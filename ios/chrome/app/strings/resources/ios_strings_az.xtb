@@ -272,7 +272,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2434405374328098816">Artıq <ph name="WEBSITE" /> saytında "<ph name="USERNAME" />" üçün parolu yadda saxlamısınız</translation>
 <translation id="2434918313224755415">Sola sürüşdürərək Anonim rejimdə baxa bilərsiniz.</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
-<translation id="2459155039684421202">Ünvan panelində "tarixçəni silin", yaxud "parolları redaktə edin" kimi tapşırıq daxil edin.</translation>
 <translation id="2461070143328828326">Parol Ayarları</translation>
 <translation id="2462736546165239215">Bütün brauzer tarixçəsi buradadır.</translation>
 <translation id="2468132863574325555">Disk</translation>
@@ -827,7 +826,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5256661381001734217">Bu sayt tətbiq açmağa çalışır.  Anonim rejimdən çıxacaqsınız.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
-<translation id="5283494734135414249">Ünvan panelinin altındakı qısayola toxunun.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hesabı silinsin?</translation>
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6638511529934826365">Mətni Böyüdün…</translation>
 <translation id="6640268266988685324">Açıq Tab</translation>
 <translation id="6642362222295953972">Mövcud taba keçin</translation>
-<translation id="6643016212128521049">Silin</translation>
 <translation id="6645899968535965230">QR Kodu: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ziyarət etdiyiniz keçidlər növbəti dəfə hansı saytlara daxil ola biləcəyinizi proqnozlaşdırmaq üçün Google'a göndərilir</translation>
 <translation id="6656103420185847513">Qovluğa düzəliş edin</translation>
@@ -1202,7 +1199,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7136892417564438900">Kamera əlçatan deyil</translation>
 <translation id="7138080855268384146">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}}</translation>
 <translation id="7141960840225504692">Tablar bağlanacaq və baxış datası silinəcək</translation>
-<translation id="7154343200458623869">Tapşırığı tamamlayın.</translation>
 <translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>
 <translation id="7162168282402939716">Anonim tabları <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>

@@ -983,6 +983,7 @@
 <translation id="1720318856472900922">‏راستی‌آزمایی سرور TLS WWW</translation>
 <translation id="172123215662733643">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
+<translation id="1723166841621737307">‏داده‌ها چگونه به عملکرد بهتر Chrome برای شما کمک می‌کنند؟</translation>
 <translation id="1723824996674794290">پنجره &amp;جدید</translation>
 <translation id="1724801751621173132">حالت ورودی</translation>
 <translation id="1725562816265788801">پیمایش برگه</translation>
@@ -1006,6 +1007,7 @@
 <translation id="1743970419083351269">بستن نوار بارگیری‌</translation>
 <translation id="1744108098763830590">صفحه پس‌زمینه</translation>
 <translation id="1745732479023874451">مدیریت مخاطبین</translation>
+<translation id="1746797507422124818">داده‌های شما هنگام مرور</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{# فایل در این برنامهٔ وب باز و ویرایش شود؟}other{# فایل در این برنامهٔ وب باز و ویرایش شود؟}}</translation>
 <translation id="1748329107062243374">از گذرکلید <ph name="DEVICE_NAME" /> برای ورود به سیستم <ph name="WEBSITE" /> استفاده کنید</translation>
 <translation id="1748563609363301860">‏می‌توانید این گذرواژه را در «حساب Google» خود یا فقط در این دستگاه ذخیره کنید</translation>
@@ -4474,6 +4476,7 @@
 <translation id="4357583358198801992">نمایش گروه‌های برگه</translation>
 <translation id="4358361163731478742">هیچ برنامه‌ای از انتخاب زبان پشتیبانی نمی‌کند</translation>
 <translation id="4358643842961018282">دستگاهتان به‌روز است</translation>
+<translation id="4358995225307748864">برنامه‌ای را برای باز کردن انتخاب کنید</translation>
 <translation id="4359408040881008151">به دلیل برنامه(های) افزودنی وابسته نصب شد.</translation>
 <translation id="4359717112757026264">نمای شهر</translation>
 <translation id="4359809482106103048">ایمنی در یک نگاه</translation>
@@ -4639,6 +4642,7 @@
 <translation id="4481448477173043917">دستگاه <ph name="DEVICE_TYPE" /> به‌طور غیرمنتظره‌ای بازراه‌اندازی شد</translation>
 <translation id="4481467543947557978">عامل خدماتی</translation>
 <translation id="4482990632723642375">برگه‌ای که اخیراً بسته شده است</translation>
+<translation id="4485245862007675842">‏‫Chrome کمک می‌کند وب عملکرد بهتری برای شما داشته باشد</translation>
 <translation id="4486333480498805415">دقت مکان</translation>
 <translation id="4487489714832036847">‏دستگاه‌های Chromebook به‌جای نرم‌افزار قدیمی از برنامه‌ها استفاده می‌کنند. برنامه‌هایی ویژه بهره‌وری، سرگرمی، و غیره دریافت کنید.</translation>
 <translation id="4488257340342212116">اجازه دارد از دوربین استفاده کند</translation>
@@ -6282,6 +6286,7 @@
 <translation id="5793339252089865437">بارگیری به‌روزرسانی ازطریق شبکه تلفن می‌تواند به کسر هزینه‌های مازاد منجر شود.</translation>
 <translation id="5793420564274426163">تأیید مرتبط‌سازی</translation>
 <translation id="5794034487966529952">در میزکار <ph name="DESK_TITLE" />، <ph name="NUM_BROWSERS" /> پنجره مرورگر باز است</translation>
+<translation id="5794086402489402632">سابقه مرور و جستجو چه تفاوتی دارند؟</translation>
 <translation id="5794414402486823030">همیشه با نظاره‌گر سیستم باز شود</translation>
 <translation id="5794700615121138172">‏پوشه‌های هم‌رسانی‌شده Linux</translation>
 <translation id="5794786537412027208">‏خروج از همه برنامه‌های Chrome</translation>
@@ -7372,6 +7377,7 @@
 <translation id="6647690760956378579">پیش‌نمایش صدای طبیعی</translation>
 <translation id="6648911618876616409">به‌روزرسانی مهمی برای نصب آماده است. برای شروع به کار، به سیستم وارد شوید.</translation>
 <translation id="6649018507441623493">یک لحظه…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> می‌خواهد تأیید کند این فرد شما هستید</translation>
 <translation id="6650206238642452078">‏مشترک شدن در رویدادهای سیستم ChromeOS</translation>
 <translation id="665061930738760572">باز کردن در پنجره &amp;جدید</translation>
 <translation id="6651237644330755633">برای شناسایی وب‌سایت‌ها به این گواهی اطمینان شود</translation>
@@ -8070,6 +8076,7 @@
 <translation id="7196913789568937443">‏پشتیبان‌گیری در Google Drive. هرزمان خواستید داده‌هایتان را به‌آسانی بازیابی کنید یا دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و با استفاده از گذرواژه حساب Google رمزگذاری می‌شود. <ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">‏دریافت «جستجوی Google» و هوشمندی‌های Google هنگام مرور</translation>
 <translation id="719791532916917144">میان‌بر صفحه‌کلید</translation>
+<translation id="7197958763276896180">‏چرا Chrome فراتر از کوکی‌های شخص ثالث می‌رود؟</translation>
 <translation id="7198503619164954386">باید از دستگاه ثیت‌شده شرکتی استفاده کنید</translation>
 <translation id="7199158086730159431">دریافت راهنمایی</translation>
 <translation id="7199452998289813782">توقف موقت پخش محتوا در <ph name="DEVICE_NAME" /></translation>

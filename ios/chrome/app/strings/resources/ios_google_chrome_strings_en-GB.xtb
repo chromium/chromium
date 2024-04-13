@@ -189,7 +189,6 @@ Your data is encrypted with your passphrase. Enter it to use and save Chrome dat
 <translation id="6634107063912726160">When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="6646696210740573446">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.</translation>
 <translation id="6648150602980899529">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
-<translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
 <translation id="6683891932310469419">Opens your Chrome History Page.</translation>
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
 <translation id="6815466750807582739">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.

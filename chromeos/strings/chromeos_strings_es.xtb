@@ -841,6 +841,8 @@
 <translation id="5946538341867151940">Aún no te has conectado. Si tu operador móvil recomienda un APN personalizado, selecciona + Nuevo APN para introducir la información del APN.</translation>
 <translation id="5947266287934282605">Si el último día del mes es anterior a este, los datos se restablecerán el último día del mes</translation>
 <translation id="5948460390109837040">perros</translation>
+<translation id="594989847980441553">Selecciona Crear para crear una imagen con IA.
+        Todas las imágenes creadas aparecerán aquí automáticamente.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
@@ -1196,6 +1198,7 @@
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943235353293548836">Intervalo keepalive persistente</translation>
+<translation id="7943516765291457328">Activa el Bluetooth para buscar puntos de acceso cercanos</translation>
 <translation id="7944562637040950644">activar o desactivar retroiluminación del teclado</translation>
 <translation id="7953669802889559161">Métodos de introducción de texto</translation>
 <translation id="7955587717700691983">Teclado Bluetooth</translation>
@@ -1325,6 +1328,7 @@
 <translation id="8747900814994928677">Confirmar cambio</translation>
 <translation id="8749478549112817787">Fondo de la cámara</translation>
 <translation id="8755946156089753497">torre</translation>
+<translation id="8756235582947991808">Cómo crear contenido con IA y varios aspectos que tener en cuenta</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del módem</translation>

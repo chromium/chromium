@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Tout marquer comme lu</translation>
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> sélectionnés</translation>
+<translation id="1710698977900873766">Activer la protection renforcée</translation>
 <translation id="1713777106376424209">Livré par</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
@@ -271,7 +272,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2434405374328098816">Vous avez déjà enregistré un mot de passe pour l'utilisateur « <ph name="USERNAME" /> » sur le site <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Vous pouvez faire défiler l'écran vers la gauche pour naviguer en mode Navigation privée.</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
-<translation id="2459155039684421202">Dans la barre d'adresse, entrez une tâche comme « effacer mon historique » ou « modifier les mots de passe ».</translation>
 <translation id="2461070143328828326">Paramètres des mots de passe</translation>
 <translation id="2462736546165239215">Vous pouvez retrouver tout votre historique de navigation ici.</translation>
 <translation id="2468132863574325555">Disque</translation>
@@ -826,7 +826,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5256661381001734217">Ce site essaie d'ouvrir une application.  Vous serez redirigé en dehors de la Navigation privée.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
-<translation id="5283494734135414249">Touchez le raccourci qui s'affiche sous la barre d'adresse.</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="6638511529934826365">Zoomer sur le texte…</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>
 <translation id="6642362222295953972">Passer à l'onglet déjà ouvert</translation>
-<translation id="6643016212128521049">Effacer</translation>
 <translation id="6645899968535965230">Code QR : <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Les URL des pages que vous visitez sont envoyées à Google aux fins de prédiction des sites que vous êtes susceptible de visiter ultérieurement</translation>
 <translation id="6656103420185847513">Modifier le dossier</translation>
@@ -1201,7 +1199,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7136892417564438900">La caméra est indisponible</translation>
 <translation id="7138080855268384146">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{{count} favori enregistré dans « {title} » dans votre compte, {email}}other{{count} favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="7141960840225504692">Vos onglets seront fermés, et les données de navigation seront supprimées</translation>
-<translation id="7154343200458623869">Terminez votre tâche.</translation>
 <translation id="7161230316646448869">Synchroniser vos favoris, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="7162168282402939716">Déverrouiller les onglets de navigation privée avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>

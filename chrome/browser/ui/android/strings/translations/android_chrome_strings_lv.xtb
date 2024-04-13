@@ -882,6 +882,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="5657871969392618475">Jūsu informācija ir aizsargāta, izmantojot profila bloķēšanu</translation>
 <translation id="5659593005791499971">E-pasts</translation>
 <translation id="5665379678064389456">Izveidojiet pasākumu lietotnē <ph name="APP_NAME" />.</translation>
+<translation id="5680616253592639556">Trūkst informācijas</translation>
 <translation id="5683547024293500885">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5686790454216892815">Faila nosaukums ir pārāk garš</translation>
 <translation id="5687606994963670306">Pārlūkā Chrome tiek automātiski dzēstas vietnes, kas ir glabātas ilgāk nekā 30 dienas. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Varat arī liegt vietnei ieteikt jums reklāmas. Uzziniet vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību pārlūkā Chrome<ph name="END_LINK" />.</translation>
@@ -960,6 +961,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="6030719887161080597">Pārvaldiet informāciju, ko izmanto vietnes, lai novērtētu reklāmu veiktspēju.</translation>
 <translation id="6039379616847168523">Pāriet uz nākamo cilni</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
+<translation id="6040939430773295212">Atkārtojas</translation>
 <translation id="604124094241169006">Automātiski</translation>
 <translation id="6042308850641462728">Vairāk</translation>
 <translation id="604996488070107836">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās nezināma kļūda.</translation>
@@ -1187,6 +1189,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7080806333218412752">Vietrāži URL tiek sūtīti uz funkciju Droša pārlūkošana, lai tos pārbaudītu. Lai palīdzētu atklāt jaunus draudus, tiek nosūtīti arī nelieli datu paraugi, kas ietver lapas, lejupielādes, paplašinājumu aktivitāti un sistēmas informāciju. Lai aizsargātu jūs dažādās Google lietotnēs, šie dati tiek īslaicīgi saistīti ar jūsu Google kontu, kad esat pierakstījies.</translation>
 <translation id="7085332316435785646">Izvēlieties, vai iekļaut Chrome vēsturi, lai iegūtu personalizētākas iespējas Google pakalpojumos.</translation>
 <translation id="7088681679121566888">Chrome jaunākā versija jau ir instalēta.</translation>
+<translation id="7094933634769755999">Neprecīzs</translation>
 <translation id="7105047059074518658">Pierakstieties, lai atvieglotu pārlūkošanu dažādās ierīcēs</translation>
 <translation id="7106762743910369165">Pārlūku pārvalda jūsu organizācija</translation>
 <translation id="7111394291981742152">Chrome nodrošina lielāku kontroli pār jums rādītajām reklāmām un ierobežo informāciju, ko vietnes var uzzināt par jums, kad tās rāda jums personalizētas reklāmas.</translation>
@@ -1495,6 +1498,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>
 <translation id="854522910157234410">Atvērt šo lapu</translation>
 <translation id="8551513938758868521">Bloķēt inkognito cilnes, aizverot pārlūku Chrome</translation>
+<translation id="8551524210492420949">Aizvainojošs vai nedrošs</translation>
 <translation id="8559961053328923750">Pārlūkā Chrome tiek ierobežots kopējais to datu apjoms, ko vietnes pārlūkā var kopīgot reklāmu veiktspējas izvērtēšanai</translation>
 <translation id="8559990750235505898">Piedāvāt tulkot lapas citās valodās</translation>
 <translation id="8560602726703398413">Skatiet savu lasīšanas sarakstu grāmatzīmju sadaļā</translation>

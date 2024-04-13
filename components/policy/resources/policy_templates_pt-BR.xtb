@@ -684,6 +684,10 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1557113199339446336">Se a política for definida como verdadeira, os dispositivos registrados vão enviar relatórios com informações sobre eventos de detecção e resposta estendidas (XDR, na sigla em inglês).
 
       Se a política for definida como falsa ou for deixada sem definição, os dispositivos registrados não vão informar eventos XDR.</translation>
+<translation id="1557873444324280490">As extensões empresariais podem adicionar registros pela API chrome.enterprise.systemLog a um arquivo de registro do sistema.
+
+Se a política for ativada, os registros serão mantidos no arquivo de registro do sistema por tempo limitado.
+Se for desativada ou deixada sem definição, os registros não poderão ser adicionados ao arquivo de registro do sistema. Isso significa que os registros não serão mantidos entre as sessões.</translation>
 <translation id="1560279917909364275">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">A política modifica as versões de depuração do host de acesso remoto</translation>
 <translation id="1561967320164410511">U2F e extensões para declaração individual</translation>
@@ -693,6 +697,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
       Se a política for definida como "Desativada", solicitações HTTP não seguras não poderão usar o esquema de autenticação <ph name="BASIC_AUTH" />. Apenas conexões HTTPS seguras serão aceitas.
 
       Se a política <ph name="AUTH_SCHEMES_POLICY_NAME" /> for definida e não incluir o esquema <ph name="BASIC_AUTH" />, a definição da política será ignorada e o <ph name="BASIC_AUTH" /> será sempre proibido.</translation>
+<translation id="1571604752299617930">Scanners</translation>
 <translation id="1573074208167290576">Permite definir se os usuários podem adicionar exceções para permitir conteúdo misto em sites específicos.
 
 Esta política pode ser modificada para padrões de URL específicos usando as políticas "InsecureContentAllowedForUrls" e "InsecureContentBlockedForUrls".
@@ -1057,6 +1062,7 @@ Esta política não terá efeito se for definida no nível da máquina.</transla
 <translation id="1843102210803941014">Ativa somente cookies e dados essenciais na pesquisa</translation>
 <translation id="1843117931376765605">Taxa de atualização da política do usuário</translation>
 <translation id="1844620919405873871">Configura as políticas relacionadas ao desbloqueio rápido.</translation>
+<translation id="1844833120200057817">Ativar a geração de registros do sistema de extensões</translation>
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
 <translation id="1845405905602899692">Configurações de quiosque</translation>
 <translation id="1845429996559814839">Restringir modo de impressão com PIN</translation>
@@ -2374,6 +2380,7 @@ Se esta política for desativada, os usuários não poderão adicionar contas do
 
 Definir "command_line" impede que uma extensão seja carregada na
 linha de comando.</translation>
+<translation id="2779027965175176474">Não mostrar a tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>
 <translation id="2786117913267907931">Não permitir que as origens usem a API Direct Sockets</translation>
@@ -2632,6 +2639,7 @@ Se o valor for definido como <ph name="DEFAULT_ENUM_VALUE" />, o comportamento d
 Se o valor for definido como <ph name="ENABLED_ENUM_VALUE" />, as entidades serão detectadas, sublinhadas e acionadas ao tocar ou ao tocar e manter pressionado.
 Se o valor for definido como <ph name="DISABLED_ENUM_VALUE" />, as entidades não serão detectadas e não poderão ser acionadas.
 Se o valor for definido como <ph name="LONGPRESSONLY_ENUM_VALUE" />, as entidades serão detectadas e só poderão ser acionadas quando o usuário tocar e mantiver pressionado.</translation>
+<translation id="3010395821339265736">Mostrar a tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="3010907817113180883">Taxa de coleta do sinal de funcionamento de atividade do dispositivo em milissegundos.</translation>
 <translation id="3016585641676676461">Bloquear a tela cheia automática nesses sites</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
@@ -3225,6 +3233,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="3483585138745445814">Permitir que os usuários ativem o recurso "Compartilhar por proximidade"</translation>
 <translation id="3485200437120267231">Desativar interceptação de login</translation>
 <translation id="3487651201232258606">Mensagens nativas</translation>
+<translation id="3488551354274495283">Ativar a exibição da tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
 <translation id="3492351353716550742">Não usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">Essa política controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis (diferentes da Google Play Store).
 
@@ -4000,6 +4009,27 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4101826711886952606">As configurações Home/End usam o atalho que contém a tecla modificadora de pesquisa</translation>
 <translation id="4102347680024644994">Relatar eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
+<translation id="4104303092334469130">Configura uma lista de regras de controle de dados para evitar vazamentos.
+
+      Cada regra consiste no seguinte:
+      - Campos de condição que acionam essa regra. Uma regra só será acionada se uma ação do usuário corresponder a todos os campos preenchidos em <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Para subcampos da lista, precisa haver correspondência de pelo menos uma entrada. Por exemplo, apenas um padrão de URL precisa ser correspondente para acionar a regra.
+      - Uma lista de restrições a serem aplicadas. Dependendo da restrição, apenas as condições <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> podem estar disponíveis.
+
+      As regras podem ser aplicadas para controlar:
+      - Os dados na área de transferência compartilhados entre as origens e os destinos.
+      - O bloqueio de capturas de tela com base nas guias de origem.
+
+      Se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> for definida como "True", as regras acionadas serão informadas ao administrador.
+      O nível de restrição pode ser definido como "BLOCK", "WARN" ou "REPORT" (bloquear, alertar ou informar).
+      - Se a restrição for definida como "BLOCK", a ação não será autorizada.
+      - Se a restrição for definida como "WARN", o usuário será avisado e poderá escolher entre continuar ou cancelar a ação.
+      - Se a restrição for definida como "REPORT", a ação do usuário não será interrompida, mas um relatório será enviado se a política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> estiver ativada.
+
+      Observações:
+      - Formate os padrões de URL da maneira descrita em https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Para regras de prevenção contra vazamento de dados específicas do <ph name="PRODUCT_OS_NAME" />, consulte também a política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se a política for deixada sem definição, nenhuma restrição será aplicada.</translation>
 <translation id="4105989332710272578">Desativar a aplicação da Transparência dos certificados para uma lista de URLs</translation>
 <translation id="410740968939768919">Controle se as extensões do Manifest v2 podem ser usadas na tela de login do <ph name="PRODUCT_OS_NAME" />.
 
@@ -4391,6 +4421,7 @@ Se você definir a política, os usuários não poderão mudá-la no <ph name="P
       Embora a política seja compatível com as plataformas acima, o recurso que ela ativa pode estar disponível em menos plataformas, Nem todos os recursos de uso suspenso da plataforma Web podem ser reativados. Apenas aqueles explicitamente listados abaixo podem ser reativados por um período de tempo limitado, e isso difere de acordo com o recurso. O formato geral da tag de string será [NomeDoRecursoDeUsoSuspenso]_EffectiveUntil[aaaammdd]. Como referência, é possível verificar o objeto por trás das alterações do recurso da plataforma Web em https://bit.ly/blinkintents.
       </translation>
 <translation id="4443711908766051441">Ativar o jogo easter egg de dinossauro</translation>
+<translation id="4444682330960613191">Mostrar selos de empresas apenas em dispositivos gerenciados</translation>
 <translation id="4445728642576791607">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para a medição de anúncios no dispositivo.</translation>
 <translation id="4447668084338250480">Comportamento de redirecionamento à intranet</translation>
 <translation id="4449469846627734399">Definir configuração do dia para a economia de energia no período de pico</translation>
@@ -5058,6 +5089,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
       Para acessar mais informações sobre a descontinuação da API U2F Security Key, consulte https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A.</translation>
 <translation id="4988291787868618635">Ação a ser realizada quando o intervalo de inatividade for atingido</translation>
+<translation id="4991786313466977061">Controlar a visibilidade dos selos de empresas</translation>
 <translation id="4995123966071996433">Não permitir o encaminhamento de portas a máquinas virtuais Linux</translation>
 <translation id="4996068111491152684">As credenciais de login do <ph name="PRODUCT_OS_NAME" /> não serão usadas para a autenticação de rede.</translation>
 <translation id="4996086761250834365">Permitir Analytics do produto <ph name="PLUGIN_VM_NAME" /></translation>
@@ -5267,6 +5299,19 @@ política enquanto o navegador estiver em execução.</translation>
       * desativada ou se nenhum valor for definido, o Modo restrito no YouTube não será aplicado pelo Chrome. Políticas externas, como as do YouTube, ainda poderão aplicar o Modo restrito.</translation>
 <translation id="5191476996923842491">Comportamento padrão para o tempo limite mínimo da função setTimeout().</translation>
 <translation id="519247340330463721">Configura as políticas relacionadas ao Safe Browsing.</translation>
+<translation id="5192555640439947289">Se a política for ativada, o <ph name="PRODUCT_OS_NAME" /> vai pedir que os usuários desbloqueiem o dispositivo com uma senha quando ele for suspenso ou a tampa for fechada.
+
+      O dispositivo será bloqueado quando a tampa for fechada, exceto se estiver conectado a um monitor externo.  Nesse caso, ele não será bloqueado quando a tampa fechar, mas será se o monitor externo for desconectado e a tampa ainda estiver fechada.
+
+      Em versões anteriores à M106 do <ph name="PRODUCT_OS_NAME" />, esta política só bloqueia o dispositivo quando ele é suspenso.  Na versão M106 e mais recentes, ela bloqueia o dispositivo quando ele está suspenso ou quando a tampa é fechada.
+
+      Ao definir esta política como ativada e a <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> como <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, o dispositivo será bloqueado quando a tampa for fechada, mas será suspenso apenas se for configurado para fazer isso na <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Se a política estiver ativada e a <ph name="ALLOW_SCREEN_LOCK_POLICY_NAME" /> for desativada, não será possível bloquear o dispositivo, e o usuário será desconectado.
+
+      Se a política for desativada, os usuários não vão precisar digitar uma senha para desbloquear o dispositivo.
+
+      Se ela for deixada sem definição, os usuários poderão escolher se querem receber uma solicitação de senha para desbloquear o dispositivo.</translation>
 <translation id="5194683382395300627">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web, por exemplo, para autorizar a mudança automática de senhas</translation>
 <translation id="5196630732055960309">Permitir a API File Handling nesses apps da Web</translation>
 <translation id="5205352023880027050">Não ativar o recurso EphemeralNetworkPolicies.</translation>
@@ -5920,6 +5965,7 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
 <translation id="5679540979548648200">Impede que os usuários deste dispositivo usem sideload com adb e forçará um Powerwash se o sideload já tiver sido ativado</translation>
 <translation id="5681258683432554972">Configuração padrão de pop-ups</translation>
 <translation id="5684501593989438324">Ativar a hotword do Google Assistente</translation>
+<translation id="5688951037082618146">Mostrar selos da empresa em todos os dispositivos</translation>
 <translation id="5689430183304951538">Tamanho da página de impressão padrão</translation>
 <translation id="5691637243722588222">A definição da política especifica quais esquemas de autenticação HTTP são compatíveis com o <ph name="PRODUCT_NAME" />.
 
@@ -5948,6 +5994,7 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
           O valor da política só é aplicado quando a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está ativada. Caso contrário, ele não é aplicável.</translation>
 <translation id="5695907219125832836">Ativar o recurso, mas não enviar dados para treinar os modelos de IA</translation>
 <translation id="5697306356229823047">Reporta os usuários do dispositivo</translation>
+<translation id="5697387906103995839">Desativar a geração de registros do sistema de extensões empresariais</translation>
 <translation id="569777361305162263">Desativar a exibição de conteúdo promocional na guia inteira</translation>
 <translation id="5698923148503075597">Se a política for ativada, a política de nuvem vai ter precedência caso haja um conflito com a política da plataforma.
 
@@ -6101,6 +6148,7 @@ Se a política não for definida, isso será funcionalmente equivalente a defini
       Os campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> são usados para configurar uma mensagem que informa o usuário quando um aviso é mostrado após uma verificação ter um resultado não limpo. O campo "message" contém o texto que será mostrado ao usuário e pode ter no máximo 200 caracteres. O campo "learn_more_url" contém um URL fornecido pelo administrador em que o usuário pode clicar para conferir mais informações fornecidas pelo cliente sobre o motivo de a ação ter sido bloqueada. O campo "language" é opcional e contém o idioma da mensagem. Deixar esse campo vazio ou com um valor "padrão" indica uma mensagem a ser usada quando o idioma do usuário não contiver uma mensagem. O campo "tag" especifica para quais tipos de verificação a mensagem será mostrada. A lista "custom_messages" pode ter zero ou mais entradas. Cada entrada precisa ter campos "message" e "tag" não vazios.
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
+<translation id="5812539307212402176">Ocultar todos os selos de empresas</translation>
 <translation id="5814301096961727113">Definir estado padrão da resposta falada na tela de login</translation>
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
@@ -6515,6 +6563,13 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do familiar responsável. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182206125906000651">Desativar upgrades do HTTPS.</translation>
 <translation id="6182563940865917569">Permitir que o Chrome inicie mídia automaticamente</translation>
+<translation id="618635925649844912">Esta política controla se a tela inicial dos recursos de IA na sessão será mostrada ao usuário durante o primeiro fluxo de login.
+
+      Se desativada, a tela inicial da IA não vai aparecer.
+
+      Se ativada, a tela inicial da IA será mostrada.
+
+      Se não for definida, a tela inicial da IA será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="6187573347027372072">Aviso: esta política foi descontinuada. Use a <ph name="CROS_GLS_POLICY_NAME" />. O <ph name="PRODUCT_OS_NAME" /> agora tem uma opção de ativação/desativação do local do sistema, que controla todo o sistema, incluindo o <ph name="ANDROID_NAME" />. O botão de ativação/desativação do <ph name="ANDROID_NAME" /> agora é somente leitura e reflete o estado do local do <ph name="PRODUCT_OS_NAME" />.
 
 A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização continuarão desativados durante a configuração.
@@ -6774,6 +6829,7 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
 <translation id="6331943515692769234">Forçar o algoritmo User-Agent GREASE anterior a ser usado.</translation>
 <translation id="6332546092866098577">Bloquear acesso de leitura com a API File System nestes sites</translation>
+<translation id="6333338054007607863">Baixar o modelo automaticamente</translation>
 <translation id="6334330017384340264">Esta política especifica quais aplicativos e URLs serão permitidos para restrições de uso por app.
         A lista de permissões configurada é aplicada aos apps instalados no <ph name="PRODUCT_OS_NAME" /> para um determinado usuário com limite de tempo por app.
         A lista de permissões configurada só pode ser aplicada para contas de crianças e entra em vigor quando a política <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> é definida.
@@ -6909,6 +6965,7 @@ Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usar
 <translation id="6412352702230183710">Permitir apenas hosts de mensagens nativas no nível do sistema</translation>
 <translation id="6416506846917150119">Desativar a escrita preditiva do teclado físico quando os usuários digitarem</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
+<translation id="6419001911253110938">Ativar a exibição da tela inicial para recursos de IA na sessão durante o fluxo de login</translation>
 <translation id="6421254653839955267">Ativar a política faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
 
 Desativar a política ou deixá-la sem definição faz com que a pesquisa CNAME determine o nome canônico do servidor ao gerar o SPN do Kerberos.</translation>
@@ -7116,6 +7173,7 @@ Observação: as senhas podem ser mais velhas do que o número especificado de d
 <translation id="6536600139108165863">Reinicialização automática no desligamento do dispositivo</translation>
 <translation id="6538653424603921690">Sempre desativar a tela de privacidade na tela de login</translation>
 <translation id="6539246272469751178">Esta política não tem nenhum efeito sobre apps Android. Os apps Android sempre usam o diretório de downloads padrão e não podem acessar nenhum arquivo baixado pelo <ph name="PRODUCT_OS_NAME" /> para um diretório de downloads não padrão.</translation>
+<translation id="6541383786427998658">Ativar a geração de registros do sistema de extensões empresariais</translation>
 <translation id="654303922206238013">Estratégia de migração para eCryptfs</translation>
 <translation id="6544601600794014309">Ativar a tradução das Respostas rápidas</translation>
 <translation id="654546276700640113">Se a política for definida, o tamanho máximo de PIN configurado será aplicado. Se o valor for 0 ou menos, o usuário poderá definir um PIN do tamanho que quiser. Se o valor for maior que 0 e menor que <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, o tamanho máximo será definido como o mínimo.
@@ -8278,6 +8336,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="7421230730436851224">Nunca colocar o processo de áudio no sandbox</translation>
 <translation id="7421483919690710988">Define o tamanho do cache de disco de mídia em bytes</translation>
 <translation id="7424751532654212117">Lista de exceções à lista de plug-ins desativados</translation>
+<translation id="742531731411208578">Mostrar selos corporativos apenas em dispositivos não gerenciados</translation>
 <translation id="7426112309807051726">Especifica se a otimização <ph name="TLS_FALSE_START" /> deve ser desativada. Por razões históricas, essa política é chamada de DisableSSLRecordSplitting.
 
       Se a política não for configurada ou se for definida como "false", <ph name="TLS_FALSE_START" /> será ativada. Se for definida como "true", <ph name="TLS_FALSE_START" /> será desativada.</translation>
@@ -8327,6 +8386,13 @@ a leitura em voz alta será ativada.</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
+<translation id="7469182444144588294">Esta política controla se a tela inicial do <ph name="FEATURE_NAME" /> será mostrada ao usuário durante o primeiro login.
+
+      Se ela for desativada, a tela inicial do <ph name="FEATURE_NAME" /> não será mostrada.
+
+      Se ela for ativada, a tela inicial do <ph name="FEATURE_NAME" /> será mostrada.
+
+      Se não for definida, a tela inicial do <ph name="FEATURE_NAME" /> será ignorada para usuários gerenciados por empresas e mostrada para usuários não gerenciados.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>
 <translation id="7476030153540156377">Escolher se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> deve ser ativado.</translation>
@@ -8818,6 +8884,7 @@ Se a política for definida como 2, as origens não poderão usar a API.
 Se ela não for definida, a API Direct Sockets vai ser permitida.</translation>
 <translation id="7853140303943875314">Ativar o descarte do login automático</translation>
 <translation id="7854187834842629068">Desativar o Ditado na tela de login</translation>
+<translation id="7858352166858826505">Configurações do modelo de fundação local da IA generativa</translation>
 <translation id="7863947545897944083">Ativar o recurso de acessibilidade de alto contraste na tela de login.
 
           Se esta política for definida como verdadeira, o alto contraste sempre ficará ativado na tela de login.
@@ -9125,6 +9192,7 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENAB
 <translation id="8124468781472887384">Política de acesso à configuração de impressoras do dispositivo.</translation>
 <translation id="8128192446158421884">URLs em que é possível aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
+<translation id="8132419228205300235">Não mostrar a tela inicial da IA durante o login</translation>
 <translation id="8133152694354699657">Se a política for definida como verdadeira ou não for definida, a opção "Pesquisa por toque" ficará disponível para o usuário, e ele poderá ativar ou desativar esse recurso.
 
       Se ela for definida como falsa, o recurso será totalmente desativado.</translation>
@@ -9537,6 +9605,7 @@ configurados.</translation>
       Se essa política não for definida, o valor padrão 3 será usado.
 
       Se a política for definida, snapshots antigos serão excluídos conforme necessário para respeitar o limite. Se a política for definida como 0, nenhum snapshot será criado.</translation>
+<translation id="8446679541472571487">Mostrar a tela inicial da IA durante o login</translation>
 <translation id="8451988835943702790">Usar a página "Nova guia" como página inicial</translation>
 <translation id="8452787853105404870">Enviar dados de hardware ao Google para apoiar as melhorias no ChromeOS Flex</translation>
 <translation id="8453218444172088993">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anúncios para os usuários.</translation>
@@ -9715,6 +9784,7 @@ Não definir a política significa que os usuários não poderão jogar no <ph n
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
+<translation id="8592363656632862875">Não baixar o modelo</translation>
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
 <translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>
@@ -10140,6 +10210,13 @@ Se desativada, apenas os dados de hardware padrão serão enviados.</translation
 <translation id="8931555638815157255">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a versão do SO e do firmware periodicamente.
 
       Se a política for definida como "Desativada", os dispositivos registrados não relatarão as informações de versão.</translation>
+<translation id="8934485887744460569">Configure como o <ph name="PRODUCT_NAME" /> baixa o modelo básico da IA generativa e usa para inferência local. 
+
+Quando a política é definida como "Permitida" (0) ou deixada sem definição, o modelo é baixado automaticamente e ele é usado para inferência.
+
+Quando a política é desativada (1), o modelo não é baixado.
+
+O download do modelo também pode ser desativado pela <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="8937282917198525844"> A partir da versão M81, os elementos padrão de controle de formulários (por exemplo, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) foram atualizados para proporcionar melhor acessibilidade e uniformidade na plataforma. Esta política restaura os antigos elementos de controle de formulários "legados" até a M84.
 
       Se esta política for definida como verdadeira, os elementos de controle de formulários "legados" serão usados para todos os sites.

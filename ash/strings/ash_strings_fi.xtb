@@ -226,6 +226,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1864454756846565995">C-tyypin USB-laite (takaportti)</translation>
 <translation id="1869497990620230175">Pikatiedostot</translation>
 <translation id="1871023081802165724">Toista mediaa</translation>
+<translation id="1871915835366697861">Ei saatavilla tähän peliin</translation>
 <translation id="1879018240766558464">Incognito-ikkunoita ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
 <translation id="1882814835921407042">Ei mobiiliverkkoa</translation>
 <translation id="1882897271359938046">Peilataan näyttöön: <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>
 <translation id="7942349550061667556">Punainen</translation>
+<translation id="7943516765291457328">Laita Bluetooth päälle, niin voit etsiä lähellä olevia hotspoteja</translation>
 <translation id="7944023924886109030">Katso kaikki tämän päivän tapahtumat</translation>
 <translation id="7945357288295809525">Näytä saavutettavuusasetukset, <ph name="ENABLED_FEATURES" /> käytössä.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> haluaa käyttää tätä: <ph name="DEVICE_NAME" /></translation>

@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">全部标为已读</translation>
 <translation id="1689333818294560261">昵称</translation>
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
+<translation id="1710698977900873766">开启增强型保护</translation>
 <translation id="1713777106376424209">递送方：</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
@@ -271,7 +272,6 @@
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2434918313224755415">向左滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2435457462613246316">显示密码</translation>
-<translation id="2459155039684421202">在地址栏中输入任务，例如“清除我的历史记录”或“修改密码”。</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
 <translation id="2468132863574325555">云端硬盘</translation>
@@ -826,7 +826,6 @@
 <translation id="5256661381001734217">此网站正在尝试打开某款应用。这项操作会使您退出无痕模式。</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
-<translation id="5283494734135414249">点按地址栏下方显示的相应快捷方式。</translation>
 <translation id="5295239312320826323">移除账号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@
 <translation id="6638511529934826365">缩放文字…</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6642362222295953972">切换到已打开的标签页</translation>
-<translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">二维码：<ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6656103420185847513">修改文件夹</translation>
@@ -1201,7 +1199,6 @@
 <translation id="7136892417564438900">无法使用相机</translation>
 <translation id="7138080855268384146">{count,plural, =1{书签已保存到账号 {email} 中的“{title}”}other{{count} 个书签已保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="7141960840225504692">标签页将被关闭，而且您的浏览数据将被删除</translation>
-<translation id="7154343200458623869">完成任务。</translation>
 <translation id="7161230316646448869">将您的书签、历史记录等信息同步到所有设备上</translation>
 <translation id="7162168282402939716">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁无痕式标签页</translation>
 <translation id="7173114856073700355">打开“设置”</translation>

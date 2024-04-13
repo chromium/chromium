@@ -378,6 +378,7 @@
 <translation id="168693727862418163">Вредноста на правилото не може да се потврди според неговата шема и ќе биде игнорирана.</translation>
 <translation id="168841957122794586">Сертификатот на серверот содржи слаб криптографски клуч.</translation>
 <translation id="1689333818294560261">Прекар</translation>
+<translation id="1691425742011409472">заклучување покажувач</translation>
 <translation id="1692622044604477956">Филмски репертоари и театарски претстави</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како може да управувате со вашите податоци:<ph name="END_BOLD" /> Chrome автоматски ги брише темите што се постари од 4 седмици. Со понатамошното прелистување, некоја тема може одново да се појави на списокот. Може и да ги блокирате темите што не сакате Chrome да ги споделува со сајтови и да ги исклучите темите за реклами во секое време во поставките за Chrome.</translation>
 <translation id="1697532407822776718">Подготвени сте.</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
+<translation id="2349056830177284083">Заклучување тастатура</translation>
 <translation id="2349957959687031096">Копче за отворање картичка „Инкогнито“, активирајте го за да отворите нова картичка „Инкогнито“ за приватно прелистување</translation>
 <translation id="2350796302381711542">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Камерата и микрофонот се дозволени</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Врската е ресетирана.</translation>
 <translation id="2786008859124691917">Велосипеди и додатоци</translation>
+<translation id="2791955793407772554">Заклучување покажувач</translation>
 <translation id="2792012897584536778">Администраторите на уредов поставиле безбедносни сертификати што може да им дозволат да ги гледаат содржините на веб-сајтовите што ги посетувате.</translation>
 <translation id="2794233252405721443">Сајтот е блокиран</translation>
 <translation id="2794629552137076216">Стакло (површинско)</translation>
@@ -1080,6 +1083,7 @@
             <ph name="LIST_ITEM" />историја на пребарување<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />податоци внесени во формулари<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Штедна сметка</translation>
 <translation id="3103188521861412364">Акции и обврзници</translation>
 <translation id="3105172416063519923">ИД на средство:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да ја проверите конфигурацијата на безбедниот DNS<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@
 <translation id="3121994479408824897">Оди во <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Етикети (трајни)</translation>
 <translation id="3133565499688974786">Отсега <ph name="SEARCH_ENGINE_NAME" /> е вашиот стандарден пребарувач</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – пребарувајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Бизнис услуги</translation>
 <translation id="3141093262818886744">Сепак отвори</translation>
 <translation id="3141641372357166056">Нема одлука за согласност</translation>
@@ -1297,6 +1302,7 @@
 <translation id="3493660662684070951">Камиони, комбиња и теренски возила</translation>
 <translation id="3495081129428749620">Најди на страницата
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Сметка за плата</translation>
 <translation id="3497627066518778351">Прегледајте список со податоци од сајтови на уредот во нов прозорец</translation>
 <translation id="3498215018399854026">Во моментов не можевме да го добиеме вашиот родител. Обидете се повторно.</translation>
 <translation id="350069200438440499">Име на датотека:</translation>
@@ -1426,12 +1432,14 @@
 <translation id="3711895659073496551">Суспендирај</translation>
 <translation id="3712006010833051684">Плик #10</translation>
 <translation id="3712624925041724820">Исцрпени лиценци</translation>
+<translation id="3713277100229669269">Отсега може да ги видите поволностите на картичката пред да платите</translation>
 <translation id="371420189621607696">Натпреварувачко играње видеоигри</translation>
 <translation id="3714633008798122362">веб-календар</translation>
 <translation id="3714780639079136834">Да вклучите мобилен интернет или Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Датотека е блокирана за прикачување}one{<ph name="FILE_COUNT" /> датотека се блокирани за прикачување}other{<ph name="FILE_COUNT" /> датотеки се блокирани за прикачување}}</translation>
 <translation id="3715545959749027023">Кога Chrome пријавува безбедносни настани, важните податоци за нив се испраќаат до вашиот администратор. Тука спаѓаат URL-адресите на страниците што ги посетувате во Chrome, имињата или метаподатоците на датотеките, падовите на прелистувачот или картичките и корисничкото име што го користите за најавување на онлајн апликациите, вашиот уред и Chrome.</translation>
 <translation id="3715597595485130451">Поврзете се со Wi-Fi</translation>
+<translation id="3716622997181469465">заклучување тастатура</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Да ги проверите проксито, заштитниот ѕид и DNS-конфигурацијата<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Во текот на ажурирањето нема да може да го користите вашиот уред најмногу 10 минути.</translation>
 <translation id="372429172604983730">Апликациите што може да ја предизвикаат грешкава опфаќаат антивируси, заштитни ѕидови и веб-филтри или прокси-софтвери.</translation>
@@ -2332,6 +2340,7 @@
 <translation id="5519696598216267194">Хартија (со отвори за поврзување)</translation>
 <translation id="5521782189689806907">Изработка на шкафови</translation>
 <translation id="5523118979700054094">Име на правило</translation>
+<translation id="5523588073846127669">Трговецот не ја прифаќа оваа виртуелна картичка</translation>
 <translation id="5525755241743357906">Датотеката е копирана или преместена</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="55293785478302737">Шиење на работ</translation>
@@ -3514,6 +3523,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Приспособете ги голимините и типовите на фонтовите во Chrome</translation>
 <translation id="7752995774971033316">Неуправуван</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – разговарајте со <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Кога ќе започне ажурирањето, ќе се затворат вашите картички и апликации на Chrome</translation>
 <translation id="7755287808199759310">Родителот може да го одблокира</translation>
 <translation id="7755624218968747854">Примарна ролна</translation>
@@ -3713,6 +3723,7 @@
 <translation id="81563721597823545">Опрема за хокеј</translation>
 <translation id="8161095570253161196">Продолжи со прелистување</translation>
 <translation id="8163866351304776260">Четири дупки лево</translation>
+<translation id="8163998196788647716">Трансакциска сметка</translation>
 <translation id="8164078261547504572">Дали сакате известувања по е-пошта при намалување на цената?</translation>
 <translation id="8169175551046720804">Копчињата „<ph name="DATA_CONTROLS_KEYS" />“ не може да се постават во истиот речник</translation>
 <translation id="8175796834047840627">Chrome нуди да ви ги зачува картичките во вашата сметка на Google бидејќи сте најавени. Ваквото однесување може да го смените во поставки.</translation>

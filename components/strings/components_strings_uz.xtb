@@ -1082,6 +1082,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
             <ph name="LIST_ITEM" />Qidiruv tarixi<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Shakllarga kiritilgan maʼlumotlar<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Jamgʻarma</translation>
 <translation id="3103188521861412364">Qimmatli qogʻozlar va obligatsiyalar</translation>
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS sozlamalar himoyasini tekshirish<ph name="END_LINK" /></translation>
@@ -1297,6 +1298,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3487845404393360112">Tarnov 4</translation>
 <translation id="3493660662684070951">Yuk mashinalari, furgonlar va yoʻl tanlamas transport</translation>
 <translation id="3495081129428749620">“<ph name="PAGE_TITLE" />” sahifasidan qidirish</translation>
+<translation id="3495818359064790343">Maosh</translation>
 <translation id="3497627066518778351">Qurilmadagi sayt maʼlumotlari roʻyxatini yangi oynada tekshirish</translation>
 <translation id="3498215018399854026">Ota-onangiz bilan bog‘lanib bo‘lmadi. Qaytadan urinib ko‘ring.</translation>
 <translation id="350069200438440499">Fayl nomi:</translation>
@@ -2333,6 +2335,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5519696598216267194">Qogʻoz (teshilgan)</translation>
 <translation id="5521782189689806907">Duradgorlik</translation>
 <translation id="5523118979700054094">Parametr nomi</translation>
+<translation id="5523588073846127669">Sotuvchi bu virtual kartani qabul qilmaydi</translation>
 <translation id="5525755241743357906">Fayl nusxalangan yoki koʻchirilgan</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS sozlamalari orqali qulaylik vositalarini moslashtirish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="55293785478302737">Chekkasini tikish</translation>
@@ -3714,6 +3717,7 @@ Batafsil axborot:
 <translation id="81563721597823545">Xokey jihozlari</translation>
 <translation id="8161095570253161196">Koʻrishda davom etish</translation>
 <translation id="8163866351304776260">Chapdan 4 ta teshik ochish</translation>
+<translation id="8163998196788647716">Sarflar hisobi</translation>
 <translation id="8164078261547504572">Narxlar tushganda xat olishni istaysizmi?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" kalitlari bir xil lugʻatda sozlanmaydi</translation>
 <translation id="8175796834047840627">Hisobingizga kirganingiz uchun Chrome kartalarni Google hisobingizga saqlashni taklif qilmoqda. Buni sozlamalar orqali oʻzgartirish mumkin.</translation>

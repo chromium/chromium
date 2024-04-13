@@ -226,6 +226,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1864454756846565995">Dyfais USB-C (porth cefn)</translation>
 <translation id="1869497990620230175">Ffeiliau cyflym</translation>
 <translation id="1871023081802165724">Chwarae'r cyfryngau</translation>
+<translation id="1871915835366697861">Ddim ar gael ar gyfer y gêm hon</translation>
 <translation id="1879018240766558464">Ni chefnogir ffenestri anhysbys ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="1882814835921407042">Dim rhwydwaith symudol</translation>
 <translation id="1882897271359938046">Wrthi'n adlewyrchu i <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="79341161159229895">Rheolir y cyfrif gan <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pwyswch <ph name="SHORTCUT_KEY_NAME" /> a V i weld eich clipfwrdd. Mae'r 5 eitem ddiwethaf a gopïoch wedi'u cadw i'ch clipfwrdd.</translation>
 <translation id="7942349550061667556">Coch</translation>
+<translation id="7943516765291457328">Trowch Bluetooth ymlaen i sganio am fannau problemus cyfagos</translation>
 <translation id="7944023924886109030">Gweld yr holl ddigwyddiadau ar gyfer heddiw</translation>
 <translation id="7945357288295809525">Dangos gosodiadau hygyrchedd, '<ph name="ENABLED_FEATURES" />' wedi'i alluogi.</translation>
 <translation id="7947798320695032612">Mae <ph name="APP_NAME" /> am ddefnyddio eich <ph name="DEVICE_NAME" /></translation>

@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Marcar todas as entradas como lidas</translation>
 <translation id="1689333818294560261">Apelido</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1710698977900873766">Ativar a proteção reforçada</translation>
 <translation id="1713777106376424209">Enviado por</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode usar uma senha salva para fazer login.</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
@@ -271,7 +272,6 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2434405374328098816">Você já salvou uma senha para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Role a tela para a esquerda para navegar no modo de navegação anônima.</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
-<translation id="2459155039684421202">Na barra de endereço, digite uma tarefa como "limpar meu histórico" ou "editar senhas".</translation>
 <translation id="2461070143328828326">Configurações de senha</translation>
 <translation id="2462736546165239215">Todo seu histórico de navegação aparece aqui.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +826,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5256661381001734217">O site está tentando abrir um aplicativo.  Com essa ação, você sai da navegação anônima.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
-<translation id="5283494734135414249">Toque no atalho que aparece abaixo da barra de endereço.</translation>
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6638511529934826365">Aplicar zoom no texto…</translation>
 <translation id="6640268266988685324">Abrir guia</translation>
 <translation id="6642362222295953972">Mudar para guia existente</translation>
-<translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6656103420185847513">Editar pasta</translation>
@@ -1201,7 +1199,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7136892417564438900">A câmera não está disponível</translation>
 <translation id="7138080855268384146">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{{count} favorito salvo em "{title}" na conta {email}}other{{count} favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="7141960840225504692">As guias serão fechadas e os dados de navegação serão excluídos</translation>
-<translation id="7154343200458623869">Conclua sua tarefa.</translation>
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Configurações</translation>

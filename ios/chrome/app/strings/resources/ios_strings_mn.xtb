@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2434918313224755415">Та Нууцлалтай горимд үзэхийн тулд зүүн тийш гүйлгэх боломжтой.</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
-<translation id="2459155039684421202">Хаяг оруулах хэсэгт “миний түүхийг арилгах” эсвэл “нууц үгнүүдийг засах” зэрэг ажлууд оруулна уу.</translation>
 <translation id="2461070143328828326">Нууц үгний тохиргоо</translation>
 <translation id="2462736546165239215">Та бүх хөтчийн түүхээ эндээс олох боломжтой.</translation>
 <translation id="2468132863574325555">Драйв</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">Энэ сайт аппликэйшнийг нээхээр оролдож байна.  Энэ нь таныг Нууцлалтай горимоос гаргана.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Заавал бөглөх хэсэг хоосон байна. Хадгалахаасаа өмнө үүнийг бөглөнө үү.}other{Заавал бөглөх зарим хэсэг хоосон байна. Хадгалахаасаа өмнө тэдгээрийг бөглөнө үү.}}</translation>
 <translation id="5271549068863921519">Нууц үгийг хадгал</translation>
-<translation id="5283494734135414249">Хаяг оруулах хэсгийн доор гарч ирэх товчлолыг товшино уу.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> бүртгэлийг хасах уу?</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-н <ph name="INDEX" /></translation>
@@ -1109,7 +1107,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6638511529934826365">Текстийг томруулах…</translation>
 <translation id="6640268266988685324">Нээлттэй таб</translation>
 <translation id="6642362222295953972">Аль хэдийн нээсэн таб руу сэлгэх</translation>
-<translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6656103420185847513">Хавтсыг засах</translation>
@@ -1202,7 +1199,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7136892417564438900">Камер боломжгүй</translation>
 <translation id="7138080855268384146">{count,plural, =1{Хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}other{{count} хавчуургыг таны {email} бүртгэлийн "{title}"-д хадгалсан}}</translation>
 <translation id="7141960840225504692">Таны табуудыг хаах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
-<translation id="7154343200458623869">Ажлаа дуусгана уу.</translation>
 <translation id="7161230316646448869">Хавчуурга, түүх болон бусад зүйлээ бүх төхөөрөмжид синк хийгээрэй</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р Нууцлалтай табуудын түгжээг тайлах</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>

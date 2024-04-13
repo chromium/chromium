@@ -189,7 +189,6 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="6634107063912726160">Si cierras sesión, Chrome no sincronizará ningún dato nuevo con tu cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Google.</translation>
 <translation id="6648150602980899529">Estás iniciando sesión con una cuenta gestionada por <ph name="DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se van a vincular de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo pero permanecerán almacenados en tu cuenta de Google.</translation>
-<translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome en este dispositivo?</translation>
 <translation id="6683891932310469419">Abre la página del historial de Chrome.</translation>
 <translation id="6709398533399187136">Tu contraseña se ha visto expuesta en una brecha de seguridad de datos. El Gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora.</translation>
 <translation id="6815466750807582739">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
@@ -219,6 +218,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="7272930098487145294">Para guardar imágenes, toca Ajustes y permite que Chrome añada fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chrome en este dispositivo</translation>
 <translation id="7304491752269485262">Vista ampliada de la función Autocompletar de Chrome</translation>
+<translation id="7344094882820374540">Consigue la seguridad más potente de Chrome frente a sitios peligrosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para ofrecerte indicaciones e información local sobre las direcciones detectadas.</translation>
 <translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Información de Google Chrome</translation>

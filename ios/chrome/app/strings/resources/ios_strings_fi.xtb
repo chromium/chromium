@@ -272,7 +272,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2434405374328098816">Olet jo tallentanut salasanan (käyttäjätunnus: <ph name="USERNAME" />) täällä: <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Voit selata incognito-tilassa vierittämällä vasemmalle.</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
-<translation id="2459155039684421202">Kirjoita osoitepalkkiin esimerkiksi "tyhjennä historia" tai "muokkaa salasanoja".</translation>
 <translation id="2461070143328828326">Salasana-asetukset</translation>
 <translation id="2462736546165239215">Täältä löydät koko selaushistoriasi.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5256661381001734217">Sivusto yrittää avata sovellusta.  Tämä poistaa sinut incognito-tilasta.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
-<translation id="5283494734135414249">Napauta osoitepalkin alla näkyvää pikakuvaketta.</translation>
 <translation id="5295239312320826323">Poistetaanko tili <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6638511529934826365">Zoomaa tekstiä…</translation>
 <translation id="6640268266988685324">Avaa välilehti</translation>
 <translation id="6642362222295953972">Siirry aiemmalle välilehdelle</translation>
-<translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645899968535965230">QR-koodi: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6656103420185847513">Muokkaa kansiota</translation>
@@ -1202,7 +1199,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>
 <translation id="7138080855268384146">{count,plural, =1{Kirjanmerkki tallennettu tilin {email} kansioon "{title}"}other{{count} kirjanmerkkiä tallennettu tilin {email} kansioon "{title}"}}</translation>
 <translation id="7141960840225504692">Välilehdet suljetaan ja selausdata poistetaan</translation>
-<translation id="7154343200458623869">Suorita tehtävä.</translation>
 <translation id="7161230316646448869">Synkronoi kirjanmerkkisi, historiasi ja paljon muuta kaikilla laitteilla</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> avaa incognito-välilehtien lukituksen</translation>
 <translation id="7173114856073700355">Avaa asetukset</translation>

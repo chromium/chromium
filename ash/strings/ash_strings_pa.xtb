@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C ਡੀਵਾਈਸ (ਪਿਛਲਾ ਪੋਰਟ)</translation>
 <translation id="1869497990620230175">ਤਤਕਾਲ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="1871023081802165724">ਮੀਡੀਆ ਚਲਾਓ</translation>
+<translation id="1871915835366697861">ਇਸ ਗੇਮ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1879018240766558464">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1882814835921407042">ਕੋਈ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ਲਈ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
@@ -1792,6 +1793,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ਅਤੇ <ph name="SECOND_PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="793716872548410480">ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਨੂੰ ਦਬਾਓ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀਆਂ ਗਈਆਂ ਆਖਰੀ 5 ਆਈਟਮਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="7942349550061667556">ਲਾਲ</translation>
+<translation id="7943516765291457328">ਨਜ਼ਦੀਕੀ ਹੌਟਸਪੌਟਾਂ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7944023924886109030">ਅੱਜ ਦੇ ਸਾਰੇ ਇਵੈਂਟ ਦੇਖੋ</translation>
 <translation id="7945357288295809525">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦਿਖਾਓ ਕਿ "<ph name="ENABLED_FEATURES" />" ਚਾਲੂ ਹੈ।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ਐਪ <ph name="DEVICE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>

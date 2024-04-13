@@ -188,7 +188,6 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="6634107063912726160">Kur të dalësh, Chrome nuk do të sinkronizojë asnjë nga të dhënat e tua të reja me "Llogarinë tënde të Google". Të dhënat e sinkronizuara më herët qëndrojnë në llogari.</translation>
 <translation id="6646696210740573446">Dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te Google.</translation>
 <translation id="6648150602980899529">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
-<translation id="6676840375528380067">Të pastrohen të dhënat e tua të Chrome nga kjo pajisje?</translation>
 <translation id="6683891932310469419">Hap faqen e historikut të Chrome.</translation>
 <translation id="6709398533399187136">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh tani.</translation>
 <translation id="6815466750807582739">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
@@ -218,6 +217,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="7272930098487145294">Për të ruajtur imazhet, trokit te "Cilësimet" për të lejuar që Chrome të shtojë te fotografitë e tua</translation>
 <translation id="7275945473750112644">Llogaria jote menaxhohet nga <ph name="HOSTED_DOMAIN" />, prandaj të dhënat e tua të Chrome do të fshihen nga kjo pajisje</translation>
 <translation id="7304491752269485262">Pamja e zgjeruar për plotësimin automatik në Chrome</translation>
+<translation id="7344094882820374540">Merr sigurinë më të fortë të Chrome ndaj sajteve të rrezikshme</translation>
 <translation id="7349129508108954623">Lejo që Chrome të përdorë Google Maps për të të dhënë udhëzime dhe informacione lokale për adresat e zbuluara.</translation>
 <translation id="7394108421562933108">Maps në Chrome</translation>
 <translation id="7400722733683201933">Informacion për Google Chrome</translation>

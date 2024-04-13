@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Означи ги сите како прочитани</translation>
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
+<translation id="1710698977900873766">Вклучете „Подобрена заштита“</translation>
 <translation id="1713777106376424209">Испорачувач:</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
@@ -271,7 +272,6 @@
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Може да лизгате налево за да прелистувате во „Инкогнито“.</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
-<translation id="2459155039684421202">Во лентата за адреси, внесете задача како „избриши ја мојата историја“ или „измени ги лозинките“.</translation>
 <translation id="2461070143328828326">Поставки за лозинка</translation>
 <translation id="2462736546165239215">Тука може да ја најдете целата ваша историја на прелистувањето.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +826,6 @@
 <translation id="5256661381001734217">Сајтов се обидува да отвори апликација.  Ова ќе го сопре режимот „Инкогнито“.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Задолжително поле е празно. Пополнете го пред да зачувате.}one{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}other{Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.}}</translation>
 <translation id="5271549068863921519">Сними ја лозинката</translation>
-<translation id="5283494734135414249">Допрете ја кратенката што се појавува под лентата за адреси.</translation>
 <translation id="5295239312320826323">Да се отстрани сметката <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6638511529934826365">Зумирај текст…</translation>
 <translation id="6640268266988685324">Отворена картичка</translation>
 <translation id="6642362222295953972">Префрлете се на постојната картичка</translation>
-<translation id="6643016212128521049">Исчисти</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6656103420185847513">Измени папка</translation>
@@ -1201,7 +1199,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7136892417564438900">Камерата е недостапна</translation>
 <translation id="7138080855268384146">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{{count} обележувач се зачувани во „{title}“ во вашата сметка, {email}}other{{count} обележувачи се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
 <translation id="7141960840225504692">Картичките ќе се затворат, а податоците од прелистување ќе се избришат</translation>
-<translation id="7154343200458623869">Завршете ја вашата задача.</translation>
 <translation id="7161230316646448869">Синхронизација на обележувачите, историјата и друго на сите уреди</translation>
 <translation id="7162168282402939716">Отклучете ги картичките „Инкогнито“ со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Отвори „Поставки“</translation>

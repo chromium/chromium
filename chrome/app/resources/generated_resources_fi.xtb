@@ -984,6 +984,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1720318856472900922">TLS WWW -palvelimen todennus</translation>
 <translation id="172123215662733643">Hae kuvia: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Laitettasi (<ph name="DEVICE_TYPE" />) ylläpitää<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Miten Chrome toimii paremmin datasi avulla?</translation>
 <translation id="1723824996674794290">Uusi ikku&amp;na</translation>
 <translation id="1724801751621173132">Syöttötapa</translation>
 <translation id="1725562816265788801">Välilehden vieritys</translation>
@@ -1007,6 +1008,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1743970419083351269">Sulje latauspalkki</translation>
 <translation id="1744108098763830590">taustasivu:</translation>
 <translation id="1745732479023874451">Ylläpidä kontakteja</translation>
+<translation id="1746797507422124818">Data selaamisen aikana</translation>
 <translation id="1748283190377208783">{0,plural, =1{käyttämätön monikko}other{Haluatko avata ja muokata # tiedostoa tässä verkkosovelluksessa?}}</translation>
 <translation id="1748329107062243374">Käytä avainkoodia (<ph name="DEVICE_NAME" />) kirjautumiseen: <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Voit tallentaa tämän salasanan Google-tilillesi tai vain tälle laitteelle</translation>
@@ -4473,6 +4475,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4357583358198801992">Näytä välilehtiryhmät</translation>
 <translation id="4358361163731478742">Mikään sovellus ei tue kielen valintaa</translation>
 <translation id="4358643842961018282">Laite on ajan tasalla</translation>
+<translation id="4358995225307748864">Valitse avattava sovellus</translation>
 <translation id="4359408040881008151">Asennettiin, koska muut laajennukset ovat riippuvaisia tästä laajennuksesta.</translation>
 <translation id="4359717112757026264">Kaupunkimaisema</translation>
 <translation id="4359809482106103048">Turvallisuus nopeasti</translation>
@@ -4638,6 +4641,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> käynnistyi uudelleen odottamattomasti</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Viimeksi suljettu välilehti</translation>
+<translation id="4485245862007675842">Chrome parantaa verkon toimintaa sinulle</translation>
 <translation id="4486333480498805415">Sijaintitietojen tarkkuus</translation>
 <translation id="4487489714832036847">Chromebookit käyttävät sovelluksia perinteisten ohjelmistojen sijaan. Lataa sovelluksia esim. tuottavuuden parantamista ja viihdettä varten.</translation>
 <translation id="4488257340342212116">Kameran käyttö sallittu</translation>
@@ -6281,6 +6285,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5793339252089865437">Lisämaksuja voidaan periä, jos lataat päivityksen mobiiliverkossa.</translation>
 <translation id="5793420564274426163">Laiteparin vahvistus</translation>
 <translation id="5794034487966529952">Työpöydällä <ph name="DESK_TITLE" /> on <ph name="NUM_BROWSERS" /> avointa selainikkunaa</translation>
+<translation id="5794086402489402632">Miten selaus‑ ja hakuhistoria eroavat toisistaan?</translation>
 <translation id="5794414402486823030">Avaa aina järjestelmän katselusovelluksella</translation>
 <translation id="5794700615121138172">Linuxin jaetut kansiot</translation>
 <translation id="5794786537412027208">Sulje kaikki Chrome-sovellukset</translation>
@@ -7369,6 +7374,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6647690760956378579">Luonnollisen äänen esikuuntelu</translation>
 <translation id="6648911618876616409">Tärkeä päivitys on valmis asennettavaksi. Aloita kirjautumalla sisään.</translation>
 <translation id="6649018507441623493">Hetki vain…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> haluaa varmistaa henkilöllisyytesi</translation>
 <translation id="6650206238642452078">Tilaa ChromeOS:n järjestelmätapahtumat</translation>
 <translation id="665061930738760572">Avaa uudessa ikkunassa</translation>
 <translation id="6651237644330755633">Luota tähän varmenteeseen tunnistettaessa verkkosivustoja.</translation>
@@ -8067,6 +8073,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7196913789568937443">Varmuuskopioi Google Driveen. Palauta dataa tai vaihda laitetta helposti milloin tahansa. Varmuuskopio sisältää sovellusdatan. Varmuuskopiot ladataan Googleen ja salataan Google-tilisi salasanalla. <ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Käytä Google Hakua ja Googlen älykkäitä ratkaisuja selatessasi</translation>
 <translation id="719791532916917144">Pikanäppäin</translation>
+<translation id="7197958763276896180">Miksi Chrome siirtyy kolmansien osapuolten evästeiden ulkopuolelle?</translation>
 <translation id="7198503619164954386">Sinun täytyy käyttää yrityskäytössä olevaa laitetta</translation>
 <translation id="7199158086730159431">Pyydä ohj&amp;eita</translation>
 <translation id="7199452998289813782">Keskeytä striimaus: <ph name="DEVICE_NAME" /></translation>

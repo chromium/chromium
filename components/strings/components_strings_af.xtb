@@ -1080,6 +1080,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
             <ph name="LIST_ITEM" />Soekgeskiedenis<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Inligting wat op vorms ingevoer is<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Spaar</translation>
 <translation id="3103188521861412364">Aandele en effekte</translation>
 <translation id="3105172416063519923">Bate-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Gaan die veilige-DNS-opstelling na<ph name="END_LINK" /></translation>
@@ -1297,6 +1298,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3493660662684070951">Vragmotors, paneelwaens en sportnutsvoertuie</translation>
 <translation id="3495081129428749620">Vind in bladsy
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Salaris</translation>
 <translation id="3497627066518778351">Gaan ’n lys werfdata op die toestel in ’n nuwe venster na</translation>
 <translation id="3498215018399854026">Ons kan nie jou ouers op die oomblik bereik nie. Probeer weer.</translation>
 <translation id="350069200438440499">Lêernaam:</translation>
@@ -2332,6 +2334,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5519696598216267194">Papier (vooraf gepons)</translation>
 <translation id="5521782189689806907">Kaste</translation>
 <translation id="5523118979700054094">Beleidnaam</translation>
+<translation id="5523588073846127669">Handelaar aanvaar nie hierdie virtuele kaart nie</translation>
 <translation id="5525755241743357906">Lêer is gekopieer of geskuif</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="55293785478302737">Randhegting</translation>
@@ -3713,6 +3716,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="81563721597823545">Hokkietoerusting</translation>
 <translation id="8161095570253161196">Hervat blaai</translation>
 <translation id="8163866351304776260">Vierpons links</translation>
+<translation id="8163998196788647716">Lopende rekening</translation>
 <translation id="8164078261547504572">Wil jy e-posse ontvang wanneer pryse daal?</translation>
 <translation id="8169175551046720804">Sleutels “<ph name="DATA_CONTROLS_KEYS" />” kan nie in dieselfde woordeboek gestel word nie</translation>
 <translation id="8175796834047840627">Chrome bied aan om jou kaarte in jou Google-rekening te stoor omdat jy aangemeld is. Jy kan hierdie gedrag in instellings verander.</translation>

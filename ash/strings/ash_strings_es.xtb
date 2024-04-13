@@ -226,6 +226,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1869497990620230175">Archivos rápidos</translation>
 <translation id="1871023081802165724">Reproducir el contenido multimedia</translation>
+<translation id="1871915835366697861">No disponible para este juego</translation>
 <translation id="1879018240766558464">Las ventanas de Incógnito no se admiten actualmente. Se guardarán las demás aplicaciones.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Proyectando en <ph name="DISPLAY_NAME" /></translation>
@@ -1792,6 +1793,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="79341161159229895">Cuenta gestionada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pulsa <ph name="SHORTCUT_KEY_NAME" /> + V para ver el portapapeles, que guarda los 5 últimos elementos que hayas copiado.</translation>
 <translation id="7942349550061667556">Rojo</translation>
+<translation id="7943516765291457328">Activa el Bluetooth para buscar puntos de acceso cercanos</translation>
 <translation id="7944023924886109030">Ver todos los eventos de hoy</translation>
 <translation id="7945357288295809525">Mostrar configuración de accesibilidad, "<ph name="ENABLED_FEATURES" />" habilitado.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>

@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Alle als gelesen markieren</translation>
 <translation id="1689333818294560261">Alias</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ausgewählt</translation>
+<translation id="1710698977900873766">Erweiterten Schutz aktivieren</translation>
 <translation id="1713777106376424209">Geliefert von</translation>
 <translation id="1715515772563243997">Wenn du <ph name="SITE" /> vertraust, kannst du ein gespeichertes Passwort zur Anmeldung verwenden.</translation>
 <translation id="1740468249224277719">Tippe hier doppelt, um die Installation zu starten.</translation>
@@ -271,7 +272,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2434405374328098816">Du hast für „<ph name="USERNAME" />“ schon ein Passwort bei <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2434918313224755415">Du kannst nach links scrollen, um im Inkognitomodus zu surfen.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
-<translation id="2459155039684421202">Gib in die Adressleiste eine Aufgabe wie „Meinen Verlauf löschen“ oder „Passwörter bearbeiten“ ein.</translation>
 <translation id="2461070143328828326">Passworteinstellungen</translation>
 <translation id="2462736546165239215">Hier findest du deinen gesamten Browserverlauf.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +826,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5256661381001734217">Diese Website versucht, eine App zu öffnen.  Dadurch verlässt du den Inkognitomodus.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.}other{Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.}}</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
-<translation id="5283494734135414249">Tippe auf den Kurzbefehl unter der Adressleiste.</translation>
 <translation id="5295239312320826323">Konto <ph name="USER_EMAIL" /> entfernen?</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6638511529934826365">Text zoomen…</translation>
 <translation id="6640268266988685324">Geöffneter Tab</translation>
 <translation id="6642362222295953972">Zu vorhandenem Tab wechseln</translation>
-<translation id="6643016212128521049">Löschen</translation>
 <translation id="6645899968535965230">QR-Code: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6656103420185847513">Ordner bearbeiten</translation>
@@ -1201,7 +1199,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
 <translation id="7138080855268384146">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{{count} Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="7141960840225504692">Deine Tabs werden geschlossen und die Browserdaten werden gelöscht</translation>
-<translation id="7154343200458623869">Schließe die Aufgabe ab.</translation>
 <translation id="7161230316646448869">Lesezeichen, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="7162168282402939716">Inkognitotabs mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>

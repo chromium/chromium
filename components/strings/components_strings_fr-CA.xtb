@@ -378,6 +378,7 @@
 <translation id="168693727862418163">La validation de la valeur de cette politique par rapport à son schéma a échoué. La politique sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1689333818294560261">Pseudo</translation>
+<translation id="1691425742011409472">verrouillage du pointeur</translation>
 <translation id="1692622044604477956">Films à l'affiche et horaires de représentations</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sujets ayant plus de quatre semaines. Au fil de votre navigation sur le Web, un sujet peut réapparaître dans la liste. Vous pouvez également bloquer les sujets que vous ne souhaitez pas que Chrome partage avec des sites et désactiver les sujets d'annonces à tout moment dans les paramètres de Chrome.</translation>
 <translation id="1697532407822776718">Vous êtes prêt!</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
+<translation id="2349056830177284083">Verrouillage du clavier</translation>
 <translation id="2349957959687031096">Bouton Ouvrir l'onglet de navigation privée, activez-le pour ouvrir un nouvel onglet de navigation privée pour naviguer en mode privé</translation>
 <translation id="2350796302381711542">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">La caméra et le microphone sont autorisés</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
 <translation id="2786008859124691917">Vélos et accessoires</translation>
+<translation id="2791955793407772554">Verrouillage du pointeur</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité qui leur permettent de voir le contenu des sites Web que vous visitez.</translation>
 <translation id="2794233252405721443">Site bloqué</translation>
 <translation id="2794629552137076216">Verre (surfacé)</translation>
@@ -1102,6 +1105,7 @@
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Étiquettes (permanentes)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> est désormais votre moteur de recherche par défaut</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – Rechercher <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Services aux entreprises</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
 <translation id="3141641372357166056">Aucune décision de consentement</translation>
@@ -1428,12 +1432,14 @@
 <translation id="3711895659073496551">Mettre en veille</translation>
 <translation id="3712006010833051684">Enveloppe nᵒ 10</translation>
 <translation id="3712624925041724820">Licences épuisées.</translation>
+<translation id="3713277100229669269">Vous pouvez désormais consulter les avantages des cartes avant de payer</translation>
 <translation id="371420189621607696">Jeux vidéo compétitifs</translation>
 <translation id="3714633008798122362">Agenda Web</translation>
 <translation id="3714780639079136834">D'activer les données mobiles ou le Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Le téléversement du fichier a été bloqué}one{Le téléversement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le téléversement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
 <translation id="3715545959749027023">Lorsque Chrome signale des événements relatifs à la sécurité, les données pertinentes sur les événements sont envoyées à votre administrateur. Ces données pourraient comprendre les URL des pages que vous visitez dans Chrome, les noms de fichiers ou les métadonnées, les plantages du navigateur ou des onglets, et le nom d'utilisateur que vous utilisez pour vous connecter aux applications Web, à votre appareil et à Chrome.</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
+<translation id="3716622997181469465">verrouillage du clavier</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Durant la mise à jour, vous ne pourrez pas utiliser votre appareil pendant un maximum de 10 minutes.</translation>
 <translation id="372429172604983730">Voici des applications qui peuvent provoquer cette erreur : un logiciel antivirus, un logiciel de pare-feu, ou un logiciel de filtrage Web ou de mandataire.</translation>
@@ -3517,6 +3523,7 @@ Détails supplémentaires :
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personnalisez la taille des polices et les caractères dans Chrome</translation>
 <translation id="7752995774971033316">Non géré</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – Clavarder avec <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Vos onglets et applications Chrome se fermeront au démarrage de la mise à jour</translation>
 <translation id="7755287808199759310">L'un de tes parents peut le débloquer pour toi</translation>
 <translation id="7755624218968747854">Premier rouleau</translation>

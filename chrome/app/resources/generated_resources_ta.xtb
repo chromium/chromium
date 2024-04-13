@@ -985,6 +985,7 @@
 <translation id="1720318856472900922">TLS WWW சேவையக அங்கீகரிப்பு</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படங்களைத் தேடு</translation>
 <translation id="1722460139690167654">உங்கள் <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />ஐ நிர்வகிப்பது<ph name="END_LINK" />: <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Chrome உங்களுக்குச் சிறப்பாக வேலை செய்ய, தரவு எப்படி உதவுகிறது?</translation>
 <translation id="1723824996674794290">&amp;புதிய சாளரம்</translation>
 <translation id="1724801751621173132">உள்ளீட்டு முறை</translation>
 <translation id="1725562816265788801">தாவலை நகர்த்துதல்</translation>
@@ -1008,6 +1009,7 @@
 <translation id="1743970419083351269">பதிவிறக்கங்கள் பட்டியை மூடு</translation>
 <translation id="1744108098763830590">பின்புலப் பக்கம்</translation>
 <translation id="1745732479023874451">தொடர்புகளை நிர்வகியுங்கள்</translation>
+<translation id="1746797507422124818">உங்கள் உலாவல் தரவு</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{இந்த இணைய ஆப்ஸில் # ஃபைல்களைத் திறந்து திருத்த வேண்டுமா?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> இணையதளத்தில் உள்நுழைய <ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து கடவுச்சாவியைப் பயன்படுத்துங்கள்</translation>
 <translation id="1748563609363301860">இந்தக் கடவுச்சொல்லை உங்கள் Google கணக்கிலோ இந்தச் சாதனத்தில் மட்டுமோ சேமிக்கலாம்</translation>
@@ -4477,6 +4479,7 @@
 <translation id="4357583358198801992">பக்கக் குழுக்களைக் காட்டு</translation>
 <translation id="4358361163731478742">ஆப்ஸ் மொழித் தேர்வை எந்த ஆப்ஸும் ஆதரிக்கவில்லை</translation>
 <translation id="4358643842961018282">உங்கள் சாதனம் புதுப்பிக்கப்பட்ட நிலையில் உள்ளது</translation>
+<translation id="4358995225307748864">திறப்பதற்கான ஆப்ஸைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="4359408040881008151">நீட்டிப்பு(கள்) சார்ந்திருப்பதன் காரணமாக நிறுவப்பட்டது.</translation>
 <translation id="4359717112757026264">நகரக் காட்சி</translation>
 <translation id="4359809482106103048">ஒரே பார்வையில் பாதுகாப்புத் தகவல்கள்</translation>
@@ -4642,6 +4645,7 @@
 <translation id="4481448477173043917">எதிர்பாராதவிதமாக <ph name="DEVICE_TYPE" /> சாதனம் மீண்டும் தொடங்கியது</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">சமீபத்தில் மூடிய தாவல்</translation>
+<translation id="4485245862007675842">Chrome இணையத்தை உங்களுக்குச் சிறப்பாக்குகிறது</translation>
 <translation id="4486333480498805415">இருப்பிடத் துல்லியம்</translation>
 <translation id="4487489714832036847">Chromebookகுகள் வழக்கமான மென்பொருளுக்குப் பதிலாக ஆப்ஸைப் பயன்படுத்தும். பணிச் செயல்திறன், பொழுதுபோக்கு ஆகியவற்றுடன் இன்னும் பலவற்றுக்கான ஆப்ஸைப் பெறுக.</translation>
 <translation id="4488257340342212116">உங்கள் கேமராவைப் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
@@ -6286,6 +6290,7 @@
 <translation id="5793339252089865437">புதுப்பிப்பை மொபைல் நெர்ட்வொர்க் மூலம் பதிவிறக்கினால் கூடுதல் கட்டணங்கள் வசூலிக்கப்படலாம்.</translation>
 <translation id="5793420564274426163">இணைத்தலை உறுதிப்படுத்தல்</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> டெஸ்க்கில் <ph name="NUM_BROWSERS" /> உலாவிச் சாளரங்கள் திறந்துள்ளன</translation>
+<translation id="5794086402489402632">இதுவரை இணையத்தில் பார்த்தவையும் இதுவரை தேடியவையும் எப்படி வேறுபடுகின்றன?</translation>
 <translation id="5794414402486823030">எப்போதும் சிஸ்டம் வியூவரைக் கொண்டு திற</translation>
 <translation id="5794700615121138172">Linux பகிர்ந்த ஃபோல்டர்கள்</translation>
 <translation id="5794786537412027208">எல்லா Chrome ஆப்ஸையும் நிறுத்து</translation>
@@ -7374,6 +7379,7 @@
 <translation id="6647690760956378579">இயல்பான குரல் மாதிரி</translation>
 <translation id="6648911618876616409">முக்கியப் புதுப்பிப்பு நிறுவுவதற்குத் தயாராக உள்ளது. தொடங்க, உள்நுழையவும்.</translation>
 <translation id="6649018507441623493">சற்று காத்திருக்கவும்...</translation>
+<translation id="6650072551060208490">இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="6650206238642452078">ChromeOS சிஸ்டம் நிகழ்வுகளில் குழு சேர்</translation>
 <translation id="665061930738760572">&amp;புதிய சாளரத்தில் திற</translation>
 <translation id="6651237644330755633">இணையதளங்களை அடையாளங்காண, இந்தச் சான்றிதழை நம்பு</translation>
@@ -8072,6 +8078,7 @@
 <translation id="7196913789568937443">Google இயக்ககத்திற்குக் காப்புப் பிரதி எடுக்கும். இதனால் உங்கள் தரவை எளிதாக மீட்டெடுக்கலாம் அல்லது எப்போது வேண்டுமானாலும் சாதனத்தை மாற்றலாம். உங்கள் காப்புப் பிரதியில் ஆப்ஸ் தரவும் உள்ளடங்கும். உங்கள் காப்புப் பிரதிகள் Googleளுக்குப் பதிவேற்றப்பட்டு, உங்கள் Google கணக்கின் கடவுச்சொல்லைப் பயன்படுத்தி என்க்ரிப்ட் செய்யப்படும். <ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">உலாவும் ஒவ்வொரு முறையும் Google தேடலையும் Google ஸ்மார்ட்ஸையும் பெறுங்கள்</translation>
 <translation id="719791532916917144">கீபோர்டு ஷார்ட்கட்</translation>
+<translation id="7197958763276896180">மூன்றாம் தரப்புக் குக்கீக்கான ஆதரவை Chrome திரும்பப்பெறுவது ஏன்?</translation>
 <translation id="7198503619164954386">நிறுவனத்தால் பதிவுசெய்யப்பட்ட சாதனத்தைப் பயன்படுத்த வேண்டும்</translation>
 <translation id="7199158086730159431">உதவி பெறுக</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />க்கு அலைபரப்புவதை இடைநிறுத்தும்</translation>

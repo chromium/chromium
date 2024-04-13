@@ -1083,6 +1083,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
             <ph name="LIST_ITEM" />Historia ya mambo uliyotafuta<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Maelezo unayojaza katika fomu<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Akaunti ya akiba</translation>
 <translation id="3103188521861412364">Hisa na Dhamana</translation>
 <translation id="3105172416063519923">Kitambulisho cha Kipengee:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kukagua mipangilio ya DNS salama<ph name="END_LINK" /></translation>
@@ -1301,6 +1302,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3493660662684070951">Lori, Magari ya Mizigo na SUV</translation>
 <translation id="3495081129428749620">Pata katika ukurasa wa
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Mshahara</translation>
 <translation id="3497627066518778351">Kagua orodha ya data ya tovuti iliyo kwenye kifaa katika dirisha jipya</translation>
 <translation id="3498215018399854026">Hatukuweza kufikia mzazi wako wakati huu. Tafadhali jaribu tena.</translation>
 <translation id="350069200438440499">Jina la faili:</translation>
@@ -2338,6 +2340,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5519696598216267194">Karatasi (Iliyotobolewa Mashimo)</translation>
 <translation id="5521782189689806907">Kabati</translation>
 <translation id="5523118979700054094">Jina la sera</translation>
+<translation id="5523588073846127669">Muuzaji hakubali kadi pepe hii</translation>
 <translation id="5525755241743357906">Faili imenakiliwa au imehamishwa</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili uweke mapendeleo ya zana zako za ufikivu katika mipangilio ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="55293785478302737">Mshono wa ncha</translation>
@@ -3718,6 +3721,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="81563721597823545">Vifaa vya Mpira wa Magongo</translation>
 <translation id="8161095570253161196">Endelea kuvinjari</translation>
 <translation id="8163866351304776260">Toboa mara nne kushoto</translation>
+<translation id="8163998196788647716">Akaunti ya kufanyia miamala</translation>
 <translation id="8164078261547504572">Je, ungependa kupata arifa za barua pepe bei zinaposhuka?</translation>
 <translation id="8169175551046720804">Funguo za "<ph name="DATA_CONTROLS_KEYS" />" haziwezi kuwekwa katika kamusi ile ile</translation>
 <translation id="8175796834047840627">Chrome ina huduma ya kuhifadhi kadi zako kwenye Akaunti yako ya Google kwa sababu umeingia katika akaunti. Unaweza kubadilisha hali hii katika mipangilio.</translation>

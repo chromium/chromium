@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1533488253335887280">Accès facile et sécurisé à vos mots de passe à partir de l'écran d'accueil.</translation>
+<translation id="1590550141045148182">Ouvrez ou fermez vos onglets comme vous le souhaitez.</translation>
+<translation id="2036020471903443693">Vous verrez votre onglet épinglé au bas de votre écran.</translation>
+<translation id="2984477737332162971">Accédez à vos onglets ouverts.</translation>
+<translation id="3595188309555410362">Si vous avez des onglets qui n'ont pas été utilisés depuis un certain temps, ils seront désormais déplacés vers la section Onglets inactifs.</translation>
+<translation id="3941788408634637840">Touchez les onglets inactifs (si possible).</translation>
+<translation id="3942215673032261195">Vous pouvez épingler vos sites préférés pour y accéder facilement plus tard.</translation>
+<translation id="4196935312151003338">Sélectionnez « Épingler l’onglet » dans le menu.</translation>
+<translation id="4497631794981705027">Maintenez le doigt sur l'écran d'accueil.</translation>
+<translation id="463279609093232564">En haut à gauche de l'écran, touchez +.</translation>
+<translation id="5604467549230434026">Dans le champ Widgets de recherche, entrez Chrome.</translation>
+<translation id="5639067007765618198">Widget du gestionnaire de mots de passe Google</translation>
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
+<translation id="6109989197058801417">Maintenez le doigt sur l'onglet que vous souhaitez épingler.</translation>
+<translation id="639614003069108254">Sélectionnez Gestionnaire de mots de passe, puis touchez Ajouter un widget.</translation>
+<translation id="6905308710260460250">Onglets épinglés</translation>
+<translation id="720206380500582061">Gérez les paramètres des onglets inactifs sous Paramètres &gt; Onglets.</translation>
 <translation id="8077675488769462025">Onglets inactifs</translation>
+<translation id="8602952180069641300">Faites défiler vers le haut de vos onglets.</translation>
+<translation id="979990360845983227">Non utilisé pendant 14 jours ou plus</translation>
 </translationbundle>

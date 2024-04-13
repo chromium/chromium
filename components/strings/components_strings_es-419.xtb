@@ -378,6 +378,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="168693727862418163">No se pudo validar el valor de esta política con su esquema y, por lo tanto, se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
+<translation id="1691425742011409472">bloqueo del puntero</translation>
 <translation id="1692622044604477956">Cartelera de películas y horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes administrar tus datos:<ph name="END_BOLD" /> Chrome elimina los temas de forma automática luego de 4 semanas. A medida que navegues, un tema puede volver a aparecer en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios y desactivar los temas de anuncios en cualquier momento en la configuración de Chrome.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
@@ -727,6 +728,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
 <translation id="2346319942568447007">Imagen que copiaste</translation>
+<translation id="2349056830177284083">Bloqueo del teclado</translation>
 <translation id="2349957959687031096">Botón Abrir una pestaña de incógnito: actívalo para abrir una nueva pestaña de incógnito y así navegar de forma privada</translation>
 <translation id="2350796302381711542">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
@@ -943,6 +945,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Se ha restablecido la conexión.</translation>
 <translation id="2786008859124691917">Bicicletas y accesorios</translation>
+<translation id="2791955793407772554">Bloqueo del puntero</translation>
 <translation id="2792012897584536778">Los administradores de este dispositivo configuraron certificados de seguridad que les permiten ver el contenido de los sitios web que visitas.</translation>
 <translation id="2794233252405721443">Sitio bloqueado</translation>
 <translation id="2794629552137076216">Vidrio (superpuesto)</translation>
@@ -1080,6 +1083,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
             <ph name="LIST_ITEM" />El historial de búsqueda<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />La información que ingreses en formularios<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Caja de ahorros</translation>
 <translation id="3103188521861412364">Acciones y bonos</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar la configuración de DNS seguro<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3121994479408824897">Ir a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanentes)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ahora es tu motor de búsqueda predeterminado</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Buscar <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Servicios empresariales</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
 <translation id="3141641372357166056">Sin decisión sobre el consentimiento</translation>
@@ -1298,6 +1303,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3493660662684070951">Camiones, furgones y vehículos deportivos utilitarios</translation>
 <translation id="3495081129428749620">Buscar en la página
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Salario</translation>
 <translation id="3497627066518778351">Revisar una lista de datos de sitios en el dispositivo en una ventana nueva</translation>
 <translation id="3498215018399854026">No pudimos comunicarnos con ninguno de tus padres. Vuelve a intentarlo.</translation>
 <translation id="350069200438440499">Nombre de archivo:</translation>
@@ -1427,12 +1433,14 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712006010833051684">Sobre n.º 10</translation>
 <translation id="3712624925041724820">Licencias agotadas</translation>
+<translation id="3713277100229669269">Ahora puedes ver los beneficios de la tarjeta antes de pagar</translation>
 <translation id="371420189621607696">Videojuegos competitivos</translation>
 <translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi.</translation>
 <translation id="3715016660240337709">{0,plural, =1{No se permite cargar el archivo}other{No se permite cargar <ph name="FILE_COUNT" /> archivos}}</translation>
 <translation id="3715545959749027023">Cuando Chrome marca eventos de seguridad, se envían datos relacionados con los eventos a tu administrador. Esta información puede incluir URLs de las páginas que visitas en Chrome, nombres de archivos o metadatos, fallas en el navegador o las pestañas, y el nombre de usuario con el que accedes a aplicaciones web, tu dispositivo y Chrome.</translation>
 <translation id="3715597595485130451">Conectar a Wi-Fi</translation>
+<translation id="3716622997181469465">bloqueo del teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS<ph name="END_LINK" />.</translation>
 <translation id="3723663469265383848">Durante la actualización, no podrás usar el dispositivo por 10 minutos como máximo.</translation>
 <translation id="372429172604983730">Las apps que pueden causar este error incluyen antivirus, firewall, filtros web o software proxy.</translation>
@@ -2333,6 +2341,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5519696598216267194">Papel (perforado)</translation>
 <translation id="5521782189689806907">Ebanistería</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
+<translation id="5523588073846127669">El comercio no acepta esta tarjeta virtual</translation>
 <translation id="5525755241743357906">Se copió o movió el archivo</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="55293785478302737">Costura de borde</translation>
@@ -3515,6 +3524,7 @@ Detalles adicionales:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personaliza el tamaño de las fuentes y los tipos de letra en Chrome</translation>
 <translation id="7752995774971033316">Sin administrar</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - Chatear con <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Las pestañas y apps de Chrome se cerrarán cuando comience la actualización</translation>
 <translation id="7755287808199759310">Tu madre o padre puede desbloquearlo por ti</translation>
 <translation id="7755624218968747854">Rollo principal</translation>
@@ -3714,6 +3724,7 @@ Detalles adicionales:
 <translation id="81563721597823545">Equipo para hockey</translation>
 <translation id="8161095570253161196">Reanudar la navegación</translation>
 <translation id="8163866351304776260">Perforación cuádruple a la izquierda</translation>
+<translation id="8163998196788647716">Cuenta de transacciones</translation>
 <translation id="8164078261547504572">¿Quieres recibir correos electrónicos cuando bajen los precios?</translation>
 <translation id="8169175551046720804">Las claves "<ph name="DATA_CONTROLS_KEYS" />" no se pueden establecer en el mismo diccionario.</translation>
 <translation id="8175796834047840627">Como accediste a tu cuenta, Chrome te ofrece guardar tus tarjetas en tu Cuenta de Google. Puedes modificar este comportamiento en la configuración.</translation>

@@ -973,6 +973,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1720318856472900922">TLS WWW Sunucu Kimlik Doğrulaması</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> ile görsel ara</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />, <ph name="ENROLLMENT_DOMAIN" /> tarafından yönetilmektedir</translation>
+<translation id="1723166841621737307">Veriler nasıl Chrome'un size daha uygun çalışmasını sağlar?</translation>
 <translation id="1723824996674794290">Ye&amp;ni pencere</translation>
 <translation id="1724801751621173132">Giriş modu</translation>
 <translation id="1725562816265788801">Sekme Kaydırma</translation>
@@ -996,6 +997,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1743970419083351269">İndirme Çubuğunu Kapat</translation>
 <translation id="1744108098763830590">arka plan sayfası</translation>
 <translation id="1745732479023874451">Kişileri yönet</translation>
+<translation id="1746797507422124818">İnternette gezinirken verileriniz</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# dosyayı bu web uygulamasında açıp düzenlemek istiyor musunuz?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> adresinde oturum açmak için <ph name="DEVICE_NAME" /> adlı cihazdaki bir geçiş anahtarını kullanın</translation>
 <translation id="1748563609363301860">Bu şifreyi Google Hesabınızda veya yalnızca bu cihazda kaydedebilirsiniz</translation>
@@ -4455,6 +4457,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4357583358198801992">Sekme gruplarını göster</translation>
 <translation id="4358361163731478742">Uygulama dili seçimini hiçbir uygulama desteklemiyor</translation>
 <translation id="4358643842961018282">Cihazınız güncel</translation>
+<translation id="4358995225307748864">Açılacak bir uygulama seçin</translation>
 <translation id="4359408040881008151">Bağımlı uzantılar nedeniyle yüklendi.</translation>
 <translation id="4359717112757026264">Şehir manzaraları</translation>
 <translation id="4359809482106103048">Bir bakışta güvenlik</translation>
@@ -4620,6 +4623,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> cihazınız beklenmedik bir şekilde yeniden başlatıldı</translation>
 <translation id="4481467543947557978">hizmet çalışanı</translation>
 <translation id="4482990632723642375">Son Kapatılan Sekme</translation>
+<translation id="4485245862007675842">Chrome, size daha uygun bir web sunar</translation>
 <translation id="4486333480498805415">Konum doğruluğu</translation>
 <translation id="4487489714832036847">Chromebook'lar geleneksel yazılım yerine uygulama kullanır. Üretkenlik, eğlence ve diğer konularla ilgili uygulamalar edinin.</translation>
 <translation id="4488257340342212116">Kameranızı kullanmasına izin verilen siteler</translation>
@@ -6261,6 +6265,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5793339252089865437">Güncellemeyi mobil ağ bağlantınız üzerinden indirirseniz limit aşımı ücretleriyle karşılaşabilirsiniz.</translation>
 <translation id="5793420564274426163">Eşleme Onayı</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> masasında <ph name="NUM_BROWSERS" /> tarayıcı penceresi açık</translation>
+<translation id="5794086402489402632">Tarama ve arama geçmişinin farkı nedir?</translation>
 <translation id="5794414402486823030">Daima sistem görüntüleyici ile açın</translation>
 <translation id="5794700615121138172">Linux paylaşılan klasörler</translation>
 <translation id="5794786537412027208">Tüm Chrome Uygulamalarından Çık</translation>
@@ -7348,6 +7353,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6647690760956378579">Doğal ses önizlemesi</translation>
 <translation id="6648911618876616409">Önemli bir güncelleme yüklenmeye hazır. Başlamak için oturum açın.</translation>
 <translation id="6649018507441623493">Bir saniye...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="6650206238642452078">ChromeOS sistem etkinliklerine abone olma</translation>
 <translation id="665061930738760572">&amp;Yeni Pencerede Aç</translation>
 <translation id="6651237644330755633">Web sitelerini tanımlamak için bu sertifikaya güvenin</translation>
@@ -8046,6 +8052,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7196913789568937443">Google Drive'a yedekleyin. Verilerinizi istediğiniz zaman kolayca geri yükleyebilir veya cihazlar arasında geçiş yapabilirsiniz. Yedekleme işleminiz uygulama verilerini içerir. Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir. <ph name="BEGIN_LINK1" />Daha Fazla Bilgi<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Her göz attığınızda Google Arama ve Google zekasından yararlanın</translation>
 <translation id="719791532916917144">Klavye kısayolu</translation>
+<translation id="7197958763276896180">Chrome neden üçüncü taraf çerezlerinden daha fazlasını kullanıyor?</translation>
 <translation id="7198503619164954386">Kurumsal olarak kayıtlı bir cihazda olmanız gerekir</translation>
 <translation id="7199158086730159431">&amp;Yardım Al</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> adlı cihazda yayınlamayı duraklatın</translation>

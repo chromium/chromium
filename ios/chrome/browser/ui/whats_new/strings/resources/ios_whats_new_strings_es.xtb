@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1533488253335887280">Accede de forma fácil y segura a tus contraseñas desde la pantalla de inicio.</translation>
+<translation id="1590550141045148182">Abre o cierra las pestañas como quieras.</translation>
+<translation id="2036020471903443693">La pestaña se fijará en la parte inferior de la pantalla.</translation>
+<translation id="2984477737332162971">Ve a tus pestañas abiertas.</translation>
+<translation id="3595188309555410362">Si tienes pestañas abiertas que hace rato que no usas, ahora se moverán a la sección Pestañas inactivas.</translation>
+<translation id="3941788408634637840">Toca Pestañas inactivas (si está disponible).</translation>
+<translation id="3942215673032261195">Puedes fijar tus sitios favoritos para acceder a ellos fácilmente en otro momento.</translation>
+<translation id="4196935312151003338">Selecciona Fijar pestaña en el menú.</translation>
+<translation id="4497631794981705027">Mantén pulsada la pantalla de inicio.</translation>
+<translation id="463279609093232564">En la parte superior izquierda de la pantalla, toca +.</translation>
+<translation id="5604467549230434026">En el cuadro de búsqueda de widgets, escribe Chrome.</translation>
+<translation id="5639067007765618198">Widget del Gestor de Contraseñas de Google</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
+<translation id="6109989197058801417">Mantén pulsada la pestaña que quieras fijar.</translation>
+<translation id="639614003069108254">Selecciona Gestor de contraseñas y toca Añadir widget.</translation>
+<translation id="6905308710260460250">Pestañas fijas</translation>
+<translation id="720206380500582061">Gestiona la configuración de las pestañas inactivas en Configuración &gt; Pestañas.</translation>
 <translation id="8077675488769462025">Pestañas inactivas</translation>
+<translation id="8602952180069641300">Desplázate hasta la parte superior de las pestañas.</translation>
+<translation id="979990360845983227">No se ha usado durante 14 días o más</translation>
 </translationbundle>

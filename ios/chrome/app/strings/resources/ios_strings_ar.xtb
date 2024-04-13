@@ -273,7 +273,6 @@
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2434918313224755415">يمكنك الانتقال لليمين للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
-<translation id="2459155039684421202">في شريط العناوين، أدخِل مَهمة مثل "محو السجلّ" أو "تعديل كلمات المرور".</translation>
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2462736546165239215">يمكنك العثور على سجلّ التصفُّح كاملاً هنا.</translation>
 <translation id="2468132863574325555">‏تنزيل إلى Drive</translation>
@@ -828,7 +827,6 @@
 <translation id="5256661381001734217">يحاول هذا الموقع الإلكتروني فتح أحد التطبيقات.  وسيؤدي هذا إلى الخروج من وضع التصفُّح المتخفي.</translation>
 <translation id="5271265092610673171">{count,plural, =1{هناك حقل مطلوب فارغ. يُرجى ملء هذا الحقل قبل الحفظ.}zero{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}two{هناك حقلان مطلوبان فارغان. يُرجى ملء هذين الحقلين قبل الحفظ.}few{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}many{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}other{بعض الحقول المطلوبة فارغة. يُرجى ملء هذه الحقول قبل الحفظ.}}</translation>
 <translation id="5271549068863921519">حفظ كلمة المرور</translation>
-<translation id="5283494734135414249">انقر على الاختصار الذي يظهر أسفل شريط العناوين.</translation>
 <translation id="5295239312320826323">هل تريد إزالة الحساب <ph name="USER_EMAIL" />؟</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> من إجمالي <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1110,7 +1108,6 @@
 <translation id="6638511529934826365">تصغير/تكبير النص…</translation>
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
-<translation id="6643016212128521049">محو</translation>
 <translation id="6645899968535965230">رمز الاستجابة السريعة: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
 <translation id="6656103420185847513">تعديل مجلد</translation>
@@ -1203,7 +1200,6 @@
 <translation id="7136892417564438900">الكاميرا غير متاحة</translation>
 <translation id="7138080855268384146">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك ({email}).}zero{تم حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك ({email}).}two{تم حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك ({email}).}few{تم حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك ({email}).}many{تم حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك ({email}).}other{تم حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك ({email}).}}</translation>
 <translation id="7141960840225504692">سيتم إغلاق علامات التبويب وحذف بيانات التصفُّح</translation>
-<translation id="7154343200458623869">أكمِل مهمتك.</translation>
 <translation id="7161230316646448869">مزامنة الإشارات المرجعية والسجلّ وغير ذلك على جميع الأجهزة</translation>
 <translation id="7162168282402939716">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>

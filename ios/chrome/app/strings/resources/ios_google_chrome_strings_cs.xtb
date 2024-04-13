@@ -189,7 +189,6 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="6634107063912726160">Když se odhlásíte, Chrome do vašeho účtu Google nebude synchronizovat žádná nová data. Dříve synchronizovaná data v účtu zůstanou.</translation>
 <translation id="6646696210740573446">Odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome do Googlu odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="6648150602980899529">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
-<translation id="6676840375528380067">Vymazat z tohoto zařízení data prohlížeče Chrome?</translation>
 <translation id="6683891932310469419">Otevře stránku Historie Chromu.</translation>
 <translation id="6709398533399187136">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel Google doporučuje ihned ho změnit.</translation>
 <translation id="6815466750807582739">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
@@ -219,6 +218,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7272930098487145294">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte Chromu přidávat obrázky do vašich fotek</translation>
 <translation id="7275945473750112644">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chrome z tohoto zařízení vymazána</translation>
 <translation id="7304491752269485262">Rozbalené zobrazení automatického vyplňování prohlížeče Chrome</translation>
+<translation id="7344094882820374540">Získejte nejsilnější zabezpečení Chromu před nebezpečnými weby</translation>
 <translation id="7349129508108954623">Povolte Chromu používat Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="7394108421562933108">Mapy v Chromu</translation>
 <translation id="7400722733683201933">O aplikaci Google Chrome</translation>

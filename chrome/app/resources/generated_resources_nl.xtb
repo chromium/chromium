@@ -538,6 +538,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1410797069449661718">Scrollen richting het eerste tabblad</translation>
 <translation id="1410806973194718079">Kan de beleidsregels niet checken</translation>
 <translation id="1411400282355634827">Rechten voor alle bluetooth-apparaten resetten?</translation>
+<translation id="141163372431617064">Niet toestaan dat sites je cursor vergrendelen</translation>
 <translation id="1414315029670184034">Niet toestaan dat sites je camera gebruiken</translation>
 <translation id="1414648216875402825">Je voert een upgrade uit naar een instabiele versie van <ph name="PRODUCT_NAME" />, die opties bevat die nog in ontwikkeling zijn. Crashes en onverwachte fouten zullen optreden. Ga voorzichtig te werk.</translation>
 <translation id="1415708812149920388">Leestoegang voor klembord geweigerd</translation>
@@ -1364,6 +1365,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="2010501376126504057">Geschikte apparaten</translation>
 <translation id="201217432804812273">'Groep opslaan' aanzetten</translation>
 <translation id="2012935757369720523">Bestand verwijderen</translation>
+<translation id="2013467735169740431">Sites kunnen vragen of ze je toetsenbord mogen vergrendelen</translation>
 <translation id="2013550551806600826">Probeer het uit. Zet de instelling aan of uit en scroll met 2 vingers op je touchpad in het testgebied. Je kunt deze optie ook later vinden via Instellingen &gt; Apparaat &gt; Muis en touchpad.</translation>
 <translation id="2015232545623037616">Pc en Chromecast op hetzelfde wifi-netwerk</translation>
 <translation id="2016473077102413275">Functies die afhankelijk zijn van afbeeldingen, werken niet</translation>
@@ -2193,6 +2195,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2613535083491958306"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bewerken</translation>
 <translation id="2613747923081026172">Groep maken</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{<ph name="FILE1" /> openen en bewerken in deze extensie}other{<ph name="FILE1" />, ... openen en bewerken in deze app}}</translation>
+<translation id="2615927647449180540">Geen toestemming om je cursor te vergrendelen</translation>
 <translation id="2616366145935564096">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Dichtbij delen instellen</translation>
 <translation id="2619340799655338321">afspelen/onderbreken</translation>
@@ -3058,6 +3061,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3293644607209440645">Deze pagina verzenden</translation>
 <translation id="32939749466444286">De Linux-container is niet gestart. Probeer het opnieuw.</translation>
 <translation id="3294437725009624529">Gast</translation>
+<translation id="3294484594253557399">Sites gebruiken cursorvergrendeling om de cursor te verbergen en te voorkomen dat deze de pagina verlaat.</translation>
 <translation id="3294686910656423119">Gebruiksstatistieken en crashrapporten</translation>
 <translation id="3295241308788901889">Een tabblad casten</translation>
 <translation id="3297105622164376095">Toestemming om externe inlogprompts te tonen</translation>
@@ -4133,6 +4137,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4094647278880271855">Je gebruikt een niet-ondersteunde omgevingsvariabele: <ph name="BAD_VAR" />. Dit heeft negatieve gevolgen voor de stabiliteit en beveiliging.</translation>
 <translation id="4095264805865317199">UI voor mobiele activering openen</translation>
 <translation id="4095425503313512126">Browsen en zoeken gaan sneller</translation>
+<translation id="4095483462103784441">Nieuwe tabbladgroep maken</translation>
 <translation id="4095507791297118304">Primair scherm</translation>
 <translation id="4096421352214844684">Automatisch verbinding maken met de hotspot van je telefoon.</translation>
 <translation id="4096508467498758490">Extensies van ontwikkelaarsmodus uitzetten</translation>
@@ -5042,6 +5047,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4819323978093861656">{0,plural, =0{De browsers worden nu gesloten}=1{De browsers worden over 1 seconde gesloten}other{De browsers worden over # seconden gesloten}}</translation>
 <translation id="4819607494758673676">Google Assistent-meldingen</translation>
 <translation id="4819818293886748542">Een link naar een supporttool krijgen</translation>
+<translation id="4820082996741546682">Toestemming om je toetsenbord te vergrendelen</translation>
 <translation id="4820236583224459650">Instellen als actief ticket</translation>
 <translation id="4820795723433418303">Functietoetsen gebruiken als toetsen op de bovenste rij</translation>
 <translation id="4821935166599369261">&amp;Profiling staat aan</translation>
@@ -5118,6 +5124,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4872192066608821120">Als je wachtwoorden wilt importeren, selecteer je een csv-bestand.</translation>
 <translation id="4872212987539553601">Versleuteling op het apparaat instellen</translation>
 <translation id="4873312501243535625">Media File Checker</translation>
+<translation id="4874705075711349931">Sites gebruiken toetsenbordvergrendeling om toetsenbordinvoer te registreren die anders door de browser of het besturingssysteem zou worden verwerkt.</translation>
 <translation id="4876273079589074638">Help onze engineers om deze crash te onderzoeken en op te lossen. Vermeld indien mogelijk je exacte stappen: elk detail is het vermelden waard.</translation>
 <translation id="4876305945144899064">Geen gebruikersnaam</translation>
 <translation id="4876327226315760474">Dit betekent dat sitefuncties werken zoals verwacht, maar dat je browser misschien minder goed beveiligd is.</translation>
@@ -6319,6 +6326,7 @@ Als je dit uitzet, gebruikt Android alleen het IP-adres voor de locatie. Dit kan
 <translation id="583431638776747">Site was niet beschikbaar</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minuten resterend</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> heeft toegang tot HID-apparaten}=2{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + nog {3}}}</translation>
+<translation id="5835714760577949748">Geen toestemming om je toetsenbord te vergrendelen</translation>
 <translation id="583673505367439042">Sites kunnen vragen of ze bestanden en mappen op je apparaat mogen bewerken</translation>
 <translation id="5836999627049108525">Taal om uit te vertalen</translation>
 <translation id="583756221537636748">Case</translation>
@@ -7348,6 +7356,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6647690760956378579">Voorbeeld van natuurlijke stem</translation>
 <translation id="6648911618876616409">Er is een nieuwe essentiële update beschikbaar. Log in om aan de slag te gaan.</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="6650206238642452078">Abonneren op ChromeOS-systeemgebeurtenissen</translation>
 <translation id="665061930738760572">Openen in &amp;nieuw venster</translation>
 <translation id="6651237644330755633">Dit certificaat vertrouwen voor het identificeren van websites</translation>
@@ -8844,6 +8853,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7788298548579301890">Een ander programma op je computer heeft een app toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7788948939674438635">Niet toestaan dat sites je toetsenbord vergrendelen</translation>
 <translation id="7789963078219276159">Achtergrond van homepage is gewijzigd in <ph name="CATEGORY" />.</translation>
 <translation id="7791269138074599214">Invoermethode</translation>
 <translation id="7791429245559955092">Deze app wordt geïnstalleerd in je huidige gebruikte Chrome-profiel</translation>
@@ -9872,6 +9882,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8561206103590473338">Olifant</translation>
 <translation id="8561565784790166472">Ga voorzichtig verder</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
+<translation id="8562115322675481339">Nieuwe tabbladgroep maken</translation>
 <translation id="8563043098557365232">Alleen toegestaan voor systeemservices</translation>
 <translation id="8564220755011656606">Geen toegang tot microfoon</translation>
 <translation id="8565650234829130278">Je probeert een oudere versie van de app te installeren.</translation>
@@ -10353,6 +10364,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8931076093143205651">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="8931475688782629595">Beheren wat je synchroniseert</translation>
+<translation id="8931479761457920281">Toestemming om je cursor te vergrendelen</translation>
 <translation id="8931713990831679796">Deze printers zijn verbonden en klaar voor gebruik. Sla ze op in je profiel voor makkelijkere toegang.</translation>
 <translation id="8932654652795262306">Gegevens van instant tethering</translation>
 <translation id="893298445929867520">Winkelwagens zijn verborgen. Ze worden opnieuw getoond als je wijzigingen aanbrengt.</translation>
@@ -10820,6 +10832,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="978146274692397928">Standaard interpunctiebreedte is 'volledig'</translation>
 <translation id="978978324795544535">Dubbeltik op een item, houd je vinger erop bij de tweede tik en sleep het naar de juiste plek</translation>
 <translation id="97905529126098460">Dit venster wordt gesloten nadat het annuleren is voltooid.</translation>
+<translation id="979345485590886759">Sites kunnen vragen of ze je cursor mogen vergrendelen</translation>
 <translation id="980731642137034229">Knop voor actiemenu</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>

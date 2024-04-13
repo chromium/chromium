@@ -136,6 +136,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Ytterklær</translation>
+<translation id="1253096324252841344">Betal med <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> og <ph name="TYPE_2" /> (synkronisert)</translation>
 <translation id="1255086252236620440">Kjøkkenmiksere</translation>
 <translation id="1256368399071562588">&lt;p&gt;Hvis du prøver å gå til et nettsted og det ikke åpnes, bør du først prøve å løse feilen med disse feilsøkingstrinnene:&lt;/p&gt;
@@ -1511,6 +1512,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="385489333361351399">Kamera og fotoutstyr</translation>
 <translation id="3858027520442213535">Oppdater dato og klokkeslett</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3865339060090354361">Se vilkårene for <ph name="CREDIT_CARD_NAME" /> her</translation>
 <translation id="3872834068356954457">Vitenskap</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
 <translation id="3880456882942693779">Kunst og underholdning</translation>
@@ -2347,6 +2349,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="553377674408670169">Undervisningsjobber</translation>
 <translation id="5536214594743852365">Vis «<ph name="SECTION" />»-delen</translation>
 <translation id="553782666181800029">Chou 2-konvolutt</translation>
+<translation id="5538270463355278784">automatisk fullskjerm</translation>
 <translation id="5539243836947087108">Flåte</translation>
 <translation id="5540224163453853">Den forespurte artikkelen ble ikke funnet.</translation>
 <translation id="5540969246441091044">Hestesport</translation>
@@ -2711,6 +2714,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere filer du har lastet ned i Chrome</translation>
 <translation id="6254436959401408446">Det er ikke nok minne til å åpne denne siden</translation>
 <translation id="625463612687472648">Slutt å tillate</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som et alternativ}other{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som alternativer}}</translation>
 <translation id="6259156558325130047">&amp;Omorganiser likevel</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bokmerker</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
@@ -3844,6 +3848,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8381674639488873545">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare. <ph name="BEGIN_LINK" />Vis likevel<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatisk fullskjerm</translation>
 <translation id="838307841291975086">Stasjonsvogner</translation>
 <translation id="8389532092404711541">Vanligvis <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Spesialbygde kjøretøy og sportskjøretøy</translation>

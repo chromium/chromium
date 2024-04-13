@@ -975,6 +975,7 @@
 <translation id="1720318856472900922">TLS WWW սերվերի նույնականացում</translation>
 <translation id="172123215662733643">Որոնել պատկերներ՝ օգտագործելով <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
+<translation id="1723166841621737307">Ինչպե՞ս են տվյալներն օգնում Chrome-ին ավելի լավ աշխատել ձեզ համար</translation>
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1725562816265788801">Ներդիրների ոլորում</translation>
@@ -998,6 +999,7 @@
 <translation id="1743970419083351269">Փակել ներբեռնումների գոտին</translation>
 <translation id="1744108098763830590">հետնաշերտի էջ</translation>
 <translation id="1745732479023874451">Կառավարել կոնտակտները</translation>
+<translation id="1746797507422124818">Ձեր տվյալները, երբ կայքեր եք դիտարկում</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Ուզո՞ւմ եք բացել և փոփոխել # ֆայլ այս վեբ հավելվածում։}other{Ուզո՞ւմ եք բացել և փոփոխել # ֆայլ այս վեբ հավելվածում։}}</translation>
 <translation id="1748329107062243374">Օգտագործեք <ph name="DEVICE_NAME" /> սարքի անցաբառը՝ <ph name="WEBSITE" /> կայք մուտք գործելու համար</translation>
 <translation id="1748563609363301860">Դուք կարող եք պահել այս գաղտնաբառը ձեր Google հաշվում կամ միայն այս սարքում</translation>
@@ -4455,6 +4457,7 @@
 <translation id="4357583358198801992">Ցուցադրել ներդիրների խմբերը</translation>
 <translation id="4358361163731478742">Ոչ մի հավելված չի աջակցում լեզվի ընտրությունը</translation>
 <translation id="4358643842961018282">Ձեր սարքը թարմացված է</translation>
+<translation id="4358995225307748864">Ընտրեք հավելված, որով ուզում եք վեբ էջը բացել</translation>
 <translation id="4359408040881008151">Տեղադրված է ենթակա ընդլայնման(ումների) հետևանքով:</translation>
 <translation id="4359717112757026264">Քաղաքային տեսարաններ</translation>
 <translation id="4359809482106103048">Ընդհանուր տեղեկություններ անվտանգության մասին</translation>
@@ -4620,6 +4623,7 @@
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> սարքն անսպասելիորեն վերագործարկվեց</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Վերջերս փակված ներդիր</translation>
+<translation id="4485245862007675842">Chrome-ը կօգնի ձեզ հնարավորինս օպտիմալ օգտվել համացանցից</translation>
 <translation id="4486333480498805415">Տեղորոշման ճշգրտություն</translation>
 <translation id="4487489714832036847">Chromebook սարքերում ավանդական ծրագրերի փոխարեն հավելվածներ են օգտագործվում։ Տեղադրեք աշխատանքային, ժամանցային և այլ հավելվածներ։</translation>
 <translation id="4488257340342212116">Թույլատրվում է օգտագործել ձեր տեսախցիկը</translation>
@@ -6259,6 +6263,7 @@
 <translation id="5793339252089865437">Բջջային ինտերնետով թարմացումների ներբեռնումը կարող է հավելյալ ծախսեր առաջացնել։</translation>
 <translation id="5793420564274426163">Զուգակցման հաստատում</translation>
 <translation id="5794034487966529952">«<ph name="DESK_TITLE" />» աշխատասեղանում բացված է դիտարկիչի<ph name="NUM_BROWSERS" /> պատուհան</translation>
+<translation id="5794086402489402632">Ի՞նչ տարբերություն կա այցելությունների և որոնումների պատմության միջև</translation>
 <translation id="5794414402486823030">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
@@ -7347,6 +7352,7 @@
 <translation id="6647690760956378579">Բնական ձայնի նախնական ունկնդրում</translation>
 <translation id="6648911618876616409">Առկա է կարևոր թարմացում։ Տեղադրելու համար մուտք գործեք:</translation>
 <translation id="6649018507441623493">Մի վայրկյան...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="6650206238642452078">Բաժանորդագրվեք ChromeOS համակարգի իրադարձություններին</translation>
 <translation id="665061930738760572">Բացել &amp;նոր պատուհանում</translation>
 <translation id="6651237644330755633">Վստահել այս հավաստագրին կայքերի նույնականացման համար</translation>
@@ -8044,6 +8050,7 @@
 <translation id="7196913789568937443">Կրկնօրինակ Google Drive-ում։ Արագ վերականգնեք ձեր տվյալները կամ տեղափոխեք այլ սարք: Կրկնօրինակները ներառում են հավելվածների տվյալները։ Կրկնօրինակները վերբեռնվում են Google և գաղտնագրվում ձեր Google հաշվի գաղտնաբառի միջոցով։ <ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Օգնեք Որոնմանը և Google-ի մյուս ծառայություններին ավելի լավ ճանաչել ձեզ</translation>
 <translation id="719791532916917144">Ստեղնային դյուրանցում</translation>
+<translation id="7197958763276896180">Ինչո՞ւ Chrome-ն այլևս չի աջակցում երրորդ կողմի քուքիները</translation>
 <translation id="7198503619164954386">Ձեր սարքը պետք է գրանցված լինի կազմակերպության տիրույթում</translation>
 <translation id="7199158086730159431">Ստանալ օ&amp;գնություն</translation>
 <translation id="7199452998289813782">Դադարեցնել հեռարձակումը <ph name="DEVICE_NAME" /> սարքին</translation>

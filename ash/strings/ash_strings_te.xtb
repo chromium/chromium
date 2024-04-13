@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C పరికరం (వెనుకవైపు పోర్ట్)</translation>
 <translation id="1869497990620230175">క్విక్ ఫైల్స్</translation>
 <translation id="1871023081802165724">మీడియాను ప్లే చేయండి</translation>
+<translation id="1871915835366697861">ఈ గేమ్ కోసం అందుబాటులో లేదు</translation>
 <translation id="1879018240766558464">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు. ఇతర యాప్‌లు సేవ్ చేయబడతాయి.</translation>
 <translation id="1882814835921407042">మొబైల్ నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />కు మిర్రరింగ్ చేస్తోంది</translation>
@@ -1792,6 +1793,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> మరియు <ph name="SECOND_PARENT_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>
 <translation id="793716872548410480">మీ క్లిప్‌బోర్డ్‌ను చూడడానికి, <ph name="SHORTCUT_KEY_NAME" /> + V నొక్కండి. మీరు చివరగా కాపీ చేసిన 5 ఐటెమ్‌లు, మీ క్లిప్‌బోర్డ్‌లో సేవ్ చేయబడతాయి.</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
+<translation id="7943516765291457328">సమీపంలోని హాట్‌స్పాట్‌ల కోసం స్కాన్ చేయడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="7944023924886109030">ఈరోజు ఉన్న ఈవెంట్‌లన్నింటిని చూడండి</translation>
 <translation id="7945357288295809525">యాక్సెసిబిలిటీ సెట్టింగ్‌లను చూపించండి, "<ph name="ENABLED_FEATURES" />" ఎనేబుల్ చేయబడింది.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> యాప్ మీ <ph name="DEVICE_NAME" />‌ను ఉపయోగించాలనుకుంటుంది</translation>

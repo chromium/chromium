@@ -272,7 +272,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2434405374328098816">Ai salvat deja o parolă pentru <ph name="USERNAME" /> la <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Poți derula spre stânga pentru a naviga în modul incognito.</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
-<translation id="2459155039684421202">În bara de adrese, introdu o activitate, cum ar fi „șterge istoricul” sau „editează parolele”.</translation>
 <translation id="2461070143328828326">Setări parolă</translation>
 <translation id="2462736546165239215">Aici găsești întregul istoric de navigare.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5256661381001734217">Site-ul încearcă să deschidă o aplicație.  Astfel, vei ieși din modul incognito.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un câmp obligatoriu este necompletat. Completează-l înainte de a salva.}few{Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.}other{Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.}}</translation>
 <translation id="5271549068863921519">Salvează parola</translation>
-<translation id="5283494734135414249">Atinge comanda rapidă care apare sub bara de adrese.</translation>
 <translation id="5295239312320826323">Elimini contul <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6638511529934826365">Fă zoom pe text…</translation>
 <translation id="6640268266988685324">Filă deschisă</translation>
 <translation id="6642362222295953972">Comută la o filă existentă</translation>
-<translation id="6643016212128521049">Șterge</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Adresele URL pe care le accesezi sunt trimise la Google pentru a anticipa site-urile pe care le-ai putea accesa pe viitor</translation>
 <translation id="6656103420185847513">Modificați dosarul</translation>
@@ -1202,7 +1199,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7136892417564438900">Camera foto nu este disponibilă</translation>
 <translation id="7138080855268384146">{count,plural, =1{Marcaj salvat în {title} în contul tău, {email}}few{{count} marcaje salvate în {title} în contul tău, {email}}other{{count} de marcaje salvate în {title} în contul tău, {email}}}</translation>
 <translation id="7141960840225504692">Filele vor fi închise și datele de navigare vor fi șterse</translation>
-<translation id="7154343200458623869">Finalizează activitatea.</translation>
 <translation id="7161230316646448869">Sincronizează marcajele, istoricul și alte date, pe toate dispozitivele</translation>
 <translation id="7162168282402939716">Deblochează filele incognito cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Deschide Setările</translation>

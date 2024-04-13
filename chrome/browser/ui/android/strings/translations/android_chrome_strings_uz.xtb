@@ -882,6 +882,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="5657871969392618475">Maʼlumotlaringiz profil qulfi bilan himoyalangan</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" /> ilovasida tadbir yaratish</translation>
+<translation id="5680616253592639556">Ayrim maʼlumotlar yetishmayapti</translation>
 <translation id="5683547024293500885">Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="5686790454216892815">Fayl nomi juda uzun</translation>
 <translation id="5687606994963670306">Chrome 30 kundan eskirgan saytlarni avtomatik oʻchiradi. Takroriy ochilgan saytlar roʻyxatda qayta chiqishi mumkin. Yoki saytni sizga reklama taklif qilishini bloklashingiz mumkin. <ph name="BEGIN_LINK" />Chrome brauzerida reklamada maxfiylikni boshqarish<ph name="END_LINK" /> haqida batafsil.</translation>
@@ -960,6 +961,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="6030719887161080597">Reklama unumdorligini hisoblash uchun saytlar ishlatadigan maʼlumotlarni boshqarish</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
 <translation id="6040143037577758943">Yopish</translation>
+<translation id="6040939430773295212">Takroriy ko‘rsatuv</translation>
 <translation id="604124094241169006">Avtomatik</translation>
 <translation id="6042308850641462728">Yana</translation>
 <translation id="604996488070107836">Noma’lum xatolik tufayli <ph name="FILE_NAME" /> fayli yuklab olinmadi.</translation>
@@ -1187,6 +1189,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7080806333218412752">URL manzillarni Saytlarni xavfsiz kezish tizimi tekshiruviga yuboradi. Sahifa, yuklanma, kengaytma harakati va tizim axboroti parchalarini ham yangi tahdidlarni aniqlashga yordam berishi uchun yuboradi. Hisobingizga kirganingizda Google ilovalaridan foydalanishingizni himoyalash maqsadida bu axborotni vaqtincha Google hisobingizga ulaydi.</translation>
 <translation id="7085332316435785646">Kerak boʻlsa, Chrome tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
 <translation id="7088681679121566888">Chrome eng oxirgi versiyada</translation>
+<translation id="7094933634769755999">Noaniq</translation>
 <translation id="7105047059074518658">Internetni turli qurilmalararo kezish uchun hisobga kiring</translation>
 <translation id="7106762743910369165">Brauzeringiz tashkilotingiz boshqaruvida</translation>
 <translation id="7111394291981742152">Chrome sizga koʻrsatiladigan reklamalar ustidan koʻproq nazorat beradi va saytlar sizga moslangan reklama chiqarganida siz haqingizda nimani bilishini cheklaydi.</translation>
@@ -1495,6 +1498,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8540136935098276800">URL manzilni xatosiz kiriting</translation>
 <translation id="854522910157234410">Shu sahifani ochish</translation>
 <translation id="8551513938758868521">Chrome yopilganda, Inkognito varaqlar qulflansin</translation>
+<translation id="8551524210492420949">Haqoratomuz yoki xavfli</translation>
 <translation id="8559961053328923750">Reklamalarning unumdorligini oʻlchash uchun Chrome brauzeri orqali saytlar yuboradigan maʼlumotlarning umumiy miqdorini cheklaydi.</translation>
 <translation id="8559990750235505898">Boshqa tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="8560602726703398413">Mutolaa roʻyxatini Bukmarklardan topish mumkin</translation>

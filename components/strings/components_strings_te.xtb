@@ -1078,6 +1078,7 @@
             <ph name="LIST_ITEM" />సెర్చ్ హిస్టరీ<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ఫారమ్‌లలో ఎంటర్ చేసిన సమాచారం<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">సేవింగ్స్</translation>
 <translation id="3103188521861412364">స్టాక్‌లు &amp; బాండ్‌లు</translation>
 <translation id="3105172416063519923">అసెట్ ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />సెక్యూర్ DNS కాన్ఫిగరేషన్‌ని చెక్ చేస్తోంది<ph name="END_LINK" /></translation>
@@ -1296,6 +1297,7 @@
 <translation id="3493660662684070951">ట్రక్‌లు, వ్యాన్‌లు &amp; SUVలు</translation>
 <translation id="3495081129428749620">పేజీలో కనుగొనండి
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">జీతం</translation>
 <translation id="3497627066518778351">కొత్త విండోలో పరికరంలోని సైట్ డేటాకు సంబంధించిన లిస్ట్‌ను రివ్యూ చేయండి</translation>
 <translation id="3498215018399854026">మేము ప్రస్తుతం మీ తల్లి/తండ్రిని సంప్రదించలేకపోయాము. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="350069200438440499">ఫైల్ పేరు:</translation>
@@ -2333,6 +2335,7 @@
 <translation id="5519696598216267194">పేపర్ (ప్రీపంచ్డ్)</translation>
 <translation id="5521782189689806907">క్యాబినెట్‌లను తయారు చేసి, అమర్చడం</translation>
 <translation id="5523118979700054094">విధానం పేరు</translation>
+<translation id="5523588073846127669">వ్యాపారి ఈ వర్చువల్ కార్డ్‌ను అంగీకరించరు</translation>
 <translation id="5525755241743357906">ఫైల్ కాపీ చేయబడింది లేదా తరలించబడింది</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS సెట్టింగ్‌లలో మీ యాక్సెసిబిలిటీ టూల్స్‌ను వ్యక్తిగతీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="55293785478302737">కుట్టిన అంచులు</translation>
@@ -3715,6 +3718,7 @@
 <translation id="81563721597823545">హాకీ ఎక్విప్‌మెంట్</translation>
 <translation id="8161095570253161196">బ్రౌజింగ్ కొనసాగించండి</translation>
 <translation id="8163866351304776260">ఎడమవైపు నాలుగు రంధ్రాలు</translation>
+<translation id="8163998196788647716">లావాదేవీ ఖాతా</translation>
 <translation id="8164078261547504572">ధరలు తగ్గినప్పుడు ఈమెయిల్స్ పొందాలనుకుంటున్నారా?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" కీలను అదే రకమైన డిక్షనరీలో సెట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8175796834047840627">మీరు సైన్ ఇన్ చేశారు కనుక మీ కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేసుకునే చక్కని అవకాశాన్ని Chrome మీకు అందిస్తోంది. అలాగే మీరు ఈ చర్యను సెట్టింగ్‌లలోకి వెళ్లి మార్చుకోవచ్చు.</translation>

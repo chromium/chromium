@@ -378,6 +378,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="168693727862418163">Deze beleidswaarde kan niet worden gevalideerd op basis van het bijbehorende schema en wordt genegeerd.</translation>
 <translation id="168841957122794586">Het servercertificaat bevat een zwakke cryptografische sleutel.</translation>
 <translation id="1689333818294560261">Bijnaam</translation>
+<translation id="1691425742011409472">cursorvergrendeling</translation>
 <translation id="1692622044604477956">Filmladder en bioscoopagenda</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Als je blijft browsen, kan een onderwerp opnieuw in de lijst verschijnen. Je kunt ook onderwerpen blokkeren waarvan je niet wilt dat de Chrome ze deelt met sites, en advertentieonderwerpen op elk moment uitzetten via de Chrome-instellingen.</translation>
 <translation id="1697532407822776718">Je bent nu klaar!</translation>
@@ -727,6 +728,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2337852623177822836">Instelling beheerd door je beheerder</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil koppelen</translation>
 <translation id="2346319942568447007">Afbeelding die je hebt gekopieerd</translation>
+<translation id="2349056830177284083">Toetsenbordvergrendeling</translation>
 <translation id="2349957959687031096">Knop Incognitotabblad openen. Activeer deze om een nieuw incognitotabblad te openen om privé te browsen.</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen in plaats van <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
@@ -943,6 +945,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">De verbinding is opnieuw ingesteld.</translation>
 <translation id="2786008859124691917">Fietsen en accessoires</translation>
+<translation id="2791955793407772554">Cursorvergrendeling</translation>
 <translation id="2792012897584536778">De beheerders van dit apparaat hebben beveiligingscertificaten ingesteld waarmee ze de content kunnen bekijken van websites die je bezoekt.</translation>
 <translation id="2794233252405721443">Site geblokkeerd</translation>
 <translation id="2794629552137076216">Glas (reliëf)</translation>
@@ -1102,6 +1105,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3121994479408824897">Naar <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> is nu je standaard zoekmachine</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Zoeken in <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Zakelijke dienstverlening</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141641372357166056">Geen beslissing over toestemming</translation>
@@ -1423,12 +1427,14 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712006010833051684">Envelop #10</translation>
 <translation id="3712624925041724820">Licenties zijn verbruikt</translation>
+<translation id="3713277100229669269">Je kunt nu de kaartvoordelen bekijken voordat je betaalt</translation>
 <translation id="371420189621607696">Competitief videogamen</translation>
 <translation id="3714633008798122362">online agenda</translation>
 <translation id="3714780639079136834">Zet je mobiele data of wifi aan</translation>
 <translation id="3715016660240337709">{0,plural, =1{Bestand kan niet worden geüpload}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden geüpload}}</translation>
 <translation id="3715545959749027023">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, bestandsnamen of metadata, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="3715597595485130451">Verbinding maken met wifi</translation>
+<translation id="3716622997181469465">toetsenbordvergrendeling</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en DNS-configuratie<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Tijdens de update kun je het apparaat maximaal 10 minuten niet gebruiken.</translation>
 <translation id="372429172604983730">Apps die deze fout kunnen veroorzaken, omvatten antivirussoftware, firewalls en webfilter- of proxysoftware.</translation>
@@ -3511,6 +3517,7 @@ Aanvullende informatie:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Lettertypen en lettergrootten aanpassen in Chrome</translation>
 <translation id="7752995774971033316">Niet-beheerd</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - Chatten met <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Je Chrome-tabbladen en apps worden gesloten als de update wordt gestart</translation>
 <translation id="7755287808199759310">Je ouder of voogd kan de blokkering van deze site opheffen</translation>
 <translation id="7755624218968747854">Primaire rol</translation>

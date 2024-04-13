@@ -272,7 +272,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2434405374328098816">Heslo pre používateľské meno <ph name="USERNAME" /> ste už uložili na <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Ak chcete prehliadať v režime inkognito, posuňte sa doľava.</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
-<translation id="2459155039684421202">Do panela s adresou zadajte úlohu, napríklad „vymazať moju históriu“ alebo „upraviť heslá“.</translation>
 <translation id="2461070143328828326">Nastavenia hesla</translation>
 <translation id="2462736546165239215">Tu nájdete celú históriu prehliadania.</translation>
 <translation id="2468132863574325555">Disk</translation>
@@ -827,7 +826,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5256661381001734217">Tento web sa pokúša otvoriť aplikáciu.  Opustíte tým režim inkognito.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
-<translation id="5283494734135414249">Klepnite na skratku, ktorá sa zobrazí pod panelom s adresou.</translation>
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1045,6 +1043,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6363526231572697780">Žiadne používateľské meno</translation>
 <translation id="6366190659675876144">Štandardná ochrana</translation>
 <translation id="6366663624406569102">Odhlásiť sa a vypnúť synchronizáciu</translation>
+<translation id="6368038301482806847">Vyberte v zozname vyhľadávač.</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
 <translation id="6377118281273296434">Zabezpečenie webu</translation>
 <translation id="6383719166112032471">Otvoriť umiestnenie…</translation>
@@ -1109,7 +1108,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6638511529934826365">Textová lupa…</translation>
 <translation id="6640268266988685324">Otvoriť kartu</translation>
 <translation id="6642362222295953972">Prepnúť na existujúcu kartu</translation>
-<translation id="6643016212128521049">Vymazať</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6656103420185847513">Upraviť priečinok</translation>
@@ -1202,10 +1200,10 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7136892417564438900">Kamera nie je k dispozícii</translation>
 <translation id="7138080855268384146">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{{count} záložky boli uložené do priečinka {title} vo vašom účte {email}}many{{count} Bookmarks saved to "{title}" in your account, {email}}other{{count} záložiek bolo uložených do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="7141960840225504692">Karty budú zatvorené a dáta prehliadania odstránené</translation>
-<translation id="7154343200458623869">Dokončite svoju úlohu.</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
 <translation id="7162168282402939716">Odomknúť karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
+<translation id="7186568385131859684">Ovládajte, ako sa história prehliadania používa s inými údajmi v službách Googlu</translation>
 <translation id="7189598951263744875">Zdieľať...</translation>
 <translation id="719133302483559673">Spravujte svoje záujmy a predvoľby.</translation>
 <translation id="7192050974311852563">Spustiť zapisovanie do denníka</translation>
@@ -1249,6 +1247,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7438481509621345350">Keď teraz otvoríte novú kartu, budú sa vám zobrazovať príbehy z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Záložka bola uložená do umiestnenia {title}}few{Záložky boli uložené do umiestnenia {title}}many{Záložky boli uložené do umiestnenia {title}}other{Záložky boli uložené do umiestnenia {title}}}</translation>
 <translation id="7454057999980797137">Štát/okres</translation>
+<translation id="7458706065921255639">Prispôsobenie a prepojenie</translation>
 <translation id="745899714366929493">Celý deň</translation>
 <translation id="7459628154744868585">Rozšírená ochrana je zapnutá</translation>
 <translation id="7465351360025415755">Dostávajte obsah, ktorý je pre vás dôležitý</translation>

@@ -972,6 +972,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1720318856472900922">TLS WWW serveri haqiqiylik tekshiruvi</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> orqali rasm qidirish</translation>
 <translation id="1722460139690167654"><ph name="DEVICE_TYPE" /> qurilmangiz <ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />domenida boshqariladi<ph name="END_LINK" /></translation>
+<translation id="1723166841621737307">Maʼlumotlar Chromeni yanada qulay qilishga qanday yordam beradi?</translation>
 <translation id="1723824996674794290">&amp;Yangi oyna</translation>
 <translation id="1724801751621173132">Matn kiritish rejimi</translation>
 <translation id="1725562816265788801">Varaqni aylantirish</translation>
@@ -995,6 +996,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1743970419083351269">Yuklanmalar panelini yopish</translation>
 <translation id="1744108098763830590">orqa fondagi sahifa</translation>
 <translation id="1745732479023874451">Kontaktlarni boshqarish</translation>
+<translation id="1746797507422124818">Internetdagi harakatlaringiz haqidagi maʼlumotlar</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# ta fayl shu veb ilovada ochilib, tahrirlansinmi?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> saytiga kirishda <ph name="DEVICE_NAME" /> kodini ishlatish</translation>
 <translation id="1748563609363301860">Parolni Google hisobingizga yoki faqat shu qurilmada saqlash mumkin</translation>
@@ -4464,6 +4466,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4357583358198801992">Varaqlar guruhini koʻrsatish</translation>
 <translation id="4358361163731478742">Ilova tilini tanlashni hech qanday ilova dastaklamaydi</translation>
 <translation id="4358643842961018282">Qurilmangiz dasturi yangilandi</translation>
+<translation id="4358995225307748864">Ilovani tanlang</translation>
 <translation id="4359408040881008151">Bog‘liq kengaytmalar mavjudligi sababli, o‘rnatildi.</translation>
 <translation id="4359717112757026264">Shahar manzarasi</translation>
 <translation id="4359809482106103048">Eng asosiy xavfsizlik</translation>
@@ -4629,6 +4632,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> qurilmangiz kutilmaganda qayta ishga tushdi</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Oxirgi yopilgan varaq</translation>
+<translation id="4485245862007675842">Chrome bilan internetdan maksimal foydalanish mumkin</translation>
 <translation id="4486333480498805415">Joylashuv aniqligi</translation>
 <translation id="4487489714832036847">Chromebook qurilmalarida odatiy dasturlar oʻrniga ilovalar ishlatiladi. Ish va unumdorlik, hordiq va boshqa turkumdagi ilovalarni oʻrnating.</translation>
 <translation id="4488257340342212116">Kameradan foydalanishga ruxsat berilgan</translation>
@@ -6272,6 +6276,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5793339252089865437">Yangilanishlarni mobil tarmoq orqali amalga oshirsangiz, ancha pulingiz ketib qoladi.</translation>
 <translation id="5793420564274426163">Ulanishni tasdiqlash</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> ish stolida <ph name="NUM_BROWSERS" /> ta brauzer oynasi ochilgan</translation>
+<translation id="5794086402489402632">Brauzer tarixi va qidiruv tarixi qanday farqlanadi?</translation>
 <translation id="5794414402486823030">Doim tizimdagi birlamchi ko‘rish dasturida ochish</translation>
 <translation id="5794700615121138172">Linux umumiy jildlari</translation>
 <translation id="5794786537412027208">Barcha Chrome ilovalarini yopish</translation>
@@ -7360,6 +7365,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6647690760956378579">Tabiiy ovozni oldindan tinglash</translation>
 <translation id="6648911618876616409">Jiddiy yangilanish o‘rnatish uchun tayyor. Boshlash uchun hisobingizga kiring.</translation>
 <translation id="6649018507441623493">Iltimos, kuting...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> shaxsingizni tasdiqlamoqchi</translation>
 <translation id="6650206238642452078">ChromeOS tizim hodisalariga obuna boʻlish</translation>
 <translation id="665061930738760572">&amp;Yangi oynada ochish</translation>
 <translation id="6651237644330755633">Saytlarni identifikatsiya qilishda ushbu sertifikat ishonchli deb hisoblansin</translation>
@@ -8057,6 +8063,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7196913789568937443">Google Drive xizmatiga zaxiralash. Axborotlaringizni osongina tiklashingiz yoki qurilmangizni xohlagan vaqtda almashtirishingiz mumkin. Zaxira ichida ilova ma’lumotlari ham bor. Zaxiralar Google serverlariga yuklanadi va Google hisobingiz paroli bilan shifrlanadi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Qidiruv va boshqa Google xizmatlariga oʻzingizni yaxshiroq tanishtiring</translation>
 <translation id="719791532916917144">Tezkor tugma</translation>
+<translation id="7197958763276896180">Chrome nega tashqi cookie fayllardan foydalanishni cheklaydi?</translation>
 <translation id="7198503619164954386">Faqat korporativ qayd qilingan qurilmalarda ishlaydi</translation>
 <translation id="7199158086730159431">&amp;Yordam olish</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />ga translatsiyani pauza qilish</translation>

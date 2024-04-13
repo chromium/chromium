@@ -984,6 +984,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1720318856472900922">TLS WWW-bedienerstawing</translation>
 <translation id="172123215662733643">Soek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Jou <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> word bestuur<ph name="END_LINK" /> deur <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Hoe help data sodat Chrome beter vir jou werk?</translation>
 <translation id="1723824996674794290">Nuwe venster</translation>
 <translation id="1724801751621173132">Invoermodus</translation>
 <translation id="1725562816265788801">Oortjierollees</translation>
@@ -1007,6 +1008,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1743970419083351269">Maak Aflaaibalk toe</translation>
 <translation id="1744108098763830590">agtergrondbladsy</translation>
 <translation id="1745732479023874451">Bestuur kontakte</translation>
+<translation id="1746797507422124818">Jou data terwyl jy blaai</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Maak # lêers in hierdie webprogram oop en wysig dit?}}</translation>
 <translation id="1748329107062243374">Gebruik <ph name="DEVICE_NAME" /> se toegangsleutel om aan te meld by <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Jy kan hierdie wagwoord in jou Google-rekening of net op hierdie toestel stoor</translation>
@@ -4472,6 +4474,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4357583358198801992">Wys oortjiegroepe</translation>
 <translation id="4358361163731478742">Geen apps steun apptaalkeuse nie</translation>
 <translation id="4358643842961018282">Jou toestel is op datum</translation>
+<translation id="4358995225307748864">Kies ’n app om oop te maak</translation>
 <translation id="4359408040881008151">Vanweë afhanklike uitbreiding(s) geïnstalleer.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
 <translation id="4359809482106103048">Oorsig van veiligheid</translation>
@@ -4637,6 +4640,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4481448477173043917">Jou <ph name="DEVICE_TYPE" /> het onverwags herbegin</translation>
 <translation id="4481467543947557978">dienswerker</translation>
 <translation id="4482990632723642375">Oortjie wat onlangs toegemaak is</translation>
+<translation id="4485245862007675842">Chrome maak die web beter vir jou werk</translation>
 <translation id="4486333480498805415">Liggingakkuraatheid</translation>
 <translation id="4487489714832036847">Chromebooks gebruik programme pleks van tradisionele sagteware. Kry programme vir produktiwiteit, vermaak en meer.</translation>
 <translation id="4488257340342212116">Mag jou kamera gebruik</translation>
@@ -6279,6 +6283,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5793339252089865437">As jy die opdatering oor jou selnetwerk aflaai, kan dit tot bykomende koste lei.</translation>
 <translation id="5793420564274426163">Saambindingbevestiging</translation>
 <translation id="5794034487966529952"><ph name="NUM_BROWSERS" /> blaaiervensters is op werkskerm <ph name="DESK_TITLE" /> oop</translation>
+<translation id="5794086402489402632">Wat is die verskil tussen blaai- en soekgeskiedenis?</translation>
 <translation id="5794414402486823030">Altyd oop met die stelselkyker</translation>
 <translation id="5794700615121138172">Linux- gedeelde lêers</translation>
 <translation id="5794786537412027208">Beëindig alle Chrome-programme</translation>
@@ -7366,6 +7371,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6647690760956378579">Voorskou van natuurlike stem</translation>
 <translation id="6648911618876616409">'n Noodsaaklike opdatering is gereed om geïnstalleer te word. Meld aan om te begin.</translation>
 <translation id="6649018507441623493">Net 'n oomblik …</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="6650206238642452078">Teken in op ChromeOS-stelselgebeure</translation>
 <translation id="665061930738760572">Maak in nuwe venster oop</translation>
 <translation id="6651237644330755633">Vertrou hierdie sertifikaat om webwerwe te identifiseer</translation>
@@ -8063,6 +8069,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7196913789568937443">Rugsteun in Google Drive. Stel jou data maklik terug of wissel enige tyd tussen toestelle. Jou rugsteun sluit programdata in. Jou rugsteune word in Google opgelaai en met jou Google-rekeningwagwoord geënkripteer. <ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Kry Google Search en Google-slimhede elke keer wanneer jy blaai</translation>
 <translation id="719791532916917144">Sleutelbordkortpad</translation>
+<translation id="7197958763276896180">Hoekom skort Chrome derdepartywebkoekies op?</translation>
 <translation id="7198503619164954386">Jy moet 'n toestel gebruik wat by 'n onderneming ingeskryf is</translation>
 <translation id="7199158086730159431">Kry hulp</translation>
 <translation id="7199452998289813782">Onderbreek uitsending na <ph name="DEVICE_NAME" /></translation>

@@ -1080,6 +1080,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
             <ph name="LIST_ITEM" />Arama geçmişi<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Formlara girilen bilgiler<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Tasarruf hesabı</translation>
 <translation id="3103188521861412364">Hisse ve Tahviller</translation>
 <translation id="3105172416063519923">Öğe Kimliği:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Güvenli DNS yapılandırması kontrol etme<ph name="END_LINK" /></translation>
@@ -1297,6 +1298,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3493660662684070951">Kamyon, Kamyonet ve SUV'ler</translation>
 <translation id="3495081129428749620">Şu sayfada bul:
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Maaş</translation>
 <translation id="3497627066518778351">Cihaz üzerindeki site verileri listesini yeni pencerede inceleyin</translation>
 <translation id="3498215018399854026">Şu anda ebeveyninize erişemedik. Lütfen tekrar deneyin.</translation>
 <translation id="350069200438440499">Dosya adı:</translation>
@@ -2332,6 +2334,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5519696598216267194">Kağıt (Önceden Delinmiş)</translation>
 <translation id="5521782189689806907">Dolaplar</translation>
 <translation id="5523118979700054094">Politika adı</translation>
+<translation id="5523588073846127669">Satıcı bu sanal kartı kabul etmiyor</translation>
 <translation id="5525755241743357906">Dosya kopyalandı veya taşındı</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="55293785478302737">Kenar dikişi</translation>
@@ -3713,6 +3716,7 @@ Ek ayrıntılar:
 <translation id="81563721597823545">Hokey Gereçleri</translation>
 <translation id="8161095570253161196">Göz atmaya devam et</translation>
 <translation id="8163866351304776260">Solda dörtlü delik</translation>
+<translation id="8163998196788647716">İşlem hesabı</translation>
 <translation id="8164078261547504572">Fiyatlar düştüğünde e-posta almak ister misiniz?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" anahtarları aynı sözlükte ayarlanamaz</translation>
 <translation id="8175796834047840627">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz.</translation>

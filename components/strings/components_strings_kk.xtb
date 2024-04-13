@@ -378,6 +378,7 @@
 <translation id="168693727862418163">Бұл саясат мәні осы схемаға қатысты тексерілмеді және ол еленбейді.</translation>
 <translation id="168841957122794586">Сервер сертификаты сенімсіз криптографиялық кілтті қамтиды.</translation>
 <translation id="1689333818294560261">Лақап ат</translation>
+<translation id="1691425742011409472">меңзер құлпы</translation>
 <translation id="1692622044604477956">Кино мен театр афишалары</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Деректерді басқару жолы:<ph name="END_BOLD" /> Chrome 4 аптадан асқан тақырыптарды автоматты түрде жояды. Оны қайта қараған кезде, тақырып тізімде қайта шығуы мүмкін. Сонымен қатар Chrome браузері сайттармен бөліспейтін тақырыптарды бөгей және Chrome параметрлерінен жарнама тақырыптарын кез келген уақытта өшіре аласыз.</translation>
 <translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
 <translation id="2346319942568447007">Көшірілген сурет</translation>
+<translation id="2349056830177284083">Пернетақта құлпы</translation>
 <translation id="2349957959687031096">"Инкогнито қойындысын ашу" түймесі, құпия шолу мақсатында жаңа инкогнито қойындысын ашу үшін белсендіріңіз</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="REPLACED_HANDLER_TITLE" /> орнына барлық <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
 <translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Байланыс қалпына келтірілді.</translation>
 <translation id="2786008859124691917">Велосипедтер және аксессуарлары</translation>
+<translation id="2791955793407772554">Меңзер құлпы</translation>
 <translation id="2792012897584536778">Бұл құрылғының әкімшілері қауіпсіздік сертификаттарын орнатты, енді олар сіз кірген веб-сайттардың контентін көруі мүмкін.</translation>
 <translation id="2794233252405721443">Сайт блокталған</translation>
 <translation id="2794629552137076216">Шыны (беттік)</translation>
@@ -1102,6 +1105,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> доменіне өту</translation>
 <translation id="3126023634486644099">Белгілер (тұрақты)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> – енді сіздің әдепкі іздеу жүйеңіз.</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> іздеу</translation>
 <translation id="3140646734028448730">Іскери қызметтер</translation>
 <translation id="3141093262818886744">Бәрібір ашу</translation>
 <translation id="3141641372357166056">Келісім шешімі жоқ</translation>
@@ -1427,12 +1431,14 @@
 <translation id="3711895659073496551">Уақытша тоқтату</translation>
 <translation id="3712006010833051684">#10 хатқалта</translation>
 <translation id="3712624925041724820">Лицензиялар аяқталды</translation>
+<translation id="3713277100229669269">Енді төлемей тұрып, карта бонустарын қарай аласыз.</translation>
 <translation id="371420189621607696">Сайысатын бейне ойындар</translation>
 <translation id="3714633008798122362">веб-күнтізбе</translation>
 <translation id="3714780639079136834">Мобильдік интернетті немесе Wi-Fi желісін қосу</translation>
 <translation id="3715016660240337709">{0,plural, =1{Файлды жүктеп салуға блок қойылған}other{<ph name="FILE_COUNT" /> файлды жүктеп салуға блок қойылған}}</translation>
 <translation id="3715545959749027023">Chrome браузерінде қауіпсіздік іс-шараларына жалауша қойылған кезде, іс-шараларға қатысты деректер әкімшіңізге жіберіледі. Мұндай деректерге Chrome браузерінде сіз ашатын беттердің URL мекенжайлары, файл атаулары немесе метадеректер, браузер немесе қойынды бұзылулары, вебке негізделген қолданбаларға, құрылғыға және Chrome браузеріне кіретін пайдаланушы аты жатуы мүмкін.</translation>
 <translation id="3715597595485130451">Wi-Fi желісіне қосылу</translation>
+<translation id="3716622997181469465">пернетақта құлпы</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проксиді, брандмауэрді және DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Жаңарту кезінде құрылғыны 10 минутқа дейін пайдалана алмайсыз.</translation>
 <translation id="372429172604983730">Мұндай қате тудыратын қолданбаларға антивирустар, брандмауэрлер, вебсүзгілер және прокси-сервер бағдарламалық құралдары жатады.</translation>
@@ -3516,6 +3522,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу</translation>
 <translation id="7752995774971033316">Басқарылмайды</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> өкілімен чатта сөйлесу</translation>
 <translation id="7754587126786572336">Жаңарту басталған кезде, Chrome қойындылары мен қолданбалары жабылады</translation>
 <translation id="7755287808199759310">Ата-анаңыз оны сіз үшін бөгеуден шығара алады</translation>
 <translation id="7755624218968747854">Негізгі орам</translation>

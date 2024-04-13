@@ -68,6 +68,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikácia Obchodu Play</translation>
 <translation id="1225748608451425081">Váš Chromebook je uzamknutý pre známy problém. Prihlásiť sa budete môcť po uplynutí tohto času: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončiť výber</translation>
+<translation id="1230853660706736937">Vyhľadávajte text na obrázkoch a prehliadajte ukážky obrázkov</translation>
 <translation id="1235458158152011030">Známe siete</translation>
 <translation id="1239161794459865856">Funkcia <ph name="FEATURE_NAME" /> je pripojená.</translation>
 <translation id="1240638468526743569">Aplikácia</translation>
@@ -715,11 +716,13 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3824784079442479685">Týmto povolíte prístup ku kamere aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať kameru. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
 <translation id="3826099427150913765">Prepnúť na heslo</translation>
 <translation id="383058930331066723">Režim šetriča batérie je zapnutý</translation>
+<translation id="3831226344927851293">Ukončiť zobrazenie návodu</translation>
 <translation id="383629559565718788">Zobraziť nastavenia klávesnice</translation>
 <translation id="384082539148746321">Chcete šablónu odstrániť?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, potom <ph name="KEY_ONE" /> alebo <ph name="KEY_TWO" /> alebo <ph name="KEY_THREE" /> alebo <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50 + 94/5</translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
+<translation id="3848526302597027234">Má prístup k týmto povoleniam:</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="385300504083504382">Začiatok</translation>
 <translation id="3859364108019690">Aplikácie sa nedajú streamovať</translation>

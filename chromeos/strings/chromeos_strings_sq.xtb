@@ -841,6 +841,8 @@
 <translation id="5946538341867151940">Nuk je lidhur ende. Nëse operatori yt celular rekomandon një APN të personalizuar, fut informacionet e APN-së duke zgjedhur "+ APN e re"</translation>
 <translation id="5947266287934282605">Nëse dita e fundit e muajit është para kësaj dite, të dhënat do të rivendosen në ditën e fundit të muajit</translation>
 <translation id="5948460390109837040">qen</translation>
+<translation id="594989847980441553">Zgjidh "Krijo" për të krijuar një imazh me IA-në.
+        Të gjitha imazhet e krijuara do të shfaqen automatikisht këtu.</translation>
 <translation id="5972388717451707488">Motori i përditësimit</translation>
 <translation id="5975130252842127517">koral</translation>
 <translation id="5984145644188835034">Imazhi i parazgjedhur i sfondit</translation>
@@ -1196,6 +1198,7 @@
 <translation id="7936303884198020182">Nuk u gjetën serverë DNS</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7943235353293548836">Intervali i procesit të vazhdueshëm të mbajtjes aktive</translation>
+<translation id="7943516765291457328">Aktivizo Bluetooth-in për të skanuar për zona të qasjes për internet në afërsi</translation>
 <translation id="7944562637040950644">aktivizo/çaktivizo dritën e sfondit të tastierës</translation>
 <translation id="7953669802889559161">Hyrjet</translation>
 <translation id="7955587717700691983">Tastierë me Bluetooth</translation>
@@ -1325,6 +1328,7 @@
 <translation id="8747900814994928677">Konfirmo ndryshimin</translation>
 <translation id="8749478549112817787">Sfondi i kamerës</translation>
 <translation id="8755946156089753497">kullë</translation>
+<translation id="8756235582947991808">Si të krijosh me IA-në dhe disa gjëra për t'i pasur parasysh</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albumi i "Fotografive të Google"</translation>
 <translation id="8775713578693478175">APN-ja e modemit</translation>

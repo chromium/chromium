@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">"<ph name="USERNAME" />" үчүн <ph name="WEBSITE" /> вебсайтында сырсөздү сактап койгонсуз</translation>
 <translation id="2434918313224755415">Жашыруун режимде карап чыгуу үчүн солго сыдырыңыз.</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
-<translation id="2459155039684421202">"Таржымалды өчүрүү" же "сырсөздөрдү өзгөртүү" сыяктуу жасалчу ишти дарек тилкесине жазыңыз.</translation>
 <translation id="2461070143328828326">Сырсөздүн параметрлери</translation>
 <translation id="2462736546165239215">Көргөн вебсайттарыңыздын баарын бул жерден таба аласыз.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">Бул сайт колдонмону ачууга аракет кылып жатат.  Бул сизди Жашыруун режимден чыгарат.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Милдеттүү талаа бош калды. Сактоодон мурда аны толтуруңуз.}other{Милдеттүү айрым талаалар бош калды. Сактоодон мурда аларды толтуруңуз.}}</translation>
 <translation id="5271549068863921519">Сырсөздү сактоо</translation>
-<translation id="5283494734135414249">Дарек тилкесинин астындагы ыкчам баскычты таптап коюңуз.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> аккаунту өчүрүлсүнбү?</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> ичинен <ph name="INDEX" /></translation>
@@ -1109,7 +1107,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6638511529934826365">Текстти чоңойтуп/кичирейтүү…</translation>
 <translation id="6640268266988685324">Ачык өтмөк</translation>
 <translation id="6642362222295953972">Учурдагы өтмөккө которулуу</translation>
-<translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6645899968535965230">QR код: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Кийин кайсы сайттарга кирериңизди болжолдоо үчүн сиз баш баккан URL даректери Google'га жөнөтүлүп турат</translation>
 <translation id="6656103420185847513">Куржунду түзөтүү</translation>
@@ -1202,7 +1199,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7136892417564438900">Камера жеткиликсиз</translation>
 <translation id="7138080855268384146">{count,plural, =1{Кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}other{{count} кыстарма {email} аккаунтуңуздагы "{title}" папкасына сакталды}}</translation>
 <translation id="7141960840225504692">Өтмөктөрүңүз жабылып, серептөө дайындарыңыз өчүрлөт</translation>
-<translation id="7154343200458623869">Жасалчу ишти бүтүрүңүз.</translation>
 <translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен жашыруун өтмөктөрдүн кулпусун ачуу</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>

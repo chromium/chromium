@@ -882,6 +882,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="5657871969392618475">Informacionet e tua janë siguruar me një kyçje profili</translation>
 <translation id="5659593005791499971">Mail-i</translation>
 <translation id="5665379678064389456">Krijo ngjarje në <ph name="APP_NAME" /></translation>
+<translation id="5680616253592639556">Mungojnë informacione</translation>
 <translation id="5683547024293500885">Chrome nuk mund të kontrollojë për përditësime</translation>
 <translation id="5686790454216892815">Emri i skedarit është tepër i gjatë</translation>
 <translation id="5687606994963670306">Chrome i fshin automatikisht sajtet që janë më të vjetra se 30 ditë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Ose mund ta bllokosh një sajt që të mos sugjerojë reklama për ty. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave në Chrome<ph name="END_LINK" />.</translation>
@@ -960,6 +961,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="6030719887161080597">Menaxho informacionet e përdorura nga sajtet për të matur performancën e reklamave</translation>
 <translation id="6039379616847168523">Kalo te skeda tjetër</translation>
 <translation id="6040143037577758943">Mbyll</translation>
+<translation id="6040939430773295212">E përsëritur</translation>
 <translation id="604124094241169006">Automatike</translation>
 <translation id="6042308850641462728">Më shumë</translation>
 <translation id="604996488070107836">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të një gabimi të panjohur.</translation>
@@ -1187,6 +1189,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7080806333218412752">I dërgon URL-të te "Shfletimi i sigurt" për t'i kontrolluar. Dërgon gjithashtu një shembull të vogël të faqeve, shkarkimeve, aktivitetit të shtesave dhe informacionit të sistemit për të ndihmuar në zbulimin e kërcënimeve të reja. I lidh përkohësisht këto të dhëna me "Llogarinë e Google" kur je i identifikuar, për të të mbrojtur nëpër aplikacionet e Google.</translation>
 <translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
+<translation id="7094933634769755999">E pasaktë</translation>
 <translation id="7105047059074518658">Identifikohu për të shfletuar më lehtë nëpër pajisje</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
 <translation id="7111394291981742152">Chrome të jep më shumë kontroll mbi reklamat që shikon ti dhe kufizon ato që sajtet mund të mësojnë për ty kur të shfaqin reklama të personalizuara.</translation>
@@ -1495,6 +1498,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="8540136935098276800">Fut një URL të formatuar saktë</translation>
 <translation id="854522910157234410">Hape këtë faqe</translation>
 <translation id="8551513938758868521">Kyçi skedat "e fshehta" kur të largohesh nga Chrome</translation>
+<translation id="8551524210492420949">Fyese ose e pasigurt</translation>
 <translation id="8559961053328923750">Chrome e kufizon sasinë totale të të dhënave që sajtet mund të ndajnë nëpërmjet shfletuesit për matjen e perfomancës së reklamave</translation>
 <translation id="8559990750235505898">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
 <translation id="8560602726703398413">Gjej listën tënd të leximit te "Faqeshënuesit"</translation>

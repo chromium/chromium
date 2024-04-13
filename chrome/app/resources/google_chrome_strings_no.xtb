@@ -86,6 +86,7 @@
 <translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
 <translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
+<translation id="2389730170785586152">Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="2401189691232800402">ChromeOS-systemet</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chrome-utvidelser}=1{1 HID-enhet brukes av en eller flere Chrome-utvidelser}other{# HID-enheter brukes av en eller flere Chrome-utvidelser}}</translation>
 <translation id="2424440923901031101">Denne utvidelsen er i strid med retningslinjene for Chrome Nettmarked og kan være utrygg. Fjern den fra Chrome, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
@@ -214,9 +215,11 @@
 <translation id="4293420128516039005">Logg på for å synkronisere og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="430327780270213103">Tillat at utvidelsen viser tilgangsforespørsler på Chrome-verktøylinjen</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS – inn)</translation>
+<translation id="4329315893554541805">For å få personlig tilpasning og andre funksjoner må du inkludere Chrome i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="4334294535648607276">Nedlastingen er fullført.</translation>
 <translation id="4335235004908507846">Chrome kan beskytte deg mot databrudd, ondsinnede utvidelser med mer</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er lagt til i Chrome</translation>
+<translation id="4348548358339558429">For å få personlig tilpasning må du inkludere Chrome i Nett- og appaktivitet</translation>
 <translation id="436060642166082913">Chrome har blokkert denne nedlastingen fordi filen kan skade de personlige kontoene dine og kontoene dine på sosiale nettverk</translation>
 <translation id="4384570495110188418">Chrome kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="4389991535395284064">Når du surfer i inkognitomodus, advarer Chrome deg før nettsteder lastes inn via usikre tilkoblinger</translation>
@@ -328,7 +331,9 @@
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chrome-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
+<translation id="6481963882741794338">Knytt sammen Chrome og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
+<translation id="6489302989675808168">På • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="6493527311031785448">Google Chrome prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome ble lukket automatisk</translation>
 <translation id="6506909944137591434">Chrome trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
@@ -353,6 +358,7 @@
 <translation id="6933858244219479645">ChromeOS-systemet</translation>
 <translation id="6938166777909186039">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.1.</translation>
 <translation id="6943584222992551122">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chrome som <ph name="USER_EMAIL" />.</translation>
+<translation id="6944202724043006419">Chrome trenger tillatelse til omgivelsesforståelse og håndsporing for å starte en omsluttende økt</translation>
 <translation id="6967962315388095737">Regel for å tillate innkommende mDNS-trafikk i Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome har blitt oppdatert, men du har ikke brukt programmet på minst 30 dager.</translation>
 <translation id="7011190694940573312">Installasjonen mislyktes fordi denne versjonen av operativsystemet ikke støttes.</translation>
@@ -387,6 +393,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7477130805345743099">Chrome advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="7481213027396403996">Få den sterkeste sikkerheten i Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="7572537927358445944">Av • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
@@ -475,6 +482,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8823341990149967727">Chrome er utdatert</translation>
 <translation id="8825634023950448068">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Og hvis Chrome tar feil, eller hvis det er visse annonser du ikke vil se, kan du fjerne en interesse.</translation>
 <translation id="8834965163890861871">Google Chrome prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
+<translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome anbefaler at du fjerner den}other{Chrome anbefaler at du fjerner dem}}</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8922193594870374009">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chrome på begge enhetene.</translation>

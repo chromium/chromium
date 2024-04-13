@@ -988,6 +988,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1720318856472900922">Dilysu Gweinyddwr TLS WWW</translation>
 <translation id="172123215662733643">Chwilio lluniau â <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Rheolir eich <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> gan <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Sut mae data yn helpu Chrome i weithio'n well i chi?</translation>
 <translation id="1723824996674794290">&amp;Ffenestr newydd</translation>
 <translation id="1724801751621173132">Modd mewnbynnu</translation>
 <translation id="1725562816265788801">Sgrolio Tab</translation>
@@ -1011,6 +1012,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1743970419083351269">Cau'r Bar Lawrlwythiadau</translation>
 <translation id="1744108098763830590">tudalen gefndir</translation>
 <translation id="1745732479023874451">Rheoli cysylltiadau</translation>
+<translation id="1746797507422124818">Eich data wrth i chi bori</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{Agor a golygu # ffeil yn yr ap gwe hwn?}two{Agor a golygu # ffeil yn yr ap gwe hwn?}few{Agor a golygu # ffeil yn yr ap gwe hwn?}many{Agor a golygu # o ffeiliau yn yr ap gwe hwn?}other{Agor a golygu # o ffeiliau yn yr ap gwe hwn?}}</translation>
 <translation id="1748329107062243374">Defnyddiwch god pas o <ph name="DEVICE_NAME" /> i fewngofnodi i <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Gallwch gadw'r cyfrinair hwn yn eich Cyfrif Google neu ar y ddyfais hon yn unig</translation>
@@ -4480,6 +4482,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4357583358198801992">Dangos grwpiau tab</translation>
 <translation id="4358361163731478742">Nid oes unrhyw apiau yn cefnogi dewis iaith apiau</translation>
 <translation id="4358643842961018282">Mae eich dyfais yn gyfredol</translation>
+<translation id="4358995225307748864">Dewiswch ap i'w agor</translation>
 <translation id="4359408040881008151">Wedi'i osod oherwydd estyniad(au) dibynnol.</translation>
 <translation id="4359717112757026264">Dinaswedd</translation>
 <translation id="4359809482106103048">Cipolwg ar ddiogelwch</translation>
@@ -4645,6 +4648,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4481448477173043917">Mae eich <ph name="DEVICE_TYPE" /> wedi ailgychwyn yn annisgwyl</translation>
 <translation id="4481467543947557978">gweithiwr gwasanaeth</translation>
 <translation id="4482990632723642375">Tab a Gaewyd yn Ddiweddar</translation>
+<translation id="4485245862007675842">Mae Chrome yn gwneud i'r we weithio'n well i chi</translation>
 <translation id="4486333480498805415">Cywirdeb lleoliad</translation>
 <translation id="4487489714832036847">Mae Chromebooks yn defnyddio apiau yn lle meddalwedd draddodiadol. Cael apiau ar gyfer cynhyrchiant, adloniant, a rhagor.</translation>
 <translation id="4488257340342212116">Wedi'i ganiatáu defnyddio'ch camera</translation>
@@ -6288,6 +6292,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5793339252089865437">Os byddwch yn lawrlwytho'r diweddariad dros eich rhwydwaith symudol, gallai arwain at daliadau gorswm.</translation>
 <translation id="5793420564274426163">Cadarnhad Paru</translation>
 <translation id="5794034487966529952">Mae gan y ddesg <ph name="DESK_TITLE" /> <ph name="NUM_BROWSERS" /> ffenestr porwr ar agor</translation>
+<translation id="5794086402489402632">Sut mae hanes pori a chwilio yn wahanol?</translation>
 <translation id="5794414402486823030">Agor gyda'r gwyliwr system bob tro</translation>
 <translation id="5794700615121138172">Ffolderi cyffredin Linux</translation>
 <translation id="5794786537412027208">Cau pob Ap Chrome</translation>
@@ -7384,6 +7389,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6647690760956378579">Rhagolwg llais naturiol</translation>
 <translation id="6648911618876616409">Mae diweddariad critigol yn barod i'w osod. Mewngofnodwch i gychwyn arni.</translation>
 <translation id="6649018507441623493">Arhoswch eiliad...</translation>
+<translation id="6650072551060208490">Hoffai <ph name="ORIGIN_NAME" /> gadarnhau mai chi sydd yno</translation>
 <translation id="6650206238642452078">Tanysgrifio i ddigwyddiadau system ChromeOS</translation>
 <translation id="665061930738760572">Agor mewn &amp;Ffenestr Newydd</translation>
 <translation id="6651237644330755633">Ymddiried yn y dystysgrif hon ar gyfer adnabod gwefannau</translation>
@@ -8081,6 +8087,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7196913789568937443">Gwneud copi wrth gefn yn Google Drive. Adfer eich data neu newid dyfais yn hawdd ar unrhyw adeg. Mae eich copïau wrth gefn yn cynnwys data apiau. Mae eich copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio eich cyfrinair Cyfrif Google. <ph name="BEGIN_LINK1" />Dysgu rhagor<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Cael Google Search a buddion Google bob tro y byddwch yn pori</translation>
 <translation id="719791532916917144">Llwybr byr bysellfwrdd</translation>
+<translation id="7197958763276896180">Pam mae Chrome yn symud y tu hwnt i gwcis trydydd parti?</translation>
 <translation id="7198503619164954386">Rhaid i chi fod ar ddyfais sydd wedi'i chofrestru gan fenter</translation>
 <translation id="7199158086730159431">Cael H&amp;elp</translation>
 <translation id="7199452998289813782">Seibio castio i <ph name="DEVICE_NAME" /></translation>

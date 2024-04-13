@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1533488253335887280">Accede de forma fácil y segura a tus contraseñas desde la pantalla principal.</translation>
+<translation id="1590550141045148182">Abre o cierra las pestañas cuando quieras.</translation>
+<translation id="2036020471903443693">Verás la pestaña fijada en la parte inferior de la pantalla.</translation>
+<translation id="2984477737332162971">Ve a tus pestañas abiertas.</translation>
+<translation id="3595188309555410362">Las pestañas que no se usen por un tiempo se moverán a la sección Pestañas inactivas.</translation>
+<translation id="3941788408634637840">Presiona Pestañas inactivas (si están disponibles).</translation>
+<translation id="3942215673032261195">Puedes fijar tus sitios favoritos para acceder a ellos fácilmente más tarde.</translation>
+<translation id="4196935312151003338">Selecciona "Fijar pestaña" en el menú.</translation>
+<translation id="4497631794981705027">Mantén presionada la pantalla principal.</translation>
+<translation id="463279609093232564">En la esquina superior izquierda de la pantalla, presiona +.</translation>
+<translation id="5604467549230434026">En el cuadro widgets de la Búsqueda, ingresa Chrome.</translation>
+<translation id="5639067007765618198">Widget del Administrador de contraseñas de Google</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>
+<translation id="6109989197058801417">Mantén presionada la pestaña que quieres fijar.</translation>
+<translation id="639614003069108254">Selecciona el Administrador de contraseñas y, luego, presiona Agregar widget.</translation>
+<translation id="6905308710260460250">Pestañas fijas</translation>
+<translation id="720206380500582061">Administra la configuración de Pestañas inactivas en Configuración &gt; Pestañas.</translation>
 <translation id="8077675488769462025">Pestañas inactivas</translation>
+<translation id="8602952180069641300">Desplázate hacia la parte superior de las pestañas.</translation>
+<translation id="979990360845983227">No se usó durante 14 días o más</translation>
 </translationbundle>

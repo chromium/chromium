@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store යෙදුම</translation>
 <translation id="1225748608451425081">දන්නා ගැටලුවක් හේතුවෙන් ඔබගේ Chromebook අගුලු දමා ඇත. ඔබට මෙම කාලයට පසුව පිරීමට හැකි වනු ඇත: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">තේරීම නවත්වන්න</translation>
+<translation id="1230853660706736937">රූප තුළ පාඨය සොයන්න, රූප පෙරදසුන් බලන්න</translation>
 <translation id="1235458158152011030">දන්නා ජාල</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> සම්බන්ධයි.</translation>
 <translation id="1240638468526743569">යෙදුමක්</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">මෙය <ph name="APP_NAME" /> සහ කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
 <translation id="3826099427150913765">මුරපදයට මාරු වන්න</translation>
 <translation id="383058930331066723">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාත්මකයි</translation>
+<translation id="3831226344927851293">නිබන්‍ධන දසුනින් පිට වන්න</translation>
 <translation id="383629559565718788">යතුරුපුවරු සැකසීම් පෙන්වන්න</translation>
 <translation id="384082539148746321">අච්චුව මකන්නද?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> පසුව <ph name="KEY_ONE" /> හෝ <ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /> හෝ <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ජාල තොරතුරු ලද නොහැක</translation>
+<translation id="3848526302597027234">පහත අවසර වෙත ප්‍රවේශ වන්න:</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="385300504083504382">ආරම්භය</translation>
 <translation id="3859364108019690">යෙදුම් ප්‍රවාහ කළ නොහැක</translation>

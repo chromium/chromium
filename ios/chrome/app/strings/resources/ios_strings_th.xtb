@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">คุณบันทึกรหัสผ่านสำหรับ "<ph name="USERNAME" />" ที่ <ph name="WEBSITE" /> ไว้แล้ว</translation>
 <translation id="2434918313224755415">คุณสามารถเลื่อนไปทางซ้ายเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
-<translation id="2459155039684421202">ในแถบที่อยู่ ให้ป้อนงาน เช่น "ล้างประวัติการเข้าชมของฉัน" หรือ "แก้ไขรหัสผ่าน"</translation>
 <translation id="2461070143328828326">การตั้งค่ารหัสผ่าน</translation>
 <translation id="2462736546165239215">คุณดูประวัติการท่องเว็บทั้งหมดได้ที่นี่</translation>
 <translation id="2468132863574325555">ไดรฟ์</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">เว็บไซต์นี้พยายามเปิดแอปพลิเคชัน  การดำเนินการนี้จะนำคุณออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
-<translation id="5283494734135414249">แตะทางลัดที่ปรากฏใต้แถบที่อยู่</translation>
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> จาก <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@
 <translation id="6638511529934826365">ซูมข้อความ…</translation>
 <translation id="6640268266988685324">แท็บที่เปิดอยู่</translation>
 <translation id="6642362222295953972">เปลี่ยนไปใช้แท็บที่มีอยู่</translation>
-<translation id="6643016212128521049">ล้าง</translation>
 <translation id="6645899968535965230">คิวอาร์โค้ด: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">ระบบจะส่ง URL ที่คุณเข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชม</translation>
 <translation id="6656103420185847513">แก้ไขโฟลเดอร์</translation>
@@ -1202,7 +1199,6 @@
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
 <translation id="7138080855268384146">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" ในบัญชีของคุณ {email} แล้ว}}</translation>
 <translation id="7141960840225504692">แท็บจะปิดไป และข้อมูลการท่องเว็บจะถูกลบ</translation>
-<translation id="7154343200458623869">ทำงานของคุณให้เสร็จสมบูรณ์</translation>
 <translation id="7161230316646448869">ซิงค์บุ๊กมาร์ก ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7162168282402939716">ปลดล็อกแท็บที่ไม่ระบุตัวตนด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">เปิดการตั้งค่า</translation>

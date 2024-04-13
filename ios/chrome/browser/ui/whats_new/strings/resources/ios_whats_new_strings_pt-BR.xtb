@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1533488253335887280">Acesso fácil e seguro às suas senhas pela tela inicial.</translation>
+<translation id="1590550141045148182">Abra ou feche as guias como quiser.</translation>
+<translation id="2036020471903443693">A guia vai aparecer fixada na parte de baixo da tela.</translation>
+<translation id="2984477737332162971">Acesse as guias abertas.</translation>
+<translation id="3595188309555410362">Se você tiver guias não usadas há algum tempo, elas serão movidas para a seção "Guias inativas".</translation>
+<translation id="3941788408634637840">Toque em "Guias inativas" (se disponíveis).</translation>
+<translation id="3942215673032261195">Você pode fixar seus sites favoritos para os acessar com mais facilidade depois.</translation>
+<translation id="4196935312151003338">Selecione "Fixar guia" no menu.</translation>
+<translation id="4497631794981705027">Toque e pressione a tela inicial.</translation>
+<translation id="463279609093232564">No canto superior esquerdo da tela, toque em +.</translation>
+<translation id="5604467549230434026">Na caixa "Widgets da Pesquisa", digite "Chrome".</translation>
+<translation id="5639067007765618198">Widget do Gerenciador de senhas do Google</translation>
 <translation id="5922999516621365983">Arraste a guia até aqui para fixar.</translation>
 <translation id="5979837087407522202">Pesquisar senhas</translation>
+<translation id="6109989197058801417">Toque e pressione a guia que você quer fixar.</translation>
+<translation id="639614003069108254">Selecione o Gerenciador de senhas e toque em "Adicionar widget".</translation>
+<translation id="6905308710260460250">Guias fixadas</translation>
+<translation id="720206380500582061">Gerencie as configurações de guias inativas em Configurações &gt; Guias.</translation>
 <translation id="8077675488769462025">Guias inativas</translation>
+<translation id="8602952180069641300">Role a tela para cima até o topo das guias.</translation>
+<translation id="979990360845983227">Não usadas há 14 dias ou mais</translation>
 </translationbundle>

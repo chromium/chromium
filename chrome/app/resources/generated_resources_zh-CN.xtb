@@ -538,6 +538,7 @@
 <translation id="1410797069449661718">滚动至第一个标签页</translation>
 <translation id="1410806973194718079">无法检查政策</translation>
 <translation id="1411400282355634827">重置所有蓝牙设备权限？</translation>
+<translation id="141163372431617064">不允许网站锁定指针</translation>
 <translation id="1414315029670184034">不允许网站使用您的摄像头</translation>
 <translation id="1414648216875402825">您即将更新到 <ph name="PRODUCT_NAME" />的不稳定版本，其中含有尚处于开发阶段的功能。系统可能会出现崩溃和意外错误。继续操作前，请三思。</translation>
 <translation id="1415708812149920388">已被禁止读取剪贴板</translation>
@@ -1357,6 +1358,7 @@
 <translation id="2010501376126504057">兼容的设备</translation>
 <translation id="201217432804812273">开启“保存组”</translation>
 <translation id="2012935757369720523">删除文件</translation>
+<translation id="2013467735169740431">网站可以请求锁定键盘</translation>
 <translation id="2013550551806600826">试试看！开启/关闭这项设置，然后在触控板上的测试区域用两根手指进行滚动。日后您还可在“设置”&gt;“设备”&gt;“鼠标和触控板”下找到此设置。</translation>
 <translation id="2015232545623037616">PC 和 Chromecast 使用同一个 Wi-Fi 网络</translation>
 <translation id="2016473077102413275">所有需要使用图片的功能都将无法正常运行</translation>
@@ -2185,6 +2187,7 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
 <translation id="2613747923081026172">创建群组</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此扩展程序中打开并修改 <ph name="FILE1" />}other{在此应用中打开并修改 <ph name="FILE1" />…}}</translation>
+<translation id="2615927647449180540">不允许锁定指针</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
 <translation id="2619340799655338321">播放/暂停</translation>
@@ -3050,6 +3053,7 @@
 <translation id="3293644607209440645">发送此页面</translation>
 <translation id="32939749466444286">无法启动 Linux 容器。请重试。</translation>
 <translation id="3294437725009624529">访客</translation>
+<translation id="3294484594253557399">网站使用指针锁定来隐藏鼠标指针，并防止鼠标指针离开网页。</translation>
 <translation id="3294686910656423119">使用情况统计信息和崩溃报告</translation>
 <translation id="3295241308788901889">正在投放标签页</translation>
 <translation id="3297105622164376095">可以显示第三方登录提示</translation>
@@ -4124,6 +4128,7 @@
 <translation id="4094647278880271855">您使用了不受支持的环境变量：<ph name="BAD_VAR" />。稳定性和安全性会有所下降。</translation>
 <translation id="4095264805865317199">打开移动网络激活界面</translation>
 <translation id="4095425503313512126">浏览和搜索速度更快</translation>
+<translation id="4095483462103784441">创建新标签页分组</translation>
 <translation id="4095507791297118304">主显示屏</translation>
 <translation id="4096421352214844684">自动连接到手机的热点。</translation>
 <translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
@@ -5035,6 +5040,7 @@
 <translation id="4819323978093861656">{0,plural, =0{正在关闭。}=1{将在 1 秒后关闭}other{将在 # 秒后关闭}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
 <translation id="4819818293886748542">获取支持工具链接</translation>
+<translation id="4820082996741546682">允许锁定键盘</translation>
 <translation id="4820236583224459650">设为当前所用票据</translation>
 <translation id="4820795723433418303">将功能键用作顶行按键</translation>
 <translation id="4821935166599369261">分析已启用(&amp;P)</translation>
@@ -5111,6 +5117,7 @@
 <translation id="4872192066608821120">若要导入密码，请选择一个 CSV 文件</translation>
 <translation id="4872212987539553601">设置设备端加密</translation>
 <translation id="4873312501243535625">媒体文件检查工具</translation>
+<translation id="4874705075711349931">网站使用键盘锁定来捕获本应由浏览器或操作系统处理的键盘输入。</translation>
 <translation id="4876273079589074638">帮助我们的工程师调查并解决此崩溃问题。请列出您的具体操作，越详细越好！</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4876327226315760474">这意味着，网站功能应该会按预期运行，但您受到的保护级别较低。</translation>
@@ -6312,6 +6319,7 @@
 <translation id="583431638776747">网站出问题了</translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{“<ph name="EXTENSION1" />”正在访问 HID 设备}=2{正在访问设备的扩展程序：“<ph name="EXTENSION1" />”“<ph name="EXTENSION2" />”}other{正在访问设备的扩展程序：“<ph name="EXTENSION1" />”“<ph name="EXTENSION2" />”和另外 {3} 个}}</translation>
+<translation id="5835714760577949748">不允许锁定键盘</translation>
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
@@ -7342,6 +7350,7 @@
 <translation id="6647690760956378579">自然语音预览</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
 <translation id="6649018507441623493">请稍候…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="6650206238642452078">订阅 ChromeOS 系统事件</translation>
 <translation id="665061930738760572">在新窗口中打开(&amp;N)</translation>
 <translation id="6651237644330755633">信任该证书，以标识网站的身份</translation>
@@ -7373,7 +7382,7 @@
 <translation id="6671320560732140690">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="6671497123040790595">正在设置为受 <ph name="MANAGER" /> 管理</translation>
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">无痕模式可确保<ph name="BEGIN_LINK" />实现私密浏览<ph name="END_LINK" />，让与您共用设备的人员无从得知您的浏览活动</translation>
+<translation id="6673353404516008367">无痕模式可<ph name="BEGIN_LINK" />实现私密浏览<ph name="END_LINK" />，其他使用此设备的人员无法得知您的浏览信息</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">通过降低亮度、限制后台活动和视觉效果、延迟通知和开启 Chrome 节能模式来延长电池续航时间。</translation>
 <translation id="6673898378497337661">调高键盘亮度</translation>
@@ -8842,6 +8851,7 @@
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7788948939674438635">不允许网站锁定键盘</translation>
 <translation id="7789963078219276159">初始页背景已更改为 <ph name="CATEGORY" />。</translation>
 <translation id="7791269138074599214">输入法</translation>
 <translation id="7791429245559955092">系统会将此应用安装到您当前使用的 Chrome 个人资料中</translation>
@@ -9870,6 +9880,7 @@
 <translation id="8561206103590473338">大象</translation>
 <translation id="8561565784790166472">继续操作有风险，请三思</translation>
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
+<translation id="8562115322675481339">创建新标签页分组</translation>
 <translation id="8563043098557365232">只能用于系统服务</translation>
 <translation id="8564220755011656606">无法使用麦克风</translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
@@ -10350,6 +10361,7 @@
 <translation id="8930622219860340959">无线</translation>
 <translation id="8931076093143205651">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 账号中。</translation>
 <translation id="8931475688782629595">管理您的同步数据</translation>
+<translation id="8931479761457920281">允许锁定指针</translation>
 <translation id="8931713990831679796">这些打印机已连接妥当，可以使用了。不妨将它们保存到您的个人资料中，以便更轻松地访问。</translation>
 <translation id="8932654652795262306">“即时网络共享”的网络详细信息</translation>
 <translation id="893298445929867520">购物车已隐藏。当您做出更改时，它们会再次现身。</translation>
@@ -10817,6 +10829,7 @@
 <translation id="978146274692397928">初始标点符号用全角</translation>
 <translation id="978978324795544535">点按两次某内容并在第二次点按时按住它，然后拖动该内容，即可移动它</translation>
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
+<translation id="979345485590886759">网站可以请求锁定鼠标指针</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

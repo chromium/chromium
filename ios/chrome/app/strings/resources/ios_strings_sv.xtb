@@ -272,7 +272,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan scrolla åt vänster för att surfa inkognito.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
-<translation id="2459155039684421202">Skriv till exempel ”rensa min historik” eller ”redigera lösenord” i adressfältet.</translation>
 <translation id="2461070143328828326">Lösenordsinställningar</translation>
 <translation id="2462736546165239215">Du hittar all din webbhistorik här.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5256661381001734217">Den här webbplatsen försöker öppna en app.  Du loggas ut från inkognitoläget.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
-<translation id="5283494734135414249">Tryck på genvägen som visas under adressfältet.</translation>
 <translation id="5295239312320826323">Vill du ta bort kontot <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6638511529934826365">Zooma text …</translation>
 <translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6642362222295953972">Byt till befintlig flik</translation>
-<translation id="6643016212128521049">Rensa</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst</translation>
 <translation id="6656103420185847513">Redigera mapp</translation>
@@ -1202,7 +1199,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
 <translation id="7138080855268384146">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{{count} bokmärken har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="7141960840225504692">Flikarna stängs och webbinformationen rensas</translation>
-<translation id="7154343200458623869">Slutför uppgiften.</translation>
 <translation id="7161230316646448869">Synkronisera bokmärken, historik med mera på alla dina enheter</translation>
 <translation id="7162168282402939716">Lås upp inkognitoflikar med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Inställningar</translation>

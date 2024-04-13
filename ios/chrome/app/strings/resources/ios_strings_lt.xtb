@@ -272,7 +272,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2434405374328098816">Jau išsaugojote <ph name="USERNAME" /> slaptažodį svetainėje <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Naršydami inkognito režimu galite perbraukti kairėn.</translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
-<translation id="2459155039684421202">Adreso juostoje įveskite užduotį, pvz., „išvalyti istoriją“ arba „redaguoti slaptažodžius“.</translation>
 <translation id="2461070143328828326">Slaptažodžio nustatymai</translation>
 <translation id="2462736546165239215">Visą naršymo istoriją galite rasti čia.</translation>
 <translation id="2468132863574325555">Diskas</translation>
@@ -827,7 +826,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5256661381001734217">Ši svetainė bando atidaryti programą.  Išjungsite inkognito režimą.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Būtinas laukas tuščias. Užpildykite jį prieš išsaugodami.}one{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}few{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}many{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}other{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}}</translation>
 <translation id="5271549068863921519">Išsaugoti slaptažodį</translation>
-<translation id="5283494734135414249">Palieskite spartųjį klavišą, rodomą po adreso juosta.</translation>
 <translation id="5295239312320826323">Pašalinti paskyrą <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> iš <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="6638511529934826365">Keisti teksto mastelį…</translation>
 <translation id="6640268266988685324">Atidarytas skirtukas</translation>
 <translation id="6642362222295953972">Perjungti į esamą skirtuką</translation>
-<translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6645899968535965230">QR kodas: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL, kuriais lankotės, siunčiami „Google“, kad numatytų, kokiose svetainėse galite vėliau apsilankyti</translation>
 <translation id="6656103420185847513">Redaguoti aplanką</translation>
@@ -1202,7 +1199,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7136892417564438900">Fotoaparatas nepasiekiamas</translation>
 <translation id="7138080855268384146">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{{count} žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}few{{count} žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{{count} žymės išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}other{{count} žymių išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="7141960840225504692">Skirtukai bus uždaryti, o naršymo duomenys ištrinti</translation>
-<translation id="7154343200458623869">Užbaikite užduotį.</translation>
 <translation id="7161230316646448869">Sinchronizuokite žymes, istoriją ir kt. visuose įrenginiuose</translation>
 <translation id="7162168282402939716">Atrakinti inkognito skirtukus naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Atidaryti nustatymus</translation>

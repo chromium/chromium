@@ -272,7 +272,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="2435457462613246316">Mostra password</translation>
-<translation id="2459155039684421202">Nella barra degli indirizzi, inserisci un'attività come "cancellare la mia cronologia" o "modificare password".</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2462736546165239215">Qui puoi trovare tutta la tua cronologia di navigazione.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5256661381001734217">Questo sito sta tentando di aprire un'applicazione.  Uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="5271265092610673171">{count,plural, =1{C'è un campo obbligatorio vuoto. Compilalo prima di salvare.}other{Ci sono alcuni campi obbligatori vuoti. Compilali prima di salvare.}}</translation>
 <translation id="5271549068863921519">Salva password</translation>
-<translation id="5283494734135414249">Tocca la scorciatoia visualizzata sotto la barra degli indirizzi.</translation>
 <translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> di <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6638511529934826365">Zoom del testo…</translation>
 <translation id="6640268266988685324">Scheda aperta</translation>
 <translation id="6642362222295953972">Passa alla scheda esistente</translation>
-<translation id="6643016212128521049">Cancella</translation>
 <translation id="6645899968535965230">Codice QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6656103420185847513">Modifica cartella</translation>
@@ -1202,7 +1199,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7136892417564438900">La videocamera non è disponibile</translation>
 <translation id="7138080855268384146">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{{count} preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="7141960840225504692">Le schede verranno chiuse e i dati di navigazione eliminati</translation>
-<translation id="7154343200458623869">Completa l'attività.</translation>
 <translation id="7161230316646448869">Sincronizza i tuoi preferiti, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="7162168282402939716">Sblocca le schede di navigazione in incognito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>

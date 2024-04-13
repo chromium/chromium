@@ -226,6 +226,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1864454756846565995">USB-C įrenginys (prievadas gale)</translation>
 <translation id="1869497990620230175">Spartieji failai</translation>
 <translation id="1871023081802165724">Leisti mediją</translation>
+<translation id="1871915835366697861">Nepasiekiama šiam žaidimui</translation>
 <translation id="1879018240766558464">Inkognito langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="79341161159229895">Paskyrą tvarko: <ph name="FIRST_PARENT_EMAIL" /> ir <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Norėdami peržiūrėti iškarpinę, paspauskite „<ph name="SHORTCUT_KEY_NAME" />“ + V. Pastarieji penki nukopijuoti elementai išsaugomi iškarpinėje.</translation>
 <translation id="7942349550061667556">Raudona</translation>
+<translation id="7943516765291457328">Įjunkite „Bluetooth“, kad būtų galima nuskaityti viešosios interneto prieigos taškus netoliese</translation>
 <translation id="7944023924886109030">Žr. visus šiandienos įvykius</translation>
 <translation id="7945357288295809525">Rodyti pritaikomumo nustatymus, funkcija „<ph name="ENABLED_FEATURES" />“ įgalinta.</translation>
 <translation id="7947798320695032612">„<ph name="APP_NAME" />“ nori naudoti jūsų <ph name="DEVICE_NAME" /></translation>

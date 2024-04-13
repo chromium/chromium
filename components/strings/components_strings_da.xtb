@@ -1083,6 +1083,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
             <ph name="LIST_ITEM" />Søgehistorik<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Oplysninger, der er angivet i formularer<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Opsparingskonto</translation>
 <translation id="3103188521861412364">Aktier og obligationer</translation>
 <translation id="3105172416063519923">Aktiv-id:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Tjekker den sikre DNS-konfiguration<ph name="END_LINK" /></translation>
@@ -1301,6 +1302,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3493660662684070951">Lastbiler, kassevogne og SUV'er</translation>
 <translation id="3495081129428749620">Find på side
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Lønkonto</translation>
 <translation id="3497627066518778351">Gennemgå en liste over websitedata på enheden i et nyt vindue</translation>
 <translation id="3498215018399854026">Vi kan ikke få fat i din forælder på nuværende tidspunkt. Prøv igen.</translation>
 <translation id="350069200438440499">Filnavn:</translation>

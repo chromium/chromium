@@ -378,6 +378,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="168693727862418163">Giá trị chính sách này không xác thực được dựa vào giản đồ và sẽ bị bỏ qua.</translation>
 <translation id="168841957122794586">Chứng chỉ máy chủ chứa khóa mật mã yếu.</translation>
 <translation id="1689333818294560261">Biệt hiệu</translation>
+<translation id="1691425742011409472">khoá con trỏ</translation>
 <translation id="1692622044604477956">Danh sách phim và lịch chiếu</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, một chủ đề có thể xuất hiện lại trên danh sách. Bất cứ lúc nào bạn cũng có thể chặn những chủ đề bạn không muốn Chrome chia sẻ với các trang web, cũng như tắt các chủ đề quảng cáo trong phần cài đặt trên Chrome.</translation>
 <translation id="1697532407822776718">Bạn đã hoàn tất!</translation>
@@ -727,6 +728,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2337852623177822836">Cài đặt do quản trị viên kiểm soát</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> muốn ghép nối</translation>
 <translation id="2346319942568447007">Hình ảnh bạn đã sao chép</translation>
+<translation id="2349056830177284083">Khoá bàn phím</translation>
 <translation id="2349957959687031096">Nút Mở thẻ ẩn danh, hãy nhấn nút này để mở một thẻ ẩn danh mới và duyệt web ở chế độ riêng tư</translation>
 <translation id="2350796302381711542">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
@@ -943,6 +945,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Kết nối đã được đặt lại.</translation>
 <translation id="2786008859124691917">Xe đạp và phụ kiện</translation>
+<translation id="2791955793407772554">Khoá con trỏ</translation>
 <translation id="2792012897584536778">Các quản trị viên của thiết bị này đã thiết lập các chứng chỉ bảo mật có thể cho phép họ xem nội dung của những trang web bạn truy cập.</translation>
 <translation id="2794233252405721443">Trang web đã bị chặn</translation>
 <translation id="2794629552137076216">Thuỷ tinh (In bề mặt)</translation>
@@ -1080,6 +1083,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
             <ph name="LIST_ITEM" />Nhật ký tìm kiếm<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Thông tin đã nhập vào biểu mẫu<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Tài khoản tiết kiệm</translation>
 <translation id="3103188521861412364">Cổ phiếu và trái phiếu</translation>
 <translation id="3105172416063519923">ID phần tử:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kiểm tra cấu hình DNS bảo mật<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3121994479408824897">Truy cập vào <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Nhãn (Cố định)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> hiện là công cụ tìm kiếm mặc định</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – Tìm kiếm <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Dịch vụ kinh doanh</translation>
 <translation id="3141093262818886744">Vẫn mở</translation>
 <translation id="3141641372357166056">Không có quyết định đồng ý</translation>
@@ -1297,6 +1302,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3493660662684070951">Xe tải, xe van và xe thể thao đa dụng</translation>
 <translation id="3495081129428749620">Tìm trong trang
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Lương</translation>
 <translation id="3497627066518778351">Xem danh sách dữ liệu trang web trên thiết bị trong cửa sổ mới</translation>
 <translation id="3498215018399854026">Chúng tôi không thể liên lạc với cha mẹ của bạn vào thời điểm này. Vui lòng thử lại.</translation>
 <translation id="350069200438440499">Tên tệp:</translation>
@@ -1426,12 +1432,14 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3711895659073496551">Tạm ngừng</translation>
 <translation id="3712006010833051684">Phong bì số 10</translation>
 <translation id="3712624925041724820">Giấy phép không đủ</translation>
+<translation id="3713277100229669269">Giờ đây, bạn sẽ thấy được các lợi ích của thẻ trước khi thanh toán</translation>
 <translation id="371420189621607696">Trò chơi điện tử mang tính cạnh tranh</translation>
 <translation id="3714633008798122362">lịch trên web</translation>
 <translation id="3714780639079136834">Bật dữ liệu di dộng hoặc Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Tệp đã bị chặn không cho tải lên}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho tải lên}}</translation>
 <translation id="3715545959749027023">Khi Chrome gắn cờ cho các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL của những trang bạn truy cập trong Chrome, tên tệp hoặc siêu dữ liệu, sự cố của trình duyệt hoặc thẻ, cũng như tên người dùng mà bạn dùng để đăng nhập vào các ứng dụng dựa trên nền tảng web, thiết bị của bạn và Chrome.</translation>
 <translation id="3715597595485130451">Kết nối Wi-Fi</translation>
+<translation id="3716622997181469465">khoá bàn phím</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kiểm tra proxy, tường lửa và cấu hình DNS<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Trong quá trình cập nhật, bạn sẽ không thể sử dụng thiết bị trong tối đa 10 phút.</translation>
 <translation id="372429172604983730">Các ứng dụng có thể gây ra lỗi này gồm có phần mềm diệt vi-rút, tường lửa và lọc web hoặc phần mềm proxy.</translation>
@@ -2332,6 +2340,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5519696598216267194">Giấy (Đục lỗ sẵn)</translation>
 <translation id="5521782189689806907">Tủ</translation>
 <translation id="5523118979700054094">Tên chính sách</translation>
+<translation id="5523588073846127669">Nhà bán hàng không chấp nhận thẻ ảo này</translation>
 <translation id="5525755241743357906">Tệp sẽ được sao chép hoặc di chuyển</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để cá nhân hoá các công cụ hỗ trợ tiếp cận của bạn trong phần cài đặt ChromeOS</translation>
 <translation id="55293785478302737">May viền</translation>
@@ -3514,6 +3523,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Tùy chỉnh cỡ chữ và kiểu chữ trong Chrome</translation>
 <translation id="7752995774971033316">Không được quản lý</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – Trò chuyện với <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Các thẻ và ứng dụng trên Chrome sẽ đóng khi quá trình cập nhật bắt đầu</translation>
 <translation id="7755287808199759310">Cha mẹ của bạn có thể bỏ chặn trang web cho bạn</translation>
 <translation id="7755624218968747854">Cuộn chính</translation>
@@ -3713,6 +3723,7 @@ Thông tin chi tiết bổ sung:
 <translation id="81563721597823545">Thiết bị dành cho môn khúc côn cầu</translation>
 <translation id="8161095570253161196">Tiếp tục duyệt xem</translation>
 <translation id="8163866351304776260">Đục 4 lỗ bên trái</translation>
+<translation id="8163998196788647716">Tài khoản giao dịch</translation>
 <translation id="8164078261547504572">Bạn muốn nhận email thông báo khi giá giảm?</translation>
 <translation id="8169175551046720804">Không thể thiết lập các khoá "<ph name="DATA_CONTROLS_KEYS" />" trong cùng một từ điển</translation>
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>

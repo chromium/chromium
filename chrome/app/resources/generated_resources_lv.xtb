@@ -976,6 +976,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1720318856472900922">TLS WWW servera autentifikācija</translation>
 <translation id="172123215662733643">Meklēt attēlus ar <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Jūsu ierīci <ph name="BEGIN_LINK" />(veids: <ph name="DEVICE_TYPE" />) pārvalda<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Kā dati palīdz uzlabot pārlūka Chrome darbību?</translation>
 <translation id="1723824996674794290">Jauns logs</translation>
 <translation id="1724801751621173132">Ievades režīms</translation>
 <translation id="1725562816265788801">Ciļņu ritināšana</translation>
@@ -999,6 +1000,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1743970419083351269">Aizvērt lejupielāžu joslu</translation>
 <translation id="1744108098763830590">fona lapa</translation>
 <translation id="1745732479023874451">Pārvaldīt kontaktpersonas</translation>
+<translation id="1746797507422124818">Jūsu dati pārlūkošanas laikā</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}one{Vai atvērt un rediģēt # failu šajā tīmekļa lietotnē?}other{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}}</translation>
 <translation id="1748329107062243374">Ierīces “<ph name="DEVICE_NAME" />” piekļuves atslēgas izmantošana, lai pierakstītos vietnē <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Varat saglabāt šo paroli Google kontā vai tikai šajā ierīcē</translation>
@@ -4464,6 +4466,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4357583358198801992">Rādīt ciļņu grupas</translation>
 <translation id="4358361163731478742">Nevienā lietotnē netiek atbalstīta lietotnes valodas atlase.</translation>
 <translation id="4358643842961018282">Jūsu ierīce ir atjaunināta</translation>
+<translation id="4358995225307748864">Atlasiet lietotni, ko izmantot atvēršanai</translation>
 <translation id="4359408040881008151">Paplašinājums tika instalēts atkarīga(-u) paplašinājuma(-u) dēļ.</translation>
 <translation id="4359717112757026264">Pilsētu fotoattēli</translation>
 <translation id="4359809482106103048">Drošības informācija īsumā</translation>
@@ -4629,6 +4632,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4481448477173043917">Jūsu ierīce (<ph name="DEVICE_TYPE" />) tika negaidīti restartēta</translation>
 <translation id="4481467543947557978">pakalpojumu skripts</translation>
 <translation id="4482990632723642375">Nesen aizvērta cilne</translation>
+<translation id="4485245862007675842">Chrome padara tīmekļa darbību noderīgāku</translation>
 <translation id="4486333480498805415">Atrašanās vietas precizitāte</translation>
 <translation id="4487489714832036847">Tradicionālas programmatūras vietā Chromebook datoros tiek izmantotas lietotnes. Varat iegūt lietotnes produktivitātei, izklaidei un daudz kam citam.</translation>
 <translation id="4488257340342212116">Drīkst izmantot kameru</translation>
@@ -6269,6 +6273,7 @@ Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai
 <translation id="5793339252089865437">Ja lejupielādēsiet atjauninājumu, izmantojot mobilo tīklu, tas var izraisīt papildu izmaksas.</translation>
 <translation id="5793420564274426163">Apstiprinājums par savienošanu pārī</translation>
 <translation id="5794034487966529952">Darbvietā “<ph name="DESK_TITLE" />” atvērto pārlūka logu skaits: <ph name="NUM_BROWSERS" /></translation>
+<translation id="5794086402489402632">Ar ko atšķiras pārlūkošanas un meklēšanas vēsture?</translation>
 <translation id="5794414402486823030">Vienmēr atvērt, izmantojot sistēmas skatītāju</translation>
 <translation id="5794700615121138172">Linux koplietotās mapes</translation>
 <translation id="5794786537412027208">Aizvērt visas Chrome lietotnes</translation>
@@ -7360,6 +7365,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6647690760956378579">Dabiskās balss priekšskatījums</translation>
 <translation id="6648911618876616409">Svarīgs atjauninājums ir pieejams instalēšanai. Pierakstieties, lai sāktu.</translation>
 <translation id="6649018507441623493">Uzgaidiet…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="6650206238642452078">Abonēt ChromeOS sistēmas notikumus</translation>
 <translation id="665061930738760572">Atvērt &amp;jaunā logā</translation>
 <translation id="6651237644330755633">Uzticēties šim sertifikātam, lai identificētu vietnes</translation>
@@ -8058,6 +8064,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7196913789568937443">Dublējiet Google diskā. Ērti atjaunojiet datus vai nomainiet ierīci jebkurā brīdī. Dublējumā ir ietverti arī lietotņu dati. Jūsu dublējumi tiek augšupielādēti Google serveros un šifrēti, izmantojot jūsu Google konta paroli. <ph name="BEGIN_LINK1" />Uzziniet vairāk.<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Iegūstiet iespēju izmantot Google meklēšanu un Google viedās tehnoloģijas katrā pārlūkošanas reizē</translation>
 <translation id="719791532916917144">Īsinājumtaustiņi</translation>
+<translation id="7197958763276896180">Kādēļ pārlūkā Chrome tiek pārtraukts trešo pušu sīkfailu atbalsts?</translation>
 <translation id="7198503619164954386">Jums ir jāizmanto uzņēmuma reģistrēta ierīce</translation>
 <translation id="7199158086730159431">Saņemt p&amp;alīdzību</translation>
 <translation id="7199452998289813782">Apturēt apraidi ierīcē <ph name="DEVICE_NAME" /></translation>

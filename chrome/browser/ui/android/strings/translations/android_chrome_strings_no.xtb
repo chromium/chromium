@@ -109,6 +109,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1513858653616922153">Slett passordet</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1544826120773021464">For å administrere Google-kontoen din, trykk på «Administrer kontoen»-knappen</translation>
+<translation id="154513667535157406">Tommel opp sender tilbakemelding om at du liker dette sammendraget</translation>
 <translation id="1549000191223877751">Flytt til det andre vinduet</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
 <translation id="1554532453982918912">Bidra til å gjøre Chrome bedre for personer som bruker Chrome på samme måte som deg</translation>
@@ -309,6 +310,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
 <translation id="2673169232805572412">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome sende nettadresser, inkludert deler av sideinnholdet, til Google</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
+<translation id="2705073298859543115">Opprett et sammendrag</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="2708226184420201102">Åpne i <ph name="PRODUCT_NAME" />-nettleseren</translation>
 <translation id="271033894570825754">Ny</translation>
@@ -394,6 +396,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="3046945242843292318">Åpne dette nettstedet raskere neste gang</translation>
 <translation id="3055259925215945098">Bokmerket er flyttet</translation>
 <translation id="3055841435094910999">Informasjon om bruken din av Chrome blir sendt til Google, men den blir ikke knyttet til deg\n\nHvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger\n\nHvis du slår på synkronisering, kan målingene også inneholde informasjon om nettadresser du besøker</translation>
+<translation id="3059531648236115056">Legg til et sammendrag</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmerke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmerker}}</translation>
 <translation id="3062802207422175757">Artikler om interessene dine i Chrome</translation>
 <translation id="3066573403916685335">Flytt ned</translation>
@@ -686,6 +689,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="465657074423018424">Safe Browsing beskytter deg mot villedende nettsteder. Hvis du slår det av, må du være ekstra forsiktig når du surfer, spesielt før du skriver inn passord.</translation>
 <translation id="4662373422909645029">Kallenavnet kan ikke inneholde tall</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bokmerker ble slettet</translation>
+<translation id="4664020984660113387">Fjern sammendraget</translation>
 <translation id="4668279686271488041">Data om annonsemålinger slettes regelmessig fra enheten din.</translation>
 <translation id="4668347365065281350">Alle data som er lagret av nettsteder, inkludert informasjonskapsler og andre lokalt lagrede data</translation>
 <translation id="4678082183394354975">Mørkt tema for nettsteder er påslått i Chrome</translation>
@@ -825,6 +829,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5342314432463739672">Tillatelsesforespørsler</translation>
 <translation id="534580735623577507">Ingen nettsteder fra <ph name="TIME_PERIOD" /></translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
+<translation id="5364112109233799727">Nettadressen til siden du gir tilbakemelding om, sendes til Google og kan bli gjennomgått av mennesker for å gjøre denne funksjonen bedre</translation>
 <translation id="5375577065097716013">Søk etter bildet med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="539881862970320163">Et sterkt passord er foreslått. Tastaturet er skjult.</translation>
@@ -1050,6 +1055,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6473086018775716761">Listen over delingsalternativer er åpnet i halv høyde.</translation>
 <translation id="6475951671322991020">Last ned videoen</translation>
 <translation id="6477928892249167417">Disse nettstedene ser ut til å være viktige for deg:</translation>
+<translation id="6481963882741794338">Knytt sammen Chrome og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="6482749332252372425">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av mangel på lagringsplass.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Filen er lastet ned}other{# nedlastinger er fullført}}</translation>
 <translation id="6508722015517270189">Start Chrome på nytt</translation>
@@ -1156,6 +1162,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6918398787259831832">Hvis problemet vedvarer, kan du <ph name="BEGIN_LINK" />få mer informasjon<ph name="END_LINK" /> fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Alle sikkerhetskoder som er lagret på enheten og i Google-kontoen din, blir slettet</translation>
+<translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
 <translation id="6942665639005891494">Endre standard nedlastingssted når som helst via menyalternativet Innstillinger</translation>
 <translation id="694267552845942083">Du holder på å tilpasse innstillingene for Synkronisering. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
 <translation id="6945221475159498467">Velg</translation>
@@ -1173,6 +1180,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7013762323294215682">Denne passnøkkelen lagres i passordlagringen. Alle som har tilgang til den, kan bruke denne passnøkkelen.</translation>
 <translation id="7020741890149022655">Legg til på leselisten <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
+<translation id="7025769836128625875">Dette er en AI-funksjon på forsøksstadiet. Det kan hende at den gjør feil. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">Gjenopprettet <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7030304022046916278">Sender nettadresser til Safe Browsing for å sjekke dem</translation>
@@ -1204,6 +1212,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7177873915659574692">Kan ikke opprette QR-kode. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7183693674623539380">Fanegruppe – <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="7191430249889272776">En fane ble åpnet i bakgrunnen.</translation>
 <translation id="7196215469483532480">Forklaringen til personvernveiledningen er åpnet i full høyde</translation>
@@ -1493,6 +1502,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8512053371384421952">Du får ikke lenger varsler fra <ph name="DOMAIN" />.</translation>
 <translation id="8514477925623180633">Eksportér passord som er lagret med Chrome</translation>
 <translation id="8516012719330875537">Bilderedigeringsprogram</translation>
+<translation id="8521833595674902532">Noe gikk galt. Kunne ikke fullføre sammendraget</translation>
 <translation id="8523928698583292556">Slett lagrede passord</translation>
 <translation id="8526855376374973824">Flyt for varslingstillatelse</translation>
 <translation id="8540136935098276800">Skriv inn en riktig formatert nettadresse</translation>
@@ -1568,6 +1578,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
+<translation id="8982113230057126145">Tommel ned sender tilbakemelding om at du ikke liker dette sammendraget</translation>
 <translation id="8992769679401294069">Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og lagre Chrome-data i Google-kontoen din.</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>

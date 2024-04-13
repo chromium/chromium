@@ -272,7 +272,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2434405374328098816">Olete kasutaja „<ph name="USERNAME" />“ jaoks parooli saidil <ph name="WEBSITE" /> juba salvestanud.</translation>
 <translation id="2434918313224755415">Inkognito režiimis sirvimiseks võite kerida vasakule.</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
-<translation id="2459155039684421202">Sisestage aadressiribale soovitud ülesanne, näiteks „ajaloo kustutamine“ või „paroolide muutmine“.</translation>
 <translation id="2461070143328828326">Parooli seaded</translation>
 <translation id="2462736546165239215">Kogu oma sirvimisajaloo leiate siit.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5256661381001734217">See sait proovib rakendust avada.  See suunab teid inkognito režiimist välja.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kohustuslik väli on tühi. Täitke see enne salvestamist.}other{Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.}}</translation>
 <translation id="5271549068863921519">Salvesta parool</translation>
-<translation id="5283494734135414249">Puudutage aadressiriba all kuvatavat otseteed.</translation>
 <translation id="5295239312320826323">Kas eemaldada konto <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6638511529934826365">Teksti suumimine …</translation>
 <translation id="6640268266988685324">Avatud vaheleht</translation>
 <translation id="6642362222295953972">Lülita olemasolevale vahelehele</translation>
-<translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6645899968535965230">QR-kood: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada</translation>
 <translation id="6656103420185847513">Kausta muutmine</translation>
@@ -1202,7 +1199,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7136892417564438900">Kaamera pole saadaval</translation>
 <translation id="7138080855268384146">{count,plural, =1{Järjehoidja salvestati teie kontol {email} kausta „{title}“}other{{count} järjehoidjat salvestati teie kontol {email} kausta „{title}“}}</translation>
 <translation id="7141960840225504692">Teie vahelehed suletakse ja sirvimisandmed kustutatakse</translation>
-<translation id="7154343200458623869">Viige ülesanne lõpule.</translation>
 <translation id="7161230316646448869">Teie järjehoidjate, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="7162168282402939716">Ava inkognito vahelehed meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Ava seaded</translation>

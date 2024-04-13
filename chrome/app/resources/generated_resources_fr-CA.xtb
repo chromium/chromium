@@ -539,6 +539,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1410797069449661718">Faire défiler l'écran vers le premier onglet</translation>
 <translation id="1410806973194718079">Impossible de vérifier les politiques</translation>
 <translation id="1411400282355634827">Réinitialiser toutes les autorisations des appareils Bluetooth?</translation>
+<translation id="141163372431617064">Ne pas autoriser les sites à verrouiller votre pointeur</translation>
 <translation id="1414315029670184034">Ne pas autoriser les sites à utiliser votre caméra</translation>
 <translation id="1414648216875402825">Vous passez à une version instable de <ph name="PRODUCT_NAME" /> qui contient des fonctionnalités en cours de développement. Des plantages et des bogues inattendus peuvent se produire. Nous vous recommandons d'agir avec précaution.</translation>
 <translation id="1415708812149920388">Accès en lecture au presse-papiers refusé</translation>
@@ -1365,6 +1366,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="2010501376126504057">Appareils compatibles</translation>
 <translation id="201217432804812273">Activez « Enregistrer le groupe »</translation>
 <translation id="2012935757369720523">Supprimer le fichier</translation>
+<translation id="2013467735169740431">Les sites peuvent demander de verrouiller votre clavier</translation>
 <translation id="2013550551806600826">Essayez-le. Activez ou désactivez le paramètre, puis faites défiler avec deux doigts sur votre pavé tactile dans la zone de test. Vous pouvez également le trouver plus tard dans Paramètres &gt; Appareil &gt; Souris et Pavé tactile.</translation>
 <translation id="2015232545623037616">L'ordinateur et le Chromecast sont sur le même réseau Wi-Fi</translation>
 <translation id="2016473077102413275">Les fonctionnalités qui utilisent des images ne fonctionneront pas</translation>
@@ -2195,6 +2197,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> pourra modifier <ph name="FILENAME" /></translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Ouvrir et modifier le fichier <ph name="FILE1" /> dans cette extension}one{Ouvrir et modifier le fichier <ph name="FILE1" /> dans cette application}other{Ouvrir et modifier les fichiers <ph name="FILE1" />, … dans cette application}}</translation>
+<translation id="2615927647449180540">Non autorisé à verrouiller votre pointeur</translation>
 <translation id="2616366145935564096">Accéder à vos données sur <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2618797463720777311">Configurer le partage à proximité</translation>
 <translation id="2619340799655338321">lecture/mise en pause</translation>
@@ -3061,6 +3064,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3293644607209440645">Envoyer cette page</translation>
 <translation id="32939749466444286">Le conteneur Linux n'a pas démarré. Veuillez réessayer.</translation>
 <translation id="3294437725009624529">Invité</translation>
+<translation id="3294484594253557399">Les sites utilisent le verrouillage du pointeur pour masquer le pointeur de la souris et l'empêcher de quitter la page.</translation>
 <translation id="3294686910656423119">Statistiques d'utilisation et rapports de plantage</translation>
 <translation id="3295241308788901889">Diffusion d'onglet</translation>
 <translation id="3297105622164376095">Autorisés à afficher des invites de connexion tierces</translation>
@@ -4136,6 +4140,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement incompatible : <ph name="BAD_VAR" />. Cela aura un impact sur la stabilité et la sécurité.</translation>
 <translation id="4095264805865317199">Ouvrir l'IU d'activation cellulaire</translation>
 <translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
+<translation id="4095483462103784441">Créer un nouveau groupe d'onglets</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096421352214844684">Vous connecter automatiquement au point d'accès sans fil de votre téléphone</translation>
 <translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
@@ -5047,6 +5052,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fermeture maintenant.}=1{Fermeture dans : 1 seconde}one{Fermeture dans : # seconde}other{Fermeture dans : # secondes}}</translation>
 <translation id="4819607494758673676">Notifications de l'Assistant Google</translation>
 <translation id="4819818293886748542">Obtenir un lien vers l'outil d'assistance</translation>
+<translation id="4820082996741546682">Autorisé à verrouiller votre clavier</translation>
 <translation id="4820236583224459650">Enregistrer comme ticket actif</translation>
 <translation id="4820795723433418303">Utilisez les touches de fonction comme touches de la rangée supérieure</translation>
 <translation id="4821935166599369261">&amp;Profilage activé</translation>
@@ -5123,6 +5129,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4872192066608821120">Pour importer des mots de passe, sélectionnez un fichier CSV</translation>
 <translation id="4872212987539553601">Configurer le chiffrement sur l'appareil</translation>
 <translation id="4873312501243535625">Vérificateur de fichier multimédia</translation>
+<translation id="4874705075711349931">Les sites utilisent le verrouillage du clavier pour capturer les entrées au clavier qui seraient autrement gérées par le navigateur ou le système d'exploitation.</translation>
 <translation id="4876273079589074638">Aidez nos ingénieurs à enquêter sur ce plantage et à le corriger. Indiquez les étapes exactes, si vous le pouvez. Tous les détails comptent!</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876327226315760474">Cela signifie que les fonctionnalités du site devraient fonctionner comme prévu, mais que le niveau de protection de la navigation est moins élevé.</translation>
@@ -6326,6 +6333,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="583431638776747">Le site n'était pas accessible</translation>
 <translation id="5834581999798853053">Il reste environ <ph name="TIME" /> min</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> accède aux appareils HID}=2{Extensions accédant aux appareils : <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{Extensions accédant aux appareils : <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} autres}other{Extensions accédant aux appareils : <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} autres}}</translation>
+<translation id="5835714760577949748">Non autorisé à verrouiller votre clavier</translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
 <translation id="5836999627049108525">Langue à partir de laquelle traduire</translation>
 <translation id="583756221537636748">Cas</translation>
@@ -7359,6 +7367,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour essentielle est prête pour l'installation. Connectez-vous pour commencer.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="6650206238642452078">S'abonner aux événements du système Chrome OS</translation>
 <translation id="665061930738760572">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>
@@ -8858,6 +8867,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 
 
 <ph name="EXTENSION_NAME" /></translation>
+<translation id="7788948939674438635">Ne pas autoriser les sites à verrouiller votre clavier</translation>
 <translation id="7789963078219276159">La catégorie d'image pour l'arrière-plan de la page d'accueil est maintenant <ph name="CATEGORY" />.</translation>
 <translation id="7791269138074599214">Méthode d'entrée</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome que vous utilisez actuellement</translation>
@@ -9885,6 +9895,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8561206103590473338">Éléphant</translation>
 <translation id="8561565784790166472">Soyez prudent</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
+<translation id="8562115322675481339">Créer un nouveau groupe d'onglets</translation>
 <translation id="8563043098557365232">Uniquement autorisé pour les services système</translation>
 <translation id="8564220755011656606">Impossible d'accéder au microphone</translation>
 <translation id="8565650234829130278">Tentative d'installation d'une version antérieure de l'application.</translation>
@@ -10365,6 +10376,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8931076093143205651">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer votre expérience Android en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="8931475688782629595">Gérer les données que vous synchronisez</translation>
+<translation id="8931479761457920281">Autorisé à verrouiller votre pointeur</translation>
 <translation id="8931713990831679796">Ces imprimantes sont connectées et prêtes à être utilisées. Enregistrez-les à votre profil pour y accéder plus facilement.</translation>
 <translation id="8932654652795262306">Renseignements sur le partage de connexion instantané</translation>
 <translation id="893298445929867520">Paniers masqués. Ils s'afficheront de nouveau lorsque vous effectuerez des changements.</translation>
@@ -10832,6 +10844,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="978146274692397928">La largeur de ponctuation initiale est « Complète »</translation>
 <translation id="978978324795544535">Touchez deux fois sur un élément, maintenez le deuxième toucher enfoncé, puis faites glisser l'élément pour le déplacer</translation>
 <translation id="97905529126098460">Cette fenêtre sera automatiquement fermée une fois l'annulation terminée.</translation>
+<translation id="979345485590886759">Les sites peuvent demander de verrouiller le pointeur de votre souris</translation>
 <translation id="980731642137034229">Bouton du menu Action</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>

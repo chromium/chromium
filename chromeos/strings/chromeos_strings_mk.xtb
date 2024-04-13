@@ -841,6 +841,8 @@
 <translation id="5946538341867151940">Сѐ уште не сте поврзани. Ако вашиот мобилен оператор препорачува приспособено APN, внесете ги податоците за APN така што ќе изберете „+ Нова APN“</translation>
 <translation id="5947266287934282605">Ако последниот ден во месецот е пред овој ден, мобилниот интернет ќе се ресетира на последниот ден во месецот</translation>
 <translation id="5948460390109837040">кучиња</translation>
+<translation id="594989847980441553">Изберете „Создај“ за да се создаде слика со AI.
+        Сите создадени слики ќе се појавуваат овде автоматски.</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
 <translation id="5975130252842127517">розовоцрвена</translation>
 <translation id="5984145644188835034">Стандарден тапет</translation>
@@ -1196,6 +1198,7 @@
 <translation id="7936303884198020182">Не се најдени сервери за име</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943235353293548836">Постојан интервал на одржување врска</translation>
+<translation id="7943516765291457328">Вклучете Bluetooth за да скенирате за точки на пристап во близина</translation>
 <translation id="7944562637040950644">вклучување/исклучување на заднинското светло на тастатурата</translation>
 <translation id="7953669802889559161">Методи за внесување</translation>
 <translation id="7955587717700691983">Тастатура со Bluetooth</translation>
@@ -1325,6 +1328,7 @@
 <translation id="8747900814994928677">Потврдете ја измената</translation>
 <translation id="8749478549112817787">Заднина на камерата</translation>
 <translation id="8755946156089753497">кула</translation>
+<translation id="8756235582947991808">Како да создавате со AI и неколку работи што треба да ги имате предвид</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Албум на „Фотографии на Google“</translation>
 <translation id="8775713578693478175">Модерно APN</translation>

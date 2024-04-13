@@ -4480,6 +4480,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4357583358198801992">Vis fanegrupper</translation>
 <translation id="4358361163731478742">Ingen apps understøtter valg af appsprog</translation>
 <translation id="4358643842961018282">Din enhed er opdateret</translation>
+<translation id="4358995225307748864">Vælg den app, du vil åbne</translation>
 <translation id="4359408040881008151">Installeret på grund af andre udvidelser, der er afhængige af den.</translation>
 <translation id="4359717112757026264">Cityscape</translation>
 <translation id="4359809482106103048">Sikkerhedsoverblik</translation>
@@ -4645,6 +4646,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4481448477173043917">Din <ph name="DEVICE_TYPE" /> genstartede uventet</translation>
 <translation id="4481467543947557978">scripttjeneste</translation>
 <translation id="4482990632723642375">Fane, der blev lukket for nylig</translation>
+<translation id="4485245862007675842">Chrome gør det nemmere for dig at bruge nettet</translation>
 <translation id="4486333480498805415">Lokationsnøjagtighed</translation>
 <translation id="4487489714832036847">Chromebooks bruger apps i stedet for traditionel software. Få apps til produktivitet, underholdning og meget mere.</translation>
 <translation id="4488257340342212116">Har tilladelse til at bruge dit kamera</translation>
@@ -6288,6 +6290,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5793339252089865437">Hvis du downloader opdateringen via dit mobilnetværk, kan der pålægges yderligere gebyrer.</translation>
 <translation id="5793420564274426163">Bekræftelse af parring</translation>
 <translation id="5794034487966529952">Skrivebordet <ph name="DESK_TITLE" /> har <ph name="NUM_BROWSERS" /> åbne browservinduer</translation>
+<translation id="5794086402489402632">Hvad er forskellen på browserhistorik og søgehistorik?</translation>
 <translation id="5794414402486823030">Åbn altid med systemets visningsprogram</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Afslut alle Chrome-apps</translation>
@@ -7378,6 +7381,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6647690760956378579">Eksempel på naturlig stemme</translation>
 <translation id="6648911618876616409">En vigtig opdatering er klar til at blive installeret. Log ind for at komme godt i gang.</translation>
 <translation id="6649018507441623493">Vent et øjeblik…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="6650206238642452078">Abonner på ChromeOS-systemhændelser</translation>
 <translation id="665061930738760572">Åbn i &amp;nyt vindue</translation>
 <translation id="6651237644330755633">Hav tillid til dette certifikat i forbindelse med identificering af websites</translation>
@@ -8076,6 +8080,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7196913789568937443">Sikkerhedskopiér til Google Drev. Du kan til enhver tid gendanne dine data eller skifte til en anden enhed. Backups omfatter appdata og uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Få adgang til Google Søgning og Google-intelligens, hver gang du browser</translation>
 <translation id="719791532916917144">Tastaturgenvej</translation>
+<translation id="7197958763276896180">Hvorfor udfaser Chrome tredjepartscookies?</translation>
 <translation id="7198503619164954386">Du skal være på en virksomhedstilmeldt enhed</translation>
 <translation id="7199158086730159431">Få H&amp;jælp</translation>
 <translation id="7199452998289813782">Sæt casting til <ph name="DEVICE_NAME" /> på pause</translation>

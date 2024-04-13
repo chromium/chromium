@@ -68,6 +68,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> – Play Butikk-app</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
+<translation id="1230853660706736937">Søk etter tekst i bilder, og se forhåndsvisninger av bilder</translation>
 <translation id="1235458158152011030">Kjente nettverk:</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> er tilkoblet.</translation>
 <translation id="1240638468526743569">En app</translation>
@@ -715,11 +716,13 @@ Koble enheten til strøm.</translation>
 <translation id="3824784079442479685">Dette gir <ph name="APP_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="3826099427150913765">Bytt til passord</translation>
 <translation id="383058930331066723">Batterisparing er på</translation>
+<translation id="3831226344927851293">Avslutt veiledningsvisningen</translation>
 <translation id="383629559565718788">Vis tastaturinnstillinger</translation>
 <translation id="384082539148746321">Vil du slette malen?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, deretter <ph name="KEY_ONE" /> eller <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /> eller <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Ingen nettverksinformasjon tilgjengelig</translation>
+<translation id="3848526302597027234">bruke disse tillatelsene:</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
 <translation id="3859364108019690">Kan ikke strømme apper</translation>

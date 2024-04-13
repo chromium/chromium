@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">‏دستگاه USB-C (درگاه عقب)</translation>
 <translation id="1869497990620230175">فایل‌های سریع</translation>
 <translation id="1871023081802165724">پخش رسانه</translation>
+<translation id="1871915835366697861">برای این بازی دردسترس نیست</translation>
 <translation id="1879018240766558464">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">حساب تحت مدیریت <ph name="FIRST_PARENT_EMAIL" /> و <ph name="SECOND_PARENT_EMAIL" /> است</translation>
 <translation id="793716872548410480">‏برای مشاهده بریده‌دان، کلیدهای <ph name="SHORTCUT_KEY_NAME" /> + V را فشار دهید. ۵ مورد آخری که کپی کرده‌اید در بریده‌دان ذخیره می‌شود.</translation>
 <translation id="7942349550061667556">قرمز</translation>
+<translation id="7943516765291457328">برای اسکن کردن نقطه‌های اتصال اطراف، بلوتوث را روشن کنید</translation>
 <translation id="7944023924886109030">دیدن همه رویدادهای امروز</translation>
 <translation id="7945357288295809525">نمایش تنظیمات دسترس‌پذیری، «<ph name="ENABLED_FEATURES" />» فعال است.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> می‌خواهد از <ph name="DEVICE_NAME" /> شما استفاده کند</translation>

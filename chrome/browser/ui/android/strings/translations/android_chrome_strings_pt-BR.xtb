@@ -883,6 +883,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5657871969392618475">Suas informações são protegidas com um bloqueio de perfil</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5665379678064389456">Criar evento no <ph name="APP_NAME" /></translation>
+<translation id="5680616253592639556">Informações ausentes</translation>
 <translation id="5683547024293500885">O Chrome não pode verificar se há atualizações</translation>
 <translation id="5686790454216892815">Nome do arquivo muito longo</translation>
 <translation id="5687606994963670306">O Chrome exclui automaticamente sites que estão na lista há mais de 30 dias. Um site que você visitar novamente pode reaparecer na lista. Você também pode bloquear um site para que ele não sugira anúncios. Saiba mais sobre <ph name="BEGIN_LINK" />como gerenciar a privacidade de anúncios no Chrome<ph name="END_LINK" />.</translation>
@@ -961,6 +962,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6030719887161080597">Gerencie as informações usadas por sites para avaliar a performance de anúncios</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
+<translation id="6040939430773295212">Repetitivo</translation>
 <translation id="604124094241169006">Automático</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="604996488070107836">Falha no download do arquivo <ph name="FILE_NAME" /> devido a um erro desconhecido.</translation>
@@ -1188,6 +1190,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7080806333218412752">Envia URLs para a verificação pelo Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="7085332316435785646">Escolha se você quer incluir o histórico do Chrome para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
+<translation id="7094933634769755999">Conteúdo incorreto</translation>
 <translation id="7105047059074518658">Faça login para facilitar a navegação em vários dispositivos</translation>
 <translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
 <translation id="7111394291981742152">O Chrome oferece mais controle sobre os anúncios mostrados e limita o que os sites podem saber sobre você quando mostram anúncios personalizados</translation>
@@ -1496,6 +1499,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
 <translation id="8551513938758868521">Bloquear guias anônimas ao sair do Chrome</translation>
+<translation id="8551524210492420949">Ofensivo ou não seguro</translation>
 <translation id="8559961053328923750">O Chrome limita a quantidade total de dados que os sites podem compartilhar pelo navegador para medir a performance de anúncios</translation>
 <translation id="8559990750235505898">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="8560602726703398413">Encontre sua lista de leitura nos Favoritos</translation>

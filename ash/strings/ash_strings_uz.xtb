@@ -226,6 +226,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1864454756846565995">USB-C qurilma (orqa port)</translation>
 <translation id="1869497990620230175">Tezkor fayllar</translation>
 <translation id="1871023081802165724">Media ijrosi</translation>
+<translation id="1871915835366697861">Bu oʻyin uchun mavjud emas</translation>
 <translation id="1879018240766558464">Inkognito oynalari ishlamaydi. Boshqa ilovalar saqlanadi.</translation>
 <translation id="1882814835921407042">Mobil tarmoq topilmadi</translation>
 <translation id="1882897271359938046">Nusxa tasvir <ph name="DISPLAY_NAME" /> ekraniga uzatilmoqda</translation>
@@ -1791,6 +1792,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="79341161159229895">Hisobni <ph name="FIRST_PARENT_EMAIL" /> va <ph name="SECOND_PARENT_EMAIL" /> boshqaradi</translation>
 <translation id="793716872548410480">Klipbordni ochish uchun <ph name="SHORTCUT_KEY_NAME" /> + V tugmalarini bosing. Nusxalangan oxirgi 5 ta element klipbordga saqlandi.</translation>
 <translation id="7942349550061667556">Qizil</translation>
+<translation id="7943516765291457328">Atrofdagi hotspotlarni qidirish uchun Bluetooth aloqasini yoqing</translation>
 <translation id="7944023924886109030">Bugungi barcha tadbirlarni ochish</translation>
 <translation id="7945357288295809525">Maxsus imkoniyatlar sozlamalarini koʻrsatish, “<ph name="ENABLED_FEATURES" />” yoqildi.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ilovasi <ph name="DEVICE_NAME" /> ishlatmoqchi</translation>

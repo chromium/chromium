@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">మీరు "<ph name="USERNAME" />" కోసం పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో ఇప్పటికే సేవ్ చేశారు</translation>
 <translation id="2434918313224755415">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి ఎడమ వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
-<translation id="2459155039684421202">అడ్రస్ బార్‌లో, “నా హిస్టరీని క్లియర్ చేయండి” లేదా “పాస్‌వర్డ్‌లను ఎడిట్ చేయండి” వంటి టాస్క్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="2461070143328828326">పాస్‌వర్డ్ సెట్టింగ్‌లు</translation>
 <translation id="2462736546165239215">మీరు ఇక్కడ మీ బ్రౌజింగ్ హిస్టరీ మొత్తాన్ని కనుగొనవచ్చు.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">ఈ సైట్ యాప్‌ను తెరవడానికి ట్రై చేస్తోంది.  ఇది మిమ్మల్ని అజ్ఞాత మోడ్ నుండి బయటకు తీసుకువెళుతుంది.</translation>
 <translation id="5271265092610673171">{count,plural, =1{అవసరమైన ఫీల్డ్ ఖాళీగా ఉంది. సేవ్ చేయడానికి ముందు దాన్ని పూరించండి.}other{కొన్ని అవసరమైన ఫీల్డ్స్ ఖాళీగా ఉన్నాయి. సేవ్ చేయడానికి ముందు వాటిని పూరించండి.}}</translation>
 <translation id="5271549068863921519">పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
-<translation id="5283494734135414249">అడ్రస్ బార్ కింద కనిపించే షార్ట్‌కట్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ఖాతాను తీసివేయాలా?</translation>
 <translation id="5300589172476337783">చూపించు</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
@@ -1109,7 +1107,6 @@
 <translation id="6638511529934826365">వచనాన్ని జూమ్ చేయి…</translation>
 <translation id="6640268266988685324">తెరిచి ఉన్న ట్యాబ్</translation>
 <translation id="6642362222295953972">ప్రస్తుత ట్యాబ్‌కు మారు</translation>
-<translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6645899968535965230">QR కోడ్: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">మీరు తర్వాత ఏ సైట్‌లను సందర్శించవచ్చు అనే దానిని అంచనా వేయడానికి మీరు సందర్శించే URLలు Googleకు పంపబడతాయి</translation>
 <translation id="6656103420185847513">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
@@ -1202,7 +1199,6 @@
 <translation id="7136892417564438900">కెమెరా అందుబాటులో లేదు</translation>
 <translation id="7138080855268384146">{count,plural, =1{బుక్‌మార్క్ మీ {email} ఖాతాలోని "{title}"లో సేవ్ అయ్యింది}other{{count} బుక్‌మార్క్‌లు మీ {email} ఖాతాలోని "{title}"లో సేవ్ అయ్యాయి}}</translation>
 <translation id="7141960840225504692">మీ ట్యాబ్‌లు మూసివేయబడతాయి, ఇంకా బ్రౌజింగ్ డేటా తొలగించబడుతుంది</translation>
-<translation id="7154343200458623869">మీ టాస్క్‌ను పూర్తి చేయండి.</translation>
 <translation id="7161230316646448869">పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లను, హిస్టరీని, ఇంకా మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="7162168282402939716">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>

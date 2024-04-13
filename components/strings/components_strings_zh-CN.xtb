@@ -378,6 +378,7 @@
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
 <translation id="1689333818294560261">昵称</translation>
+<translation id="1691425742011409472">指针锁定</translation>
 <translation id="1692622044604477956">上映影片与放映时间</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
+<translation id="2349056830177284083">键盘锁定</translation>
 <translation id="2349957959687031096">“打开无痕式标签页”按钮，激活它即可打开新的无痕式标签页进行私密浏览</translation>
 <translation id="2350796302381711542">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接（而非<ph name="REPLACED_HANDLER_TITLE" />）？</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">连接已重置。</translation>
 <translation id="2786008859124691917">自行车及配件</translation>
+<translation id="2791955793407772554">指针锁定</translation>
 <translation id="2792012897584536778">此设备的管理员设置了安全证书，这些证书可能会允许管理员查看您所访问的网站的内容。</translation>
 <translation id="2794233252405721443">网站已被屏蔽</translation>
 <translation id="2794629552137076216">玻璃（磨光）</translation>
@@ -1102,6 +1105,7 @@
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">标签（永久性）</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 现在已经是默认搜索引擎</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜索<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">商业服务</translation>
 <translation id="3141093262818886744">仍然打开</translation>
 <translation id="3141641372357166056">尚无决定意见</translation>
@@ -1424,12 +1428,14 @@
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712006010833051684">#10 信封</translation>
 <translation id="3712624925041724820">许可已用尽</translation>
+<translation id="3713277100229669269">现在，您可以在付款前查看凭卡可享的福利</translation>
 <translation id="371420189621607696">竞技类视频游戏</translation>
 <translation id="3714633008798122362">网络日历</translation>
 <translation id="3714780639079136834">开启移动数据网络或 WLAN</translation>
 <translation id="3715016660240337709">{0,plural, =1{此文件已被禁止上传}other{<ph name="FILE_COUNT" /> 个文件已被禁止上传}}</translation>
 <translation id="3715545959749027023">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与相应事件有关的数据。这些数据可能包括您在 Chrome 中访问的网页的网址、文件名或元数据、浏览器或标签页崩溃信息，以及您在登录基于网络的应用、您的设备和 Chrome 时使用的用户名。</translation>
 <translation id="3715597595485130451">连接到 Wi-Fi 网络</translation>
+<translation id="3716622997181469465">键盘锁定</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">更新期间，您可能最多会有 10 分钟的时间无法使用设备。</translation>
 <translation id="372429172604983730">可能导致此错误的应用包括防病毒软件、防火墙软件和网络过滤/代理软件。</translation>
@@ -3512,6 +3518,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - 与 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
 <translation id="7755287808199759310">你的家长可为你取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>

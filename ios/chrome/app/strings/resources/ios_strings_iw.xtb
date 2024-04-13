@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">כדי לגלוש במצב פרטי, אפשר לגלול שמאלה.</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
-<translation id="2459155039684421202">בסרגל הכתובות, מזינים משימה כמו 'ניקוי ההיסטוריה שלי' או 'עריכת סיסמאות'.</translation>
 <translation id="2461070143328828326">הגדרות סיסמה</translation>
 <translation id="2462736546165239215">כאן אפשר למצוא את כל היסטוריית הגלישה.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">האתר הזה מנסה לפתוח אפליקציה.  הפעולה הזו תוציא אותך ממצב פרטי.</translation>
 <translation id="5271265092610673171">{count,plural, =1{יש שדה חובה ריק. עליך למלא אותו לפני השמירה.}one{יש כמה שדות חובה ריקים. עליך למלא אותם לפני השמירה.}two{יש כמה שדות חובה ריקים. עליך למלא אותם לפני השמירה.}other{יש כמה שדות חובה ריקים. עליך למלא אותם לפני השמירה.}}</translation>
 <translation id="5271549068863921519">שמירת סיסמה</translation>
-<translation id="5283494734135414249">מקישים על קיצור הדרך שמופיע מתחת לסרגל הכתובות.</translation>
 <translation id="5295239312320826323">האם להסיר את החשבון <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> מתוך <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@
 <translation id="6638511529934826365">הגדלת טקסט…</translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="6642362222295953972">מעבר אל כרטיסייה קיימת</translation>
-<translation id="6643016212128521049">ניקוי</translation>
 <translation id="6645899968535965230">‏קוד QR‏: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6656103420185847513">עריכת תיקייה</translation>
@@ -1202,7 +1199,6 @@
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
 <translation id="7138080855268384146">{count,plural, =1{הסימנייה נשמרה בתיקייה ‘{title}‘ בחשבון שלך, {email}}one{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}two{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}other{‫{count} סימניות נשמרו בתיקייה ‘{title}' בחשבון שלך, {email}}}</translation>
 <translation id="7141960840225504692">הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
-<translation id="7154343200458623869">משלימים את המשימה.</translation>
 <translation id="7161230316646448869">סנכרון הסימניות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="7162168282402939716">ביטול נעילת כרטיסיות מצב אנונימי עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>

@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2434918313224755415">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે ડાબી તરફ સ્ક્રોલ કરી શકો છો.</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
-<translation id="2459155039684421202">ઍડ્રેસ બારમાં, “મારો ઇતિહાસ સાફ કરો” અથવા “પાસવર્ડમાં ફેરફાર કરો” જેવું કોઈ કાર્ય દાખલ કરો.</translation>
 <translation id="2461070143328828326">પાસવર્ડ સેટિંગ</translation>
 <translation id="2462736546165239215">તમે તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ અહીં મેળવી શકો છો.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">આ સાઇટ કોઈ ઍપ્લિકેશન ખોલવાનો પ્રયાસ કરી રહી છે.  આ તમને છૂપા મોડમાંથી બહાર લઈ જશે.</translation>
 <translation id="5271265092610673171">{count,plural, =1{ફરજિયાત ભરવા માટેનું ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}one{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}other{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}}</translation>
 <translation id="5271549068863921519">પાસવર્ડ સાચવો</translation>
-<translation id="5283494734135414249">ઍડ્રેસ બારની નીચે દેખાતા શૉર્ટકટ પર ટૅપ કરો.</translation>
 <translation id="5295239312320826323">એકાઉન્ટ <ph name="USER_EMAIL" /> કાઢી નાખીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />માંથી <ph name="INDEX" /></translation>
@@ -1109,7 +1107,6 @@
 <translation id="6638511529934826365">ટેક્સ્ટ નાની-મોટી કરો…</translation>
 <translation id="6640268266988685324">ટૅબ ખોલો</translation>
 <translation id="6642362222295953972">હાલના ટૅબ પર સ્વિચ કરો</translation>
-<translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645899968535965230">QR કોડ: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6656103420185847513">ફોલ્ડરમાં ફેરફાર કરો</translation>
@@ -1202,7 +1199,6 @@
 <translation id="7136892417564438900">કૅમેરા અનુપલબ્ધ છે</translation>
 <translation id="7138080855268384146">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="7141960840225504692">તમારી ટૅબ બંધ કરવામાં આવશે અને બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
-<translation id="7154343200458623869">તમારું કામ પૂરું કરો.</translation>
 <translation id="7161230316646448869">બધા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપી ટૅબ અનલૉક કરો</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>

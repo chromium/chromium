@@ -378,6 +378,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
 <translation id="1689333818294560261">Pseudonimi</translation>
+<translation id="1691425742011409472">kyçja e treguesit</translation>
 <translation id="1692622044604477956">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
@@ -727,6 +728,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2337852623177822836">Cilësim i kontrolluar nga administratori yt</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dëshiron të çiftohet</translation>
 <translation id="2346319942568447007">Imazhi që kopjove</translation>
+<translation id="2349056830177284083">Kyçja e tastierës</translation>
 <translation id="2349957959687031096">Butoni "Hap skedën 'e fshehtë'". Aktivizoje për të hapur një skedë të re "të fshehtë" për të shfletuar në mënyrë private</translation>
 <translation id="2350796302381711542">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Kamera dhe mikrofoni lejohen</translation>
@@ -943,6 +945,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Lidhja u rivendos.</translation>
 <translation id="2786008859124691917">Biçikleta dhe aksesorë</translation>
+<translation id="2791955793407772554">Kyçja e treguesit</translation>
 <translation id="2792012897584536778">Administratorët e kësaj pajisjeje kanë konfiguruar certifikatat e sigurisë që mund t'i lejojnë të shohin përmbajtjen e sajteve të uebit që viziton.</translation>
 <translation id="2794233252405721443">Sajti u bllokua</translation>
 <translation id="2794629552137076216">Qelq (në sipërfaqe)</translation>
@@ -1080,6 +1083,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
             <ph name="LIST_ITEM" />Historiku i kërkimeve<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Informacionet e futura në formularë<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Kursimi</translation>
 <translation id="3103188521861412364">Aksionet dhe obligacionet</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3121994479408824897">Shko te <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiketa (të përhershme)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> tani është motori yt i parazgjedhur i kërkimit</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Kërko te <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Shërbime biznesi</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
 <translation id="3141641372357166056">Nuk ka vendim për pëlqimin</translation>
@@ -1297,6 +1302,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3493660662684070951">Kamionë, furgona dhe SUV</translation>
 <translation id="3495081129428749620">Gjej në faqen
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Paga</translation>
 <translation id="3497627066518778351">Rishiko një listë të të dhënave të sajtit në pajisje në një dritare të re</translation>
 <translation id="3498215018399854026">Nuk mund të kontaktonim me prindin tënd për momentin. Provo përsëri.</translation>
 <translation id="350069200438440499">Emri i dosjes:</translation>
@@ -1426,12 +1432,14 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3711895659073496551">Pezullo</translation>
 <translation id="3712006010833051684">Zarf nr. 10</translation>
 <translation id="3712624925041724820">Licencat janë shfrytëzuar</translation>
+<translation id="3713277100229669269">Tani mund të shikosh përfitimet e kartës para se të paguash</translation>
 <translation id="371420189621607696">Videolojëra konkurruese</translation>
 <translation id="3714633008798122362">kalendari në ueb</translation>
 <translation id="3714780639079136834">Të aktivizosh të dhënat celulare ose Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Ngarkimi i skedarit është bllokuar}other{Ngarkimi i <ph name="FILE_COUNT" /> skedarëve është bllolkuar}}</translation>
 <translation id="3715545959749027023">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, emrat e skedarëve ose metadatat, ndërprerjet aksidentale të shfletuesit ose të skedës dhe emrin e përdoruesit që përdor ti për t'u identifikuar në aplikacionet bazuar në ueb, në pajisjen tënde dhe në Chrome.</translation>
 <translation id="3715597595485130451">Lidhu me Wi-Fi</translation>
+<translation id="3716622997181469465">kyçja e tastierës</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Gjatë përditësimit, nuk do të mund ta përdorësh pajisjen tënde për deri në 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacionet që mund ta shkaktojnë këtë gabim përfshijnë softuerë antivirusi, murin mbrojtës, si dhe softuerë filtrimi uebi ose ndërmjetësues.</translation>
@@ -2332,6 +2340,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5519696598216267194">Letër (me shpim paraprake)</translation>
 <translation id="5521782189689806907">Mobilieri</translation>
 <translation id="5523118979700054094">Emri i politikës</translation>
+<translation id="5523588073846127669">Tregtari nuk e pranon këtë kartë virtuale</translation>
 <translation id="5525755241743357906">Skedari u kopjua ose u zhvendos</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS.</translation>
 <translation id="55293785478302737">Qepje anësore</translation>
@@ -3513,6 +3522,7 @@ Detaje shtesë:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalizo madhësitë e fonteve dhe llojin e karaktereve në Chrome</translation>
 <translation id="7752995774971033316">I pamenaxhuar</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - Bisedo me <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Skedat e Chrome dhe aplikacionet do të mbyllen kur të fillojë përditësimi</translation>
 <translation id="7755287808199759310">Prindi yt mund ta zhbllokojë atë për ty</translation>
 <translation id="7755624218968747854">Ruli parësor</translation>
@@ -3712,6 +3722,7 @@ Detaje shtesë:
 <translation id="81563721597823545">Pajisje për hokej</translation>
 <translation id="8161095570253161196">Vazhdo të shfletosh</translation>
 <translation id="8163866351304776260">Katër shpime majtas</translation>
+<translation id="8163998196788647716">Llogaria për transaksionet</translation>
 <translation id="8164078261547504572">Dëshiron të marrësh email-e kur të bien çmimet?</translation>
 <translation id="8169175551046720804">Çelësat "<ph name="DATA_CONTROLS_KEYS" />" nuk mund të caktohen në të njëjtin fjalor</translation>
 <translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>

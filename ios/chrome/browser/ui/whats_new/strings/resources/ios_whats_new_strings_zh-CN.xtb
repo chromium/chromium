@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1533488253335887280">从主屏幕轻松、安全地获取您的密码。</translation>
+<translation id="1590550141045148182">随意打开或关闭标签页。</translation>
+<translation id="2036020471903443693">您会看到标签页固定在屏幕底部。</translation>
+<translation id="2984477737332162971">前往打开的标签页。</translation>
+<translation id="3595188309555410362">已有一段时间未使用的标签页现在会移至“闲置标签页”部分。</translation>
+<translation id="3941788408634637840">点按“闲置标签页”（如果有）。</translation>
+<translation id="3942215673032261195">您可固定自己喜爱的网站，以便日后轻松访问。</translation>
+<translation id="4196935312151003338">从菜单中选择“固定标签页”。</translation>
+<translation id="4497631794981705027">轻触并按住主屏幕。</translation>
+<translation id="463279609093232564">点按屏幕左上角的 +。</translation>
+<translation id="5604467549230434026">在“搜索微件”框中，输入“Chrome”。</translation>
+<translation id="5639067007765618198">Google 密码管理工具微件</translation>
 <translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
 <translation id="5979837087407522202">搜索密码</translation>
+<translation id="6109989197058801417">按住要固定的标签页。</translation>
+<translation id="639614003069108254">选择“密码管理工具”，然后点按“添加微件”。</translation>
+<translation id="6905308710260460250">固定标签页</translation>
+<translation id="720206380500582061">在“设置”&gt;“标签页”下管理“闲置标签页”设置。</translation>
 <translation id="8077675488769462025">闲置标签页</translation>
+<translation id="8602952180069641300">向上滚动到标签页顶部。</translation>
+<translation id="979990360845983227">14 天或更长时间未使用</translation>
 </translationbundle>

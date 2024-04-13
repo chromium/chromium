@@ -226,6 +226,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
 <translation id="1869497990620230175">Skedarët e shpejtë</translation>
 <translation id="1871023081802165724">Luaj median</translation>
+<translation id="1871915835366697861">Nuk ofrohet për këtë lojë</translation>
 <translation id="1879018240766558464">Dritaret "E fshehta" nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
 <translation id="1882814835921407042">Nuk ka rrjet celular</translation>
 <translation id="1882897271359938046">Po pasqyron në <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="79341161159229895">Llogaria menaxhohet nga <ph name="FIRST_PARENT_EMAIL" /> dhe <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Shtyp <ph name="SHORTCUT_KEY_NAME" /> + V për të parë kujtesën tënde të fragmenteve. 5 artikujt e fundit që ke kopjuar janë ruajtur në kujtesën tënde të fragmenteve.</translation>
 <translation id="7942349550061667556">E kuqe</translation>
+<translation id="7943516765291457328">Aktivizo Bluetooth-in për të skanuar për zona të qasjes për internet në afërsi</translation>
 <translation id="7944023924886109030">Shiko të gjitha ngjarjet për sot</translation>
 <translation id="7945357288295809525">Shfaq cilësimet e qasshmërisë, "<ph name="ENABLED_FEATURES" />" u aktivizua.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> dëshiron të përdorë <ph name="DEVICE_NAME" /></translation>

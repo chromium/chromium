@@ -983,6 +983,7 @@
 <translation id="1720318856472900922">TLS WWW సర్వర్ ప్రామాణీకరణ</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
 <translation id="1722460139690167654">మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> నిర్వహణ<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ద్వారా చేయబడుతోంది</translation>
+<translation id="1723166841621737307">మీ కోసం Chrome మెరుగ్గా పని చేయడంలో డేటా ఎలా సహాయపడుతుంది?</translation>
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
 <translation id="1724801751621173132">ఇన్‌పుట్ మోడ్</translation>
 <translation id="1725562816265788801">ట్యాబ్ స్క్రోలింగ్</translation>
@@ -1006,6 +1007,7 @@
 <translation id="1743970419083351269">డౌన్‌లోడ్‌ల బార్‌ను మూసివేయండి</translation>
 <translation id="1744108098763830590">బ్యాక్‌గ్రౌండ్ పేజీ</translation>
 <translation id="1745732479023874451">కాంటాక్ట్‌లను మేనేజ్ చేయండి</translation>
+<translation id="1746797507422124818">మీరు బ్రౌజ్ చేసినప్పుడు మీ డేటాను ఎలా ఉపయోగించడం జరుగుతుంది</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# ఫైల్స్‌ని ఈ వెబ్ యాప్‌లో తెరిచి, ఎడిట్ చేయాలా?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> వెబ్‌సైట్‌కు సైన్ ఇన్ చేయడానికి <ph name="DEVICE_NAME" /> పరికరానికి వచ్చిన పాస్-కీని ఉపయోగించండి</translation>
 <translation id="1748563609363301860">మీరు ఈ పాస్‌వర్డ్‌ను మీ Google ఖాతాలో లేదా ఈ పరికరంలో మాత్రమే సేవ్ చేయవచ్చు.</translation>
@@ -4475,6 +4477,7 @@
 <translation id="4357583358198801992">ట్యాబ్ గ్రూప్‌లను చూడండి</translation>
 <translation id="4358361163731478742">యాప్ భాష ఎంపికకు ఏ యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="4358643842961018282">మీ పరికరం అప్‌డేట్ అయ్యి ఉంది</translation>
+<translation id="4358995225307748864">తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
 <translation id="4359408040881008151">ఆధారిత ఎక్స్‌టెన్షన్‌(లు) కారణంగా ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="4359717112757026264">నగర చిత్రాలు</translation>
 <translation id="4359809482106103048">సురక్షిత డైనమిక్ డిస్‌ప్లే</translation>
@@ -4640,6 +4643,7 @@
 <translation id="4481448477173043917">మీ <ph name="DEVICE_TYPE" /> అనుకోకుండా రీస్టార్ట్ అయింది</translation>
 <translation id="4481467543947557978">సర్వీస్ వర్కర్</translation>
 <translation id="4482990632723642375">ఇటీవల మూసివేయబడిన ట్యాబ్</translation>
+<translation id="4485245862007675842">Chrome మీ కోసం మరింత మెరుగ్గా పనిచేసేలా చేస్తుంది</translation>
 <translation id="4486333480498805415">లొకేషన్ ఖచ్చితత్వం</translation>
 <translation id="4487489714832036847">సంప్రదాయ సాఫ్ట్‌వేర్‌కు బదులుగా Chromebooks యాప్‌లను ఉపయోగిస్తాయి. పని సామర్థ్యాన్ని పెంచడం, వినోదం ఇంకా మరిన్నింటి కోసం యాప్‌లను పొందండి.</translation>
 <translation id="4488257340342212116">మీ కెమెరాను ఉపయోగించడానికి అనుమతించబడింది</translation>
@@ -6283,6 +6287,7 @@
 <translation id="5793339252089865437">మీరు మీ మొబైల్ నెట్‌వర్క్ ద్వారా అప్‌డేట్‌ని డౌన్‌లోడ్ చేసినట్లయితే, అధిక ఛార్జ్‌లు చెల్లించాల్సి రావచ్చు.</translation>
 <translation id="5793420564274426163">పెయిర్‌ను నిర్ధారిస్తోంది</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> డెస్క్‌లో <ph name="NUM_BROWSERS" /> బ్రౌజర్ విండోలు తెరిచి ఉన్నాయి</translation>
+<translation id="5794086402489402632">బ్రౌజింగ్, సెర్చ్ హిస్టరీ మధ్య తేడా ఏమిటి?</translation>
 <translation id="5794414402486823030">ఎల్లప్పుడూ సిస్టమ్ వ్యూయర్‌తో తెరువు</translation>
 <translation id="5794700615121138172">Linux షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="5794786537412027208">అన్ని Chrome యాప్‌ల నుండి నిష్క్రమించండి</translation>
@@ -7371,6 +7376,7 @@
 <translation id="6647690760956378579">సహజమైన వాయిస్‌కు ప్రివ్యూ</translation>
 <translation id="6648911618876616409">ఒక ముఖ్యమైన అప్‌డేట్ ఇన్‌స్టాల్ కావడానికి సిద్ధంగా ఉంది. ప్రారంభించడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="6649018507441623493">ఒక సెకను వేచి ఉండండి…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="6650206238642452078">ChromeOS సిస్టమ్ ఈవెంట్‌లకు సబ్‌స్క్రయిబ్ చేయండి</translation>
 <translation id="665061930738760572">&amp;కొత్త విండోలో తెరువు</translation>
 <translation id="6651237644330755633">వెబ్‌సైట్‌లను గుర్తించడానికి ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
@@ -8069,6 +8075,7 @@
 <translation id="7196913789568937443">Google Driveకు బ్యాకప్ చేయండి. ఏ సమయంలో అయినా సులభంగా మీ డేటాను పునరుద్ధరించండి లేదా పరికరాన్ని మార్చండి. ఈ బ్యాకప్‌లో యాప్ డేటా ఉంటుంది. బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి మరియు మీ Google ఖాతా పాస్‌వర్డ్‌ని ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి. <ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">మీరు బ్రౌజ్ చేసే ప్రతిసారి Google Search మరియు Google స్మార్ట్‌లను పొందండి</translation>
 <translation id="719791532916917144">కీబోర్డ్ షార్ట్‌కట్</translation>
+<translation id="7197958763276896180">థర్డ్-పార్టీ కుక్కీల వినియోగాన్ని Chrome ఎందుకు ఆపివేస్తోంది?</translation>
 <translation id="7198503619164954386">మీరు ఎంటర్ప్రైజ్-ఎన్‌రోల్ చేసిన పరికరంలో ఉండాలి</translation>
 <translation id="7199158086730159431">సహా&amp;యం పొందండి</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>

@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C ଡିଭାଇସ୍ (ପଛ ପୋର୍ଟ)</translation>
 <translation id="1869497990620230175">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="1871023081802165724">ମିଡିଆ ପ୍ଲେ କରନ୍ତୁ</translation>
+<translation id="1871915835366697861">ଏହି ଗେମ୍ ପାଇଁ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1879018240766558464">ବର୍ତ୍ତମାନ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" />ର ପ୍ରତିଫଳନ</translation>
@@ -1790,6 +1791,7 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ଏବଂ <ph name="SECOND_PARENT_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="793716872548410480">ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡ ଦେଖିବାକୁ <ph name="SHORTCUT_KEY_NAME" /> + V ଦବାନ୍ତୁ। ଆପଣ କପି କରିଥିବା ଗତ 5ଟି ଆଇଟମକୁ ଆପଣଙ୍କ କ୍ଲିପବୋର୍ଡରେ ସେଭ୍ କରାଯାଇଛି।</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
+<translation id="7943516765291457328">ଆଖପାଖର ହଟସ୍ପଟଗୁଡ଼ିକୁ ସ୍କାନ କରିବା ପାଇଁ ବ୍ଲୁଟୁଥ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="7944023924886109030">ଆଜି ପାଇଁ ସମସ୍ତ ଇଭେଣ୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="7945357288295809525">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ ଦେଖାନ୍ତୁ, "<ph name="ENABLED_FEATURES" />" ସକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ଆପଣଙ୍କ <ph name="DEVICE_NAME" /> ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ</translation>

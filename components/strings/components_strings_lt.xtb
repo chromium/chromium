@@ -1083,6 +1083,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
             <ph name="LIST_ITEM" />Paieškos istorija<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Formose įvesta informacija<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Taupomoji sąskaita</translation>
 <translation id="3103188521861412364">Akcijos ir obligacijos</translation>
 <translation id="3105172416063519923">Ištekliaus ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Patikrinti saugios DNS konfigūraciją<ph name="END_LINK" /></translation>
@@ -1302,6 +1303,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3493660662684070951">Sunkvežimiai, furgonai ir padidinto pravažumo automobiliai</translation>
 <translation id="3495081129428749620">Rasti puslapyje
     „<ph name="PAGE_TITLE" />“</translation>
+<translation id="3495818359064790343">Atlyginimas</translation>
 <translation id="3497627066518778351">Peržiūrėti įrenginio svetainės duomenų sąrašą naujame lange</translation>
 <translation id="3498215018399854026">Šiuo metu nepavyko susisiekti su jūsų tėvu. Bandykite dar kartą.</translation>
 <translation id="350069200438440499">Failo pav.:</translation>
@@ -2339,6 +2341,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5519696598216267194">Popierius (perforuotas)</translation>
 <translation id="5521782189689806907">Spintelės</translation>
 <translation id="5523118979700054094">Politikos pavadinimas</translation>
+<translation id="5523588073846127669">Prekybininkas nepriima šios virtualios kortelės</translation>
 <translation id="5525755241743357906">Failas nukopijuotas arba perkeltas</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada „Enter“, jei norite suasmeninti pritaikomumo įrankius „Chrome“ OS nustatymuose</translation>
 <translation id="55293785478302737">Kraštų sukabinimas</translation>
@@ -3721,6 +3724,7 @@ Papildoma išsami informacija:
 <translation id="81563721597823545">Ledo ritulio įranga</translation>
 <translation id="8161095570253161196">Tęsti naršymą</translation>
 <translation id="8163866351304776260">Keturios skylės kairėje</translation>
+<translation id="8163998196788647716">Atsiskaitomoji sąskaita</translation>
 <translation id="8164078261547504572">Norite gauti el. laiškus, kai kainos sumažės?</translation>
 <translation id="8169175551046720804">Klavišų „<ph name="DATA_CONTROLS_KEYS" />“ negalima nustatyti tame pačiame žodyne</translation>
 <translation id="8175796834047840627">„Chrome“ siūlo išsaugoti korteles „Google“ paskyroje, nes esate prisijungę. Šią elgseną galite pakeisti nustatymuose.</translation>

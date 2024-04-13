@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
 <translation id="1869497990620230175">Ֆայլերի արագ մուտք</translation>
 <translation id="1871023081802165724">Նվագարկել</translation>
+<translation id="1871915835366697861">Հասանելի չէ այս խաղի համար</translation>
 <translation id="1879018240766558464">Ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="1882814835921407042">Բջջային կապ չկա</translation>
 <translation id="1882897271359938046">Հայելապատճենվում է <ph name="DISPLAY_NAME" />-ին</translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">Հաշվի կառավարիչներ՝ <ph name="FIRST_PARENT_EMAIL" /> և <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + V՝ սեղմատախտակը տեսնելու համար։ Վերջին 5 պատճենված տարրերը պահվել են սեղմատախտակում։</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
+<translation id="7943516765291457328">Միացրեք Bluetooth-ը՝ մոտակա թեժ կետեր գտնելու համար</translation>
 <translation id="7944023924886109030">Դիտել այսօրվա բոլոր միջոցառումները</translation>
 <translation id="7945357288295809525">Ցույց տալ հատուկ գործառույթների կարգավորումները, միացված գործառույթներ՝ «<ph name="ENABLED_FEATURES" />»։</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>

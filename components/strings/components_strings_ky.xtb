@@ -1083,6 +1083,7 @@
             <ph name="LIST_ITEM" />Издөө таржымалы<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Формаларга киргизилген маалымат<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Аманат</translation>
 <translation id="3103188521861412364">Акциялар жана облигациялар</translation>
 <translation id="3105172416063519923">Менчик объектисинин ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Коопсуз DNS конфигурациясын текшерүү<ph name="END_LINK" /></translation>
@@ -1300,6 +1301,7 @@
 <translation id="3487845404393360112">4-түпкүч</translation>
 <translation id="3493660662684070951">Жүк ташуучу унаалар, фургондор жана жол тандабастар</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" /> барагынан табуу</translation>
+<translation id="3495818359064790343">Маяна</translation>
 <translation id="3497627066518778351">Жаңы терезеде түзмөктөгү сайт маалыматтарынын тизмесин карап чыгыңыз</translation>
 <translation id="3498215018399854026">Учурда ата-энеңизге байланыша алган жокпуз. Кайталап көрүңүз.</translation>
 <translation id="350069200438440499">Файлдын аталышы:</translation>
@@ -2337,6 +2339,7 @@
 <translation id="5519696598216267194">Кагаз (перфорацияланган)</translation>
 <translation id="5521782189689806907">Корпустук эмеректер</translation>
 <translation id="5523118979700054094">Саясаттын аталышы</translation>
+<translation id="5523588073846127669">Сатуучу бул виртуалдык картаны кабыл албайт</translation>
 <translation id="5525755241743357906">Файл көчүрүлдү же жылдырылды</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS параметрлеринде атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="55293785478302737">Четин жамоо</translation>
@@ -3719,6 +3722,7 @@
 <translation id="81563721597823545">Хоккей жабдуулары</translation>
 <translation id="8161095570253161196">Карай берүү</translation>
 <translation id="8163866351304776260">Сол жагын төрт жолу тешүү</translation>
+<translation id="8163998196788647716">Транзакциялык эсеп</translation>
 <translation id="8164078261547504572">Баалар төмөндөгөндө электрондук каттарды алгыңыз келеби?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" ачкычтарын бир сөздүктө туураласа болбойт</translation>
 <translation id="8175796834047840627">Аккаунтуңузга кирип турганыңыздан улам, Chrome карталарыңызды Google аккаунтуңузга сактап коюуну сунуштап жатат. Бул параметрди параметрлерге өтүп, өзгөртүп койсоңуз болот.</translation>

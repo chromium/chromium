@@ -975,6 +975,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1720318856472900922">Authentification du serveur WWW TLS</translation>
 <translation id="172123215662733643">Rechercher des images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Comment les données permettent-elles à Chrome de mieux répondre à vos besoins ?</translation>
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1724801751621173132">Mode de saisie</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
@@ -998,6 +999,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1743970419083351269">Fermer la barre de téléchargements</translation>
 <translation id="1744108098763830590">page en arrière-plan</translation>
 <translation id="1745732479023874451">Gérer les contacts</translation>
+<translation id="1746797507422124818">Vos données lorsque vous naviguez</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Ouvrir et modifier # fichier dans cette appli Web ?}other{Ouvrir et modifier # fichiers dans cette appli Web ?}}</translation>
 <translation id="1748329107062243374">Utiliser une clé d'accès de <ph name="DEVICE_NAME" /> pour vous connecter à <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Vous pouvez enregistrer ce mot de passe dans votre compte Google ou uniquement sur cet appareil</translation>
@@ -4463,6 +4465,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4357583358198801992">Afficher les groupes d'onglets</translation>
 <translation id="4358361163731478742">Aucune appli compatible avec la langue sélectionnée</translation>
 <translation id="4358643842961018282">Votre appareil est à jour</translation>
+<translation id="4358995225307748864">Sélectionner une appli à ouvrir</translation>
 <translation id="4359408040881008151">Installée, car une ou plusieurs extensions dépendent de celle-ci.</translation>
 <translation id="4359717112757026264">Paysage urbain</translation>
 <translation id="4359809482106103048">Aperçu de la sécurité</translation>
@@ -4628,6 +4631,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4481448477173043917">Votre <ph name="DEVICE_TYPE" /> a redémarré de façon inattendue</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Onglet récemment fermé</translation>
+<translation id="4485245862007675842">Chrome améliore le Web pour vous</translation>
 <translation id="4486333480498805415">Précision de la localisation</translation>
 <translation id="4487489714832036847">Les Chromebooks utilisent des applications au lieu des logiciels traditionnels. Téléchargez des applications pour augmenter votre productivité, vous divertir et plus encore.</translation>
 <translation id="4488257340342212116">Autorisé à utiliser votre caméra</translation>
@@ -6271,6 +6275,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5793339252089865437">Si vous téléchargez la mise à jour via votre réseau mobile, cela peut entraîner des frais de dépassement.</translation>
 <translation id="5793420564274426163">Confirmation de l'association</translation>
 <translation id="5794034487966529952"><ph name="NUM_BROWSERS" /> fenêtres de navigateur ouvertes sur le bureau <ph name="DESK_TITLE" /></translation>
+<translation id="5794086402489402632">Quelle est la différence entre l'historique de navigation et l'historique des recherches ?</translation>
 <translation id="5794414402486823030">Toujours ouvrir avec le lecteur système</translation>
 <translation id="5794700615121138172">Dossiers partagés par Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
@@ -7361,6 +7366,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour critique est disponible. Connectez-vous pour lancer l'installation.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="6650206238642452078">Abonnez-vous aux événements système ChromeOS</translation>
 <translation id="665061930738760572">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>
@@ -8059,6 +8065,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7196913789568937443">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Naviguez sur le Web en bénéficiant des fonctionnalités intelligentes de Google et de la recherche Google</translation>
 <translation id="719791532916917144">Raccourci clavier</translation>
+<translation id="7197958763276896180">Pourquoi Chrome abandonne-t-il les cookies tiers ?</translation>
 <translation id="7198503619164954386">Vous devez utiliser un appareil enregistré par l'entreprise</translation>
 <translation id="7199158086730159431">Obtenir de l'aid&amp;e</translation>
 <translation id="7199452998289813782">Suspendre la diffusion sur <ph name="DEVICE_NAME" /></translation>

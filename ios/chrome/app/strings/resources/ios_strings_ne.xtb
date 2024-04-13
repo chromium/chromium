@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">तपाईंले <ph name="WEBSITE" /> का हकमा "<ph name="USERNAME" />" को पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="2434918313224755415">तपाईं इन्कोग्निटोमा ब्राउज गर्न बायाँतिर स्क्रोल गर्न सक्नुहुन्छ।</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
-<translation id="2459155039684421202">एड्रेस बारमा "मेरो हिस्ट्री मेटाउनुहोस्" वा "पासवर्डहरू बदल्नुहोस्" जस्ता कार्य हाल्नुहोस्।</translation>
 <translation id="2461070143328828326">पासवर्डसम्बन्धी सेटिङ</translation>
 <translation id="2462736546165239215">तपाईं यहाँ आफ्ना सबै ब्राउजिङ हिस्ट्री भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">यो साइटले बारम्बार एउटा एप खोल्ने प्रयास गरिरहेको छ।  यसले तपाईंलाई इन्कोग्निटो मोडमा लैजाने छ।</translation>
 <translation id="5271265092610673171">{count,plural, =1{भर्नु पर्ने एउटा फिल्ड खाली छाडिएको छ। सो फिल्डमा भरेपछि मात्र सेभ गर्नुहोस्।}other{भर्नु पर्ने केही फिल्डहरू खाली छाडिएका छन्। ती फिल्डहरूमा भरेपछि मात्र सेभ गर्नुहोस्।}}</translation>
 <translation id="5271549068863921519">पासवर्ड बचत गर्नुहोस्</translation>
-<translation id="5283494734135414249">एड्रेस बारको तलपट्टि देखिने सर्टकटमा ट्याप गर्नुहोस्।</translation>
 <translation id="5295239312320826323">खाता <ph name="USER_EMAIL" /> हटाउने हो?</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> मध्ये <ph name="INDEX" /> औँ</translation>
@@ -1109,7 +1107,6 @@
 <translation id="6638511529934826365">पाठ जुम गर्नुहोस्…</translation>
 <translation id="6640268266988685324">ट्याब खोल्नुहोस्</translation>
 <translation id="6642362222295953972">विद्यमान ट्याबमा जानुहोस्</translation>
-<translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6656103420185847513">फोल्डर सम्पादन गर्नुहोस्</translation>
@@ -1202,7 +1199,6 @@
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
 <translation id="7138080855268384146">{count,plural, =1{यो बुकमार्क तपाईंको खाता ({email}) मा भएको "{title}" मा सेभ गरिएको छ}other{तपाईंको खाता ({email}) मा भएको "{title}" मा {count} वटा बुकमार्क सेभ गरिएका छन्}}</translation>
 <translation id="7141960840225504692">तपाईंका ट्याबहरू बन्द गरिने छन् र ब्राउजिङ डेटा मेटाइने छ</translation>
-<translation id="7154343200458623869">आफ्नो कार्य पूरा गर्नुहोस्।</translation>
 <translation id="7161230316646448869">सबै डिभाइसहरूमा आफ्ना बुकमार्क, हिस्ट्री तथा थप कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी इन्कोग्निटो ट्याबहरू अनलक गर्नुहोस्</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>

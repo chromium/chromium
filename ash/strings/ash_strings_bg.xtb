@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
 <translation id="1869497990620230175">Бърз достъп до файловете</translation>
 <translation id="1871023081802165724">Възпроизвеждане на мултимедия</translation>
+<translation id="1871915835366697861">Не е налице за тази игра</translation>
 <translation id="1879018240766558464">Понастоящем не се поддържат прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
 <translation id="1882897271359938046">Дублира се на „<ph name="DISPLAY_NAME" />“</translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">Профилът се управлява от <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Натиснете <ph name="SHORTCUT_KEY_NAME" /> + V, за да видите буферната памет. В нея се запазват последните 5 неща, които сте копирали.</translation>
 <translation id="7942349550061667556">червено</translation>
+<translation id="7943516765291457328">Включете Bluetooth, за да сканирате за точки за достъп в близост</translation>
 <translation id="7944023924886109030">Преглед на всички събития за днес</translation>
 <translation id="7945357288295809525">Показване на настройките за достъпност: функцията „<ph name="ENABLED_FEATURES" />“ е активирана.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" /></translation>

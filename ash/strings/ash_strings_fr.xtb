@@ -226,6 +226,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1864454756846565995">Appareil USB de type C (port situé sur l'arrière de l'appareil)</translation>
 <translation id="1869497990620230175">Fichiers rapides</translation>
 <translation id="1871023081802165724">Diffuser du contenu multimédia</translation>
+<translation id="1871915835366697861">Non disponible pour ce jeu</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
@@ -1792,6 +1793,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers. Les cinq derniers éléments que vous avez copiés y sont enregistrés.</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7943516765291457328">Activez le Bluetooth pour rechercher les points d'accès à proximité</translation>
 <translation id="7944023924886109030">Afficher tous les événements d'aujourd'hui</translation>
 <translation id="7945357288295809525">Afficher les paramètres d'accessibilité, "<ph name="ENABLED_FEATURES" />" activé(e).</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" /></translation>

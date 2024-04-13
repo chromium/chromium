@@ -226,6 +226,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1864454756846565995">USB-C-Gerät (Port hinten)</translation>
 <translation id="1869497990620230175">Schnellzugriff auf Dateien</translation>
 <translation id="1871023081802165724">Medien abspielen</translation>
+<translation id="1871915835366697861">Für dieses Spiel nicht verfügbar</translation>
 <translation id="1879018240766558464">Inkognitofenster werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="1882814835921407042">Kein Mobilfunknetz</translation>
 <translation id="1882897271359938046">Wird auf <ph name="DISPLAY_NAME" /> gespiegelt...</translation>
@@ -1791,6 +1792,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="79341161159229895">Konto verwaltet von <ph name="FIRST_PARENT_EMAIL" /> und <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Drücke „<ph name="SHORTCUT_KEY_NAME" /> + V“, um die Zwischenablage zu öffnen. In der Zwischenablage werden immer die letzten fünf Elemente, die du kopiert hast, gespeichert.</translation>
 <translation id="7942349550061667556">Rot</translation>
+<translation id="7943516765291457328">Bluetooth aktivieren, um nach Hotspots in der Nähe zu suchen</translation>
 <translation id="7944023924886109030">Alle heutigen Termine anzeigen</translation>
 <translation id="7945357288295809525">Einstellungen für Bedienungshilfen anzeigen, „<ph name="ENABLED_FEATURES" />“ aktiviert.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden.</translation>

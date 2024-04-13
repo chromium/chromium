@@ -149,6 +149,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3702352323269013324">Finn ut mer om personlig tilpasning av annonser i Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3713809861844741608">Åpne linken i en ny fane i Chromium</translation>
+<translation id="3728124580182886854">Knytt sammen Chromium og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="3788675262216168505">Administrer Chromium-profiler</translation>
 <translation id="378917192836375108">Med Chromium kan du klikke på et telefonnummer på nettet og ringe til det med Skype.</translation>
 <translation id="3790262771324122253">Finn ut hvorfor Chromium blokkerer enkelte nedlastinger</translation>
@@ -230,6 +231,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
 <translation id="5358375970380395591">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ekstrakode: <ph name="EXTRA_CODE" />.</translation>
+<translation id="5377622451696208284">For å få personlig tilpasning må du inkludere Chromium i Nett- og appaktivitet</translation>
 <translation id="5383439451358640070">Finn ut hvorfor Chromium blokkerer enkelte filer</translation>
 <translation id="5386450000063123300">Oppdaterer Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillat Chromium-pålogging</translation>
@@ -272,6 +274,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6096348254544841612">Tilpass og kontroller Chromium. Oppdatering er tilgjengelig.</translation>
 <translation id="6102072151902574948">Når dette er på, sparer Chromium batteristrøm ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer.</translation>
+<translation id="6107893135096467929">På • Chromium kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="6119438414301547735">Tillat at utvidelsen viser tilgangsforespørsler på Chromium-verktøylinjen</translation>
 <translation id="6120345080069858279">Chromium lagrer dette passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> er farlig, så Chromium har blokkert den.</translation>
@@ -306,6 +309,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
 <translation id="6442900851116057561">Start ChromiumOS på nytt</translation>
 <translation id="6443470774889161065">Chromium forhåndslaster enda flere sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
+<translation id="645458117210240797">Av • Chromium kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="6455857529632101747">Velkommen til Chromium-profiler</translation>
 <translation id="6475912303565314141">Den styrer også hvilken side som vises når du starter Chromium.</translation>
 <translation id="648319183876919572">Safe Browsing med økt beskyttelse gjør mer for å beskytte deg mot farlige nettsteder og nedlastinger</translation>
@@ -328,6 +332,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6717134281241384636">Profilen din kan ikke brukes fordi den kommer fra en nyere versjon av Chromium.
 
 Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilkatalog eller bruk en nyere versjon av Chromium.</translation>
+<translation id="6729124504294600478">For å få personlig tilpasning og andre funksjoner må du inkludere Chromium i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="67706546131546258">Chromium anbefaler å skanne denne filen ettersom den kan være farlig.</translation>
@@ -355,9 +360,11 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="718435575166326686">Chromium trenger kameratillatelse for dette nettstedet</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
 <translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv på nytt når det har gått 24 timer.</translation>
+<translation id="7198365860059291213">Chromium trenger tillatelse til omgivelsesforståelse og håndsporing for å starte en omsluttende økt</translation>
 <translation id="7213407614656404070">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="7246575524853130370">Interessene dine som Chromium har anslått</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium anbefaler at du fjerner den}other{Chromium anbefaler at du fjerner dem}}</translation>
 <translation id="7309928523159922338">Med annonsemålinger kan nettsteder du besøker, spørre Chromium om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
 <translation id="731795002583552498">Oppdaterer Chromium</translation>
 <translation id="7318036098707714271">Innstillingerfilen din er ødelagt eller ugyldig.
@@ -464,6 +471,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9144490074902256427">Underveis i prøveprosjektene kan du se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chromium anslår interessene dine basert på den nylige nettleserloggen din.</translation>
 <translation id="9158494823179993217">Systemadministratoren din har konfigurert Chromium til å åpne en annen nettleser når du går til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Start på nytt for å oppdatere &amp;Chromium</translation>
+<translation id="9187458940438504468">Chromium kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="9190841055450128916">Chromium (mDNS-Inn)</translation>
 <translation id="924957577793602335">Gi Chromium et personlig preg</translation>
 <translation id="93478295209880648">Chromium fungerer kanskje ikke riktig fordi den ikke lenger støttes på Windows XP eller Windows Vista</translation>

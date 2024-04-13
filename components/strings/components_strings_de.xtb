@@ -378,6 +378,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
 <translation id="1689333818294560261">Alias</translation>
+<translation id="1691425742011409472">Zeigersperre</translation>
 <translation id="1692622044604477956">Kino- und Theaterprogramme</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Themen, die älter als vier Wochen sind, werden in Chrome automatisch gelöscht. Je nach deinen Browseraktivitäten können die Themen wieder in der Liste erscheinen. Du kannst in den Einstellungen von Chrome auch Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
@@ -727,6 +728,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2337852623177822836">Einstellung wird von deinem Administrator gesteuert</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> möchte eine Kopplung durchführen</translation>
 <translation id="2346319942568447007">Von dir kopiertes Bild</translation>
+<translation id="2349056830177284083">Tastatursperre</translation>
 <translation id="2349957959687031096">Schaltfläche „Inkognitotab öffnen“ – aktivieren, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
 <translation id="2350796302381711542">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> anstatt <ph name="REPLACED_HANDLER_TITLE" /> zulassen?</translation>
 <translation id="2353297238722298836">Kamera- und Mikrofonnutzung zulässig</translation>
@@ -943,6 +945,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Verbindung wurde zurückgesetzt.</translation>
 <translation id="2786008859124691917">Fahrräder und Zubehör</translation>
+<translation id="2791955793407772554">Zeigersperre</translation>
 <translation id="2792012897584536778">Administratoren dieses Geräts haben Sicherheitszertifikate eingerichtet, die es ihnen möglicherweise erlauben, Inhalte der von dir besuchten Websites anzuzeigen.</translation>
 <translation id="2794233252405721443">Website blockiert</translation>
 <translation id="2794629552137076216">Glas (abgeflächt)</translation>
@@ -1080,6 +1083,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
             <ph name="LIST_ITEM" />Suchverlauf<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />In Formulare eingegebene Informationen<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktien und Anleihen</translation>
 <translation id="3105172416063519923">Asset-ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Konfiguration der sicheren DNS-Abfragen prüfen<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3121994479408824897">Zu <ph name="DOMAIN" /> wechseln</translation>
 <translation id="3126023634486644099">Etiketten (permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ist jetzt deine Standardsuchmaschine</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – In <ph name="KEYWORD_SHORT_NAME" /> suchen</translation>
 <translation id="3140646734028448730">Geschäftsdienstleistungen</translation>
 <translation id="3141093262818886744">Trotzdem öffnen</translation>
 <translation id="3141641372357166056">Keine Entscheidung zur Einwilligung getroffen</translation>
@@ -1296,6 +1301,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3487845404393360112">Fach 4</translation>
 <translation id="3493660662684070951">LKWs, Vans und Geländewagen</translation>
 <translation id="3495081129428749620">Auf Seite "<ph name="PAGE_TITLE" />" suchen</translation>
+<translation id="3495818359064790343">Gehalt</translation>
 <translation id="3497627066518778351">Liste der Websitedaten auf dem Gerät in einem neuen Fenster öffnen</translation>
 <translation id="3498215018399854026">Wir können deinen Vater bzw. deine Mutter momentan nicht erreichen. Bitte versuche es später noch einmal.</translation>
 <translation id="350069200438440499">Dateiname:</translation>
@@ -1424,12 +1430,14 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3712006010833051684">Umschlag Nr. 10</translation>
 <translation id="3712624925041724820">Lizenzen aufgebraucht</translation>
+<translation id="3713277100229669269">Du kannst jetzt schon vor dem Bezahlen Kartenvorteile sehen</translation>
 <translation id="371420189621607696">E-Sport</translation>
 <translation id="3714633008798122362">Web-Kalender</translation>
 <translation id="3714780639079136834">Mobile Daten oder WLAN aktivieren</translation>
 <translation id="3715016660240337709">{0,plural, =1{Datei kann nicht hochgeladen werden}other{<ph name="FILE_COUNT" /> Dateien können nicht hochgeladen werden}}</translation>
 <translation id="3715545959749027023">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs der von dir in Chrome besuchten Seiten, Dateinamen oder Metadaten, Browser- oder Tab-Abstürze sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>
 <translation id="3715597595485130451">WLAN-Verbindung herstellen</translation>
+<translation id="3716622997181469465">Tastatursperre</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Während des Updates kannst du dein Gerät bis zu 10 Minuten lang nicht verwenden.</translation>
 <translation id="372429172604983730">Anwendungen, die diesen Fehler verursachen können, sind Antivirensoftware, Firewalls, Webfilter- oder Proxy-Software.</translation>
@@ -2330,6 +2338,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5519696598216267194">Papier (vorgestanzt)</translation>
 <translation id="5521782189689806907">Möbelbau</translation>
 <translation id="5523118979700054094">Richtlinienname</translation>
+<translation id="5523588073846127669">Der Händler akzeptiert diese virtuelle Karte nicht</translation>
 <translation id="5525755241743357906">Datei wird kopiert oder verschoben</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
 <translation id="55293785478302737">Mehrere Heftklammern</translation>
@@ -3512,6 +3521,7 @@ Weitere Details:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" />.</translation>
 <translation id="7751971323486164747">Schriftgrößen und -arten in Chrome anpassen</translation>
 <translation id="7752995774971033316">Nicht verwaltet</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – Mit <ph name="KEYWORD_SHORT_NAME" /> chatten</translation>
 <translation id="7754587126786572336">Deine Chrome-Tabs und -Apps werden zu Beginn des Updates geschlossen</translation>
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7755624218968747854">Erste Rolle</translation>
@@ -3711,6 +3721,7 @@ Weitere Details:
 <translation id="81563721597823545">Hockeyausrüstung</translation>
 <translation id="8161095570253161196">Suche fortsetzen</translation>
 <translation id="8163866351304776260">Vierfache Lochung links</translation>
+<translation id="8163998196788647716">Girokonto</translation>
 <translation id="8164078261547504572">Möchtest du per E‑Mail über Preissenkungen informiert werden?</translation>
 <translation id="8169175551046720804">Die Schlüssel „<ph name="DATA_CONTROLS_KEYS" />“ können nicht im selben Wörterbuch festgelegt werden</translation>
 <translation id="8175796834047840627">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern.</translation>

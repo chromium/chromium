@@ -841,6 +841,8 @@
 <translation id="5946538341867151940">Ještě nejste připojeni. Pokud váš mobilní operátor doporučuje vlastní APN, zadejte informace o APN výběrem možnost „+ Nový přístupový bod (APN)“</translation>
 <translation id="5947266287934282605">V měsících, které mají méně než tento počet dní, se data resetují poslední den v měsíci</translation>
 <translation id="5948460390109837040">psi</translation>
+<translation id="594989847980441553">Výběrem možnosti Vytvořit můžete vytvořit obrázek pomocí AI.
+        Všechny vytvořené obrázky se automaticky zobrazí tady.</translation>
 <translation id="5972388717451707488">Modul aktualizací</translation>
 <translation id="5975130252842127517">korálová</translation>
 <translation id="5984145644188835034">Výchozí tapeta</translation>
@@ -1196,6 +1198,7 @@
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943235353293548836">Trvalý interval keepalive</translation>
+<translation id="7943516765291457328">Pokud chcete vyhledat hotspoty v okolí, zapněte Bluetooth</translation>
 <translation id="7944562637040950644">přepnout podsvícení klávesnice</translation>
 <translation id="7953669802889559161">Metody zadávání</translation>
 <translation id="7955587717700691983">Klávesnice Bluetooth</translation>
@@ -1325,6 +1328,7 @@
 <translation id="8747900814994928677">Potvrdit změnu</translation>
 <translation id="8749478549112817787">Fotografické pozadí</translation>
 <translation id="8755946156089753497">věž</translation>
+<translation id="8756235582947991808">Pokyny k vytváření s AI a pár věcí, které je třeba mít na paměti</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotek Google</translation>
 <translation id="8775713578693478175">APN modemu</translation>

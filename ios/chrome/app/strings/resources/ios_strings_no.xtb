@@ -272,7 +272,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2434405374328098816">Du har allerede lagret et passord for «<ph name="USERNAME" />» på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for å surfe i inkognitomodus.</translation>
 <translation id="2435457462613246316">Vis passord</translation>
-<translation id="2459155039684421202">Skriv inn en oppgave i adressefeltet, for eksempel «tøm loggen» eller «rediger passord».</translation>
 <translation id="2461070143328828326">Passordinnstillinger</translation>
 <translation id="2462736546165239215">Du finner hele nettleserloggen din her.</translation>
 <translation id="2468132863574325555">Disk</translation>
@@ -827,7 +826,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5256661381001734217">Dette nettstedet prøver å åpne en app.  Dette medfører at du går ut av inkognitomodus.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
-<translation id="5283494734135414249">Trykk på snarveien som vises under adressefeltet.</translation>
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1045,6 +1043,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6363526231572697780">Brukernavnet mangler</translation>
 <translation id="6366190659675876144">Standardbeskyttelse</translation>
 <translation id="6366663624406569102">Logg av og slå av synkronisering</translation>
+<translation id="6368038301482806847">Velg en søkemotor på listen.</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
 <translation id="6377118281273296434">Nettstedssikkerhet</translation>
 <translation id="6383719166112032471">Åpne plassering</translation>
@@ -1109,7 +1108,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6638511529934826365">Forstørr tekst</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
 <translation id="6642362222295953972">Bytt til den eksisterende fanen</translation>
-<translation id="6643016212128521049">Tøm</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6656103420185847513">Mapperedigering</translation>
@@ -1202,10 +1200,10 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
 <translation id="7138080855268384146">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din, {email}}other{{count} bokmerker er lagret i «{title}» i kontoen din, {email}}}</translation>
 <translation id="7141960840225504692">Fanene dine blir lukket, og nettlesingsdataene dine blir slettet</translation>
-<translation id="7154343200458623869">Fullfør oppgaven din.</translation>
 <translation id="7161230316646448869">Synkroniser bokmerker, logg med mer på alle enheter</translation>
 <translation id="7162168282402939716">Lås opp inkognitofaner med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
+<translation id="7186568385131859684">Kontroller hvordan nettleserloggen brukes med de andre dataene dine i Google-tjenester</translation>
 <translation id="7189598951263744875">Del</translation>
 <translation id="719133302483559673">Administrer interessene og preferansene dine.</translation>
 <translation id="7192050974311852563">Start loggføring</translation>
@@ -1249,6 +1247,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7438481509621345350">Nå ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Bokmerket er lagret i «{title}»}other{Bokmerkene er lagret i «{title}»}}</translation>
 <translation id="7454057999980797137">Fylke/kommune</translation>
+<translation id="7458706065921255639">Personlig tilpasning og tilknytning</translation>
 <translation id="745899714366929493">Hele dagen</translation>
 <translation id="7459628154744868585">Økt beskyttelse er på</translation>
 <translation id="7465351360025415755">Få innholdet du er interessert i</translation>

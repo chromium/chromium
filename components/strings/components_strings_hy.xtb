@@ -1086,6 +1086,7 @@
             <ph name="LIST_ITEM" />որոնումների պատմությունը,<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Խնայողական</translation>
 <translation id="3103188521861412364">Բաժնետոմսեր և պարտատոմսեր</translation>
 <translation id="3105172416063519923">Ակտիվների ID՝</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Ստուգել ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
@@ -1303,6 +1304,7 @@
 <translation id="3493660662684070951">Բեռնատարներ, ֆուրգոններ և ամենագնացներ</translation>
 <translation id="3495081129428749620">Որոնում
     <ph name="PAGE_TITLE" /> էջում</translation>
+<translation id="3495818359064790343">Աշխատավարձային</translation>
 <translation id="3497627066518778351">Դիտել սարքում կայքերի տվյալների ցանկը նոր պատուհանում</translation>
 <translation id="3498215018399854026">Մեզ չհաջողվեց կապ հաստատել ձեր ծնողի հետ: Նորից փորձեք:</translation>
 <translation id="350069200438440499">Ֆայլի անունը՝</translation>
@@ -2343,6 +2345,7 @@
 <translation id="5519696598216267194">Թուղթ (նախապես դակված)</translation>
 <translation id="5521782189689806907">Կորպուսային կահույք</translation>
 <translation id="5523118979700054094">Կանոնի անունը</translation>
+<translation id="5523588073846127669">Վաճառողը չի ընդունում այս վիրտուալ քարտը</translation>
 <translation id="5525755241743357906">Ֆայլը պատճենվել կամ տեղափոխվել է</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ ChromeOS-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար։</translation>
 <translation id="55293785478302737">Եզրակար</translation>
@@ -3724,6 +3727,7 @@
 <translation id="81563721597823545">Հոկեյի հանդերձանք</translation>
 <translation id="8161095570253161196">Շարունակել դիտարկումը</translation>
 <translation id="8163866351304776260">Չորս անցք ձախ կողմում</translation>
+<translation id="8163998196788647716">Հաշվարկային</translation>
 <translation id="8164078261547504572">Ուզո՞ւմ եք գնիջեցումների մասին նամակներ ստանալ</translation>
 <translation id="8169175551046720804">«<ph name="DATA_CONTROLS_KEYS" />» բանալիները հնարավոր չէ ավելացնել նույն բառարանում</translation>
 <translation id="8175796834047840627">Chrome-ն առաջարկում է պահել քարտերը ձեր Google հաշվում, քանի որ դուք մտել եք հաշիվ: Սա կարող եք փոխել կարգավորումներում։</translation>

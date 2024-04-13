@@ -682,6 +682,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       如果此政策已停用，不安全的 HTTP 请求将无法使用<ph name="BASIC_AUTH" />身份验证方案，只有安全的 HTTPS 能使用该方案。
 
       在以下情况下，系统会忽略这项政策设置（一律禁止使用“<ph name="BASIC_AUTH" />”）：<ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策已设置，且其中不包含“<ph name="BASIC_AUTH" />”。</translation>
+<translation id="1571604752299617930">扫描仪</translation>
 <translation id="1573074208167290576">让您能够设置用户可否添加例外情况以允许在特定网站中显示混合内容。
 
 您可以使用“InsecureContentAllowedForUrls”和“InsecureContentBlockedForUrls”政策为特定网址格式覆盖此政策。
@@ -2293,6 +2294,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2774906947252258544">屏蔽名单用于控制不允许的扩展程序安装类型。
 
 设置“command_line”将禁止从命令行加载扩展程序。</translation>
+<translation id="2779027965175176474">在用户登录期间不显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="2780840673734667062">禁止使用其他 Google 账号登录</translation>
 <translation id="2784880732336446591">退出时清除浏览数据</translation>
 <translation id="2786117913267907931">不允许源使用 Direct Sockets</translation>
@@ -2546,6 +2548,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果该值设为 <ph name="ENABLED_ENUM_VALUE" />，系统会检测到实体，并且只需点按一下或长按，即可为实体添加下划线或触发实体。
 如果该值设为 <ph name="DISABLED_ENUM_VALUE" />，则不会检测到实体，并且无法执行操作。
 如果该值设为 <ph name="LONGPRESSONLY_ENUM_VALUE" />，系统会检测到实体，并且只能通过长按对实体执行操作。</translation>
+<translation id="3010395821339265736">在用户登录期间显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="3010907817113180883">设备活动检测信号收集时间间隔（以毫秒为单位）。</translation>
 <translation id="3016585641676676461">禁止在这些网站上自动全屏显示</translation>
 <translation id="3017578958356048910">PDF 查看器能在 PDF 文件中添加注释</translation>
@@ -3137,6 +3140,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3483585138745445814">允许用户启用“附近分享”功能</translation>
 <translation id="3485200437120267231">停用登录拦截功能</translation>
 <translation id="3487651201232258606">原生消息传递</translation>
+<translation id="3488551354274495283">允许在用户登录期间显示<ph name="FEATURE_NAME" />介绍界面</translation>
 <translation id="3492351353716550742">不使用默认引荐来源网址政策值 no-referrer-when-downgrade</translation>
 <translation id="3492834335089638487">此政策用于控制设备对来源不受信任（不是来自 Google Play 商店）的 Android 应用的使用。
 
@@ -3879,6 +3883,26 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4101826711886952606">Home/End 设置使用包含搜索辅助键的快捷键</translation>
 <translation id="4102347680024644994">报告扩展检测和响应 (XDR) 事件</translation>
+<translation id="4104303092334469130">配置一系列数据控制规则，防止数据泄露。
+
+      每个规则均包含以下内容：- 触发该规则的条件字段。只有当某项用户操作与其 <ph name="DATA_CONTROLS_SOURCES" />、<ph name="DATA_CONTROLS_DESTINATIONS" />、<ph name="DATA_CONTROLS_AND" />、<ph name="DATA_CONTROLS_OR" /> 和 <ph name="DATA_CONTROLS_NOT" /> 字段中填充的所有字段均匹配时，才会触发规则。对于列表子字段，只需匹配 1 个条目，例如只需匹配 1 个网址格式即可触发规则。
+      - 要应用的限制条件列表。可能只有<ph name="DATA_CONTROLS_SOURCES" />或<ph name="DATA_CONTROLS_DESTINATIONS" />条件可用，具体取决于限制。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 根据来源标签页控制屏蔽屏幕截图。
+
+      如果 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策设为 True，系统会将触发的规则报告给管理员。
+      限制级别可设为 BLOCK、WARN 或 REPORT。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。
+      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。
+      - 如果限制级别设为 REPORT，用户操作将不会中断，但如果启用了 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> 政策，系统会发送报告。
+
+      注意：
+      - 所列网址必须采用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 规定的格式。
+      - 对于专门针对 <ph name="PRODUCT_OS_NAME" /> 的数据泄露防范规则，另请参阅 <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> 政策。
+
+      如果未设置此政策，系统将不会应用任何限制。</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
 <translation id="410740968939768919">控制可否在 <ph name="PRODUCT_OS_NAME" /> 登录页面上使用 Manifest V2 扩展程序。
 
@@ -4243,6 +4267,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       尽管上述平台均支持此政策，但此政策启用的功能在其中的少数平台上可能无法使用。并非所有已弃用的网络平台功能都可重新启用。只有下面明确列出的功能才能在限定的时间（具体因功能而异）内重新发挥功效。字符串标记的常用格式为 [已弃用功能的名称]_EffectiveUntil[yyyymmdd]。要了解更改网络平台功能的意图，请访问 https://bit.ly/blinkintents。
       </translation>
 <translation id="4443711908766051441">允许玩恐龙复活节彩蛋游戏</translation>
+<translation id="4444682330960613191">仅在受管设备上显示企业标记</translation>
 <translation id="4445728642576791607">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告衡量设置。</translation>
 <translation id="4447668084338250480">内网重定向行为</translation>
 <translation id="4449469846627734399">设定日间用电高峰转移配置</translation>
@@ -4869,6 +4894,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       有关 U2F Security Key API 弃用情况的更多信息，请参阅 https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A。</translation>
 <translation id="4988291787868618635">闲置延迟时间已过时执行的操作</translation>
+<translation id="4991786313466977061">控制是否显示企业标记</translation>
 <translation id="4995123966071996433">不允许端口转发到 Linux 虚拟机</translation>
 <translation id="4996068111491152684"><ph name="PRODUCT_OS_NAME" />登录凭据不会被用于网络身份验证。</translation>
 <translation id="4996086761250834365">允许进行 <ph name="PLUGIN_VM_NAME" /> 产品分析</translation>
@@ -5073,6 +5099,19 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
 <translation id="5191476996923842491">setTimeout() 函数延迟的默认行为。</translation>
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
+<translation id="5192555640439947289">如果此政策已启用，当设备处于休眠或合盖状态时，<ph name="PRODUCT_OS_NAME" /> 会要求用户提供密码来解锁设备。
+
+      设备在合盖后就会锁定，除非已插入基座（使用外接显示器）。在这种情况下，设备在合盖后不会锁定，但如果外接显示器被移除且盖子仍处于闭合状态，设备就会锁定。
+
+      在 <ph name="PRODUCT_OS_NAME" /> M106 之前，此政策仅会在设备处于休眠状态时锁定设备。从 M106 开始，此政策会在设备处于休眠或合盖状态时锁定设备。
+
+      如果此政策已启用，且 <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> 设为 <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />，设备在合盖后就会锁定，但仅当已在 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 中进行了相应配置时，设备才会休眠。
+
+      请注意，如果此政策已启用且 <ph name="ALLOW_SCREEN_LOCK_POLICY_NAME" /> 已停用，系统将无法锁定设备，并会让用户退出登录状态。
+
+      如果此政策已停用，系统将不会要求用户提供密码来解锁设备。
+
+      如果您未设置此政策，用户可选择是否让系统提示输入密码以解锁设备。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
 <translation id="5205352023880027050">不启用 EphemeralNetworkPolicies 功能。</translation>
@@ -5711,6 +5750,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5679540979548648200">禁止此设备的用户使用 ADB 旁加载；如果先前已启用旁加载，就对设备强制执行 Powerwash</translation>
 <translation id="5681258683432554972">默认弹出式窗口设置</translation>
 <translation id="5684501593989438324">启用 Google 助理启动指令</translation>
+<translation id="5688951037082618146">在所有设备上显示企业标记</translation>
 <translation id="5689430183304951538">默认打印页面大小</translation>
 <translation id="5691637243722588222">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 支持的 HTTP 身份验证方案。
 
@@ -5864,6 +5904,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 字段用于配置系统在扫描完毕并判定数据有问题后向用户显示的警告消息。message 字段包含要向用户显示的文字，最多只能有 200 个字符。learn_more_url 字段包含管理员提供的网址，用户可点击该网址以从客户提供的信息中详细了解相应操作被禁止的原因。language 字段是可选字段，包含消息所用的语言。空 language 字段或“default”值用于指明要显示的消息不是以用户所用语言设定的。tag 字段用于指定要针对哪类扫描显示消息。custom_messages 列表可包含零个或多个条目，每个条目都必须具有非空的 message 和 tag 字段。
 
       此政策需要依靠额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
+<translation id="5812539307212402176">隐藏所有企业标记</translation>
 <translation id="5814301096961727113">设置登录屏幕上语音反馈的默认状态</translation>
 <translation id="5815129011704381141">更新后自动重启</translation>
 <translation id="5815990343032461023">旧行为：自助服务终端 Chrome 应用将由扩展程序系统使用扩展程序清单中的更新网址进行更新，以及由缓存管理器使用政策提供的更新网址进行更新</translation>
@@ -6263,6 +6304,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="6181783961196084973">用于切换应用活动记录功能的状态的值。如果设为 true，系统会向服务器报告用户的应用活动，以便在孩子和家长的 <ph name="PRODUCT_NAME" /> 应用中显示该数据。如果设为 false，应用级使用时限功能仍会正常运行，但系统不会向服务器报告任何数据，因此 <ph name="PRODUCT_NAME" /> 中也不会显示任何数据。</translation>
 <translation id="6182206125906000651">停用 HTTPS 升级。</translation>
 <translation id="6182563940865917569">允许 Chrome 自动播放媒体</translation>
+<translation id="618635925649844912">此政策用于控制是否在用户首次登录流程中显示会话内 AI 功能的介绍界面。
+
+      如果此政策已停用，系统将不会显示 AI 介绍界面。
+
+      如果此政策已启用，系统将会显示 AI 介绍界面。
+
+      如果未设置此政策，系统将为受企业管理的用户跳过 AI 介绍界面，而为非受管用户显示该介绍界面。</translation>
 <translation id="6187573347027372072">警告！此政策已被弃用，请改用 <ph name="CROS_GLS_POLICY_NAME" />。<ph name="PRODUCT_OS_NAME" /> 现在有一个系统位置信息切换开关，用于控制整个系统，包括 <ph name="ANDROID_NAME" />。<ph name="ANDROID_NAME" /> 切换开关现在处于只读状态，反映 <ph name="PRODUCT_OS_NAME" /> 的位置信息服务状态。
 
 除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策已设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，否则将此政策设为 <ph name="GLS_ENABLED" /> 会在初始设置期间开启 Google 位置信息服务。如果此政策设为 <ph name="GLS_DISABLED" /> 或不设置，位置信息服务会在设置期间保持关闭状态。
@@ -6498,6 +6546,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
 <translation id="6331943515692769234">强制使用旧版 User-Agent GREASE 算法。</translation>
 <translation id="6332546092866098577">禁止在这些网站上通过 File System API 读取内容</translation>
+<translation id="6333338054007607863">自动下载模型</translation>
 <translation id="6334330017384340264">此政策用于指定哪些应用和网址可以不受应用级使用限制的约束。
         所配置的许可名单会应用于 <ph name="PRODUCT_OS_NAME" />上安装的应用，这些应用针对给定用户设置了应用级使用时限。
         所配置的许可名单只能应用于儿童用户账号，并且仅当已设置 <ph name="PER_APP_TIME_LIMITS_POLICY_NAME" /> 政策后才会生效。
@@ -6616,6 +6665,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
 <translation id="6416506846917150119">在用户输入内容时停用实体键盘预测性撰写功能</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6419001911253110938">允许在用户登录流程中显示会话内 AI 功能的介绍界面</translation>
 <translation id="6421254653839955267">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
 
 如果此政策已停用或未设置，当生成 Kerberos SPN 时，服务器的规范名称将由 CNAME 查找来决定。</translation>
@@ -7952,6 +8002,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7421230730436851224">一律不在沙盒中处理音频</translation>
 <translation id="7421483919690710988">设置媒体磁盘缓存大小（字节）</translation>
 <translation id="7424751532654212117">已停用插件列表的例外情况</translation>
+<translation id="742531731411208578">仅在非受管设备上显示企业标记</translation>
 <translation id="7426112309807051726">指定是否停用 <ph name="TLS_FALSE_START" /> 优化。由于历史原因，此政策被命名为 DisableSSLRecordSplitting。
 
       如果此政策未设置或设为 false，系统将启用 <ph name="TLS_FALSE_START" />。如果此政策设为 true，系统将停用 <ph name="TLS_FALSE_START" />。</translation>
@@ -7998,6 +8049,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7468182772656807573">通过设置此政策，您可决定监控网络数据包的发送频率（以毫秒为单位）。时间间隔应介于 30 秒到 24 小时之间。任何不在此范围内的值都会被强制改为距其较近的那个限值（上限值或下限值）。
 
       如果此政策未设置，系统会应用默认时间间隔（3 分钟）。</translation>
+<translation id="7469182444144588294">此政策用于控制是否在用户首次登录期间显示<ph name="FEATURE_NAME" />介绍界面。
+
+      如果此政策已停用，系统将不会显示<ph name="FEATURE_NAME" />介绍界面。
+
+      如果此政策已启用，系统将会显示<ph name="FEATURE_NAME" />介绍界面。
+
+      如果未设置此政策，系统将为受企业管理的用户跳过<ph name="FEATURE_NAME" />介绍界面，而为非受管用户显示该介绍界面。</translation>
 <translation id="7469554574977894907">启用搜索建议</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
 <translation id="7476030153540156377">选择是否应启用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 地址保护功能。</translation>
@@ -8473,6 +8531,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果未设置，系统会允许使用 Direct Sockets。</translation>
 <translation id="7853140303943875314">允许取消自动登录</translation>
 <translation id="7854187834842629068">禁止在登录屏幕上输入语音</translation>
+<translation id="7858352166858826505">生成式 AI 本地基础模型的设置</translation>
 <translation id="7863947545897944083">在登录屏幕上启用高对比度模式无障碍功能。
 
           如果此政策设为 true，高对比度模式在登录屏幕上将始终处于启用状态。
@@ -8762,6 +8821,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8124468781472887384">设备打印机配置访问政策。</translation>
 <translation id="8128192446158421884">AutoOpenFileTypes 可应用到的网址</translation>
 <translation id="8131046602440880289">允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
+<translation id="8132419228205300235">不在用户登录期间显示 AI 介绍界面</translation>
 <translation id="8133152694354699657">如果此政策设为 True 或未设置，用户将能够使用“轻触搜索”功能，并能够开启或关闭该功能。
 
       如果此政策设为 False，系统会彻底关闭“轻触搜索”功能。</translation>
@@ -9162,6 +9222,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，系统将会使用默认值（即 3）
 
       如果设置了此政策，系统便会酌情删除旧快照以遵守此限制。如果此政策设为 0，系统将不会创建任何快照</translation>
+<translation id="8446679541472571487">在用户登录期间显示 AI 介绍界面</translation>
 <translation id="8451988835943702790">使用“新标签页”作为主页</translation>
 <translation id="8452787853105404870">向 Google 发送硬件数据，协助改进 ChromeOS Flex</translation>
 <translation id="8453218444172088993">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
@@ -9332,6 +9393,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果您未设置此政策，系统将使用默认时长。
 
           指定的政策值应以毫秒为单位。</translation>
+<translation id="8592363656632862875">不下载模型</translation>
 <translation id="859579553230883285">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
 <translation id="8597758693275075382">要在安装过程中向虚拟机传递的 SMBIOS OEM 字符串。默认为空列表。</translation>
 <translation id="8598786284856179541">启用关于版本信息的报告</translation>
@@ -9737,6 +9799,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8931555638815157255">如果此政策已启用或未设置，已注册的设备将会定期报告其操作系统和固件版本。
 
       如果此政策已停用，已注册的设备将不会报告版本信息。</translation>
+<translation id="8934485887744460569">配置 <ph name="PRODUCT_NAME" /> 如何下载基础生成式 AI 模型并在本地用于推理。
+
+如果此政策设为“允许 (0)”或未设置，系统会自动下载模型，并将其用于推理。
+
+如果此政策设为“已停用 (1)”，系统将不会下载模型。
+
+也可以通过 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 停用模型下载功能。</translation>
 <translation id="8937282917198525844"> 从 M81 开始，我们不仅更新了标准表单控件元素（例如 &lt;select&gt;、&lt;button&gt;、&lt;input type=date&gt;）的外观和风格，还改进了无障碍功能并提升了平台统一性。此政策用于在 M84 之前的版本中恢复“旧版”表单控件元素。
 
       如果此政策设为 True，系统将会为所有网站使用“旧版”表单控件元素。

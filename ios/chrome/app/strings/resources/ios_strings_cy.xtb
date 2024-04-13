@@ -272,7 +272,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2434405374328098816">Rydych eisoes wedi cadw cyfrinair ar gyfer "<ph name="USERNAME" />" yn <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Gallwch sgrolio i'r chwith i bori yn y modd Anhysbys.</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
-<translation id="2459155039684421202">Yn y bar cyfeiriad, rhowch dasg megis "clirio fy hanes" neu "golygu cyfrineiriau".</translation>
 <translation id="2461070143328828326">Cyfrinair Gosodiadau</translation>
 <translation id="2462736546165239215">Gallwch ddod o hyd i'ch holl hanes pori yma.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5256661381001734217">Mae'r wefan hon yn ceisio agor ap.  Bydd hyn yn mynd â chi allan o'r modd Anhysbys.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Mae maes gofynnol yn wag. Llenwch ef cyn cadw.}zero{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}two{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}few{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}many{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}other{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}}</translation>
 <translation id="5271549068863921519">Cadw cyfrinair</translation>
-<translation id="5283494734135414249">Tapiwch y llwybr byr sy'n ymddangos o dan y bar cyfeiriad.</translation>
 <translation id="5295239312320826323">Tynnu'r cyfrif <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Arddangos</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> o <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="6638511529934826365">Chwyddo Testun…</translation>
 <translation id="6640268266988685324">Agor Tab</translation>
 <translation id="6642362222295953972">Newid i dab presennol</translation>
-<translation id="6643016212128521049">Clirio</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragfynegi pa wefannau y mae'n bosib y byddwch yn ymweld â nhw nesaf</translation>
 <translation id="6656103420185847513">Golygu'r Ffolder</translation>
@@ -1202,7 +1199,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7136892417564438900">Nid yw'r camera ar gael</translation>
 <translation id="7138080855268384146">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae {count} Nod tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="7141960840225504692">Bydd eich tabiau'n cael eu cau a bydd data pori yn cael eu dileu</translation>
-<translation id="7154343200458623869">Cwblhau eich tasg.</translation>
 <translation id="7161230316646448869">Cysonwch eich nodau tudalen, hanes a rhagor ar bob dyfais</translation>
 <translation id="7162168282402939716">Datgloi Tabiau Anhysbys gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>

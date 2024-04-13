@@ -728,7 +728,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2337852623177822836">Postavkom upravlja administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> se želi upariti</translation>
 <translation id="2346319942568447007">Slika koju ste kopirali</translation>
-<translation id="2349056830177284083">Zaključavanje tipkovnice</translation>
+<translation id="2349056830177284083">Zaključavanje tastature</translation>
 <translation id="2349957959687031096">Dugme Otvori anonimnu karticu, aktivirajte da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="2350796302381711542">Dozvoliti da <ph name="HANDLER_HOSTNAME" /> otvori sve linkove za <ph name="PROTOCOL" /> umjesto obrađivača <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Kamera i mikrofon su dozvoljeni</translation>
@@ -1432,14 +1432,14 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3711895659073496551">Obustavi</translation>
 <translation id="3712006010833051684">Koverta #10</translation>
 <translation id="3712624925041724820">Licence su potrošene</translation>
-<translation id="3713277100229669269">Sad možete pregledati pogodnosti kartice prije plaćanja</translation>
+<translation id="3713277100229669269">Sada možete vidjeti pogodnosti kartice prije nego što platite</translation>
 <translation id="371420189621607696">Takmičarsko igranje video igara</translation>
 <translation id="3714633008798122362">web kalendar</translation>
 <translation id="3714780639079136834">Uključivanje prijenosa podataka na mobilnoj mreži ili WiFi-ja</translation>
 <translation id="3715016660240337709">{0,plural, =1{Blokirano je otpremanje fajla}one{Blokirano je otpremanje <ph name="FILE_COUNT" /> fajla}few{Blokirano je otpremanje <ph name="FILE_COUNT" /> fajla}other{Blokirano je otpremanje <ph name="FILE_COUNT" /> fajlova}}</translation>
 <translation id="3715545959749027023">Kada Chrome označi sigurnosne događaje, relevantni podaci o događajima se šalju vašem administratoru. To može uključivati URL-ove stranica koje posjetite u Chromeu, nazive fajlova ili metapodatke, padove preglednika ili kartice i korisničko ime koje koristite za prijavu u aplikacije zasnovane na webu, vaš uređaj i Chrome.</translation>
 <translation id="3715597595485130451">Povežite se s WiFi-jem</translation>
-<translation id="3716622997181469465">zaključavanje tipkovnice</translation>
+<translation id="3716622997181469465">zaključavanje tastature</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Provjeravanje konfiguracije proksi servera, zaštitnog zida i DNS-a<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Tokom ažuriranja nećete moći koristiti uređaj do 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacije koje mogu uzrokovati grešku uključuju antivirus, zaštitni zid i softver filtriranje weba ili proksi softver.</translation>

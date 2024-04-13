@@ -985,6 +985,7 @@
 <translation id="1720318856472900922">TLS WWW серверинин аныктыгын текшерүү</translation>
 <translation id="172123215662733643">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу издөө</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> түзмөгүңүз<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> тарабынан башкарылууда</translation>
+<translation id="1723166841621737307">Маалыматтар Chrome'ду жакшыртууга кантип жардам берет?</translation>
 <translation id="1723824996674794290">&amp;Жаңы терезе</translation>
 <translation id="1724801751621173132">Киргизүү режими</translation>
 <translation id="1725562816265788801">Тилди сыдыруу</translation>
@@ -1008,6 +1009,7 @@
 <translation id="1743970419083351269">Жүктөлүп алынгандар тилкесин жабуу</translation>
 <translation id="1744108098763830590">фон бети</translation>
 <translation id="1745732479023874451">Байланыштарды башкаруу</translation>
+<translation id="1746797507422124818">Интернеттеги аракеттериңиз тууралуу маалымат</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# файлды ушул веб-колдонмодо ачып, түзөтөсүзбү?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> сайтына кирүү үчүн <ph name="DEVICE_NAME" /> түзмөгүндөгү киргизүүчү ачкычты колдонуңуз</translation>
 <translation id="1748563609363301860">Бул сырсөздү Google аккаунтуңузда же ушул түзмөктө гана сактап койсоңуз болот</translation>
@@ -4477,6 +4479,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4357583358198801992">Өтмөктөр тобун көрсөтүү</translation>
 <translation id="4358361163731478742">Тил тандоого мүмкүн болгон колдонмолор жок</translation>
 <translation id="4358643842961018282">Түзмөгүңүз жаңырды</translation>
+<translation id="4358995225307748864">Ачуу үчүн колдонмо тандаңыз</translation>
 <translation id="4359408040881008151">Көз каранды кеңейтүү(лөр)дөн улам орноту Installed because of dependent extension(s).</translation>
 <translation id="4359717112757026264">Шаар пейзажы</translation>
 <translation id="4359809482106103048">Коопсуздук тууралуу жалпы маалымат</translation>
@@ -4642,6 +4645,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> түзмөгүңүз күтүүсүздөн өчүп күйдү</translation>
 <translation id="4481467543947557978">service worker cкрипти</translation>
 <translation id="4482990632723642375">Жакында жабылган өтмөк</translation>
+<translation id="4485245862007675842">Chrome аркылуу Интернеттин бардык мүмкүнчүлүктөрүн колдоносуз</translation>
 <translation id="4486333480498805415">Жайгашкан жерди так аныктоо</translation>
 <translation id="4487489714832036847">Chromebook'тар кадимки программалардын ордуна колдонмолорду пайдаланат. Майнаптуулук, көңүл ачуу жана башкалар үчүн колдонмолорду жүктөп алыңыз.</translation>
 <translation id="4488257340342212116">Камераңызды колдоно алат</translation>
@@ -6285,6 +6289,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5793339252089865437">Эгер жаңыртууну мобилдик Интернет аркылуу жүктөп алсаңыз, кошумча акы алынышы мүмкүн.</translation>
 <translation id="5793420564274426163">Жупташтырууну ырастоо</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> иш тактасында <ph name="NUM_BROWSERS" /> серепчи терезеси ачылып турат</translation>
+<translation id="5794086402489402632">Көрүлгөн вебсайттар жана издөө таржымалынын ортосундагы айырма кандай?</translation>
 <translation id="5794414402486823030">Ар дайым тутум көрсөткүч менен ачылсын</translation>
 <translation id="5794700615121138172">Linux'тун бөлүшүлгөн папкалары</translation>
 <translation id="5794786537412027208">Бардык Chrome Колдонмолорунан чыгуу</translation>
@@ -7373,6 +7378,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6647690760956378579">Кадимки үндү алдын ала угуу</translation>
 <translation id="6648911618876616409">Маанилүү жаңыртуу орнотууга даяр. Баштоо үчүн аккаунтуңузга кириңиз.</translation>
 <translation id="6649018507441623493">Бир секунд…</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сиз экениңизди ырастоону суранып жатат</translation>
 <translation id="6650206238642452078">ChromeOS тутумунун иш-аракеттерине жазылыңыз</translation>
 <translation id="665061930738760572">&amp;Жаңы терезеде ачуу</translation>
 <translation id="6651237644330755633">Веб-сайттарды аныктай турган ушул тастыктамага ишенүү</translation>
@@ -8070,6 +8076,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7196913789568937443">Камдык көчүрмөнү Google Drive'га сактоо. Дайын-даректериңизди оңой эле калыбына келтирип, бир түзмөктөн экинчисине өткөрүүгө мүмкүнчүлүк берет. Көчүрмөдө колдонмо дайындары дагы сакталат. Камдык көчүрмөлөр Google'га жүктөлүп берилип, Google аккаунтуңуздун сырсөзү менен шифрленет. <ph name="BEGIN_LINK1" />Кеңири маалымат<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Google Издөө менен Google'дун акылдуу функцияларын серептеген сайын колдонуңуз</translation>
 <translation id="719791532916917144">Ыкчам баскыч</translation>
+<translation id="7197958763276896180">Эмне үчүн Chrome үчүнчү тараптын cookie файлдарын чектейт?</translation>
 <translation id="7198503619164954386">Ишкана аркылуу катталган түзмөктү пайдаланышыңыз керек</translation>
 <translation id="7199158086730159431">Ж&amp;ардам алуу</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну тындыруу</translation>

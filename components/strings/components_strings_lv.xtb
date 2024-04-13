@@ -1083,6 +1083,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
             <ph name="LIST_ITEM" />meklēšanas vēsture;<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />veidlapās ievadītā informācija.<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Uzkrājumu konts</translation>
 <translation id="3103188521861412364">Akcijas un obligācijas</translation>
 <translation id="3105172416063519923">Līdzekļa ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Pārbaudīt droša DNS servera konfigurāciju<ph name="END_LINK" /></translation>
@@ -1301,6 +1302,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3493660662684070951">Kravas automašīnas, furgoni un apvidus automašīnas</translation>
 <translation id="3495081129428749620">Meklēt lapā
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Algas konts</translation>
 <translation id="3497627066518778351">Pārskatīt ierīcē saglabāto vietņu datu sarakstu jaunā logā</translation>
 <translation id="3498215018399854026">Mēs nevarējām sasniegt jūsu māti/tēvu. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="350069200438440499">Faila vārds:</translation>
@@ -2337,6 +2339,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5519696598216267194">Papīrs (perforēts)</translation>
 <translation id="5521782189689806907">Skapji</translation>
 <translation id="5523118979700054094">Politikas nosaukums</translation>
+<translation id="5523588073846127669">Tirgotājs nepieņem šo virtuālo karti</translation>
 <translation id="5525755241743357906">Fails tiek kopēts vai pārvietots</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="55293785478302737">Malu sašuvums</translation>
@@ -3719,6 +3722,7 @@ Papildu informācija:
 <translation id="81563721597823545">Hokeja aprīkojums</translation>
 <translation id="8161095570253161196">Atsākt pārlūkošanu</translation>
 <translation id="8163866351304776260">Četri caurumi kreisajā malā</translation>
+<translation id="8163998196788647716">Darījumu konts</translation>
 <translation id="8164078261547504572">Vai vēlaties saņemt e-pasta ziņojumus par cenu kritumu?</translation>
 <translation id="8169175551046720804">Atslēgas “<ph name="DATA_CONTROLS_KEYS" />” nevar iestatīt vienā vārdnīcā</translation>
 <translation id="8175796834047840627">Pārlūkprogrammā Chrome tiek piedāvāts saglabāt jūsu kartes Google kontā, jo esat pierakstījies. Varat mainīt šo darbību iestatījumos.</translation>

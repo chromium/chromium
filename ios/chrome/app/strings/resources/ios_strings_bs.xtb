@@ -272,7 +272,6 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2434405374328098816">Već ste sačuvali lozinku za korisnika "<ph name="USERNAME" />" na web lokaciji <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Možete kliznuti ulijevo da pregledate u anonimnom načinu rada.</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
-<translation id="2459155039684421202">U traci za adresu unesite zadatak, npr. "obriši historiju" ili "uredi lozinke".</translation>
 <translation id="2461070143328828326">Postavke lozinki</translation>
 <translation id="2462736546165239215">Ovdje možete pronaći svu historiju pregledanja.</translation>
 <translation id="2468132863574325555">Disk</translation>
@@ -827,7 +826,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5256661381001734217">Web lokacija pokušava otvoriti aplikaciju.  Ovim ćete napustiti anonimni način rada.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Obavezno polje je prazno. Popunite ga prije pohranjivanja.}one{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}few{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}other{Neka obavezna polja su prazna. Popunite ih prije pohranjivanja.}}</translation>
 <translation id="5271549068863921519">Sačuvaj lozinku</translation>
-<translation id="5283494734135414249">Dodirnite prečicu koja se prikazuje ispod trake za adresu.</translation>
 <translation id="5295239312320826323">Ukloniti račun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />. od <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="6638511529934826365">Zumiraj tekst…</translation>
 <translation id="6640268266988685324">Otvorena kartica</translation>
 <translation id="6642362222295953972">Prelazak na postojeću karticu</translation>
-<translation id="6643016212128521049">Obriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-ovi koje posjetite šalju se Googleu radi predviđanja koje web lokacije ćete možda posjetiti sljedeće</translation>
 <translation id="6656103420185847513">Uredi folder</translation>
@@ -1202,7 +1199,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7136892417564438900">Kamera je nedostupna</translation>
 <translation id="7138080855268384146">{count,plural, =1{Oznaka je sačuvana u folder "{title}" na računu {email}}one{{count} oznaka je sačuvana u folder "{title}" na računu {email}}few{{count} oznake su sačuvane u folder "{title}" na računu {email}}other{{count} oznaka je sačuvano u folder "{title}" na računu {email}}}</translation>
 <translation id="7141960840225504692">Kartice će se zatvoriti i podaci o pregledanju izbrisati</translation>
-<translation id="7154343200458623869">Izvršite zadatak.</translation>
 <translation id="7161230316646448869">Sinhronizirajte oznake, historiju i drugo na svim uređajima</translation>
 <translation id="7162168282402939716">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica</translation>
 <translation id="7173114856073700355">Otvori postavke</translation>

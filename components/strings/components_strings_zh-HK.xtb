@@ -378,6 +378,7 @@
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
 <translation id="1689333818294560261">暱稱</translation>
+<translation id="1691425742011409472">游標鎖定</translation>
 <translation id="1692622044604477956">電影場次和放映時間</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著您持續瀏覽，清單可能會再次出現特定主題。此外，您亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">由管理員控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2346319942568447007">您複製的圖片</translation>
+<translation id="2349056830177284083">鍵盤鎖定</translation>
 <translation id="2349957959687031096">開啟無痕式分頁按鈕，啟動之後就可以開新嘅無痕式分頁私下瀏覽</translation>
 <translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2353297238722298836">已允許使用相機和麥克風</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">單車和配件</translation>
+<translation id="2791955793407772554">游標鎖定</translation>
 <translation id="2792012897584536778">此裝置的管理員已設定安全性憑證，這些憑證可允許管理員查看您瀏覽的網站內容。</translation>
 <translation id="2794233252405721443">網站已被封鎖</translation>
 <translation id="2794629552137076216">玻璃 (磨光)</translation>
@@ -1102,6 +1105,7 @@
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">標籤 (永久)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設定為預設搜尋引擎</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意書決定</translation>
@@ -1427,12 +1431,14 @@
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712006010833051684">10 信封</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
+<translation id="3713277100229669269">現在，你可以在付款前查看信用卡福利</translation>
 <translation id="371420189621607696">電競</translation>
 <translation id="3714633008798122362">網絡日曆</translation>
 <translation id="3714780639079136834">開啟流動數據或 Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{禁止上載檔案}other{禁止上載 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3715545959749027023">當 Chrome 標示安全性事件時，系統會向您的管理員發送該事件的相關資料。這些資料可包括您在 Chrome 瀏覽的網址、檔案名稱或元數據、瀏覽器或分頁當機，以及用於登入網絡應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="3715597595485130451">連線至 Wi-Fi</translation>
+<translation id="3716622997181469465">鍵盤鎖定</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">系統最多需時 10 分鐘進行更新，期間無法使用裝置。</translation>
 <translation id="372429172604983730">可能造成此錯誤的應用程式包括防毒軟件、防火牆及網頁篩選或 Proxy 軟件。</translation>
@@ -3516,6 +3522,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自訂 Chrome 的字型大小和字體</translation>
 <translation id="7752995774971033316">未管理</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - 與 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="7754587126786572336">更新開始時，您的 Chrome 分頁和應用程式將會關閉</translation>
 <translation id="7755287808199759310">您的家長可以為您解除封鎖此網站</translation>
 <translation id="7755624218968747854">主卷</translation>

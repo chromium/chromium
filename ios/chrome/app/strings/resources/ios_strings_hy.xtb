@@ -271,7 +271,6 @@
 <translation id="2434405374328098816">Դուք <ph name="WEBSITE" /> կայքում «<ph name="USERNAME" />» օգտատիրոջ համար արդեն գաղտնաբառ պահել եք։</translation>
 <translation id="2434918313224755415">Ինկոգնիտո ռեժիմում դիտարկելու համար ոլորեք ձախ։</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
-<translation id="2459155039684421202">Հասցեագոտում մուտքագրեք որևէ առաջադրանք, օրինակ՝ «մաքրել իմ պատմությունը» կամ «փոփոխել գաղտնաբառերը»։</translation>
 <translation id="2461070143328828326">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="2462736546165239215">Ձեր այցելությունների ամբողջ պատմությունը կգտնեք այստեղ։</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +825,6 @@
 <translation id="5256661381001734217">Այս կայքը փորձում է հավելված բացել։  Դուք կվերաուղղորդվեք ինկոգնիտո պատուհան։</translation>
 <translation id="5271265092610673171">{count,plural, =1{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}one{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}other{Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։}}</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>
-<translation id="5283494734135414249">Հպեք դյուրանցմանը, որը հայտնվում է հասցեագոտու տակ։</translation>
 <translation id="5295239312320826323">Հեռացնե՞լ <ph name="USER_EMAIL" /> հաշիվը</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />՝ <ph name="NUM_SUGGESTIONS" />-ից</translation>
@@ -1108,7 +1106,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6638511529934826365">Մեծացնել տեքստը…</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>
-<translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6645899968535965230">QR կոդ՝ <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6656103420185847513">Պանակի փոփոխում</translation>
@@ -1201,7 +1198,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7136892417564438900">Ֆոտոխցիկն անհասանելի է</translation>
 <translation id="7138080855268384146">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="7141960840225504692">Ներդիրները կփակվեն, իսկ այցելությունների պատմությունը կջնջվի</translation>
-<translation id="7154343200458623869">Ավարտեք ձեր առաջադրանքը։</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>

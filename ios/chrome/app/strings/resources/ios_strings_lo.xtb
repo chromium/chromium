@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">ທ່ານມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບ "<ph name="USERNAME" />" ຢູ່ <ph name="WEBSITE" /> ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2434918313224755415">ທ່ານສາມາດເລື່ອນໄປທາງຊ້າຍເພື່ອທ່ອງເວັບໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໄດ້.</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
-<translation id="2459155039684421202">ໃນແຖບທີ່ຢູ່, ໃຫ້ຕັ້ງຊື່ໜ້າວຽກ ເຊັ່ນ: “ລຶບລ້າງປະຫວັດຂອງຂ້ອຍ” ຫຼື “ແກ້ໄຂລະຫັດຜ່ານ.”</translation>
 <translation id="2461070143328828326">ການຕັ້ງຄ່າລະຫັດຜ່ານ</translation>
 <translation id="2462736546165239215">ທ່ານສາມາດຊອກຫາປະຫວັດການທ່ອງເວັບທັງໝົດຂອງທ່ານໄດ້ບ່ອນນີ້.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">ເວັບໄຊນີ້ກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນ.  ສິ່ງນີ້ຈະນຳທ່ານອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="5271265092610673171">{count,plural, =1{ຊ່ອງຂໍ້ມູນທີ່ຈຳເປັນຫວ່າງເປົ່າ. ຕື່ມມັນກ່ອນການບັນທຶກ.}other{ຊ່ອງຂໍ້ມູນທີ່ຈຳເປັນຈຳນວນໜຶ່ງຫວ່າງເປົ່າ. ຕື່ມພວກມັນກ່ອນການບັນທຶກ.}}</translation>
 <translation id="5271549068863921519">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
-<translation id="5283494734135414249">ແຕະໃສ່ທາງລັດທີ່ປາກົດຢູ່ກ້ອງແຖບທີ່ຢູ່.</translation>
 <translation id="5295239312320826323">ລຶບບັນຊີ <ph name="USER_EMAIL" /> ອອກບໍ?</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> ຈາກທັງໝົດ <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6638511529934826365">ຊູມຂໍ້ຄວາມ…</translation>
 <translation id="6640268266988685324">ເປີດແຖບ</translation>
 <translation id="6642362222295953972">ປ່ຽນເປັນແຖບທີ່ມີຢູ່</translation>
-<translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6645899968535965230">ລະຫັດ QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL ທີ່ທ່ານເຂົ້າເບິ່ງຈະຖືກສົ່ງໄປໃຫ້ Google ເພື່ອຄາດເດົາເວັບໄຊທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງເປັນລຳດັບຕໍ່ໄປ</translation>
 <translation id="6656103420185847513">ແກ້ໄຂໂຟລເດີ</translation>
@@ -1202,7 +1199,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7136892417564438900">ກ້ອງຖ່າຍຮູບບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="7138080855268384146">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email} ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email} ແລ້ວ}}</translation>
 <translation id="7141960840225504692">ແຖບຂອງທ່ານຈະຖືກປິດໄວ້ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ</translation>
-<translation id="7154343200458623869">ເຮັດໜ້າວຽກຂອງທ່ານໃຫ້ສຳເລັດ.</translation>
 <translation id="7161230316646448869">ຊິ້ງບຸກມາກ, ປະຫວັດ ແລະ ອື່ນໆຂອງທ່ານຢູ່ທຸກໆອຸປະກອນ</translation>
 <translation id="7162168282402939716">ປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນດ້ວຍ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">ເປີດການຕັ້ງຄ່າ</translation>

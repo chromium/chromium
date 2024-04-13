@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Marcar todas como leídas</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
+<translation id="1710698977900873766">Activar la protección mejorada</translation>
 <translation id="1713777106376424209">Empresa de transporte a cargo de la entrega:</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para acceder.</translation>
 <translation id="1740468249224277719">Presiona dos veces para instalar.</translation>
@@ -271,7 +272,6 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2434405374328098816">Ya guardaste una contraseña para "<ph name="USERNAME" />" en <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puedes desplazar el dedo hacia la izquierda para navegar en modo Incógnito.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
-<translation id="2459155039684421202">En la barra de direcciones, ingresa una tarea como "borrar mi historial" o "editar mis contraseñas".</translation>
 <translation id="2461070143328828326">Configuración de contraseñas</translation>
 <translation id="2462736546165239215">Ahí puedes encontrar todo el historial de navegación.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +826,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5256661381001734217">Este sitio está intentando abrir una aplicación.  Saldrás del modo Incógnito.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Llénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Llénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
-<translation id="5283494734135414249">Presiona el acceso directo que aparece debajo de la barra de direcciones.</translation>
 <translation id="5295239312320826323">¿Quieres quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="6638511529934826365">Hacer zoom en el texto…</translation>
 <translation id="6640268266988685324">Abrir pestaña</translation>
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
-<translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Se enviarán a Google las URL que visites para predecir los sitios que posiblemente vayas a visitar</translation>
 <translation id="6656103420185847513">Editar carpeta</translation>
@@ -1201,7 +1199,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7138080855268384146">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{{count} favoritos se guardaron en "{title}" en tu cuenta, {email}}}</translation>
 <translation id="7141960840225504692">Se cerrarán las pestañas y se borrarán los datos de navegación</translation>
-<translation id="7154343200458623869">Completa tu tarea.</translation>
 <translation id="7161230316646448869">Sincroniza tus favoritos, historial y más en todos los dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Abrir la configuración</translation>

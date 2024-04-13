@@ -982,6 +982,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1720318856472900922">Uthibitishaji wa Seva ya TLS WWW</translation>
 <translation id="172123215662733643">Tafuta picha ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> yako inadhibitiwa<ph name="END_LINK" /> na <ph name="ENROLLMENT_DOMAIN" /></translation>
+<translation id="1723166841621737307">Data inasaidiaje kuifanya Chrome ikufae zaidi?</translation>
 <translation id="1723824996674794290">&amp;Dirisha jipya</translation>
 <translation id="1724801751621173132">Mipangilio ya kuingiza data</translation>
 <translation id="1725562816265788801">Usogezaji wa Vichupo</translation>
@@ -1005,6 +1006,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1743970419083351269">Funga Upau wa Vipakuliwa</translation>
 <translation id="1744108098763830590">Ukurasa wa mandharinyuma</translation>
 <translation id="1745732479023874451">Dhibiti anwani</translation>
+<translation id="1746797507422124818">Data yako kadiri unavyovinjari</translation>
 <translation id="1748283190377208783">{0,plural, =1{wingi usiotumika}other{Ungependa kufungua na kubadilisha faili # katika programu hizi za wavuti?}}</translation>
 <translation id="1748329107062243374">Tumia ufunguo wa siri wa <ph name="DEVICE_NAME" /> ili uingie kwenye <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Unaweza kuhifadhi nenosiri hili kwenye Akaunti yako ya Google au kwenye kifaa hiki pekee</translation>
@@ -4472,6 +4474,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4357583358198801992">Onyesha vikundi vya vichupo</translation>
 <translation id="4358361163731478742">Hakuna programu zinazoruhusu uteuzi wa lugha ya programu</translation>
 <translation id="4358643842961018282">Kifaa chako kimesasishwa</translation>
+<translation id="4358995225307748864">Chagua programu ili ufungue</translation>
 <translation id="4359408040881008151">Kilisakinishwa kwa sababu ya kiendelezi au viendelezi vinavyotegemea.</translation>
 <translation id="4359717112757026264">Mandhari ya jiji</translation>
 <translation id="4359809482106103048">Usalama kwa muhtasari</translation>
@@ -4637,6 +4640,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> imezimwa kisha kuwashwa bila kutarajiwa</translation>
 <translation id="4481467543947557978">kitoa huduma</translation>
 <translation id="4482990632723642375">Kichupo Kilichofungwa Hivi Karibuni</translation>
+<translation id="4485245862007675842">Chrome hufanya wavuti ikufae zaidi</translation>
 <translation id="4486333480498805415">Usahihi wa mahali</translation>
 <translation id="4487489714832036847">Chromebook hutumia programu badala ya programu ya zamani. Pata programu za tija, burudani na zaidi.</translation>
 <translation id="4488257340342212116">Zinazoruhusiwa kutumia kamera</translation>
@@ -6280,6 +6284,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5793339252089865437">Iwapo unapakua sasisho kupitia mtandao wa simu, huenda utatozwa zaidi.</translation>
 <translation id="5793420564274426163">Uthibitisho wa Kuoanisha</translation>
 <translation id="5794034487966529952">Eneokazi la <ph name="DESK_TITLE" /> lina madirisha <ph name="NUM_BROWSERS" /> ya kivinjari yaliyofunguliwa</translation>
+<translation id="5794086402489402632">Je, ipi tofauti kati ya historia ya mambo uliyotafuta na historia ya kuvinjari?</translation>
 <translation id="5794414402486823030">Fungua ukitumia kitazamaji cha mfumo wakati wowote</translation>
 <translation id="5794700615121138172">Folda zinazoshirikiwa za Linux</translation>
 <translation id="5794786537412027208">Ondoka kwenye Programu zote za Chrome</translation>
@@ -7368,6 +7373,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6647690760956378579">Kagua kwanza sauti ya kawaida</translation>
 <translation id="6648911618876616409">Sasisho muhimu liko tayari kusakinishwa. Ingia katika akaunti ili usakinishe.</translation>
 <translation id="6649018507441623493">Subiri kidogo...</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="6650206238642452078">Jisajili kwenye matukio ya mfumo wa ChromeOS</translation>
 <translation id="665061930738760572">Fungua katika &amp;Dirisha Jipya</translation>
 <translation id="6651237644330755633">Amini cheti hiki kwa ajili ya kutambua tovuti</translation>
@@ -8066,6 +8072,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7196913789568937443">Weka nakala kwenye Hifadhi ya Google. Rejesha data yako au ubadilishe vifaa kwa urahisi wakati wowote. Nakala unazohifadhi zinajumuisha data ya programu. Nakala unazohifadhi zinapakiwa kwenye Google na kusimbwa kwa kutumia nenosiri la Akaunti yako ya Google. <ph name="BEGIN_LINK1" />Pata Maelezo Zaidi<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Pata Huduma ya Tafuta na Google na Google smarts kila unapovinjari</translation>
 <translation id="719791532916917144">Mikato ya kibodi</translation>
+<translation id="7197958763276896180">Kwa nini Chrome inaacha kutumia vidakuzi vya washirika wengine?</translation>
 <translation id="7198503619164954386">Lazima uwe unatumia kifaa kilichoandikishwa na biashara</translation>
 <translation id="7199158086730159431">Pata Usaidizi</translation>
 <translation id="7199452998289813782">Sitisha kutuma maudhui kwenye <ph name="DEVICE_NAME" /></translation>

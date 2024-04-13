@@ -226,6 +226,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1864454756846565995">USB-C ierīce (aizmugurējā pieslēgvieta)</translation>
 <translation id="1869497990620230175">Ātrā piekļuve failiem</translation>
 <translation id="1871023081802165724">Atskaņot multivides saturu</translation>
+<translation id="1871915835366697861">Nav pieejama šai spēlei.</translation>
 <translation id="1879018240766558464">Inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="79341161159229895">Kontu pārvalda <ph name="FIRST_PARENT_EMAIL" /> un <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Lai skatītu starpliktuvi, nospiediet <ph name="SHORTCUT_KEY_NAME" /> + V. Pēdējie pieci nokopētie vienumi ir saglabāti starpliktuvē.</translation>
 <translation id="7942349550061667556">Sarkana</translation>
+<translation id="7943516765291457328">Ieslēdziet Bluetooth, lai meklētu tuvumā esošus tīklājus</translation>
 <translation id="7944023924886109030">Skatīt visus šodienas pasākumus</translation>
 <translation id="7945357288295809525">Rādīt pieejamības iestatījumus; iespējotas šādas funkcijas: <ph name="ENABLED_FEATURES" />.</translation>
 <translation id="7947798320695032612">Lietotne <ph name="APP_NAME" /> pieprasa atļauju izmantot šo ierīci: <ph name="DEVICE_NAME" />.</translation>

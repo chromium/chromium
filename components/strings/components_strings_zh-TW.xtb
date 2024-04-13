@@ -377,6 +377,7 @@
 <translation id="168693727862418163">這項政策的值未通過其結構定義的驗證，因此會遭到忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
 <translation id="1689333818294560261">暱稱</translation>
+<translation id="1691425742011409472">游標鎖定</translation>
 <translation id="1692622044604477956">電影場次與放映時間</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />管理資料的方式：<ph name="END_BOLD" />Chrome 會自動刪除 4 週以前的主題。隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
@@ -726,6 +727,7 @@
 <translation id="2337852623177822836">管理員所控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求配對</translation>
 <translation id="2346319942568447007">你複製的圖片</translation>
+<translation id="2349056830177284083">鍵盤鎖定</translation>
 <translation id="2349957959687031096">「開啟無痕分頁」按鈕，啟動後即可開啟新的無痕分頁進行私密瀏覽</translation>
 <translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有<ph name="PROTOCOL" />連結嗎？</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
@@ -942,6 +944,7 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">腳踏車與配件</translation>
+<translation id="2791955793407772554">游標鎖定</translation>
 <translation id="2792012897584536778">這個裝置的系統管理員已設定安全憑證，這些憑證將允許系統管理員檢視你所造訪的網站內容。</translation>
 <translation id="2794233252405721443">網站遭到封鎖</translation>
 <translation id="2794629552137076216">玻璃 (磨光)</translation>
@@ -1079,6 +1082,7 @@
             <ph name="LIST_ITEM" />搜尋記錄<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />在表單中輸入的資訊<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">存款</translation>
 <translation id="3103188521861412364">股票與債券</translation>
 <translation id="3105172416063519923">資產 ID：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />檢查安全 DNS 設定<ph name="END_LINK" /></translation>
@@ -1099,6 +1103,7 @@
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">標籤 (永久)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設為預設搜尋引擎</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141641372357166056">沒有同意聲明決定</translation>
@@ -1295,6 +1300,7 @@
 <translation id="3493660662684070951">卡車、貨車與運動型多用途車</translation>
 <translation id="3495081129428749620">在
     「<ph name="PAGE_TITLE" />」網頁中尋找</translation>
+<translation id="3495818359064790343">薪資</translation>
 <translation id="3497627066518778351">在新視窗中顯示裝置端網站資料清單</translation>
 <translation id="3498215018399854026">我們暫時無法與您的家長聯絡，請再試一次。</translation>
 <translation id="350069200438440499">檔案名稱：</translation>
@@ -1424,12 +1430,14 @@
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712006010833051684">Envelope #10</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
+<translation id="3713277100229669269">現在，你可以在付款前查看信用卡福利</translation>
 <translation id="371420189621607696">電子競技</translation>
 <translation id="3714633008798122362">網路日曆</translation>
 <translation id="3714780639079136834">開啟行動數據或 Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{禁止上傳這個檔案}other{禁止上傳這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3715545959749027023">當 Chrome 標記安全性事件時，系統會將與事件相關的資料傳送給系統管理員，內容可能包括在 Chrome 中造訪的網頁網址、檔案名稱或中繼資料、停止運作的瀏覽器或分頁資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="3715597595485130451">連線至 Wi-Fi</translation>
+<translation id="3716622997181469465">鍵盤鎖定</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和 DNS 設定<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">系統最多需要 10 分鐘的時間進行更新。這段期間內將無法使用裝置。</translation>
 <translation id="372429172604983730">可能造成這個錯誤的應用程式包括防毒軟體、防火牆、網路篩選或 Proxy 軟體。</translation>
@@ -2330,6 +2338,7 @@
 <translation id="5519696598216267194">紙 (打孔紙)</translation>
 <translation id="5521782189689806907">櫥櫃與工作檯</translation>
 <translation id="5523118979700054094">政策名稱</translation>
+<translation id="5523588073846127669">商家不接受這張虛擬卡片</translation>
 <translation id="5525755241743357906">檔案已複製或移動</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
 <translation id="55293785478302737">邊緣裝訂</translation>
@@ -3512,6 +3521,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自訂 Chrome 中的字型大小和字體</translation>
 <translation id="7752995774971033316">未管理</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - 與 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="7754587126786572336">更新開始後，Chrome 將關閉分頁和應用程式</translation>
 <translation id="7755287808199759310">你的家長可以為你解除封鎖這個網站</translation>
 <translation id="7755624218968747854">主卷</translation>
@@ -3711,6 +3721,7 @@
 <translation id="81563721597823545">曲棍球裝備</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
+<translation id="8163998196788647716">交易帳戶</translation>
 <translation id="8164078261547504572">想在商品降價時收到電子郵件嗎？</translation>
 <translation id="8169175551046720804">無法在相同字典中設定「<ph name="DATA_CONTROLS_KEYS" />」鍵</translation>
 <translation id="8175796834047840627">你已登入帳戶，因此 Chrome 詢問你是否要將卡片儲存至你的 Google 帳戶。你可以在設定中變更這項行為。</translation>

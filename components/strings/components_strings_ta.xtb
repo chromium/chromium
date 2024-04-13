@@ -1083,6 +1083,7 @@
             <ph name="LIST_ITEM" />இதுவரை தேடியவை<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />படிவங்களில் வழங்கிய தகவல்கள்<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">சேமிப்புக் கணக்கு</translation>
 <translation id="3103188521861412364">பங்குகள் மற்றும் பத்திரங்கள்</translation>
 <translation id="3105172416063519923">பண்பு ஐடி:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />உங்களின் பாதுகாப்பான DNS உள்ளமைவைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
@@ -1297,6 +1298,7 @@
 <translation id="3487845404393360112">தட்டு 4</translation>
 <translation id="3493660662684070951">டிரக்குகள், வேன்கள் &amp; SUVகள்</translation>
 <translation id="3495081129428749620"><ph name="PAGE_TITLE" /> பக்கத்தில் கண்டறிக</translation>
+<translation id="3495818359064790343">சம்பளக் கணக்கு</translation>
 <translation id="3497627066518778351">சாதனத்தில் உள்ள தளத் தரவின் பட்டியலை புதிய சாரளத்தில் பார்க்கலாம்</translation>
 <translation id="3498215018399854026">தற்போது உங்கள் பெற்றோரைத் தொடர்புகொள்ள முடியவில்லை. மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="350069200438440499">ஃபைல் பெயர்:</translation>
@@ -2334,6 +2336,7 @@
 <translation id="5519696598216267194">பஞ்ச் செய்யப்பட்ட காகிதம்</translation>
 <translation id="5521782189689806907">வீட்டில் பயன்படுத்தும் கேபினெட்கள்</translation>
 <translation id="5523118979700054094">கொள்கைப் பெயர்</translation>
+<translation id="5523588073846127669">இந்த விர்ச்சுவல் கார்டை வணிகர் ஏற்பதில்லை</translation>
 <translation id="5525755241743357906">ஃபைல் நகலெடுக்கப்பட்டது அல்லது நகர்த்தப்பட்டது</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. ChromeOS அமைப்புகளில் அணுகல் கருவிகளைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="55293785478302737">எட்ஜ் ஸ்டிட்ச்</translation>
@@ -3715,6 +3718,7 @@
 <translation id="81563721597823545">ஹாக்கி உபகரணங்கள்</translation>
 <translation id="8161095570253161196">உலாவலை மீண்டும் தொடங்கு</translation>
 <translation id="8163866351304776260">குவாட் பஞ்ச் லெஃப்ட்</translation>
+<translation id="8163998196788647716">பரிவர்த்தனைக் கணக்கு</translation>
 <translation id="8164078261547504572">விலை குறையும்போது மின்னஞ்சல்களைப் பெற விரும்புகிறீர்களா?</translation>
 <translation id="8169175551046720804">அதே அகராதியில் "<ph name="DATA_CONTROLS_KEYS" />" கீகளை அமைக்க முடியாது</translation>
 <translation id="8175796834047840627">உங்கள் Google கணக்கில் உள்நுழைந்திருப்பதால் Chrome உங்கள் கார்டுகளை இந்தக் கணக்கில் சேமிப்பதற்குக் கோருகிறது. இதை அமைப்புகளில் மாற்றலாம்.</translation>

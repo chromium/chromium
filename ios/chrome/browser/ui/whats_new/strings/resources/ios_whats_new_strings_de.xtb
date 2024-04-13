@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1533488253335887280">Einfacher und sicherer Zugriff auf deine Passwörter vom Startbildschirm aus.</translation>
+<translation id="1590550141045148182">Öffne und schließe deine Tabs nach Bedarf.</translation>
+<translation id="2036020471903443693">Der Tab wird unten am Display angepinnt.</translation>
+<translation id="2984477737332162971">Rufe deine geöffneten Tabs auf.</translation>
+<translation id="3595188309555410362">Tabs, die seit einiger Zeit nicht mehr verwendet wurden, werden jetzt in den Bereich „Inaktive Tabs“ verschoben.</translation>
+<translation id="3941788408634637840">Tippe auf „Inaktive Tabs“ (falls verfügbar).</translation>
+<translation id="3942215673032261195">Du kannst oft besuchte Websites anpinnen, um später leichter darauf zugreifen zu können.</translation>
+<translation id="4196935312151003338">Wähle im Menü „Tab anpinnen“ aus.</translation>
+<translation id="4497631794981705027">Halte den Startbildschirm gedrückt.</translation>
+<translation id="463279609093232564">Tippe links oben auf dem Display auf „+“.</translation>
+<translation id="5604467549230434026">Gib „Chrome“ in das Feld des Such-Widgets ein.</translation>
+<translation id="5639067007765618198">Google Passwortmanager-Widget</translation>
 <translation id="5922999516621365983">Ziehe den Tab zum Anpinnen hierher.</translation>
 <translation id="5979837087407522202">Passwörter suchen</translation>
+<translation id="6109989197058801417">Halte den Tab gedrückt, den du anpinnen möchtest.</translation>
+<translation id="639614003069108254">Wähle „Passwortmanager“ aus und tippe dann auf „Widget hinzufügen“.</translation>
+<translation id="6905308710260460250">Angepinnte Tabs</translation>
+<translation id="720206380500582061">Einstellungen für „Inaktive Tabs“ kannst du unter „Einstellungen“ &gt; „Tabs“ verwalten.</translation>
 <translation id="8077675488769462025">Inaktive Tabs</translation>
+<translation id="8602952180069641300">Scrolle in deinen Tabs ganz nach oben.</translation>
+<translation id="979990360845983227">Mindestens 14 Tage lang nicht verwendet</translation>
 </translationbundle>

@@ -272,7 +272,6 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2434405374328098816">Xa gardaches un contrasinal de <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Podes desprazarte cara á esquerda para navegar no modo de incógnito.</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
-<translation id="2459155039684421202">Na barra de enderezos, indica unha tarefa como, por exemplo, "borrar o meu historial" ou "editar contrasinais".</translation>
 <translation id="2461070143328828326">Configuración dos contrasinais</translation>
 <translation id="2462736546165239215">Aquí podes atopar o historial de navegación.</translation>
 <translation id="2468132863574325555">Google Drive</translation>
@@ -827,7 +826,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5256661381001734217">Este sitio está tentando abrir unha aplicación.  Con esta acción, sairás do modo de incógnito.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
-<translation id="5283494734135414249">Toca o atallo que se mostra debaixo da barra de enderezos.</translation>
 <translation id="5295239312320826323">Queres quitar a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6638511529934826365">Aplicar zoom ao texto…</translation>
 <translation id="6640268266988685324">Pestana aberta</translation>
 <translation id="6642362222295953972">Cambiar á pestana xa aberta</translation>
-<translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
 <translation id="6656103420185847513">Editar cartafol</translation>
@@ -1202,7 +1199,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7138080855268384146">{count,plural, =1{Gardouse o marcador en {title}, na túa conta ({email})}other{Gardáronse {count} marcadores en {title}, na túa conta ({email})}}</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
-<translation id="7154343200458623869">Completa a tarefa.</translation>
 <translation id="7161230316646448869">Sincroniza os teus marcadores e o historial, entre outras cousas, en todos os dispositivos</translation>
 <translation id="7162168282402939716">Desbloquear pestanas do modo de incógnito con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>

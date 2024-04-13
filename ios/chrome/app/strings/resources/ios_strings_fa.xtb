@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2434918313224755415">برای مرور در «حالت ناشناس»، می‌توانید به چپ پیمایش کنید.</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
-<translation id="2459155039684421202">در نوار نشانی، کاری مثل «پاک کردن سابقه من» یا «ویرایش گذرواژه‌ها» را وارد کنید.</translation>
 <translation id="2461070143328828326">تنظیمات رمز عبور</translation>
 <translation id="2462736546165239215">می‌توانید همه سابقه مرورتان را در اینجا ببینید.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">این سایت تلاش می‌کند برنامه‌ای را باز کند.  با این کار، از «حالت ناشناس» خارج می‌شوید.</translation>
 <translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
-<translation id="5283494734135414249">روی میان‌بری که زیر نوار نشانی ظاهر می‌شود ضربه بزنید.</translation>
 <translation id="5295239312320826323">حساب <ph name="USER_EMAIL" /> برداشته شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5316356981864168850">‫<ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1109,7 +1107,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6638511529934826365">بزرگ‌نمایی نوشتار…</translation>
 <translation id="6640268266988685324">برگه باز</translation>
 <translation id="6642362222295953972">رفتن به برگه موجود</translation>
-<translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645899968535965230">رمزینه پاسخ‌سریع: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6656103420185847513">ویرایش پوشه</translation>
@@ -1202,7 +1199,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7136892417564438900">دوربین غیرقابل‌ دسترسی است</translation>
 <translation id="7138080855268384146">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{{count} نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{{count} نشانک در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="7141960840225504692">برگه‌هایتان بسته خواهد شد و داده‌های مرور حذف خواهد شد</translation>
-<translation id="7154343200458623869">تکلیف را کامل کنید</translation>
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="7162168282402939716">باز کردن قفل «برگه‌های ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>

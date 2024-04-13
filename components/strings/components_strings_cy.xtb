@@ -1083,6 +1083,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
             <ph name="LIST_ITEM" />Hanes chwilio<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />Gwybodaeth a roddir mewn ffurflenni<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">Cynilion</translation>
 <translation id="3103188521861412364">Stociau a Bondiau</translation>
 <translation id="3105172416063519923">Rhif adnabod yr ased:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r ffurfweddiad DNS diogel<ph name="END_LINK" /></translation>
@@ -1301,6 +1302,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3493660662684070951">Tryciau, Faniau a SUV</translation>
 <translation id="3495081129428749620">Chwilio'r Dudalen
     <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">Cyflog</translation>
 <translation id="3497627066518778351">Adolygwch restr o ddata gwefan ar y ddyfais mewn ffenestr newydd</translation>
 <translation id="3498215018399854026">Ni allem gyrraedd dy riant ar hyn o bryd. Rhowch gynnig arall arni.</translation>
 <translation id="350069200438440499">Enw'r ffeil:</translation>
@@ -2338,6 +2340,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5519696598216267194">Papur (Rhagdyllwyd)</translation>
 <translation id="5521782189689806907">Cabinetau</translation>
 <translation id="5523118979700054094">Enw'r polisi</translation>
+<translation id="5523588073846127669">Nid yw'r masnachwr yn derbyn y cerdyn rhithwir hwn</translation>
 <translation id="5525755241743357906">Mae'r ffeil yn cael ei chopïo neu ei symud</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="55293785478302737">Pwyth ymyl</translation>
@@ -3720,6 +3723,7 @@ Manylion ychwanegol:
 <translation id="81563721597823545">Offer Hoci</translation>
 <translation id="8161095570253161196">Parhau i bori</translation>
 <translation id="8163866351304776260">Pedwar twll ar y chwith</translation>
+<translation id="8163998196788647716">Cyfrif trafod</translation>
 <translation id="8164078261547504572">Eisiau e-byst pan fydd prisiau yn gostwng?</translation>
 <translation id="8169175551046720804">Ni ellir gosod bysellau "<ph name="DATA_CONTROLS_KEYS" />" yn yr un geiriadur</translation>
 <translation id="8175796834047840627">Mae Chrome yn cynnig cadw eich cardiau yn eich Cyfrif Google oherwydd eich bod wedi mewngofnodi. Gallwch newid yr ymddygiad hwn yn y gosodiadau.</translation>

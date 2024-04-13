@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">सर्व वाचले चिन्हांकित करा</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> निवडले</translation>
+<translation id="1710698977900873766">वर्धित संरक्षण सुरू करा</translation>
 <translation id="1713777106376424209">द्वारे डिलिव्हर केले</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
@@ -271,7 +272,6 @@
 <translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2434918313224755415">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी डावीकडे स्क्रोल करू शकता.</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
-<translation id="2459155039684421202">ॲड्रेस बारमध्ये, "माझा इतिहास साफ करा" किंवा "पासवर्ड संपादित करा" यासारखी टास्क एंटर करा.</translation>
 <translation id="2461070143328828326">पासवर्ड सेटिंग्ज</translation>
 <translation id="2462736546165239215">तुम्ही तुमचा सर्व ब्राउझिंग इतिहास येथे पाहू शकता.</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -826,7 +826,6 @@
 <translation id="5256661381001734217">ही साइट अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.  हे तुम्हाला गुप्त मोड च्या बाहेर घेऊन जाईल.</translation>
 <translation id="5271265092610673171">{count,plural, =1{भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.}other{भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
-<translation id="5283494734135414249">ॲड्रेस बारच्या खाली दिसणार्‍या शॉर्टकटवर टॅप करा.</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="INDEX" /></translation>
@@ -1109,7 +1108,6 @@
 <translation id="6638511529934826365">मजकूर झूम करा…</translation>
 <translation id="6640268266988685324">टॅब उघडा</translation>
 <translation id="6642362222295953972">विद्यमान टॅबवर स्विच करा</translation>
-<translation id="6643016212128521049">साफ करा</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6656103420185847513">फोल्डर संपादित करा</translation>
@@ -1202,7 +1200,6 @@
 <translation id="7136892417564438900">कॅमेरा अनुपलब्ध आहे</translation>
 <translation id="7138080855268384146">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="7141960840225504692">तुमचे टॅब बंद केले जातील आणि ब्राउझिंग डेटा हटवला जाईल</translation>
-<translation id="7154343200458623869">तुमची टास्क पूर्ण करा.</translation>
 <translation id="7161230316646448869">सर्व डिव्हाइसवर तुमचे बुकमार्क, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरून गुप्त टॅब अनलॉक करा</translation>
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>

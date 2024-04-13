@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">Heslo bude uložené do vášho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Vymazanie údajov prehliadača Chromium</translation>
 <translation id="1791845338122684020">Otvorí stránku histórie v prehliadači Chromium.</translation>
+<translation id="1811860791247653035">Ak chcete mať k dispozícii prispôsobenie a ďalšie funkcie, zahrňte Chromium do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Prehliadač Chromium overil, že certifikát tohto webu bol vydaný vydavateľom <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Prehliadač Chromium obsahuje funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3688710892786762883">Chromium zistí sledovacie čísla zásielok na weboch, ktoré navštívite, a zobrazí aktuality o zásielke na stránke na novej karte. Vaše údaje sa budú zdieľať s Googlom na účely poskytovania tejto funkcie a zlepšovania Nákupov pre všetkých.</translation>
 <translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
+<translation id="3728124580182886854">Prepojte Chromium a ďalšie služby Googlu na prispôsobenie a ďalšie účely</translation>
 <translation id="3780779443901618967">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z prehliadača Chromium môžete preskočiť.</translation>
 <translation id="3784369638459513223">Otvorí novú kartu inkognito v prehliadači Chromium.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
@@ -251,7 +253,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="800195749539500647">Využívajte Chromium naplno</translation>
 <translation id="8013573822802650211">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa do nich</translation>
 <translation id="8071041515667087705">Prejdite do Nastavení prehliadača Chromium.</translation>
-<translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8104697640054703121">Získajte najúčinnejšie zabezpečenie prehliadača Chromium pred nebezpečnými webmi</translation>
 <translation id="8115308261377517697">Nastavte si Chromium ako predvolený prehliadač</translation>
 <translation id="8197822717502700527">Teraz budete môcť využívať Chromium vo svojom zariadení naplno.</translation>

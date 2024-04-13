@@ -378,6 +378,7 @@
 <translation id="168693727862418163">हे धोरण मूल्य त्याच्या स्कीमासोबत प्रमाणित करता आले नाही आणि त्याच्याकडे दुर्लक्ष केले जाईल.</translation>
 <translation id="168841957122794586">सर्व्हर सर्टिफिकेटमध्ये एक कमकुवत क्रिप्टोग्राफिक की आहे.</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
+<translation id="1691425742011409472">पॉइंटर लॉक</translation>
 <translation id="1692622044604477956">चित्रपटाच्या सूची आणि चित्रपटगृहाचे शोटाइम</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:<ph name="END_BOLD" /> Chrome हे चार आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो. Chrome सेटिंग्जमध्ये, Chrome ने साइटसह शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉकदेखील करू शकता आणि जाहिरातीचे विषय कधीही बंद करू शकता.</translation>
 <translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
@@ -727,6 +728,7 @@
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
 <translation id="2346319942568447007">तुम्ही कॉपी केलेली इमेज</translation>
+<translation id="2349056830177284083">कीबोर्ड लॉक</translation>
 <translation id="2349957959687031096">गुप्त टॅब उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडण्याकरिता ॲक्टिव्हेट करा</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
@@ -943,6 +945,7 @@
 <translation id="2784474685437057136">B5 अतिरिक्त</translation>
 <translation id="2784949926578158345">कनेक्शन रीसेट केले.</translation>
 <translation id="2786008859124691917">सायकल आणि अ‍ॅक्सेसरी</translation>
+<translation id="2791955793407772554">पॉइंटर लॉक</translation>
 <translation id="2792012897584536778">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने सुरक्षा सर्टिफिकेट सेट केले आहे जे त्यांना तुम्ही भेट देत असलेल्या वेबसाइटचा आशय पाहण्याची परवानगी देऊ शकतात.</translation>
 <translation id="2794233252405721443">साइट ब्लॉक केली</translation>
 <translation id="2794629552137076216">ग्लास (सरफेस्ड)</translation>
@@ -1080,6 +1083,7 @@
             <ph name="LIST_ITEM" />शोध इतिहास<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />फॉर्ममध्ये एंटर केलेली माहिती<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">स्टॉक आणि बाँड</translation>
 <translation id="3105172416063519923">मालमत्ता आयडी:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
@@ -1101,6 +1105,7 @@
 <translation id="3121994479408824897"><ph name="DOMAIN" /> वर जा</translation>
 <translation id="3126023634486644099">लेबल (पर्मनंट)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> हे आता तुमचे डीफॉल्ट शोध इंजीन आहे</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> शोधा</translation>
 <translation id="3140646734028448730">व्‍यवसाय सेवा</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
 <translation id="3141641372357166056">संमती निर्णय नाही</translation>
@@ -1296,6 +1301,7 @@
 <translation id="3487845404393360112">ट्रे ४</translation>
 <translation id="3493660662684070951">ट्रक, व्हॅन आणि SUVs</translation>
 <translation id="3495081129428749620">पेज <ph name="PAGE_TITLE" /> मध्ये शोधा</translation>
+<translation id="3495818359064790343">पगार</translation>
 <translation id="3497627066518778351">डिव्हाइसवरील साइट डेटाच्या सूचीचे नवीन विंडोमध्ये पुनरावलोकन करा</translation>
 <translation id="3498215018399854026">याक्षणी आम्ही आपल्या पालकांपर्यंत पोहोचू शकलो नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="350069200438440499">फाइल नाव:</translation>
@@ -1425,12 +1431,14 @@
 <translation id="3711895659073496551">निलंबन</translation>
 <translation id="3712006010833051684">एन्व्हलप #१०</translation>
 <translation id="3712624925041724820">परवाने संपुष्टात</translation>
+<translation id="3713277100229669269">आता तुम्हाला पेमेंट करण्यापूर्वी कार्डशी संबंधित फायदे दिसतील</translation>
 <translation id="371420189621607696">स्पर्धात्मक व्हिडिओ गेमिंग</translation>
 <translation id="3714633008798122362">वेब कॅलेंडर</translation>
 <translation id="3714780639079136834">मोबाइल डेटा किंवा वाय-फाय सुरू करणे</translation>
 <translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल अपलोड करण्यापासून ब्लॉक केल्या आहेत}}</translation>
 <translation id="3715545959749027023">Chrome ने सुरक्षा इव्हेंट फ्लॅग केल्यास, इव्हेंटसंबंधित उपयुक्त डेटा तुमच्या अ‍ॅडमिनिस्ट्रेटरकडे पाठवला जातो. यामध्ये तुम्ही Chrome मध्ये भेट देत असलेल्या पेजच्या URL, फाइलची नावे किंवा मेटाडेटा, ब्राउझर किंवा टॅब क्रॅश होणे आणि तुम्ही वेबवर आधारित अ‍ॅप्लिकेशन, तुमचे डिव्हाइस व Chrome वर साइन इन करण्यासाठी वापरत असलेले वापरकर्ता नाव असू शकते.</translation>
 <translation id="3715597595485130451">वाय-फाय वर कनेक्ट करा</translation>
+<translation id="3716622997181469465">कीबोर्ड लॉक</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉन्फिगरेशन तपासणे<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">अपडेटदरम्यान तुम्हाला तुमचे डिव्हाइस कमान १० मिनिटे वापरता येणार नाही.</translation>
 <translation id="372429172604983730">या एररला कारणीभूत असू शकणार्‍या ॲप्लिकेशनमध्ये अँटिव्हायरस, फायरवॉल आणि वेब फिल्टरिंग किंवा प्रॉक्सी सॉफ्टवेअरचा समावेश होतो.</translation>
@@ -2331,6 +2339,7 @@
 <translation id="5519696598216267194">पेपर (प्रीपंच्ड)</translation>
 <translation id="5521782189689806907">कॅबिनेट</translation>
 <translation id="5523118979700054094">धोरणाचे नाव</translation>
+<translation id="5523588073846127669">व्यापारी हे व्हर्च्युअल कार्ड स्वीकारत नाही</translation>
 <translation id="5525755241743357906">फाइल कॉपी केली किंवा हलवली</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी, टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="55293785478302737">एज स्टिच</translation>
@@ -3514,6 +3523,7 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" />, <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करा</translation>
 <translation id="7752995774971033316">व्यवस्थापित न केलेले</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> वापरून चॅट करा</translation>
 <translation id="7754587126786572336">अपडेट सुरू झाल्यावर तुमचे Chrome टॅब आणि अ‍ॅप्स बंद होतील</translation>
 <translation id="7755287808199759310">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
 <translation id="7755624218968747854">प्राथमिक रोल</translation>
@@ -3713,6 +3723,7 @@
 <translation id="81563721597823545">हॉकीची उपकरणे</translation>
 <translation id="8161095570253161196">ब्राउझिंग पुन्‍हा सुरू करा</translation>
 <translation id="8163866351304776260">क्वाड पंच लेफ्ट</translation>
+<translation id="8163998196788647716">व्यवहार करणारे खाते</translation>
 <translation id="8164078261547504572">किमतीमध्ये घट झाल्यावर ईमेल मिळवायची आहेत का?</translation>
 <translation id="8169175551046720804">"<ph name="DATA_CONTROLS_KEYS" />" या की समान डिक्शनरीमध्ये सेट केल्या जाऊ शकत नाहीत</translation>
 <translation id="8175796834047840627">तुम्ही साइन इन केले असल्यामुळे Chrome तुमच्या Google खात्यामध्ये तुमची कार्डे सेव्ह करत आहे. तुम्‍ही हे वर्तन सेटिंग्‍जमध्‍ये बदलू शकता.</translation>

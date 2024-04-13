@@ -226,6 +226,7 @@
 <translation id="1864454756846565995">USB-C डिव्‍हाइस (मागील बाजूचे पोर्ट)</translation>
 <translation id="1869497990620230175">झटपट फाइल</translation>
 <translation id="1871023081802165724">मीडिया प्ले करा</translation>
+<translation id="1871915835366697861">या गेमसाठी उपलब्ध नाही</translation>
 <translation id="1879018240766558464">गुप्त विंडोना सध्या सपोर्ट नाही. इतर ॲप्स सेव्ह केली जातील.</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्क नाही</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> वर मिरर करत आहे</translation>
@@ -1791,6 +1792,7 @@
 <translation id="79341161159229895">खाते <ph name="FIRST_PARENT_EMAIL" /> आणि <ph name="SECOND_PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
 <translation id="793716872548410480">तुमचा क्लिपबोर्ड पाहण्यासाठी <ph name="SHORTCUT_KEY_NAME" /> + V प्रेस करा. तुम्ही कॉपी केलेल्या शेवटच्या पाच गोष्टी तुमच्या क्लिपबोर्डवर सेव्ह केल्या आहेत.</translation>
 <translation id="7942349550061667556">लाल</translation>
+<translation id="7943516765291457328">जवळपासच्या हॉटस्पॉटसाठी स्कॅन करण्याकरिता ब्लूटूथ सुरू करा</translation>
 <translation id="7944023924886109030">आजचे सर्व इव्‍हेंट पहा</translation>
 <translation id="7945357288295809525">अ‍ॅक्सेसिबिलिटी सेटिंग्ज दाखवा, "<ph name="ENABLED_FEATURES" />" सुरू केले आहे.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ला तुमचे <ph name="DEVICE_NAME" /> वापरायचे आहे</translation>

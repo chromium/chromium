@@ -226,6 +226,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1869497990620230175">Tệp nhanh</translation>
 <translation id="1871023081802165724">Phát nội dung nghe nhìn</translation>
+<translation id="1871915835366697861">Không được hỗ trợ trong trò chơi này</translation>
 <translation id="1879018240766558464">Hiện không hỗ trợ cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
@@ -1791,6 +1792,7 @@ Mới cài đặt</translation>
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>
 <translation id="7942349550061667556">Đỏ</translation>
+<translation id="7943516765291457328">Bật Bluetooth để quét tìm các điểm phát sóng lân cận</translation>
 <translation id="7944023924886109030">Xem tất cả sự kiện cho hôm nay</translation>
 <translation id="7945357288295809525">Hiển thị chế độ cài đặt hỗ trợ tiếp cận, "<ph name="ENABLED_FEATURES" />" đã bật.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> muốn sử dụng <ph name="DEVICE_NAME" /> của bạn</translation>

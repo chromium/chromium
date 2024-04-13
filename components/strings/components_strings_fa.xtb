@@ -1083,6 +1083,7 @@
             <ph name="LIST_ITEM" />سابقه جستجو<ph name="END_LIST_ITEM" />
             <ph name="LIST_ITEM" />اطلاعات واردشده در فرم‌ها<ph name="END_LIST_ITEM" />
           <ph name="END_LIST" /></translation>
+<translation id="3102312643185441063">حساب پس‌انداز</translation>
 <translation id="3103188521861412364">سهام و اوراق قرضه</translation>
 <translation id="3105172416063519923">شناسه دارایی:</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />بررسی پیکربندی DNS امن<ph name="END_LINK" /></translation>
@@ -1301,6 +1302,7 @@
 <translation id="3493660662684070951">کامیون، وَن، و خودروهای شاسی‌بلند</translation>
 <translation id="3495081129428749620">یافتن در صفحه
 <ph name="PAGE_TITLE" /></translation>
+<translation id="3495818359064790343">حقوق</translation>
 <translation id="3497627066518778351">مرور فهرست داده‌های سایت درون دستگاه در پنجره‌ای جدید</translation>
 <translation id="3498215018399854026">در حال حاضر نمی‌توانیم با والدینتان تماس برقرار کنیم. لطفاً دوباره امتحان کنید.</translation>
 <translation id="350069200438440499">نام فایل:</translation>
@@ -2338,6 +2340,7 @@
 <translation id="5519696598216267194">کاغذ (ازپیش پانچ‌شده)</translation>
 <translation id="5521782189689806907">کابینت‌سازی</translation>
 <translation id="5523118979700054094">نام خط‌مشی</translation>
+<translation id="5523588073846127669">فروشنده این کارت مجازی را نمی‌پذیرد</translation>
 <translation id="5525755241743357906">فایل کپی یا منتقل شد</translation>
 <translation id="5526617258931667850">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات ChromeOS، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="55293785478302737">دوختن لبه</translation>
@@ -3720,6 +3723,7 @@
 <translation id="81563721597823545">تجهیزات هاکی</translation>
 <translation id="8161095570253161196">ازسر گرفتن مرور</translation>
 <translation id="8163866351304776260">چهار سوراخ در چپ</translation>
+<translation id="8163998196788647716">حساب تراکنش</translation>
 <translation id="8164078261547504572">می‌خواهید هنگام کاهش یافتن قیمت‌ها، ایمیل دریافت کنید؟</translation>
 <translation id="8169175551046720804">کلیدهای «<ph name="DATA_CONTROLS_KEYS" />» را نمی‌توان در واژه‌نامه یکسان تنظیم کرد</translation>
 <translation id="8175796834047840627">‏چون به سیستم وارد شده‌اید، Chrome پیشنهاد می‌کند کارت‌ها را در حساب Google ذخیره کنید. در تنظیمات می‌توانید این رفتار را تغییر دهید.</translation>

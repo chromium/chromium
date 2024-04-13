@@ -272,7 +272,6 @@
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2434918313224755415">আপনি 'ছদ্মবেশী' মোডে ব্রাউজ করার জন্য বাঁদিকে স্ক্রল করতে পারবেন।</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
-<translation id="2459155039684421202">অ্যাড্রেস বারে, “আমার ইতিহাস মুছুন” বা “পাসওয়ার্ড এডিট করুন”-এর মতো টাস্ক লিখুন।</translation>
 <translation id="2461070143328828326">পাসওয়ার্ড সেটিংস</translation>
 <translation id="2462736546165239215">আপনি নিজের সব ব্রাউজিং ইতিহাস এখানে পাবেন।</translation>
 <translation id="2468132863574325555">Drive</translation>
@@ -827,7 +826,6 @@
 <translation id="5256661381001734217">এই সাইট অ্যাপ্লিকেশন খোলার জন্য চেষ্টা করছে।  এটি করলে আপনাকে 'ছদ্মবেশী মোড' ছেড়ে বেরিয়ে যেতে হবে।</translation>
 <translation id="5271265092610673171">{count,plural, =1{ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।}one{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}other{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}}</translation>
 <translation id="5271549068863921519">পাসওয়ার্ড সেভ করুন</translation>
-<translation id="5283494734135414249">অ্যাড্রেস বারের নিচে যে শর্টকার্ট দেখা যায় তার উপরে ট্যাপ করুন।</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> অ্যাকাউন্ট সরাবেন?</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />-এর <ph name="INDEX" /></translation>
@@ -1110,7 +1108,6 @@
 <translation id="6638511529934826365">টেক্সট জুম করা…</translation>
 <translation id="6640268266988685324">ট্যাব খুলুন</translation>
 <translation id="6642362222295953972">আগে থেকে থাকা ট্যাবে পাল্টান</translation>
-<translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645899968535965230">QR কোড: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6656103420185847513">ফোল্ডার সম্পাদনা করুন</translation>
@@ -1203,7 +1200,6 @@
 <translation id="7136892417564438900">ক্যামেরা অনুপলব্ধ</translation>
 <translation id="7138080855268384146">{count,plural, =1{বুকমার্ক আপনার অ্যাকাউন্ট -{email}এ "{title}"-এ সেভ করা হয়েছে}one{{count}টি বুকমার্ক আপনার অ্যাকাউন্ট {email}-এ "{title}"-এ সেভ করা হয়েছে}other{{count}টি বুকমার্ক আপনার অ্যাকাউন্ট {email}-এ "{title}"-এ সেভ করা হয়েছে}}</translation>
 <translation id="7141960840225504692">আপনার ট্যাব বন্ধ করে এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
-<translation id="7154343200458623869">আপনার টাস্ক সম্পূর্ণ করুন।</translation>
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে ছদ্মবেশী ট্যাব আনলক করুন</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>

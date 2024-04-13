@@ -378,6 +378,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="168693727862418163">Preverjanje vrednosti tega pravilnika v skladu z njegovo shemo ni uspelo in bo prezrta.</translation>
 <translation id="168841957122794586">Potrdilo strežnika vsebuje šibek šifrirni ključ.</translation>
 <translation id="1689333818294560261">Vzdevek</translation>
+<translation id="1691425742011409472">zaklepanje kazalca</translation>
 <translation id="1692622044604477956">Sporedi kinodvoran in gledališč</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako lahko upravljate podatke:<ph name="END_BOLD" /> Chrome samodejno izbriše teme, starejše od štirih tednov. Ko nadaljujete brskanje, se tema lahko znova prikaže na seznamu. V Chromovih nastavitvah lahko prav tako kadar koli blokirate teme, za katere ne želite, da jih Chrome deli s spletnimi mesti, in izklopite teme oglasov.</translation>
 <translation id="1697532407822776718">Pripravljeni ste.</translation>
@@ -727,6 +728,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2337852623177822836">Nastavitev nadzira vaš skrbnik</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> želi izvesti seznanitev</translation>
 <translation id="2346319942568447007">Slika, ki ste jo kopirali</translation>
+<translation id="2349056830177284083">Zaklepanje tipkovnice</translation>
 <translation id="2349957959687031096">Gumb za odpiranje anonimnega zavihka, aktivirajte, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="2350796302381711542">Dovoli gostitelju <ph name="HANDLER_HOSTNAME" /> odpreti vse povezave za <ph name="PROTOCOL" /> namesto gostitelja <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Kamera in mikrofon sta dovoljena</translation>
@@ -943,6 +945,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Povezava je bila obnovljena.</translation>
 <translation id="2786008859124691917">Kolesa in oprema</translation>
+<translation id="2791955793407772554">Zaklepanje kazalca</translation>
 <translation id="2792012897584536778">Skrbniki te naprave so nastavili varnostna potrdila, ki jim morda omogočajo ogled vsebine spletnih mest, ki jih obiščete.</translation>
 <translation id="2794233252405721443">Spletno mesto blokirano</translation>
 <translation id="2794629552137076216">Glass (Surfaced)</translation>
@@ -1102,6 +1105,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3121994479408824897">Odpri <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je zdaj vaš privzeti iskalnik</translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> – Iskanje tu: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3140646734028448730">Poslovne storitve</translation>
 <translation id="3141093262818886744">Vseeno odpri</translation>
 <translation id="3141641372357166056">Brez odločitve glede privolitve</translation>
@@ -1428,12 +1432,14 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3711895659073496551">Prekinitev</translation>
 <translation id="3712006010833051684">Kuverta št. 10</translation>
 <translation id="3712624925041724820">Ni dovolj licenc</translation>
+<translation id="3713277100229669269">Zdaj si lahko pred plačevanjem ogledate ugodnosti kartice</translation>
 <translation id="371420189621607696">Videoigričarska tekmovanja (e-športi)</translation>
 <translation id="3714633008798122362">spletni koledar</translation>
 <translation id="3714780639079136834">vklopiti prenos podatkov v mobilnih omrežjih ali Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Nalaganje datoteke je blokirano}one{Nalaganje <ph name="FILE_COUNT" /> datoteke je blokirano}two{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}few{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}other{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}}</translation>
 <translation id="3715545959749027023">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="3715597595485130451">Vzpostavljanje povezave z omrežjem Wi-Fi</translation>
+<translation id="3716622997181469465">zaklepanje tipkovnice</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />preveriti strežnik proxy, požarni zid in konfiguracijo DNS-ja<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">Med posodobitvijo naprave ne boste mogli uporabljati do 10 minut.</translation>
 <translation id="372429172604983730">Aplikacije, ki lahko povzročijo to napako, so med drugim protivirusni program, požarni zid, programska oprema za spletno filtriranje ali strežnik proxy.</translation>
@@ -3517,6 +3523,7 @@ Dodatne podrobnosti:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prilagajanje velikosti pisav in tipografije v Chromu</translation>
 <translation id="7752995774971033316">Odstranjen iz uporabe</translation>
+<translation id="7753769899818674547"><ph name="KEYWORD" /> – Klepet s storitvijo <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Zavihki in aplikacije v Chromu se bodo ob začetku posodobitve zaprli.</translation>
 <translation id="7755287808199759310">Starš ga lahko odblokira</translation>
 <translation id="7755624218968747854">Glavni kolut</translation>

@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Označit vše jako přečtené</translation>
 <translation id="1689333818294560261">Přezdívka</translation>
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1710698977900873766">Zapnout vylepšenou ochranu</translation>
 <translation id="1713777106376424209">Doručeno</translation>
 <translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
@@ -271,7 +272,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
 <translation id="2434918313224755415">Posunutím doleva si web můžete prohlížet v anonymním režimu.</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
-<translation id="2459155039684421202">Do adresního řádku zadejte úkol, například „vymazat historii“ nebo „upravit hesla“.</translation>
 <translation id="2461070143328828326">Nastavení hesla</translation>
 <translation id="2462736546165239215">Zde najdete veškerou svou historii prohlížení.</translation>
 <translation id="2468132863574325555">Disk</translation>
@@ -826,7 +826,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5256661381001734217">Tento web se pokouší otevřít aplikaci.  Tím opustíte anonymní režim.</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdné. Před uložením ho vyplňte.}few{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}many{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}other{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložit heslo</translation>
-<translation id="5283494734135414249">Klepněte na zkratku, která se zobrazí pod adresním řádkem.</translation>
 <translation id="5295239312320826323">Odstranit účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6638511529934826365">Přiblížit text…</translation>
 <translation id="6640268266988685324">Otevřená karta</translation>
 <translation id="6642362222295953972">Přepnout na existující kartu</translation>
-<translation id="6643016212128521049">Vymazat</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další</translation>
 <translation id="6656103420185847513">Úprava složky</translation>
@@ -1201,7 +1199,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7136892417564438900">Kamera je nedostupná</translation>
 <translation id="7138080855268384146">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložek}many{Do složky „{title}“ ve vašem účtu {email} byly uloženy {count} záložky}other{Do složky „{title}“ ve vašem účtu {email} bylo uloženo {count} záložek}}</translation>
 <translation id="7141960840225504692">Vaše karty se zavřou a vymažou se údaje o prohlížení</translation>
-<translation id="7154343200458623869">Dokončete úkol.</translation>
 <translation id="7161230316646448869">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="7162168282402939716">Odemknout anonymní karty pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>

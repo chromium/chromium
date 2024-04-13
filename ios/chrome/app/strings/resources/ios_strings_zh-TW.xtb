@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">全部標示為已讀取</translation>
 <translation id="1689333818294560261">暱稱</translation>
 <translation id="1700629756560807968">已選取 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
+<translation id="1710698977900873766">啟用強化防護</translation>
 <translation id="1713777106376424209">配送者</translation>
 <translation id="1715515772563243997">如果你信任 <ph name="SITE" />，可以使用已儲存的密碼登入。</translation>
 <translation id="1740468249224277719">輕觸兩下即可安裝。</translation>
@@ -271,7 +272,6 @@
 <translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2434918313224755415">向左捲動即可使用無痕模式瀏覽。</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
-<translation id="2459155039684421202">在網址列中輸入要執行的工作，例如「清除歷史記錄」或「編輯密碼」。</translation>
 <translation id="2461070143328828326">密碼設定</translation>
 <translation id="2462736546165239215">這裡會顯示你的所有瀏覽記錄。</translation>
 <translation id="2468132863574325555">雲端硬碟</translation>
@@ -826,7 +826,6 @@
 <translation id="5256661381001734217">這個網站正在嘗試開啟某個應用程式，這會使你退出無痕模式。</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
-<translation id="5283494734135414249">輕觸網址列下方顯示的捷徑。</translation>
 <translation id="5295239312320826323">要移除 <ph name="USER_EMAIL" /> 帳戶嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5316356981864168850"><ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
@@ -1108,7 +1107,6 @@
 <translation id="6638511529934826365">縮放文字…</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
 <translation id="6642362222295953972">切換至現有分頁</translation>
-<translation id="6643016212128521049">清除</translation>
 <translation id="6645899968535965230">QR 圖碼：<ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6656103420185847513">編輯資料夾</translation>
@@ -1201,7 +1199,6 @@
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7138080855268384146">{count,plural, =1{這個書籤已儲存到帳戶 ({email}) 中的「{title}」}other{這 {count} 個書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
-<translation id="7154343200458623869">完成工作。</translation>
 <translation id="7161230316646448869">同步你在所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="7162168282402939716">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕分頁</translation>
 <translation id="7173114856073700355">開啟設定</translation>

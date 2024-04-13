@@ -189,7 +189,6 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="6634107063912726160">Si sales de la cuenta, Chrome no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
 <translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta la dirección IP. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, Chrome también puede enviar las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="6648150602980899529">Estás accediendo con una cuenta administrada por <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
-<translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome de este dispositivo?</translation>
 <translation id="6683891932310469419">Abre la página del historial de Chrome.</translation>
 <translation id="6709398533399187136">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
 <translation id="6815466750807582739">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chrome.
@@ -219,6 +218,7 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="7272930098487145294">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chrome agregue tus fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chrome almacenados en este dispositivo.</translation>
 <translation id="7304491752269485262">Vista expandida de Autocompletar de Chrome</translation>
+<translation id="7344094882820374540">Obtener la seguridad más potente de Chrome contra sitios peligrosos</translation>
 <translation id="7349129508108954623">Permite que Chrome use Google Maps para brindarte instrucciones sobre cómo llegar y datos locales sobre las direcciones detectadas.</translation>
 <translation id="7394108421562933108">Maps en Chrome</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
