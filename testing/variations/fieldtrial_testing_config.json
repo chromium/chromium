@@ -11891,6 +11891,22 @@
             ]
         }
     ],
+    "MultiCalendarSupport": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MultiCalendarSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "MutationEvents": [
         {
             "platforms": [
