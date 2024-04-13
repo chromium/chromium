@@ -300,6 +300,10 @@
     No results found
   </message>
 
+  <message name="IDS_OMNIBOX_GEMINI_IPH" desc = "The string displayed as the last row in the Omnibox as IPH directing users to the @gemini starter pack.">
+    Type @gemini to Chat with Gemini
+  </message>
+
   <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
     <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
   </message>

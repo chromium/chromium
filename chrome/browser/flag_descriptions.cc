@@ -2561,6 +2561,12 @@ const char kOmniboxStarterPackExpansionName[] =
 const char kOmniboxStarterPackExpansionDescription[] =
     "Enables additional providers for the Site search starter pack feature";
 
+const char kOmniboxStarterPackIPHName[] =
+    "IPH message for the Site search starter pack";
+const char kOmniboxStarterPackIPHDescription[] =
+    "Enables an informational IPH message for the  Site search starter pack "
+    "feature";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kOmnibox2023RefreshConnectionSecurityIndicatorsName[] =
     "Omnibox 2023 refresh connection security indicators";

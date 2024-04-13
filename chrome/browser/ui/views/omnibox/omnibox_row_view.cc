@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
@@ -115,6 +116,10 @@ gfx::Insets OmniboxRowView::GetInsets() const {
   if (line_ != 0 && header_view_ && header_view_->GetVisible() &&
       !OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled()) {
     return gfx::Insets::TLBR(4, 0, 0, right_inset);
+  }
+  if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+      result_view_->GetThemeState() == OmniboxPartState::IPH) {
+    return gfx::Insets::TLBR(8, 8, 8, 16);
   }
 
   return gfx::Insets::TLBR(0, 0, 0, right_inset);

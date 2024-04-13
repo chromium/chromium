@@ -551,6 +551,12 @@ BASE_FEATURE(kStarterPackExpansion,
              "StarterPackExpansion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables an informational IPH message at the bottom of the Omnibox directing
+// users to certain starter pack engines.
+BASE_FEATURE(kStarterPackIPH,
+             "StarterPackIPH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, |SearchProvider| will not function in Zero Suggest.
 BASE_FEATURE(kAblateSearchProviderWarmup,
              "AblateSearchProviderWarmup",

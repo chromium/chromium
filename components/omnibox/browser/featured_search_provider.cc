@@ -47,6 +47,13 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   }
 
   DoStarterPackAutocompletion(input);
+
+  // TODO(crbug.com/333762301): Implement smarter triggering for the IPH match.
+  //  As is, the IPH message will always be displayed. This might make sense to
+  //  move to the ZPS provider.
+  if (OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
+    AddIPHMatch();
+  }
 }
 
 FeaturedSearchProvider::~FeaturedSearchProvider() = default;
@@ -146,5 +153,21 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     match.contents_class.emplace_back(0, ACMatchClassification::URL);
     match.SetAllowedToBeDefault(input);
   }
+  matches_.push_back(match);
+}
+
+void FeaturedSearchProvider::AddIPHMatch() {
+  // This value doesn't really matter as this suggestion is grouped after all
+  // other suggestions. Use an arbitrary constant.
+  constexpr int kRelevanceScore = 1000;
+  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/false,
+                          AutocompleteMatchType::NULL_RESULT_MESSAGE);
+
+  // Use this suggestion's contents field to display a message to the user that
+  // cannot be acted upon.
+  match.contents = l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH);
+  match.contents_class.emplace_back(0, ACMatchClassification::NONE);
+  match.from_keyword = true;
+
   matches_.push_back(match);
 }

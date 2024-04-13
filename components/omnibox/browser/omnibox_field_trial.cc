@@ -1133,6 +1133,10 @@ const base::FeatureParam<std::string> kGeminiUrlOverride(
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
 }
+
+bool IsStarterPackIPHEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kStarterPackIPH);
+}
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
 

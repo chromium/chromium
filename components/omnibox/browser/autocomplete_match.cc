@@ -1400,6 +1400,11 @@ int AutocompleteMatch::GetSortingOrder() const {
       shortcut_boosted) {
     return 1;
   }
+  // IPH message always appears at the bottom of the Omnibox, after all other
+  // suggestions.
+  if (type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+    return 4;
+  }
   return 3;
 }
 

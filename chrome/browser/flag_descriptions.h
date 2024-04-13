@@ -1489,6 +1489,9 @@ extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 extern const char kOmniboxStarterPackExpansionName[];
 extern const char kOmniboxStarterPackExpansionDescription[];
 
+extern const char kOmniboxStarterPackIPHName[];
+extern const char kOmniboxStarterPackIPHDescription[];
+
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 

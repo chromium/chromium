@@ -318,6 +318,13 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
   if (part_state == OmniboxPartState::NORMAL && !prefers_contrast)
     return nullptr;
 
+  if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+      part_state == OmniboxPartState::IPH) {
+    return views::CreateThemedRoundedRectBackground(
+        GetOmniboxBackgroundColorId(part_state), /*radius=*/8,
+        /*for_border_thickness=*/0);
+  }
+
   if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()) {
     gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
                                   static_cast<float>(view->height()), 0};
@@ -482,8 +489,18 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
   // NULL_RESULT_MESSAGE matches are no-op suggestions that only deliver a
   // message. The selected and hovered states imply an action can be taken from
   // that suggestion, so do not allow those states for this result.
-  if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE)
-    return OmniboxPartState::NORMAL;
+  //
+  // IPH messages originate from the Featured Search Provider and show a
+  // different theme state (colored background).
+  // TODO(crbug.com/333762301): Probably makes sense to find a more sustainable
+  // way to differentiate IPH from the "No Results Found" suggestion. Maybe a
+  // different autocomplete match type.
+  if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
+    bool is_iph = OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+                  match_.provider->type() ==
+                      AutocompleteProvider::Type::TYPE_FEATURED_SEARCH;
+    return is_iph ? OmniboxPartState::IPH : OmniboxPartState::NORMAL;
+  }
 
   if (GetMatchSelected())
     return OmniboxPartState::SELECTED;

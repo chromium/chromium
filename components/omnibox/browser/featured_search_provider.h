@@ -40,6 +40,11 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   void AddStarterPackMatch(const TemplateURL& template_url,
                            const AutocompleteInput& input);
 
+  // Constructs a NULL_RESULT_MESSAGE match that is informational only and
+  // cannot be acted upon.  This match delivers an IPH message directing users
+  // to the starter pack feature.
+  void AddIPHMatch();
+
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;
 };
