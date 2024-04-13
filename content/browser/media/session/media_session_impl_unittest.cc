@@ -35,6 +35,7 @@ namespace content {
 
 using media_session::mojom::AudioFocusType;
 using media_session::mojom::MediaPlaybackState;
+using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionInfo;
 using media_session::mojom::MediaSessionInfoPtr;
 using media_session::test::MockMediaSessionMojoObserver;
@@ -98,15 +99,13 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   MediaSessionImplTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    default_actions_.insert(media_session::mojom::MediaSessionAction::kPlay);
-    default_actions_.insert(media_session::mojom::MediaSessionAction::kPause);
-    default_actions_.insert(media_session::mojom::MediaSessionAction::kStop);
-    default_actions_.insert(media_session::mojom::MediaSessionAction::kSeekTo);
-    default_actions_.insert(media_session::mojom::MediaSessionAction::kScrubTo);
-    default_actions_.insert(
-        media_session::mojom::MediaSessionAction::kSeekForward);
-    default_actions_.insert(
-        media_session::mojom::MediaSessionAction::kSeekBackward);
+    default_actions_.insert(MediaSessionAction::kPlay);
+    default_actions_.insert(MediaSessionAction::kPause);
+    default_actions_.insert(MediaSessionAction::kStop);
+    default_actions_.insert(MediaSessionAction::kSeekTo);
+    default_actions_.insert(MediaSessionAction::kScrubTo);
+    default_actions_.insert(MediaSessionAction::kSeekForward);
+    default_actions_.insert(MediaSessionAction::kSeekBackward);
   }
 
   MediaSessionImplTest(const MediaSessionImplTest&) = delete;
@@ -212,8 +211,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     return player_observer_.get();
   }
 
-  const std::set<media_session::mojom::MediaSessionAction>& default_actions()
-      const {
+  const std::set<MediaSessionAction>& default_actions() const {
     return default_actions_;
   }
 
@@ -226,7 +224,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   }
 
  private:
-  std::set<media_session::mojom::MediaSessionAction> default_actions_;
+  std::set<MediaSessionAction> default_actions_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -376,9 +374,8 @@ TEST_F(MediaSessionImplTest, SessionInfo_PlaybackState) {
 }
 
 TEST_F(MediaSessionImplTest, SuspendUI) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPause, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPause, _))
       .Times(0);
 
   StartNewPlayer();
@@ -392,14 +389,12 @@ TEST_F(MediaSessionImplTest, SuspendUI) {
 }
 
 TEST_F(MediaSessionImplTest, SuspendContent_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPause, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPause, _))
       .Times(0);
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPause);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kContent);
   mock_media_session_service().FlushForTesting();
@@ -410,14 +405,12 @@ TEST_F(MediaSessionImplTest, SuspendContent_WithAction) {
 }
 
 TEST_F(MediaSessionImplTest, SuspendSystem_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPause, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPause, _))
       .Times(0);
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPause);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kSystem);
   mock_media_session_service().FlushForTesting();
@@ -428,13 +421,11 @@ TEST_F(MediaSessionImplTest, SuspendSystem_WithAction) {
 }
 
 TEST_F(MediaSessionImplTest, SuspendUI_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPause, _));
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPause, _));
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPause);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kUI);
   mock_media_session_service().FlushForTesting();
@@ -445,9 +436,8 @@ TEST_F(MediaSessionImplTest, SuspendUI_WithAction) {
 }
 
 TEST_F(MediaSessionImplTest, ResumeUI) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPlay, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPlay, _))
       .Times(0);
 
   StartNewPlayer();
@@ -462,14 +452,12 @@ TEST_F(MediaSessionImplTest, ResumeUI) {
 }
 
 TEST_F(MediaSessionImplTest, ResumeContent_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPlay, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPlay, _))
       .Times(0);
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPlay);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPlay);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kSystem);
   GetMediaSession()->Resume(MediaSession::SuspendType::kContent);
@@ -481,14 +469,12 @@ TEST_F(MediaSessionImplTest, ResumeContent_WithAction) {
 }
 
 TEST_F(MediaSessionImplTest, ResumeSystem_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPlay, _))
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPlay, _))
       .Times(0);
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPlay);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPlay);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kSystem);
   GetMediaSession()->Resume(MediaSession::SuspendType::kSystem);
@@ -500,13 +486,11 @@ TEST_F(MediaSessionImplTest, ResumeSystem_WithAction) {
 }
 
 TEST_F(MediaSessionImplTest, ResumeUI_WithAction) {
-  EXPECT_CALL(
-      mock_media_session_service().mock_client(),
-      DidReceiveAction(media_session::mojom::MediaSessionAction::kPlay, _));
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(MediaSessionAction::kPlay, _));
 
   StartNewPlayer();
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPlay);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPlay);
 
   GetMediaSession()->Suspend(MediaSession::SuspendType::kSystem);
   GetMediaSession()->Resume(MediaSession::SuspendType::kUI);
@@ -806,18 +790,15 @@ TEST_F(MediaSessionImplTest,
   media_session::test::MockMediaSessionMojoObserver observer(
       *GetMediaSession());
   mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+      MediaSessionAction::kEnterPictureInPicture);
   mock_media_session_service().FlushForTesting();
 
-  EXPECT_TRUE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_TRUE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture));
-  EXPECT_TRUE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kEnterAutoPictureInPicture));
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kExitPictureInPicture));
 }
 
 TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureVideo) {
@@ -828,16 +809,13 @@ TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureVideo) {
   StartNewPlayer();
   media_session::test::MockMediaSessionMojoObserver observer(
       *GetMediaSession());
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPause);
   mock_media_session_service().FlushForTesting();
 
-  EXPECT_FALSE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_TRUE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kExitPictureInPicture));
 }
 
 TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureDocument) {
@@ -848,16 +826,13 @@ TEST_F(MediaSessionImplTest, WebContentsHasPictureInPictureDocument) {
   StartNewPlayer();
   media_session::test::MockMediaSessionMojoObserver observer(
       *GetMediaSession());
-  mock_media_session_service().EnableAction(
-      media_session::mojom::MediaSessionAction::kPause);
+  mock_media_session_service().EnableAction(MediaSessionAction::kPause);
   mock_media_session_service().FlushForTesting();
 
-  EXPECT_FALSE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_TRUE(base::Contains(
-      observer.actions(),
-      media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+  EXPECT_FALSE(base::Contains(observer.actions(),
+                              MediaSessionAction::kEnterPictureInPicture));
+  EXPECT_TRUE(base::Contains(observer.actions(),
+                             MediaSessionAction::kExitPictureInPicture));
 }
 
 TEST_F(MediaSessionImplTest, SufficientlyVisibleVideo_NoPlayer) {
@@ -925,6 +900,45 @@ TEST_F(MediaSessionImplTest, PausedPlayersDoNotRequestFocus) {
   EXPECT_EQ(delegate->request_audio_focus_count(), 1);
   EXPECT_FALSE(GetMediaSession()->IsActive());
   EXPECT_TRUE(GetMediaSession()->IsControllable());
+}
+
+TEST_F(MediaSessionImplTest, SeekingAndScrubbingNotAllowedWithMaxDuration) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  int player_id = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
+
+  media_session::MediaPosition pos;
+  pos = media_session::MediaPosition(
+      /*playback_rate=*/1.0,
+      /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+  player_observer_->SetPosition(player_id, pos);
+  GetMediaSession()->RebuildAndNotifyMediaPositionChanged();
+  FlushForTesting(GetMediaSession());
+
+  // With a max duration, we should be considered live media and should not
+  // allow seeking and scrubbing actions by default.
+  EXPECT_FALSE(base::Contains(observer.actions(), MediaSessionAction::kSeekTo));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kScrubTo));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kSeekBackward));
+
+  // However, if the website explicitly supports the action, then we will still
+  // route it.
+  mock_media_session_service().EnableAction(MediaSessionAction::kSeekTo);
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_TRUE(base::Contains(observer.actions(), MediaSessionAction::kSeekTo));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kScrubTo));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(
+      base::Contains(observer.actions(), MediaSessionAction::kSeekBackward));
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
@@ -1043,8 +1057,30 @@ TEST_F(MediaSessionImplDurationThrottleTest, ThrottleDurationUpdate) {
                     /*playback_rate=*/0.0,
                     /*duration=*/base::TimeDelta::Max(),
                     /*position=*/base::TimeDelta(), /*end_of_media=*/false));
+
+      // Since we're now considered live, the seeking and scrubbing actions
+      // should no longer be available.
+      EXPECT_FALSE(
+          base::Contains(observer.actions(), MediaSessionAction::kSeekTo));
+      EXPECT_FALSE(
+          base::Contains(observer.actions(), MediaSessionAction::kScrubTo));
+      EXPECT_FALSE(
+          base::Contains(observer.actions(), MediaSessionAction::kSeekForward));
+      EXPECT_FALSE(base::Contains(observer.actions(),
+                                  MediaSessionAction::kSeekBackward));
     } else {
       EXPECT_EQ(**observer.session_position(), pos);
+
+      // If we're not considered live, then the seeking and scrubbing actions
+      // should still be available.
+      EXPECT_TRUE(
+          base::Contains(observer.actions(), MediaSessionAction::kSeekTo));
+      EXPECT_TRUE(
+          base::Contains(observer.actions(), MediaSessionAction::kScrubTo));
+      EXPECT_TRUE(
+          base::Contains(observer.actions(), MediaSessionAction::kSeekForward));
+      EXPECT_TRUE(base::Contains(observer.actions(),
+                                 MediaSessionAction::kSeekBackward));
     }
   }
 

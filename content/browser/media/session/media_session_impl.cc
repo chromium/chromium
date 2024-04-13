@@ -636,6 +636,18 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
 
   for (auto& observer : observers_)
     observer->MediaSessionPositionChanged(position_);
+
+  const bool is_considered_live =
+      position_.has_value() && position_->duration().is_max();
+  if (is_considered_live == is_considered_live_) {
+    return;
+  }
+
+  // The available actions can be different depending on whether we're
+  // considered live or not, so if that has changed we must re-notify for the
+  // new state.
+  is_considered_live_ = is_considered_live;
+  RebuildAndNotifyActionsChanged();
 }
 
 void MediaSessionImpl::Resume(SuspendType suspend_type) {
@@ -1750,10 +1762,14 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     actions.insert(media_session::mojom::MediaSessionAction::kPause);
     actions.insert(media_session::mojom::MediaSessionAction::kStop);
-    actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
-    actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
-    actions.insert(media_session::mojom::MediaSessionAction::kSeekForward);
-    actions.insert(media_session::mojom::MediaSessionAction::kSeekBackward);
+
+    // Support seeking as long as this isn't live media.
+    if (!is_considered_live_) {
+      actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+      actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+      actions.insert(media_session::mojom::MediaSessionAction::kSeekForward);
+      actions.insert(media_session::mojom::MediaSessionAction::kSeekBackward);
+    }
   }
 
   // If the website has specified an action handler for 'enterpictureinpicture',

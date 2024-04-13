@@ -653,6 +653,11 @@ class MediaSessionImpl : public MediaSession,
   // active session.
   bool always_ignore_for_active_session_for_testing_ = false;
 
+  // True if the given media has infinite duration OR has a duration that
+  // changes often enough to be considered live. See
+  // `MaybeGuardDurationUpdate()` for details on duration changes.
+  bool is_considered_live_ = false;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
