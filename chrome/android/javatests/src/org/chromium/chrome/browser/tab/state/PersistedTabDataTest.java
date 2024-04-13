@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -44,6 +45,8 @@ public class PersistedTabDataTest {
     @Mock Profile mProfile;
 
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
+
+    @Mock Tab mTab;
 
     @Rule public JniMocker jniMocker = new JniMocker();
 
@@ -169,6 +172,69 @@ public class PersistedTabDataTest {
                 .setUserData(ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);
         verify(mShoppingPersistedTabDataMock, times(1)).disableSaving();
+    }
+
+    @SmallTest
+    @Test
+    public void testUninitializedTab() throws TimeoutException {
+        doReturn(false).when(mTab).isInitialized();
+        doReturn(false).when(mTab).isDestroyed();
+        doReturn(false).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testDestroyedTab() throws TimeoutException {
+        doReturn(true).when(mTab).isInitialized();
+        doReturn(true).when(mTab).isDestroyed();
+        doReturn(false).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testCustomTab() throws TimeoutException {
+        doReturn(true).when(mTab).isInitialized();
+        doReturn(false).when(mTab).isDestroyed();
+        doReturn(true).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
     }
 
     static class ThreadVerifierMockPersistedTabData extends MockPersistedTabData {

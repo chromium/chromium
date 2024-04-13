@@ -187,6 +187,10 @@ public abstract class PersistedTabData implements UserData {
     protected static <T extends PersistedTabData> void from(
             Tab tab, Supplier<T> supplier, Class<T> clazz, Callback<T> callback) {
         ThreadUtils.assertOnUiThread();
+        if (!tab.isInitialized() || tab.isDestroyed() || tab.isCustomTab()) {
+            onInvalidTab(callback);
+            return;
+        }
         T userData = getUserData(tab, clazz);
         // {@link PersistedTabData} already attached to {@link Tab}
         if (userData != null) {
@@ -209,6 +213,10 @@ public abstract class PersistedTabData implements UserData {
                         tab.getId(),
                         config.getId(),
                         (data) -> {
+                            if (tab.isDestroyed()) {
+                                onInvalidTab(callback);
+                                return;
+                            }
                             // No stored {@link PersistedTabData} found, return null.
                             if (data == null || data.limit() == 0) {
                                 PostTask.postTask(
@@ -224,6 +232,10 @@ public abstract class PersistedTabData implements UserData {
                                 PostTask.postTask(
                                         TaskTraits.USER_BLOCKING_MAY_BLOCK,
                                         () -> {
+                                            if (tab.isDestroyed()) {
+                                                onInvalidTab(callback);
+                                                return;
+                                            }
                                             persistedTabData.deserializeAndLog(data);
                                             // Post result back to UI thread.
                                             PostTask.postTask(
@@ -235,6 +247,14 @@ public abstract class PersistedTabData implements UserData {
                                         });
                             }
                         });
+    }
+
+    private static <T extends PersistedTabData> void onInvalidTab(Callback<T> callback) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.onResult(null);
+                });
     }
 
     private static <T extends PersistedTabData> void onPersistedTabDataRetrieved(
