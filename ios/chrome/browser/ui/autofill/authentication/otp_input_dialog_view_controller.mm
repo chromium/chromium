@@ -8,16 +8,19 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
 #import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierContent = kSectionIdentifierEnumZero,
+  SectionIdentifierError,
 };
 
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
@@ -37,6 +40,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   BOOL _contentSet;
   NSString* _inputValue;
+  NSString* _errorTitle;
 }
 
 - (instancetype)init {
@@ -53,25 +57,48 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(didTapCancelButton)];
-  self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:_content.confirmButtonLabel
-                                       style:UIBarButtonItemStyleDone
-                                      target:self
-                                      action:@selector(didTapConfirmButton)];
-  // Enable the confirm button only after a valid OTP has been entered.
-  self.navigationItem.rightBarButtonItem.enabled = NO;
-  self.tableView.allowsSelection = NO;
+  self.navigationItem.rightBarButtonItem = [self createConfirmButton];
   [self loadModel];
 }
 
 #pragma mark - UITableViewDelegate
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierContent:
+      return UITableViewAutomaticDimension;
+    case SectionIdentifierError:
+      return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
+  }
+}
+
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
-  CardUnmaskHeaderView* view =
-      DequeueTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
-  view.titleLabel.text = _content.windowTitle;
-  return view;
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierContent: {
+      CardUnmaskHeaderView* view =
+          DequeueTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
+      view.titleLabel.text = _content.windowTitle;
+      return view;
+    }
+    case SectionIdentifierError: {
+      if (!_errorTitle) {
+        return nil;
+      }
+      TableViewTextHeaderFooterView* errorMessage =
+          DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
+              self.tableView);
+      [errorMessage setSubtitle:_errorTitle
+                      withColor:[UIColor colorNamed:kRedColor]];
+      [errorMessage setForceIndents:YES];
+      return errorMessage;
+    }
+  }
 }
 
 #pragma mark - PaymentsSuggestionBottomSheetConsumer
@@ -88,13 +115,20 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)showPendingState {
-  // TODO(crbug.com/303715678): Handle pending state (after the confirm button
-  // is clicked).
+  UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  UIBarButtonItem* pendingButton =
+      [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
+  self.navigationItem.rightBarButtonItem = pendingButton;
+  [activityIndicator startAnimating];
+  [self.tableView setUserInteractionEnabled:NO];
 }
 
 - (void)showInvalidState:(NSString*)invalidLabelText {
-  // TODO(crbug.com/303715678): Handle error state (after the confirm button is
-  // clicked and server returns a result).
+  self.navigationItem.rightBarButtonItem = [self createConfirmButton];
+  _errorTitle = invalidLabelText;
+  [self.tableView setUserInteractionEnabled:YES];
+  [self reloadModel];
 }
 
 #pragma mark - Private
@@ -104,6 +138,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   CHECK(_contentSet);
   RegisterTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
   RegisterTableViewCell<TableViewTextEditCell>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
   __weak __typeof(self) weakSelf = self;
   _dataSource = [[UITableViewDiffableDataSource alloc]
       initWithTableView:self.tableView
@@ -121,7 +156,15 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierContent) ]];
   [snapshot appendItemsWithIdentifiers:@[ @(ItemTypeTextField) ]
              intoSectionWithIdentifier:@(SectionIdentifierContent)];
-  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierError) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+- (void)reloadModel {
+  NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(ItemTypeTextField) ]];
+  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierError) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 // Returns the appropriate cell for the table view.
@@ -131,7 +174,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   TableViewTextEditCell* cell =
       DequeueTableViewCell<TableViewTextEditCell>(self.tableView);
   [cell setIdentifyingIcon:nil];
-  [cell setIcon:TableViewTextEditItemIconTypeEdit];
+  if (_errorTitle) {
+    [cell setIcon:TableViewTextEditItemIconTypeError];
+    cell.textField.text = _inputValue;
+    cell.textField.textColor = [UIColor colorNamed:kRedColor];
+  } else {
+    [cell setIcon:TableViewTextEditItemIconTypeEdit];
+    cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  }
   cell.textField.placeholder = _content.textFieldPlaceholder;
   [cell.textField addTarget:self
                      action:@selector(textFieldDidChange:)
@@ -143,6 +193,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)textFieldDidChange:(UITextField*)textField {
+  // Reset error state.
+  if (_errorTitle) {
+    _errorTitle = nil;
+    [self reloadModel];
+  }
+
   _inputValue = textField.text;
   [self didChangeOtpInputText];
 }
@@ -161,6 +217,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // Notify the model controller when the OTP input value changes.
 - (void)didChangeOtpInputText {
   [_mutator onOtpInputChanges:_inputValue];
+}
+
+- (UIBarButtonItem*)createConfirmButton {
+  UIBarButtonItem* confirmButton =
+      [[UIBarButtonItem alloc] initWithTitle:_content.confirmButtonLabel
+                                       style:UIBarButtonItemStyleDone
+                                      target:self
+                                      action:@selector(didTapConfirmButton)];
+  // Enable the confirm button only after a valid OTP has been entered.
+  confirmButton.enabled = NO;
+  return confirmButton;
 }
 
 @end
