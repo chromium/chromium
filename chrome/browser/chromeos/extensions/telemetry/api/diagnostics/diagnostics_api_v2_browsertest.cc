@@ -1130,32 +1130,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionDiagnosticsApiV2BrowserTest,
-    CreateNetworkBandwidthRoutineWithoutFeatureFlagUnrecognized) {
-  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
-    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
-        crosapi::TelemetryDiagnosticRoutineArgument::Tag::
-            kUnrecognizedArgument);
-    ASSERT_TRUE(control);
-  }));
-
-  OpenAppUiAndMakeItSecure();
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function createNetworkBandwidthRoutineUnrecognized() {
-        const result = await chrome.os.diagnostics.createRoutine({
-          networkBandwidth: {},
-        });
-
-        chrome.test.assertTrue(result !== undefined);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        ReplyToRoutineInquiryUnknownUuidError) {
   OpenAppUiAndMakeItSecure();
@@ -1289,21 +1263,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   EXPECT_TRUE(led_routine_created.Wait());
 }
 
-class PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest
-    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
- public:
-  PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest,
-    CreateNetworkBandwidthRoutineWithFeatureFlagSuccess) {
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateNetworkBandwidthRoutineSuccess) {
   fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
     auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
         crosapi::TelemetryDiagnosticRoutineArgument::Tag::kNetworkBandwidth);
@@ -1375,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest
-    : public PendingApprovalTelemetryExtensionDiagnosticsApiV2BrowserTest {
+    : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
  public:
   NoExtraPermissionTelemetryExtensionDiagnosticsApiV2BrowserTest() = default;
 

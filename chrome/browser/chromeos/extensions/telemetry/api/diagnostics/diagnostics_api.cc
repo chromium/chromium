@@ -65,7 +65,7 @@ ParseRoutineArgumentSupportResult(
 
 bool IsPendingApprovalRoutine(
     const crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr& arg) {
-  return arg->is_network_bandwidth();
+  return false;
 }
 
 }  // namespace
