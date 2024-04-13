@@ -17,7 +17,7 @@ from telemetry.web_perf import timeline_based_measurement
 # Features to enable via command line.
 _ENABLED_FEATURES = [
     'SharedStorageAPI:ExposeDebugMessageForSettingsStatus/true',
-    'SharedStorageAPIM118', 'SharedStorageAPIM124',
+    'SharedStorageAPIM118', 'SharedStorageAPIM125',
     'SharedStorageAPIEnableWALForDatabase',
     'FencedFrames:implementation_type/mparch', 'FencedFramesDefaultMode',
     'PrivacySandboxAdsAPIsOverride', 'DefaultAllowPrivacySandboxAttestations'

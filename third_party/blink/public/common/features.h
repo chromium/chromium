@@ -1420,10 +1420,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // shipped.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
 
-// Additional Shared Storage API features shipped in M124.
+// Additional Shared Storage API features shipped in M125.
 // TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
 // shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM124);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
 
 // Enables WAL (write-ahead-logging) mode for the Shared Storage API SQLite
 // database backend.

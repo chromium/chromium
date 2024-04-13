@@ -234,8 +234,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {wf::EnableSharedStorageAPIM118,
            raw_ref(blink::features::kSharedStorageAPIM118), kDefault},
-          {wf::EnableSharedStorageAPIM124,
-           raw_ref(blink::features::kSharedStorageAPIM124), kDefault},
+          {wf::EnableSharedStorageAPIM125,
+           raw_ref(blink::features::kSharedStorageAPIM125), kDefault},
           {wf::EnableFedCmMultipleIdentityProviders,
            raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
           {wf::EnableFedCmSelectiveDisclosure,
@@ -675,15 +675,15 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableSharedStorageAPIM118(false);
   }
 
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM124) ||
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM125) ||
       !base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM124Enabled())
-        << "SharedStorage for M124+ cannot be enabled in this "
+    LOG_IF(WARNING, WebRuntimeFeatures::IsSharedStorageAPIM125Enabled())
+        << "SharedStorage for M125+ cannot be enabled in this "
            "configuration. Use --"
         << switches::kEnableFeatures << "="
         << blink::features::kSharedStorageAPI.name << ","
-        << blink::features::kSharedStorageAPIM124.name << " in addition.";
-    WebRuntimeFeatures::EnableSharedStorageAPIM124(false);
+        << blink::features::kSharedStorageAPIM125.name << " in addition.";
+    WebRuntimeFeatures::EnableSharedStorageAPIM125(false);
   }
 
   if (!base::FeatureList::IsEnabled(

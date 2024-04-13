@@ -9472,6 +9472,7 @@ interface SharedStorage
     method append
     method clear
     method constructor
+    method createWorklet
     method delete
     method get
     method run
@@ -9481,6 +9482,8 @@ interface SharedStorageWorklet
     attribute @@toStringTag
     method addModule
     method constructor
+    method run
+    method selectURL
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
