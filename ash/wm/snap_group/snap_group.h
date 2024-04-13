@@ -62,8 +62,8 @@ class SnapGroup : public aura::WindowObserver,
   void MinimizeWindows();
 
   // aura::WindowObserver:
-  // TODO: Implement `OnWindowParentChanged`.
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
 
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
@@ -120,6 +120,9 @@ class SnapGroup : public aura::WindowObserver,
   // visibility when partial overview ends.
   void OnOverviewModeStarting();
   void OnOverviewModeEnding();
+
+  // True while the snap group is being moved to another display.
+  bool is_moving_display_ = false;
 
   // Within a snap group, the divider appears as a widget positioned between the
   // two snapped windows. It serves a dual purpose: signifying the group

@@ -455,12 +455,6 @@ void SplitViewDivider::OnWindowStackingChanged(aura::Window* window) {
   RefreshStackingOrder();
 }
 
-void SplitViewDivider::OnWindowAddedToRootWindow(aura::Window* window) {
-  // Stop observing `window` if it no longer belongs to the same root window as
-  // of the `controller_`.
-  MaybeRemoveObservedWindow(window);
-}
-
 void SplitViewDivider::OnWindowVisibilityChanged(aura::Window* window,
                                                  bool visible) {
   RefreshStackingOrder();
