@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
-
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -111,9 +109,6 @@ IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, Test) {
 class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
  public:
   LoggedInUserFilesAppBrowserTest() {
-    // TODO(http://b/333952534): Reenable this suite for forest.
-    feature_list_.InitAndDisableFeature(ash::features::kForestFeature);
-
     // ChromeOS user will be set by `LoggedInUserMixin`.
     set_chromeos_user_ = false;
 
@@ -177,8 +172,6 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
   std::unique_ptr<ash::DeviceStateMixin> device_state_mixin_;
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(LoggedInUserFilesAppBrowserTest, Test) {

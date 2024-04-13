@@ -21,7 +21,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -120,7 +119,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   const bool type_is_desk_button =
       bar_view->type() == DeskBarViewBase::Type::kDeskButton;
 
-  if (IsForestFeatureEnabled() && !type_is_desk_button) {
+  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
     return;
   }
 
@@ -621,8 +620,9 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
         height = kDeskBarZeroStateHeight;
       } else {
         height = DeskPreviewView::GetHeight(root) +
-                 (IsForestFeatureEnabled() ? kExpandedDeskBarHeightWithOak
-                                           : kDeskBarNonPreviewAllocatedHeight);
+                 (features::IsForestFeatureEnabled()
+                      ? kExpandedDeskBarHeightWithOak
+                      : kDeskBarNonPreviewAllocatedHeight);
       }
       break;
   }

@@ -32,7 +32,6 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/toast_manager_impl.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/default_desk_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -538,7 +537,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
   // disabled by users. We don't need to worry about showing/hiding the bar
   // dynamically on primary/secondary user switch because we exit overview when
   // we switch users.
-  return IsForestFeatureEnabled() &&
+  return features::IsForestFeatureEnabled() &&
          Shell::Get()->session_controller()->IsUserPrimary() &&
          BirchBarController::Get()->GetShowBirchSuggestions() &&
          !SplitViewController::Get(root_window)->InSplitViewMode();
@@ -546,7 +545,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
 
 bool ShouldShowPineDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
-         IsForestFeatureEnabled() &&
+         features::IsForestFeatureEnabled() &&
          !!Shell::Get()->pine_controller()->pine_contents_data();
 }
 
@@ -683,7 +682,7 @@ void OverviewGrid::PrepareForOverview() {
 
   MaybeInitBirchBarWidget();
 
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     scoped_overview_wallpaper_clipper_ =
         std::make_unique<ScopedOverviewWallpaperClipper>(this);
   }
@@ -793,7 +792,7 @@ void OverviewGrid::PositionWindows(
 
   // Create a feedback button that shows even when no items are present (e.g.,
   // for Pine).
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     UpdateFeedbackButton();
   }
 
@@ -1660,7 +1659,7 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 }
 
 gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
-  if (!IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return gfx::Insets();
   }
 
@@ -1691,7 +1690,7 @@ gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
 }
 
 gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
-  const bool forest_enabled = IsForestFeatureEnabled();
+  const bool forest_enabled = features::IsForestFeatureEnabled();
 
   // Use compact paddings for partial overview.
   if (forest_enabled &&
@@ -2297,7 +2296,7 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
     scoped_overview_wallpaper_clipper_->RefreshWallpaperClipBounds();
   }
 
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     UpdateFeedbackButton();
   }
 }
@@ -3007,7 +3006,7 @@ bool OverviewGrid::FitWindowRectsInBounds(
 void OverviewGrid::MaybeCenterOverviewItems(
     std::vector<gfx::RectF>& out_window_rects,
     const base::flat_set<OverviewItemBase*>& ignored_items) {
-  if (!IsForestFeatureEnabled() || out_window_rects.empty()) {
+  if (!features::IsForestFeatureEnabled() || out_window_rects.empty()) {
     return;
   }
 
@@ -3212,7 +3211,7 @@ void OverviewGrid::OnBirchBarLayoutChanged(
 }
 
 void OverviewGrid::RefreshDesksWidgets(bool visible) {
-  if (!IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return;
   }
 
@@ -3385,7 +3384,7 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
 }
 
 void OverviewGrid::UpdateFeedbackButton() {
-  CHECK(IsForestFeatureEnabled());
+  CHECK(features::IsForestFeatureEnabled());
 
   if (SplitViewController::Get(root_window_)->InSplitViewMode()) {
     feedback_widget_.reset();
