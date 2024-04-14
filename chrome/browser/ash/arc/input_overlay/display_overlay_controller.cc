@@ -58,7 +58,6 @@ namespace arc::input_overlay {
 namespace {
 
 using ash::game_dashboard_utils::GetNextWidgetToFocus;
-using ash::game_dashboard_utils::UpdateAccessibilityTree;
 
 // UI specs.
 constexpr int kMenuEntrySideMargin = 24;
@@ -152,7 +151,6 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it == widget_list_.end()) {
       widget_list_.emplace_back(widget);
-      UpdateAccessibilityTree(widget_list_);
     }
   }
 
@@ -160,7 +158,6 @@ class DisplayOverlayController::FocusCycler {
     if (auto it = std::find(widget_list_.begin(), widget_list_.end(), widget);
         it != widget_list_.end()) {
       widget_list_.erase(it);
-      UpdateAccessibilityTree(widget_list_);
     }
   }
 
