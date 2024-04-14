@@ -101,7 +101,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa umzuzu ongu-{THRESHOLD}}one{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa imizuzu engu-{THRESHOLD}}other{Lokhu kwenzeka lapho i-Chrome ingasetshenziswa imizuzu engu-{THRESHOLD}}}</translation>
 <translation id="3399930248910934354">Vula Amasethingi e-Chrome</translation>
 <translation id="344736123700721678">Finyelela ku-Chrome ngokushesha ukusuka kudokhu yakho yesikrini sasekhaya</translation>
-<translation id="3472587960215700950">I-Chrome isebenzisa i-Google Maps ukuze ikunikeze izikhombisi-ndlela nolwazi lwasendaweni kumakheli atholiwe.</translation>
+<translation id="3472587960215700950">I-Chrome isebenzisa Amamephu eGoogle ukuze ikunikeze izikhombisi-ndlela nolwazi lwasendaweni kumakheli atholiwe.</translation>
 <translation id="3503014945441706099">Thola Ukubhrawuza Okuphephile Okuthuthukisiwe kwale phrofayela ye-Chrome, futhi</translation>
 <translation id="3522659714780527202">Ukuze ubone amathebhu wakho noma kuphi lapho usebenzisa i-Chrome, vula ukuvumelanisa</translation>
 <translation id="3577555362230509265">Sebenzisa i-Chrome kwamanye ama-app.</translation>
@@ -164,7 +164,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 <translation id="546541279759910616">{COUNT,plural, =1{I-Chrome izokusiza ukulandelela le phakheji Ekhasini Lethebhu Entsha.}one{I-Chrome izokusiza ukulandelela le phakheji Ekhasini Lethebhu Entsha.}other{I-Chrome izokusiza ukulandelela le phakheji Ekhasini Lethebhu Entsha.}}</translation>
 <translation id="5492504007368565877">Umphathi Wephasiwedi Ye-Google akakwazi ukuhlola amaphasiwedi wakho.</translation>
 <translation id="5525095647255982834">Ukuze uthumele le thebhu kwenye idivayisi, ngena ngemvume ku-Chrome lapho.</translation>
-<translation id="5527026824954593399">Thepha okuthi “Buka nge-Google Maps ku-Chrome.”</translation>
+<translation id="5527026824954593399">Thepha okuthi “Buka nge-Amamephu eGoogle ku-Chrome.”</translation>
 <translation id="5552137475244467770">I-Chrome ngezikhathi ezithile ihlola amaphasiwedi akho ngokuwaqhathanisa nohlu olushicilelwe ku-inthanethi. Uma kwenziwa lokhu, amaphasiwedi akho namagama abasebenzisi abethelwe, ngakho-ke awakwazi ukufundwa inoma ubani, okufaka i-Google.</translation>
 <translation id="5554520618550346933">Uma usebenzisa iphasiwedi, i-Chrome iyakuxwayisa uma ishicilelwe ku-inthanethi. Uma yenza lokhu, amaphasiwedi akho namagama abasebenzisi ayabethelwa, ngakho awakwazi ukufundwa yinoma ubani, kubandakanya ne-Google.</translation>
 <translation id="5601180634394228718">Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwakho kwe-Chrome, iya <ph name="BEGIN_LINK" />Kumasevisi e-Google<ph name="END_LINK" />.</translation>
@@ -197,7 +197,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 
 Idatha yakho ibethelwe ngomushwana wokungena. Ifake ukuze usebenzise futhi wonge idatha ye-Chrome ku-akhawunti yakho ye-Google.</translation>
 <translation id="6540120577248033958">Vakashela isayithi bese uchofoza okuthi Landela kumenyu ye-Chrome</translation>
-<translation id="6545449117344801102">I-Chrome ithola amakheli futhi isebenzise i-Google Maps ukuze ikunikeze izikhombisi-ndlela nolwazi lwendawo.</translation>
+<translation id="6545449117344801102">I-Chrome ithola amakheli futhi isebenzise Amamephu eGoogle ukuze ikunikeze izikhombisi-ndlela nolwazi lwendawo.</translation>
 <translation id="6600954340915313787">Ikopishelwe ku-Chrome</translation>
 <translation id="6634107063912726160">Lapho uphuma ngemvume, i-Chrome ngeke ivumelanise noma iyiphi idatha entsha kwi-akhawunti yakho ye-Google. Idatha evumelaniswe ngaphambilini ihlala kwi-akhawunti.</translation>
 <translation id="6646696210740573446">Ithumela ingxenye engaqondakali ye-URL ku-Google isebenzisa iseva eyimfihlo efihla ikheli lakho lasesizindeni se-inthanethi. Uma isayithi lizama ukuntshontsha iphasiwedi yakho, noma uma udawuniloda ifayela eliyingozi, i-Chrome ingathumela nama-URL, kuhlanganise nokuthile okuqukethwe kulelo khasi, ku-Google.</translation>
@@ -232,7 +232,7 @@ Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwa
 <translation id="7272930098487145294">Ukuze ulondoloze izithombe, thepha Amasethingi ukuze uvumele i-Chrome ingeze ezithombeni zakho</translation>
 <translation id="7275945473750112644">I-akhawunti yakho iphethwe yi-<ph name="HOSTED_DOMAIN" />, ngakho idatha yakho ye-Chrome izosulwa kule divayisi</translation>
 <translation id="7304491752269485262">Ukubuka Okunwetshiwe Kokugcwalisa Okuzenzakalelayo kwe-Chrome</translation>
-<translation id="7349129508108954623">Vumela i-Chrome ukuthi isebenzise i-Google Maps ukuze ikunikeze izikhombisi-ndlela nolwazi lwasendaweni kumakheli atholiwe.</translation>
+<translation id="7349129508108954623">Vumela i-Chrome ukuthi isebenzise Amamephu eGoogle ukuze ikunikeze izikhombisi-ndlela nolwazi lwasendaweni kumakheli atholiwe.</translation>
 <translation id="7394108421562933108">I-Maps ku-Chrome</translation>
 <translation id="7400722733683201933">Mayelana ne-Google Chrome</translation>
 <translation id="7466693328838535498">Ebhokisini elithi Amawijethi Okusesha, faka i-Chrome</translation>

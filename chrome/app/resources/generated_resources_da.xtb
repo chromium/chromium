@@ -132,7 +132,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1093645050124056515">Ctrl + Alt + pil ned</translation>
 <translation id="1094219634413363886">Du får vist en notifikation, hvis en optagelse starter på denne administrerede enhed</translation>
 <translation id="1095761715416917775">Sørg for, at du altid kan få adgang til dine synkroniserede data</translation>
-<translation id="1095879482467973146">Google Adgangskodeadministrator på nettet</translation>
+<translation id="1095879482467973146">Google Adgangs­kode­admin­istrator på nettet</translation>
 <translation id="109647177154844434">Hvis du afinstallerer Parallels Desktop, slettes dit Windows-billede. Dette omfatter dens apps, indstillinger og data. Er du sikker på, at du vil fortsætte?</translation>
 <translation id="1097016918605049747">Denne side kunne ikke oversættes</translation>
 <translation id="1097658378307015415">Før du logger ind, skal du starte en gæstesession for at aktivere netværket <ph name="NETWORK_ID" /></translation>
@@ -453,7 +453,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="1341701348342335220">Sådan!</translation>
 <translation id="1341871421050612057">Synkroniseringen med <ph name="USERNAME" /> mislykkedes</translation>
-<translation id="1342886103232377846">Gå til Google Adgangskodeadministrator for at tjekke, om der er kompromitterede adgangskoder</translation>
+<translation id="1342886103232377846">Gå til Google Adgangs­kode­admin­istrator for at tjekke, om der er kompromitterede adgangskoder</translation>
 <translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
 <translation id="1344141078024003905">Du caster din skærm. Du kan til enhver tid sætte din casting af skærmen på pause eller stoppe den.</translation>
@@ -894,7 +894,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1651008383952180276">Du skal angive den samme adgangssætning to gange</translation>
 <translation id="1651609627703324721">Denne fane viser VR-indhold til et headset</translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
-<translation id="1652862280638399816">Hvis du vil bruge Adgangskodeadministrator sammen med macOS-nøgleringen, skal du genstarte Chromium og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
+<translation id="1652862280638399816">Hvis du vil bruge Adgangs­kode­admin­istrator sammen med macOS-nøgleringen, skal du genstarte Chromium og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="1653958716132599769">Gruppér relaterede faner</translation>
 <translation id="1654580009054503925">Har ikke tilladelse til at vise anmodninger</translation>
 <translation id="1656528038316521561">Baggrundens gennemsigtighed</translation>
@@ -1430,7 +1430,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2048653237708779538">Handlingen er ikke tilgængelig</translation>
 <translation id="204914487372604757">Opret genvej</translation>
 <translation id="2050339315714019657">Højformat</translation>
-<translation id="2051266530792296582">Google Adgangskodeadministrator har oprettet en stærk adgangskode til dette website</translation>
+<translation id="2051266530792296582">Google Adgangs­kode­admin­istrator har oprettet en stærk adgangskode til dette website</translation>
 <translation id="2051555741181591333">Deaktiver hotspot automatisk</translation>
 <translation id="2051669996101374349">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS. Du kan ikke ændre denne indstilling, fordi du har aktiveret Avanceret beskyttelse.</translation>
 <translation id="2052572566310583903">Installeret på dine andre enheder</translation>
@@ -2288,7 +2288,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2687407218262674387">Googles servicevilkår</translation>
 <translation id="2687621393791886981">Spørg mig senere</translation>
 <translation id="2688196195245426394">Fejl ved registrering af enheden med serveren: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="2688734475209947648">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="ACCOUNT" />.</translation>
+<translation id="2688734475209947648">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangs­kode­admin­istrator for <ph name="ACCOUNT" />.</translation>
 <translation id="2690024944919328218">Vis sprogindstillinger</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Skift indstillinger for indtastning</translation>
@@ -3224,7 +3224,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lås ved manglende tilstedeværelse</translation>
 <translation id="3433621910545056227">Ups! Systemet kunne ikke fastslå indstallationstidspunktet for enhedens attributlås.</translation>
-<translation id="3434025015623587566">Google Adgangskodeadministrator skal bruge mere omfattende adgang</translation>
+<translation id="3434025015623587566">Google Adgangs­kode­admin­istrator skal bruge mere omfattende adgang</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. Få flere oplysninger om disse indstillinger og om, hvordan du ændrer dem, ved at gå til families.google.com.</translation>
 <translation id="3434475275396485144">Denne indstilling administreres af administratoren af din telefon</translation>
@@ -3464,7 +3464,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3617062258679844578">Du kan klikke ved at trykke på din touchplade</translation>
 <translation id="3617891479562106823">Baggrunde er utilgængelige. Prøv igen senere.</translation>
 <translation id="3618286417582819036">Der opstod en fejl</translation>
-<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> kan nu bruge dit brugernavn og din adgangskode, når vedkommende bruger Google Adgangskodeadministrator. Bed vedkommende om at gå til <ph name="WEBSITE" /> for at logge ind.</translation>
+<translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> kan nu bruge dit brugernavn og din adgangskode, når vedkommende bruger Google Adgangs­kode­admin­istrator. Bed vedkommende om at gå til <ph name="WEBSITE" /> for at logge ind.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619294456800709762">Websites kan automatisk åbne integreret billede</translation>
 <translation id="3620136223548713675">Geoplacering</translation>
@@ -3617,7 +3617,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="372722114124766626">Kun én gang</translation>
 <translation id="3727332897090187514">Der er ikke tilføjet en note</translation>
 <translation id="3727473233247516571">Underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
-<translation id="3727850735097852673">Hvis du vil bruge Google Adgangskodeadministrator med macOS-nøgleringen, skal du genstarte Chrome og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
+<translation id="3727850735097852673">Hvis du vil bruge Google Adgangs­kode­admin­istrator med macOS-nøgleringen, skal du genstarte Chrome og give adgang til nøgleringen. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="3728188878314831180">Spejl notifikationer fra din telefon</translation>
 <translation id="3728681439294129328">Konfigurer netværksadresse</translation>
 <translation id="3729506734996624908">Tilladte websites</translation>
@@ -3738,7 +3738,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Rumvæsen</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan se filer i følgende mapper</translation>
-<translation id="3810770279996899697">Adgangskodeadministrator skal have adgang til macOS-nøgleringen</translation>
+<translation id="3810770279996899697">Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
 <translation id="3810914450553844415">Din administrator tillader ikke yderligere Google-konti.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="381202950560906753">Tilføj endnu et</translation>
@@ -4112,7 +4112,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4090103403438682346">Aktivér Verificeret adgang</translation>
 <translation id="4090947011087001172">Vil du nulstille tilladelserne for <ph name="SITE" />?</translation>
 <translation id="4092636882861724179">Du kan se og administrere dine gemte adgangskoder i <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
-<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
+<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangs­kode­admin­istrator med at gemme dine loginoplysninger</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du bruger en variabel for miljøet, der ikke understøttes: <ph name="BAD_VAR" />. Dette går ud over stabiliteten og sikkerheden.</translation>
@@ -4371,7 +4371,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4301671483919369635">Denne side har tilladelse til at redigere filer</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# kontakt er ikke tilgængelig. Hvis du vil bruge <ph name="FEATURE_NAME" /> med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}one{# kontakt er ikke tilgængelig. Hvis du vil bruge <ph name="FEATURE_NAME" /> med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}other{# kontakter er ikke tilgængelige. Hvis du vil bruge <ph name="FEATURE_NAME" /> med disse kontakter, skal du føje de mailadresser, der er tilknyttet deres Google-konti, til dine kontakter.}}</translation>
 <translation id="4303079906735388947">Opret en ny pinkode til din sikkerhedsnøgle</translation>
-<translation id="4304713468139749426">Adgangskodeadministrator</translation>
+<translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
 <translation id="4305402730127028764">Kopiér til <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Skift</translation>
 <translation id="4306119971288449206">Apps skal downloades med indholdstypen "<ph name="CONTENT_TYPE" />"</translation>
@@ -4633,7 +4633,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4508332912150723117">brugernavn <ph name="USER_EMAIL" />. Se oplysninger</translation>
 <translation id="450867954911715010">Indstillinger for hjælpefunktioner</translation>
 <translation id="4508765956121923607">Vis k&amp;ilde</translation>
-<translation id="4509277363725254222">Når du deler en kopi af dit <ph name="BEGIN_BOLD_USERNAME" />brugernavn<ph name="END_BOLD_USERNAME" /> og din <ph name="BEGIN_BOLD_PASSWORD" />adgangskode<ph name="END_BOLD_PASSWORD" />, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangskodeadministrator</translation>
+<translation id="4509277363725254222">Når du deler en kopi af dit <ph name="BEGIN_BOLD_USERNAME" />brugernavn<ph name="END_BOLD_USERNAME" /> og din <ph name="BEGIN_BOLD_PASSWORD" />adgangskode<ph name="END_BOLD_PASSWORD" />, kan dine familiemedlemmer udfylde dem ved hjælp af Google Adgangs­kode­admin­istrator</translation>
 <translation id="4509421746503122514">Genstart for at opdatere</translation>
 <translation id="4509741852167209430">Begrænsede typer af data deles mellem websites for at måle, hvor effektive deres annoncer er, f.eks. om du har foretaget et køb, når du har besøgt et website</translation>
 <translation id="4510195992002502722">Din feedback kunne ikke indsendes. Prøver igen...</translation>
@@ -5161,7 +5161,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4918134162946436591">Vis overlejring med hint</translation>
 <translation id="4918762404810341788">Kopiér og åbn</translation>
 <translation id="4921348630401250116">Oplæsning</translation>
-<translation id="4922104989726031751">Hvis du vil bruge Adgangskodeadministrator sammen med dit operativsystem, skal du genstarte Chromium og give adgang til Adgangskodeadministrator på din computer. Dine faner åbnes igen, når du har genstartet.</translation>
+<translation id="4922104989726031751">Hvis du vil bruge Adgangs­kode­admin­istrator sammen med dit operativsystem, skal du genstarte Chromium og give adgang til Adgangs­kode­admin­istrator på din computer. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="492299503953721473">Fjern Android-apps</translation>
 <translation id="492363500327720082">Afinstallerer <ph name="APP_NAME" />…</translation>
 <translation id="4924002401726507608">Indsend feedback</translation>
@@ -5475,7 +5475,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5177549709747445269">Du bruger mobildata</translation>
 <translation id="5178667623289523808">Find forrige</translation>
 <translation id="5181140330217080051">Downloader</translation>
-<translation id="5181172023548002891">I Google Adgangskodeadministrator for <ph name="ACCOUNT" /></translation>
+<translation id="5181172023548002891">I Google Adgangs­kode­admin­istrator for <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Adgangskoden gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">Vil du nulstille alle HID-enhedstilladelser?</translation>
 <translation id="5184063094292164363">&amp;JavaScript-konsol</translation>
@@ -6821,7 +6821,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6238982280403036866">Har tilladelse til at bruge JavaScript</translation>
 <translation id="6239558157302047471">Genindlæs &amp;ramme</translation>
 <translation id="6240821072888636753">Spørg hver gang</translation>
-<translation id="6240964651812394252">Hvis du vil bruge Google Adgangskodeadministrator sammen med dit operativsystem, skal du genstarte Chrome og give adgang til Adgangskodeadministrator på din computer. Dine faner åbnes igen, når du har genstartet.</translation>
+<translation id="6240964651812394252">Hvis du vil bruge Google Adgangs­kode­admin­istrator sammen med dit operativsystem, skal du genstarte Chrome og give adgang til Adgangs­kode­admin­istrator på din computer. Dine faner åbnes igen, når du har genstartet.</translation>
 <translation id="6241530762627360640">Få adgang til oplysninger om Bluetooth-enheder, der er parret med dit system, og registrér Bluetooth-enheder i nærheden.</translation>
 <translation id="6241844896329831164">Adgang er ikke påkrævet</translation>
 <translation id="6242574558232861452">Tjekker downloaden i henhold til din organisations sikkerhedspolitikker.</translation>
@@ -6830,9 +6830,9 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6242852299490624841">Sæt denne fane i fokus</translation>
 <translation id="6243774244933267674">Serveren er utilgængelig</translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
-<translation id="6245523954602476652">Du kan få adgang til den i Google Adgangskodeadministrator.</translation>
+<translation id="6245523954602476652">Du kan få adgang til den i Google Adgangs­kode­admin­istrator.</translation>
 <translation id="6246790815526961700">Upload fra enhed</translation>
-<translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
+<translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
 <translation id="6247620186971210352">Der blev ikke fundet nogen apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
 <translation id="6247802389331535091">System: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6856,7 +6856,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6264365405983206840">Vælg &amp;alle</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
 <translation id="6264520534872750757">Fortsæt med at bruge enheden</translation>
-<translation id="6264636978858465832">Adgangskodeadministrator skal bruge mere omfattende adgang</translation>
+<translation id="6264636978858465832">Adgangs­kode­admin­istrator skal bruge mere omfattende adgang</translation>
 <translation id="6265159465845424232">Spørg, før der kopieres eller flyttes Microsoft-filer til Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjern port</translation>
 <translation id="6266532094411434237">Der oprettes forbindelse til <ph name="DEVICE" /></translation>
@@ -7161,10 +7161,10 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
 <translation id="6519689855001245063">Tjekker berettigelse</translation>
-<translation id="6520087076882753524">Du kan se og administrere gemte adgangskoder i Google Adgangskodeadministrator</translation>
+<translation id="6520087076882753524">Du kan se og administrere gemte adgangskoder i Google Adgangs­kode­admin­istrator</translation>
 <translation id="6520876759015997832">Søgeresultat <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryk på Enter for at gå til sektionen.</translation>
 <translation id="6521214596282732365">Websites bruger som regel dine skrifttyper, så du kan oprette indhold i høj kvalitet med design- og grafikværktøjer online</translation>
-<translation id="6523574494641144162">Google Adgangskodeadministrator kunne ikke gemme disse adgangskoder på din Google-konto. Du kan gemme dem på denne enhed.</translation>
+<translation id="6523574494641144162">Google Adgangs­kode­admin­istrator kunne ikke gemme disse adgangskoder på din Google-konto. Du kan gemme dem på denne enhed.</translation>
 <translation id="652492607360843641">Du har oprettet forbindelse til et <ph name="NETWORK_TYPE" />-netværk.</translation>
 <translation id="6525767484449074555">Klik på "Installer"</translation>
 <translation id="6527303717912515753">Del</translation>
@@ -7259,11 +7259,11 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6595322909015878027">Har ikke tilladelse til automatisk at åbne integreret billede</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Den kompromitterede adgangskode blev ændret.
 
-Du har # anden kompromitteret adgangskode. Google Adgangskodeadministrator anbefaler, at du tjekker denne adgangskode nu.}one{Den kompromitterede adgangskode blev ændret.
+Du har # anden kompromitteret adgangskode. Google Adgangs­kode­admin­istrator anbefaler, at du tjekker denne adgangskode nu.}one{Den kompromitterede adgangskode blev ændret.
 
-Du har # anden kompromitteret adgangskode. Google Adgangskodeadministrator anbefaler, at du tjekker denne adgangskode nu.}other{Den kompromitterede adgangskode blev ændret.
+Du har # anden kompromitteret adgangskode. Google Adgangs­kode­admin­istrator anbefaler, at du tjekker denne adgangskode nu.}other{Den kompromitterede adgangskode blev ændret.
 
-Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anbefaler, at du tjekker disse adgangskoder nu.}}</translation>
+Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrator anbefaler, at du tjekker disse adgangskoder nu.}}</translation>
 <translation id="6596325263575161958">Krypteringsmuligheder</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6596916244504302242">Genindlæs denne side for at anvende dine opdaterede indstillinger for udvidelser på dette website</translation>
@@ -7463,7 +7463,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6762861159308991328">Du kan ændre, hvordan links åbnes, i appindstillingerne</translation>
 <translation id="6764633064754857889">Se forhåndsvisning af link</translation>
 <translation id="676560328519657314">Dine betalingsmetoder i Google Pay</translation>
-<translation id="6766488013065406604">Gå til Google Adgangskodeadministrator</translation>
+<translation id="6766488013065406604">Gå til Google Adgangs­kode­admin­istrator</translation>
 <translation id="6767566652486411142">Vælg et andet sprog...</translation>
 <translation id="6767639283522617719">Enheden kunne ikke knyttes til domænet. Sørg for, at indstillingerne er angivet korrekt for organisationsenheden.</translation>
 <translation id="6768034047581882264">Har ikke tilladelse til at vise usikkert indhold</translation>
@@ -7482,7 +7482,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6777845730143344223">Få flere oplysninger om Passpoint-abonnementer</translation>
 <translation id="6778660707554364320"><ph name="APP" /> åbnes nu som en app</translation>
 <translation id="6779092717724412415">Vælg en tekst, og højreklik på den for at oprette en markering som denne.</translation>
-<translation id="6779348349813025131">Google Adgangskodeadministrator skal have adgang til macOS-nøgleringen</translation>
+<translation id="6779348349813025131">Google Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
 <translation id="6779447100905857289">dine indkøbskurve</translation>
 <translation id="677965093459947883">Meget lille</translation>
 <translation id="6781005693196527806">&amp;Administrer søgemaskiner...</translation>
@@ -8012,7 +8012,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7189965711416741966">Fingeraftrykket er tilføjet.</translation>
 <translation id="7191063546666816478">Nogle understøttede links åbnes fortsat i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> andre apps.</translation>
 <translation id="7191159667348037">Ukendt printer (USB)</translation>
-<translation id="7191632649590906354">Dine familiemedlemmer kan nu bruge dit brugernavn og din adgangskode, når de bruger Google Adgangskodeadministrator. Bed dem om at gå til <ph name="WEBSITE" /> for at logge ind.</translation>
+<translation id="7191632649590906354">Dine familiemedlemmer kan nu bruge dit brugernavn og din adgangskode, når de bruger Google Adgangs­kode­admin­istrator. Bed dem om at gå til <ph name="WEBSITE" /> for at logge ind.</translation>
 <translation id="7193051357671784796">Din app blev tilføjet af din organisation. Genstart appen for at afslutte installationen.</translation>
 <translation id="7193374945610105795">Der er ikke gemt nogen adgangskoder til <ph name="ORIGIN" /></translation>
 <translation id="7193663868864659844">Send feedback om foreslåede grupper</translation>
@@ -8642,7 +8642,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7666531788977935712">Knappen Fortsæt er aktiveret</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}one{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Returner <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
 <translation id="7668205084604701639">Office-filindstillinger</translation>
-<translation id="7668423670802040666">I Google Adgangskodeadministrator for <ph name="ACCOUNT" /></translation>
+<translation id="7668423670802040666">I Google Adgangs­kode­admin­istrator for <ph name="ACCOUNT" /></translation>
 <translation id="7668648754769651616">Hjælpefunktioner gør din enhed nemmere at bruge. Du kan få adgang til kvikmenuen ved at vælge klokkeslættet nederst på skærmen.</translation>
 <translation id="7669620291129890197">Synlig for dine enheder</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{Pinkoden er forkert. Du har ét forsøg tilbage.}one{Pinkoden er forkert. Du har # forsøg tilbage.}other{Pinkoden er forkert. Du har # forsøg tilbage.}}</translation>
@@ -9156,7 +9156,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8041267120753677077">Stream din telefons apps</translation>
 <translation id="8042142357103597104">Tekstens gennemsigtighed</translation>
-<translation id="8042331986490021244">Dine adgangskoder krypteres på din enhed, før de gemmes i Google Adgangskodeadministrator</translation>
+<translation id="8042331986490021244">Dine adgangskoder krypteres på din enhed, før de gemmes i Google Adgangs­kode­admin­istrator</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> svarer ikke.</translation>
 <translation id="8044899503464538266">Langsom</translation>
 <translation id="8045253504249021590">Synkronisering er blevet stoppet via Google Kontrolpanel.</translation>
@@ -9496,7 +9496,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8295450130892483256">Installer Microsoft 365</translation>
 <translation id="8297292446125062288">HID-indstillinger</translation>
 <translation id="8298429963694909221">Nu kan du få notifikationer fra din telefon på din <ph name="DEVICE_TYPE" />. Hvis du afviser notifikationer på din <ph name="DEVICE_TYPE" />, afvises de også på din telefon. Sørg for, at din telefon er i nærheden, og at Bluetooth og Wi-Fi er aktiveret.</translation>
-<translation id="829923460755755423">Tilføj en genvej til Google Adgangskodeadministrator</translation>
+<translation id="829923460755755423">Tilføj en genvej til Google Adgangs­kode­admin­istrator</translation>
 <translation id="8299319456683969623">Du er i øjeblikket offline.</translation>
 <translation id="829937697336000302">Øg din produktivitet</translation>
 <translation id="8299951061833867575">Wi-Fi, mobildata</translation>

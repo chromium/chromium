@@ -53,7 +53,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1240288207750131269"><ph name="LANG" /> indlæses</translation>
 <translation id="1240903469550363138">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />servicevilkår<ph name="END_LINK2" />.</translation>
 <translation id="124116460088058876">Flere sprog</translation>
-<translation id="1241792820757384812">Dine adgangskoder slettes fra Google Adgangskodeadministrator for <ph name="CHROME_CHANNEL" />. Du kan beholde den adgangskodefil, du lige har downloadet.</translation>
+<translation id="1241792820757384812">Dine adgangskoder slettes fra Google Adgangs­kode­admin­istrator for <ph name="CHROME_CHANNEL" />. Du kan beholde den adgangskodefil, du lige har downloadet.</translation>
 <translation id="1242883863226959074">enhed</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
@@ -143,7 +143,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1750259112639922169">Fanegruppe – <ph name="TAB_COUNT" /> faner</translation>
 <translation id="17513872634828108">Åbne faner</translation>
 <translation id="1755203724116202818">Med henblik på at måle en annonces effektivitet deles der begrænsede typer data mellem websites, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
-<translation id="1757620656501361327">Opdatering af Google Adgangskodeadministrator</translation>
+<translation id="1757620656501361327">Opdatering af Google Adgangs­kode­admin­istrator</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}one{Sider, # side på listen}other{Sider, # sider på listen}}</translation>
 <translation id="1778457539567749232">Markér som ulæst</translation>
 <translation id="1779766957982586368">Luk vindue</translation>
@@ -226,7 +226,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="2234827758954819389">Privatlivsguide</translation>
 <translation id="2239812875700136898">Administrer dine historier ved hjælp af knappen Indstillinger for Discover</translation>
 <translation id="2247789808226901522">Kortet er udløbet</translation>
-<translation id="2248941474044011069">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
+<translation id="2248941474044011069">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator</translation>
 <translation id="2249635629516220541">Tilpas de oplysninger, som websites kan bruge til at vise dig annoncer</translation>
 <translation id="2259659629660284697">Eksportér adgangskoder…</translation>
 <translation id="2276231040576210443">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />. Google kan personlig tilpasse Søgning og andre tjenester baseret på din historik.</translation>
@@ -562,7 +562,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />leveret af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan bruge denne tablet til at logge ind på den enhed, der viser QR-koden.</translation>
-<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
+<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangs­kode­admin­istrator med at gemme dine loginoplysninger</translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
 <translation id="4095425503313512126">Browsing og søgning er hurtigere</translation>
 <translation id="4096227151372679484">Flow til lagring af bogmærker er åbnet i halv højde</translation>
@@ -570,7 +570,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4116038641877404294">Download sider for at bruge dem, når du er offline</translation>
-<translation id="4121654769234887259">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangskodeadministrator for <ph name="USERNAME" />.</translation>
+<translation id="4121654769234887259">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator for <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Flow for notifikationstilladelse er åbnet i fuld højde</translation>
 <translation id="4126285640274188657">Sideindsigt</translation>
 <translation id="4135200667068010335">Lukket liste over enheder, der skal deles en fane med.</translation>
@@ -596,7 +596,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4249955472157341256">Sortér efter seneste</translation>
 <translation id="4256782883801055595">Open source-licenser</translation>
-<translation id="4257230861809842349">Vil du slette adgangskoderne fra Google Adgangskodeadministrator?</translation>
+<translation id="4257230861809842349">Vil du slette adgangskoderne fra Google Adgangs­kode­admin­istrator?</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
@@ -604,7 +604,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298388696830689168">Tilknyttede websites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4304713468139749426">Adgangskodeadministrator</translation>
+<translation id="4304713468139749426">Adgangs­kode­admin­istrator</translation>
 <translation id="4307992518367153382">Grundlæggende valgmuligheder</translation>
 <translation id="4311652497846705514">Vil du åbne PDF-filen?</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
@@ -692,7 +692,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4758061975920522644">Del kun billede</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
-<translation id="4766313118839197559">Adgangskoder gemmes i Adgangskodeadministrator på denne enhed</translation>
+<translation id="4766313118839197559">Adgangskoder gemmes i Adgangs­kode­admin­istrator på denne enhed</translation>
 <translation id="4766678251456904326">Føj konto til enhed</translation>
 <translation id="4767947714785277816">Vi lancerer en ny privatlivsfunktion til annoncer ved navn annoncemåling. Chrome deler kun meget begrænsede oplysninger mellem websites og apps, f.eks. hvornår du fik vist en annonce, for at hjælpe med at måle annonceeffektiviteten.</translation>
 <translation id="4769095993849849966">Nyt filnavn</translation>
@@ -710,7 +710,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4837753911714442426">Åbn valgmuligheder for udskrivning af siden</translation>
 <translation id="4842092870884894799">Viser pop op for generering af adgangskoder</translation>
 <translation id="4842515939542199281">Tryk på mikrofonen for at søge ved hjælp af stemmen</translation>
-<translation id="4844633725025837809">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
+<translation id="4844633725025837809">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator</translation>
 <translation id="4850886885716139402">Vis</translation>
 <translation id="4852014461738377247">Logger ind\u2026</translation>
 <translation id="4860895144060829044">Ring op</translation>
@@ -972,7 +972,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="6186394685773237175">Der blev ikke fundet nogen kompromitterede adgangskoder</translation>
 <translation id="6192907950379606605">Få billedbeskrivelser</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
-<translation id="6196315980958524839">Adgangskoder gemmes i Google Adgangskodeadministrator på denne enhed</translation>
+<translation id="6196315980958524839">Adgangskoder gemmes i Google Adgangs­kode­admin­istrator på denne enhed</translation>
 <translation id="6202812185118613467">Log ind igen for at synkronisere</translation>
 <translation id="6205314730813004066">Privatliv ved annoncering</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
@@ -1152,7 +1152,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6987047470128880212">Inkognitofaner er ikke tilgængelige på denne enhed</translation>
 <translation id="6995899638241819463">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="6996145122199359148">Download denne side</translation>
-<translation id="7013762323294215682">Denne adgangsnøgle gemmes i Adgangskodeadministrator. Alle med adgang til Adgangskodeadministrator kan bruge denne adgangsnøgle.</translation>
+<translation id="7013762323294215682">Denne adgangsnøgle gemmes i Adgangs­kode­admin­istrator. Alle med adgang til Adgangs­kode­admin­istrator kan bruge denne adgangsnøgle.</translation>
 <translation id="7020741890149022655">Føj til læseliste <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Åbn i browser</translation>
 <translation id="7027549951530753705">Gendannet den <ph name="ITEM_TITLE" /></translation>
@@ -1352,7 +1352,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7960972236129063347">Knappen Tilbage på arket med sideindsigt</translation>
 <translation id="7961926449547174351">Du har deaktiveret adgangen til lagerplads. Gå til Indstillinger for at aktivere den.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
-<translation id="7965838025086216108">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangskodeadministrator for <ph name="ACCOUNT" />.</translation>
+<translation id="7965838025086216108">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
@@ -1400,7 +1400,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8130309322784422030">Dine gemte loginoplysninger kan være forældede</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8135406045838672858">Downloadede PDF-filer åbnes automatisk med <ph name="APP_NAME" /></translation>
-<translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangskodeadministrator.</translation>
+<translation id="8137562778192957619">Du behøver ikke at huske denne adgangskode. Den gemmes i Google Adgangs­kode­admin­istrator.</translation>
 <translation id="8163820386638255770">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> filer tilbage</translation>
