@@ -29,14 +29,14 @@ namespace {
 void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
-    field.label.clear();
-    field.set_value(u"");
-    field.autocomplete_attribute.clear();
+    field.label = {};
+    field.set_value({});
+    field.autocomplete_attribute = {};
     field.options.clear();
-    field.placeholder.clear();
-    field.css_classes.clear();
-    field.id_attribute.clear();
-    field.name_attribute.clear();
+    field.placeholder = {};
+    field.css_classes = {};
+    field.id_attribute = {};
+    field.name_attribute = {};
   }
 }
 

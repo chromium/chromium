@@ -73,7 +73,7 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
     field.is_focusable = false;
     field.renderer_id = autofill::FieldRendererId(42);
     field.set_value(u"a@example.com");
-    field.autocomplete_attribute.clear();
+    field.autocomplete_attribute = {};
     form_.fields.push_back(field);
   }
 

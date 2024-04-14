@@ -316,14 +316,14 @@ ACTION_P2(InvokeConsumer, store, form) {
 void SanitizeFormData(FormData* form) {
   form->main_frame_origin = url::Origin();
   for (FormFieldData& field : form->fields) {
-    field.label.clear();
-    field.set_value(u"");
-    field.autocomplete_attribute.clear();
+    field.label = {};
+    field.set_value({});
+    field.autocomplete_attribute = {};
     field.options.clear();
-    field.placeholder.clear();
-    field.css_classes.clear();
-    field.id_attribute.clear();
-    field.name_attribute.clear();
+    field.placeholder = {};
+    field.css_classes = {};
+    field.id_attribute = {};
+    field.name_attribute = {};
   }
 }
 
@@ -1341,7 +1341,7 @@ TEST_P(PasswordManagerTest, DoNotSaveWhenUserDeletesPassword) {
   // The user deletes the password, no manuall fallback should be shown.
   PasswordForm empty_password_form(form);
   empty_password_form.password_value.clear();
-  empty_password_form.form_data.fields[1].set_value(u"");
+  empty_password_form.form_data.fields[1].set_value({});
   EXPECT_CALL(client_, ShowManualFallbackForSaving).Times(0);
   EXPECT_CALL(client_, HideManualFallbackForSaving);
   manager()->OnInformAboutUserInput(&driver_, empty_password_form.form_data);
@@ -1799,7 +1799,7 @@ TEST_P(PasswordManagerTest, LoginFormReappearance) {
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
   for (auto& field : form_data_after_navigation.fields)
-    field.set_value(u"");
+    field.set_value({});
   observed.push_back(form_data_after_navigation);
 
   // A PasswordForm appears, and is visible in the layout:
@@ -1837,7 +1837,7 @@ TEST_P(PasswordManagerTest, ChangePasswordFormReappearance) {
   form_data_after_navigation.url =
       GURL("https://accounts.google.com/login/error?redirect_after_login");
   for (auto& field : form_data_after_navigation.fields)
-    field.set_value(u"");
+    field.set_value({});
   observed.push_back(form_data_after_navigation);
 
   // Reappeared change password form is a signal of a possibly successful
@@ -2887,7 +2887,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   PasswordForm form(MakeFormWithOnlyNewPasswordField());
   form.username_element.clear();
   form.username_value.clear();
-  form.form_data.fields[0].set_value(u"");
+  form.form_data.fields[0].set_value({});
   std::vector<FormData> observed = {form.form_data};
 
   // Emulate page load.
@@ -2900,7 +2900,7 @@ TEST_P(PasswordManagerTest, ClearedFieldsSuccessCriteria) {
   OnPasswordFormSubmitted(form.form_data);
 
   // JavaScript cleared field values.
-  observed[0].fields[1].set_value(u"");
+  observed[0].fields[1].set_value({});
 
   // Check success of the submission.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2920,7 +2920,7 @@ TEST_P(PasswordManagerTest, NotSavingSyncPasswordHash_NoUsername) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleGAIAFormData());
   // Simulate that no username is found.
-  form_data.fields[0].set_value(u"");
+  form_data.fields[0].set_value({});
   observed.push_back(form_data);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -5282,9 +5282,9 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
 
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
-    form_data.fields[0].set_value(u"");
+    form_data.fields[0].set_value({});
     if (new_password_field_was_cleared)
-      form_data.fields[1].set_value(u"");
+      form_data.fields[1].set_value({});
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {

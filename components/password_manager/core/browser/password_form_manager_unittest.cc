@@ -1052,7 +1052,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyName) {
 
   FormData anonymous_signup = observed_form_;
   // There is an anonymous password field.
-  anonymous_signup.fields[2].name.clear();
+  anonymous_signup.fields[2].name = {};
   anonymous_signup.fields[2].set_value(u"a password");
   // Mark the password field as new-password.
   std::map<FormSignature, FormPredictions> predictions = CreatePredictions(

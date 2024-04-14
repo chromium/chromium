@@ -620,7 +620,7 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsEmptyName) {
 
   FormData anonymous_signup = observed_form_;
   // There is an anonymous password field and set it as the new password field.
-  anonymous_signup.fields[2].name.clear();
+  anonymous_signup.fields[2].name = {};
   anonymous_signup.fields[2].set_value(u"a password");
   anonymous_signup.fields[2].autocomplete_attribute = "new-password";
 
