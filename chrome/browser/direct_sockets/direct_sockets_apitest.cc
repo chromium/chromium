@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -178,15 +177,8 @@ class ChromeDirectSocketsUdpTest : public ChromeDirectSocketsTest<TestHarness> {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-class ExtensionApiTestWithDirectSocketsEnabled
-    : public extensions::ExtensionApiTest {
- private:
-  base::test::ScopedFeatureList features_{
-      extensions::kDirectSocketsInChromeApps};
-};
-
 using ChromeDirectSocketsTcpApiTest =
-    ChromeDirectSocketsTcpTest<ExtensionApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsTcpTest<extensions::ExtensionApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
   extensions::TestExtensionDir dir;
@@ -323,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
 }
 
 using ChromeDirectSocketsUdpApiTest =
-    ChromeDirectSocketsUdpTest<ExtensionApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsUdpTest<extensions::ExtensionApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
   extensions::TestExtensionDir dir;
@@ -529,8 +521,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-using ChromeDirectSocketsTcpServerApiTest =
-    ExtensionApiTestWithDirectSocketsEnabled;
+using ChromeDirectSocketsTcpServerApiTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
                        TcpServerSocketUndefinedWithoutSocketsPermission) {

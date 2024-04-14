@@ -105,11 +105,11 @@ BASE_FEATURE(kStopUsingRenderProcessHostPrivilege,
              "StopUsingRenderProcessHostPrivilege",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This feature tracks the work to enable Direct Sockets in Chrome Apps by
-// default. See crbug.com/329445684 for details.
+// This feature is a kill switch for the Direct Sockets API in Chrome Apps.
+// See crbug.com/329445684 for details.
 BASE_FEATURE(kDirectSocketsInChromeApps,
              "DirectSocketsInChromeApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
