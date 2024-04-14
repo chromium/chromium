@@ -235,7 +235,6 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
   EXPECT_EQ(hotspot_info->allow_status,
             mojom::HotspotAllowStatus::kDisallowedNoMobileData);
   EXPECT_EQ(hotspot_info->allowed_wifi_security_modes.size(), 2u);
-  EXPECT_FALSE(hotspot_info->config);
   EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
 
   AddActiveCellularService();

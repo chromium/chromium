@@ -305,7 +305,8 @@ void HotspotCapabilitiesProvider::OnCheckReadinessFailure(
 
 void HotspotCapabilitiesProvider::SetHotspotAllowStatus(
     hotspot_config::mojom::HotspotAllowStatus new_allow_status) {
-  if (hotspot_capabilities_.allow_status == new_allow_status) {
+  if (hotspot_capabilities_.allow_status == new_allow_status &&
+      new_allow_status == hotspot_config::mojom::HotspotAllowStatus::kAllowed) {
     return;
   }
 
