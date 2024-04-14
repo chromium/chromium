@@ -1097,6 +1097,32 @@ if (is_win) {
 }
 
 if (is_chromeos && is_chromeos_device) {
+  if (is_chromeos_ash) {
+    copy("crosier_metadata") {
+      sources = [
+        "../browser/ash/assistant/assistant_integration_test.yaml",
+        "../browser/ash/bluetooth/bluetooth_integration_test.yaml",
+        "../browser/ash/child_accounts/web_approvals_integration_test.yaml",
+        "../browser/ash/external_metrics_integration_test.yaml",
+        "../browser/ash/featured_integration_test.yaml",
+        "../browser/ash/login/lock/lock_screen_integration_test.yaml",
+        "../browser/ash/login/login_integration_test.yaml",
+        "../browser/ash/login/supervised_user_login_integration_test.yaml",
+        "../browser/ash/ml_integration_test.yaml",
+        "../browser/ash/power/ml/smart_dim/smart_dim_integration_test.yaml",
+        "../browser/ash/scanning/multi_page_scan_integration_test.yaml",
+        "../browser/ash/scanning/scan_integration_test.yaml",
+        "../browser/ash/screenshot_integration_test.yaml",
+        "../browser/ash/security_files_integration_test.yaml",
+        "../browser/ash/system_web_apps/apps/terminal_integration_test.yaml",
+        "../browser/ash/web_handwriting_integration_test.yaml",
+        "../browser/ui/ash/quick_settings_integration_test.yaml",
+        "../browser/ui/ash/shelf/shelf_integration_test.yaml",
+      ]
+      outputs = [ "$root_out_dir/crosier_metadata/{{source_file_part}}" ]
+    }
+  }
+
   test("chromeos_integration_tests") {
     configs += [ "//build/config:precompiled_headers" ]
     defines = [
@@ -1116,6 +1142,8 @@ if (is_chromeos && is_chromeos_device) {
       data_deps += [ "//chrome:chrome(//build/toolchain/cros:lacros_clang)" ]
     }
     if (is_chromeos_ash) {
+      # Note: for each test case in the below list, add a metadata file
+      # in the `crosier_metadata` build rule above.
       sources += [
         "../browser/ash/assistant/assistant_integration_test.cc",
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
@@ -1175,6 +1203,7 @@ if (is_chromeos && is_chromeos_device) {
       ]
 
       data_deps += [
+        ":crosier_metadata",
         "//chrome/test/base/chromeos/crosier/helper",
         "//chrome/test/base/chromeos/crosier/helper/fake_chrome",
       ]
