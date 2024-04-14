@@ -103,7 +103,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 
 Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Åbner og kører et sikkerhedstjek i Chromium.</translation>
-<translation id="4043291146360695975">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
+<translation id="4043291146360695975">Adgangskoder gemmes kun i Adgangs­kode­admin­istrator på denne enhed.</translation>
 <translation id="4076589763479456892">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Understøttes ikke i Chromium Beta</translation>
 <translation id="4106512142782407609">Logget ind som <ph name="EMAIL" />.
@@ -141,7 +141,7 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chromium bruges.</translation>
 <translation id="5146749061471423558">Føj bogmærker til Chromium</translation>
 <translation id="5171868502429358653">Log ind på Chromium</translation>
-<translation id="5213683223491576284">Åbner Adgangskodeadministrator i Chromium.</translation>
+<translation id="5213683223491576284">Åbner Adgangs­kode­admin­istrator i Chromium.</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5242782538551259282">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
 
@@ -187,7 +187,7 @@ Vær opmærksom på følgende:
 <translation id="6170619162539716595">Tillad, at Chromium bruger Google Maps til at vise dig rutevejledning og lokale oplysninger om registrerede adresser.</translation>
 <translation id="6175967839221456271">Del Chromium</translation>
 <translation id="6197255575340902638">Hvis du skjuler "<ph name="MODULE_NAME" />", sporer Chromium ikke længere automatisk dine fremtidige pakker, og alle dine tidligere pakkesporingsdata slettes.</translation>
-<translation id="6247557882553405851">Google Adgangskodeadministrator</translation>
+<translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
 <translation id="6324041800010509197">Gå til fanegitteret i Chromium</translation>
 <translation id="6325378625795868881">Brug Chromium, hver gang du trykker på links i meddelelser og andre apps.</translation>
@@ -211,14 +211,14 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="6852799557929001644">Få adgang til dine Chromium-adgangskoder m.m. i andre apps på denne enhed.</translation>
 <translation id="6887138405044152640">Hvis du vil sende denne fane til en anden enhed, skal du logge ind i Chromium på den pågældende enhed.</translation>
 <translation id="6911341667534646387">Fortsæt med at bruge Chromium-dataene på din Google-konto</translation>
-<translation id="7006920032187763988">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPad.</translation>
+<translation id="7006920032187763988">Du kan bruge de adgangskoder, du har gemt i Adgangs­kode­admin­istrator, i andre apps på din iPad.</translation>
 <translation id="7018284295775193585">Chromium kan ikke opdateres</translation>
 <translation id="7045244423563602563">Tilpas Chromium</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chromium kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
 <translation id="7163483974919055112">Søg efter visuelle elementer i Chromium.</translation>
 <translation id="7165402419892018581">Vælg Chromium for Autofyld</translation>
-<translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
+<translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangs­kode­admin­istrator anbefaler, at du ændrer det nu.</translation>
 <translation id="7192111075364461693">Chromium-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="7222001353246886083">Søg efter ${searchphrase} i Chromium</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
@@ -227,7 +227,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte data er fjernet fra Chromium og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
 <translation id="7387082980875012885">Åbn en ny fane i Chromium</translation>
-<translation id="7395825497086981028">Din adgangskode gemmes i Adgangskodeadministrator for <ph name="EMAIL" />.</translation>
+<translation id="7395825497086981028">Din adgangskode gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Brug Chromium, uanset hvor du er</translation>
 <translation id="7523464085759699266">Aktivér "Lås inkognitofaner, når du lukker Chromium".</translation>
 <translation id="7601597633134889942">Besøg et website, og klik på Følg i Chromium-menuen</translation>
@@ -263,7 +263,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="8458950033462118672">Du kan åbne links i Chromium automatisk ved at angive Chromium som din standardapp til browsing.</translation>
-<translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPhone.</translation>
+<translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangs­kode­admin­istrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8618440443578628179">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
 
@@ -289,7 +289,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-da
 Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgangssætningen for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9050790730841755540">Brug Chromium, hver gang du trykker på links i andre apps.</translation>
-<translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangskodeadministrator for <ph name="EMAIL" /></translation>
+<translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9110075932708282655">Brug Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
