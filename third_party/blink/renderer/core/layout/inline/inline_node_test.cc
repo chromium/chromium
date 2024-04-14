@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -486,80 +487,83 @@ TEST_F(InlineNodeTest, SegmentBidiIsolate) {
   TEST_ITEM_OFFSET_DIR(items[8], 22u, 28u, TextDirection::kLtr);
 }
 
-TEST_F(InlineNodeTest, MinMaxSizes) {
-  LoadAhem();
-  SetupHtml("t", "<div id=t style='font:10px Ahem'>AB CDEF</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(40, sizes.min_size);
-  EXPECT_EQ(70, sizes.max_size);
+struct MinMaxData {
+  const char* content;
+  int min_max[2];
+  const char* target_style = "";
+  const char* style = "";
+  const char* lang = nullptr;
+} min_max_data[] = {
+    {"AB CDEF", {40, 70}},
+    // Element boundary is at the middle of a word.
+    {"A B<span>C D</span>", {20, 60}},
+    // A close tag after a forced break.
+    {"<span>12<br></span>", {80, 80}, "", "span { border: 30px solid blue; }"},
+    // `pre-wrap` with trailing spaces.
+    {"12345 6789 ", {50, 110}, "white-space: pre-wrap;"},
+    // `word-break: break-word` can break a space run.
+    {"M):\n<span>    </span>p",
+     {10, 90},
+     "white-space: pre-wrap; word-break: break-word;",
+     "span { font-size: 200%; }"},
+    // Tabulation characters with `break-word`.
+    {"&#9;&#9;<span>X</span>",
+     {10, 170},
+     "white-space: pre-wrap; word-break: break-word;"},
+    // Soft Hyphens.
+    {"abcd&shy;ef xx", {50, 90}},
+    {"abcd&shy;ef xx", {60, 90}, "hyphens: none;"},
+    {"abcd&shy; ef xx", {50, 100}, "hyphens: none;"},
+    // Hyphenations.
+    {"zz hyphenation xx", {50, 170}, "hyphens: auto;", "", "en-us"},
+    // Floats.
+    {"XXX <div id=left></div> XXXX",
+     {50, 130},
+     "",
+     "#left { float: left; width: 50px; }"},
+    // Floats with clearances.
+    {"XXX <div id=left></div><div id=right></div><div id=left></div> XXX",
+     {50, 160},
+     "",
+     "#left { float: left; width: 40px; }"
+     "#right { float: right; clear: left; width: 50px; }"},
+};
+
+std::ostream& operator<<(std::ostream& os, const MinMaxData& data) {
+  return os << data.content << std::endl << data.style;
 }
 
-TEST_F(InlineNodeTest, MinMaxSizesElementBoundary) {
-  LoadAhem();
-  SetupHtml("t", "<div id=t style='font:10px Ahem'>A B<span>C D</span></div>");
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  // |min_content| should be the width of "BC" because there is an element
-  // boundary between "B" and "C" but no break opportunities.
-  EXPECT_EQ(20, sizes.min_size);
-  EXPECT_EQ(60, sizes.max_size);
-}
+class MinMaxTest : public InlineNodeTest,
+                   public testing::WithParamInterface<MinMaxData> {};
 
-TEST_F(InlineNodeTest, MinMaxSizesFloats) {
+INSTANTIATE_TEST_SUITE_P(InlineNodeTest,
+                         MinMaxTest,
+                         testing::ValuesIn(min_max_data));
+
+TEST_P(MinMaxTest, Data) {
+  const MinMaxData& data = GetParam();
   LoadAhem();
-  SetupHtml("t", R"HTML(
+  StringBuilder html;
+  html.AppendFormat(R"HTML("
+    <!DOCTYPE html>
     <style>
-      #left { float: left; width: 50px; }
+    #target { font: 10px Ahem;%s }
+    %s
     </style>
-    <div id=t style="font: 10px Ahem">
-      XXX <div id="left"></div> XXXX
-    </div>
-  )HTML");
-
+    <div id="target")HTML",
+                    data.target_style, data.style);
+  if (data.lang) {
+    html.AppendFormat(" lang='%s'", data.lang);
+    LayoutLocale::SetHyphenationForTesting(AtomicString(data.lang),
+                                           MockHyphenation::Create());
+  }
+  html.AppendFormat(">%s</div>", data.content);
+  SetupHtml("target", html.ToString());
   InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-
-  EXPECT_EQ(50, sizes.min_size);
-  EXPECT_EQ(130, sizes.max_size);
-}
-
-TEST_F(InlineNodeTest, MinMaxSizesCloseTagAfterForcedBreak) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-      span { border: 30px solid blue; }
-    </style>
-    <div id=t style="font: 10px Ahem">
-      <span>12<br></span>
-    </div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  // The right border of the `</span>` is included in the line even if it
-  // appears after `<br>`. crbug.com/991320.
-  EXPECT_EQ(80, sizes.min_size);
-  EXPECT_EQ(80, sizes.max_size);
-}
-
-TEST_F(InlineNodeTest, MinMaxSizesFloatsClearance) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-      #left { float: left; width: 40px; }
-      #right { float: right; clear: left; width: 50px; }
-    </style>
-    <div id=t style="font: 10px Ahem">
-      XXX <div id="left"></div><div id="right"></div><div id="left"></div> XXX
-    </div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-
-  EXPECT_EQ(50, sizes.min_size);
-  EXPECT_EQ(160, sizes.max_size);
+  const MinMaxSizes actual_sizes = ComputeMinMaxSizes(node);
+  const MinMaxSizes expected_sizezs{LayoutUnit(data.min_max[0]),
+                                    LayoutUnit(data.min_max[1])};
+  EXPECT_EQ(actual_sizes, expected_sizezs);
 }
 
 // For http://crbug.com/1112560
@@ -583,25 +587,6 @@ TEST_F(InlineNodeTest, MinMaxSizesSaturated) {
   MinMaxSizes sizes = ComputeMinMaxSizes(node);
   EXPECT_EQ(LayoutUnit(33554431), sizes.min_size.Round());
   // Note: |sizes.max_size.Round()| isn't |LayoutUnit::Max()| on some platform.
-}
-
-TEST_F(InlineNodeTest, MinMaxSizesTabulationWithBreakWord) {
-  LoadAhem();
-  SetupHtml("t", R"HTML(
-    <style>
-    #t {
-      font: 10px Ahem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    </style>
-    <div id=t>&#9;&#9;<span>X</span></div>
-  )HTML");
-
-  InlineNodeForTest node = CreateInlineNode();
-  MinMaxSizes sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(10, sizes.min_size);
-  EXPECT_EQ(170, sizes.max_size);
 }
 
 // For http://crbug.com/1116713

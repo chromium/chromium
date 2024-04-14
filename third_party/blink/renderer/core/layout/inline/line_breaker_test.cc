@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
-#include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -753,122 +752,6 @@ TEST_F(LineBreakerTest, TrailingCollapsedSpaces) {
   // But a layout pass should.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(space_text->NeedsLayout());
-}
-
-TEST_F(LineBreakerTest, MinMaxWithTrailingSpaces) {
-  LoadAhem();
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    #container {
-      font: 10px/1 Ahem;
-      white-space: pre-wrap;
-    }
-    </style>
-    <div id=container>12345 6789 </div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(110));
-}
-
-// `word-break: break-word` can break a space run.
-TEST_F(LineBreakerTest, MinMaxBreakSpaces) {
-  LoadAhem();
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    div {
-      font: 10px/1 Ahem;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    span {
-      font-size: 200%;
-    }
-    </style>
-    <div id=container>M):
-<span>    </span>p</div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(10));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
-}
-
-TEST_F(LineBreakerTest, MinMaxWithSoftHyphen) {
-  LoadAhem();
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    #container {
-      font: 10px/1 Ahem;
-    }
-    </style>
-    <div id=container>abcd&shy;ef xx</div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
-}
-
-TEST_F(LineBreakerTest, MinMaxWithHyphensDisabled) {
-  LoadAhem();
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    #container {
-      font: 10px/1 Ahem;
-      hyphens: none;
-    }
-    </style>
-    <div id=container>abcd&shy;ef xx</div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(60));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
-}
-
-TEST_F(LineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
-  LoadAhem();
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    #container {
-      font: 10px/1 Ahem;
-      hyphens: none;
-    }
-    </style>
-    <div id=container>abcd&shy; ef xx</div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(100));
-}
-
-TEST_F(LineBreakerTest, MinMaxWithHyphensAuto) {
-  LoadAhem();
-  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"),
-                                         MockHyphenation::Create());
-  InlineNode node = CreateInlineNode(R"HTML(
-    <!DOCTYPE html>
-    <style>
-    #container {
-      font: 10px/1 Ahem;
-      hyphens: auto;
-    }
-    </style>
-    <div id=container lang="en-us">zz hyphenation xx</div>
-  )HTML");
-
-  const auto sizes = ComputeMinMaxSizes(node);
-  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
-  EXPECT_EQ(sizes.max_size, LayoutUnit(170));
-  LayoutLocale::SetHyphenationForTesting(AtomicString("en-us"), nullptr);
 }
 
 // For http://crbug.com/1104534
