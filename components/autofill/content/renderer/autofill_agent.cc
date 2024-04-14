@@ -1021,11 +1021,22 @@ void AutofillAgent::ShowSuggestions(
   }
 
   last_queried_element_ = FieldRef(element);
-  const bool is_address_or_payments_manual_fallback =
-      IsAddressAutofillManuallyTriggered(trigger_source) ||
-      IsPaymentsAutofillManuallyTriggered(trigger_source);
-  if (!is_address_or_payments_manual_fallback &&
-      form_util::IsAutofillableInputElement(input_element)) {
+
+  // Manual fallbacks override any prioritization done based on the field type.
+  // TODO(b/333990908): Test manual fallback on different form types.
+  if (IsAddressAutofillManuallyTriggered(trigger_source) ||
+      IsPaymentsAutofillManuallyTriggered(trigger_source)) {
+    QueryAutofillSuggestions(element, trigger_source);
+    return;
+  }
+  if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
+    is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
+        input_element, trigger_source);
+    return;
+  }
+
+  // Proceed with generating suggestions based on the field type.
+  if (form_util::IsAutofillableInputElement(input_element)) {
     if (password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element)) {
@@ -1040,17 +1051,15 @@ void AutofillAgent::ShowSuggestions(
   }
 
   // Password field elements should only have suggestions shown by the password
-  // autofill agent. Unless an address or payments manual fallback option is
-  // chosen. The /*disable presubmit*/ comment below is used to disable a
-  // presubmit script that ensures that only IsPasswordFieldForAutofill() is
+  // autofill agent. The /*disable presubmit*/ comment below is used to disable
+  // a presubmit script that ensures that only IsPasswordFieldForAutofill() is
   // used in this code (it has to appear between the function name and the
   // parenthesis to not match a regex). In this specific case we are actually
   // interested in whether the field is currently a password field, not whether
   // it has ever been a password field.
   if (!input_element.IsNull() &&
       input_element.IsPasswordField /*disable presubmit*/ () &&
-      !config_.query_password_suggestions &&
-      !is_address_or_payments_manual_fallback) {
+      !config_.query_password_suggestions) {
     return;
   }
 

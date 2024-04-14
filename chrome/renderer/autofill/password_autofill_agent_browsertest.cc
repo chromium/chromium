@@ -2574,7 +2574,7 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
-      AutofillSuggestionTriggerSource::kTextFieldDidChange);
+      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 }
 
 TEST_F(PasswordAutofillAgentTest,
