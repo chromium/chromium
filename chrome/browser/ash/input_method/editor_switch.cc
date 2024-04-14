@@ -61,6 +61,9 @@ const char* kWorkspaceAppIdDenylist[] = {
     extension_misc::kGoogleSheetsAppId,
     extension_misc::kGoogleDriveAppId,
     extension_misc::kGoogleKeepAppId,
+    extension_misc::kGoogleMeetPwaAppId,
+    extension_misc::kGoogleDocsPwaAppId,
+    extension_misc::kGoogleSheetsPwaAppId,
     // App ids in demo mode
     extension_misc::kCalendarDemoAppId,
     extension_misc::kGoogleDocsDemoAppId,
