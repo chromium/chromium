@@ -89,7 +89,8 @@ struct MahiUiError {
   ~MahiUiError();
 
   // The error status. NOTE: `status` should not be
-  // `chromeos::MahiResponseStatus::kSuccess`.
+  // `chromeos::MahiResponseStatus::kSuccess` or
+  // `chromeos::MahiResponseStatus::kLowQuota`.
   const chromeos::MahiResponseStatus status;
 
   // Indicates the `VisibilityState` where `status` comes from.

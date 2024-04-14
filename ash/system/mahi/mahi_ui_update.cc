@@ -24,6 +24,9 @@ MahiQuestionParams::~MahiQuestionParams() = default;
 MahiUiError::MahiUiError(chromeos::MahiResponseStatus status,
                          VisibilityState origin_state)
     : status(status), origin_state(origin_state) {
+  // `chromeos::MahiResponseStatus::kLowQuota` is a warning not an error.
+  CHECK_NE(status, chromeos::MahiResponseStatus::kLowQuota);
+
   CHECK_NE(status, chromeos::MahiResponseStatus::kSuccess);
 }
 

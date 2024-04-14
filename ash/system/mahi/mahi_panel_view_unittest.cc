@@ -78,13 +78,15 @@ class MockNewWindowDelegate : public NiceMock<TestNewWindowDelegate> {
 // Helpers ---------------------------------------------------------------------
 
 // Returns a comprehensive list of potential errors from Mahi backend.
+// NOTE: `MahiResponseStatus::kLowQuota` is a warning instead of an error.
 std::vector<MahiResponseStatus> GetMahiErrors() {
   std::vector<MahiResponseStatus> errors;
   for (size_t status_value = 0;
        status_value <= static_cast<size_t>(MahiResponseStatus::kMax);
        ++status_value) {
     MahiResponseStatus status = static_cast<MahiResponseStatus>(status_value);
-    if (status != MahiResponseStatus::kSuccess) {
+    if (status != MahiResponseStatus::kSuccess &&
+        status != MahiResponseStatus::kLowQuota) {
       errors.push_back(status);
     }
   }
@@ -1181,6 +1183,12 @@ TEST_F(MahiPanelViewTest, ScrollViewScrollsAfterLayout) {
 // iterating all possible errors.
 TEST_F(MahiPanelViewTest, FailToGetAnswer) {
   for (MahiResponseStatus error : GetMahiErrors()) {
+    // `kInappropriate` introduced by a question is presented in the Q&A view,
+    // verified in its own test.
+    if (error == MahiResponseStatus::kInappropriate) {
+      continue;
+    }
+
     // Config the mock mahi manager to return answer with an `error` asyncly.
     base::test::TestFuture<void> answer_waiter;
     EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
@@ -1227,23 +1235,11 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
     // Wait until an answer is loaded with an error.
     ASSERT_TRUE(answer_waiter.Wait());
 
-    if (error == MahiResponseStatus::kInappropriate ||
-        error == MahiResponseStatus::kLowQuota) {
-      // `kInappropriate` introduced by a question is presented in the Q&A view,
-      // verified in its own test. `kLowQuota` triggers a warning not presented
-      // in the `error_status_view`.
-      EXPECT_FALSE(error_status_view->GetVisible());
-      EXPECT_TRUE(question_answer_view->GetVisible());
-      EXPECT_FALSE(summary_outlines_section->GetVisible());
-      CreatePanelWidget();
-      continue;
-    }
-
+    EXPECT_TRUE(error_status_view->GetVisible());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(question_answer_view->GetViewByID(
         mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
     EXPECT_FALSE(summary_outlines_section->GetVisible());
-    EXPECT_TRUE(error_status_view->GetVisible());
 
     // Check the contents of `error_status_label`.
     EXPECT_EQ(
@@ -1279,6 +1275,62 @@ TEST_F(MahiPanelViewTest, FailToGetAnswer) {
 
     CreatePanelWidget();
   }
+}
+
+// Verifies the mahi panel view when loading an answer with a low quota warning.
+TEST_F(MahiPanelViewTest, GetAnswerWithLowQuotaWarning) {
+  // Config the mock mahi manager to return an answer with a low quota warning.
+  base::test::TestFuture<void> answer_waiter;
+  EXPECT_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillOnce(
+          [&answer_waiter](
+              const std::u16string& question, bool current_panel_content,
+              chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            ReturnDefaultAnswerAsyncly(answer_waiter,
+                                       MahiResponseStatus::kLowQuota,
+                                       std::move(callback));
+          });
+
+  SubmitTestQuestion();
+
+  Mock::VerifyAndClearExpectations(&mock_mahi_manager());
+
+  // After a question is posted and before an answer is loaded, the Q&A view
+  // should show.
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  CHECK(question_answer_view);
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetViewByID(
+      mahi_constants::ViewId::kAnswerLoadingAnimatedImage));
+
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  CHECK(summary_outlines_section);
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+
+  const auto* const error_status_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+  CHECK(error_status_view);
+  EXPECT_FALSE(error_status_view->GetVisible());
+
+  // Wait until an answer is loaded.
+  ASSERT_TRUE(answer_waiter.Wait());
+
+  // `question_answer_view` should still be visible because
+  // `MahiResponseStatus::kLowQuota` should not block the answer.
+  EXPECT_FALSE(error_status_view->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+
+  // Check the answer bubble.
+  // TODO(http://b/334117521): Add a test API instead of using `children()`.
+  ASSERT_EQ(question_answer_view->children().size(), 2u);
+  EXPECT_EQ(views::AsViewClass<views::Label>(
+                question_answer_view->children()[1]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText(),
+            u"fake answer");
 }
 
 // Verifies the mahi panel view when loading outlines with an error by
@@ -1322,17 +1374,9 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
     // Wait until outlines are loaded with an error.
     ASSERT_TRUE(outlines_waiter.Wait());
 
-    if (error == MahiResponseStatus::kLowQuota) {
-      // `kLowQuota` triggers a warning not presented in `error_status_view`.
-      EXPECT_FALSE(error_status_view->GetVisible());
-      EXPECT_FALSE(question_answer_view->GetVisible());
-      EXPECT_TRUE(summary_outlines_section->GetVisible());
-      continue;
-    }
-
+    EXPECT_TRUE(error_status_view->GetVisible());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
-    EXPECT_TRUE(error_status_view->GetVisible());
 
     // Check the contents of `error_status_label`.
     EXPECT_EQ(
@@ -1358,6 +1402,48 @@ TEST_F(MahiPanelViewTest, FailToGetOutlines) {
       Mock::VerifyAndClear(&mock_mahi_manager());
     }
   }
+}
+
+// Verifies the mahi panel view when loading outlines with a low quota warning.
+TEST_F(MahiPanelViewTest, GetOutlinesWithLowQuotaWarning) {
+  // Config the mock mahi manager to return outlines with a low quota warning.
+  base::test::TestFuture<void> outlines_waiter;
+  EXPECT_CALL(mock_mahi_manager(), GetOutlines)
+      .WillOnce([&outlines_waiter](
+                    chromeos::MahiManager::MahiOutlinesCallback callback) {
+        ReturnDefaultOutlinesAsyncly(outlines_waiter,
+                                     MahiResponseStatus::kLowQuota,
+                                     std::move(callback));
+      });
+
+  CreatePanelWidget();
+  Mock::VerifyAndClear(&mock_mahi_manager());
+
+  // Before outlines are loaded, the summary & outlines section should show.
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  CHECK(question_answer_view);
+  EXPECT_FALSE(question_answer_view->GetVisible());
+
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  CHECK(summary_outlines_section);
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  const auto* const error_status_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+  CHECK(error_status_view);
+  EXPECT_FALSE(error_status_view->GetVisible());
+
+  // Wait until outlines are loaded.
+  ASSERT_TRUE(outlines_waiter.Wait());
+
+  // `summary_outlines_section` should still be visible because
+  // `MahiResponseStatus::kLowQuota` should not block the outlines.
+  // TODO(http://b/330643995): Check the outlines container is visible.
+  EXPECT_FALSE(error_status_view->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
 }
 
 // Verifies the mahi panel view when loading summary with an error by iterating
@@ -1401,17 +1487,9 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
     // Wait until the summary is loaded with an error.
     ASSERT_TRUE(summary_waiter.Wait());
 
-    if (error == MahiResponseStatus::kLowQuota) {
-      // `kLowQuota` triggers a warning not presented in `error_status_view`.
-      EXPECT_FALSE(error_status_view->GetVisible());
-      EXPECT_FALSE(question_answer_view->GetVisible());
-      EXPECT_TRUE(summary_outlines_section->GetVisible());
-      continue;
-    }
-
+    EXPECT_TRUE(error_status_view->GetVisible());
     EXPECT_FALSE(question_answer_view->GetVisible());
     EXPECT_FALSE(summary_outlines_section->GetVisible());
-    EXPECT_TRUE(error_status_view->GetVisible());
 
     // Check the contents of `error_status_label`.
     EXPECT_EQ(
@@ -1437,6 +1515,50 @@ TEST_F(MahiPanelViewTest, FailToGetSummary) {
       Mock::VerifyAndClear(&mock_mahi_manager());
     }
   }
+}
+
+// Verifies the mahi panel view when loading a summary with a low quota warning.
+TEST_F(MahiPanelViewTest, GetSummaryWithLowQuotaWarning) {
+  // Config the mock mahi manager to return a summary with a low quota warning.
+  base::test::TestFuture<void> summary_waiter;
+  EXPECT_CALL(mock_mahi_manager(), GetSummary)
+      .WillOnce([&summary_waiter](
+                    chromeos::MahiManager::MahiSummaryCallback callback) {
+        ReturnDefaultSummaryAsyncly(
+            summary_waiter, MahiResponseStatus::kLowQuota, std::move(callback));
+      });
+
+  CreatePanelWidget();
+  Mock::VerifyAndClear(&mock_mahi_manager());
+
+  // Before the summary is loaded, the summary & outlines section should show.
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  CHECK(question_answer_view);
+  EXPECT_FALSE(question_answer_view->GetVisible());
+
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  CHECK(summary_outlines_section);
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  const auto* const error_status_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kErrorStatusView);
+  CHECK(error_status_view);
+  EXPECT_FALSE(error_status_view->GetVisible());
+
+  // Wait until the summary is loaded.
+  ASSERT_TRUE(summary_waiter.Wait());
+
+  // `summary_outlines_section` should still be visible because
+  // `MahiResponseStatus::kLowQuota` should not block the summary.
+  EXPECT_FALSE(error_status_view->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+
+  const auto* const summary_label = GetSummaryLabel(panel_view());
+  ASSERT_TRUE(summary_label);
+  EXPECT_TRUE(summary_label->GetVisible());
 }
 
 // Tests that calling `RefreshSummaryContents` will update the panel's contents

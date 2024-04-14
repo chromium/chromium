@@ -17,8 +17,20 @@ namespace ash {
 namespace {
 
 // Returns true if `status` indicates an error.
-bool HasError(chromeos::MahiResponseStatus status) {
-  return status != chromeos::MahiResponseStatus::kSuccess;
+// NOTE: `chromeos::MahiResponseStatus::kLowQuota` is a warning.
+bool IsErrorStatus(chromeos::MahiResponseStatus status) {
+  switch (status) {
+    case chromeos::MahiResponseStatus::kCantFindOutputData:
+    case chromeos::MahiResponseStatus::kContentExtractionError:
+    case chromeos::MahiResponseStatus::kInappropriate:
+    case chromeos::MahiResponseStatus::kQuotaLimitHit:
+    case chromeos::MahiResponseStatus::kResourceExhausted:
+    case chromeos::MahiResponseStatus::kUnknownError:
+      return true;
+    case chromeos::MahiResponseStatus::kLowQuota:
+    case chromeos::MahiResponseStatus::kSuccess:
+      return false;
+  }
 }
 
 }  // namespace
@@ -119,10 +131,8 @@ void MahiUiController::UpdateSummaryAndOutlines() {
 }
 
 void MahiUiController::HandleError(const MahiUiError& error) {
-  if (error.status == chromeos::MahiResponseStatus::kLowQuota) {
-    // TODO(http://b/319731862): Add the low quota warning toast.
-    return;
-  }
+  // `chromeos::MahiResponseStatus::kLowQuota` is a warning not an error.
+  CHECK_NE(error.status, chromeos::MahiResponseStatus::kLowQuota);
 
   // The presentation of the inappropriate error during
   // `State::kQuestionAndAnswer` should be embedded into the Q&A view instead
@@ -162,7 +172,7 @@ void MahiUiController::SetVisibilityStateAndNotifyUiUpdate(
 
 void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
                                       chromeos::MahiResponseStatus status) {
-  if (HasError(status)) {
+  if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
         status, /*origin_state=*/VisibilityState::kQuestionAndAnswer));
     return;
@@ -182,7 +192,7 @@ void MahiUiController::OnAnswerLoaded(std::optional<std::u16string> answer,
 void MahiUiController::OnOutlinesLoaded(
     std::vector<chromeos::MahiOutline> outlines,
     chromeos::MahiResponseStatus status) {
-  if (HasError(status)) {
+  if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
         status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
     return;
@@ -193,7 +203,7 @@ void MahiUiController::OnOutlinesLoaded(
 
 void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
                                        chromeos::MahiResponseStatus status) {
-  if (HasError(status)) {
+  if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
         status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
     return;
