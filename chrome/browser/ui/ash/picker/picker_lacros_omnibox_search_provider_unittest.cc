@@ -171,11 +171,8 @@ TEST_F(PickerLacrosOmniboxSearchProviderTest,
   EXPECT_TRUE(mojom_factory.TakeLastTestController());
 }
 
-// The three tests below show the UNWANTED behaviour of the provider.
-// The provider SHOULD re-call the factory when it is bound, not when
-// `GetController` is called.
 TEST_F(PickerLacrosOmniboxSearchProviderTest,
-       CallsFactoryAfterConstructionOnGetController) {
+       CallsFactoryAfterConstructionWhenBound) {
   base::test::SingleThreadTaskEnvironment environment;
   crosapi::SearchControllerFactoryAsh factory;
   ASSERT_FALSE(factory.IsBound());
@@ -184,31 +181,12 @@ TEST_F(PickerLacrosOmniboxSearchProviderTest,
   TestMojomSearchControllerFactory mojom_factory;
   factory.BindRemote(mojom_factory.BindToRemote());
   ASSERT_TRUE(factory.IsBound());
-  (void)provider.GetController();
   mojom_factory.RunUntilCreateSearchController();
 
   EXPECT_TRUE(mojom_factory.TakeLastTestController());
 }
 
-TEST_F(PickerLacrosOmniboxSearchProviderTest,
-       DoesNotCallFactoryAfterConstructionWhenBound) {
-  base::test::SingleThreadTaskEnvironment environment;
-  crosapi::SearchControllerFactoryAsh factory;
-  ASSERT_FALSE(factory.IsBound());
-
-  PickerLacrosOmniboxSearchProvider provider(&factory, false, false, false);
-  TestMojomSearchControllerFactory mojom_factory;
-  factory.BindRemote(mojom_factory.BindToRemote());
-  ASSERT_TRUE(factory.IsBound());
-  // Ensure that the factory is NOT called.
-  // There is no way to have a callback for "function is not called", so we need
-  // to use `RunUntilIdle` here.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(mojom_factory.TakeLastTestController());
-}
-
-TEST_F(PickerLacrosOmniboxSearchProviderTest, DoesNotCallFactoryWhenRebound) {
+TEST_F(PickerLacrosOmniboxSearchProviderTest, CallsFactoryWhenRebound) {
   base::test::SingleThreadTaskEnvironment environment;
   crosapi::SearchControllerFactoryAsh factory;
   PickerLacrosOmniboxSearchProvider provider(&factory, false, false, false);
@@ -216,7 +194,6 @@ TEST_F(PickerLacrosOmniboxSearchProviderTest, DoesNotCallFactoryWhenRebound) {
     // Connect a remote factory...
     TestMojomSearchControllerFactory mojom_factory;
     factory.BindRemote(mojom_factory.BindToRemote());
-    (void)provider.GetController();
     mojom_factory.RunUntilCreateSearchController();
     ASSERT_TRUE(mojom_factory.TakeLastTestController());
     // ...then disconnect it.
@@ -228,13 +205,9 @@ TEST_F(PickerLacrosOmniboxSearchProviderTest, DoesNotCallFactoryWhenRebound) {
   // Rebind another remote factory.
   TestMojomSearchControllerFactory mojom_factory;
   factory.BindRemote(mojom_factory.BindToRemote());
-  (void)provider.GetController();
-  // Ensure that the factory is NOT called.
-  // There is no way to have a callback for "function is not called", so we need
-  // to use `RunUntilIdle` here.
-  base::RunLoop().RunUntilIdle();
+  mojom_factory.RunUntilCreateSearchController();
 
-  EXPECT_FALSE(mojom_factory.TakeLastTestController());
+  EXPECT_TRUE(mojom_factory.TakeLastTestController());
 }
 
 TEST_F(PickerLacrosOmniboxSearchProviderTest, DoesNotCallFactoryMultipleTimes) {

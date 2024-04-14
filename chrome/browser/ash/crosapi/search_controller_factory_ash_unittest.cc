@@ -15,9 +15,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/search_controller_ash.h"
+#include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-forward.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-shared.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
@@ -128,6 +130,30 @@ class TestMojomSearchControllerFactory : public mojom::SearchControllerFactory {
 
   std::unique_ptr<TestMojomSearchController> last_test_controller_;
   mojo::Receiver<mojom::SearchControllerFactory> receiver_{this};
+};
+
+class TestFactoryObserver : public SearchControllerFactoryAsh::Observer {
+ public:
+  explicit TestFactoryObserver(SearchControllerFactoryAsh* factory) {
+    obs_.Observe(factory);
+  }
+  ~TestFactoryObserver() override = default;
+
+  void OnSearchControllerFactoryBound(
+      SearchControllerFactoryAsh* factory) override {
+    on_bound_.SetValue(factory);
+  }
+
+  base::test::TestFuture<SearchControllerFactoryAsh*>& on_bound() {
+    return on_bound_;
+  }
+
+ private:
+  base::test::TestFuture<SearchControllerFactoryAsh*> on_bound_;
+
+  base::ScopedObservation<SearchControllerFactoryAsh,
+                          SearchControllerFactoryAsh::Observer>
+      obs_{this};
 };
 
 using SearchControllerFactoryAshTest = ::testing::Test;
@@ -271,6 +297,73 @@ TEST_F(SearchControllerFactoryAshTest,
   EXPECT_TRUE(mojom_controller->bookmarks());
   EXPECT_FALSE(mojom_controller->history());
   EXPECT_TRUE(mojom_controller->open_tabs());
+}
+
+TEST_F(SearchControllerFactoryAshTest, OnBoundNotCalledIfNotBound) {
+  base::test::SingleThreadTaskEnvironment environment;
+  SearchControllerFactoryAsh factory;
+
+  TestFactoryObserver observer(&factory);
+
+  EXPECT_FALSE(observer.on_bound().IsReady());
+}
+
+TEST_F(SearchControllerFactoryAshTest, OnBoundCalledIfAlreadyBound) {
+  base::test::SingleThreadTaskEnvironment environment;
+  SearchControllerFactoryAsh factory;
+  TestMojomSearchControllerFactory mojom_factory;
+  factory.BindRemote(mojom_factory.BindToRemote());
+
+  TestFactoryObserver observer(&factory);
+
+  EXPECT_TRUE(observer.on_bound().IsReady());
+}
+
+TEST_F(SearchControllerFactoryAshTest, OnBoundCalledWhenBoundLater) {
+  base::test::SingleThreadTaskEnvironment environment;
+  SearchControllerFactoryAsh factory;
+  TestFactoryObserver observer(&factory);
+  ASSERT_FALSE(observer.on_bound().IsReady());
+
+  TestMojomSearchControllerFactory mojom_factory;
+  factory.BindRemote(mojom_factory.BindToRemote());
+
+  EXPECT_TRUE(observer.on_bound().IsReady());
+}
+
+TEST_F(SearchControllerFactoryAshTest, OnBoundCalledWhenRebound) {
+  base::test::SingleThreadTaskEnvironment environment;
+  SearchControllerFactoryAsh factory;
+  TestFactoryObserver observer(&factory);
+  {
+    // Connect a remote factory...
+    TestMojomSearchControllerFactory mojom_factory;
+    factory.BindRemote(mojom_factory.BindToRemote());
+    ASSERT_TRUE(observer.on_bound().IsReady());
+    observer.on_bound().Clear();
+    // ...then disconnect it.
+  }
+  // Ensure that the factory receives the disconnection so it can be rebound.
+  // TODO: b/326147929 - Use a `QuitClosure` for this.
+  base::RunLoop().RunUntilIdle();
+
+  // Rebind another remote factory.
+  TestMojomSearchControllerFactory mojom_factory;
+  factory.BindRemote(mojom_factory.BindToRemote());
+
+  EXPECT_TRUE(observer.on_bound().IsReady());
+}
+
+TEST_F(SearchControllerFactoryAshTest, OnBoundCalledWithFactoryPtr) {
+  base::test::SingleThreadTaskEnvironment environment;
+  SearchControllerFactoryAsh factory;
+  TestMojomSearchControllerFactory mojom_factory;
+  factory.BindRemote(mojom_factory.BindToRemote());
+
+  TestFactoryObserver observer(&factory);
+
+  SearchControllerFactoryAsh* ptr = observer.on_bound().Take();
+  EXPECT_EQ(ptr, &factory);
 }
 
 }  // namespace

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -20,14 +19,8 @@ PickerLacrosOmniboxSearchProvider::PickerLacrosOmniboxSearchProvider(
     bool bookmarks,
     bool history,
     bool open_tabs)
-    : bookmarks_(bookmarks),
-      history_(history),
-      open_tabs_(open_tabs),
-      factory_(CHECK_DEREF(factory)) {
-  if (factory_->IsBound()) {
-    controller_ = factory_->CreateSearchControllerPicker(bookmarks_, history_,
-                                                         open_tabs_);
-  }
+    : bookmarks_(bookmarks), history_(history), open_tabs_(open_tabs) {
+  obs_.Observe(factory);
 }
 
 PickerLacrosOmniboxSearchProvider::~PickerLacrosOmniboxSearchProvider() =
@@ -35,11 +28,13 @@ PickerLacrosOmniboxSearchProvider::~PickerLacrosOmniboxSearchProvider() =
 
 crosapi::SearchControllerAsh*
 PickerLacrosOmniboxSearchProvider::GetController() {
-  if (!controller_ && factory_->IsBound()) {
-    controller_ = factory_->CreateSearchControllerPicker(bookmarks_, history_,
-                                                         open_tabs_);
-  }
   return controller_.get();
+}
+
+void PickerLacrosOmniboxSearchProvider::OnSearchControllerFactoryBound(
+    crosapi::SearchControllerFactoryAsh* factory) {
+  controller_ =
+      factory->CreateSearchControllerPicker(bookmarks_, history_, open_tabs_);
 }
 
 app_list::OmniboxLacrosProvider::SearchControllerCallback

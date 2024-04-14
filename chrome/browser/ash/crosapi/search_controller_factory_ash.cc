@@ -27,6 +27,21 @@ void SearchControllerFactoryAsh::BindRemote(
 
   search_controller_factory_.reset();
   search_controller_factory_.Bind(std::move(remote));
+
+  for (Observer& observer : observers_) {
+    observer.OnSearchControllerFactoryBound(this);
+  }
+}
+
+void SearchControllerFactoryAsh::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+  if (IsBound()) {
+    obs->OnSearchControllerFactoryBound(this);
+  }
+}
+
+void SearchControllerFactoryAsh::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
 }
 
 std::unique_ptr<SearchControllerAsh>
