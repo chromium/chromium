@@ -27,6 +27,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -40,7 +41,6 @@ import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} 
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
@@ -1226,12 +1226,17 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
 
     const isAutoBrightnessToggleChecked: boolean =
-        strictQuery(
-            '#autoBrightnessToggle', this.shadowRoot,
-            SettingsToggleButtonElement)
+        strictQuery('#autoBrightnessToggle', this.shadowRoot, CrToggleElement)
             .checked;
     this.displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(
         isAutoBrightnessToggleChecked);
+  }
+
+  private onAutoBrightnessToggleRowClicked_(): void {
+    const autoBrightnessToggle =
+        strictQuery('#autoBrightnessToggle', this.shadowRoot, CrToggleElement);
+    autoBrightnessToggle.checked = !autoBrightnessToggle.checked;
+    this.onAutoBrightnessToggleChange_();
   }
 
   /**

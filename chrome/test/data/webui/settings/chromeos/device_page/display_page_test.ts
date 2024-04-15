@@ -1209,6 +1209,26 @@ suite('<settings-display>', () => {
         // The setting in FakeDisplaySettingsProvider should now be enabled.
         assertTrue(displaySettingsProvider
                        .getInternalDisplayAmbientLightSensorEnabled());
+
+        // Switch auto-brightness to off by clicking on the row.
+        const autoBrightnessToggleRow =
+            displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+                '#autoBrightnessToggleRow');
+        assertTrue(!!autoBrightnessToggleRow);
+        autoBrightnessToggleRow.click();
+        await flushTasks();
+
+        // The setting in FakeDisplaySettingsProvider should now be disabled.
+        assertFalse(displaySettingsProvider
+                        .getInternalDisplayAmbientLightSensorEnabled());
+
+        // Switch auto-brightness to on by clicking on the row.
+        autoBrightnessToggleRow.click();
+        await flushTasks();
+
+        // The setting in FakeDisplaySettingsProvider should now be enabled.
+        assertTrue(displaySettingsProvider
+                       .getInternalDisplayAmbientLightSensorEnabled());
       });
 
 });

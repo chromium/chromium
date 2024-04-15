@@ -181,14 +181,22 @@
         if="[[showAutoBrightnessToggle_(hasAmbientLightSensor_)]]">
       <!-- TODO(cambickel): Update this toggle to read from the auto-brightness
         pref. -->
-      <!-- Note: Until a pref is added, this will show an error saying "pref not
-        found". This is okay, because this section is behind a flag, and a pref
-        will be added before the flag is enabled by default. -->
-      <settings-toggle-button id="autoBrightnessToggle" class="indented hr"
-          no-set-pref label="$i18n{displayAutoBrightnessToggleLabel}"
-          on-settings-boolean-control-change="onAutoBrightnessToggleChange_"
-          sub-label="$i18n{displayAutoBrightnessToggleSubtitle}">
-      </settings-toggle-button>
+      <div class="settings-box indented" id="autoBrightnessToggleRow"
+          on-click="onAutoBrightnessToggleRowClicked_">
+        <div class="start settings-box-text">
+          <div id="autoBrightnessToggleLabel" class="start" aria-hidden="true">
+              $i18n{displayAutoBrightnessToggleLabel}
+          </div>
+          <div id="autoBrightnessToggleSubtitle" class="secondary"
+              aria-hidden="true">
+            $i18n{displayAutoBrightnessToggleSubtitle}
+          </div>
+        </div>
+        <cr-toggle id="autoBrightnessToggle"
+            on-change="onAutoBrightnessToggleChange_"
+            aria-labelledby="autoBrightnessToggleLabel">
+        </cr-toggle>
+      </div>
     </template>
     <div class="settings-box indented">
       <div id="brightnessControlsTitle" class="start" aria-hidden="true">
