@@ -34,6 +34,11 @@ constexpr CGFloat kSubTitleHorizontalPadding = 7;
 constexpr CGFloat kThreeDotButtonSize = 19;
 constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 constexpr CGFloat kPlusImageSize = 20;
+
+constexpr CGFloat kSmallMotionTranslationCompletion = 0.8;
+constexpr CGFloat kTranslationCompletion = 0;
+constexpr CGFloat kSmallMotionOriginScale = 0.8;
+constexpr CGFloat kOriginScale = 0.1;
 }  // namespace
 
 @interface TabGroupViewController () <UINavigationBarDelegate>
@@ -83,7 +88,7 @@ constexpr CGFloat kPlusImageSize = 20;
   return self;
 }
 
-- (void)prepareForPresentation {
+- (void)prepareForPresentationWithSmallMotions:(BOOL)smallMotions {
   [self.view layoutIfNeeded];
   CGAffineTransform scaleDown =
       CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
@@ -95,7 +100,12 @@ constexpr CGFloat kPlusImageSize = 20;
   _gridViewController.view.alpha = 0;
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
-  [_gridViewController centerVisibleCellsToPoint:center withScale:0.1];
+  CGFloat translationCompletion =
+      smallMotions ? kSmallMotionTranslationCompletion : kTranslationCompletion;
+  CGFloat scale = smallMotions ? kSmallMotionOriginScale : kOriginScale;
+  [_gridViewController centerVisibleCellsToPoint:center
+                           translationCompletion:translationCompletion
+                                       withScale:scale];
 }
 
 - (void)animateTopElementsPresentation {
@@ -124,7 +134,9 @@ constexpr CGFloat kPlusImageSize = 20;
 - (void)animateDismissal {
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
-  [_gridViewController centerVisibleCellsToPoint:center withScale:0.1];
+  [_gridViewController centerVisibleCellsToPoint:center
+                           translationCompletion:kTranslationCompletion
+                                       withScale:kOriginScale];
 }
 
 - (void)fadeBlurOut {

@@ -31,7 +31,7 @@ class TabGroup;
                        tabGroup:(const TabGroup*)tabGroup;
 
 // Methods handling the presentation animation of this view controller.
-- (void)prepareForPresentation;
+- (void)prepareForPresentationWithSmallMotions:(BOOL)smallMotions;
 - (void)animateTopElementsPresentation;
 - (void)animateGridPresentation;
 - (void)fadeBlurIn;

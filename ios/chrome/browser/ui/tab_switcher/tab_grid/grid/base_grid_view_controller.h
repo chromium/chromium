@@ -148,9 +148,11 @@ class WebStateID;
 - (void)prepareForDismissal;
 
 // Moves the visible cells such as their center is in `center` (expressed in
-// self.view's coordinates) and apply `scale`. Pass CGPointZero to reset their
-// position.
-- (void)centerVisibleCellsToPoint:(CGPoint)center withScale:(CGFloat)scale;
+// self.view's coordinates) and apply `scale`. `translationCompletion` is used
+// to start the translation from a percentage of the total distance.
+- (void)centerVisibleCellsToPoint:(CGPoint)center
+            translationCompletion:(CGFloat)translationCompletion
+                        withScale:(CGFloat)scale;
 // Resets the move and scale done by the method just above.
 - (void)resetVisibleCellsCenterAndScale;
 

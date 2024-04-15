@@ -24,7 +24,7 @@
 }
 
 - (void)presentationTransitionWillBegin {
-  [_viewController prepareForPresentation];
+  [_viewController prepareForPresentationWithSmallMotions:self.smallerMotions];
 
   __weak TabGroupViewController* viewController = _viewController;
 

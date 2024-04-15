@@ -405,6 +405,26 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     }
   }
 
+  const TabGroup* tabGroup = nullptr;
+
+  if (currentActivePage == TabGridPageRegularTabs) {
+    WebStateList* webStateList = self.regularBrowser->GetWebStateList();
+    int activeWebStateIndex =
+        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
+    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
+      tabGroup = webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
+    }
+  } else if (currentActivePage == TabGridPageIncognitoTabs) {
+    WebStateList* webStateList = self.incognitoBrowser->GetWebStateList();
+    int activeWebStateIndex =
+        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
+    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
+      tabGroup = webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
+    }
+  }
+
+  BOOL toTabGroup = tabGroup != nullptr;
+
   __weak __typeof(self) weakSelf = self;
   __weak UIWindow* sceneWindow = sceneState.window;
 
@@ -442,6 +462,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           performLegacyBrowserToTabGridTransitionWithActivePage:
               currentActivePage
                                                animationEnabled:animated
+                                                     toTabGroup:toTabGroup
                                                      completion:
                                                          transitionCompletionBlock];
     }
@@ -459,27 +480,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self displayBringAndroidTabsPrompt];
   }
 
-  if (currentActivePage == TabGridPageRegularTabs) {
-    WebStateList* webStateList = self.regularBrowser->GetWebStateList();
-    int activeWebStateIndex =
-        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
-    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
-      const TabGroup* tabGroup =
-          webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
-      if (tabGroup) {
-        [_regularGridCoordinator showTabGroup:tabGroup];
-      }
-    }
-  } else if (currentActivePage == TabGridPageIncognitoTabs) {
-    WebStateList* webStateList = self.incognitoBrowser->GetWebStateList();
-    int activeWebStateIndex =
-        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
-    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
-      const TabGroup* tabGroup =
-          webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
-      if (tabGroup) {
-        [_incognitoGridCoordinator showTabGroup:tabGroup];
-      }
+  if (tabGroup) {
+    if (currentActivePage == TabGridPageRegularTabs) {
+      [_regularGridCoordinator showTabGroupForTabGridOpening:tabGroup];
+    } else if (currentActivePage == TabGridPageIncognitoTabs) {
+      [_incognitoGridCoordinator showTabGroupForTabGridOpening:tabGroup];
     }
   }
 
@@ -652,11 +657,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 
-// Performs the legacy Browser to Tab Grid transition.
+// Performs the legacy Browser to Tab Grid transition, `toTabGroup` or not.
 - (void)
     performLegacyBrowserToTabGridTransitionWithActivePage:
         (TabGridPage)activePage
                                          animationEnabled:(BOOL)animationEnabled
+                                               toTabGroup:(BOOL)toTabGroup
                                                completion:
                                                    (ProceduralBlock)completion {
   if (!self.bvcContainer) {
@@ -670,6 +676,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
                                             toTabGrid:self.baseViewController
+                                           toTabGroup:toTabGroup
                                            activePage:activePage
                                        withCompletion:completion];
 }

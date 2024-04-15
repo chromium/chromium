@@ -14,6 +14,10 @@
 @interface TabGroupTransitionDelegate
     : NSObject <UIViewControllerTransitioningDelegate>
 
+// Whether this coordinator should be presented with smaller motions. Default is
+// NO.
+@property(nonatomic, assign) BOOL smallerMotions;
+
 // Inits with the TabGroup view controller to handle the animation.
 - (instancetype)initWithTabGroupViewController:
     (TabGroupViewController*)tabGroupViewController;

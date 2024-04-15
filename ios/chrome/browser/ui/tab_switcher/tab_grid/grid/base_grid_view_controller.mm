@@ -556,13 +556,17 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-- (void)centerVisibleCellsToPoint:(CGPoint)center withScale:(CGFloat)scale {
+- (void)centerVisibleCellsToPoint:(CGPoint)center
+            translationCompletion:(CGFloat)translationCompletion
+                        withScale:(CGFloat)scale {
   for (UIView* cell in self.collectionView.visibleCells) {
     CGPoint transformedOrigin = [self.collectionView convertPoint:center
                                                          fromView:self.view];
-    CGAffineTransform transform =
-        CGAffineTransformMakeTranslation(transformedOrigin.x - cell.center.x,
-                                         transformedOrigin.y - cell.center.y);
+    CGFloat dX =
+        (transformedOrigin.x - cell.center.x) * (1 - translationCompletion);
+    CGFloat dY =
+        (transformedOrigin.y - cell.center.y) * (1 - translationCompletion);
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(dX, dY);
     transform = CGAffineTransformScale(transform, scale, scale);
     cell.transform = transform;
   }

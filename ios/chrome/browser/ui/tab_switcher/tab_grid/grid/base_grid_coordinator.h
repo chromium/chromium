@@ -40,6 +40,9 @@ class Browser;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Shows the TabGroup view while the TabGrid is being opened at the same time.
+- (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_H_

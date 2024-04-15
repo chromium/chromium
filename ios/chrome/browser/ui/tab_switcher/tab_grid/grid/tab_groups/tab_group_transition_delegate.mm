@@ -31,6 +31,7 @@
       [[TabGroupPresentationController alloc]
           initWithPresentedTabGroupViewController:_tabGroupViewController
                          presentingViewController:presenting];
+  presentationController.smallerMotions = self.smallerMotions;
   return presentationController;
 }
 

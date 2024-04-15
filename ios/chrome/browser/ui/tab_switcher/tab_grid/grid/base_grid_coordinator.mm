@@ -52,6 +52,10 @@
   NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
 }
 
+- (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup {
+  [self showTabGroup:tabGroup forTabGridOpening:YES];
+}
+
 #pragma mark - Subclassing properties
 
 - (id<GridToolbarsMutator>)toolbarsMutator {
@@ -87,17 +91,7 @@
 #pragma mark - TabGroupsCommands
 
 - (void)showTabGroup:(const TabGroup*)tabGroup {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to show a tab group UI outside the "
-         "Tab Groups experiment.";
-  CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
-                                  "when one is already presented.";
-  _tabGroupCoordinator = [[TabGroupCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                        tabGroup:tabGroup];
-  _tabGroupCoordinator.tabContextMenuDelegate = self.tabContextMenuDelegate;
-  [_tabGroupCoordinator start];
+  [self showTabGroup:tabGroup forTabGridOpening:NO];
 }
 
 - (void)hideTabGroup {
@@ -157,6 +151,28 @@
   id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
   [tabGroupsHandler hideTabGroupCreation];
+}
+
+#pragma mark - Private
+
+// Shows the `tabGroup` with animations for `tabGridOpening` or not.
+- (void)showTabGroup:(const TabGroup*)tabGroup
+    forTabGridOpening:(BOOL)tabGridOpening {
+  CHECK(IsTabGroupInGridEnabled())
+      << "You should not be able to show a tab group UI outside the "
+         "Tab Groups experiment.";
+  CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
+                                  "when one is already presented.";
+  // TODO(crbug.com/1501837): Replace base view controller by view controller
+  // when the base grid coordinator will have access to the grid view
+  // controller.
+  _tabGroupCoordinator = [[TabGroupCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                        tabGroup:tabGroup];
+  _tabGroupCoordinator.tabContextMenuDelegate = self.tabContextMenuDelegate;
+  _tabGroupCoordinator.smallerMotions = tabGridOpening;
+  [_tabGroupCoordinator start];
 }
 
 @end

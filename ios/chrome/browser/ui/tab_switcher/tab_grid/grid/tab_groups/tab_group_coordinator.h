@@ -15,7 +15,11 @@ class TabGroup;
 @interface TabGroupCoordinator : ChromeCoordinator
 
 // View controller for tab groups.
-@property(weak, readonly) TabGroupViewController* viewController;
+@property(nonatomic, weak, readonly) TabGroupViewController* viewController;
+
+// Whether this coordinator should be presented with smaller motions. Default is
+// NO.
+@property(nonatomic, assign) BOOL smallerMotions;
 
 // Tab Context Menu delegate.
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;

@@ -13,6 +13,10 @@
 // and the animation of the inner elements during appearance/disappearance.
 @interface TabGroupPresentationController : UIPresentationController
 
+// Whether this coordinator should be presented with smaller motions. Default is
+// NO.
+@property(nonatomic, assign) BOOL smallerMotions;
+
 // Init with the `tabGroupViewController` to be able to animate the element.
 - (instancetype)initWithPresentedTabGroupViewController:
                     (TabGroupViewController*)tabGroupViewController

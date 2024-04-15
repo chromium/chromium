@@ -87,6 +87,7 @@
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _transitionDelegate = [[TabGroupTransitionDelegate alloc]
       initWithTabGroupViewController:_viewController];
+  _transitionDelegate.smallerMotions = self.smallerMotions;
   _viewController.transitioningDelegate = _transitionDelegate;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
