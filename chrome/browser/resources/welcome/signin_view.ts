@@ -8,7 +8,7 @@ import '../strings.m.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixinLit} from './navigation_mixin_lit.js';
+import {NavigationMixin} from './navigation_mixin.js';
 import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {getCss} from './signin_view.css.js';
 import {getHtml} from './signin_view.html.js';
@@ -23,7 +23,7 @@ export interface SigninViewElement {
   };
 }
 
-const SigninViewElementBase = NavigationMixinLit(CrLitElement);
+const SigninViewElementBase = NavigationMixin(CrLitElement);
 
 export class SigninViewElement extends SigninViewElementBase {
   static get is() {

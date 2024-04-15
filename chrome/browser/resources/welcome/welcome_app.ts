@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {NuxGoogleAppsElement} from './google_apps/nux_google_apps.js';
-import {NavigationMixinLit} from './navigation_mixin_lit.js';
+import {NavigationMixin} from './navigation_mixin.js';
 import type {NuxNtpBackgroundElement} from './ntp_background/nux_ntp_background.js';
 import {Routes} from './router.js';
 import type {NuxSetAsDefaultElement} from './set_as_default/nux_set_as_default.js';
@@ -60,7 +60,7 @@ export interface WelcomeAppElement {
   };
 }
 
-const WelcomeAppElementBase = NavigationMixinLit(CrLitElement);
+const WelcomeAppElementBase = NavigationMixin(CrLitElement);
 
 /** @polymer */
 export class WelcomeAppElement extends WelcomeAppElementBase {

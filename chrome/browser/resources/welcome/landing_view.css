@@ -4,10 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=./shared/animations_lit.css.js
- * #import=./shared/splash_pages_shared_lit.css.js
- * #import=./shared/action_link_style_lit.css.js
- * #include=animations-lit action-link-style-lit splash-pages-shared-lit
+ * #import=./shared/animations.css.js
+ * #import=./shared/splash_pages_shared.css.js
+ * #import=./shared/action_link_style.css.js
+ * #include=animations action-link-style splash-pages-shared
  * #css_wrapper_metadata_end */
 
 onboarding-background {

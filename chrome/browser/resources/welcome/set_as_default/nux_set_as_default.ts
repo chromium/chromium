@@ -14,7 +14,7 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixinLit} from '../navigation_mixin_lit.js';
+import {NavigationMixin} from '../navigation_mixin.js';
 import {navigateToNextStep} from '../router.js';
 import type {DefaultBrowserInfo, StepIndicatorModel} from '../shared/nux_types.js';
 
@@ -30,7 +30,7 @@ export interface NuxSetAsDefaultElement {
 }
 
 const NuxSetAsDefaultElementBase =
-    WebUiListenerMixinLit(NavigationMixinLit(CrLitElement));
+    WebUiListenerMixinLit(NavigationMixin(CrLitElement));
 
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   static get is() {

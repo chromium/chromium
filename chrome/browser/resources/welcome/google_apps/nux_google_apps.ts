@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixinLit} from '../navigation_mixin_lit.js';
+import {NavigationMixin} from '../navigation_mixin.js';
 import {navigateToNextStep} from '../router.js';
 import type {BookmarkProxy} from '../shared/bookmark_proxy.js';
 import {BookmarkBarManager, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
@@ -44,7 +44,7 @@ export interface NuxGoogleAppsElement {
   };
 }
 
-const NuxGoogleAppsElementBase = I18nMixinLit(NavigationMixinLit(CrLitElement));
+const NuxGoogleAppsElementBase = I18nMixinLit(NavigationMixin(CrLitElement));
 
 export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
   static get is() {
@@ -171,7 +171,7 @@ export class NuxGoogleAppsElement extends NuxGoogleAppsElementBase {
    */
   protected onAppClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    const item = this.appList_[index];
+    const item = this.appList_[index]!;
 
     item.selected = !item.selected;
     this.requestUpdate();

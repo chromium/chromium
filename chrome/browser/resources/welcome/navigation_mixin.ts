@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview The NavigationMixinLit is in charge of manipulating and
+ * @fileoverview The NavigationMixin is in charge of manipulating and
  *     watching window.history.state changes. The page is using the history
  *     state object to remember state instead of changing the URL directly,
  *     because the flow requires that users can use browser-back/forward to
@@ -30,10 +30,10 @@ type Constructor<T> = new (...args: any[]) => T;
  *   2) onRouteChange() on all subscribed routes
  *   3) onRouteEnter() on the new route
  */
-export const NavigationMixinLit =
+export const NavigationMixin =
     <T extends Constructor<CrLitElement>>(superClass: T): T&
-    Constructor<NavigationMixinLitInterface> => {
-      class NavigationMixinLit extends superClass {
+    Constructor<NavigationMixinInterface> => {
+      class NavigationMixin extends superClass {
         static get properties() {
           return {
             subtitle: String,
@@ -101,10 +101,10 @@ export const NavigationMixinLit =
         onRouteUnload() {}
       }
 
-      return NavigationMixinLit;
+      return NavigationMixin;
     };
 
-export interface NavigationMixinLitInterface {
+export interface NavigationMixinInterface {
   subtitle?: string;
   notifyRouteEnter(): void;
   updateFocusForA11y(): void;

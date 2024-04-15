@@ -5,9 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=../shared/animations_lit.css.js
- * #import=../shared/chooser_shared_lit.css.js
- * #include=animations-lit chooser-shared-lit
+ * #import=../shared/animations.css.js
+ * #import=../shared/chooser_shared.css.js
+ * #include=animations chooser-shared
  * #css_wrapper_metadata_end */
 
 .apps-ask {

@@ -15,7 +15,7 @@ import {getCss} from './landing_view.css.js';
 import {getHtml} from './landing_view.html.js';
 import type {LandingViewProxy} from './landing_view_proxy.js';
 import {LandingViewProxyImpl} from './landing_view_proxy.js';
-import {NavigationMixinLit} from './navigation_mixin_lit.js';
+import {NavigationMixin} from './navigation_mixin.js';
 import {navigateTo, Routes} from './router.js';
 import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
@@ -26,7 +26,7 @@ export interface LandingViewElement {
   };
 }
 
-const LandingViewElementBase = NavigationMixinLit(CrLitElement);
+const LandingViewElementBase = NavigationMixin(CrLitElement);
 
 /** @polymer */
 export class LandingViewElement extends LandingViewElementBase {

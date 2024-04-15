@@ -16,7 +16,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixinLit} from '../navigation_mixin_lit.js';
+import {NavigationMixin} from '../navigation_mixin.js';
 import {navigateToNextStep} from '../router.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import type {StepIndicatorModel} from '../shared/nux_types.js';
@@ -36,8 +36,7 @@ export interface NuxNtpBackgroundElement {
   };
 }
 
-const NuxNtpBackgroundElementBase =
-    I18nMixinLit(NavigationMixinLit(CrLitElement));
+const NuxNtpBackgroundElementBase = I18nMixinLit(NavigationMixin(CrLitElement));
 
 export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   static get is() {
@@ -178,7 +177,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
 
   protected onBackgroundClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    this.selectedBackground_ = this.backgrounds_[index];
+    this.selectedBackground_ = this.backgrounds_[index]!;
     this.metricsManager_.recordClickedOption();
     this.announceA11y_(this.i18n(
         'ntpBackgroundPreviewUpdated', this.selectedBackground_.title));

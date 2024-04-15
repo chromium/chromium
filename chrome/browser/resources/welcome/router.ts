@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import type {NavigationMixinLitInterface} from './navigation_mixin_lit.js';
+import type {NavigationMixinInterface} from './navigation_mixin.js';
 
 /**
  * Valid route pathnames.
@@ -15,11 +15,11 @@ export enum Routes {
   RETURNING_USER = 'returning-user'
 }
 
-export const routeObservers: Set<NavigationMixinLitInterface> = new Set();
+export const routeObservers: Set<NavigationMixinInterface> = new Set();
 
-let currentRouteElement: NavigationMixinLitInterface|null;
+let currentRouteElement: NavigationMixinInterface|null;
 
-export function setCurrentRouteElement(element: NavigationMixinLitInterface) {
+export function setCurrentRouteElement(element: NavigationMixinInterface) {
   currentRouteElement = element;
 }
 
@@ -44,7 +44,7 @@ function notifyObservers() {
 
   // If currentRouteElement is not null, it means there was a new route.
   if (currentRouteElement) {
-    (currentRouteElement as NavigationMixinLitInterface).notifyRouteEnter();
+    (currentRouteElement as NavigationMixinInterface).notifyRouteEnter();
   }
 }
 
