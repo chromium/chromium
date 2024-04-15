@@ -97,7 +97,7 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
       // Add all supported form fields (including with empty names) to the
       // signature.  This is a requirement for Autofill servers.
       base::StrAppend(&form_signature_field_names,
-                      {"&", StripDigitsIfRequired(UTF16ToUTF8(field.name))});
+                      {"&", StripDigitsIfRequired(UTF16ToUTF8(field.name()))});
     }
   }
 
@@ -163,7 +163,7 @@ FieldSignature CalculateFieldSignatureByNameAndType(
 
 FieldSignature CalculateFieldSignatureForField(
     const FormFieldData& field_data) {
-  return CalculateFieldSignatureByNameAndType(field_data.name,
+  return CalculateFieldSignatureByNameAndType(field_data.name(),
                                               field_data.form_control_type());
 }
 

@@ -404,33 +404,33 @@ class PasswordFormManagerTest : public testing::Test,
     observed_form_only_password_fields_ = observed_form_;
 
     FormFieldData field;
-    field.name = u"firstname";
-    field.id_attribute = field.name;
-    field.name_attribute = field.name;
+    field.set_name(u"firstname");
+    field.id_attribute = field.name();
+    field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
-    field.name = u"username";
-    field.id_attribute = field.name;
-    field.name_attribute = field.name;
+    field.set_name(u"username");
+    field.id_attribute = field.name();
+    field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.renderer_id = autofill::FieldRendererId(3);
     observed_form_.fields.push_back(field);
 
     non_password_form_ = observed_form_;
 
-    field.name = u"password";
-    field.id_attribute = field.name;
-    field.name_attribute = field.name;
+    field.set_name(u"password");
+    field.id_attribute = field.name();
+    field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.renderer_id = autofill::FieldRendererId(4);
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
-    field.name = u"password2";
-    field.id_attribute = field.name;
-    field.name_attribute = field.name;
+    field.set_name(u"password2");
+    field.id_attribute = field.name();
+    field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
@@ -463,9 +463,9 @@ class PasswordFormManagerTest : public testing::Test,
     parsed_observed_form_ = saved_match_;
     parsed_observed_form_.form_data = observed_form_;
     parsed_observed_form_.username_element =
-        observed_form_.fields[kUsernameFieldIndex].name;
+        observed_form_.fields[kUsernameFieldIndex].name();
     parsed_observed_form_.password_element =
-        observed_form_.fields[kPasswordFieldIndex].name;
+        observed_form_.fields[kPasswordFieldIndex].name();
 
     parsed_submitted_form_ = parsed_observed_form_;
     parsed_submitted_form_.form_data = submitted_form_;
@@ -1052,7 +1052,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyName) {
 
   FormData anonymous_signup = observed_form_;
   // There is an anonymous password field.
-  anonymous_signup.fields[2].name = {};
+  anonymous_signup.fields[2].set_name({});
   anonymous_signup.fields[2].set_value(u"a password");
   // Mark the password field as new-password.
   std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
@@ -1140,9 +1140,9 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
   EXPECT_EQ(new_username, saved_form.username_value);
   EXPECT_EQ(new_password, saved_form.password_value);
 
-  EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name,
+  EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name(),
             saved_form.username_element);
-  EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
+  EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name(),
             saved_form.password_element);
   ASSERT_EQ(best_matches.size(), 1u);
   EXPECT_EQ(best_matches[0], &saved_match_);
@@ -1322,12 +1322,12 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
   for (const AlternativeElement& alternative :
        saved_match_.all_alternative_usernames) {
     FormFieldData text_field;
-    text_field.name = alternative.name;
+    text_field.set_name(alternative.name);
     text_field.set_form_control_type(autofill::FormControlType::kInputText);
     saved_match_.form_data.fields.push_back(text_field);
   }
   FormFieldData password_field;
-  password_field.name = saved_match_.password_element;
+  password_field.set_name(saved_match_.password_element);
   password_field.set_form_control_type(
       autofill::FormControlType::kInputPassword);
   saved_match_.form_data.fields.push_back(password_field);
@@ -1389,12 +1389,12 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
   for (const AlternativeElement& alternative :
        saved_match_.all_alternative_usernames) {
     FormFieldData field;
-    field.name = alternative.name;
+    field.set_name(alternative.name);
     field.set_form_control_type(autofill::FormControlType::kInputText);
     saved_match_.form_data.fields.push_back(field);
   }
   FormFieldData password_field;
-  password_field.name = saved_match_.password_element;
+  password_field.set_name(saved_match_.password_element);
   password_field.set_form_control_type(
       autofill::FormControlType::kInputPassword);
   saved_match_.form_data.fields.push_back(password_field);
@@ -1590,7 +1590,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
 
   PasswordForm expected = form_manager_->GetPendingCredentials();
   expected.password_value = password;
-  expected.password_element = form.fields[0].name;
+  expected.password_element = form.fields[0].name();
 
   // Simulate that the user updates value to save for the first password field.
   form_manager_->OnUpdatePasswordFromPrompt(password);
@@ -2056,7 +2056,8 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedNames) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  form.fields[kUsernameFieldIndex].name += u"123";
+  form.fields[kUsernameFieldIndex].set_name(
+      form.fields[kUsernameFieldIndex].name() + u"123");
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2131,7 +2132,8 @@ TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
 
   FormData form = observed_form_;
   form.fields[kUsernameFieldIndex].renderer_id.value() += 1000;
-  form.fields[kUsernameFieldIndex].name += u"1";
+  form.fields[kUsernameFieldIndex].set_name(
+      form.fields[kUsernameFieldIndex].name() + u"1");
   form.fields[kUsernameFieldIndex].id_attribute += u"1";
   form.fields[kPasswordFieldIndex].renderer_id.value() += 1000;
 
@@ -3682,7 +3684,7 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
   // A form with username, current and new password fields.
   FormData submitted_form = observed_form_only_password_fields_;
   FormFieldData username_field;
-  username_field.name = u"username";
+  username_field.set_name(u"username");
   username_field.set_form_control_type(autofill::FormControlType::kInputText);
   username_field.set_value(u"oldusername");
   username_field.renderer_id = autofill::FieldRendererId(2);
@@ -4497,9 +4499,9 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   EXPECT_EQ(expected_signon_realm, updated_form.signon_realm);
   EXPECT_EQ(new_username, updated_form.username_value);
   EXPECT_EQ(new_password, updated_form.password_value);
-  EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name,
+  EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name(),
             updated_form.username_element);
-  EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
+  EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name(),
             updated_form.password_element);
   // Check UKM metrics.
   ResetFormManager();

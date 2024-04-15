@@ -1164,7 +1164,7 @@ FormFieldData* SearchForFormControlByName(
   if (field_name.empty())
     return nullptr;
 
-  auto get_field_name = [](const auto& p) { return p.first->name; };
+  auto get_field_name = [](const auto& p) { return p.first->name(); };
   auto it = base::ranges::find(field_set, field_name, get_field_name);
   auto end = field_set.end();
   if (it == end ||
@@ -1922,7 +1922,7 @@ void WebFormControlElementToFormField(
   const FieldRendererId renderer_id = GetFieldRendererId(element);
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
-  field->name = element.NameForAutofill().Utf16();
+  field->set_name(element.NameForAutofill().Utf16());
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = GetAttribute<kName>(element).Utf16();
   field->renderer_id = renderer_id;
@@ -1978,9 +1978,9 @@ void WebFormControlElementToFormField(
       field->id_attribute = host.GetIdAttribute().Utf16();
     if (field->name_attribute.empty())
       field->name_attribute = GetAttribute<kName>(host).Utf16();
-    if (field->name.empty()) {
-      field->name = field->name_attribute.empty() ? field->id_attribute
-                                                  : field->name_attribute;
+    if (field->name().empty()) {
+      field->set_name(field->name_attribute.empty() ? field->id_attribute
+                                                    : field->name_attribute);
     }
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
@@ -2183,8 +2183,8 @@ std::optional<FormData> FindFormForContentEditable(
   WebDocument document = content_editable.GetDocument();
   field.id_attribute = content_editable.GetIdAttribute().Utf16();
   field.name_attribute = GetAttribute<kName>(content_editable).Utf16();
-  field.name =
-      !field.id_attribute.empty() ? field.id_attribute : field.name_attribute;
+  field.set_name(!field.id_attribute.empty() ? field.id_attribute
+                                             : field.name_attribute);
   field.renderer_id = GetFieldRendererId(content_editable);
   field.host_form_id = GetFormRendererId(content_editable);
   field.set_form_control_type(FormControlType::kContentEditable);

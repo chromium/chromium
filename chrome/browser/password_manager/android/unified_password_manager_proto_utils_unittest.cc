@@ -114,10 +114,10 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest,
   EXPECT_EQ(form.form_data.action, GURL(kTestAction));
   EXPECT_EQ(form.form_data.name, kTestFormName16);
   ASSERT_EQ(form.form_data.fields.size(), 2u);
-  EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
+  EXPECT_EQ(form.form_data.fields[0].name(), kTestUsernameElementName16);
   EXPECT_EQ(form.form_data.fields[0].form_control_type(),
             kTestUsernameElementType);
-  EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
+  EXPECT_EQ(form.form_data.fields[1].name(), kTestPasswordElementName16);
   EXPECT_EQ(form.form_data.fields[1].form_control_type(),
             kTestPasswordElementType);
 

@@ -280,7 +280,7 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
         << "Unexpected non-null renderer_id in a from deserialized form "
            "LoginDatabase.";
     field.renderer_id = autofill::FieldRendererId(renderer_id_counter_++);
-    field_name_to_renderer_id.insert({field.name, field.renderer_id});
+    field_name_to_renderer_id.insert({field.name(), field.renderer_id});
   }
 
   FillRendererIdIfNotSet(matched_form.username_element,

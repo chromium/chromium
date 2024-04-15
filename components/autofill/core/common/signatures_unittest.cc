@@ -17,18 +17,18 @@ TEST(SignaturesTest, StripDigits) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  field1.name = u"field_name_12345";
+  field1.set_name(u"field_name_12345");
   actual_form.fields.push_back(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  field2.name = u"field_name_1234";
+  field2.set_name(u"field_name_1234");
   actual_form.fields.push_back(field2);
 
   // Sequences of 5 digits or longer should be stripped.
   FormData expected_form(actual_form);
   expected_form.name = u"form_name_";
-  expected_form.fields[0].name = u"field_name_";
+  expected_form.fields[0].set_name(u"field_name_");
 
   EXPECT_EQ(CalculateFormSignature(expected_form).value(),
             CalculateFormSignature(actual_form).value());

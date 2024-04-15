@@ -315,7 +315,7 @@ std::vector<Section> SectionTestCases() {
   // FieldIdentifier.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   FormFieldData field;
-  field.name = u"from_field_name";
+  field.set_name(u"from_field_name");
   // Randomizing the LocalFrameToken requires an AutofillTestEnvironment, which
   // doesn't exist yet because SectionTestCases() is called by
   // INSTANTIATE_TEST_SUITE_P().
@@ -336,7 +336,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
       "TestLabel", "TestName", "TestValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
-  input.name = u"name";
+  input.set_name(u"name");
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.set_value(u"value");

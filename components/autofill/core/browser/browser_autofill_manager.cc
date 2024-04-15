@@ -2784,7 +2784,8 @@ bool BrowserAutofillManager::ShouldUploadUkm(
                                     is_focusable_predicted_text_field);
     if (base::ToLowerASCII((*it)->placeholder).find(u"search") !=
             std::string::npos ||
-        base::ToLowerASCII((*it)->name).find(u"search") != std::string::npos ||
+        base::ToLowerASCII((*it)->name()).find(u"search") !=
+            std::string::npos ||
         base::ToLowerASCII((*it)->label).find(u"search") != std::string::npos ||
         base::ToLowerASCII((*it)->aria_label).find(u"search") !=
             std::string::npos) {

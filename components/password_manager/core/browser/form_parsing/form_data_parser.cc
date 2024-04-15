@@ -299,17 +299,17 @@ std::ostream& operator<<(std::ostream& os,
                          const SignificantFields& significant_fields) {
   os << u"SignificantFields(";
   if (significant_fields.username) {
-    os << u"username=" << significant_fields.username->name;
+    os << u"username=" << significant_fields.username->name();
   }
   if (significant_fields.password) {
-    os << " password=" << significant_fields.password->name;
+    os << " password=" << significant_fields.password->name();
   }
   if (significant_fields.new_password) {
-    os << " new_password=" << significant_fields.new_password->name;
+    os << " new_password=" << significant_fields.new_password->name();
   }
   if (significant_fields.confirmation_password) {
     os << " confirmation_password="
-       << significant_fields.confirmation_password->name;
+       << significant_fields.confirmation_password->name();
   }
   os << ")";
   return os;
@@ -861,21 +861,22 @@ void ParseUsingBaseHeuristics(
 void SetFields(const SignificantFields& significant_fields,
                PasswordForm* password_form) {
   if (significant_fields.username) {
-    password_form->username_element = significant_fields.username->name;
+    password_form->username_element = significant_fields.username->name();
     password_form->username_value = GetFieldValue(*significant_fields.username);
     password_form->username_element_renderer_id =
         significant_fields.username->renderer_id;
   }
 
   if (significant_fields.password) {
-    password_form->password_element = significant_fields.password->name;
+    password_form->password_element = significant_fields.password->name();
     password_form->password_value = GetFieldValue(*significant_fields.password);
     password_form->password_element_renderer_id =
         significant_fields.password->renderer_id;
   }
 
   if (significant_fields.new_password) {
-    password_form->new_password_element = significant_fields.new_password->name;
+    password_form->new_password_element =
+        significant_fields.new_password->name();
     password_form->new_password_value =
         GetFieldValue(*significant_fields.new_password);
     password_form->new_password_element_renderer_id =
@@ -887,7 +888,7 @@ void SetFields(const SignificantFields& significant_fields,
         << "Lone confirmation field (no new password field)"
         << significant_fields;
     password_form->confirmation_password_element =
-        significant_fields.confirmation_password->name;
+        significant_fields.confirmation_password->name();
     password_form->confirmation_password_element_renderer_id =
         significant_fields.confirmation_password->renderer_id;
   }
@@ -942,7 +943,7 @@ std::vector<ProcessedField> ProcessFields(
         // There was no such element in |seen_values|.
         all_alternative_fields->emplace_back(
             AlternativeElement::Value(field_value), field.renderer_id,
-            AlternativeElement::Name(field.name));
+            AlternativeElement::Name(field.name()));
       }
     }
 

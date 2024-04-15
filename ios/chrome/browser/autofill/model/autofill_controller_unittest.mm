@@ -157,7 +157,7 @@ void CheckField(const FormStructure& form,
                 const char* name) {
   for (const auto& field : form) {
     if (field->heuristic_type() == fieldType) {
-      EXPECT_EQ(base::UTF8ToUTF16(name), field->name);
+      EXPECT_EQ(base::UTF8ToUTF16(name), field->name());
       return;
     }
   }
@@ -659,7 +659,7 @@ void AutofillControllerTest::SetUpKeyValueData() {
   // Load value into database.
   std::vector<FormFieldData> values;
   FormFieldData fieldData;
-  fieldData.name = u"greeting";
+  fieldData.set_name(u"greeting");
   fieldData.set_value(u"Bonjour");
   values.push_back(fieldData);
   web_data_service->AddFormFields(values);

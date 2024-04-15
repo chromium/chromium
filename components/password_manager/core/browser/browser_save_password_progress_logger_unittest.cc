@@ -60,7 +60,7 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
 
     // Add a password field.
     autofill::FormFieldData field;
-    field.name = u"password";
+    field.set_name(u"password");
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.is_focusable = true;
     field.autocomplete_attribute = "new-password";
@@ -68,7 +68,7 @@ class BrowserSavePasswordProgressLoggerTest : public testing::Test {
     form_.fields.push_back(field);
 
     // Add a text field.
-    field.name = u"email";
+    field.set_name(u"email");
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.is_focusable = false;
     field.renderer_id = autofill::FieldRendererId(42);

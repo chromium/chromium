@@ -1099,7 +1099,7 @@ void FormStructure::ExtractParseableFieldNames() {
   std::vector<std::u16string_view> names;
   names.reserve(field_count());
   for (const auto& field : *this)
-    names.emplace_back(field->name);
+    names.emplace_back(field->name());
 
   // Determine the parseable names and write them into the corresponding field.
   ComputeParseableNames(names);

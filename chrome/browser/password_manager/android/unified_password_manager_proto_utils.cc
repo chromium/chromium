@@ -45,7 +45,7 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
     base::Value::Dict serialized_field;
     // Stored FormFieldData is used only for signature calculations, therefore
     // only members that are used for signature calculation are stored.
-    serialized_field.Set(kNameKey, field.name);
+    serialized_field.Set(kNameKey, field.name());
     serialized_field.Set(kFormControlTypeKey, autofill::FormControlTypeToString(
                                                   field.form_control_type()));
     serialized_fields.Append(std::move(serialized_field));
@@ -95,7 +95,7 @@ std::optional<FormData> DeserializeFormData(
     if (!field_name || !field_type) {
       return std::nullopt;
     }
-    field.name = base::UTF8ToUTF16(*field_name);
+    field.set_name(base::UTF8ToUTF16(*field_name));
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
     // values.

@@ -287,13 +287,13 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
 TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   PasswordForm pending = CreatePending(u"nameofuser", u"wordToP4a55");
   FormFieldData field;
-  field.name = u"name";
+  field.set_name(u"name");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_value(u"value");
   field.label = u"label";
   field.placeholder = u"placeholder";
   field.id_attribute = u"id";
-  field.name_attribute = field.name;
+  field.name_attribute = field.name();
   field.css_classes = u"css_classes";
   pending.form_data.fields.push_back(field);
 
@@ -315,7 +315,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
 
   ASSERT_EQ(1u, saved.form_data.fields.size());
   const FormFieldData& saved_field = saved.form_data.fields[0];
-  EXPECT_EQ(u"name", saved_field.name);
+  EXPECT_EQ(u"name", saved_field.name());
   EXPECT_EQ(autofill::FormControlType::kInputPassword,
             saved_field.form_control_type());
   EXPECT_TRUE(saved_field.value().empty());

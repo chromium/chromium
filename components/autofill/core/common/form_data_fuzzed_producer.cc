@@ -66,8 +66,8 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     result.fields[i].autocomplete_attribute =
         provider.ConsumeRandomLengthString();
     result.fields[i].label = ConsumeU16String(provider);
-    result.fields[i].name = ConsumeU16String(provider);
-    result.fields[i].name_attribute = result.fields[i].name;
+    result.fields[i].set_name(ConsumeU16String(provider));
+    result.fields[i].name_attribute = result.fields[i].name();
     result.fields[i].id_attribute = ConsumeU16String(provider);
     result.fields[i].renderer_id =
         FieldRendererId(provider.ConsumeIntegralInRange(-32, 31));

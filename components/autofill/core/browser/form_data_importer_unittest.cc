@@ -1954,7 +1954,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   FormData form = CreateFullCreditCardForm(
       "Biggie Smalls", "4111-1111-1111-1111", "Feb (2)", "2999");
   // Add option values and contents to the expiration month field.
-  ASSERT_EQ(u"exp_month", form.fields[2].name);
+  ASSERT_EQ(u"exp_month", form.fields[2].name());
   form.fields[2].options = {
       {.value = u"1", .content = u"Jan (1)"},
       {.value = u"2", .content = u"Feb (2)"},

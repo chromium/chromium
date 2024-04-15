@@ -1665,7 +1665,7 @@ bool HasObservedFormChanged(const FormData& form_data,
           PasswordFormMetricsRecorder::kAutocompleteAttributes;
     }
 
-    if (lhs_field.name != rhs_field.name) {
+    if (lhs_field.name() != rhs_field.name()) {
       differences_bitmask |= PasswordFormMetricsRecorder::kFormFieldNames;
     }
   }

@@ -52,7 +52,7 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
     result.fields[i].autocomplete_attribute =
         form_data_proto.autocomplete_attribute();
     result.fields[i].label = UTF8ToUTF16(form_data_proto.label());
-    result.fields[i].name = UTF8ToUTF16(form_data_proto.name());
+    result.fields[i].set_name(UTF8ToUTF16(form_data_proto.name()));
     result.fields[i].set_value(UTF8ToUTF16(form_data_proto.value()));
   }
 

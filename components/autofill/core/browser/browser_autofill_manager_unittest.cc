@@ -526,7 +526,7 @@ void ExpectFilledField(const char* expected_label,
                        const FormFieldData& field) {
   SCOPED_TRACE(expected_label);
   EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
-  EXPECT_EQ(UTF8ToUTF16(expected_name), field.name);
+  EXPECT_EQ(UTF8ToUTF16(expected_name), field.name());
   EXPECT_EQ(UTF8ToUTF16(expected_value), field.value());
   EXPECT_EQ(expected_form_control_type, field.form_control_type());
 }
@@ -1474,7 +1474,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Create a form where the first field is unclassifiable.
   FormData form = CreateTestAddressFormData();
   form.fields[0].label = u"unclassified";
-  form.fields[0].name = u"unclassified";
+  form.fields[0].set_name(u"unclassified");
   FormsSeen({form});
 
   // Expect that no suggestions are returned for the first field.
@@ -5486,14 +5486,15 @@ TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
 
   // Manually fill out |form| so we can use it in OnFormSubmitted.
   for (auto& field : form.fields) {
-    if (field.name == u"cardnumber")
+    if (field.name() == u"cardnumber") {
       field.set_value(u"4012888888881881");
-    else if (field.name == u"nameoncard")
+    } else if (field.name() == u"nameoncard") {
       field.set_value(u"John H Dillinger");
-    else if (field.name == u"ccmonth")
+    } else if (field.name() == u"ccmonth") {
       field.set_value(u"01");
-    else if (field.name == u"ccyear")
+    } else if (field.name() == u"ccyear") {
       field.set_value(u"2017");
+    }
   }
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
@@ -6824,7 +6825,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
   FormsSeen({form});
 
   const FormFieldData& card_number_field = form.fields[1];
-  ASSERT_EQ(card_number_field.name, u"cardnumber");
+  ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where autofill is enabled.
   browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
@@ -6847,7 +6848,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
   FormsSeen({form});
 
   const FormFieldData& card_number_field = form.fields[1];
-  ASSERT_EQ(card_number_field.name, u"cardnumber");
+  ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where device and platform support scanning credit cards.
   ON_CALL(autofill_client_, HasCreditCardScanFeature())
@@ -6874,13 +6875,13 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
 
   // Test case for credit-card-number field.
   const FormFieldData& card_number_field = form.fields[1];
-  ASSERT_EQ(card_number_field.name, u"cardnumber");
+  ASSERT_EQ(card_number_field.name(), u"cardnumber");
   EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 
   // Test case for non-credit-card-number field.
   const FormFieldData& cvc_field = form.fields[4];
-  ASSERT_EQ(cvc_field.name, u"cvc");
+  ASSERT_EQ(cvc_field.name(), u"cvc");
   EXPECT_FALSE(
       browser_autofill_manager_->ShouldShowScanCreditCard(form, cvc_field));
 }
@@ -6897,7 +6898,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
   FormsSeen({form_http});
 
   const FormFieldData& card_number_field_http = form_http.fields[1];
-  ASSERT_EQ(card_number_field_http.name, u"cardnumber");
+  ASSERT_EQ(card_number_field_http.name(), u"cardnumber");
   EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form_http, card_number_field_http));
 
@@ -6907,7 +6908,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
   FormsSeen({form_https});
 
   const FormFieldData& card_number_field_https = form_https.fields[1];
-  ASSERT_EQ(card_number_field_https.name, u"cardnumber");
+  ASSERT_EQ(card_number_field_https.name(), u"cardnumber");
   EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form_https, card_number_field_https));
 }

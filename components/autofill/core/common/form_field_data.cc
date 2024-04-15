@@ -107,7 +107,7 @@ bool DeserializeSection1(base::PickleIterator* iter,
       iter->ReadUInt64(&max_length) && iter->ReadBool(&is_autofilled);
   if (success) {
     field_data->label = std::move(label);
-    field_data->name = std::move(name);
+    field_data->set_name(std::move(name));
     field_data->set_value(std::move(value));
     field_data->autocomplete_attribute = std::move(autocomplete_attribute);
     field_data->max_length = max_length;
@@ -252,7 +252,7 @@ bool DeserializeSection11(base::PickleIterator* iter,
 
 auto IdentityTuple(const FormFieldData& f) {
   return std::tuple_cat(
-      std::tie(f.label, f.name, f.name_attribute, f.id_attribute,
+      std::tie(f.label, f.name(), f.name_attribute, f.id_attribute,
                f.form_control_type(), f.autocomplete_attribute, f.placeholder,
                f.max_length, f.css_classes, f.is_focusable,
                f.should_autocomplete, f.role, f.text_direction, f.options),
@@ -286,7 +286,7 @@ Section Section::FromFieldIdentifier(
   size_t generated_frame_id =
       frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
           .first->second;
-  section.value_ = FieldIdentifier(base::UTF16ToUTF8(field.name),
+  section.value_ = FieldIdentifier(base::UTF16ToUTF8(field.name()),
                                    generated_frame_id, field.renderer_id);
   return section;
 }
@@ -482,7 +482,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
                             base::Pickle* pickle) {
   pickle->WriteInt(kFormFieldDataPickleVersion);
   pickle->WriteString16(field_data.label);
-  pickle->WriteString16(field_data.name);
+  pickle->WriteString16(field_data.name());
   pickle->WriteString16(field_data.value());
   pickle->WriteString(FormControlTypeToString(field_data.form_control_type()));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
@@ -643,7 +643,7 @@ bool DeserializeFormFieldData(base::PickleIterator* iter,
 std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
   return os << "label='" << field.label << "' "
             << "unique_Id=" << field.global_id() << " " << "origin='"
-            << field.origin.Serialize() << "' " << "name='" << field.name
+            << field.origin.Serialize() << "' " << "name='" << field.name()
             << "' " << "id_attribute='" << field.id_attribute << "' "
             << "name_attribute='" << field.name_attribute << "' " << "value='"
             << field.value() << "' " << "control='" << field.form_control_type()
@@ -670,7 +670,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tag{"table"};
-  buffer << Tr{} << "Name:" << field.name;
+  buffer << Tr{} << "Name:" << field.name();
   buffer
       << Tr{} << "Identifiers:"
       << base::StrCat(

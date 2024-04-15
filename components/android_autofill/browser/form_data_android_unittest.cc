@@ -49,8 +49,8 @@ MATCHER(SimilarFieldAs, "") {
 FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   static uint64_t renderer_id = 1;
   FormFieldData f;
-  f.name = std::move(name);
-  f.name_attribute = f.name;
+  f.set_name(std::move(name));
+  f.name_attribute = f.name();
   f.id_attribute = u"some_id";
   f.set_form_control_type(FormControlType::kInputText);
   f.check_status = FormFieldData::CheckStatus::kChecked;
@@ -197,7 +197,7 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
 
   // Forms with fields that are not similar, are not similar either.
   f = af.form();
-  f.fields.front().name += u"x";
+  f.fields.front().set_name(f.fields.front().name() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
@@ -267,7 +267,7 @@ TEST_F(FormDataAndroidTest, GetFieldIndex) {
 
   // As updates in `f` are not propagated to the Android version `af`, the
   // lookup fails.
-  f.fields[1].name = u"name3";
+  f.fields[1].set_name(u"name3");
   EXPECT_FALSE(af.GetFieldIndex(f.fields[1], &index));
 }
 
@@ -286,7 +286,7 @@ TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
 
   // Name is a part of the field similarity check, so there is no field similar
   // to this one.
-  f.fields[1].name = u"name3";
+  f.fields[1].set_name(u"name3");
   EXPECT_FALSE(af.GetSimilarFieldIndex(f.fields[1], &index));
 }
 

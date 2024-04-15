@@ -393,9 +393,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsForIncompleteForm) {
   // Erase expiration month and expiration year fields.
-  ASSERT_EQ(form_.fields[2].name, u"ccmonth");
+  ASSERT_EQ(form_.fields[2].name(), u"ccmonth");
   form_.fields.erase(form_.fields.begin() + 2);
-  ASSERT_EQ(form_.fields[2].name, u"ccyear");
+  ASSERT_EQ(form_.fields[2].name(), u"ccyear");
   form_.fields.erase(form_.fields.begin() + 2);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
@@ -413,7 +413,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   browser_autofill_manager_->OnFormsSeen({form_}, {});
   // Set credit card value.
   // TODO(crbug/1428904): Retrieve the card number field by name here.
-  ASSERT_EQ(form_.fields[1].name, u"cardnumber");
+  ASSERT_EQ(form_.fields[1].name(), u"cardnumber");
   form_.fields[1].set_value(u"411111111111");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
@@ -431,7 +431,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   browser_autofill_manager_->OnFormsSeen({form_}, {});
   // Set card expiration year.
   // TODO(crbug/1428904): Retrieve the card expiry year field by name here.
-  ASSERT_EQ(form_.fields[3].name, u"ccyear");
+  ASSERT_EQ(form_.fields[3].name(), u"ccyear");
   form_.fields[3].set_value(u"2023");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 

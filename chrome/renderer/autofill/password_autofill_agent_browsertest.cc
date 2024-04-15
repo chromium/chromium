@@ -802,11 +802,11 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
     size_t unchecked_masks = expected_properties_masks.size();
     for (const FormFieldData& field : form_data.fields) {
-      const auto& it = expected_properties_masks.find(field.name);
+      const auto& it = expected_properties_masks.find(field.name());
       if (it == expected_properties_masks.end())
         continue;
       EXPECT_EQ(field.properties_mask, it->second)
-          << "Wrong mask for the field " << field.name;
+          << "Wrong mask for the field " << field.name();
       unchecked_masks--;
     }
     EXPECT_TRUE(unchecked_masks == 0)

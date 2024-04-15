@@ -16,7 +16,7 @@ namespace {
 
 void FillCommonFields(FormFieldData* data) {
   data->label = u"label";
-  data->name = u"name";
+  data->set_name(u"name");
   data->set_value(u"value");
   data->set_form_control_type(FormControlType::kInputPassword);
   data->autocomplete_attribute = "off";
@@ -57,7 +57,7 @@ void FillVersion8Fields(FormFieldData* data) {
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteString16(data.label);
-  pickle->WriteString16(data.name);
+  pickle->WriteString16(data.name());
   pickle->WriteString16(data.value());
   pickle->WriteString(FormControlTypeToString(data.form_control_type()));
   pickle->WriteString(data.autocomplete_attribute);

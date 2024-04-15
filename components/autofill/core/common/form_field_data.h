@@ -271,7 +271,8 @@ struct FormFieldData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  std::u16string name;
+  const std::u16string& name() const { return name_; }
+  void set_name(std::u16string name) { name_ = std::move(name); }
 
   std::u16string id_attribute;
   std::u16string name_attribute;
@@ -425,6 +426,7 @@ struct FormFieldData {
   bool force_override = false;
 
  private:
+  std::u16string name_;
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
 };
@@ -504,7 +506,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
 #define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                        \
   do {                                                                         \
     EXPECT_EQ(expected.label, actual.label);                                   \
-    EXPECT_EQ(expected.name, actual.name);                                     \
+    EXPECT_EQ(expected.name(), actual.name());                                 \
     EXPECT_EQ(expected.value(), actual.value());                               \
     EXPECT_EQ(expected.form_control_type(), actual.form_control_type());       \
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \

@@ -82,7 +82,7 @@ void CopyFieldPropertiesMasks(const FormData& from, FormData* to) {
 
   for (size_t i = 0; i < from.fields.size(); ++i) {
     to->fields[i].properties_mask =
-        to->fields[i].name == from.fields[i].name
+        to->fields[i].name() == from.fields[i].name()
             ? from.fields[i].properties_mask
             : autofill::FieldPropertiesFlags::kErrorOccurred;
   }

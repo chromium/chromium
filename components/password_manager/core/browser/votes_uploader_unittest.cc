@@ -132,7 +132,7 @@ class VotesUploaderTest : public testing::Test {
     const int kNumberOfFields = 20;
     for (int i = 0; i < kNumberOfFields; ++i) {
       FormFieldData field;
-      field.name = GetFieldNameByIndex(i);
+      field.set_name(GetFieldNameByIndex(i));
       field.renderer_id = FieldRendererId(i);
       form_to_upload_.form_data.fields.push_back(field);
       submitted_form_.form_data.fields.push_back(field);
@@ -269,7 +269,7 @@ TEST_F(VotesUploaderTest, SendVotesOnSaveOverwrittenFlow) {
 
   for (size_t i = 0; i < 10; ++i) {
     FormFieldData field;
-    field.name = GetFieldNameByIndex(i);
+    field.set_name(GetFieldNameByIndex(i));
     match_form.form_data.fields.push_back(field);
   }
 
@@ -328,7 +328,7 @@ TEST_F(VotesUploaderTest, SendVoteOnCredentialsReuseFlow) {
   submitted_form_.username_value = u"username_value";
 
   FormFieldData field;
-  field.name = GetFieldNameByIndex(6);
+  field.set_name(GetFieldNameByIndex(6));
   field.renderer_id = FieldRendererId(6);
 
   PasswordForm pending;

@@ -95,16 +95,16 @@ autofill::FormData MakeSimpleFormData() {
   form_data.name = u"login_form";
 
   autofill::FormFieldData field;
-  field.name = u"Username";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
+  field.set_name(u"Username");
+  field.id_attribute = field.name();
+  field.name_attribute = field.name();
   field.set_value(u"googleuser");
   field.set_form_control_type(autofill::FormControlType::kInputText);
   form_data.fields.push_back(field);
 
-  field.name = u"Passwd";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
+  field.set_name(u"Passwd");
+  field.id_attribute = field.name();
+  field.name_attribute = field.name();
   field.set_value(u"p4ssword");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   form_data.fields.push_back(field);

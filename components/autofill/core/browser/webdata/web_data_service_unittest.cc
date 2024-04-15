@@ -186,7 +186,7 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
                        const std::u16string& value,
                        std::vector<FormFieldData>* form_fields) {
     FormFieldData field;
-    field.name = name;
+    field.set_name(name);
     field.set_value(value);
     form_fields->push_back(field);
   }

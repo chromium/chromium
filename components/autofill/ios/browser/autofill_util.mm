@@ -280,7 +280,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     return false;
   }
 
-  field_data->name = base::UTF8ToUTF16(*name);
+  field_data->set_name(base::UTF8ToUTF16(*name));
   field_data->set_form_control_type(
       autofill::StringToFormControlTypeDiscouraged(*form_control_type,
                                                    /*fallback=*/std::nullopt));

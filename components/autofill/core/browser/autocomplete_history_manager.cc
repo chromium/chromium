@@ -78,7 +78,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   CancelPendingQueries();
 
-  if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
+  if (!IsMeaningfulFieldName(field.name()) || !client.IsAutocompleteEnabled() ||
       field.form_control_type() == FormControlType::kTextArea ||
       field.form_control_type() == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
@@ -89,7 +89,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        field.name, field.value(), kMaxAutocompleteMenuItems, this);
+        field.name(), field.value(), kMaxAutocompleteMenuItems, this);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
@@ -299,8 +299,8 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   // value is neither empty nor only whitespaces.
   bool is_value_valid = base::ranges::any_of(
       field.value(), std::not_fn(base::IsUnicodeWhitespace<char16_t>));
-  return is_value_valid && IsMeaningfulFieldName(field.name) &&
-         !field.name.empty() && field.IsTextInputElement() &&
+  return is_value_valid && IsMeaningfulFieldName(field.name()) &&
+         !field.name().empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
          field.form_control_type() != FormControlType::kInputNumber &&
          field.should_autocomplete && !IsValidCreditCardNumber(field.value()) &&

@@ -101,10 +101,10 @@ bool AreChangePasswordFieldsEmpty(const FormData& form_data,
       parsed_form.confirmation_password_element;
   for (const auto& field : form_data.fields) {
     if (!field.value().empty() &&
-        (field.name == new_password ||
-         (!old_password.empty() && field.name == old_password) ||
+        (field.name() == new_password ||
+         (!old_password.empty() && field.name() == old_password) ||
          (!confirmation_password.empty() &&
-          field.name == confirmation_password))) {
+          field.name() == confirmation_password))) {
       return false;
     }
   }

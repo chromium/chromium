@@ -611,17 +611,17 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   form_data.renderer_id = autofill::test::MakeFormRendererId();
 
   autofill::FormFieldData field;
-  field.name = u"Username";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
+  field.set_name(u"Username");
+  field.id_attribute = field.name();
+  field.name_attribute = field.name();
   field.set_value(u"googleuser");
   field.set_form_control_type(autofill::FormControlType::kInputText);
   field.renderer_id = autofill::test::MakeFieldRendererId();
   form_data.fields.push_back(field);
 
-  field.name = u"Passwd";
-  field.id_attribute = field.name;
-  field.name_attribute = field.name;
+  field.set_name(u"Passwd");
+  field.id_attribute = field.name();
+  field.name_attribute = field.name();
   field.set_value(u"p4ssword");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.renderer_id = autofill::test::MakeFieldRendererId();
@@ -970,7 +970,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:SysUTF16ToNSString(form.name)
         formRendererID:form.renderer_id
-       fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
+       fieldIdentifier:SysUTF16ToNSString(form.fields[0].name())
        fieldRendererID:form.fields[0].renderer_id
              fieldType:@"text"
                   type:@"focus"
@@ -1040,7 +1040,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:SysUTF16ToNSString(form.name)
             formRendererID:form.renderer_id
-           fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
+           fieldIdentifier:SysUTF16ToNSString(form.fields[0].name())
            fieldRendererID:form.fields[0].renderer_id
                  fieldType:@"text"
                       type:@"focus"
@@ -1067,7 +1067,7 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:SysUTF16ToNSString(form.name)
             formRendererID:form.renderer_id
-           fieldIdentifier:SysUTF16ToNSString(form.fields[1].name)
+           fieldIdentifier:SysUTF16ToNSString(form.fields[1].name())
            fieldRendererID:form.fields[1].renderer_id
                  fieldType:kObfuscatedFieldType
                       type:@"focus"

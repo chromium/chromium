@@ -232,7 +232,7 @@ void AddKeys(int profile, const std::set<AutocompleteKey>& keys) {
   std::vector<FormFieldData> form_fields;
   for (const AutocompleteKey& key : keys) {
     FormFieldData field;
-    field.name = key.name();
+    field.set_name(key.name());
     field.set_value(key.value());
     form_fields.push_back(field);
   }

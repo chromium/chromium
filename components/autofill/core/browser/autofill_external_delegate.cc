@@ -678,7 +678,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       return manager_->RemoveAutofillProfileOrCreditCard(
           suggestion.GetPayload<Suggestion::BackendId>());
     case PopupItemId::kAutocompleteEntry:
-      manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name,
+      manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name(),
                                                    suggestion.main_text.value,
                                                    suggestion.popup_item_id);
       return true;

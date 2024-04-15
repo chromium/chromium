@@ -105,7 +105,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
     field.renderer_id = autofill::FieldRendererId(i + 1000);
-    field.name = ASCIIToUTF16(test_fields[i].name);
+    field.set_name(ASCIIToUTF16(test_fields[i].name));
     field.set_form_control_type(test_fields[i].form_control_type);
 
     AutofillType::ServerPrediction prediction;
@@ -179,7 +179,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     for (size_t i = 0; i < test_form.size(); ++i) {
       FormFieldData field;
       field.renderer_id = autofill::FieldRendererId(i + 1000);
-      field.name = ASCIIToUTF16(test_form[i].name);
+      field.set_name(ASCIIToUTF16(test_form[i].name));
       field.set_form_control_type(test_form[i].form_control_type);
 
       AutofillType::ServerPrediction new_prediction;

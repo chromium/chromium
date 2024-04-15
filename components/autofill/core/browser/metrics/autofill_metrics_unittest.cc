@@ -442,16 +442,16 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"fullname";
-  field.name = u"fullname";
+  field.set_name(u"fullname");
   form.fields.push_back(field);
 
   field.label = u"Street 1";
-  field.name = u"street1";
+  field.set_name(u"street1");
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
   field.label = u"Street 2";
-  field.name = u"street2";
+  field.set_name(u"street2");
   form.fields.push_back(field);
   field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
 
@@ -540,21 +540,21 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Country";
-  field.name = u"country";
+  field.set_name(u"country");
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
   field.label = u"fullname";
-  field.name = u"fullname";
+  field.set_name(u"fullname");
   form.fields.push_back(field);
 
   field.label = u"State";
-  field.name = u"state";
+  field.set_name(u"state");
   form.fields.push_back(field);
   field_signature[2] = Collapse(CalculateFieldSignatureForField(field));
 
   field.label = u"State";
-  field.name = u"state";
+  field.set_name(u"state");
   field.is_focusable = false;
   field.set_form_control_type(FormControlType::kSelectOne);
   form.fields.push_back(field);
@@ -5343,11 +5343,11 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     field.set_form_control_type(FormControlType::kInputText);
 
     field.label = u"fullname";
-    field.name = u"fullname";
+    field.set_name(u"fullname");
     form.fields.push_back(field);
 
     field.label = u"address";
-    field.name = u"address";
+    field.set_name(u"address");
     form.fields.push_back(field);
 
     // Checkable fields should be ignored in parsing.
@@ -5362,11 +5362,11 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     forms_.push_back(owned_forms_.back().get());
 
     field.label = u"email";
-    field.name = u"email";
+    field.set_name(u"email");
     form.fields.push_back(field);
 
     field.label = u"password";
-    field.name = u"password";
+    field.set_name(u"password");
     field.set_form_control_type(FormControlType::kInputPassword);
     form.fields.push_back(field);
 

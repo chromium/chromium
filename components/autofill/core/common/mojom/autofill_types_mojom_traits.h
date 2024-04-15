@@ -194,7 +194,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   }
 
   static const std::u16string& name(const autofill::FormFieldData& r) {
-    return r.name;
+    return r.name();
   }
 
   static const std::u16string& id_attribute(const autofill::FormFieldData& r) {

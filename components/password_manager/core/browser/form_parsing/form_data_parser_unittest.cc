@@ -186,7 +186,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 
-  EXPECT_EQ(element_name, field_it->name);
+  EXPECT_EQ(element_name, field_it->name());
 
   std::u16string expected_value =
       field_it->user_input.empty() ? field_it->value() : field_it->user_input;
@@ -203,7 +203,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   for (const FormFieldData& field : form_data.fields) {
     result << "type="
            << autofill::FormControlTypeToString(field.form_control_type())
-           << ", name=" << field.name << ", value=" << field.value()
+           << ", name=" << field.name() << ", value=" << field.value()
            << ", unique id=" << field.renderer_id.value() << "\n";
   }
   return result;
@@ -299,11 +299,11 @@ class FormParserTest : public testing::Test {
         field.id_attribute = std::u16string(field_description.id_attribute);
       }
       if (field_description.name == kNonimportantValue) {
-        field.name = StampUniqueSuffix(u"html_name");
+        field.set_name(StampUniqueSuffix(u"html_name"));
       } else {
-        field.name = std::u16string(field_description.name);
+        field.set_name(std::u16string(field_description.name));
       }
-      field.name_attribute = field.name;
+      field.name_attribute = field.name();
       field.set_form_control_type(field_description.form_control_type);
       field.is_focusable = field_description.is_focusable;
       field.is_enabled = field_description.is_enabled;
@@ -3044,7 +3044,7 @@ TEST_F(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   const autofill::FormFieldData* field_data = FindUsernameInPredictions(
       predictions, processed_fields, Interactability::kCertain);
   ASSERT_TRUE(field_data);
-  EXPECT_EQ(u"id", field_data->name);
+  EXPECT_EQ(u"id", field_data->name());
 }
 
 // Tests that the form parser is not considering fields with values consisting

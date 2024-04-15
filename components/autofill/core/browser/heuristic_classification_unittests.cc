@@ -328,9 +328,11 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   }
   // `FormFieldData::name` is used for form signature calculation and a fallback
   // from a field's name to the field's id.
-  field.name = base::TrimWhitespace(field.name_attribute, base::TRIM_ALL);
-  if (field.name.empty()) {
-    field.name = base::TrimWhitespace(field.id_attribute, base::TRIM_ALL);
+  field.set_name(std::u16string(
+      base::TrimWhitespace(field.name_attribute, base::TRIM_ALL)));
+  if (field.name().empty()) {
+    field.set_name(std::u16string(
+        base::TrimWhitespace(field.id_attribute, base::TRIM_ALL)));
   }
 
   if (const std::string* label = field_dict.FindString("label_attr")) {

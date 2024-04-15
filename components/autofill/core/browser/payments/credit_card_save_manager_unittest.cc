@@ -317,20 +317,21 @@ class CreditCardSaveManagerTest : public testing::Test {
                                const char* country,
                                FormData* form) {
     for (FormFieldData& field : form->fields) {
-      if (base::EqualsASCII(field.name, "firstname"))
+      if (base::EqualsASCII(field.name(), "firstname")) {
         field.set_value(ASCIIToUTF16(first_name));
-      else if (base::EqualsASCII(field.name, "lastname"))
+      } else if (base::EqualsASCII(field.name(), "lastname")) {
         field.set_value(ASCIIToUTF16(last_name));
-      else if (base::EqualsASCII(field.name, "addr1"))
+      } else if (base::EqualsASCII(field.name(), "addr1")) {
         field.set_value(u"123 Maple");
-      else if (base::EqualsASCII(field.name, "city"))
+      } else if (base::EqualsASCII(field.name(), "city")) {
         field.set_value(u"Dallas");
-      else if (base::EqualsASCII(field.name, "state"))
+      } else if (base::EqualsASCII(field.name(), "state")) {
         field.set_value(u"Texas");
-      else if (base::EqualsASCII(field.name, "zipcode"))
+      } else if (base::EqualsASCII(field.name(), "zipcode")) {
         field.set_value(ASCIIToUTF16(zip_code));
-      else if (base::EqualsASCII(field.name, "country"))
+      } else if (base::EqualsASCII(field.name(), "country")) {
         field.set_value(ASCIIToUTF16(country));
+      }
     }
   }
 

@@ -74,7 +74,7 @@ auto UnorderedArrayEquals(const std::vector<T>& exp) {
 auto Equals(const FormFieldData& exp) {
   return AllOf(
       Property("global_id", &FormFieldData::global_id, exp.global_id()),
-      Field("name", &FormFieldData::name, exp.name),
+      Property("name", &FormFieldData::name, exp.name()),
       Field("host_form_id", &FormFieldData::host_form_id, exp.host_form_id),
       Field("origin", &FormFieldData::origin, exp.origin),
       Property("form_control_type", &FormFieldData::form_control_type,
@@ -414,7 +414,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
       data.name = base::ASCIIToUTF16(form_info.name);
       data.url = url;
       for (FormFieldData& field : data.fields) {
-        field.name = base::StrCat({data.name, u".", field.name});
+        field.set_name(base::StrCat({data.name, u".", field.name()}));
       }
       driver->SetMetaData(data);
 
@@ -1142,7 +1142,7 @@ class FormForestTestUpdateFieldAdd
     FormData& target_form = GetMockedForm(GetParam().form_name);
     size_t target_index = GetParam().field_index;
     FormFieldData field = target_form.fields.front();
-    field.name = base::StrCat({field.name, u"_copy"});
+    field.set_name(base::StrCat({field.name(), u"_copy"}));
     field.renderer_id = test::MakeFieldRendererId();
     target_form.fields.insert(target_form.fields.begin() + target_index, field);
   }

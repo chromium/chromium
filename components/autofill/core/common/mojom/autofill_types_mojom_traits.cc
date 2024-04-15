@@ -179,7 +179,7 @@ bool StructTraits<
     if (!data.ReadName(&name)) {
       return false;
     }
-    out->name = std::move(name);
+    out->set_name(std::move(name));
   }
   {
     std::u16string id_attribute;

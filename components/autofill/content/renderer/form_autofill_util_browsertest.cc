@@ -65,6 +65,7 @@ using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Optional;
 using ::testing::Pointwise;
+using ::testing::Property;
 using ::testing::Values;
 
 struct AutofillFieldUtilCase {
@@ -226,7 +227,7 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   EXPECT_EQ(form_data.id_attribute, u"form-id");
   EXPECT_EQ(form_data.name_attribute, u"form-name");
   ASSERT_EQ(form_data.fields.size(), 1u);
-  EXPECT_EQ(form_data.fields[0].name, u"input-name");
+  EXPECT_EQ(form_data.fields[0].name(), u"input-name");
   EXPECT_EQ(form_data.fields[0].id_attribute, u"input-id");
   EXPECT_EQ(form_data.fields[0].name_attribute, u"input-name");
 }
@@ -568,13 +569,13 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       form,
       Optional(Field(
           &FormData::fields,
-          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
                             Field(&FormFieldData::is_enabled, IsTrue())),
-                      AllOf(Field(&FormFieldData::name, u"name2"),
+                      AllOf(Property(&FormFieldData::name, u"name2"),
                             Field(&FormFieldData::is_enabled, IsFalse())),
-                      AllOf(Field(&FormFieldData::name, u"name3"),
+                      AllOf(Property(&FormFieldData::name, u"name3"),
                             Field(&FormFieldData::is_enabled, IsTrue())),
-                      AllOf(Field(&FormFieldData::name, u"name4"),
+                      AllOf(Property(&FormFieldData::name, u"name4"),
                             Field(&FormFieldData::is_enabled, IsFalse()))))));
 }
 
@@ -592,13 +593,13 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       form,
       Optional(Field(
           &FormData::fields,
-          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
                             Field(&FormFieldData::is_readonly, IsFalse())),
-                      AllOf(Field(&FormFieldData::name, u"name2"),
+                      AllOf(Property(&FormFieldData::name, u"name2"),
                             Field(&FormFieldData::is_readonly, IsTrue())),
-                      AllOf(Field(&FormFieldData::name, u"name3"),
+                      AllOf(Property(&FormFieldData::name, u"name3"),
                             Field(&FormFieldData::is_readonly, IsFalse())),
-                      AllOf(Field(&FormFieldData::name, u"name4"),
+                      AllOf(Property(&FormFieldData::name, u"name4"),
                             Field(&FormFieldData::is_readonly, IsTrue()))))));
 }
 
@@ -614,9 +615,9 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
       form,
       Optional(Field(
           &FormData::fields,
-          ElementsAre(AllOf(Field(&FormFieldData::name, u"name1"),
+          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
                             Field(&FormFieldData::is_focusable, IsTrue())),
-                      AllOf(Field(&FormFieldData::name, u"name2"),
+                      AllOf(Property(&FormFieldData::name, u"name2"),
                             Field(&FormFieldData::is_focusable, IsFalse()))))));
 }
 
@@ -1938,7 +1939,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_EQ(*form->renderer_id, *field.renderer_id);
   EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
-  EXPECT_EQ(field.name, u"my-id");
+  EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute, u"my-id");
   EXPECT_EQ(field.name_attribute, u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
@@ -1966,7 +1967,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   EXPECT_EQ(*form->renderer_id, *field.renderer_id);
   EXPECT_EQ(form->renderer_id, field.host_form_id);
   EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
-  EXPECT_EQ(field.name, u"my-id");
+  EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute, u"my-id");
   EXPECT_EQ(field.name_attribute, u"my-name");
   EXPECT_EQ(field.css_classes, u"my-class");
@@ -2023,14 +2024,15 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
       <form><input type=text name=excluded/></form>
       </html>)");
   WebDocument doc = GetMainFrame()->GetDocument();
-  EXPECT_THAT(ExtractFormData(doc, GetFormElementById(doc, "form_of_interest"),
-                              field_data_manager()),
-              Optional(Field(
-                  &FormData::fields,
-                  ElementsAre(Field(&FormFieldData::name, u"text_input"),
-                              Field(&FormFieldData::name, u"check_input"),
-                              Field(&FormFieldData::name, u"number_input"),
-                              Field(&FormFieldData::name, u"select_input")))));
+  EXPECT_THAT(
+      ExtractFormData(doc, GetFormElementById(doc, "form_of_interest"),
+                      field_data_manager()),
+      Optional(
+          Field(&FormData::fields,
+                ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                            Property(&FormFieldData::name, u"check_input"),
+                            Property(&FormFieldData::name, u"number_input"),
+                            Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount",
                                     0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount", 4,
@@ -2051,13 +2053,14 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
       <form><input type=text name=excluded/></form>
       </html>)");
   WebDocument doc = GetMainFrame()->GetDocument();
-  EXPECT_THAT(ExtractFormData(doc, WebFormElement(), field_data_manager()),
-              Optional(Field(
-                  &FormData::fields,
-                  ElementsAre(Field(&FormFieldData::name, u"text_input"),
-                              Field(&FormFieldData::name, u"check_input"),
-                              Field(&FormFieldData::name, u"number_input"),
-                              Field(&FormFieldData::name, u"select_input")))));
+  EXPECT_THAT(
+      ExtractFormData(doc, WebFormElement(), field_data_manager()),
+      Optional(
+          Field(&FormData::fields,
+                ElementsAre(Property(&FormFieldData::name, u"text_input"),
+                            Property(&FormFieldData::name, u"check_input"),
+                            Property(&FormFieldData::name, u"number_input"),
+                            Property(&FormFieldData::name, u"select_input")))));
   histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount", 0);
   histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount",
                                       4, 1);
