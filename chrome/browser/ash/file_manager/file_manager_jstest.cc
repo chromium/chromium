@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
@@ -359,7 +360,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksUiEntries) {
   RunTestURL("state/ducks/ui_entries_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksVolumes) {
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_DucksVolumes DISABLED_DucksVolumes
+#else
+#define MAYBE_DucksVolumes DucksVolumes
+#endif  // defined(MEMORY_SANITIZER)
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MAYBE_DucksVolumes) {
   RunTestURL("state/ducks/volumes_unittest.js");
 }
 
