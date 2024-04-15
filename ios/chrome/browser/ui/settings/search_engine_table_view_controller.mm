@@ -208,8 +208,6 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   [self updateUIForEditState];
   [self loadModel];
-  // The toolbar edit button's state depends on the `loadModel`.
-  [self updatedToolbarForEditState];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -292,6 +290,8 @@ const char kUmaSelectDefaultSearchEngine[] =
       [model addItem:item toSectionWithIdentifier:SectionIdentifierSecondList];
     }
   }
+  // The toolbar edit button's state needs to be updated.
+  [self updatedToolbarForEditState];
 }
 
 #pragma mark - SettingsControllerProtocol
