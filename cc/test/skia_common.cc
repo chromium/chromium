@@ -13,6 +13,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -84,14 +85,14 @@ bool AreDisplayListDrawingResultsSame(const gfx::Rect& layer_rect,
                                       const DisplayItemList* list_b) {
   const size_t pixel_size = 4 * layer_rect.size().GetArea();
 
-  std::unique_ptr<unsigned char[]> pixels_a(new unsigned char[pixel_size]);
-  std::unique_ptr<unsigned char[]> pixels_b(new unsigned char[pixel_size]);
-  memset(pixels_a.get(), 0, pixel_size);
-  memset(pixels_b.get(), 0, pixel_size);
-  DrawDisplayList(pixels_a.get(), layer_rect, list_a);
-  DrawDisplayList(pixels_b.get(), layer_rect, list_b);
+  auto pixels_a = base::HeapArray<unsigned char>::Uninit(pixel_size);
+  auto pixels_b = base::HeapArray<unsigned char>::Uninit(pixel_size);
+  memset(pixels_a.data(), 0, pixel_size);
+  memset(pixels_b.data(), 0, pixel_size);
+  DrawDisplayList(pixels_a.data(), layer_rect, list_a);
+  DrawDisplayList(pixels_b.data(), layer_rect, list_b);
 
-  return !memcmp(pixels_a.get(), pixels_b.get(), pixel_size);
+  return !memcmp(pixels_a.data(), pixels_b.data(), pixel_size);
 }
 
 Region ImageRectsToRegion(const DiscardableImageMap::Rects& rects) {
