@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -734,6 +735,13 @@ void CastWebContentsImpl::ReadyToCommitNavigation(
     script_injector_.InjectScriptsForURL(
         navigation_handle->GetURL(), navigation_handle->GetRenderFrameHost());
   }
+
+  // Always allow mixed content (https and http in the same page) for cast.
+  // TODO(https://crbug.com/333795270): Decide whether to use
+  // kKeyAllowInsecureContent to configure allowing mixed content.
+  auto content_settings = blink::CreateDefaultRendererContentSettings();
+  content_settings->allow_mixed_content = true;
+  navigation_handle->SetContentSettings(std::move(content_settings));
 
   // Notifies observers that the navigation of the main frame is ready.
   for (Observer& observer : sync_observers_) {
