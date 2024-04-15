@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 
 #include <memory>
 #include <string>

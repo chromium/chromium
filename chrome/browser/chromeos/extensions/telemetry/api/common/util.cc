@@ -17,7 +17,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {

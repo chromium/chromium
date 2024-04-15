@@ -68,7 +68,7 @@ source_set("util") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
-      "//ash/webui/shimless_rma/3p_diagnostics",
+      "//ash/webui/shimless_rma/backend",
     ]
   }
 }
@@ -208,7 +208,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/webui/shimless_rma/3p_diagnostics",
+      "//ash/webui/shimless_rma/backend",
       "//chrome/browser/ash:test_support",
       "//chrome/common/chromeos/extensions",
       "//components/user_manager",

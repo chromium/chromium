@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_SHIMLESS_RMA_3P_DIAGNOSTICS_EXTERNAL_APP_DIALOG_H_
-#define ASH_WEBUI_SHIMLESS_RMA_3P_DIAGNOSTICS_EXTERNAL_APP_DIALOG_H_
+#ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_EXTERNAL_APP_DIALOG_H_
+#define ASH_WEBUI_SHIMLESS_RMA_BACKEND_EXTERNAL_APP_DIALOG_H_
 
 #include <string>
 
@@ -99,4 +99,4 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
 
 }  // namespace ash::shimless_rma
 
-#endif  // ASH_WEBUI_SHIMLESS_RMA_3P_DIAGNOSTICS_EXTERNAL_APP_DIALOG_H_
+#endif  // ASH_WEBUI_SHIMLESS_RMA_BACKEND_EXTERNAL_APP_DIALOG_H_

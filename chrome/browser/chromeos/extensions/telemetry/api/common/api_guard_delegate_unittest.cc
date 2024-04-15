@@ -39,7 +39,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
-#include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
+#include "ash/webui/shimless_rma/backend/external_app_dialog.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
