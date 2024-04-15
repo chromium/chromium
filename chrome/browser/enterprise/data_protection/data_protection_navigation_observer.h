@@ -118,8 +118,8 @@ class DataProtectionNavigationObserver
   // Screenshots are allowed unless explicitly blocked.
   bool allow_screenshot_ = true;
 
-  // The verdict corresponding to `watermark_text_` if it is populated. Used for
-  // reporting.
+  // The verdict indicating what watermark should be shown, if populated. Used
+  // for reporting as well.
   std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response_;
 
   // Identifier string to show in the watermark if needed. This is either a user
