@@ -48,6 +48,7 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
+    "java/res/xml/page_info_tracking_protection_launch_preference.xml",
     "java/res/xml/page_info_tracking_protection_preference.xml",
   ]
   deps = [

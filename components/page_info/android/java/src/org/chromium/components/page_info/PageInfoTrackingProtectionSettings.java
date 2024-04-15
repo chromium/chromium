@@ -44,7 +44,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private ChromeImageViewPreference mStorageInUse;
     private ChromeImageViewPreference mFPSInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
-    private TextMessagePreference mThirdPartyCookiesSummary;
+    private Preference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
@@ -59,6 +59,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private boolean mIsIncognito;
     // Used to have a constant # of days until expiration to prevent test flakiness.
     private boolean mFixedExpiration;
+    private boolean mShowLaunchUI;
 
     /** Parameters to configure the cookie controls view. */
     public static class PageInfoTrackingProtectionViewParams {
@@ -83,14 +84,24 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
             getParentFragmentManager().beginTransaction().remove(this).commit();
             return;
         }
-        SettingsUtils.addPreferencesFromResource(
-                this, R.xml.page_info_tracking_protection_preference);
+        mShowLaunchUI = getSiteSettingsDelegate().shouldShowTrackingProtectionLaunchUI();
+        if (mShowLaunchUI) {
+            SettingsUtils.addPreferencesFromResource(
+                    this, R.xml.page_info_tracking_protection_launch_preference);
+            mThirdPartyCookiesSummary = findPreference(TP_SWITCH_PREFERENCE);
+        } else {
+            SettingsUtils.addPreferencesFromResource(
+                    this, R.xml.page_info_tracking_protection_preference);
+            mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
+        }
+
         mCookieSwitch = findPreference(TP_SWITCH_PREFERENCE);
+        if (mShowLaunchUI) mCookieSwitch.setUseSummaryAsTitle(false);
+
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
         mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
-        mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
     }
 
     @Override
@@ -211,7 +222,8 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                             getString(
                                     R.string.page_info_tracking_protection_site_grant_description),
                             new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
-            mThirdPartyCookiesSummary.setDividerAllowedAbove(true);
+            if (mShowLaunchUI) return;
+            ((TextMessagePreference) mThirdPartyCookiesSummary).setDividerAllowedAbove(true);
             return;
         }
 
@@ -221,12 +233,14 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
 
         if (!controlsVisible) return;
 
-        mCookieSwitch.setIcon(
-                SettingsUtils.getTintedIcon(
-                        getContext(),
-                        protectionsOn
-                                ? R.drawable.ic_visibility_off_black
-                                : R.drawable.ic_visibility_black));
+        if (!mShowLaunchUI) {
+            mCookieSwitch.setIcon(
+                    SettingsUtils.getTintedIcon(
+                            getContext(),
+                            protectionsOn
+                                    ? R.drawable.ic_visibility_off_black
+                                    : R.drawable.ic_visibility_black));
+        }
         mCookieSwitch.setChecked(!protectionsOn);
         mCookieSwitch.setEnabled(!isEnforced);
         mCookieSwitch.setManagedPreferenceDelegate(
@@ -355,6 +369,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     }
 
     private void updateCookieSwitch() {
+        if (mShowLaunchUI) return;
         // TODO(crbug.com/1446230): Update the strings for when FPS are on.
         if (!mCookieSwitch.isChecked()) {
             int resId =

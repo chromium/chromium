@@ -148,6 +148,11 @@ public interface SiteSettingsDelegate {
      */
     boolean shouldShowTrackingProtectionUI();
 
+    /**
+     * @return whether the 100% 3PCD Tracking Protection launch UI should be shown.
+     */
+    boolean shouldShowTrackingProtectionLaunchUI();
+
     /***
      * @return true if all third-party cookies are blocked when Tracking Protection is on.
      */
