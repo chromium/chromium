@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -186,7 +187,7 @@ class FacilitatedPaymentsManager {
   base::TimeTicks pix_code_detection_latency_measuring_timestamp_;
 
   // The instrument identifier that was selected in the payment prompt.
-  int64_t selected_instrument_id_ = 0;
+  std::optional<int64_t> selected_instrument_id_;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

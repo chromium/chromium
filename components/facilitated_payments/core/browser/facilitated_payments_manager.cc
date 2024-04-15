@@ -38,6 +38,7 @@ void FacilitatedPaymentsManager::Reset() {
   ukm_source_id_ = 0;
   weak_ptr_factory_.InvalidateWeakPtrs();
   pix_code_detection_triggering_timer_.Stop();
+  selected_instrument_id_ = std::nullopt;
 }
 
 void FacilitatedPaymentsManager::
