@@ -185,6 +185,10 @@ class TargetDeviceBootstrapController
   // Called when account transfer is complete.
   void OnSetupComplete();
 
+  bool did_transfer_wifi() const {
+    return session_context_.did_transfer_wifi();
+  }
+
  private:
   friend class TargetDeviceBootstrapControllerTest;
 

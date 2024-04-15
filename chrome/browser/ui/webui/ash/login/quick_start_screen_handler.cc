@@ -61,8 +61,9 @@ void QuickStartScreenHandler::ShowCreatingAccountStep() {
   CallExternalAPI("showCreatingAccountStep");
 }
 
-void QuickStartScreenHandler::ShowSetupCompleteStep() {
-  CallExternalAPI("showSetupCompleteStep");
+void QuickStartScreenHandler::ShowSetupCompleteStep(
+    const bool did_transfer_wifi) {
+  CallExternalAPI("showSetupCompleteStep", did_transfer_wifi);
 }
 
 void QuickStartScreenHandler::SetUserEmail(const std::string email) {
@@ -111,8 +112,10 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE);
   builder->Add("quickStartSetupCompleteTitle",
                IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_TITLE);
-  builder->Add("quickStartSetupCompleteSubtitle",
-               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE);
+  builder->Add("quickStartSetupCompleteSubtitleBoth",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE_BOTH);
+  builder->Add("quickStartSetupCompleteSubtitleSignedIn",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE_SIGNED_IN);
   builder->Add("quickStartSetupFromSigninTitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE);
   builder->Add("quickStartSetupFromSigninSubtitle",

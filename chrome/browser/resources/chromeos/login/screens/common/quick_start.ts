@@ -12,10 +12,10 @@ import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/po
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import {QrCodeCanvas} from '../../components/qr_code_canvas.js';
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './quick_start.html.js';
@@ -40,13 +40,12 @@ enum UserActions {
   TURN_ON_BLUETOOTH = 'turn_on_bluetooth',
 }
 
-const QuickStartScreenBase =
-    mixinBehaviors([LoginScreenBehavior, MultiStepBehavior],
-      OobeI18nMixin(PolymerElement)) as { new (): PolymerElement
-        & LoginScreenBehaviorInterface
-        & MultiStepBehaviorInterface
-        & OobeI18nMixinInterface,
-    };
+const QuickStartScreenBase = mixinBehaviors(
+                                 [LoginScreenBehavior, MultiStepBehavior],
+                                 OobeI18nMixin(PolymerElement)) as {
+  new (): PolymerElement & LoginScreenBehaviorInterface &
+      MultiStepBehaviorInterface & OobeI18nMixinInterface,
+};
 
 export class QuickStartScreen extends QuickStartScreenBase {
   static get is() {
@@ -93,6 +92,10 @@ export class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: true,
       },
+      didTransferWiFi: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -105,6 +108,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   private canCancelSignin: boolean;
   private willRequestWiFi: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
+  private didTransferWiFi: boolean;
 
   constructor() {
     super();
@@ -149,11 +153,19 @@ export class QuickStartScreen extends QuickStartScreenBase {
     });
   }
 
-  private getSetupCompleteSubtitle(locale: string, _email: string):
-      TrustedHTML {
-    return this.i18nAdvancedDynamic(locale, 'quickStartSetupCompleteSubtitle', {
-      substitutions: [this.userEmail],
-    });
+  private getSetupCompleteSubtitle(
+      locale: string, _email: string, _didTransferWiFi: boolean): TrustedHTML {
+    if (this.didTransferWiFi) {
+      return this.i18nAdvancedDynamic(
+          locale, 'quickStartSetupCompleteSubtitleBoth', {
+            substitutions: [this.userEmail],
+          });
+    } else {
+      return this.i18nAdvancedDynamic(
+          locale, 'quickStartSetupCompleteSubtitleSignedIn', {
+            substitutions: [this.userEmail],
+          });
+    }
   }
 
   private getCanvas(): HTMLCanvasElement {
@@ -163,8 +175,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   }
 
   private getQuickStartBluetoothDialog(): OobeModalDialog {
-    const dialog = this.shadowRoot?.
-      querySelector('#quickStartBluetoothDialog');
+    const dialog = this.shadowRoot?.querySelector('#quickStartBluetoothDialog');
     assert(dialog instanceof OobeModalDialog);
     return dialog;
   }
@@ -245,7 +256,8 @@ export class QuickStartScreen extends QuickStartScreenBase {
     this.canCancelSignin = false;
   }
 
-  showSetupCompleteStep(): void {
+  showSetupCompleteStep(didTransferWiFi: boolean): void {
+    this.didTransferWiFi = didTransferWiFi;
     this.setUIStep(QuickStartUiState.SETUP_COMPLETE);
   }
 

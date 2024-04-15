@@ -170,6 +170,10 @@ class QuickStartController
   // the OOBE UpdateScreen or ConsumerUpdateScreen.
   void ResumeSessionAfterCancelledUpdate();
 
+  bool did_transfer_wifi() const {
+    return bootstrap_controller_->did_transfer_wifi();
+  }
+
  private:
   // Initializes the BootstrapController and starts to observe it.
   void InitTargetDeviceBootstrapController();

@@ -147,7 +147,7 @@ void QuickStartScreen::OnUiUpdateRequested(
       exit_callback_.Run(Result::FALLBACK_URL_ON_GAIA);
       break;
     case ash::quick_start::QuickStartController::UiState::SETUP_COMPLETE:
-      view_->ShowSetupCompleteStep();
+      view_->ShowSetupCompleteStep(controller_->did_transfer_wifi());
       break;
     case ash::quick_start::QuickStartController::UiState::CONNECTING_TO_PHONE:
       view_->ShowConnectingToPhoneStep();

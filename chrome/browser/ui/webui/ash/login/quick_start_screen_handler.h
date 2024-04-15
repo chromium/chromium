@@ -36,7 +36,7 @@ class QuickStartView {
   virtual void ShowConfirmGoogleAccount() = 0;
   virtual void ShowSigningInStep() = 0;
   virtual void ShowCreatingAccountStep() = 0;
-  virtual void ShowSetupCompleteStep() = 0;
+  virtual void ShowSetupCompleteStep(const bool did_transfer_wifi) = 0;
   virtual void SetUserEmail(const std::string email) = 0;
   virtual void SetUserFullName(const std::string full_name) = 0;
   virtual void SetUserAvatar(const std::string avatar_url) = 0;
@@ -69,7 +69,7 @@ class QuickStartScreenHandler final : public QuickStartView,
   void ShowConfirmGoogleAccount() override;
   void ShowSigningInStep() override;
   void ShowCreatingAccountStep() override;
-  void ShowSetupCompleteStep() override;
+  void ShowSetupCompleteStep(const bool did_transfer_wifi) override;
   void SetUserEmail(const std::string email) override;
   void SetUserFullName(const std::string full_name) override;
   void SetUserAvatar(const std::string avatar_url) override;
