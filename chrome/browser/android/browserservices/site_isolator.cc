@@ -15,10 +15,10 @@ using base::android::JavaParamRef;
 void JNI_SiteIsolator_StartIsolatingSite(JNIEnv* env,
                                          const JavaParamRef<jobject>& j_profile,
                                          const JavaParamRef<jobject>& j_gurl) {
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   content::SiteInstance::StartIsolatingSite(
-      content::BrowserContextFromJavaHandle(j_profile), *gurl,
+      content::BrowserContextFromJavaHandle(j_profile), gurl,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED);
 }

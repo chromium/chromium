@@ -213,7 +213,7 @@ static jboolean JNI_OfflinePageBridge_CanSavePage(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
   return OfflinePageModel::CanSaveURL(
-      *url::GURLAndroid::ToNativeGURL(env, j_url));
+      url::GURLAndroid::ToNativeGURL(env, j_url));
 }
 
 static ScopedJavaLocalRef<jobject>
@@ -467,7 +467,7 @@ void OfflinePageBridge::SelectPageForOnlineUrl(
   DCHECK(j_callback_obj);
 
   OfflinePageUtils::SelectPagesForURL(
-      key_, *url::GURLAndroid::ToNativeGURL(env, j_online_url), tab_id,
+      key_, url::GURLAndroid::ToNativeGURL(env, j_online_url), tab_id,
       base::BindOnce(&SelectPageCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback_obj)));
 }

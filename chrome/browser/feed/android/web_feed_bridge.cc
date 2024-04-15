@@ -51,12 +51,10 @@ base::CancelableTaskTracker& TaskTracker() {
 PageInformation ToNativePageInformation(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo) {
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
-      env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
 
   PageInformation result;
-  if (gurl)
-    result.url = *gurl;
+  result.url = url::GURLAndroid::ToNativeGURL(
+      env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
   TabAndroid* tab = TabAndroid::GetNativeTab(
       env, Java_WebFeedPageInformation_getTab(env, pageInfo));
   result.web_contents = tab ? tab->web_contents() : nullptr;
@@ -372,7 +370,7 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
       base::Time::Now() -
       base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
   history_service->GetDailyVisitsToHost(
-      *url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
+      url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
       std::move(callback), &TaskTracker());
 }
 

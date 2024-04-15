@@ -219,8 +219,8 @@ void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url,
     jboolean add_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  most_visited_->AddOrRemoveBlockedUrl(*url, add_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  most_visited_->AddOrRemoveBlockedUrl(url, add_url);
 }
 
 void MostVisitedSitesBridge::RecordPageImpression(
@@ -239,7 +239,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
     jint jtitle_source,
     jint jsource,
     const JavaParamRef<jobject>& jurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
   TileSource source = static_cast<TileSource>(jsource);
   TileVisualType visual_type = static_cast<TileVisualType>(jvisual_type);
@@ -247,7 +247,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
       static_cast<favicon_base::IconType>(jicon_type);
 
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
-      jindex, source, title_source, visual_type, icon_type, *url));
+      jindex, source, title_source, visual_type, icon_type, url));
 }
 
 void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(

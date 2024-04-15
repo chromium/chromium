@@ -88,12 +88,12 @@ jboolean LargeIconBridge::GetLargeIconForURL(
   favicon_base::LargeIconCallback callback_runner = base::BindOnce(
       &OnLargeIconAvailable, ScopedJavaGlobalRef<jobject>(env, j_callback));
 
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_page_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_page_url);
 
   // Use desired_size = 0 for getting the icon from the cache (so that
   // the icon is not poorly rescaled by LargeIconService).
   large_icon_service->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
-      *url, min_source_size_px, desired_source_size_px,
+      url, min_source_size_px, desired_source_size_px,
       std::move(callback_runner), &cancelable_task_tracker_);
 
   return true;
@@ -119,16 +119,14 @@ void LargeIconBridge::
     return;
   }
 
-  std::unique_ptr<GURL> page_url =
-      url::GURLAndroid::ToNativeGURL(env, j_page_url);
-  CHECK(page_url);
+  GURL page_url = url::GURLAndroid::ToNativeGURL(env, j_page_url);
   favicon_base::GoogleFaviconServerCallback callback =
       base::BindOnce(&LargeIconBridge::OnGoogleFaviconServerResponse,
                      weak_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(env, j_callback));
   large_icon_service
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-          *page_url, may_page_url_be_private, should_trim_page_url_path,
+          page_url, may_page_url_be_private, should_trim_page_url_path,
           net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
               j_network_annotation_hash_code),
           std::move(callback));
@@ -149,10 +147,8 @@ void LargeIconBridge::TouchIconFromGoogleServer(
     return;
   }
 
-  std::unique_ptr<GURL> icon_url =
-      url::GURLAndroid::ToNativeGURL(env, j_icon_url);
-  CHECK(icon_url);
-  large_icon_service->TouchIconFromGoogleServer(*icon_url);
+  GURL icon_url = url::GURLAndroid::ToNativeGURL(env, j_icon_url);
+  large_icon_service->TouchIconFromGoogleServer(icon_url);
 }
 
 void LargeIconBridge::OnGoogleFaviconServerResponse(

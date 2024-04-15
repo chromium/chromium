@@ -85,7 +85,7 @@ LongScreenshotsTabService::~LongScreenshotsTabService() {
 }
 
 void LongScreenshotsTabService::CaptureTab(int tab_id,
-                                           std::unique_ptr<GURL> url,
+                                           const GURL& url,
                                            content::WebContents* contents,
                                            int clip_x,
                                            int clip_y,
@@ -110,7 +110,7 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
       contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
                                        /*stay_awake=*/true);
   content::RenderFrameHost* rfh =
-      GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), *url);
+      GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), url);
   if (in_memory) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
                        clip_x, clip_y, clip_width, clip_height, in_memory,
@@ -270,9 +270,9 @@ void LongScreenshotsTabService::CaptureTabAndroid(
     jboolean in_memory) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
-  CaptureTab(static_cast<int>(j_tab_id), std::move(url), web_contents,
+  CaptureTab(static_cast<int>(j_tab_id), url, web_contents,
              static_cast<int>(clip_x), static_cast<int>(clip_y),
              static_cast<int>(clip_width), static_cast<int>(clip_height),
              static_cast<bool>(in_memory));

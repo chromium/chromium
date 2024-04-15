@@ -50,7 +50,7 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_Origin_CreateOpaque(
 static base::android::ScopedJavaLocalRef<jobject> JNI_Origin_CreateFromGURL(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_gurl) {
-  return Origin::Create(*GURLAndroid::ToNativeGURL(env, j_gurl)).ToJavaObject();
+  return Origin::Create(GURLAndroid::ToNativeGURL(env, j_gurl)).ToJavaObject();
 }
 
 static jlong JNI_Origin_CreateNative(JNIEnv* env,

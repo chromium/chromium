@@ -141,10 +141,10 @@ void TabGroupSyncServiceAndroid::AddTab(JNIEnv* env,
   auto group_id = FromJavaTabGroupId(j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
-  auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::optional<size_t> position =
       j_position < 0 ? std::nullopt : std::make_optional<size_t>(j_position);
-  tab_group_sync_service_->AddTab(group_id, tab_id, title, *url, position);
+  tab_group_sync_service_->AddTab(group_id, tab_id, title, url, position);
 }
 
 void TabGroupSyncServiceAndroid::UpdateTab(
@@ -158,10 +158,10 @@ void TabGroupSyncServiceAndroid::UpdateTab(
   auto group_id = FromJavaTabGroupId(j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
-  auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::optional<size_t> position =
       j_position < 0 ? std::nullopt : std::make_optional<size_t>(j_position);
-  tab_group_sync_service_->UpdateTab(group_id, tab_id, title, *url, position);
+  tab_group_sync_service_->UpdateTab(group_id, tab_id, title, url, position);
 }
 
 void TabGroupSyncServiceAndroid::RemoveTab(

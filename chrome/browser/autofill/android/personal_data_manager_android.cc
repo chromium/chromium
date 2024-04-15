@@ -150,7 +150,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       Java_CreditCard_getCardArtUrl(env, jcard);
   if (!java_card_art_url.is_null()) {
     card->set_card_art_url(
-        *url::GURLAndroid::ToNativeGURL(env, java_card_art_url));
+        url::GURLAndroid::ToNativeGURL(env, java_card_art_url));
   }
   // Only set the guid if it is an existing card (java guid not empty).
   // Otherwise, keep the generated one.
@@ -614,7 +614,7 @@ BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
       Java_PaymentInstrument_getDisplayIconUrl(env, jbank_account);
   GURL display_icon_url = GURL();
   if (!jdisplay_icon_url.is_null()) {
-    display_icon_url = *url::GURLAndroid::ToNativeGURL(env, jdisplay_icon_url);
+    display_icon_url = url::GURLAndroid::ToNativeGURL(env, jdisplay_icon_url);
   }
   const ScopedJavaLocalRef<jstring>& jbank_name =
       Java_BankAccount_getBankName(env, jbank_account);

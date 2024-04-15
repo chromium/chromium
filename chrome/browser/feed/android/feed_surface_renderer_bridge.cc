@@ -241,9 +241,9 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
   if (!feed_api) {
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_api->ReportOpenAction(
-      url ? *url : GURL(), FromJavaSurfaceId(surface_id),
+      url, FromJavaSurfaceId(surface_id),
       base::android::ConvertJavaStringToUTF8(env, slice_id),
       static_cast<OpenActionType>(action_type));
 }
@@ -268,11 +268,11 @@ static void JNI_FeedSurfaceRendererBridge_UpdateUserProfileOnLinkClick(
   if (!feed_api) {
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::vector<int64_t> entities_mids_vector;
   base::android::JavaLongArrayToInt64Vector(env, entity_mids,
                                             &entities_mids_vector);
-  feed_api->UpdateUserProfileOnLinkClick(*url, entities_mids_vector);
+  feed_api->UpdateUserProfileOnLinkClick(url, entities_mids_vector);
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportSliceViewed(

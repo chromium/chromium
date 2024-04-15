@@ -90,7 +90,7 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
     jint min_source_size_in_pixel,
     jint desired_size_in_pixel,
     const base::android::JavaParamRef<jobject>& on_favicon_fetched_callback) {
-  GURL url = *(url::GURLAndroid::ToNativeGURL(env, j_url));
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   FaviconFetcher* faviconFetcher =
       new FaviconFetcher(LargeIconServiceFactory::GetForBrowserContext(

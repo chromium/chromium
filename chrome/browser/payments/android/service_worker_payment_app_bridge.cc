@@ -157,7 +157,5 @@ JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
   // invoked app inside
   // ChromePaymentRequestService::openPaymentHandlerWindowInternal.
   return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
-      url::GURLAndroid::ToNativeGURL(env, jscope)
-          .get()
-          ->DeprecatedGetOriginAsURL());
+      url::GURLAndroid::ToNativeGURL(env, jscope).DeprecatedGetOriginAsURL());
 }

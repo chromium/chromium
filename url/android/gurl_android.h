@@ -5,24 +5,20 @@
 #ifndef URL_ANDROID_GURL_ANDROID_H_
 #define URL_ANDROID_GURL_ANDROID_H_
 
-#include <memory>
-
-#include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/gurl.h"
 
 namespace url {
 
 class COMPONENT_EXPORT(URL) GURLAndroid {
  public:
-  static std::unique_ptr<GURL> ToNativeGURL(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_gurl);
-  static base::android::ScopedJavaLocalRef<jobject> FromNativeGURL(
-      JNIEnv* env,
-      const GURL& gurl);
-  static base::android::ScopedJavaLocalRef<jobject> EmptyGURL(JNIEnv* env);
+  static GURL ToNativeGURL(JNIEnv* env,
+                           const jni_zero::JavaRef<jobject>& j_gurl);
+  static jni_zero::ScopedJavaLocalRef<jobject> FromNativeGURL(JNIEnv* env,
+                                                              const GURL& gurl);
+  static jni_zero::ScopedJavaLocalRef<jobject> EmptyGURL(JNIEnv* env);
 };
 
 }  // namespace url

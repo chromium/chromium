@@ -144,9 +144,9 @@ TemplateUrlServiceAndroid::IsSearchResultsPageFromDefaultSearchProvider(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   return template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
-      *url);
+      url);
 }
 
 bool TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle() {
@@ -212,7 +212,7 @@ TemplateUrlServiceAndroid::GetSearchQueryForUrl(
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
 
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
 
   std::u16string query;
 
@@ -220,9 +220,9 @@ TemplateUrlServiceAndroid::GetSearchQueryForUrl(
       default_provider->url_ref().SupportsReplacement(
           template_url_service_->search_terms_data()) &&
       template_url_service_->IsSearchResultsPageFromDefaultSearchProvider(
-          *url)) {
+          url)) {
     default_provider->ExtractSearchTermsFromURL(
-        *url, template_url_service_->search_terms_data(), &query);
+        url, template_url_service_->search_terms_data(), &query);
   }
 
   return base::android::ConvertUTF16ToJavaString(env, query);

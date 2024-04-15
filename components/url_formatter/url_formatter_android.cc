@@ -100,10 +100,10 @@ static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForSecurityDisplay(
     const JavaParamRef<jobject>& j_gurl,
     jint scheme_display) {
   DCHECK(j_gurl);
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               *gurl, static_cast<SchemeDisplay>(scheme_display)));
+               gurl, static_cast<SchemeDisplay>(scheme_display)));
 }
 
 static ScopedJavaLocalRef<jstring>
@@ -136,10 +136,10 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_gurl) {
   DCHECK(j_gurl);
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-               *gurl));
+               gurl));
 }
 
 }  // namespace android

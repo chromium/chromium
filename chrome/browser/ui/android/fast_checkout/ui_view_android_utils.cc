@@ -218,7 +218,7 @@ std::unique_ptr<autofill::CreditCard> CreateFastCheckoutCreditCardFromJava(
       Java_FastCheckoutCreditCard_getCardArtUrl(env, jcredit_card);
   if (!jcard_art_url.is_null()) {
     credit_card->set_card_art_url(
-        *url::GURLAndroid::ToNativeGURL(env, jcard_art_url));
+        url::GURLAndroid::ToNativeGURL(env, jcard_art_url));
   }
   credit_card->set_virtual_card_enrollment_state(
       static_cast<autofill::CreditCard::VirtualCardEnrollmentState>(

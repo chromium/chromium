@@ -53,7 +53,7 @@ void ShoppingServiceAndroid::GetProductInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetProductInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleProductInfoCallback,
@@ -68,7 +68,7 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
     const JavaParamRef<jobject>& j_gurl) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   std::optional<ProductInfo> info =
       shopping_service_->GetAvailableProductInfoForUrl(url);
@@ -121,7 +121,7 @@ void ShoppingServiceAndroid::GetMerchantInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetMerchantInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleMerchantInfoCallback,
@@ -155,7 +155,7 @@ void ShoppingServiceAndroid::GetPriceInsightsInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetPriceInsightsInfoForUrl(
       url,

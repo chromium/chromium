@@ -252,7 +252,8 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
           initiating_origin ? initiating_origin->ToJavaObject() : nullptr);
   if (j_gurl.is_null())
     return;
-  subframe_redirect_url_ = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  subframe_redirect_url_ =
+      std::make_unique<GURL>(url::GURLAndroid::ToNativeGURL(env, j_gurl));
 
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
       out_factory->InitWithNewPipeAndPassReceiver();
@@ -304,7 +305,9 @@ void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
   // subframe_redirect_url_ no longer empty indicates the async action has been
   // taken.
   subframe_redirect_url_ =
-      j_gurl.is_null() ? nullptr : url::GURLAndroid::ToNativeGURL(env, j_gurl);
+      j_gurl.is_null()
+          ? nullptr
+          : std::make_unique<GURL>(url::GURLAndroid::ToNativeGURL(env, j_gurl));
   MaybeHandleSubframeAction();
 }
 

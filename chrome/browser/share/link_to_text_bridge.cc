@@ -29,15 +29,15 @@ ukm::SourceId GetSourceId(
 static jboolean JNI_LinkToTextBridge_ShouldOfferLinkToText(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return shared_highlighting::ShouldOfferLinkToText(*url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return shared_highlighting::ShouldOfferLinkToText(url);
 }
 
 static jboolean JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return shared_highlighting::SupportsLinkGenerationInIframe(*url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return shared_highlighting::SupportsLinkGenerationInIframe(url);
 }
 
 static void JNI_LinkToTextBridge_LogFailureMetrics(

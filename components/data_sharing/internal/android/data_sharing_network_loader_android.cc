@@ -48,7 +48,7 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
     OnResponseAvailable(ScopedJavaGlobalRef<jobject>(j_callback), nullptr);
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::vector<std::string> scopes;
   if (j_scopes) {
     base::android::AppendJavaStringArrayToStringVector(env, j_scopes, &scopes);
@@ -57,7 +57,7 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
   base::android::JavaByteArrayToString(env, j_post_data, &post_body);
 
   data_sharing_network_loader_->LoadUrl(
-      *url, scopes, post_body,
+      url, scopes, post_body,
       net::NetworkTrafficAnnotationTag::FromJavaAnnotation(
           j_network_annotation_hash_code),
       base::BindOnce(&DataSharingNetworkLoaderAndroid::OnResponseAvailable,

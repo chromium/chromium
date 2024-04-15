@@ -186,7 +186,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
   DCHECK(j_key);
   const std::string& key = ConvertJavaStringToUTF8(env, j_key);
   std::string out;
-  if (!net::GetValueForKeyInQuery(*url::GURLAndroid::ToNativeGURL(env, j_url),
+  if (!net::GetValueForKeyInQuery(url::GURLAndroid::ToNativeGURL(env, j_url),
                                   key, &out)) {
     return ScopedJavaLocalRef<jstring>();
   }
@@ -196,11 +196,11 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
 ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_url);
   GURL::Replacements remove_port;
   remove_port.ClearPort();
   return url::GURLAndroid::FromNativeGURL(env,
-                                          gurl->ReplaceComponents(remove_port));
+                                          gurl.ReplaceComponents(remove_port));
 }
 
 }  // namespace embedder_support

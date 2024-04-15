@@ -43,11 +43,11 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   auto* service = AboutThisSiteServiceFactory::GetForProfile(profile);
   if (!service)
     return nullptr;
-  auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   auto* web_contents = content::WebContents::FromJavaWebContents(j_webContents);
   auto source_id = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto* tab_helper = AboutThisSiteTabHelper::FromWebContents(web_contents);
-  auto info = service->GetAboutThisSiteInfo(*url, source_id, tab_helper);
+  auto info = service->GetAboutThisSiteInfo(url, source_id, tab_helper);
   if (!info)
     return nullptr;
 

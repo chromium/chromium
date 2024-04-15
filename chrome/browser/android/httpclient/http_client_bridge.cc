@@ -55,8 +55,8 @@ void HttpClientBridge::SendNetworkRequest(
     const base::android::JavaParamRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(j_gurl);
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
-  DCHECK(gurl->is_valid());
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  DCHECK(gurl.is_valid());
   std::vector<uint8_t> request_body;
   base::android::JavaByteArrayToByteVector(env, j_body, &request_body);
   std::vector<std::string> header_keys;
@@ -73,8 +73,7 @@ void HttpClientBridge::SendNetworkRequest(
       &HttpClientBridge::OnResult, weak_ptr_factory_.GetWeakPtr(),
       ScopedJavaGlobalRef<jobject>(env, j_callback));
 
-  http_client_->Send(*std::move(gurl),
-                     ConvertJavaStringToUTF8(env, j_request_type),
+  http_client_->Send(gurl, ConvertJavaStringToUTF8(env, j_request_type),
                      std::move(request_body), std::move(header_keys),
                      std::move(header_values), tag, std::move(callback));
 }

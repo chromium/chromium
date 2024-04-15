@@ -69,7 +69,7 @@ class LongScreenshotsTabService
   // clip_height: How wide of a capture relative to clip_y.
   // in_memory: Use in memory capture mode.
   void CaptureTab(int tab_id,
-                  std::unique_ptr<GURL> url,
+                  const GURL& url,
                   content::WebContents* contents,
                   int clip_x,
                   int clip_y,

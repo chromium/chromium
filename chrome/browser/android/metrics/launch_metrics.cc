@@ -86,10 +86,9 @@ static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(
     jboolean show_home_button,
     jboolean homepage_is_ntp,
     const JavaParamRef<jobject>& jhomepage_gurl) {
-  std::unique_ptr<GURL> homepage_gurl =
-      url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
+  GURL homepage_gurl = url::GURLAndroid::ToNativeGURL(env, jhomepage_gurl);
   PrefMetricsService::RecordHomePageLaunchMetrics(
-      show_home_button, homepage_is_ntp, *homepage_gurl);
+      show_home_button, homepage_is_ntp, homepage_gurl);
 }
 
 }  // namespace metrics

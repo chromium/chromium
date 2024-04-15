@@ -4,8 +4,6 @@
 
 #include "url/android/gurl_android.h"
 
-#include <jni.h>
-
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -20,10 +18,10 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_jni_headers/GURL_jni.h"
 
-using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::AttachCurrentThread;
+using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero {
 
@@ -31,7 +29,7 @@ namespace jni_zero {
 template <>
 COMPONENT_EXPORT(URL)
 GURL FromJniType<GURL>(JNIEnv* env, const JavaRef<jobject>& j_gurl) {
-  return *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  return url::GURLAndroid::ToNativeGURL(env, j_gurl);
 }
 
 // Convert from native GURL object to a GURL.java object pointer.
@@ -72,15 +70,13 @@ size_t SafeGetArrayLength(JNIEnv* env, const JavaRef<JavaArrayType>& jarray) {
 }  // namespace
 
 // static
-std::unique_ptr<GURL> GURLAndroid::ToNativeGURL(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_gurl) {
+GURL GURLAndroid::ToNativeGURL(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& j_gurl) {
   GURL ret;
   Parsed parsed;
   Java_GURL_toNativeGURL(env, j_gurl, reinterpret_cast<jlong>(&ret),
                          reinterpret_cast<jlong>(&parsed));
-  // TODO(agrieve): Return GURL rather than unique_ptr<GURL>.
-  return std::make_unique<GURL>(ret);
+  return ret;
 }
 
 // static

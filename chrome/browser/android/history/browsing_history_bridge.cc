@@ -156,7 +156,7 @@ void BrowsingHistoryBridge::MarkItemForRemoval(
     const JavaParamRef<jstring>& j_app_id,
     const JavaParamRef<jlongArray>& j_native_timestamps) {
   BrowsingHistoryService::HistoryEntry entry;
-  entry.url = *url::GURLAndroid::ToNativeGURL(env, j_url);
+  entry.url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   std::vector<int64_t> timestamps;
   base::android::JavaLongArrayToInt64Vector(env, j_native_timestamps,

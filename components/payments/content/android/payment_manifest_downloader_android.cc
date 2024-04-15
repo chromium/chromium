@@ -90,7 +90,7 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadPaymentMethodManifest(
       url::Origin::FromJavaObject(jmerchant_origin),
-      *url::GURLAndroid::ToNativeGURL(env, jurl),
+      url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnPaymentMethodManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }
@@ -103,7 +103,7 @@ void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadWebAppManifest(
       url::Origin::FromJavaObject(jpayment_method_manifest_origin),
-      *url::GURLAndroid::ToNativeGURL(env, jurl),
+      url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnWebAppManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }

@@ -313,8 +313,8 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 void TabContentManager::InvalidateIfChanged(JNIEnv* env,
                                             jint tab_id,
                                             const JavaParamRef<jobject>& jurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
-  thumbnail_cache_->InvalidateThumbnailIfChanged(tab_id, *url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  thumbnail_cache_->InvalidateThumbnailIfChanged(tab_id, url);
 }
 
 void TabContentManager::UpdateVisibleIds(

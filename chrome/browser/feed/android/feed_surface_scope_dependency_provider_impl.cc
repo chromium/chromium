@@ -58,15 +58,14 @@ static void JNI_FeedSurfaceScopeDependencyProviderImpl_FetchResource(
   if (!feed_stream_api) {
     return;
   }
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::vector<std::string> header_name_and_values;
   base::android::AppendJavaStringArrayToStringVector(
       env, j_header_name_and_values, &header_name_and_values);
   std::string post_data;
   base::android::JavaByteArrayToString(env, j_post_data, &post_data);
   feed_stream_api->FetchResource(
-      url ? *url : GURL(),
-      base::android::ConvertJavaStringToUTF8(env, j_method),
+      url, base::android::ConvertJavaStringToUTF8(env, j_method),
       header_name_and_values, post_data,
       base::BindOnce(
           &OnFetchResourceFinished, env,

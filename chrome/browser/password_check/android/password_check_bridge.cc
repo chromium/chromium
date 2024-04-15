@@ -32,7 +32,7 @@ password_manager::CredentialUIEntry ConvertJavaObjectToCredential(
   // instead.
   GURL url = facet.IsValidAndroidFacetURI()
                  ? GURL(signon_realm)
-                 : *url::GURLAndroid::ToNativeGURL(
+                 : url::GURLAndroid::ToNativeGURL(
                        env, Java_CompromisedCredential_getAssociatedUrl(
                                 env, credential));
   password_manager::CredentialUIEntry entry;

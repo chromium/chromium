@@ -214,9 +214,8 @@ std::u16string TabAndroid::GetTitle() const {
 
 GURL TabAndroid::GetURL() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
+  return url::GURLAndroid::ToNativeGURL(
       env, Java_TabImpl_getUrl(env, weak_java_tab_.get(env)));
-  return std::move(*gurl);
 }
 
 bool TabAndroid::IsUserInteractable() const {
@@ -521,8 +520,8 @@ base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
 static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
     JNIEnv* env,
     const JavaParamRef<jobject>& jurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
-  return HandleNonNavigationAboutURL(*url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  return HandleNonNavigationAboutURL(url);
 }
 
 static void JNI_TabImpl_Init(JNIEnv* env,

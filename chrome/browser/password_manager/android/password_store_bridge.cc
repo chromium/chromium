@@ -27,7 +27,7 @@ PasswordForm ConvertJavaObjectToPasswordForm(
     const base::android::JavaParamRef<jobject>& credential) {
   PasswordForm form;
 
-  form.url = *url::GURLAndroid::ToNativeGURL(
+  form.url = url::GURLAndroid::ToNativeGURL(
       env, Java_PasswordStoreCredential_getUrl(env, credential));
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = base::android::ConvertJavaStringToUTF16(

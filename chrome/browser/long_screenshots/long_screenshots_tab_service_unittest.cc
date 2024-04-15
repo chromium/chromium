@@ -149,8 +149,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTab) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
-                      1000, 1000, false);
+  service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
+                      1000, false);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -184,8 +184,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
-                      1000, 1000, true);
+  service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
+                      1000, true);
   task_environment()->RunUntilIdle();
 
   // No file should have been created.
@@ -210,8 +210,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
-                      1000, 1000, false);
+  service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
+                      1000, false);
 
   task_environment()->RunUntilIdle();
   auto file_manager = service->GetFileMixin()->GetFileManager();
@@ -239,8 +239,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabTwice) {
   recorder.SetResponse(
       paint_preview::mojom::PaintPreviewStatus::kOk,
       paint_preview::mojom::PaintPreviewCaptureResponse::New());
-  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 1000,
-                      1000, 2000, 2000, false);
+  service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 1000, 1000,
+                      2000, 2000, false);
   task_environment()->RunUntilIdle();
 
   service->GetFileMixin()->GetTaskRunner()->PostTaskAndReplyWithResult(
@@ -287,8 +287,8 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabFailed) {
   OverrideInterface(&recorder);
 
   auto* service = GetService();
-  service->CaptureTab(kTabId, std::make_unique<GURL>(), web_contents(), 0, 0,
-                      1000, 1000, false);
+  service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
+                      1000, false);
   task_environment()->RunUntilIdle();
 
   auto file_manager = service->GetFileMixin()->GetFileManager();

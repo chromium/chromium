@@ -21,16 +21,16 @@ using ::base::android::JavaParamRef;
 jboolean JNI_OriginSecurityChecker_IsOriginSecure(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return url->is_valid() && network::IsUrlPotentiallyTrustworthy(*url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return url.is_valid() && network::IsUrlPotentiallyTrustworthy(url);
 }
 
 // static
 jboolean JNI_OriginSecurityChecker_IsSchemeCryptographic(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return url->is_valid() && url->SchemeIsCryptographic();
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return url.is_valid() && url.SchemeIsCryptographic();
 }
 
 }  // namespace payments

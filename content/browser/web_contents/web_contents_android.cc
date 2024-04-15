@@ -771,7 +771,7 @@ int WebContentsAndroid::DownloadImage(
     const base::android::JavaParamRef<jobject>& jcallback) {
   const gfx::Size preferred_size;
   return web_contents_->DownloadImage(
-      *url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
+      url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
       max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsAndroid::OnFinishDownloadImage,
                      weak_factory_.GetWeakPtr(), obj_,

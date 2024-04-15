@@ -135,7 +135,7 @@ void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
     const base::android::JavaParamRef<jstring>& jcontent,
     const base::android::JavaParamRef<jobject>& jcallback) {
   parser_.ParsePaymentMethodManifest(
-      *url::GURLAndroid::ToNativeGURL(env, jmanifest_url),
+      url::GURLAndroid::ToNativeGURL(env, jmanifest_url),
       base::android::ConvertJavaStringToUTF8(env, jcontent),
       base::BindOnce(&ParseCallback::OnPaymentMethodManifestParsed,
                      std::make_unique<ParseCallback>(jcallback)));
