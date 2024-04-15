@@ -404,6 +404,22 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
   }
 }
 
+void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
+    BrowserAccessibility* node,
+    const std::string& announcement,
+    const std::string& notification_id,
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    ax::mojom::AriaNotificationPriority priority_property) {
+  DCHECK(node);
+
+  auto* wcax = GetWebContentsAXFromRootManager();
+  if (!wcax) {
+    return;
+  }
+
+  wcax->AnnounceLiveRegionText(base::UTF8ToUTF16(announcement));
+}
+
 void BrowserAccessibilityManagerAndroid::SendLocationChangeEvents(
     const std::vector<blink::mojom::LocationChangesPtr>& changes) {
   // Android is not very efficient at handling notifications, and location
