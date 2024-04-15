@@ -67,6 +67,7 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              id<RefreshAccessTokenError> error,
+                             bool display,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
 };
@@ -192,6 +193,7 @@ void ChromiumSystemIdentityManager::FetchCapabilities(
 bool ChromiumSystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error,
+    bool display,
     HandleMDMCallback callback) {
   NOTREACHED();
   return false;
