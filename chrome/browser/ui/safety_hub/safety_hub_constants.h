@@ -45,9 +45,6 @@ enum class SafetyHubCardState {
 
 // Smallest time duration between two subsequent password checks.
 extern const base::TimeDelta kMinTimeBetweenPasswordChecks;
-// When the password check didn't run at its scheduled time (e.g. client was
-// offline) it will be scheduled to run within this time frame.
-extern const base::TimeDelta kPasswordCheckOverdueTimeWindow;
 
 // An enum of the different Safety Hub modules that are available. This should
 // be updated whenever a notification for a new module is added to or removed
