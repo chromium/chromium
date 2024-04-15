@@ -721,13 +721,8 @@ void SharedImageInterfaceInProcess::DestroySharedImage(
     const SyncToken& sync_token,
     scoped_refptr<ClientSharedImage> client_shared_image) {
   CHECK(client_shared_image->HasOneRef());
-  // Use sync token dependency to ensure that the destroy task does not run
-  // before sync token is released.
-  ScheduleGpuTask(
-      base::BindOnce(
-          &SharedImageInterfaceInProcess::DestroyClientSharedImageOnGpuThread,
-          base::Unretained(this), std::move(client_shared_image)),
-      {sync_token});
+  client_shared_image->UpdateDestructionSyncToken(sync_token);
+  client_shared_image->MarkForDestruction();
 }
 
 void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(

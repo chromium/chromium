@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/command_buffer/client/client_shared_image.h"
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -108,6 +110,10 @@ uint32_t ComputeTextureTargetForSharedImage(
 BASE_FEATURE(kUseUniversalGetTextureTargetFunction,
              "UseUniversalGetTextureTargetFunction",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDestroySharedImageAutomatically,
+             "DestroySharedImageAutomatically",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
@@ -254,7 +260,22 @@ ClientSharedImage::ClientSharedImage(
       metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
 }
 
-ClientSharedImage::~ClientSharedImage() = default;
+ClientSharedImage::~ClientSharedImage() {
+  if (!HasHolder()) {
+    if (marked_for_destruction_) {
+      CHECK_IS_TEST();
+    }
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kDestroySharedImageAutomatically) ||
+      marked_for_destruction_) {
+    auto sii = sii_holder_->Get();
+    if (sii) {
+      sii->DestroySharedImage(destruction_sync_token_, mailbox_);
+    }
+  }
+}
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
   auto scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get());

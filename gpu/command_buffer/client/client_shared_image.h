@@ -29,6 +29,11 @@ class ClientSharedImageInterface;
 // through to ClientSharedImage::GetTextureTarget() under the hood.
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseUniversalGetTextureTargetFunction);
 
+// Controls whether SharedImageInterface::DestroySharedImage() should be called
+// in ClientSharedImage's destructor if the shared image has not been marked
+// for destruction.
+GPU_EXPORT BASE_DECLARE_FEATURE(kDestroySharedImageAutomatically);
+
 struct ExportedSharedImage;
 
 class GPU_EXPORT ClientSharedImage

@@ -323,7 +323,8 @@ void TestSharedImageInterface::DestroySharedImage(
     const gpu::SyncToken& sync_token,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
   CHECK(client_shared_image->HasOneRef());
-  DestroySharedImage(sync_token, client_shared_image->mailbox());
+  client_shared_image->UpdateDestructionSyncToken(sync_token);
+  client_shared_image->MarkForDestruction();
 }
 
 gpu::SharedImageInterface::SwapChainSharedImages
