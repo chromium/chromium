@@ -1017,7 +1017,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
 
   // Verify the root is as we expect by default.
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
-  EXPECT_EQ(1, root->GetId());
+  EXPECT_EQ(ui::kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
 
@@ -1043,9 +1043,8 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   event_bundle.updates[0].nodes.push_back(tree1_2);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
 
-  // The root should have been cleared,not replaced, because in the former case
-  // this could cause multiple focus and load complete events.
-  EXPECT_EQ(root, manager->GetBrowserAccessibilityRoot());
+  // The root for the initial empty document is replaced.
+  root = manager->GetBrowserAccessibilityRoot();
 
   BrowserAccessibility* acc1_2 = manager->GetFromID(2);
   EXPECT_EQ(ax::mojom::Role::kTextField, acc1_2->GetRole());
@@ -1099,7 +1098,7 @@ TEST_F(BrowserAccessibilityWinTest, EmptyDocHasUniqueIdWin) {
 
   // Verify the root is as we expect by default.
   BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
-  EXPECT_EQ(1, root->GetId());
+  EXPECT_EQ(ui::kInitialEmptyDocumentRootNodeID, root->GetId());
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->GetRole());
   EXPECT_EQ(ax::mojom::State::kNone, root->GetState());
 

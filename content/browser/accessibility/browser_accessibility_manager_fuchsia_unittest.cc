@@ -175,7 +175,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
               static_cast<uint32_t>(node_1->GetFuchsiaNodeID()));
 
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
-    EXPECT_TRUE(node_deletions.empty());
+    // The initial empty document root is the only node that was deleted.
+    EXPECT_EQ(node_deletions.size(), 1u);
   }
 
   // Send another update for node 1, and verify that it was passed to the
@@ -228,7 +229,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   // Verify that no deletions were received.
   {
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
-    EXPECT_TRUE(node_deletions.empty());
+    // Only the initial empty document root has been deleted.
+    EXPECT_EQ(node_deletions.size(), 1u);
   }
 
   // Get the fuchsia IDs for nodes 1 and 2 before they are deleted.
@@ -251,8 +253,9 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   // Verify that the accessibility bridge received a deletion for node 2.
   {
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
-    ASSERT_EQ(node_deletions.size(), 1u);
-    EXPECT_EQ(node_deletions[0], static_cast<uint32_t>(node_2_fuchsia_id));
+    // The initial empty document root has also been deleted, ignore that.
+    ASSERT_EQ(node_deletions.size(), 2u);
+    EXPECT_EQ(node_deletions[1], static_cast<uint32_t>(node_2_fuchsia_id));
   }
 
   // Destroy manager. Doing so should force the remainder of the tree to be
@@ -262,8 +265,10 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   // Verify that the accessibility bridge received a deletion for node 1.
   {
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
-    ASSERT_EQ(node_deletions.size(), 2u);
-    EXPECT_EQ(node_deletions[1], node_1_fuchsia_id);
+    // The initial empty document root has also been deleted, ignore that as
+    // well as the previous node that had been deleted.
+    ASSERT_EQ(node_deletions.size(), 3u);
+    EXPECT_EQ(node_deletions[2], node_1_fuchsia_id);
   }
 }
 

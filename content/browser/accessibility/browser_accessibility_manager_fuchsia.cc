@@ -107,7 +107,7 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(ui::AXNode* node) {
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = 1;
+  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   empty_document.AddBoolAttribute(ax::mojom::BoolAttribute::kBusy, true);
   ui::AXTreeUpdate update;
