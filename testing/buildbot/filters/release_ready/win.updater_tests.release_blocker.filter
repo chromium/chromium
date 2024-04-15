@@ -435,10 +435,8 @@ TaskSchedulerTests.SetTaskEnabled
 TaskSchedulerTests.StartTask
 TagSwitchTestCases/TagSwitchTest.Prefers_And_TagPrefers/0
 TagSwitchTestCases/TagSwitchTest.Prefers_And_TagPrefers/1
-TagSwitchTestCases/TagSwitchTest.Prefers_And_TagPrefers/2
 TagSwitchTestCases/TagSwitchTest.TagPrefers/0
 TagSwitchTestCases/TagSwitchTest.TagPrefers/1
-TagSwitchTestCases/TagSwitchTest.TagPrefers/2
 UnitTestUtil.DeleteFileAndEmptyParentDirectories
 UnitTestUtil.FindProcesses
 UnitTestUtil.GetTestName
@@ -492,10 +490,8 @@ Util.StreamEnumValue
 Util.WriteInstallerDataToTempFile
 UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/0
 UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/1
-UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/2
 UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/0
 UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/1
-UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/2
 UtilTest.CommandLineForLegacyFormat
 UtilTest.CommandLineForLegacyFormat_Mixed
 UtilTest.CommandLineForLegacyFormat_WithArgs

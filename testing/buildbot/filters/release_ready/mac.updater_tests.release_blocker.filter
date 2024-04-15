@@ -258,10 +258,8 @@ Util.StreamEnumValue
 Util.WriteInstallerDataToTempFile
 UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/0
 UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/1
-UtilTagArgsTestCases/UtilTagArgsTest.AppArgsAndAP/2
 UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/0
 UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/1
-UtilTagArgsTestCases/UtilTagArgsTest.GetTagArgsForCommandLine/2
 UtilTest.ConfirmFilePermissionsTest
 UtilTest.CopyDir
 UtilTest.CopyDirPermissions
