@@ -674,6 +674,7 @@ class OrderfileGenerator:
     return_code = self._step_recorder.RunCommand(cmd, raise_on_error=False)
     if return_code:
       self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
+    return return_code == 0
 
   def _RecordHash(self, file_name):
     """Records the hash of the file into the output_data dictionary."""
@@ -987,8 +988,10 @@ class OrderfileGenerator:
       self._PatchOrderfile()
       self._compiler.CompileLibchrome(instrumented=False,
                                       force_relink=True)
-      self._VerifySymbolOrder()
-      self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
+      if self._VerifySymbolOrder():
+        self._MaybeArchiveOrderfile(self._GetPathToOrderfile())
+      else:
+        self._SaveForDebugging(self._GetPathToOrderfile())
 
     if self._options.benchmark:
       self._output_data['orderfile_benchmark_results'] = self.RunBenchmark(
