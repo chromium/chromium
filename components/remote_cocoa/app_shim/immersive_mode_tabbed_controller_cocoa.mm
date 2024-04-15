@@ -7,15 +7,8 @@
 #include "base/apple/foundation_util.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_forward.h"
+#import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
-
-// Access the private view that backs the toolbar.
-// TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in AppKit.
-@interface NSToolbar (ToolbarView)
-// The current usage of this property is readonly. Mark it as such here so we
-// don't invite other usages without a thoughtful change.
-@property(readonly) NSView* _toolbarView;
-@end
 
 namespace remote_cocoa {
 
@@ -210,8 +203,7 @@ void ImmersiveModeTabbedControllerCocoa::TitlebarReveal() {
   // and re-add the tab controller so its view is z-order above the toolbar
   // view. See http://crbug/40283902 for details.
   // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in AppKit.
-  if ([toolbar respondsToSelector:@selector(_toolbarView)]) {
-    NSView* toolbar_view = toolbar._toolbarView;
+  if (NSView* toolbar_view = toolbar.privateToolbarView) {
     [toolbar_view.superview addSubview:toolbar_view
                             positioned:NSWindowBelow
                             relativeTo:nil];

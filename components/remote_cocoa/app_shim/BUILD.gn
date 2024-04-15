@@ -17,6 +17,8 @@ component("app_shim") {
 
   configs += [ ":app_shim_warnings" ]
   sources = [
+    "NSToolbar+Private.h",
+    "NSToolbar+Private.mm",
     "alert.h",
     "alert.mm",
     "application_bridge.h",

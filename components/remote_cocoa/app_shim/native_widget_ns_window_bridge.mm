@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#import "components/remote_cocoa/app_shim/NSToolbar+Private.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #import "components/remote_cocoa/app_shim/context_menu_runner.h"
@@ -762,6 +763,17 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     pending_restoration_data_.clear();
 
     session_restore_in_progress = true;
+
+    // During an immersive fullscreen restore the key view loop can become
+    // corrupted. In certain situation this can cause an infinite loop when
+    // looking for the next valid key view, leading to an OOM. Recalculate the
+    // loop after the restore to prevent this. See https://crbug.com/324812653
+    // for details.
+    // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in
+    // AppKit.
+    if ([window_ immersiveFullscreen]) {
+      [window_ recalculateKeyViewLoop];
+    }
   }
 
   // Ensure that:
