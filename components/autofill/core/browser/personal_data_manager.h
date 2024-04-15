@@ -420,11 +420,6 @@ class PersonalDataManager : public KeyedService,
   raw_ptr<PrefService> pref_service_ = nullptr;
 
  private:
-  // Sets (or resets) the Sync service, which may not have started yet
-  // but its preferences can already be queried. Can also be a nullptr
-  // if it is disabled by CLI.
-  void SetSyncService(syncer::SyncService* sync_service);
-
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
 
@@ -448,9 +443,6 @@ class PersonalDataManager : public KeyedService,
 
   // The identity manager that this instance uses. Must outlive this instance.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
-
-  // The sync service this instances uses. Must outlive this instance.
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

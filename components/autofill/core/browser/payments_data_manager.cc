@@ -299,6 +299,7 @@ PaymentsDataManager::PaymentsDataManager(
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
   }
+  OnStateChanged(sync_service_);
   if (identity_manager_) {
     identity_observer_.Observe(identity_manager_);
   }
@@ -1857,6 +1858,7 @@ void PaymentsDataManager::SetSyncServiceForTest(
   if (sync_service_) {
     sync_observer_.Observe(sync_service_);
   }
+  OnStateChanged(sync_service_);
 }
 
 void PaymentsDataManager::AddMaskedBankAccountForTest(

@@ -109,8 +109,6 @@ void PersonalDataManager::Init(
   if (history_service_)
     history_service_observation_.Observe(history_service_.get());
 
-  SetSyncService(sync_service);
-
   AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
 
   // WebDataService may not be available in tests.
@@ -133,7 +131,6 @@ void PersonalDataManager::Init(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  sync_service_ = nullptr;
   identity_manager_ = nullptr;
 
   if (history_service_)
@@ -244,10 +241,8 @@ bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
 
 void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
-  sync_service_ = nullptr;
   address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
   payments_data_manager_->SetSyncServiceForTest(sync_service);  // IN-TEST
-  SetSyncService(sync_service);
 }
 
 void PersonalDataManager::RemoveByGUID(const std::string& guid) {
@@ -373,20 +368,6 @@ bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 void PersonalDataManager::SetCreditCards(
     std::vector<CreditCard>* credit_cards) {
   payments_data_manager_->SetCreditCards(credit_cards);
-}
-
-void PersonalDataManager::SetSyncService(syncer::SyncService* sync_service) {
-  CHECK(!sync_service_);
-
-  sync_service_ = sync_service;
-  // `address_data_manager_` and `payments_data_manager_` were already
-  // initialised with the correct `sync_service` (`SetSyncService()` is only
-  // called a single time during construction).
-
-  // TODO(crbug.com/1497734): This call is believed no longer necessary here for
-  // production (as we no longer re-mask cards in this method), but tests may
-  // depend on it still. Investigate and remove if possible.
-  payments_data_manager_->OnStateChanged(sync_service_);
 }
 
 void PersonalDataManager::NotifyPersonalDataObserver() {
