@@ -227,7 +227,8 @@ class PrintscanmgrClientImpl : public PrintscanmgrClient {
     std::move(callback).Run(response);
   }
 
-  raw_ptr<dbus::ObjectProxy> printscanmgr_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> printscanmgr_proxy_ =
+      nullptr;
   base::WeakPtrFactory<PrintscanmgrClientImpl> weak_ptr_factory_{this};
 };
 

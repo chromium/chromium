@@ -158,7 +158,7 @@ class ChapsClientImpl : public ChapsClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> proxy_ = nullptr;
   base::WeakPtrFactory<ChapsClientImpl> weak_factory_{this};
 };
 
