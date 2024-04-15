@@ -30,7 +30,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
 
-  const auto buttons = delegate_ptr->GetButtons();
+  const int buttons = delegate_ptr->GetButtons();
   const auto create_button = [&](ConfirmInfoBarDelegate::InfoBarButton type,
                                  void (ConfirmInfoBar::*click_function)()) {
     auto* button = AddChildView(std::make_unique<views::MdTextButton>(
