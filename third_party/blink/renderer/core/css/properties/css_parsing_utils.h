@@ -167,11 +167,18 @@ StringView ConsumeUrlAsStringView(CSSParserTokenRange&,
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
                                   const CSSParserContext&);
 
+// Some properties accept non-standard colors, like rgb values without a
+// preceding hash, in quirks mode.
+CORE_EXPORT CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenRange&,
+                                              const CSSParserContext&);
+
+// https://drafts.csswg.org/css-color-5/#typedef-color
 CORE_EXPORT CSSValue* ConsumeColor(CSSParserTokenRange&,
-                                   const CSSParserContext&,
-                                   bool accept_quirky_colors = false,
-                                   AllowedColorKeywords allowed_keywords =
-                                       AllowedColorKeywords::kAllowSystemColor);
+                                   const CSSParserContext&);
+
+// https://drafts.csswg.org/css-color-5/#absolute-color
+CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenRange&,
+                                           const CSSParserContext&);
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange&,
                            const CSSParserContext&,

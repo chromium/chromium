@@ -42,9 +42,7 @@ CSSValue* ConsumeColorOverride(CSSParserTokenRange& range,
       return nullptr;
     }
     range.ConsumeWhitespace();
-    CSSValue* color = css_parsing_utils::ConsumeColor(
-        range, context, false,
-        css_parsing_utils::AllowedColorKeywords::kNoSystemColor);
+    CSSValue* color = css_parsing_utils::ConsumeAbsoluteColor(range, context);
     if (!color) {
       return nullptr;
     }

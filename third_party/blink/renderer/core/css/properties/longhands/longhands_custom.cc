@@ -852,8 +852,7 @@ const CSSValue* BackgroundColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const blink::Color BackgroundColor::ColorIncludingFallback(
@@ -1961,8 +1960,7 @@ const CSSValue* ClipRule::CSSValueFromComputedStyleInternal(
 const CSSValue* Color::ParseSingleValue(CSSParserTokenRange& range,
                                         const CSSParserContext& context,
                                         const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const blink::Color Color::ColorIncludingFallback(bool visited_link,
@@ -4113,8 +4111,7 @@ const CSSValue* InternalVisitedColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const CSSValue* GridAutoColumns::ParseSingleValue(
@@ -4696,8 +4693,7 @@ const CSSValue* InternalVisitedBackgroundColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const blink::Color InternalVisitedBorderLeftColor::ColorIncludingFallback(
@@ -5086,8 +5082,7 @@ const CSSValue* InternalForcedBackgroundColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const blink::Color InternalForcedBorderColor::ColorIncludingFallback(
@@ -5118,8 +5113,7 @@ const CSSValue* InternalForcedBorderColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 void InternalForcedColor::ApplyInitial(StyleResolverState& state) const {
@@ -5174,8 +5168,7 @@ const CSSValue* InternalForcedColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const blink::Color InternalForcedOutlineColor::ColorIncludingFallback(
@@ -5206,8 +5199,7 @@ const CSSValue* InternalForcedOutlineColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 void InternalForcedVisitedColor::ApplyInitial(StyleResolverState& state) const {
@@ -5252,8 +5244,7 @@ const CSSValue* InternalForcedVisitedColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  return css_parsing_utils::ConsumeColor(range, context,
-                                         IsQuirksModeBehavior(context.Mode()));
+  return css_parsing_utils::ConsumeColorMaybeQuirky(range, context);
 }
 
 const CSSValue* Isolation::CSSValueFromComputedStyleInternal(

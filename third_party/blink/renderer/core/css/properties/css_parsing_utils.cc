@@ -807,23 +807,20 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenRange& range,
   return filter_value;
 }
 
-template <typename Func, typename... Args>
+template <typename Func>
 CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
                                         CSSParserTokenRange& range,
-                                        const CSSParserContext& context,
-                                        Args&&... args) {
+                                        const CSSParserContext& context) {
   if (range.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
-  CSSValue* light_value =
-      consume_value(arg_range, context, std::forward<Args>(args)...);
+  CSSValue* light_value = consume_value(arg_range, context);
   if (!light_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
     return nullptr;
   }
-  CSSValue* dark_value =
-      consume_value(arg_range, context, std::forward<Args>(args)...);
+  CSSValue* dark_value = consume_value(arg_range, context);
   if (!dark_value || !arg_range.AtEnd()) {
     return nullptr;
   }
@@ -833,22 +830,18 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
 
 CSSAppearanceAutoBaseSelectValuePair* ConsumeAppearanceAutoBaseSelectColor(
     CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    bool accept_quirky_colors,
-    AllowedColorKeywords allowed_color_keywords) {
+    const CSSParserContext& context) {
   if (range.Peek().FunctionId() !=
       CSSValueID::kInternalAppearanceAutoBaseSelect) {
     return nullptr;
   }
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange arg_range = ConsumeFunction(range_copy);
-  CSSValue* auto_value = ConsumeColor(arg_range, context, accept_quirky_colors,
-                                      allowed_color_keywords);
+  CSSValue* auto_value = ConsumeColor(arg_range, context);
   if (!auto_value || !ConsumeCommaIncludingWhitespace(arg_range)) {
     return nullptr;
   }
-  CSSValue* base_select_value = ConsumeColor(
-      arg_range, context, accept_quirky_colors, allowed_color_keywords);
+  CSSValue* base_select_value = ConsumeColor(arg_range, context);
   if (!base_select_value || !arg_range.AtEnd()) {
     return nullptr;
   }
@@ -1766,13 +1759,12 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSValue* color1 =
-      ConsumeColor(args, context, false /* Accept quirky colors */);
+  CSSValue* color1 = ConsumeColor(args, context);
   CSSPrimitiveValue* p1 =
       ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
   // Color can come after the percentage
   if (!color1) {
-    color1 = ConsumeColor(args, context, false /* Accept quirky colors */);
+    color1 = ConsumeColor(args, context);
     if (!color1) {
       return nullptr;
     }
@@ -1787,13 +1779,12 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSValue* color2 =
-      ConsumeColor(args, context, false /* Accept quirky colors */);
+  CSSValue* color2 = ConsumeColor(args, context);
   CSSPrimitiveValue* p2 =
       ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
   // Color can come after the percentage
   if (!color2) {
-    color2 = ConsumeColor(args, context, false /* Accept quirky colors */);
+    color2 = ConsumeColor(args, context);
     if (!color2) {
       return nullptr;
     }
@@ -2003,12 +1994,10 @@ bool SystemAccentColorAllowed(const CSSParserContext& context) {
   return true;
 }
 
-}  // namespace
-
-CSSValue* ConsumeColor(CSSParserTokenRange& range,
-                       const CSSParserContext& context,
-                       bool accept_quirky_colors,
-                       AllowedColorKeywords allowed_keywords) {
+CSSValue* ConsumeColorInternal(CSSParserTokenRange& range,
+                               const CSSParserContext& context,
+                               bool accept_quirky_colors,
+                               AllowedColorKeywords allowed_keywords) {
   if (RuntimeEnabledFeatures::CSSColorContrastEnabled() &&
       range.Peek().FunctionId() == CSSValueID::kColorContrast) {
     return ConsumeColorContrast(range, context);
@@ -2052,19 +2041,37 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
       IsUASheetBehavior(context.Mode())) {
     if (CSSAppearanceAutoBaseSelectValuePair* auto_base_select_pair =
-            ConsumeAppearanceAutoBaseSelectColor(range, context,
-                                                 /*accept_quirky_colors=*/false,
-                                                 allowed_keywords)) {
+            ConsumeAppearanceAutoBaseSelectColor(range, context)) {
       return auto_base_select_pair;
     }
   }
 
   if (IsUASheetBehavior(context.Mode()) ||
       RuntimeEnabledFeatures::CSSLightDarkColorsEnabled()) {
-    return ConsumeLightDark(ConsumeColor, range, context,
-                            false /* accept_quirky_colors */, allowed_keywords);
+    return ConsumeLightDark(ConsumeColor, range, context);
   }
   return nullptr;
+}
+
+}  // namespace
+
+CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenRange& range,
+                                  const CSSParserContext& context) {
+  return ConsumeColorInternal(range, context,
+                              IsQuirksModeBehavior(context.Mode()),
+                              AllowedColorKeywords::kAllowSystemColor);
+}
+
+CSSValue* ConsumeColor(CSSParserTokenRange& range,
+                       const CSSParserContext& context) {
+  return ConsumeColorInternal(range, context, false /* accept_quirky_colors */,
+                              AllowedColorKeywords::kAllowSystemColor);
+}
+
+CSSValue* ConsumeAbsoluteColor(CSSParserTokenRange& range,
+                               const CSSParserContext& context) {
+  return ConsumeColorInternal(range, context, false /* accept_quirky_colors */,
+                              AllowedColorKeywords::kNoSystemColor);
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,
@@ -7020,11 +7027,10 @@ CSSValue* ConsumeBorderColorSide(CSSParserTokenRange& range,
       range.Peek().FunctionId() ==
           CSSValueID::kInternalAppearanceAutoBaseSelect &&
       IsUASheetBehavior(context.Mode())) {
-    return ConsumeAppearanceAutoBaseSelectColor(
-        range, context, allow_quirky_colors,
-        AllowedColorKeywords::kAllowSystemColor);
+    return ConsumeAppearanceAutoBaseSelectColor(range, context);
   }
-  return ConsumeColor(range, context, allow_quirky_colors);
+  return ConsumeColorInternal(range, context, allow_quirky_colors,
+                              AllowedColorKeywords::kAllowSystemColor);
 }
 
 CSSValue* ConsumeBorderWidth(CSSParserTokenRange& range,
