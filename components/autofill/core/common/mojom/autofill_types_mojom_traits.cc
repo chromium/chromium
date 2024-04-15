@@ -167,88 +167,202 @@ bool StructTraits<
     autofill::mojom::FormFieldDataDataView,
     autofill::FormFieldData>::Read(autofill::mojom::FormFieldDataDataView data,
                                    autofill::FormFieldData* out) {
-  if (!data.ReadLabel(&out->label))
-    return false;
-  if (!data.ReadName(&out->name))
-    return false;
-  if (!data.ReadIdAttribute(&out->id_attribute))
-    return false;
-  if (!data.ReadNameAttribute(&out->name_attribute))
-    return false;
-  std::u16string value;
-  if (!data.ReadValue(&value)) {
-    return false;
+  {
+    std::u16string label;
+    if (!data.ReadLabel(&label)) {
+      return false;
+    }
+    out->label = std::move(label);
   }
-  out->set_value(std::move(value));
-  if (!data.ReadSelectedText(&out->selected_text)) {
-    return false;
+  {
+    std::u16string name;
+    if (!data.ReadName(&name)) {
+      return false;
+    }
+    out->name = std::move(name);
+  }
+  {
+    std::u16string id_attribute;
+    if (!data.ReadIdAttribute(&id_attribute)) {
+      return false;
+    }
+    out->id_attribute = std::move(id_attribute);
+  }
+  {
+    std::u16string name_attribute;
+    if (!data.ReadNameAttribute(&name_attribute)) {
+      return false;
+    }
+    out->name_attribute = std::move(name_attribute);
+  }
+  {
+    std::u16string value;
+    if (!data.ReadValue(&value)) {
+      return false;
+    }
+    out->set_value(std::move(value));
+  }
+  {
+    std::u16string selected_text;
+    if (!data.ReadSelectedText(&selected_text)) {
+      return false;
+    }
+    out->selected_text = std::move(selected_text);
   }
 
-  if (!data.ReadFormControlType(&out->form_control_type))
-    return false;
-  if (!data.ReadAutocompleteAttribute(&out->autocomplete_attribute))
-    return false;
-  if (!data.ReadParsedAutocomplete(&out->parsed_autocomplete))
-    return false;
+  {
+    autofill::FormControlType form_control_type;
+    if (!data.ReadFormControlType(&form_control_type)) {
+      return false;
+    }
+    out->form_control_type = std::move(form_control_type);
+  }
+  {
+    std::string autocomplete_attribute;
+    if (!data.ReadAutocompleteAttribute(&autocomplete_attribute)) {
+      return false;
+    }
+    out->autocomplete_attribute = std::move(autocomplete_attribute);
+  }
+  {
+    std::optional<autofill::AutocompleteParsingResult> parsed_autocomplete;
+    if (!data.ReadParsedAutocomplete(&parsed_autocomplete)) {
+      return false;
+    }
+    out->parsed_autocomplete = std::move(parsed_autocomplete);
+  }
 
-  if (!data.ReadPlaceholder(&out->placeholder))
-    return false;
+  {
+    std::u16string placeholder;
+    if (!data.ReadPlaceholder(&placeholder)) {
+      return false;
+    }
+    out->placeholder = std::move(placeholder);
+  }
 
-  if (!data.ReadCssClasses(&out->css_classes))
-    return false;
+  {
+    std::u16string css_classes;
+    if (!data.ReadCssClasses(&css_classes)) {
+      return false;
+    }
+    out->css_classes = std::move(css_classes);
+  }
 
-  if (!data.ReadAriaLabel(&out->aria_label))
-    return false;
+  {
+    std::u16string aria_label;
+    if (!data.ReadAriaLabel(&aria_label)) {
+      return false;
+    }
+    out->aria_label = std::move(aria_label);
+  }
 
-  if (!data.ReadAriaDescription(&out->aria_description))
-    return false;
+  {
+    std::u16string aria_description;
+    if (!data.ReadAriaDescription(&aria_description)) {
+      return false;
+    }
+    out->aria_description = std::move(aria_description);
+  }
 
-  if (!data.ReadSection(&out->section))
-    return false;
+  {
+    autofill::Section section;
+    if (!data.ReadSection(&section)) {
+      return false;
+    }
+    out->section = std::move(section);
+  }
 
   out->properties_mask = data.properties_mask();
 
-  if (!data.ReadRendererId(&out->renderer_id)) {
-    return false;
+  {
+    autofill::FieldRendererId renderer_id;
+    if (!data.ReadRendererId(&renderer_id)) {
+      return false;
+    }
+    out->renderer_id = std::move(renderer_id);
   }
 
-  if (!data.ReadHostFormId(&out->host_form_id))
-    return false;
+  {
+    autofill::FormRendererId host_form_id;
+    if (!data.ReadHostFormId(&host_form_id)) {
+      return false;
+    }
+    out->host_form_id = std::move(host_form_id);
+  }
 
   out->form_control_ax_id = data.form_control_ax_id();
   out->max_length = data.max_length();
   out->is_user_edited = data.is_user_edited();
   out->is_autofilled = data.is_autofilled();
 
-  if (!data.ReadCheckStatus(&out->check_status))
-    return false;
+  {
+    autofill::FormFieldData::CheckStatus check_status;
+    if (!data.ReadCheckStatus(&check_status)) {
+      return false;
+    }
+    out->check_status = std::move(check_status);
+  }
 
   out->is_focusable = data.is_focusable();
   out->is_visible = data.is_visible();
   out->should_autocomplete = data.should_autocomplete();
 
-  if (!data.ReadRole(&out->role))
-    return false;
+  {
+    autofill::FormFieldData::RoleAttribute role;
+    if (!data.ReadRole(&role)) {
+      return false;
+    }
+    out->role = std::move(role);
+  }
 
-  if (!data.ReadTextDirection(&out->text_direction))
-    return false;
+  {
+    base::i18n::TextDirection text_direction;
+    if (!data.ReadTextDirection(&text_direction)) {
+      return false;
+    }
+    out->text_direction = std::move(text_direction);
+  }
 
   out->is_enabled = data.is_enabled();
   out->is_readonly = data.is_readonly();
-  if (!data.ReadUserInput(&out->user_input))
-    return false;
+  {
+    std::u16string user_input;
+    if (!data.ReadUserInput(&user_input)) {
+      return false;
+    }
+    out->user_input = std::move(user_input);
+  }
 
-  if (!data.ReadOptions(&out->options))
-    return false;
+  {
+    std::vector<autofill::SelectOption> options;
+    if (!data.ReadOptions(&options)) {
+      return false;
+    }
+    out->options = std::move(options);
+  }
 
-  if (!data.ReadLabelSource(&out->label_source))
-    return false;
+  {
+    autofill::FormFieldData::LabelSource label_source;
+    if (!data.ReadLabelSource(&label_source)) {
+      return false;
+    }
+    out->label_source = std::move(label_source);
+  }
 
-  if (!data.ReadBounds(&out->bounds))
-    return false;
+  {
+    gfx::RectF bounds;
+    if (!data.ReadBounds(&bounds)) {
+      return false;
+    }
+    out->bounds = std::move(bounds);
+  }
 
-  if (!data.ReadDatalistOptions(&out->datalist_options)) {
-    return false;
+  {
+    std::vector<autofill::SelectOption> datalist_options;
+    if (!data.ReadDatalistOptions(&datalist_options)) {
+      return false;
+    }
+    out->datalist_options = std::move(datalist_options);
   }
 
   out->force_override = data.force_override();

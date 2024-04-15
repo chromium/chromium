@@ -94,16 +94,24 @@ bool ReadAsInt(base::PickleIterator* iter, T* target_value) {
 bool DeserializeSection1(base::PickleIterator* iter,
                          FormFieldData* field_data) {
   std::string form_control_type;
+  std::u16string label;
+  std::u16string name;
   std::u16string value;
-  bool success = iter->ReadString16(&field_data->label) &&
-                 iter->ReadString16(&field_data->name) &&
-                 iter->ReadString16(&value) &&
-                 iter->ReadString(&form_control_type) &&
-                 iter->ReadString(&field_data->autocomplete_attribute) &&
-                 iter->ReadUInt64(&field_data->max_length) &&
-                 iter->ReadBool(&field_data->is_autofilled);
+  std::string autocomplete_attribute;
+  uint64_t max_length = 0;
+  bool is_autofilled = false;
+  bool success =
+      iter->ReadString16(&label) && iter->ReadString16(&name) &&
+      iter->ReadString16(&value) && iter->ReadString(&form_control_type) &&
+      iter->ReadString(&autocomplete_attribute) &&
+      iter->ReadUInt64(&max_length) && iter->ReadBool(&is_autofilled);
   if (success) {
+    field_data->label = std::move(label);
+    field_data->name = std::move(name);
     field_data->set_value(std::move(value));
+    field_data->autocomplete_attribute = std::move(autocomplete_attribute);
+    field_data->max_length = max_length;
+    field_data->is_autofilled = std::move(is_autofilled);
     // Form control types are serialized as strings for legacy reasons.
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
@@ -129,25 +137,39 @@ bool DeserializeSection5(base::PickleIterator* iter,
 
 bool DeserializeSection6(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return ReadAsInt(iter, &field_data->check_status);
+  FormFieldData::CheckStatus check_status =
+      FormFieldData::CheckStatus::kNotCheckable;
+  if (!ReadAsInt(iter, &check_status)) {
+    return false;
+  }
+  field_data->check_status = check_status;
+  return true;
 }
 
 bool DeserializeSection7(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadBool(&field_data->is_focusable) &&
-         iter->ReadBool(&field_data->should_autocomplete);
+  bool is_focusable = false;
+  bool should_autocomplete = false;
+  if (!iter->ReadBool(&is_focusable) || !iter->ReadBool(&should_autocomplete)) {
+    return false;
+  }
+  field_data->is_focusable = std::move(is_focusable);
+  field_data->should_autocomplete = std::move(should_autocomplete);
+  return true;
 }
 
 bool DeserializeSection3(base::PickleIterator* iter,
                          FormFieldData* field_data) {
   std::vector<std::u16string> option_values;
   std::vector<std::u16string> option_contents;
-  if (!ReadAsInt(iter, &field_data->text_direction) ||
+  base::i18n::TextDirection text_direction = base::i18n::UNKNOWN_DIRECTION;
+  if (!ReadAsInt(iter, &text_direction) ||
       !ReadStringVector(iter, &option_values) ||
       !ReadStringVector(iter, &option_contents) ||
       option_values.size() != option_contents.size()) {
     return false;
   }
+  field_data->text_direction = text_direction;
   for (size_t i = 0; i < option_values.size(); ++i) {
     field_data->options.push_back({.value = std::move(option_values[i]),
                                    .content = std::move(option_contents[i])});
@@ -157,38 +179,75 @@ bool DeserializeSection3(base::PickleIterator* iter,
 
 bool DeserializeSection12(base::PickleIterator* iter,
                           FormFieldData* field_data) {
-  return ReadAsInt(iter, &field_data->text_direction) &&
-         ReadSelectOptionVector(iter, &field_data->options);
+  base::i18n::TextDirection text_direction;
+  std::vector<SelectOption> options;
+  if (!ReadAsInt(iter, &text_direction) ||
+      !ReadSelectOptionVector(iter, &options)) {
+    return false;
+  }
+  field_data->text_direction = std::move(text_direction);
+  field_data->options = std::move(options);
+  return true;
 }
 
 bool DeserializeSection2(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return ReadAsInt(iter, &field_data->role);
+  FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
+  if (!ReadAsInt(iter, &role)) {
+    return false;
+  }
+  field_data->role = role;
+  return true;
 }
 
 bool DeserializeSection4(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->placeholder);
+  std::u16string placeholder;
+  if (!iter->ReadString16(&placeholder)) {
+    return false;
+  }
+  field_data->placeholder = std::move(placeholder);
+  return true;
 }
 
 bool DeserializeSection8(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->css_classes);
+  std::u16string css_classes;
+  if (!iter->ReadString16(&css_classes)) {
+    return false;
+  }
+  field_data->css_classes = std::move(css_classes);
+  return true;
 }
 
 bool DeserializeSection9(base::PickleIterator* iter,
                          FormFieldData* field_data) {
-  return iter->ReadUInt32(&field_data->properties_mask);
+  FieldPropertiesMask properties_mask;
+  if (!iter->ReadUInt32(&properties_mask)) {
+    return false;
+  }
+  field_data->properties_mask = std::move(properties_mask);
+  return true;
 }
 
 bool DeserializeSection10(base::PickleIterator* iter,
                           FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->id_attribute);
+  std::u16string id_attribute;
+  if (!iter->ReadString16(&id_attribute)) {
+    return false;
+  }
+  field_data->id_attribute = std::move(id_attribute);
+  return true;
 }
 
 bool DeserializeSection11(base::PickleIterator* iter,
                           FormFieldData* field_data) {
-  return iter->ReadString16(&field_data->name_attribute);
+  std::u16string name_attribute;
+  if (!iter->ReadString16(&name_attribute)) {
+    return false;
+  }
+  field_data->name_attribute = std::move(name_attribute);
+  return true;
 }
 
 auto IdentityTuple(const FormFieldData& f) {

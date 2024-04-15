@@ -2023,8 +2023,9 @@ void WebFormControlElementToFormField(
     DCHECK(IsSelectOrSelectListElement(element));
     WebVector<WebElement> element_list_items =
         GetListItemsForSelectOrSelectList(element);
-    FilterOptionElementsAndGetOptionStrings(element_list_items,
-                                            &field->options);
+    std::vector<SelectOption> options;
+    FilterOptionElementsAndGetOptionStrings(element_list_items, &options);
+    field->options = std::move(options);
   }
   if (extract_options.contains(ExtractOption::kBounds)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
@@ -2037,7 +2038,9 @@ void WebFormControlElementToFormField(
   if (extract_options.contains(ExtractOption::kDatalist)) {
     if (WebInputElement input = element.DynamicTo<WebInputElement>();
         !input.IsNull()) {
-      GetDataListSuggestions(input, &field->datalist_options);
+      std::vector<SelectOption> datalist_options;
+      GetDataListSuggestions(input, &datalist_options);
+      field->datalist_options = std::move(datalist_options);
     }
   }
 
