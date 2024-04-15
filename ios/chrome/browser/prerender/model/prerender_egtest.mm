@@ -422,7 +422,9 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey waitForMainTabCount:3];
 }
 
-- (void)testOpenTabInTabStripBeforePrerenderedTab {
+// TODO(crbug.com/334874066): This test is flaky on ios-tests and
+// ios-dcheck-tests.
+- (void)DISABLED_testOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
