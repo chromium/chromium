@@ -420,16 +420,14 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
       return true;
 
     case kShareThisTabInstead:
-      DCHECK(share_this_tab_instead_button_);
-      return share_this_tab_instead_button_->IsEnabled();
+      return share_this_tab_instead_button_ &&
+             share_this_tab_instead_button_->IsEnabled();
 
     case kQuickNav:
-      DCHECK(quick_nav_button_);
-      return quick_nav_button_->IsEnabled();
+      return quick_nav_button_ && quick_nav_button_->IsEnabled();
 
     case kCapturedSurfaceControlIndicator:
-      DCHECK(csc_indicator_button_);
-      return csc_indicator_button_->IsEnabled();
+      return csc_indicator_button_ && csc_indicator_button_->IsEnabled();
   }
   NOTREACHED_NORETURN();
 }

@@ -163,7 +163,20 @@
     await controller.sendWheel(action);
     return logAndReturn("send-wheel-resolved");
   }
-  </script>
+
+  async function setZoomLevel(zoomLevel) {
+    try {
+      await controller.setZoomLevel(zoomLevel);
+    } catch (e) {
+      return logAndReturn("set-zoom-level-error");
+    }
+    return logAndReturn("set-zoom-level-resolved");
+  }
+
+  function getZoomLevel() {
+    return controller.getZoomLevel();
+  }
+</script>
 </head>
 <body>
   <table border="0">
