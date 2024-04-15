@@ -6,7 +6,6 @@
 import json
 import logging
 import os
-import re
 import signal
 import shutil
 import subprocess
@@ -131,8 +130,7 @@ def _get_daemon_status():
         run_ffx_command(cmd=('daemon', 'socket'),
                         check=True,
                         capture_output=True,
-                        json_out=True,
-                        suppress_repair=True).stdout.strip())
+                        json_out=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
 
@@ -166,28 +164,6 @@ def _wait_for_daemon(start=True, timeout_seconds=100):
     raise TimeoutError(f'Daemon did not {wanted_status} in time.')
 
 
-def _run_repair_command(output):
-    """Scans |output| for a self-repair command to run and, if found, runs it.
-
-    Returns:
-      True if a repair command was found and ran successfully. False otherwise.
-    """
-    # Check for a string along the lines of:
-    # "Run `ffx doctor --restart-daemon` for further diagnostics."
-    match = re.search('`ffx ([^`]+)`', output)
-    if not match or len(match.groups()) != 1:
-        return False  # No repair command found.
-    args = match.groups()[0].split()
-
-    try:
-        run_ffx_command(cmd=args, suppress_repair=True)
-        # Need the daemon to be up at the end of this.
-        _wait_for_daemon(start=True)
-    except subprocess.CalledProcessError:
-        return False  # Repair failed.
-    return True  # Repair succeeded.
-
-
 # The following two functions are the temporary work around before
 # https://fxbug.dev/92296 and https://fxbug.dev/125873 are being fixed.
 def start_ffx_daemon():
@@ -212,28 +188,18 @@ def stop_ffx_daemon():
     _wait_for_daemon(start=False)
 
 
-def run_ffx_command(suppress_repair: bool = False,
-                    check: bool = True,
+def run_ffx_command(check: bool = True,
                     capture_output: Optional[bool] = None,
                     timeout: Optional[int] = None,
                     **kwargs) -> subprocess.CompletedProcess:
     """Runs `ffx` with the given arguments, waiting for it to exit.
 
-    If `ffx` exits with a non-zero exit code, the output is scanned for a
-    recommended repair command (e.g., "Run `ffx doctor --restart-daemon` for
-    further diagnostics."). If such a command is found, it is run and then the
-    original command is retried. This behavior can be suppressed via the
-    `suppress_repair` argument.
-
     **
-    Except for `suppress_repair`, the arguments below are named after
-    |subprocess.run| arguments. They are overloaded to avoid them from being
-    forwarded to |subprocess.Popen|.
+    The arguments below are named after |subprocess.run| arguments. They are
+    overloaded to avoid them from being forwarded to |subprocess.Popen|.
     **
     See run_continuous_ffx_command for additional arguments.
     Args:
-        suppress_repair: If True, do not attempt to find and run a repair
-            command.
         check: If True, CalledProcessError is raised if ffx returns a non-zero
             exit code.
         capture_output: Whether to capture both stdout/stderr.
@@ -244,10 +210,7 @@ def run_ffx_command(suppress_repair: bool = False,
     Raises:
         CalledProcessError if |check| is true.
     """
-    # Always capture output when:
-    # - Repair does not need to be suppressed
-    # - capture_output is Truthy
-    if capture_output or not suppress_repair:
+    if capture_output:
         kwargs['stdout'] = subprocess.PIPE
         kwargs['stderr'] = subprocess.PIPE
     proc = None
@@ -264,27 +227,14 @@ def run_ffx_command(suppress_repair: bool = False,
             completed_proc.check_returncode()
         return completed_proc
     except subprocess.CalledProcessError as cpe:
-        if proc is None:
-            raise
         logging.error('%s %s failed with returncode %s.',
                       os.path.relpath(_FFX_TOOL),
                       subprocess.list2cmdline(proc.args[1:]), cpe.returncode)
-        if cpe.stdout or cpe.stderr:
-            logging.error(
-                'stdout of the command: %s, stderr or the command: %s',
-                cpe.stdout, cpe.stderr)
-        if suppress_repair or (
-            (cpe.stdout and not _run_repair_command(cpe.stdout)) and
-            (cpe.stderr and not _run_repair_command(cpe.stderr))):
-            raise
-
-    # If the original command failed but a repair command was found and
-    # succeeded, try one more time with the original command.
-    return run_ffx_command(suppress_repair=True,
-                           check=check,
-                           capture_output=capture_output,
-                           timeout=timeout,
-                           **kwargs)
+        if cpe.stdout:
+            logging.error('stdout of the command: %s', cpe.stdout)
+        if cpe.stderr:
+            logging.error('stderr or the command: %s', cpe.stderr)
+        raise
 
 
 def run_continuous_ffx_command(cmd: Iterable[str],
@@ -480,16 +430,24 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
         Tuple of strings, containing {product, version number), or a pair of
         empty strings to indicate an error.
     """
-    info_cmd = run_ffx_command(cmd=('target', 'show', '--json'),
+    info_cmd = run_ffx_command(cmd=('--machine', 'json', 'target', 'show'),
                                target_id=target,
                                capture_output=True,
                                check=False)
-    if info_cmd.returncode == 0:
-        info_json = json.loads(info_cmd.stdout.strip())
-        for info in info_json:
-            if info['title'] == 'Build':
-                return (info['child'][1]['value'], info['child'][0]['value'])
-
     # If the information was not retrieved, return empty strings to indicate
     # unknown system info.
+    if info_cmd.returncode != 0:
+        logging.error('ffx target show returns %d', info_cmd.returncode)
+        return ('', '')
+    try:
+        info_json = json.loads(info_cmd.stdout.strip())
+    except json.decoder.JSONDecodeError as error:
+        logging.error('Unexpected json string: %s, exception: %s',
+                      info_cmd.stdout, error)
+        return ('', '')
+    if isinstance(info_json, dict) and 'build' in info_json and isinstance(
+            info_json['build'], dict):
+        # Use default empty string to avoid returning None.
+        return (info_json['build'].get('product', ''),
+                info_json['build'].get('version', ''))
     return ('', '')
