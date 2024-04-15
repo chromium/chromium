@@ -35,6 +35,8 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
 
   base::RepeatingCallback<MaybeResponse(const network::ResourceRequest&)>
   GetCallback() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     return base::BindRepeating(
         [](base::WeakPtr<FakeSecurityDomainServiceImpl> impl,
            const network::ResourceRequest& request) -> MaybeResponse {
@@ -49,10 +51,14 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   }
 
   void pretend_there_are_members() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     pretend_there_are_members_ = true;
   }
 
   size_t num_physical_members() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     return base::ranges::count_if(members_, [](const auto& member) -> bool {
       return member.member_type() == trusted_vault_pb::SecurityDomainMember::
                                          MEMBER_TYPE_PHYSICAL_DEVICE;
@@ -60,6 +66,8 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   }
 
   size_t num_pin_members() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     return base::ranges::count_if(members_, [](const auto& member) -> bool {
       return member.member_type() ==
              trusted_vault_pb::SecurityDomainMember::
@@ -67,8 +75,16 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     });
   }
 
+  base::span<const trusted_vault_pb::SecurityDomainMember> members()
+      const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return members_;
+  }
+
  private:
   MaybeResponse OnRequest(const network::ResourceRequest& request) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     if (!request.url.has_host() || !request.url.has_path() ||
         request.url.host_piece() != "securitydomain-pa.googleapis.com") {
       return std::nullopt;
@@ -143,6 +159,11 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
         members_.erase(existing_pin);
       }
     }
+
+    auto* membership =
+        proto_request.mutable_security_domain_member()->add_memberships();
+    membership->set_security_domain(proto_request.security_domain().name());
+    *membership->mutable_keys() = proto_request.shared_member_key();
 
     members_.push_back(proto_request.security_domain_member());
 

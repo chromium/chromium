@@ -9,11 +9,16 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "net/http/http_status_code.h"
 
 namespace network {
 struct ResourceRequest;
+}
+
+namespace trusted_vault_pb {
+class SecurityDomainMember;
 }
 
 // A fake implementation of the Security Domain Service (SDS) for passkeys
@@ -47,6 +52,8 @@ class FakeSecurityDomainService {
 
   virtual size_t num_physical_members() const = 0;
   virtual size_t num_pin_members() const = 0;
+  virtual base::span<const trusted_vault_pb::SecurityDomainMember> members()
+      const = 0;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_FAKE_SECURITY_DOMAIN_SERVICE_H_

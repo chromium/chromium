@@ -220,12 +220,6 @@ class EnclaveManager : public KeyedService {
   // Release the cached HW and UV key references.
   void ClearCachedKeysForTesting();
 
-  // These methods get internal URLs so that tests can reply when they're
-  // fetched.
-  static std::string_view recovery_key_store_url_for_testing();
-  static std::string_view recovery_key_store_cert_url_for_testing();
-  static std::string_view recovery_key_store_sig_url_for_testing();
-
   // Create a wrapped PIN, suitable for putting into a simulated security domain
   // member.
   static std::string MakeWrappedPINForTesting(

@@ -102,19 +102,8 @@ constexpr char kUserVerifyingKeyKeychainAccessGroup[] =
     MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING ".webauthn-uvk";
 #endif  // BUILDFLAG(IS_MAC)
 
-// These URLs distribute the public keys for the recovery key store.
-constexpr char kCertFileURL[] =
-    "https://www.gstatic.com/cryptauthvault/v0/cert.xml";
-constexpr char kSigFileURL[] =
-    "https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml";
-
 // The maximum number of bytes that will be downloaded from the above two URLs.
 constexpr size_t kMaxFetchBodyBytes = 128 * 1024;
-
-// This URL is used for uploading to the recovery key store. The "name"
-// parameter isn't used by Vault and so is a constant "0".
-constexpr char kRecoveryKeyStoreURL[] =
-    "https://cryptauthvault.googleapis.com/v1/vaults/0";
 
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("recovery_key_store_fetch", R"(
@@ -1555,11 +1544,13 @@ class EnclaveManager::StateMachine {
     wrapped_pin_proto_ = hashed_pin_->ToWrappedPIN(generation);
 
     cert_xml_loader_ = FetchURL(
-        manager_->url_loader_factory_.get(), kCertFileURL,
+        manager_->url_loader_factory_.get(),
+        device::enclave::kRecoveryKeyStoreCertFileURL,
         base::BindOnce(&StateMachine::FetchComplete,
                        weak_ptr_factory_.GetWeakPtr(), FetchedFile::kCertFile));
     sig_xml_loader_ = FetchURL(
-        manager_->url_loader_factory_.get(), kSigFileURL,
+        manager_->url_loader_factory_.get(),
+        device::enclave::kRecoveryKeyStoreSigFileURL,
         base::BindOnce(&StateMachine::FetchComplete,
                        weak_ptr_factory_.GetWeakPtr(), FetchedFile::kSigFile));
     state_ = State::kDownloadingRecoveryKeyStoreKeys;
@@ -1726,7 +1717,7 @@ class EnclaveManager::StateMachine {
 
     std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
     auto request = std::make_unique<network::ResourceRequest>();
-    GURL base_url(kRecoveryKeyStoreURL);
+    GURL base_url(device::enclave::kRecoveryKeyStoreURL);
     request->url = net::AppendQueryParameter(base_url, "alt", "proto");
     request->method = "PATCH";
     request->headers.SetHeader("Authorization",
@@ -2632,21 +2623,6 @@ EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
 void EnclaveManager::ClearCachedKeysForTesting() {
   user_verifying_key_ = nullptr;
   hardware_key_ = nullptr;
-}
-
-// static
-std::string_view EnclaveManager::recovery_key_store_url_for_testing() {
-  return kRecoveryKeyStoreURL;
-}
-
-// static
-std::string_view EnclaveManager::recovery_key_store_cert_url_for_testing() {
-  return kCertFileURL;
-}
-
-// static
-std::string_view EnclaveManager::recovery_key_store_sig_url_for_testing() {
-  return kSigFileURL;
 }
 
 // static

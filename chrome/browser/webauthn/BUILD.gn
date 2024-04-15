@@ -7,6 +7,10 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "fake_magic_arch.cc",
+      "fake_magic_arch.h",
+      "fake_recovery_key_store.cc",
+      "fake_recovery_key_store.h",
       "fake_security_domain_service.cc",
       "fake_security_domain_service.h",
       "test_util.cc",
@@ -15,6 +19,7 @@ if (!is_android) {
 
     deps = [
       "//base",
+      "//components/trusted_vault",
       "//components/trusted_vault/proto:proto",
       "//device/fido:fido",
       "//net:net",

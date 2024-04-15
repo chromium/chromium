@@ -120,4 +120,11 @@ const char kRecoveryKeyStorePinHash[] = "pin_hash";
 const char kRecoveryKeyStoreCertXml[] = "cert_xml";
 const char kRecoveryKeyStoreSigXml[] = "sig_xml";
 
+const char kRecoveryKeyStoreURL[] =
+    "https://cryptauthvault.googleapis.com/v1/vaults/0";
+const char kRecoveryKeyStoreCertFileURL[] =
+    "https://www.gstatic.com/cryptauthvault/v0/cert.xml";
+const char kRecoveryKeyStoreSigFileURL[] =
+    "https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml";
+
 }  // namespace device::enclave

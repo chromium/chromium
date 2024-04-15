@@ -94,6 +94,15 @@ extern const char kRecoveryKeyStoreCertXml[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreSigXml[];
 
+// Constants for the recovery key store service, which is used in conjunction
+// with the enclave.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreURL[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreCertFileURL[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreSigFileURL[];
+
 }  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_CONSTANTS_H_
