@@ -173,8 +173,6 @@ PasswordManagerSettingsServiceAndroidImpl::
                                               syncer::SyncService* sync_service)
     : pref_service_(pref_service), sync_service_(sync_service) {
   CHECK(pref_service_);
-  if (!PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor())
-    return;
   bridge_helper_ = PasswordSettingsUpdaterAndroidBridgeHelper::Create();
   lifecycle_helper_ = std::make_unique<PasswordManagerLifecycleHelperImpl>();
   Init();
@@ -194,8 +192,7 @@ PasswordManagerSettingsServiceAndroidImpl::
       bridge_helper_(std::move(bridge_helper)),
       lifecycle_helper_(std::move(lifecycle_helper)) {
   CHECK(pref_service_);
-  if (!bridge_helper_)
-    return;
+  CHECK(bridge_helper_);
   Init();
 }
 
@@ -211,10 +208,6 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
   const PrefService::Preference* regular_pref =
       GetRegularPrefFromSetting(pref_service_, setting);
   CHECK(regular_pref);
-
-  if (!bridge_helper_) {
-    return regular_pref->GetValue()->GetBool();
-  }
 
   if (!UsesUPMBackend()) {
     return regular_pref->GetValue()->GetBool();
@@ -511,11 +504,6 @@ void PasswordManagerSettingsServiceAndroidImpl::
 }
 
 bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
-  // It's not possible to get or set the password settings values without the
-  // helper.
-  if (!bridge_helper_) {
-    return false;
-  }
   return password_manager_android_util::ShouldUseUpmWiring(
       is_password_sync_enabled_, pref_service_);
 }

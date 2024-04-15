@@ -74,9 +74,6 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl> CreateNewService(
       std::unique_ptr<MockPasswordSettingsUpdaterBridgeHelper> bridge_helper);
 
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-  GetServiceWithoutBackend();
-
   void SetPasswordsSync(bool enabled);
   void SetSettingsSync(bool enabled);
 
@@ -144,13 +141,6 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::
       base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>(),
       &test_pref_service_, &test_sync_service_, std::move(bridge_helper),
       std::move(lifecycle_helper));
-}
-
-std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-PasswordManagerSettingsServiceAndroidImplBaseTest::GetServiceWithoutBackend() {
-  return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
-      base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>(),
-      pref_service(), sync_service(), nullptr, nullptr);
 }
 
 std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
@@ -678,22 +668,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       SavePasswordsSettingSyncingNotManagedNoBackend) {
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-      no_backend_service = GetServiceWithoutBackend();
-
-  SetPasswordsSync(/*enabled=*/true);
-
-  pref_service()->SetUserPref(
-      password_manager::prefs::kCredentialsEnableService, base::Value(true));
-  pref_service()->SetUserPref(
-      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
-      base::Value(false));
-  EXPECT_TRUE(no_backend_service->IsSettingEnabled(
-      PasswordManagerSetting::kOfferToSavePasswords));
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        SavePasswordsSettingSyncingNotManaged) {
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
@@ -745,21 +719,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   pref_service()->SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
                               base::Value(true));
   EXPECT_FALSE(settings_service()->IsSettingEnabled(
-      PasswordManagerSetting::kAutoSignIn));
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       AutoSignInSettingSyncingNotManagedNoBackend) {
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-      no_backend_service = GetServiceWithoutBackend();
-
-  SetPasswordsSync(/*enabled=*/true);
-
-  pref_service()->SetUserPref(
-      password_manager::prefs::kCredentialsEnableAutosignin, base::Value(true));
-  pref_service()->SetUserPref(password_manager::prefs::kAutoSignInEnabledGMS,
-                              base::Value(false));
-  EXPECT_TRUE(no_backend_service->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn));
 }
 
@@ -819,22 +778,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   ExpectSettingsRetrievalFromBackend(SyncingAccount(kTestAccount),
                                      /*times=*/0);
   settings_service()->RequestSettingsFromBackend();
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
-       TurnOffAutoSignInNoBackend) {
-  std::unique_ptr<PasswordManagerSettingsServiceAndroidImpl>
-      no_backend_service = GetServiceWithoutBackend();
-  ASSERT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin));
-  ASSERT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kAutoSignInEnabledGMS));
-
-  no_backend_service->TurnOffAutoSignIn();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin));
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      password_manager::prefs::kAutoSignInEnabledGMS));
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,

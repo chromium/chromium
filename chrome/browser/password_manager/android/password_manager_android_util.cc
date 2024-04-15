@@ -385,6 +385,12 @@ bool AreMinUpmRequirementsMet() {
   if (!IsInternalBackendPresent()) {
     return false;
   }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting)) {
+    return true;
+  }
+
   int gms_version = 0;
   // GMSCore version could not be parsed, probably no GMSCore installed.
   if (!base::StringToInt(

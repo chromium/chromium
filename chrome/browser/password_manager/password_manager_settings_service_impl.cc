@@ -26,8 +26,9 @@ bool PasswordManagerSettingsServiceImpl::IsSettingEnabled(
 }
 
 void PasswordManagerSettingsServiceImpl::RequestSettingsFromBackend() {
-  // This method is invoked only on android when UPM is enabled.
-  NOTREACHED();
+  // Settings fetching is needed only on Android when UPM is enabled. This
+  // implementation of the settings service is only used when UPM is unusable,
+  // so do nothing here.
 }
 
 void PasswordManagerSettingsServiceImpl::TurnOffAutoSignIn() {

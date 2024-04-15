@@ -49,11 +49,6 @@ public class PasswordSettingsUpdaterDispatcherBridge {
     }
 
     @CalledByNative
-    static boolean canCreateAccessor() {
-        return PasswordSettingsAccessorFactoryImpl.getOrCreate().canCreateAccessor();
-    }
-
-    @CalledByNative
     void getSettingValue(
             String account, @PasswordManagerSetting int setting, boolean isPartOfMigration) {
         assertOnBackgroundThread();

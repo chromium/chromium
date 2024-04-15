@@ -38,6 +38,8 @@ public abstract class PasswordSettingsAccessorFactory {
         return null;
     }
 
+    // TODO (b/329100547): Remove after the downstream implementation is removed.
+    @Deprecated
     public boolean canCreateAccessor() {
         return false;
     }

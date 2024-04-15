@@ -1080,6 +1080,8 @@ version_info::Channel ChromePasswordManagerClient::GetChannel() const {
 void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
     const {
 #if BUILDFLAG(IS_ANDROID)
+  // TODO (b/334091460): Add
+  // password_manager_android_util::AreMinUpmRequirementsMet() check here.
   PasswordManagerSettingsServiceFactory::GetForProfile(profile_)
       ->RequestSettingsFromBackend();
 #endif

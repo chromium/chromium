@@ -32,6 +32,8 @@ public class PasswordManagerTestHelper {
                 new FakePasswordStoreAndroidBackendFactoryImpl());
         PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
                 new FakePasswordSyncControllerDelegateFactoryImpl());
+        PasswordSettingsAccessorFactory.setupFactoryForTesting(
+                new FakePasswordSettingsAccessorFactoryImpl());
     }
 
     /**

@@ -1083,6 +1083,8 @@ static_library("browser") {
     "password_manager/field_info_manager_factory.h",
     "password_manager/password_manager_settings_service_factory.cc",
     "password_manager/password_manager_settings_service_factory.h",
+    "password_manager/password_manager_settings_service_impl.cc",
+    "password_manager/password_manager_settings_service_impl.h",
     "password_manager/password_receiver_service_factory.cc",
     "password_manager/password_receiver_service_factory.h",
     "password_manager/password_reuse_manager_factory.cc",
@@ -1935,8 +1937,6 @@ static_library("browser") {
     sources += [
       "accessibility/embedded_a11y_extension_loader.cc",
       "accessibility/embedded_a11y_extension_loader.h",
-      "password_manager/password_manager_settings_service_impl.cc",
-      "password_manager/password_manager_settings_service_impl.h",
       "picture_in_picture/auto_pip_setting_helper.cc",
       "picture_in_picture/auto_pip_setting_helper.h",
       "picture_in_picture/auto_pip_setting_overlay_view.cc",

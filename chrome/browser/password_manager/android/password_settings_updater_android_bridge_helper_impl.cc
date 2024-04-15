@@ -25,10 +25,6 @@ PasswordSettingsUpdaterAndroidBridgeHelper::Create() {
   return std::make_unique<PasswordSettingsUpdaterAndroidBridgeHelperImpl>();
 }
 
-bool PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor() {
-  return PasswordSettingsUpdaterAndroidDispatcherBridge::CanCreateAccessor();
-}
-
 PasswordSettingsUpdaterAndroidBridgeHelperImpl::
     PasswordSettingsUpdaterAndroidBridgeHelperImpl()
     : receiver_bridge_(PasswordSettingsUpdaterAndroidReceiverBridge::Create()),
