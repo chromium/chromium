@@ -145,12 +145,16 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
   MockPersonalDataManager() = default;
-  ~MockPersonalDataManager() override = default;
   MOCK_METHOD(void, AddObserver, (PersonalDataManagerObserver*), (override));
   MOCK_METHOD(void, RemoveObserver, (PersonalDataManagerObserver*), (override));
+  MOCK_METHOD(void, RemoveByGUID, (const std::string&), (override));
+};
+
+class MockAddressDataManager : public TestAddressDataManager {
+ public:
+  using TestAddressDataManager::TestAddressDataManager;
   MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const override));
   MOCK_METHOD(void, UpdateProfile, (const AutofillProfile&), (override));
-  MOCK_METHOD(void, RemoveByGUID, (const std::string&), (override));
 };
 
 class MockAutofillDriver : public TestAutofillDriver {
@@ -300,6 +304,9 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void SetUp() override {
     client().set_personal_data_manager(
         std::make_unique<MockPersonalDataManager>());
+    pdm().set_address_data_manager(std::make_unique<MockAddressDataManager>(
+        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
+                            base::Unretained(&pdm()))));
     client().set_plus_address_delegate(
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
     autofill_driver_ =
@@ -362,6 +369,9 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   MockPersonalDataManager& pdm() {
     return *static_cast<MockPersonalDataManager*>(
         client().GetPersonalDataManager());
+  }
+  MockAddressDataManager& address_data_manager() {
+    return static_cast<MockAddressDataManager&>(pdm().address_data_manager());
   }
   MockAutofillPlusAddressDelegate& plus_address_delegate() {
     return static_cast<MockAutofillPlusAddressDelegate&>(
@@ -555,7 +565,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
       });
   // No changes should be saved when user cancels editing.
   EXPECT_CALL(pdm(), AddObserver).Times(0);
-  EXPECT_CALL(pdm(), UpdateProfile).Times(0);
+  EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
                             queried_field().global_id(),
@@ -585,7 +595,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
       });
   // No changes should be saved when user cancels editing.
   EXPECT_CALL(pdm(), AddObserver).Times(0);
-  EXPECT_CALL(pdm(), UpdateProfile).Times(0);
+  EXPECT_CALL(address_data_manager(), UpdateProfile).Times(0);
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(),
               RendererShouldTriggerSuggestions(
@@ -615,7 +625,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
   // Updated Autofill profile must be persisted when user saves changes through
   // the address editor.
   EXPECT_CALL(pdm(), AddObserver(&external_delegate()));
-  EXPECT_CALL(pdm(), UpdateProfile(profile));
+  EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
   // The Autofill popup must be reopened when editor dialog is closed.
   EXPECT_CALL(driver(), RendererShouldTriggerSuggestions(
                             queried_field().global_id(),
@@ -649,7 +659,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   // PDM observer must be added only once.
   EXPECT_CALL(pdm(), AddObserver(&external_delegate()));
   // Changes to the Autofill profile must be persisted both times.
-  EXPECT_CALL(pdm(), UpdateProfile(profile)).Times(2);
+  EXPECT_CALL(address_data_manager(), UpdateProfile(profile)).Times(2);
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
@@ -676,7 +686,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       });
 
   EXPECT_CALL(pdm(), AddObserver(&external_delegate()));
-  EXPECT_CALL(pdm(), UpdateProfile(profile));
+  EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
 
   auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
@@ -1927,7 +1937,8 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().AddProfile(profile);
   IssueOnQuery();
-  ON_CALL(pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
+  ON_CALL(address_data_manager(), IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
   const Suggestion suggestion =
       params.popup_item_id == PopupItemId::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)

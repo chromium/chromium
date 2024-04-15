@@ -9,8 +9,8 @@
 namespace autofill {
 
 TestPaymentsDataManager::TestPaymentsDataManager(
-    const std::string& app_locale,
-    base::RepeatingClosure notify_pdm_observers)
+    base::RepeatingClosure notify_pdm_observers,
+    const std::string& app_locale)
     : PaymentsDataManager(/*profile_database=*/nullptr,
                           /*account_database=*/nullptr,
                           /*image_fetcher=*/nullptr,

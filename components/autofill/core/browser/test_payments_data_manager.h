@@ -19,8 +19,8 @@ namespace autofill {
 // A simplistic PaymentsDataManager used for testing.
 class TestPaymentsDataManager : public PaymentsDataManager {
  public:
-  TestPaymentsDataManager(const std::string& app_locale,
-                          base::RepeatingClosure notify_pdm_observers);
+  explicit TestPaymentsDataManager(base::RepeatingClosure notify_pdm_observers,
+                                   const std::string& app_locale = "en-US");
 
   TestPaymentsDataManager(const TestPaymentsDataManager&) = delete;
   TestPaymentsDataManager& operator=(const TestPaymentsDataManager&) = delete;

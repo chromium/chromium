@@ -11,7 +11,8 @@
 namespace autofill {
 
 TestAddressDataManager::TestAddressDataManager(
-    base::RepeatingClosure notify_pdm_observers)
+    base::RepeatingClosure notify_pdm_observers,
+    const std::string& app_locale)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
                          /*sync_service=*/nullptr,
@@ -19,7 +20,7 @@ TestAddressDataManager::TestAddressDataManager(
                          /*strike_database=*/nullptr,
                          notify_pdm_observers,
                          /*variation_country_code=*/GeoIpCountryCode("US"),
-                         /*app_locale=*/"en-US") {
+                         app_locale) {
   // Not initialized through the base class constructor call, since
   // `inmemory_strike_database_` is not initialized at this point.
   SetStrikeDatabase(&inmemory_strike_database_);

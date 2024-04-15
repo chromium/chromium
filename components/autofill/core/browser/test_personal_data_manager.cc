@@ -21,9 +21,9 @@ TestPersonalDataManager::TestPersonalDataManager()
   auto notify_observers = base::BindRepeating(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ =
-      std::make_unique<TestAddressDataManager>(notify_observers);
+      std::make_unique<TestAddressDataManager>(notify_observers, app_locale());
   payments_data_manager_ =
-      std::make_unique<TestPaymentsDataManager>(app_locale(), notify_observers);
+      std::make_unique<TestPaymentsDataManager>(notify_observers, app_locale());
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

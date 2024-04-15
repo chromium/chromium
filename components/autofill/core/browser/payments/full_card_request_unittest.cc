@@ -90,15 +90,9 @@ class MockUIDelegate : public FullCardRequest::UIDelegate {
   base::WeakPtrFactory<MockUIDelegate> weak_ptr_factory_{this};
 };
 
-// The personal data manager.
-class MockPersonalDataManager : public TestPersonalDataManager {
+class MockPaymentsDataManager : public TestPaymentsDataManager {
  public:
-  MockPersonalDataManager() = default;
-  ~MockPersonalDataManager() override = default;
-  MOCK_METHOD(bool,
-              IsSyncFeatureEnabledForPaymentsServerMetrics,
-              (),
-              (const override));
+  using TestPaymentsDataManager::TestPaymentsDataManager;
   MOCK_METHOD(void,
               UpdateCreditCard,
               (const CreditCard& credit_card),
@@ -139,6 +133,10 @@ class FullCardRequestTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data_.set_payments_data_manager(
+        std::make_unique<MockPaymentsDataManager>(base::BindRepeating(
+            &PersonalDataManager::NotifyPersonalDataObserver,
+            base::Unretained(&personal_data_))));
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
     personal_data_.SetSyncServiceForTest(&sync_service_);
     payments_network_interface_ = std::make_unique<PaymentsNetworkInterface>(
@@ -166,7 +164,7 @@ class FullCardRequestTest : public testing::Test {
 
   ~FullCardRequestTest() override = default;
 
-  MockPersonalDataManager* personal_data() { return &personal_data_; }
+  TestPersonalDataManager* personal_data() { return &personal_data_; }
 
   FullCardRequest* request() { return request_.get(); }
 
@@ -213,7 +211,7 @@ class FullCardRequestTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  NiceMock<MockPersonalDataManager> personal_data_;
+  TestPersonalDataManager personal_data_;
   MockResultDelegate result_delegate_;
   MockUIDelegate ui_delegate_;
   TestAutofillClient autofill_client_;
@@ -842,7 +840,8 @@ TEST_F(FullCardRequestTest, UpdateExpDateForLocalCard) {
           CardMatches(CreditCard::RecordType::kLocalCard, "4111", "12", "2051"),
           testing::Eq(u"123")));
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _));
-  EXPECT_CALL(*personal_data(),
+  EXPECT_CALL(static_cast<MockPaymentsDataManager&>(
+                  personal_data()->payments_data_manager()),
               UpdateCreditCard(CardMatches(CreditCard::RecordType::kLocalCard,
                                            "4111", "12", "2051")));
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(

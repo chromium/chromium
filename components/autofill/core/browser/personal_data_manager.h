@@ -196,10 +196,10 @@ class PersonalDataManager : public KeyedService,
                        profile_or_credit_card);
 
   // Adds |profile| to the web database.
-  virtual void AddProfile(const AutofillProfile& profile);
+  void AddProfile(const AutofillProfile& profile);
 
   // Updates |profile| which already exists in the web database.
-  virtual void UpdateProfile(const AutofillProfile& profile);
+  void UpdateProfile(const AutofillProfile& profile);
 
   // Removes the profile, credit card or IBAN identified by `guid`.
   virtual void RemoveByGUID(const std::string& guid);
@@ -228,14 +228,14 @@ class PersonalDataManager : public KeyedService,
   // 1) IBAN saving must be enabled.
   // 2) No IBAN exists in `local_ibans_` which has the same guid as`iban`.
   // 3) Local database is available.
-  virtual std::string AddAsLocalIban(Iban iban);
+  std::string AddAsLocalIban(Iban iban);
 
   // Adds |credit_card| to the web database as a local card.
-  virtual void AddCreditCard(const CreditCard& credit_card);
+  void AddCreditCard(const CreditCard& credit_card);
 
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
-  virtual void UpdateCreditCard(const CreditCard& credit_card);
+  void UpdateCreditCard(const CreditCard& credit_card);
 
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
@@ -256,7 +256,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
-  virtual CreditCard* GetCreditCardByGUID(const std::string& guid);
+  CreditCard* GetCreditCardByGUID(const std::string& guid);
 
   // Returns the credit card with the specified `number`, or nullptr if there is
   // no credit card with the specified `number`.
@@ -296,21 +296,20 @@ class PersonalDataManager : public KeyedService,
       AutofillProfile::Source profile_source,
       ProfileOrder order = ProfileOrder::kNone) const;
   // Returns just LOCAL_CARD cards.
-  virtual std::vector<CreditCard*> GetLocalCreditCards() const;
+  std::vector<CreditCard*> GetLocalCreditCards() const;
   // Returns just server cards.
-  virtual std::vector<CreditCard*> GetServerCreditCards() const;
+  std::vector<CreditCard*> GetServerCreditCards() const;
   // Returns all credit cards, server and local.
-  virtual std::vector<CreditCard*> GetCreditCards() const;
+  std::vector<CreditCard*> GetCreditCards() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
-  virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
+  PaymentsCustomerData* GetPaymentsCustomerData() const;
 
   // Returns the credit card cloud token data.
-  virtual std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData()
-      const;
+  std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData() const;
 
   // Returns autofill offer data, including card-linked and promo code offers.
-  virtual std::vector<AutofillOfferData*> GetAutofillOffers() const;
+  std::vector<AutofillOfferData*> GetAutofillOffers() const;
 
   // Returns autofill offer data, but only promo code offers that are not
   // expired and that are for the given |origin|.
@@ -323,8 +322,7 @@ class PersonalDataManager : public KeyedService,
   // Returns the customized credit card art image for the |card_art_url|. If no
   // image has been cached, an asynchronous request will be sent to fetch the
   // image and this function will return nullptr.
-  virtual gfx::Image* GetCreditCardArtImageForUrl(
-      const GURL& card_art_url) const;
+  gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
 
   // TODO(b/322170538): Deprecated. Use the functions in
   // `address_data_manager()` instead. Migrate remaining callers.
@@ -347,13 +345,13 @@ class PersonalDataManager : public KeyedService,
   // these as a result of this call.
   //
   // Also see SetProfile for more details.
-  virtual void Refresh();
+  void Refresh();
 
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
   // Returns all virtual card usage data linked to the credit card.
-  virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
+  std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
 
   bool HasPendingPaymentQueriesForTesting() const {
     return payments_data_manager_->HasPendingPaymentQueries();
@@ -370,7 +368,7 @@ class PersonalDataManager : public KeyedService,
   void NotifyPersonalDataObserver();
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
-  virtual bool IsAutofillEnabled() const;
+  bool IsAutofillEnabled() const;
 
   // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
   // database by adding, updating and removing credit cards.
