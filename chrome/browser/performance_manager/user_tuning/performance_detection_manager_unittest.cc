@@ -10,18 +10,12 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
-#include "components/performance_manager/public/resource_attribution/process_context.h"
-#include "components/performance_manager/public/resource_attribution/query_results.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
-#include "components/system_cpu/cpu_sample.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,13 +123,6 @@ class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    // Reset the performance detection manager and have the task environment
-    // run until idle to make sure that any objects owned by `SequenceBound`
-    // have been destroyed to avoid tripping memory leak detection.
-    manager_.reset();
-    PerformanceManager::CallOnGraph(FROM_HERE,
-                                    task_environment()->QuitClosure());
-    task_environment()->RunUntilQuit();
     DeleteContents();
     pm_harness_.TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -145,16 +132,6 @@ class PerformanceDetectionManagerTest : public ChromeRenderViewHostTestHarness {
 
   PerformanceDetectionManager* manager() {
     return PerformanceDetectionManager::GetInstance();
-  }
-
-  resource_attribution::CPUTimeResult CreateFakeCpuResult(
-      base::TimeDelta cumulative_cpu) {
-    resource_attribution::ResultMetadata metadata(
-        base::TimeTicks::Now(),
-        resource_attribution::MeasurementAlgorithm::kDirectMeasurement);
-    return {.metadata = metadata,
-            .start_time = base::TimeTicks::Now(),
-            .cumulative_cpu = cumulative_cpu};
   }
 
  private:
@@ -230,203 +207,4 @@ TEST_F(PerformanceDetectionManagerTest, UpdatedActionableTabsSentToObservers) {
   EXPECT_TRUE(observer.actionable_tabs().value().empty());
   manager()->RemoveActionableTabsObserver(&observer);
 }
-
-TEST_F(PerformanceDetectionManagerTest, RecordCpuAndUpdateHealthStatus) {
-  CreateManager();
-
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kHealthy);
-
-  // Simulate continuously receiving system cpu
-  // Health status should remain as healthy since we didn't
-  // exceed the number of times for the health to change
-  for (int i = 0; i < kNumHealthStatusForChange - 1; i++) {
-    manager()->RecordAndUpdateCpuHealthStatus(
-        kUnhealthySystemCpuUsagePercentage);
-    EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                  PerformanceDetectionManager::ResourceType::kCpu),
-              PerformanceDetectionManager::HealthLevel::kHealthy);
-  }
-
-  // Status changes after exceeding threshold to be continuously being
-  // unhealthy
-  manager()->RecordAndUpdateCpuHealthStatus(kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kUnhealthy);
-
-  // simulate medium but doesn't meet continuous requirement
-  manager()->RecordAndUpdateCpuHealthStatus(kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-
-  // Status should stay as medium even when receiving unhealthy cpu usage
-  // since the manager received a medium health status recently and the window
-  // is no longer consistently unhealthy
-  for (int i = 0; i < kNumHealthStatusForChange - 1; i++) {
-    manager()->RecordAndUpdateCpuHealthStatus(
-        kUnhealthySystemCpuUsagePercentage);
-    EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                  PerformanceDetectionManager::ResourceType::kCpu),
-              PerformanceDetectionManager::HealthLevel::kDegraded);
-  }
-
-  // Health status should change since we have been consistently unhealthy for a
-  // while now
-  manager()->RecordAndUpdateCpuHealthStatus(kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kUnhealthy);
-
-  // Health status stays as medium when oscillating between medium and unhealthy
-  manager()->RecordAndUpdateCpuHealthStatus(kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-
-  manager()->RecordAndUpdateCpuHealthStatus(kUnhealthySystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-
-  manager()->RecordAndUpdateCpuHealthStatus(kDegradedSystemCpuUsagePercentage);
-  EXPECT_EQ(manager()->GetHealthLevelForTesting(
-                PerformanceDetectionManager::ResourceType::kCpu),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-}
-
-TEST_F(PerformanceDetectionManagerTest, CpuStatusUpdates) {
-  CreateManager();
-  // Stop the timer to prevent the cpu probe from recording real CPU data
-  // which makes the health status non-deterministic when we fast forward time.
-  manager()->cpu_probe_timer_.Stop();
-
-  resource_attribution::QueryResultMap result_map;
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  std::optional<resource_attribution::PageContext> page_context =
-      resource_attribution::PageContext::FromWebContents(web_contents.get());
-  ASSERT_TRUE(page_context.has_value());
-
-  // Exceed threshold for medium CPU usage for status change
-  for (int i = 0; i < kNumHealthStatusForChange; i++) {
-    task_environment()->FastForwardBy(base::Seconds(60));
-    result_map[page_context.value()] = {
-        .cpu_time_result = CreateFakeCpuResult(
-            base::Seconds(20 * base::SysInfo::NumberOfProcessors()))};
-    manager()->ProcessQueryResultMap(kDegradedSystemCpuUsagePercentage,
-                                     result_map);
-  }
-
-  PerformanceDetectionManagerStatusObserver observer;
-  PerformanceDetectionManager::ResourceTypeSet resources;
-  resources.Put(PerformanceDetectionManager::ResourceType::kCpu);
-  manager()->AddStatusObserver(resources, &observer);
-
-  // Verify that even though an observer is registered after the status changes,
-  // the observer is still notified of the most recent status
-  EXPECT_TRUE(observer.resource_type().has_value());
-  EXPECT_TRUE(observer.health_level().has_value());
-  EXPECT_TRUE(observer.is_actionable().has_value());
-  EXPECT_EQ(observer.resource_type().value(),
-            PerformanceDetectionManager::ResourceType::kCpu);
-  EXPECT_EQ(observer.health_level().value(),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-
-  // Consistently receive unhealthy CPU usage for status change
-  for (int i = 0; i < kNumHealthStatusForChange; i++) {
-    task_environment()->FastForwardBy(base::Seconds(1));
-    result_map[page_context.value()] = {
-        .cpu_time_result = CreateFakeCpuResult(
-            base::Seconds(1 * base::SysInfo::NumberOfProcessors()))};
-    manager()->ProcessQueryResultMap(kUnhealthySystemCpuUsagePercentage,
-                                     result_map);
-  }
-
-  // Verify that observers are notified of the status change
-  EXPECT_EQ(observer.resource_type().value(),
-            PerformanceDetectionManager::ResourceType::kCpu);
-  EXPECT_EQ(observer.health_level().value(),
-            PerformanceDetectionManager::HealthLevel::kUnhealthy);
-  manager()->RemoveStatusObserver(&observer);
-}
-
-TEST_F(PerformanceDetectionManagerTest, HealthyCpuUsageFromProbe) {
-  CreateManager();
-  // Stop the timer to prevent the cpu probe from recording real CPU data
-  // which makes the health status non-deterministic when we fast forward time.
-  manager()->cpu_probe_timer_.Stop();
-
-  PerformanceDetectionManagerStatusObserver observer;
-  PerformanceDetectionManager::ResourceTypeSet resources;
-  resources.Put(PerformanceDetectionManager::ResourceType::kCpu);
-  manager()->AddStatusObserver(resources, &observer);
-
-  EXPECT_EQ(observer.health_level().value(),
-            PerformanceDetectionManager::HealthLevel::kHealthy);
-
-  resource_attribution::QueryResultMap result_map;
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  std::optional<resource_attribution::PageContext> page_context =
-      resource_attribution::PageContext::FromWebContents(web_contents.get());
-  ASSERT_TRUE(page_context.has_value());
-
-  // Consistently receive medium CPU usage for status change
-  for (int i = 0; i < kNumHealthStatusForChange; i++) {
-    task_environment()->FastForwardBy(base::Seconds(60));
-    result_map[page_context.value()] = {
-        .cpu_time_result = CreateFakeCpuResult(
-            base::Seconds(20 * base::SysInfo::NumberOfProcessors()))};
-    manager()->ProcessQueryResultMap(kDegradedSystemCpuUsagePercentage,
-                                     result_map);
-  }
-
-  EXPECT_EQ(observer.health_level().value(),
-            PerformanceDetectionManager::HealthLevel::kDegraded);
-
-  // Consistently receive healthy cpu usage from the CPU Probe
-  for (int i = 0; i < kNumHealthStatusForChange; i++) {
-    system_cpu::CpuSample sample{0};
-    manager()->ProcessCpuProbeResult(sample);
-  }
-
-  EXPECT_EQ(observer.health_level().value(),
-            PerformanceDetectionManager::HealthLevel::kHealthy);
-  manager()->RemoveStatusObserver(&observer);
-}
-
-TEST_F(PerformanceDetectionManagerTest, GetPagesMeetMinimumCpuUsage) {
-  CreateManager();
-
-  std::map<resource_attribution::ResourceContext, double> page_contexts_cpu;
-
-  const int minimum_percent_cpu_usage =
-      features::kMinimumActionableTabCPUPercentage.Get();
-  const double minimum_decimal_cpu_usage = minimum_percent_cpu_usage / 100.0;
-
-  // Generate a map of page contexts and decimal CPU usage where half the page
-  // contexts are below the minimum cpu usage for a tab to be actionable, and
-  // half above it
-  for (int i = 0; i < 10; i++) {
-    std::unique_ptr<content::WebContents> web_contents =
-        CreateTestWebContents();
-    std::optional<resource_attribution::PageContext> page_context =
-        resource_attribution::PageContext::FromWebContents(web_contents.get());
-    ASSERT_TRUE(page_context.has_value());
-    const double cpu_usage = (i % 2 == 0) ? minimum_decimal_cpu_usage - 0.01
-                                          : minimum_decimal_cpu_usage;
-    page_contexts_cpu[page_context.value()] =
-        cpu_usage * base::SysInfo::NumberOfProcessors();
-  }
-
-  PerformanceDetectionManager::PageResourceMeasurements filtered_measurements =
-      manager()->GetPagesMeetMinimumCpuUsage(page_contexts_cpu);
-  EXPECT_EQ(filtered_measurements.size(), (page_contexts_cpu.size() / 2));
-
-  for (auto& [context, cpu_percentage] : filtered_measurements) {
-    EXPECT_EQ(cpu_percentage, minimum_percent_cpu_usage);
-  }
-}
-
 }  // namespace performance_manager::user_tuning

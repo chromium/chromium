@@ -4235,6 +4235,8 @@ static_library("browser") {
       "performance_manager/public/user_tuning/performance_detection_manager.h",
       "performance_manager/public/user_tuning/user_performance_tuning_manager.h",
       "performance_manager/user_tuning/battery_saver_mode_manager.cc",
+      "performance_manager/user_tuning/cpu_health_tracker.cc",
+      "performance_manager/user_tuning/cpu_health_tracker.h",
       "performance_manager/user_tuning/performance_detection_manager.cc",
       "performance_manager/user_tuning/profile_discard_opt_out_list_helper.cc",
       "performance_manager/user_tuning/profile_discard_opt_out_list_helper.h",

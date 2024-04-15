@@ -8214,6 +8214,7 @@ test("unit_tests") {
       "../browser/performance_manager/policies/page_discarding_helper_unittest.cc",
       "../browser/performance_manager/policies/urgent_page_discarding_policy_unittest.cc",
       "../browser/performance_manager/user_tuning/battery_saver_mode_manager_unittest.cc",
+      "../browser/performance_manager/user_tuning/cpu_health_tracker_unittest.cc",
       "../browser/performance_manager/user_tuning/performance_detection_manager_unittest.cc",
       "../browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper_unittest.cc",
       "../browser/performance_manager/user_tuning/user_performance_tuning_manager_unittest.cc",
