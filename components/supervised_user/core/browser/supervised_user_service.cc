@@ -74,7 +74,7 @@ void SupervisedUserService::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
+SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
   return url_filter_.get();
 }
 
@@ -124,6 +124,11 @@ std::string SupervisedUserService::GetSecondCustodianName() const {
 bool SupervisedUserService::HasACustodian() const {
   return !GetCustodianEmailAddress().empty() ||
          !GetSecondCustodianEmailAddress().empty();
+}
+
+bool SupervisedUserService::IsBlockedURL(GURL url) const {
+  return GetURLFilter()->GetFilteringBehaviorForURL(url) ==
+         supervised_user::FilteringBehavior::kBlock;
 }
 
 void SupervisedUserService::AddObserver(

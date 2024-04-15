@@ -31,8 +31,17 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/common/constants.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#endif
+
+namespace supervised_user {
+class SupervisedUserService;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -44,35 +53,12 @@ namespace ntp_tiles {
 
 class IconCacher;
 
-// Shim interface for SupervisedUserService.
-class MostVisitedSitesSupervisor {
- public:
-  class Observer {
-   public:
-    virtual void OnBlockedSitesChanged() = 0;
-
-   protected:
-    ~Observer() {}
-  };
-
-  virtual ~MostVisitedSitesSupervisor() {}
-
-  // Pass non-null to set observer, or null to remove observer.
-  // If setting observer, there must not yet be an observer set.
-  // If removing observer, there must already be one to remove.
-  // Does not take ownership. Observer must outlive this object.
-  virtual void SetObserver(Observer* new_observer) = 0;
-
-  // If true, |url| should not be shown on the NTP.
-  virtual bool IsBlocked(const GURL& url) = 0;
-
-  // If true, be conservative about suggesting sites from outside sources.
-  virtual bool IsChildProfile() = 0;
-};
-
 // Tracks the list of most visited sites.
-class MostVisitedSites : public history::TopSitesObserver,
-                         public MostVisitedSitesSupervisor::Observer {
+class MostVisitedSites :
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    public SupervisedUserServiceObserver,
+#endif
+    public history::TopSitesObserver {
  public:
   // The observer to be notified when the list of most visited sites changes.
   class Observer : public base::CheckedObserver {
@@ -98,16 +84,18 @@ class MostVisitedSites : public history::TopSitesObserver,
 
   // Construct a MostVisitedSites instance.
   //
-  // |prefs| and |suggestions| are required and may not be null. |top_sites|,
-  // |popular_sites|, |custom_links|, |supervisor| and |homepage_client| are
+  // |prefs| are required and may not be null. |top_sites|,
+  // |popular_sites|, |custom_links|, |supervised_user_service| and
+  // |homepage_client| are
   //  optional and if null, the associated features will be disabled.
-  MostVisitedSites(PrefService* prefs,
-                   scoped_refptr<history::TopSites> top_sites,
-                   std::unique_ptr<PopularSites> popular_sites,
-                   std::unique_ptr<CustomLinksManager> custom_links,
-                   std::unique_ptr<IconCacher> icon_cacher,
-                   std::unique_ptr<MostVisitedSitesSupervisor> supervisor,
-                   bool is_default_chrome_app_migrated);
+  MostVisitedSites(
+      PrefService* prefs,
+      supervised_user::SupervisedUserService* supervised_user_service,
+      scoped_refptr<history::TopSites> top_sites,
+      std::unique_ptr<PopularSites> popular_sites,
+      std::unique_ptr<CustomLinksManager> custom_links,
+      std::unique_ptr<IconCacher> icon_cacher,
+      bool is_default_chrome_app_migrated);
 
   MostVisitedSites(const MostVisitedSites&) = delete;
   MostVisitedSites& operator=(const MostVisitedSites&) = delete;
@@ -122,7 +110,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Returns the corresponding object passed at construction.
   history::TopSites* top_sites() { return top_sites_.get(); }
   PopularSites* popular_sites() { return popular_sites_.get(); }
-  MostVisitedSitesSupervisor* supervisor() { return supervisor_.get(); }
 
   // Adds the observer and immediately fetches the current suggestions.
   // All observers will be notified when the suggestions are fetched.
@@ -206,8 +193,10 @@ class MostVisitedSites : public history::TopSitesObserver,
   void AddOrRemoveBlockedUrl(const GURL& url, bool add_url);
   void ClearBlockedUrls();
 
-  // MostVisitedSitesSupervisor::Observer implementation.
-  void OnBlockedSitesChanged() override;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  //  SupervisedUserServiceObserver implementation.
+  void OnURLFilterChanged() override;
+#endif
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void ResetProfilePrefs(PrefService* prefs);
@@ -322,12 +311,17 @@ class MostVisitedSites : public history::TopSitesObserver,
                        ChangeReason change_reason) override;
 
   raw_ptr<PrefService> prefs_;
+  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  base::ScopedObservation<supervised_user::SupervisedUserService,
+                          SupervisedUserServiceObserver>
+      supervised_user_service_observation_{this};
+#endif
 
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;
   std::unique_ptr<IconCacher> const icon_cacher_;
-  std::unique_ptr<MostVisitedSitesSupervisor> supervisor_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;
 

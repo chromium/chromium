@@ -23,6 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/supervised_user/model",
     "//ios/web",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",

@@ -240,7 +240,8 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
         configureWithConfig:_mostVisitedTileConfig];
     // If viewDidLoad has been called before the first valid Most Visited Tiles
     // are available, construct `mostVisitedStackView`.
-    if (self.verticalStackView) {
+    if (self.verticalStackView &&
+        _mostVisitedTileConfig.mostVisitedItems.count > 0) {
       [self createAndInsertMostVisitedModule];
     }
 

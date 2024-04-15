@@ -35,6 +35,7 @@
 #include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/switches.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/common/constants.h"
 #include "extensions/buildflags/buildflags.h"
@@ -44,6 +45,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#endif
 
 namespace ntp_tiles {
 
@@ -367,6 +372,9 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
 
   MostVisitedSitesTest() {
     MostVisitedSites::RegisterProfilePrefs(pref_service_.registry());
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    supervised_user::RegisterProfilePrefs(pref_service_.registry());
+#endif
 
     std::vector<base::test::FeatureRef> enabled_features;
     // Disable FaviconServer in most tests and override in specific tests.
@@ -436,9 +444,9 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
     EXPECT_CALL(*icon_cacher, StartFetchMostLikely(_, _)).Times(AtLeast(0));
 
     most_visited_sites_ = std::make_unique<MostVisitedSites>(
-        &pref_service_, mock_top_sites_, popular_sites_factory_.New(),
-        std::move(mock_custom_links), std::move(icon_cacher),
-        /*supervisor=*/nullptr, true);
+        &pref_service_, /*supervised_user_service=*/nullptr, mock_top_sites_,
+        popular_sites_factory_.New(), std::move(mock_custom_links),
+        std::move(icon_cacher), true);
   }
 
   bool IsPopularSitesFeatureEnabled() const { return GetParam(); }
@@ -802,6 +810,7 @@ TEST_P(MostVisitedSitesTest, ShouldNotIncludeHomepageIfBlocked) {
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_P(MostVisitedSitesTest, ShouldPinHomepageAgainIfBlockedUndone) {
   FakeHomepageClient* homepage_client = RegisterNewHomepageClient();
   homepage_client->SetHomepageTileEnabled(true);
@@ -833,9 +842,11 @@ TEST_P(MostVisitedSitesTest, ShouldPinHomepageAgainIfBlockedUndone) {
           SectionType::PERSONALIZED,
           Contains(MatchesTile(u"", kHomepageUrl, TileSource::HOMEPAGE))))));
 
-  most_visited_sites_->OnBlockedSitesChanged();
+  most_visited_sites_->OnURLFilterChanged();
+
   base::RunLoop().RunUntilIdle();
 }
+#endif
 
 TEST_P(MostVisitedSitesTest, ShouldInformSuggestionSourcesWhenBlocked) {
   EXPECT_CALL(*mock_top_sites_, AddBlockedUrl(Eq(GURL(kHomepageUrl)))).Times(1);

@@ -31,6 +31,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -38,66 +39,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
-namespace {
-
-class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
-                         public SupervisedUserServiceObserver {
- public:
-  explicit SupervisorBridge(Profile* profile);
-  ~SupervisorBridge() override;
-
-  void SetObserver(Observer* observer) override;
-  bool IsBlocked(const GURL& url) override;
-  bool IsChildProfile() override;
-
-  // SupervisedUserServiceObserver implementation.
-  void OnURLFilterChanged() override;
-
- private:
-  const raw_ptr<Profile> profile_;
-  raw_ptr<Observer> supervisor_observer_;
-  base::ScopedObservation<supervised_user::SupervisedUserService,
-                          SupervisedUserServiceObserver>
-      register_observation_{this};
-};
-
-SupervisorBridge::SupervisorBridge(Profile* profile)
-    : profile_(profile), supervisor_observer_(nullptr) {
-  register_observation_.Observe(
-      SupervisedUserServiceFactory::GetForProfile(profile_));
-}
-
-SupervisorBridge::~SupervisorBridge() {}
-
-void SupervisorBridge::SetObserver(Observer* new_observer) {
-  if (new_observer) {
-    DCHECK(!supervisor_observer_);
-  } else {
-    DCHECK(supervisor_observer_);
-  }
-
-  supervisor_observer_ = new_observer;
-}
-
-bool SupervisorBridge::IsBlocked(const GURL& url) {
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
-  auto* url_filter = supervised_user_service->GetURLFilter();
-  return url_filter->GetFilteringBehaviorForURL(url) ==
-         supervised_user::FilteringBehavior::kBlock;
-}
-
-bool SupervisorBridge::IsChildProfile() {
-  return profile_->IsChild();
-}
-
-void SupervisorBridge::OnURLFilterChanged() {
-  if (supervisor_observer_) {
-    supervisor_observer_->OnBlockedSitesChanged();
-  }
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -123,7 +64,8 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #endif
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
-      profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
+      profile->GetPrefs(), SupervisedUserServiceFactory::GetForProfile(profile),
+      TopSitesFactory::GetForProfile(profile),
 #if BUILDFLAG(IS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),
 #else
@@ -143,7 +85,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()),
           std::move(data_decoder)),
-      std::make_unique<SupervisorBridge>(profile),
       is_default_chrome_app_migrated);
   return most_visited_sites;
 }

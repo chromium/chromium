@@ -81,7 +81,7 @@ class SupervisedUserService : public KeyedService,
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  supervised_user::SupervisedUserURLFilter* GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
 
   // Get the string used to identify an extension install or update request.
   // Public for testing.
@@ -113,6 +113,9 @@ class SupervisedUserService : public KeyedService,
   // Returns true if there is a custodian for the child.  A child can have
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
+
+  // Returns true if the url is blocked for the primary account user.
+  bool IsBlockedURL(GURL url) const;
 
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);

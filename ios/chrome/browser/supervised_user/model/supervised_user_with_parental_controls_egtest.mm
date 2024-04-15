@@ -10,10 +10,12 @@
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
@@ -163,6 +165,20 @@ static const char* kInterstitialFirstTimeBanner =
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that the supervised user does not see popular content suggestions.
+- (void)testSupervisedUserOpenNewTabPage {
+  [self signInSupervisedUser];
+
+  [ChromeEarlGreyUI openNewTab];
+
+  // Assert that the most visited tiles are not visible for supervised users.
+  id<GREYMatcher> firstMostVisitedTile = grey_accessibilityID(
+      [kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix
+          stringByAppendingString:@"0"]);
+  [[EarlGrey selectElementWithMatcher:firstMostVisitedTile]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 #if !TARGET_IPHONE_SIMULATOR

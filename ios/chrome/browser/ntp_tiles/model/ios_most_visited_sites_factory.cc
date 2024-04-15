@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/history/model/top_sites_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -23,6 +24,7 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
     ChromeBrowserState* browser_state) {
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       browser_state->GetPrefs(),
+      SupervisedUserServiceFactory::GetForBrowserState(browser_state),
       ios::TopSitesFactory::GetForBrowserState(browser_state),
       IOSPopularSitesFactory::NewForBrowserState(browser_state),
       /*custom_links=*/nullptr,
@@ -34,5 +36,5 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
               image_fetcher::CreateIOSImageDecoder(),
               browser_state->GetSharedURLLoaderFactory()),
           /*data_decoder=*/nullptr),
-      nil, false);
+      false);
 }

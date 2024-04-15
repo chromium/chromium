@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 if (is_android) {
@@ -63,6 +64,7 @@ static_library("ntp_tiles") {
     "//components/search",
     "//components/search_engines",
     "//components/strings",
+    "//components/supervised_user/core/common:buildflags",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
@@ -82,6 +84,10 @@ static_library("ntp_tiles") {
 
   if (enable_extensions) {
     deps += [ "//extensions/common:common_constants" ]
+  }
+
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser" ]
   }
 }
 
@@ -108,6 +114,7 @@ source_set("unit_tests") {
     "//components/image_fetcher/core:test_support",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync_preferences:test_support",
     "//components/webapps/common:common",
     "//extensions/buildflags",
@@ -121,6 +128,10 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_supervised_users) {
+    deps += [ "//components/supervised_user/core/browser" ]
+  }
 }
 
 if (is_android) {
