@@ -354,6 +354,17 @@ This collects each top-level device metric type. For example,
   <token key="Device" variants="CrasFinalDeviceBreakdown"/>
 </histogram>
 
+<histogram name="Cras.DeviceSamplesDropped{Device}" units="frames"
+    expires_after="2025-04-15">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of samples dropped from a device. It is recorded when an input
+    device is removed.
+  </summary>
+  <token key="Device" variants="CrasFinalDeviceBreakdown"/>
+</histogram>
+
 <histogram name="Cras.DeviceTypeInput" enum="CrasDeviceType"
     expires_after="2024-10-08">
   <owner>yuhsuan@chromium.org</owner>
