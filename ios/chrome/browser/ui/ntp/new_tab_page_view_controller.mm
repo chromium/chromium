@@ -647,6 +647,9 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     heightAboveFeed += viewController.view.frame.size.height;
   }
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    heightAboveFeed += kBottomMagicStackPadding;
+  }
   return heightAboveFeed;
 }
 
