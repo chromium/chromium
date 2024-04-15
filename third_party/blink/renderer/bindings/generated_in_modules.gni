@@ -3133,7 +3133,7 @@ generated_union_sources_in_modules = [
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.h",
@@ -3174,7 +3174,7 @@ if (target_os != "android") {
 # generating the snapshot for Android, Blink is compiled with
 # current_os = "linux" and target_os = "android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os = "android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_union_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_unsignedlong_webprintingrange.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_unsignedlong_webprintingrange.h",
@@ -3239,7 +3239,7 @@ if (target_os != "android") {
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h",
@@ -3274,7 +3274,7 @@ if (target_os != "android") {
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_callback_function_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_transaction_callback.h",
@@ -3335,7 +3335,7 @@ if (target_os != "android") {
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.h",
@@ -3354,7 +3354,7 @@ if (target_os != "android") {
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   generated_dictionary_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_event_init.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_event_init.h",

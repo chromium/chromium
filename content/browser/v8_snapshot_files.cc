@@ -29,7 +29,6 @@ GetV8SnapshotFilesToPreload() {
       base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_32.bin"));
 #elif BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   // For USE_V8_CONTEXT_SNAPSHOT, the renderer reads the files directly.
-  return {};
 #endif
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return files;

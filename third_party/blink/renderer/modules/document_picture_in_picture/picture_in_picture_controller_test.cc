@@ -40,16 +40,16 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
 #include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 using ::testing::_;
 
 namespace blink {
 
 namespace {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
 KURL GetOpenerURL() {
   return KURL("https://example.com/");
 }
@@ -106,7 +106,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
 
   return controller.documentPictureInPictureWindow();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 }  // namespace
 
@@ -641,7 +641,7 @@ TEST_F(PictureInPictureControllerTestWithWidget, VideoIsNotAllowedIfAutoPip) {
                 .IsElementAllowed(*Video(), /*report_failure=*/false));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
 TEST_F(PictureInPictureControllerTestWithWidget,
        DocumentPiPDoesNotAllowVizThrottling) {
   EXPECT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
@@ -902,6 +902,6 @@ TEST_F(PictureInPictureControllerTestWithChromeClient, CopiesAutoplayFlags) {
   EXPECT_EQ(pictureInPictureWindow->document()->GetPage()->AutoplayFlags(),
             flags);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 }  // namespace blink

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/renderer/config.gni")
+
 blink_core_sources_frame = [
   "ad_tracker.cc",
   "ad_tracker.h",
@@ -240,7 +242,7 @@ blink_core_sources_frame = [
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (target_os != "android") {
+if (!target_os_is_android) {
   blink_core_sources_frame += [
     "window_controls_overlay_changed_delegate.cc",
     "window_controls_overlay_changed_delegate.h",

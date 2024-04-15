@@ -86,3 +86,10 @@ if (blink_symbol_level == 2) {
 } else {
   blink_symbols_config = [ "//build/config/compiler:default_symbols" ]
 }
+
+# Record whether target_os (rather than current_os) is android, for the case of
+# generating the v8 context snapshot for android. When generating the snapshot
+# for android, blink is compiled with current_os="linux" and
+# target_os="android". Using target_os is necessary as we need to compile in the
+# same way as would happen when current_os="android".
+target_os_is_android = target_os == "android"

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
@@ -118,6 +119,11 @@ config("config") {
 
 config("core_include_dirs") {
   include_dirs = []
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "TARGET_OS_IS_ANDROID=$target_os_is_android" ]
 }
 
 import("//build/config/pch.gni")
@@ -313,6 +319,7 @@ component("core") {
   configs += [ "//v8:external_startup_data" ]
 
   public_deps = [
+    ":buildflags",
     ":core_generated",
     ":core_hot",
     "//cc",

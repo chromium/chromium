@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -101,14 +102,14 @@ class CORE_EXPORT PictureInPictureController
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   // Returns the document picture-in-picture window opened by the Document. It
   // returns null if there is no open document picture-in-picture window for the
   // Document or if PictureInPictureController is not attached to the Document.
   // It is protected so that clients use the static method
   // GetDocumentPictureInPictureWindow() that avoids creating the controller.
   virtual LocalDOMWindow* GetDocumentPictureInPictureWindow() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 };
 
 }  // namespace blink

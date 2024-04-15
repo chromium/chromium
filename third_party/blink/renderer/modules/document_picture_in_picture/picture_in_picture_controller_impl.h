@@ -18,9 +18,9 @@
 
 namespace blink {
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
 class DocumentPictureInPictureOptions;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 class ExceptionState;
 class HTMLVideoElement;
 class PictureInPictureWindow;
@@ -61,7 +61,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // video-only PiP.
   PictureInPictureWindow* pictureInPictureWindow() const;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   // Returns the Document Picture-in-Picture window if there is any.
   LocalDOMWindow* documentPictureInPictureWindow() const;
 
@@ -71,7 +71,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
                                             DocumentPictureInPictureOptions*,
                                             ScriptPromiseResolver<DOMWindow>*,
                                             ExceptionState&);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   // Implementation of PictureInPictureController.
   void EnterPictureInPicture(
@@ -86,9 +86,9 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   bool PictureInPictureEnabled() const override;
   Status IsElementAllowed(const HTMLVideoElement&,
                           bool report_failure) const override;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   LocalDOMWindow* GetDocumentPictureInPictureWindow() const override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   // Implementation of PictureInPictureSessionObserver.
   void OnWindowSizeChanged(const gfx::Size&) override;
@@ -135,7 +135,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // initialized successfully.
   bool EnsureService();
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(TARGET_OS_IS_ANDROID)
   // Resolves a call to |CreateDocumentPictureInPictureWindow()|.
   void ResolveOpenDocumentPictureInPicture();
 
@@ -176,7 +176,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // The |ScriptPromiseResolverBase| associated with the most recent call to
   // |CreateDocumentPictureInPictureWindow()| if it has not yet been resolved.
   Member<ScriptPromiseResolver<DOMWindow>> open_document_pip_resolver_;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
   // The Picture-in-Picture element for the associated document.
   Member<HTMLVideoElement> picture_in_picture_element_;
