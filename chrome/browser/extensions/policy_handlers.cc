@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/policy_handlers.h"
 
 #include <stddef.h>
+
 #include <unordered_set>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "components/crx_file/id_util.h"
@@ -42,11 +44,13 @@ bool IsValidIdList(const std::string& extension_ids) {
   std::vector<base::StringPiece> ids = base::SplitStringPiece(
       extension_ids, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  if (ids.size() == 0)
+  if (ids.size() == 0) {
     return false;
+  }
   for (const auto& id : ids) {
-    if (!crx_file::id_util::IdIsValid(std::string(id)))
+    if (!crx_file::id_util::IdIsValid(std::string(id))) {
       return false;
+    }
   }
   return true;
 }
@@ -73,8 +77,9 @@ ExtensionListPolicyHandler::~ExtensionListPolicyHandler() {}
 
 bool ExtensionListPolicyHandler::CheckListEntry(const base::Value& value) {
   const std::string& str = value.GetString();
-  if (allow_wildcards_ && str == "*")
+  if (allow_wildcards_ && str == "*") {
     return true;
+  }
 
   // Make sure str is an extension id.
   return crx_file::id_util::IdIsValid(str);
@@ -115,8 +120,9 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     const base::Value* policy_value,
     base::Value::Dict* extension_dict,
     policy::PolicyErrorMap* errors) {
-  if (!policy_value)
+  if (!policy_value) {
     return true;
+  }
 
   if (!policy_value->is_list()) {
     // This should have been caught in CheckPolicySettings.
@@ -193,6 +199,37 @@ base::Value::Dict ExtensionInstallForceListPolicyHandler::GetPolicyDict(
   return base::Value::Dict();
 }
 
+// ExtensionInstallBlockListPolicyHandler implementation ----------------------
+
+ExtensionInstallBlockListPolicyHandler::ExtensionInstallBlockListPolicyHandler()
+    : list_handler_(policy::key::kExtensionInstallBlocklist,
+                    extensions::pref_names::kInstallDenyList,
+                    /*allow_wildcards*/ true) {}
+
+ExtensionInstallBlockListPolicyHandler::
+    ~ExtensionInstallBlockListPolicyHandler() = default;
+
+bool ExtensionInstallBlockListPolicyHandler::CheckPolicySettings(
+    const policy::PolicyMap& policies,
+    policy::PolicyErrorMap* errors) {
+  return list_handler_.CheckPolicySettings(policies, errors);
+}
+
+void ExtensionInstallBlockListPolicyHandler::ApplyPolicySettings(
+    const policy::PolicyMap& policies,
+    PrefValueMap* prefs) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    // When Lacros is enabled extensions are managed by Lacros, not Ash
+    // (except for some very specific extensions, see `ExtensionsAppRunsInOS`
+    // and `ExtensionsRunsInOS`), so keep the block list empty on the Ash side.
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  list_handler_.ApplyPolicySettings(policies, prefs);
+}
+
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 
 ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(
@@ -207,11 +244,13 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   const base::Value* value = nullptr;
-  if (!CheckAndGetValue(policies, errors, &value))
+  if (!CheckAndGetValue(policies, errors, &value)) {
     return false;
+  }
 
-  if (!value)
+  if (!value) {
     return true;
+  }
 
   if (!value->is_list()) {
     NOTREACHED();
@@ -245,12 +284,14 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
 void ExtensionURLPatternListPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  if (!pref_path_)
+  if (!pref_path_) {
     return;
+  }
   // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* value = policies.GetValueUnsafe(policy_name());
-  if (value)
+  if (value) {
     prefs->SetValue(pref_path_, value->Clone());
+  }
 }
 
 // ExtensionSettingsPolicyHandler implementation  ------------------------------
@@ -260,11 +301,9 @@ ExtensionSettingsPolicyHandler::ExtensionSettingsPolicyHandler(
     : policy::SchemaValidatingPolicyHandler(
           policy::key::kExtensionSettings,
           chrome_schema.GetKnownProperty(policy::key::kExtensionSettings),
-          policy::SCHEMA_ALLOW_UNKNOWN) {
-}
+          policy::SCHEMA_ALLOW_UNKNOWN) {}
 
-ExtensionSettingsPolicyHandler::~ExtensionSettingsPolicyHandler() {
-}
+ExtensionSettingsPolicyHandler::~ExtensionSettingsPolicyHandler() {}
 
 void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     base::Value* policy_value,
@@ -393,18 +432,21 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
   }
 
   // Remove |invalid_keys| from the dictionary.
-  for (const std::string& key : invalid_keys)
+  for (const std::string& key : invalid_keys) {
     policy_value->GetDict().Remove(key);
+  }
 }
 
 bool ExtensionSettingsPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   std::unique_ptr<base::Value> policy_value;
-  if (!CheckAndGetValue(policies, errors, &policy_value))
+  if (!CheckAndGetValue(policies, errors, &policy_value)) {
     return false;
-  if (!policy_value)
+  }
+  if (!policy_value) {
     return true;
+  }
 
   SanitizePolicySettings(policy_value.get(), errors);
   return true;
@@ -414,8 +456,9 @@ void ExtensionSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   std::unique_ptr<base::Value> policy_value;
-  if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
+  if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value) {
     return;
+  }
   SanitizePolicySettings(policy_value.get(), nullptr);
   prefs->SetValue(pref_names::kExtensionManagement,
                   base::Value::FromUniquePtrValue(std::move(policy_value)));

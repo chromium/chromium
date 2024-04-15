@@ -71,6 +71,27 @@ class ExtensionInstallForceListPolicyHandler
                  policy::PolicyErrorMap* errors);
 };
 
+// Class for parsing the list of extensions that are blocklisted.
+class ExtensionInstallBlockListPolicyHandler
+    : public policy::ConfigurationPolicyHandler {
+ public:
+  ExtensionInstallBlockListPolicyHandler();
+  ExtensionInstallBlockListPolicyHandler(
+      const ExtensionInstallBlockListPolicyHandler&) = delete;
+  ExtensionInstallBlockListPolicyHandler& operator=(
+      const ExtensionInstallBlockListPolicyHandler&) = delete;
+  ~ExtensionInstallBlockListPolicyHandler() override;
+
+  // `ConfigurationPolicyHandler`:
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const policy::PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  ExtensionListPolicyHandler list_handler_;
+};
+
 // Implements additional checks for policies that are lists of extension
 // URLPatterns.
 class ExtensionURLPatternListPolicyHandler

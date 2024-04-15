@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/policy_handlers.h"
+
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -11,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
-#include "chrome/browser/extensions/policy_handlers.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -25,6 +27,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #endif
 
 namespace extensions {
@@ -172,8 +178,9 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
             : base::StringPrintf(kTestManagementPolicy4, url.c_str());
     std::optional<base::Value> policy_value =
         base::JSONReader::Read(policy_json, kJsonParseOptions);
-    if (!policy_value)
+    if (!policy_value) {
       return false;
+    }
 
     policy::Schema chrome_schema =
         policy::Schema::Wrap(policy::GetChromeSchemaData());
@@ -474,8 +481,9 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
       "}";
 
   std::string urls;
-  for (size_t i = 0; i < 101; ++i)
+  for (size_t i = 0; i < 101; ++i) {
     urls.append("\"*://example" + base::NumberToString(i) + ".com\",");
+  }
 
   std::string policy =
       base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
@@ -597,5 +605,100 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
   EXPECT_EQ(*sanitized_policy_result, *value);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ExtensionInstallBlockListPolicyHandlerAshTest : public ::testing::Test {
+ public:
+  ExtensionInstallBlockListPolicyHandlerAshTest() = default;
+  ~ExtensionInstallBlockListPolicyHandlerAshTest() override = default;
+
+  const char* pref_name() const {
+    return extensions::pref_names::kInstallDenyList;
+  }
+  const char* policy_key() const {
+    return policy::key::kExtensionInstallBlocklist;
+  }
+
+  void SetUp() override {
+    Test::SetUp();
+    // A logged in user is required in order to enable Lacros.
+    scoped_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    AccountId account_id = AccountId::FromUserEmail("test@gmail.com");
+    scoped_user_manager_->AddUser(account_id);
+    scoped_user_manager_->LoginUser(account_id);
+  }
+
+  void TearDown() override {
+    scoped_user_manager_.Reset();
+    Test::TearDown();
+  }
+
+  void EnableLacros() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
+        /*disabled_features=*/{});
+  }
+
+  void DisableLacros() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
+  }
+
+ private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      scoped_user_manager_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
+       ShouldClearBlockListIfAshBrowserIsDisabled) {
+  EnableLacros();
+
+  policy::PolicyMap policy_map;
+  PrefValueMap prefs;
+
+  policy_map.Set(policy_key(), policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(base::Value::List()
+                                 .Append("abcdefghijklmnopabcdefghijklmnop")
+                                 .Append("*")),
+                 nullptr);
+
+  ExtensionInstallBlockListPolicyHandler handler;
+  handler.ApplyPolicySettings(policy_map, &prefs);
+
+  base::Value* value = nullptr;
+  EXPECT_FALSE(prefs.GetValue(pref_name(), &value));
+}
+
+TEST_F(ExtensionInstallBlockListPolicyHandlerAshTest,
+       ShouldKeepBlockListIfAshBrowserIsEnabled) {
+  DisableLacros();
+
+  policy::PolicyMap policy_map;
+  PrefValueMap prefs;
+
+  policy_map.Set(policy_key(), policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(base::Value::List()
+                                 .Append("abcdefghijklmnopabcdefghijklmnop")
+                                 .Append("*")),
+                 nullptr);
+
+  ExtensionInstallBlockListPolicyHandler handler{};
+  handler.ApplyPolicySettings(policy_map, &prefs);
+
+  base::Value* value = nullptr;
+  EXPECT_TRUE(prefs.GetValue(pref_name(), &value));
+  ASSERT_TRUE(value->is_list());
+
+  auto expected = base::Value::List()
+                      .Append("abcdefghijklmnopabcdefghijklmnop")
+                      .Append("*");
+  ASSERT_EQ(value->GetList(), expected);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
