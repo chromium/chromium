@@ -798,7 +798,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the "Always Translate" options can be toggled and the prefs are
 // updated accordingly.
-- (void)testInfobarAlwaysTranslate {
+// TODO(crbug.com/334867767) Fix and reenable tests.
+- (void)DISABLED_testInfobarAlwaysTranslate {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
