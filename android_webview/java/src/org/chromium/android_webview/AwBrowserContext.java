@@ -18,11 +18,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
+import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.blink.mojom.WebViewMediaIntegrityProvider;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.Origin;
@@ -55,10 +55,10 @@ public class AwBrowserContext implements BrowserContextHandle {
      * looking at the 1-day aggregation of a representative app where users browse multiple domains.
      * The P95 for the metric over 1 day is 15.
      *
-     * @see AwMediaIntegrityProviderKey
+     * @see MediaIntegrityProviderKey
      */
-    private final LruCache<AwMediaIntegrityProviderKey, WebViewMediaIntegrityProvider>
-            mAwMediaIntegrityProviderCache =
+    private final LruCache<MediaIntegrityProviderKey, MediaIntegrityProvider>
+            mMediaIntegrityProviderCache =
                     new LruCache<>(10) {
 
                         private int mEvictionCounter;
@@ -66,9 +66,9 @@ public class AwBrowserContext implements BrowserContextHandle {
                         @Override
                         protected void entryRemoved(
                                 boolean evicted,
-                                AwMediaIntegrityProviderKey key,
-                                WebViewMediaIntegrityProvider oldValue,
-                                WebViewMediaIntegrityProvider newValue) {
+                                MediaIntegrityProviderKey key,
+                                MediaIntegrityProvider oldValue,
+                                MediaIntegrityProvider newValue) {
                             // Log evictions due to lack of space.
                             if (evicted) {
                                 RecordHistogram.recordCount100Histogram(
@@ -102,14 +102,14 @@ public class AwBrowserContext implements BrowserContextHandle {
      *   <li>cloud project number
      * </ul>
      */
-    public static final class AwMediaIntegrityProviderKey {
+    public static final class MediaIntegrityProviderKey {
 
         private final Origin mTopFrameOrigin;
         private final Origin mSourceOrigin;
         @MediaIntegrityApiStatus private final int mRequestMode;
         private final long mCloudProjectNumber;
 
-        public AwMediaIntegrityProviderKey(
+        public MediaIntegrityProviderKey(
                 Origin topFrameOrigin,
                 Origin sourceOrigin,
                 @MediaIntegrityApiStatus int requestMode,
@@ -127,7 +127,7 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         @Override
         public boolean equals(@Nullable Object obj) {
-            if (!(obj instanceof AwMediaIntegrityProviderKey other)) {
+            if (!(obj instanceof MediaIntegrityProviderKey other)) {
                 return false;
             }
             return Objects.equals(this.mTopFrameOrigin, other.mTopFrameOrigin)
@@ -246,15 +246,14 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @Nullable
-    public WebViewMediaIntegrityProvider getCachedAwMediaIntegrityProvider(
-            @NonNull AwMediaIntegrityProviderKey key) {
-        return mAwMediaIntegrityProviderCache.get(key);
+    public MediaIntegrityProvider getCachedMediaIntegrityProvider(
+            @NonNull MediaIntegrityProviderKey key) {
+        return mMediaIntegrityProviderCache.get(key);
     }
 
-    public void putAwMediaIntegrityProviderInCache(
-            @NonNull AwMediaIntegrityProviderKey key,
-            @NonNull WebViewMediaIntegrityProvider provider) {
-        mAwMediaIntegrityProviderCache.put(key, provider);
+    public void putMediaIntegrityProviderInCache(
+            @NonNull MediaIntegrityProviderKey key, @NonNull MediaIntegrityProvider provider) {
+        mMediaIntegrityProviderCache.put(key, provider);
     }
 
     private void migrateGeolocationPreferences() {

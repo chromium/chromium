@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwBrowserContext.AwMediaIntegrityProviderKey;
+import org.chromium.android_webview.AwBrowserContext.MediaIntegrityProviderKey;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.Lifetime;
@@ -135,16 +135,18 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         }
         final AwBrowserContext awBrowserContext = awContents.getBrowserContext();
 
-        final AwMediaIntegrityProviderKey key =
-                new AwMediaIntegrityProviderKey(
+        final MediaIntegrityProviderKey key =
+                new MediaIntegrityProviderKey(
                         sourceOrigin, topLevelOrigin, apiStatus, cloudProjectNumber);
-        WebViewMediaIntegrityProvider cachedProvider =
-                awBrowserContext.getCachedAwMediaIntegrityProvider(key);
+        final MediaIntegrityProvider cachedProvider =
+                awBrowserContext.getCachedMediaIntegrityProvider(key);
         if (cachedProvider != null) {
             RecordHistogram.recordCount100Histogram(
                     "Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2",
                     ++sCacheHitCounter);
-            WebViewMediaIntegrityProvider.MANAGER.bind(cachedProvider, providerRequest);
+            final WebViewMediaIntegrityProvider integrityProvider =
+                    new WebViewMediaIntegrityProviderImpl(cachedProvider);
+            WebViewMediaIntegrityProvider.MANAGER.bind(integrityProvider, providerRequest);
             callback.call(/* error= */ null);
             return;
         }
@@ -164,13 +166,12 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                                         "Android.WebView.MediaIntegrity"
                                                 + ".TokenProviderCreatedCumulativeV2",
                                         ++sProviderCreatedCounter);
-                                WebViewMediaIntegrityProvider integrityProvider =
-                                        new AwMediaIntegrityProviderImpl(provider);
+                                final WebViewMediaIntegrityProvider integrityProvider =
+                                        new WebViewMediaIntegrityProviderImpl(provider);
                                 WebViewMediaIntegrityProvider.MANAGER.bind(
                                         integrityProvider, providerRequest);
                                 callback.call(/* error= */ null);
-                                awBrowserContext.putAwMediaIntegrityProviderInCache(
-                                        key, integrityProvider);
+                                awBrowserContext.putMediaIntegrityProviderInCache(key, provider);
                             }
 
                             @Override
@@ -209,11 +210,12 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     }
 
     @Lifetime.WebView
-    private static class AwMediaIntegrityProviderImpl implements WebViewMediaIntegrityProvider {
+    private static class WebViewMediaIntegrityProviderImpl
+            implements WebViewMediaIntegrityProvider {
         @NonNull private final MediaIntegrityProvider mProvider;
         private int mRequestCounter;
 
-        public AwMediaIntegrityProviderImpl(@NonNull MediaIntegrityProvider provider) {
+        public WebViewMediaIntegrityProviderImpl(@NonNull MediaIntegrityProvider provider) {
             mProvider = provider;
         }
 
