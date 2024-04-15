@@ -245,10 +245,10 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
-        assertIsComboCheckedAtIndex(1, false);
+        assertIsComboCheckedAtIndex(1, true);
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
-        assertIsComboCheckedAtIndex(1, true);
+        assertIsComboCheckedAtIndex(1, false);
     }
 
     @Test
@@ -272,14 +272,9 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
-        assertIsComboCheckedAtIndex(0, false);
-        assertIsComboCheckedAtIndex(1, false);
-        assertIsComboCheckedAtIndex(2, false);
-
-        // Ensure one entry is checked.
-        onView(withText("App 1")).check(matches(isDisplayed()));
-        onView(withText("App 1")).perform(click());
+        assertIsComboCheckedAtIndex(0, true);
         assertIsComboCheckedAtIndex(1, true);
+        assertIsComboCheckedAtIndex(2, true);
 
         // Now verify the Deselect function leaves everything in unchecked state.
         onView(withId(R.id.deselect_button)).check(matches(isDisplayed()));
@@ -287,6 +282,11 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(0, false);
         assertIsComboCheckedAtIndex(1, false);
         assertIsComboCheckedAtIndex(2, false);
+
+        // Ensure one entry gets checked.
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
+        assertIsComboCheckedAtIndex(1, true);
     }
 
     private void setAppsAvailableAndPromoStage(boolean appsAvailable, @DisplayStage int value) {

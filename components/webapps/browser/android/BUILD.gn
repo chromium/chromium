@@ -112,6 +112,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/star_green.png",
     "java/res/drawable/pwa_restore_app_item_background_bottom.xml",
     "java/res/drawable/pwa_restore_app_item_background_middle.xml",
+    "java/res/drawable/pwa_restore_app_item_background_single.xml",
     "java/res/drawable/pwa_restore_app_item_background_top.xml",
     "java/res/drawable/pwa_restore_icon.xml",
     "java/res/drawable/rating_bar.xml",

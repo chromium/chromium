@@ -40,7 +40,7 @@ public class PwaRestoreProperties {
             mAppName = appName;
             mLastUsedDaysAgo = lastUsedDaysAgo;
 
-            mSelected = false;
+            mSelected = true;
         }
 
         public String getId() {

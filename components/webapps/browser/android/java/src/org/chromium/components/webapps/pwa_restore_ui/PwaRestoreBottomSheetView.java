@@ -144,7 +144,10 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
             // item has rounded corners on bottom, and all items in between have no rounded
             // corners).
             if (item == 0) {
-                appView.setBackgroundResource(R.drawable.pwa_restore_app_item_background_top);
+                appView.setBackgroundResource(
+                        appList.size() == 1
+                                ? R.drawable.pwa_restore_app_item_background_single
+                                : R.drawable.pwa_restore_app_item_background_top);
             } else {
                 appView.setBackgroundResource(
                         (item == appList.size() - 1)

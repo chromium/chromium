@@ -23,8 +23,9 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="18dp"
         android:layout_weight="1"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <CheckBox
@@ -32,5 +33,5 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="19dp"
-        android:layout_marginTop="22dp" />
+        android:layout_marginTop="18dp" />
 </LinearLayout>

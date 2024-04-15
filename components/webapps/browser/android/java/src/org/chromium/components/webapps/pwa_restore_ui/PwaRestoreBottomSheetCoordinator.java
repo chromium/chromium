@@ -23,10 +23,6 @@ public class PwaRestoreBottomSheetCoordinator {
     private final PwaRestoreBottomSheetContent mContent;
     private final PwaRestoreBottomSheetMediator mMediator;
 
-    // How long an app can go unused and still be considered 'recent' in terms
-    // of the restore UI.
-    private static final int CUTOFF_FOR_OLDER_APPS_IN_DAYS = 30;
-
     /** Constructs the PwaRestoreBottomSheetCoordinator. */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
