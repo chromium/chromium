@@ -113,6 +113,11 @@ BOOL WaitForKeyboardToAppear() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
+  if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)]) {
+    config.features_enabled.push_back(
+        kAutofillDynamicallyLoadsFieldsForAddressInput);
+  }
+
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
 
@@ -365,6 +370,25 @@ BOOL WaitForKeyboardToAppear() {
                   @"Profile should have been saved.");
 
   [SigninEarlGrey signOut];
+}
+
+// Tests that the user can edit a field in the edit via in the save address
+// flow.
+- (void)testUserData_LocalEditViaBottomSheet {
+  // Fill and submit the form.
+  [self fillPresidentProfileAndShowSaveModal];
+
+  // Edit the profile.
+  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"New York")];
+
+  // TODO(crbug.com/1482269): Update test when save functionality is
+  // implemented.
 }
 
 // Tests the sticky address prompt journey where the prompt remains there when
