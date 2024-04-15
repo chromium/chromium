@@ -353,7 +353,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
                 network::mojom::ReferrerPolicy document_referrer_policy =
                     network::mojom::ReferrerPolicy::kDefault,
                 bool use_secure_document_url = false,
-                Vector<ElementLocator> locators = {}) {
+                Vector<ElementLocator> locators = {},
+                bool disable_preload_scanning = false) {
     HTMLParserOptions options(&GetDocument());
     KURL document_url = KURL("http://whatever.test/");
     if (use_secure_document_url)
@@ -372,7 +373,8 @@ class HTMLPreloadScannerTest : public PageTestBase {
         CreateMediaValuesData(),
         TokenPreloadScanner::ScannerType::kMainDocument,
         /* script_token_scanner=*/nullptr,
-        /* take_preload=*/HTMLPreloadScanner::TakePreloadFn(), locators);
+        /* take_preload=*/HTMLPreloadScanner::TakePreloadFn(), locators,
+        disable_preload_scanning);
   }
 
   void SetUp() override {
@@ -1896,6 +1898,22 @@ TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
         )HTML",
                                       nullptr, false});
       break;
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, PreloadScanDisabled_NoPreloads) {
+  PreloadScannerTestCase test_cases[] = {
+      {"http://example.test", "<img src='bla.gif'>", /* preloaded_url=*/nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<script src='test.js'></script>",
+       /* preloaded_url=*/nullptr, "http://example.test/",
+       ResourceType::kScript, 0}};
+
+  for (const auto& test_case : test_cases) {
+    RunSetUp(kViewportDisabled, kPreloadEnabled,
+             network::mojom::ReferrerPolicy::kDefault, true, {},
+             /* disable_preload_scanning=*/true);
+    Test(test_case);
   }
 }
 
