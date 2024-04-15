@@ -233,6 +233,20 @@ scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
       is_lower_bound ? CalculationOperator::kMax : CalculationOperator::kMin);
 }
 
+bool IsEventTrusted(const Event* event) {
+  // TODO(crbug.com/333844641): verifying the top-level event should be
+  // sufficient, but it's currently not. To be updated when the associated bug
+  // is fixed.
+  while (event) {
+    if (!event->isTrusted()) {
+      return false;
+    }
+    event = event->UnderlyingEvent();
+  }
+
+  return true;
+}
+
 }  // namespace
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
@@ -472,8 +486,18 @@ void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     event.SetDefaultHandled();
-    if (IsClickingEnabled()) {
-      RequestPageEmbededPermissions();
+    if (IsEventTrusted(&event) ||
+        RuntimeEnabledFeatures::DisablePepcSecurityForTestingEnabled()) {
+      if (IsClickingEnabled()) {
+        RequestPageEmbededPermissions();
+      }
+    } else {
+      // For automated testing purposes this behavior can be overridden by
+      // adding '--enable-features=DisablePepcSecurityForTesting' to the
+      // command line when launching the browser.
+      AddConsoleError(
+          "The permission element can only be activated by actual user "
+          "clicks.");
     }
     return;
   }

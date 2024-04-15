@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -145,4 +146,82 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     WaitForDismissEvent(id);
   }
+}
+
+class PermissionElementWithSecurityBrowserTest : public InProcessBrowserTest {
+ public:
+  PermissionElementWithSecurityBrowserTest() {
+    feature_list_.InitWithFeatures({features::kPermissionElement}, {});
+  }
+
+  PermissionElementWithSecurityBrowserTest(
+      const PermissionElementWithSecurityBrowserTest&) = delete;
+  PermissionElementWithSecurityBrowserTest& operator=(
+      const PermissionElementWithSecurityBrowserTest&) = delete;
+
+  ~PermissionElementWithSecurityBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+        browser(),
+        embedded_test_server()->GetURL("/permissions/permission_element.html"),
+        1));
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionElementWithSecurityBrowserTest,
+                       JsClickingDisabledWithoutFeature) {
+  permissions::PermissionRequestObserver permission_observer(web_contents());
+  content::WebContentsConsoleObserver console_observer(web_contents());
+
+  // Clicking via JS should be disabled.
+  ClickElementWithId(web_contents(), "microphone");
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 1u);
+  EXPECT_EQ(
+      console_observer.GetMessageAt(0u),
+      "The permission element can only be activated by actual user clicks.");
+  EXPECT_FALSE(permission_observer.request_shown());
+
+  // Also attempt clicking by creating a MouseEvent.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("document.getElementById($1).dispatchEvent(new "
+                         "MouseEvent('click'));",
+                         "microphone")));
+
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(console_observer.messages().size(), 2u);
+  EXPECT_EQ(
+      console_observer.GetMessageAt(1u),
+      "The permission element can only be activated by actual user clicks.");
+  EXPECT_FALSE(permission_observer.request_shown());
+
+  // Now generate a legacy microphone permission request and wait until it is
+  // observed. Then verify that no other requests have arrived.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "const stream = navigator.mediaDevices.getUserMedia({audio: true});"));
+  permission_observer.Wait();
+  EXPECT_TRUE(permission_observer.request_shown());
+  EXPECT_EQ(console_observer.messages().size(), 2u);
+
+  // Verify that we have observed the non-PEPC initiated request.
+  EXPECT_EQ(
+      permissions::PermissionRequestManager::FromWebContents(web_contents())
+          ->Requests()
+          .size(),
+      1U);
+  EXPECT_FALSE(
+      permissions::PermissionRequestManager::FromWebContents(web_contents())
+          ->Requests()[0]
+          ->IsEmbeddedPermissionElementInitiated());
 }
