@@ -341,14 +341,18 @@ void WebNNGraphImplBackendTest::SetUp() {
   }
   const std::string_view current_test_name =
       ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  // Keep this list sorted by the operator being tested.
   static auto kSupportedTests = base::MakeFixedFlatSet<std::string_view>({
-      "BuildAndComputeSingleOperatorElementWiseBinary",
       "BuildAndComputeSingleOperatorCast",
+      "BuildAndComputeSingleOperatorClamp",
       "BuildAndComputeSingleOperatorConcat",
       "BuildAndComputeConcatWithConstants",
-      "BuildAndComputeSingleOperatorClamp",
-      "BuildAndComputeSingleOperatorSoftsign",
+      "BuildAndComputeSingleOperatorElementWiseBinary",
+      "BuildAndComputeSingleOperatorAveragePool2d",
+      "BuildAndComputeSingleOperatorL2Pool2d",
+      "BuildAndComputeSingleOperatorMaxPool2d",
       "BuildAndComputeSingleOperatorRelu",
+      "BuildAndComputeSingleOperatorSoftsign",
       "BuildAndComputeSingleOperatorTranspose",
       "BuildAndComputeGraphWithTwoTranspose",
   });

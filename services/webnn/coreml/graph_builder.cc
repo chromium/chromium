@@ -118,6 +118,10 @@ constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
 constexpr char kOpLogicalLess[] = "less";
 constexpr char kOpLogicalLessEqual[] = "less_equal";
+// Pooling operators.
+constexpr char kOpAvgPoolTypeName[] = "avg_pool";
+constexpr char kOpL2PoolTypeName[] = "l2_pool";
+constexpr char kOpMaxPoolTypeName[] = "max_pool";
 
 // General op params that are shared across multiple ops.
 constexpr char kOpParamX[] = "x";
@@ -126,6 +130,17 @@ constexpr char kOpDataTypeName[] = "dtype";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
+
+static constexpr auto kFloatDataTypes =
+    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+        {CoreML::Specification::MILSpec::DataType::FLOAT16,
+         CoreML::Specification::MILSpec::DataType::FLOAT32});
+
+static constexpr auto kFloatsAndInt32DataTypes =
+    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+        {CoreML::Specification::MILSpec::DataType::FLOAT16,
+         CoreML::Specification::MILSpec::DataType::FLOAT32,
+         CoreML::Specification::MILSpec::DataType::INT32});
 
 // Maps to types defined in
 // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
@@ -556,6 +571,10 @@ GraphBuilder::BuildCoreMLModel() {
             *operation->get_element_wise_unary(), block));
         break;
       }
+      case mojom::Operation::Tag::kPool2d: {
+        RETURN_IF_ERROR(AddOperationForPool2d(*operation->get_pool2d(), block));
+        break;
+      }
       case mojom::Operation::Tag::kRelu: {
         RETURN_IF_ERROR(AddOperationForRelu(*operation->get_relu(), block));
         break;
@@ -588,7 +607,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kPad:
-      case mojom::Operation::Tag::kPool2d:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
@@ -806,14 +824,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConcat(
   // Note that BOOL is also supported by CoreML, but WebNN does not have a
   // corresponding BOOL type. See docs here:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.concat
-  static constexpr auto kSupportedConcatOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32});
   if (base::ranges::any_of(
           operation.input_operand_ids, [&](uint64_t input_operand_id) {
-            return !kSupportedConcatOpsTypes.contains(
+            return !kFloatsAndInt32DataTypes.contains(
                 GetOperandInfo(input_operand_id).mil_data_type);
           })) {
     return NewNotSupportedError("Unsupported input datatype.");
@@ -850,16 +863,9 @@ GraphBuilder::AddOperationForElementwiseBinary(
       GetOperandInfo(operation.lhs_operand_id);
   const OperandInfo& rhs_operand_info = GetOperandInfo(
       operation.rhs_operand_id);
-  // Input keys (x, y) and supported types are defined in coremltools.
-  // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/elementwise_binary.py#L33
-  static constexpr auto kSupportedBinaryOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32});
 
-  if (!kSupportedBinaryOpsTypes.contains(lhs_operand_info.mil_data_type) ||
-      !kSupportedBinaryOpsTypes.contains(rhs_operand_info.mil_data_type)) {
+  if (!kFloatsAndInt32DataTypes.contains(lhs_operand_info.mil_data_type) ||
+      !kFloatsAndInt32DataTypes.contains(rhs_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -933,9 +939,8 @@ GraphBuilder::AddOperationForElementwiseBinary(
     auto* named_value_type = op->add_outputs();
     named_value_type->set_name(internal_output_name);
     auto& value_type = *named_value_type->mutable_type();
-    PopulateValueTypeFromOperand(
-        *graph_info_->id_to_operand_map.at(operation.output_operand_id),
-        value_type);
+    PopulateValueTypeFromOperand(GetOperand(operation.output_operand_id),
+                                 value_type);
     value_type.mutable_tensortype()->set_datatype(
         CoreML::Specification::MILSpec::DataType::BOOL);
 
@@ -1001,17 +1006,96 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(
+    const mojom::Pool2d& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
+    // TODO: crbug.com/334914466 - Support channels-last by adding transposes.
+    return NewNotSupportedError("Unsupported input layout.");
+  }
+
+  if (operation.dilations->height != 1 || operation.dilations->width != 1) {
+    // TODO: crbug.com/334914466 - Support dilations.
+    return NewNotSupportedError("Unsupported dilations.");
+  }
+
+  static constexpr char kParamKernelSizes[] = "kernel_sizes";
+  static constexpr char kParamStrides[] = "strides";
+  static constexpr char kParamPadType[] = "pad_type";
+  static constexpr char kParamPadTypeValue[] = "custom";
+  static constexpr char kParamPad[] = "pad";
+  static constexpr char kParamExcludePaddingFromAverage[] =
+      "exclude_padding_from_average";
+  static constexpr char kParamCeilMode[] = "ceil_mode";
+
+  // CoreML supports 1D, 2D, and 3D pooling, but WebNN only supports 2D.
+  static constexpr size_t kSpatialDimensions = 2u;
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  switch (operation.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      op->set_type(kOpAvgPoolTypeName);
+
+      // The padding elements are not counted as part of the averaging
+      // calculation.
+      SetInputWithValue(*op->mutable_inputs(), kParamExcludePaddingFromAverage,
+                        CreateScalarImmediateValue(true));
+      break;
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      op->set_type(kOpL2PoolTypeName);
+      break;
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      op->set_type(kOpMaxPoolTypeName);
+      break;
+  }
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  const std::array<const int32_t, kSpatialDimensions> kernel_sizes = {
+      base::checked_cast<int32_t>(operation.window_dimensions->height),
+      base::checked_cast<int32_t>(operation.window_dimensions->width),
+  };
+  const std::array<const int32_t, kSpatialDimensions> strides = {
+      base::checked_cast<int32_t>(operation.strides->height),
+      base::checked_cast<int32_t>(operation.strides->width),
+  };
+  const std::array<const int32_t, 4> pad = {
+      base::checked_cast<int32_t>(operation.padding->beginning->height),
+      base::checked_cast<int32_t>(operation.padding->ending->height),
+      base::checked_cast<int32_t>(operation.padding->beginning->width),
+      base::checked_cast<int32_t>(operation.padding->ending->width)};
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kParamKernelSizes, Create1DTensorImmediateValue<int32_t>(kernel_sizes)},
+       {kParamStrides, Create1DTensorImmediateValue<int32_t>(strides)},
+       {kParamPadType, CreateStringImmediateValue(kParamPadTypeValue)},
+       {kParamPad, Create1DTensorImmediateValue<int32_t>(pad)},
+       // TODO: crbug.com/334914466 - Support `ceil_mode` by calculating the
+       // expected output shape and comparing it to the shape of the output
+       // operand. Note that Core ML requires padding to be symmetric if
+       // `ceil_mode` is true.
+       {kParamCeilMode, CreateScalarImmediateValue(false)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForRelu(
     const mojom::Relu& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
 
-  static constexpr auto kSupportedReluOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32});
-  if (!kSupportedReluOpsTypes.contains(input_operand_info.mil_data_type)) {
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -1031,11 +1115,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftsign(
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
 
-  static constexpr auto kSupportedSoftsignOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32});
-  if (!kSupportedSoftsignOpsTypes.contains(input_operand_info.mil_data_type)) {
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -1057,12 +1137,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
   // Note that BOOL is also supported by CoreML, but WebNN does not have a
   // corresponding BOOL type. See docs here:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_operation.transpose
-  static constexpr auto kSupportedTransposeOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32});
-  if (!kSupportedTransposeOpsTypes.contains(input_operand_info.mil_data_type)) {
+  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -1089,19 +1164,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
     const mojom::Conv2d& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
-  // Input keys and supported types are defined in coremltools.
-  // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/conv.py#L24
-  static constexpr auto kSupportedConv2dOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32});
 
   if (operation.kind != mojom::Conv2d::Kind::kDirect) {
     // TODO: support transposed conv2d.
     return NewNotSupportedError("Unsupported conv2d kind.");
   }
 
-  if (!kSupportedConv2dOpsTypes.contains(input_operand.mil_data_type)) {
+  if (!kFloatDataTypes.contains(input_operand.mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
 
@@ -1257,12 +1326,7 @@ base::expected<void, mojom::ErrorPtr>
 GraphBuilder::PopulateConstantOpFromOperand(
     uint64_t constant_id,
     CoreML::Specification::MILSpec::Operation& op) {
-  static constexpr auto kSupportedConstOpsTypes =
-      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-          {CoreML::Specification::MILSpec::DataType::FLOAT16,
-           CoreML::Specification::MILSpec::DataType::FLOAT32,
-           CoreML::Specification::MILSpec::DataType::INT32});
-  if (!kSupportedConstOpsTypes.contains(
+  if (!kFloatsAndInt32DataTypes.contains(
           GetOperandInfo(constant_id).mil_data_type)) {
     return NewNotSupportedError("Unsupported input datatype.");
   }
@@ -1361,9 +1425,6 @@ void GraphBuilder::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
                                      operand.data_type, mil_data_type))
             .second);
 }
-
-
-
 
 base::expected<void, mojom::ErrorPtr>
 GraphBuilder::SetupMlPackageDirStructure() {
