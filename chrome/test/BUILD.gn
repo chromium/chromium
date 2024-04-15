@@ -5649,6 +5649,7 @@ if (is_chromeos_lacros) {
       "../browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros_browsertest.cc",
       "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
+      "../browser/media/webrtc/capture_policy_utils_browsertest.cc",
       "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
       "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_delegate_browsertest.cc",

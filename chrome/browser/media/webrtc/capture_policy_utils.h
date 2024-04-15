@@ -47,6 +47,8 @@ extern const char kManagedMultiScreenCaptureAllowedForUrls[];
 // Sets a multi capture service mock for testing.
 void SetMultiCaptureServiceForTesting(
     crosapi::mojom::MultiCaptureService* service);
+
+crosapi::mojom::MultiCaptureService* GetMultiCaptureService();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Gets the highest capture level that the requesting origin is allowed to

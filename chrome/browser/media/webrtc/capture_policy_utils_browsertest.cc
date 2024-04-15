@@ -8,13 +8,20 @@
 #include <vector>
 
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -25,14 +32,21 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
-
 constexpr char kValidIsolatedAppId1[] =
     "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic";
+}  // namespace
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+
 constexpr char kValidIsolatedAppId2[] =
     "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
@@ -316,3 +330,34 @@ INSTANTIATE_TEST_SUITE_P(
                         .expected_forbidden_origins = {kValidIsolatedAppId1,
                                                        kValidIsolatedAppId2},
                     })));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+using CaptureUtilsBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest, MultiCaptureServiceExists) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>() <
+      static_cast<int>(crosapi::mojom::MultiCaptureService::MethodMinVersions::
+                           kIsMultiCaptureAllowedMinVersion)) {
+    GTEST_SKIP();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  EXPECT_TRUE(capture_policy::GetMultiCaptureService());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureUtilsBrowserTest,
+                       NoPolicySetMultiCaptureServiceMaybeExists) {
+  Browser* current_browser = browser();
+  TabStripModel* current_tab_strip_model = current_browser->tab_strip_model();
+  content::WebContents* current_web_contents =
+      current_tab_strip_model->GetWebContentsAt(0);
+
+  base::test::TestFuture<bool> future;
+  capture_policy::CheckGetAllScreensMediaAllowed(
+      current_web_contents->GetBrowserContext(), GURL(kValidIsolatedAppId1),
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get<bool>());
+}

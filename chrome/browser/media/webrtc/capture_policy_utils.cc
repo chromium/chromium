@@ -58,30 +58,6 @@ namespace {
 crosapi::mojom::MultiCaptureService* g_multi_capture_service_for_testing =
     nullptr;
 
-crosapi::mojom::MultiCaptureService* GetMultiCaptureService() {
-  if (g_multi_capture_service_for_testing) {
-    return g_multi_capture_service_for_testing;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  const int multi_capture_service_version =
-      lacros_service
-          ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>();
-  if (multi_capture_service_version >=
-      static_cast<int>(crosapi::mojom::MultiCaptureService::MethodMinVersions::
-                           kIsMultiCaptureAllowedMinVersion)) {
-    return lacros_service->GetRemote<crosapi::mojom::MultiCaptureService>()
-        .get();
-  }
-  return nullptr;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->multi_capture_service_ash();
-#endif
-}
-
 void IsGetAllScreensMediaAllowedForIwaResultReceived(
     base::OnceCallback<void(bool)> callback,
     const GURL& url,
@@ -150,6 +126,30 @@ void SetMultiCaptureServiceForTesting(
   CHECK_IS_TEST();
   CHECK(!g_multi_capture_service_for_testing);
   g_multi_capture_service_for_testing = service;
+}
+
+crosapi::mojom::MultiCaptureService* GetMultiCaptureService() {
+  if (g_multi_capture_service_for_testing) {
+    return g_multi_capture_service_for_testing;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  const int multi_capture_service_version =
+      lacros_service
+          ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>();
+  if (multi_capture_service_version >=
+      static_cast<int>(crosapi::mojom::MultiCaptureService::MethodMinVersions::
+                           kIsMultiCaptureAllowedMinVersion)) {
+    return lacros_service->GetRemote<crosapi::mojom::MultiCaptureService>()
+        .get();
+  }
+  return nullptr;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->multi_capture_service_ash();
+#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
