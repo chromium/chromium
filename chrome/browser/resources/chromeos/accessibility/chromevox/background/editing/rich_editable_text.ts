@@ -116,7 +116,8 @@ export class RichEditableText extends AutomationEditableText {
   }
 
   override onUpdate(intents: AutomationIntent[]): void {
-    const root = this.node_.root;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const root = this.node_.root!;
     if (!root.selectionStartObject || !root.selectionEndObject ||
         root.selectionStartOffset === undefined ||
         root.selectionEndOffset === undefined) {

@@ -11,8 +11,8 @@ import {OutputNodeSpan} from '../output/output_types.js';
 
 import {ChromeVoxEditableTextBase, TextChangeEvent} from './editable_text_base.js';
 
-const AutomationIntent = chrome.automation.AutomationIntent;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationIntent = chrome.automation.AutomationIntent;
+type AutomationNode = chrome.automation.AutomationNode;
 const StateType = chrome.automation.StateType;
 
 /**
@@ -20,33 +20,30 @@ const StateType = chrome.automation.StateType;
  * for automation tree text fields.
  */
 export class AutomationEditableText extends ChromeVoxEditableTextBase {
-  /** @param {!AutomationNode} node */
-  constructor(node) {
-    if (!node.state.editable) {
+  private lineBreaks_: number[];
+  protected node_: AutomationNode;
+
+  constructor(node: AutomationNode) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!node.state![StateType.EDITABLE]) {
       throw Error('Node must have editable state set to true.');
     }
     const value = AutomationEditableText.getProcessedValue_(node) ?? '';
     const lineBreaks = AutomationEditableText.getLineBreaks_(value);
-    const start = node.textSelStart;
-    const end = node.textSelEnd;
+    const start = node.textSelStart!;
+    const end = node.textSelEnd!;
 
     super(
         value, Math.min(start, end, value.length),
         Math.min(Math.max(start, end), value.length),
-        node.state[StateType.PROTECTED] /**password*/, ChromeVox.tts);
-    /** @private {!Array<number>} */
+        node.state![StateType.PROTECTED] /**password*/, ChromeVox.tts);
     this.lineBreaks_ = lineBreaks;
-    /** @override */
-    this.multiline = node.state[StateType.MULTILINE] || false;
-    /** @protected {!AutomationNode} */
+    this.multiline = node.state![StateType.MULTILINE] || false;
     this.node_ = node;
   }
 
-  /**
-   * Called when the text field has been updated.
-   * @param {!Array<AutomationIntent>} intents
-   */
-  onUpdate(intents) {
+  /** Called when the text field has been updated. */
+  onUpdate(_intents: AutomationIntent[]): void {
     const oldValue = this.value;
     const oldStart = this.start;
     const oldEnd = this.end;
@@ -64,22 +61,17 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     this.outputBraille_(oldValue, oldStart, oldEnd);
   }
 
-  /**
-   * Returns true if selection starts on the first line.
-   */
-  isSelectionOnFirstLine() {
+  /** Returns true if selection starts on the first line. */
+  isSelectionOnFirstLine(): boolean {
     return this.getLineIndex(this.start) === 0;
   }
 
-  /**
-   * Returns true if selection ends on the last line.
-   */
-  isSelectionOnLastLine() {
+  /** Returns true if selection ends on the last line. */
+  isSelectionOnLastLine(): boolean {
     return this.getLineIndex(this.end) >= this.lineBreaks_.length - 1;
   }
 
-  /** @override */
-  getLineIndex(charIndex) {
+  override getLineIndex(charIndex: number): number {
     let lineIndex = 0;
     while (charIndex > this.lineBreaks_[lineIndex]) {
       lineIndex++;
@@ -87,8 +79,7 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return lineIndex;
   }
 
-  /** @override */
-  getLineStart(lineIndex) {
+  override getLineStart(lineIndex: number): number {
     if (lineIndex === 0) {
       return 0;
     }
@@ -98,13 +89,11 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return this.lineBreaks_[lineIndex - 1] + 1;
   }
 
-  /** @override */
-  getLineEnd(lineIndex) {
+  override getLineEnd(lineIndex: number): number {
     return this.lineBreaks_[lineIndex];
   }
 
-  /** @private */
-  getLineIndexForBrailleOutput_(oldStart) {
+  private getLineIndexForBrailleOutput_(oldStart: number): number {
     let lineIndex = this.getLineIndex(this.start);
     // Output braille at the end of the selection that changed, if start and end
     // differ.
@@ -114,8 +103,8 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return lineIndex;
   }
 
-  /** @private */
-  getTextFromIndexAndStart_(lineIndex, lineStart) {
+  private getTextFromIndexAndStart_(
+      lineIndex: number, lineStart: number): string {
     const lineEnd = this.getLineEnd(lineIndex);
     let lineText = this.value.substr(lineStart, lineEnd - lineStart);
 
@@ -128,8 +117,8 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return lineText;
   }
 
-  /** @private */
-  outputBraille_(oldValue, oldStart, oldEnd) {
+  private outputBraille_(
+      _oldValue: string, oldStart: number, _oldEnd: number): void {
     const lineIndex = this.getLineIndexForBrailleOutput_(oldStart);
     const lineStart = this.getLineStart(lineIndex);
     let lineText = this.getTextFromIndexAndStart_(lineIndex, lineStart);
@@ -151,12 +140,7 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
         new NavBraille({text: value, startIndex, endIndex}));
   }
 
-  /**
-   * @param {!AutomationNode} node
-   * @return {string|undefined}
-   * @private
-   */
-  static getProcessedValue_(node) {
+  private static getProcessedValue_(node: AutomationNode): string|undefined {
     let value = node.value;
     if (node.inputType === 'tel') {
       value = value?.trimEnd();
@@ -164,13 +148,8 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
     return value;
   }
 
-  /**
-   * @param {string} value
-   * @return {!Array<number>}
-   * @private
-   */
-  static getLineBreaks_(value) {
-    const lineBreaks = [];
+  private static getLineBreaks_(value: string): number[] {
+    const lineBreaks: number[] = [];
     const lines = value.split('\n');
     let total = 0;
     for (let i = 0; i < lines.length; i++) {
