@@ -36,7 +36,7 @@ public final class ToolbarFeatures {
                     ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                             ChromeFeatureList.DYNAMIC_TOP_CHROME,
                             USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM,
-                            false);
+                            true);
 
     private static Boolean sTabStripLayoutOptimizationEnabledForTesting;
 

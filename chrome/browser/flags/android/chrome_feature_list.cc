@@ -655,7 +655,7 @@ BASE_FEATURE(kDrawWebEdgeToEdge,
 
 BASE_FEATURE(kDynamicTopChrome,
              "DynamicTopChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",

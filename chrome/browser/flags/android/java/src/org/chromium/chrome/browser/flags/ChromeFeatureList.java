@@ -575,7 +575,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDrawNativeEdgeToEdge =
             newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawWebEdgeToEdge = newCachedFlag(DRAW_WEB_EDGE_TO_EDGE, false);
-    public static final CachedFlag sDynamicTopChrome = newCachedFlag(DYNAMIC_TOP_CHROME, false);
+    public static final CachedFlag sDynamicTopChrome = newCachedFlag(DYNAMIC_TOP_CHROME, true);
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             newCachedFlag(FEED_LOADING_PLACEHOLDER, false);

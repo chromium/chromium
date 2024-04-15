@@ -6713,24 +6713,6 @@
             ]
         }
     ],
-    "DynamicTopChrome": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "use_toolbar_bg_color_for_strip_transition_scrim": "true"
-                    },
-                    "enable_features": [
-                        "DynamicTopChrome"
-                    ]
-                }
-            ]
-        }
-    ],
     "EdgeToEdgeAndroid": [
         {
             "platforms": [
