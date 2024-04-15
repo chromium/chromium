@@ -104,6 +104,7 @@ class ReadAnythingAppController
       double speech_rate,
       base::Value::Dict voices,
       read_anything::mojom::HighlightGranularity granularity) override;
+  // TODO: b/295526868 - rename this to SetLanguageCode here and in the mojom.
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
 

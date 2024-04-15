@@ -985,27 +985,24 @@ void ReadAnythingAppModel::ToggleLinksEnabled() {
 std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
   std::vector<std::string> font_choices_;
 
-  if (base::Contains(kLanguagesSupportedByPoppins, default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByPoppins, language_code())) {
     font_choices_.push_back("Poppins");
   }
   font_choices_.push_back("Sans-serif");
   font_choices_.push_back("Serif");
-  if (base::Contains(kLanguagesSupportedByComicNeue, default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByComicNeue, language_code())) {
     font_choices_.push_back("Comic Neue");
   }
-  if (base::Contains(kLanguagesSupportedByLexendDeca,
-                     default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByLexendDeca, language_code())) {
     font_choices_.push_back("Lexend Deca");
   }
-  if (base::Contains(kLanguagesSupportedByEbGaramond,
-                     default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByEbGaramond, language_code())) {
     font_choices_.push_back("EB Garamond");
   }
-  if (base::Contains(kLanguagesSupportedByStixTwoText,
-                     default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByStixTwoText, language_code())) {
     font_choices_.push_back("STIX Two Text");
   }
-  if (base::Contains(kLanguagesSupportedByAndika, default_language_code())) {
+  if (base::Contains(kLanguagesSupportedByAndika, language_code())) {
     font_choices_.push_back("Andika");
   }
   return font_choices_;

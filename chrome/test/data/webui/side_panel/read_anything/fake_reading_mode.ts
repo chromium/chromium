@@ -256,7 +256,7 @@ export class FakeReadingMode {
       _foregroundColor: number, _backgroundColor: number, _lineSpacing: number,
       _letterSpacing: number) {}
 
-  // Sets the default language. Used by tests only.
+  // Sets the language. Used by tests only.
   setLanguageForTesting(_code: string) {}
 
   // Called when the side panel has finished loading and it's safe to call

@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
@@ -1099,9 +1100,7 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
 }
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
-  // TODO(crbug.com/1474951): Instead of returning the default browser
-  // language we should use the page language.
-  return model_.default_language_code();
+  return model_.language_code();
 }
 
 void ReadAnythingAppController::OnConnected() {
@@ -1368,7 +1367,7 @@ void ReadAnythingAppController::SetLanguageForTesting(
 
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
-  model_.set_default_language_code(code);
+  model_.set_language_code(code);
 
   // Signal to the WebUI that the supported fonts may have changed.
   ExecuteJavaScript("chrome.readingMode.updateFonts();");

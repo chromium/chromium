@@ -211,7 +211,7 @@ declare namespace chrome {
         foregroundColor: number, backgroundColor: number, lineSpacing: number,
         letterSpacing: number): void;
 
-    // Sets the default language. Used by tests only.
+    // Sets the page language. Used by tests only.
     function setLanguageForTesting(code: string): void;
 
     // Called when the side panel has finished loading and it's safe to call

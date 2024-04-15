@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
@@ -26,6 +27,9 @@
 #include "components/pdf/common/pdf_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_driver.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
@@ -221,6 +225,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   TabStripModelObserver::StopObservingAll(this);
+  translate_observation_.Reset();
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
@@ -433,6 +438,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
     const std::string& code) {
+  default_language_code_ = code;
   page_->SetDefaultLanguageCode(code);
 }
 
@@ -548,6 +554,23 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     return;
   }
 
+  // Observe the new contents so we can get the page language once it's
+  // determined.
+  if (ChromeTranslateClient* translate_client =
+          ChromeTranslateClient::FromWebContents(contents)) {
+    translate::TranslateDriver* driver = translate_client->GetTranslateDriver();
+    // If the page was already open when Reading Mode opened, then we're already
+    // observing the page, so just set the language.
+    if (translate_observation_.IsObservingSource(driver)) {
+      const std::string& source_language =
+          translate_client->GetLanguageState().source_language();
+      SetLanguageCode(source_language);
+      translate_observation_.Reset();
+    } else {
+      translate_observation_.Observe(driver);
+    }
+  }
+
   if (is_pdf) {
     // What happens if there are multiple such `rfhs`?
     contents->ForEachRenderFrameHost([this](content::RenderFrameHost* rfh) {
@@ -570,6 +593,26 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
+}
+
+void ReadAnythingUntrustedPageHandler::SetLanguageCode(
+    const std::string& code) {
+  if (code.empty() || code == translate::kUnknownLanguageCode) {
+    page_->SetDefaultLanguageCode(default_language_code_);
+  } else {
+    page_->SetDefaultLanguageCode(code);
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  SetLanguageCode(details.adopted_language);
+  translate_observation_.Reset();
+}
+
+void ReadAnythingUntrustedPageHandler::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* driver) {
+  translate_observation_.Reset();
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {
