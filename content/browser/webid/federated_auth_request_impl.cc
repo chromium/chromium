@@ -940,14 +940,9 @@ void FederatedAuthRequestImpl::RequestToken(
             mojo::ReportBadMessage("FedCM button mode is not enabled.");
             return;
           }
-          if (!had_transient_user_activation_) {
-            // TODO(crbug.com/1487270): use a more specific error.
-            CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                     TokenStatus::kUnhandledRequest,
-                                     /*token_error=*/std::nullopt,
-                                     /*should_delay_callback=*/false);
-            return;
-          }
+          // We fail sooner before, but just to double check, we assert that
+          // we are inside a user gesture here again.
+          CHECK(had_transient_user_activation_);
         }
       }
       if (ShouldFailBeforeFetchingAccounts(idp_ptr->config->config_url)) {
