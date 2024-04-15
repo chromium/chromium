@@ -101,6 +101,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnableDownloadWarningImprovements,
        std::cref(safe_browsing::kDeepScanningPromptRemoval),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kDownloadReportWithoutUserDecision),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
       // Override for --privacy-sandbox-ads-apis.
       {switches::kEnablePrivacySandboxAdsApis,
