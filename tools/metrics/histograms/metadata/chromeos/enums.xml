@@ -289,6 +289,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IncorrectReports"/>
 </enum>
 
+<enum name="BooleanDistillable">
+  <int value="0" label="Page not distillable"/>
+  <int value="1" label="Page distillable"/>
+</enum>
+
 <enum name="BooleanNewAccount">
   <int value="0" label="Existing account"/>
   <int value="1" label="New account"/>

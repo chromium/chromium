@@ -2300,6 +2300,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Mahi.ContextMenuView.Distillable"
+    enum="BooleanDistillable" expires_after="2025-04-09">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records whether the page is distillable when Mahi menu is requested to show.
+    Emitted when user right clicks and Mahi menu is requested.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
     enum="ChromeOSMessageCenterScrollActionReason" expires_after="2024-07-28">
   <owner>leandre@chromium.org</owner>

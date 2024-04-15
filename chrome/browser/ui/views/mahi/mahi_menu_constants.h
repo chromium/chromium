@@ -34,6 +34,8 @@ enum class MahiMenuButton {
 
 inline constexpr char kMahiContextMenuButtonClickHistogram[] =
     "ChromeOS.Mahi.ContextMenuView.ButtonClicked";
+inline constexpr char kMahiContextMenuDistillableHistogram[] =
+    "ChromeOS.Mahi.ContextMenuView.Distillable";
 
 }  // namespace chromeos::mahi
 

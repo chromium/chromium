@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -193,6 +195,36 @@ TEST_F(MahiMenuControllerTest, PrefChange) {
   EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
   EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
       menu_controller()->menu_widget_for_test()->GetContentsView()));
+}
+
+TEST_F(MahiMenuControllerTest, DistillableMetrics) {
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
+                                     0);
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram,
+                                     false, 0);
+
+  ChangePageDistillability(false);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
+                                     0);
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram,
+                                     false, 1);
+
+  // If page is not distillable, then menu widget should not be triggered.
+  ChangePageDistillability(true);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
+                                     1);
+  histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram,
+                                     false, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

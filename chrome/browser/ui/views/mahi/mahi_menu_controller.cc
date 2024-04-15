@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
@@ -33,11 +35,18 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
     return;
   }
 
+  bool page_distillable =
+      ::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable();
+
+  // Records metric of whether the page is distillable when Mahi menu is
+  // requested to show.
+  base::UmaHistogramBoolean(kMahiContextMenuDistillableHistogram,
+                            page_distillable);
+
   // Only shows mahi menu for distillable pages or when the switch
   // `kUseFakeMahiManager` is enabled.
-  if (!::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kUseFakeMahiManager)) {
+  if (!page_distillable && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                               chromeos::switches::kUseFakeMahiManager)) {
     return;
   }
 
