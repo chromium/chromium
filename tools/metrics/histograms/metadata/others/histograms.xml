@@ -7620,7 +7620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkDuration" units="ms"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7631,7 +7631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkEstimatedTokensPerSecond.{Stage}"
-    units="tk/s" expires_after="2024-09-29">
+    units="tk/s" expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7646,7 +7646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkSuccess" enum="Boolean"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7657,7 +7657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.BenchmarkVeryLowReason"
-    enum="VeryLowPerformanceReason" expires_after="2024-08-18">
+    enum="VeryLowPerformanceReason" expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7667,7 +7667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.DeviceHeapSize.{GpuType}" units="MB"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7681,7 +7681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuBlockedReason" enum="GpuBlockedReason"
-    expires_after="2024-08-18">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7691,7 +7691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
-    expires_after="2024-09-15">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7701,7 +7701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7711,7 +7711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.LoadPlatformModelStatus"
-    enum="LoadPlatformModelStatus" expires_after="2024-10-08">
+    enum="LoadPlatformModelStatus" expires_after="2024-10-15">
   <owner>jmpollock@chromium.org</owner>
   <owner>yich@google.com</owner>
   <summary>
@@ -7721,7 +7721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.MaxBufferSize.{GpuType}" units="MB"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7735,7 +7735,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
-    expires_after="2024-09-29">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7749,7 +7749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.TokenCount.{Stage}" units="tokens"
-    expires_after="2024-05-30">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -7763,7 +7763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OnDeviceModel.TokensPerSecond.{Stage}" units="tk/s"
-    expires_after="2024-05-30">
+    expires_after="2024-10-15">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
