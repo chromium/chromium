@@ -88,14 +88,7 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
       changed_ = PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
-  String ToString() const {
-    String s = ToJSON()->ToJSONString();
-#if DCHECK_IS_ON()
-    return debug_name_ + String::Format(" %p ", this) + s;
-#else
-    return s;
-#endif
-  }
+  String ToString() const;
 
   virtual std::unique_ptr<JSONObject> ToJSON() const;
 

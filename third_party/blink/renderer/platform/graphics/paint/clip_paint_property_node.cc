@@ -77,7 +77,9 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
   json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
-  if (state_.layout_clip_rect_excluding_overlay_scrollbars) {
+  if (state_.layout_clip_rect_excluding_overlay_scrollbars &&
+      *state_.layout_clip_rect_excluding_overlay_scrollbars !=
+          state_.layout_clip_rect_) {
     json->SetString(
         "rectExcludingOverlayScrollbars",
         String(state_.layout_clip_rect_excluding_overlay_scrollbars->Rect()

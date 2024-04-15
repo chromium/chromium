@@ -61,9 +61,17 @@ const PaintPropertyNode& PaintPropertyNode::LowestCommonAncestorInternal(
   return *a_ptr;
 }
 
+String PaintPropertyNode::ToString() const {
+  String s = ToJSON()->ToJSONString();
+#if DCHECK_IS_ON()
+  return debug_name_ + " " + s;
+#else
+  return s;
+#endif
+}
+
 std::unique_ptr<JSONObject> PaintPropertyNode::ToJSON() const {
   auto json = std::make_unique<JSONObject>();
-  json->SetString("this", String::Format("%p", this));
   if (Parent()) {
     json->SetString("parent", String::Format("%p", Parent()));
   }
@@ -127,7 +135,12 @@ void PropertyTreePrinter::BuildTreeString(StringBuilder& string_builder,
   for (unsigned i = 0; i < indent; i++) {
     string_builder.Append(' ');
   }
-  string_builder.Append(node.ToString());
+
+  string_builder.Append(node.DebugName());
+  string_builder.Append(" ");
+  auto json = node.ToJSON();
+  json->Remove("parent");
+  string_builder.Append(json->ToJSONString());
   string_builder.Append("\n");
 
   for (const auto& child_node : nodes_) {

@@ -80,7 +80,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleTransformTreePath) {
       transformed_object_properties->Transform()->ToTreeString();
   EXPECT_THAT(transform_path_as_string.Ascii().c_str(),
               testing::MatchesRegex("root .*\"scroll\".*"
-                                    "  .*\"parent\".*"
+                                    "  .*\"in_subtree_of_page_scale\".*"
                                     "    .*\"translation2d\".*"
                                     "      .*\"matrix\".*"));
 }
@@ -111,7 +111,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleEffectTreePath) {
       effect_object_properties->Effect()->ToTreeString();
   EXPECT_THAT(effect_path_as_string.Ascii().c_str(),
               testing::MatchesRegex("root .*\"outputClip\".*"
-                                    "  .*\"parent\".*\"opacity\".*"));
+                                    "  .*\"opacity\".*"));
 }
 
 TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTreePath) {
@@ -129,7 +129,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTreePath) {
                                      ->ToTreeString();
   EXPECT_THAT(scroll_path_as_string.Ascii().c_str(),
               testing::MatchesRegex("root .*"
-                                    "  .*\"parent\".*"));
+                                    "  Scroll.*"));
 }
 
 }  // namespace blink
