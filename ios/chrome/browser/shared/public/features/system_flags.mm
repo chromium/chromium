@@ -51,6 +51,7 @@ NSString* const kSafetyCheckCompromisedPasswordsCountOverride =
 NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
 NSString* const kShouldIgnoreHistorySyncDeclineLimits =
     @"ShouldIgnoreHistorySyncDeclineLimits";
+NSString* const kDisplaySwitchProfile = @"DisplaySwitchProfile";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -256,6 +257,17 @@ bool SimulatePostDeviceRestore() {
 bool ShouldIgnoreHistorySyncDeclineLimits() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kShouldIgnoreHistorySyncDeclineLimits];
+}
+
+std::optional<int> DisplaySwitchProfile() {
+  int switchProfileCount = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kDisplaySwitchProfile];
+
+  if (switchProfileCount == 0) {
+    return std::nullopt;
+  }
+
+  return switchProfileCount;
 }
 
 }  // namespace experimental_flags

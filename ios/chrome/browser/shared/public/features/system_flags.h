@@ -138,6 +138,10 @@ bool SimulatePostDeviceRestore();
 // limits are suppressed for simpler testing.
 bool ShouldIgnoreHistorySyncDeclineLimits();
 
+// Whether the developer-mode Switch Profile UI will be be displayed, returns
+// the number of test profiles that should be created.
+std::optional<int> DisplaySwitchProfile();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

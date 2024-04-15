@@ -451,6 +451,30 @@
 			</array>
 		</dict>
 		<dict>
+		    <key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Switch Profile Debugging</string>
+			<key>Key</key>
+			<string>DisplaySwitchProfile</string>
+			<key>DefaultValue</key>
+			<integer>0</integer>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>3</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Enabled (creates 1 test profile)</string>
+				<string>Enabled (creates 2 test profiles)</string>
+				<string>Enabled (creates 3 test profiles)</string>
+			</array>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
