@@ -1323,6 +1323,9 @@ ChromeClient* LocalFrameView::GetChromeClient() const {
 }
 
 void LocalFrameView::HandleLoadCompleted() {
+  TRACE_EVENT1("blink", "LocalFrameView::HandleLoadCompleted",
+               "has_auto_size_info", !!auto_size_info_);
+
   // Once loading has completed, allow autoSize one last opportunity to
   // reduce the size of the frame.
   if (auto_size_info_)
@@ -3069,6 +3072,7 @@ void LocalFrameView::UpdateStyleAndLayout() {
   DCHECK(!is_updating_layout_);
   base::AutoReset<bool> is_updating_layout(&is_updating_layout_, true);
 #endif
+  TRACE_EVENT("blink", "LocalFrameView::UpdateStyleAndLayout");
 
   if (IsInPerformLayout() || ShouldThrottleRendering() ||
       !frame_->GetDocument()->IsActive() || frame_->IsProvisional() ||
@@ -4454,6 +4458,7 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
 }
 
 void LocalFrameView::BeginLifecycleUpdates() {
+  TRACE_EVENT("blink", "LocalFrameView::BeginLifecycleUpdates");
   lifecycle_updates_throttled_ = false;
 
   LayoutView* layout_view = GetLayoutView();
