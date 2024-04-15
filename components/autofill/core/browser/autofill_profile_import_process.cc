@@ -261,8 +261,8 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
   CHECK(import_candidate_);
   if (personal_data_manager_->address_data_manager()
           .IsEligibleForAddressAccountStorage() &&
-      personal_data_manager_->IsCountryEligibleForAccountStorage(
-          base::UTF16ToUTF8(
+      personal_data_manager_->address_data_manager()
+          .IsCountryEligibleForAccountStorage(base::UTF16ToUTF8(
               import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     import_candidate_ = import_candidate_->ConvertToAccountProfile();
   }

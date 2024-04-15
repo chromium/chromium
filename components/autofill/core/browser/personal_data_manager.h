@@ -208,9 +208,8 @@ class PersonalDataManager : public KeyedService,
   // TODO(crbug.com/1487119): Change return type to const AutofillProfile*
   AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
-  // Users based in unsupported countries and profiles with a country value set
-  // to an unsupported country are not eligible for account storage. This
-  // function determines if the `country_code` is eligible.
+  // TODO(b/322170538): Deprecated. Use the functions in
+  // `address_data_manager()` instead. Migrate remaining callers.
   bool IsCountryEligibleForAccountStorage(std::string_view country_code) const;
 
   // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has

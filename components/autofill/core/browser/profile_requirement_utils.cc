@@ -162,8 +162,9 @@ bool IsEligibleForMigrationToAccount(
              .IsEligibleForAddressAccountStorage() &&
          !personal_data_manager.address_data_manager()
               .IsProfileMigrationBlocked(profile.guid()) &&
-         personal_data_manager.IsCountryEligibleForAccountStorage(
-             base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
+         personal_data_manager.address_data_manager()
+             .IsCountryEligibleForAccountStorage(
+                 base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }
 
 }  // namespace autofill

@@ -115,8 +115,9 @@ autofill::AutofillProfile CreateNewAutofillProfile(
       personal_data->address_data_manager().IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
           : autofill::AutofillProfile::Source::kLocalOrSyncable;
-  if (country_code && !personal_data->IsCountryEligibleForAccountStorage(
-                          country_code.value())) {
+  if (country_code &&
+      !personal_data->address_data_manager().IsCountryEligibleForAccountStorage(
+          country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
     // TODO(crbug.com/1432505): remove temporary unsupported countries
     // filtering.

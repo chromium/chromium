@@ -230,8 +230,9 @@ PersonalDataManagerAndroid::GetDefaultCountryCodeForNewAddress(
 bool PersonalDataManagerAndroid::IsCountryEligibleForAccountStorage(
     JNIEnv* env,
     const JavaParamRef<jstring>& country_code) const {
-  return personal_data_manager_->IsCountryEligibleForAccountStorage(
-      ConvertJavaStringToUTF8(env, country_code));
+  return personal_data_manager_->address_data_manager()
+      .IsCountryEligibleForAccountStorage(
+          ConvertJavaStringToUTF8(env, country_code));
 }
 
 ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(

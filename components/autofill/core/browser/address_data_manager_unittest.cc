@@ -650,6 +650,11 @@ TEST_F(AddressDataManagerTest, IsEligibleForAddressAccountStorage) {
   EXPECT_FALSE(address_data_manager().IsEligibleForAddressAccountStorage());
 }
 
+TEST_F(AddressDataManagerTest, IsCountryEligibleForAccountStorage) {
+  EXPECT_TRUE(address_data_manager().IsCountryEligibleForAccountStorage("AT"));
+  EXPECT_FALSE(address_data_manager().IsCountryEligibleForAccountStorage("IR"));
+}
+
 TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   const AutofillProfile kLocalProfile = test::GetFullProfile();
   ASSERT_EQ(kLocalProfile.source(), AutofillProfile::Source::kLocalOrSyncable);

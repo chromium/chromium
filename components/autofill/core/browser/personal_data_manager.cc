@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -210,9 +209,8 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
 
 bool PersonalDataManager::IsCountryEligibleForAccountStorage(
     std::string_view country_code) const {
-  constexpr char const* kUnsupportedCountries[] = {"CU", "IR", "KP", "SD",
-                                                   "SY"};
-  return !base::Contains(kUnsupportedCountries, country_code);
+  return address_data_manager_->IsCountryEligibleForAccountStorage(
+      country_code);
 }
 
 void PersonalDataManager::MigrateProfileToAccount(
