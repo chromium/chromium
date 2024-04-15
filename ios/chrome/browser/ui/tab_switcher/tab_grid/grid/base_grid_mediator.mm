@@ -1239,11 +1239,16 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       return;
     }
     if (fromSameCollection) {
+      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
+                                    DragItemOrigin::kSameCollection);
       int sourceIndex = tabGroupInfo.tabGroup->range().range_begin();
       int nextWebStateIndex = WebStateIndexAfterGridDropItemIndex(
           self.webStateList, destinationIndex, sourceIndex);
       self.webStateList->MoveGroup(tabGroupInfo.tabGroup, nextWebStateIndex);
       return;
+    } else {
+      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
+                                    DragItemOrigin::kOtherBrwoser);
     }
 
     int destinationWebStateIndex = WebStateIndexAfterGridDropItemIndex(

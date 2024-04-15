@@ -812,8 +812,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     case GridItemType::Tab:
       [self.dragDropHandler
           dragWillBeginForItem:_draggedItemIdentifier.tabSwitcherItem];
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
+                                    DragDropItem::kDragBegin);
       break;
     case GridItemType::Group:
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroups,
+                                    DragDropItem::kDragBegin);
       break;
     case GridItemType::SuggestedActions:
       NOTREACHED();
@@ -821,8 +825,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
-  base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
-                                DragDropTabs::kDragBegin);
 
   [self.delegate gridViewControllerDragSessionWillBegin:self];
 }
@@ -831,15 +833,26 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
      dragSessionDidEnd:(id<UIDragSession>)session {
   self.localDragActionInProgress = NO;
 
-  DragDropTabs dragEvent = self.dragEndAtNewIndex
-                               ? DragDropTabs::kDragEndAtNewIndex
-                               : DragDropTabs::kDragEndAtSameIndex;
+  DragDropItem dragEvent = self.dragEndAtNewIndex
+                               ? DragDropItem::kDragEndAtNewIndex
+                               : DragDropItem::kDragEndAtSameIndex;
   // If a drop animation is in progress and the drag didn't end at a new index,
   // that means the item has been dropped outside of its collection view.
   if (_dropAnimationInProgress && !_dragEndAtNewIndex) {
-    dragEvent = DragDropTabs::kDragEndInOtherCollection;
+    dragEvent = DragDropItem::kDragEndInOtherCollection;
   }
-  base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs, dragEvent);
+
+  switch (_draggedItemIdentifier.type) {
+    case GridItemType::Tab:
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs, dragEvent);
+      break;
+    case GridItemType::Group:
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroups, dragEvent);
+      break;
+    case GridItemType::SuggestedActions:
+      NOTREACHED();
+      break;
+  }
 
   // Used to let the Taptic Engine return to its idle state.
   // To preserve power, the Taptic Engine remains in a prepared state for only a

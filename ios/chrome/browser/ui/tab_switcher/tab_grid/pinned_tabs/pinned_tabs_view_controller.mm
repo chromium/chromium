@@ -498,7 +498,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
-                                DragDropTabs::kDragBegin);
+                                DragDropItem::kDragBegin);
   [self.delegate pinnedViewControllerDragSessionWillBegin:self];
   [self dragSessionEnabled:YES];
 }
@@ -506,13 +506,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
      dragSessionDidEnd:(id<UIDragSession>)session {
   _localDragActionInProgress = NO;
-  DragDropTabs dragEvent = _dragEndAtNewIndex
-                               ? DragDropTabs::kDragEndAtNewIndex
-                               : DragDropTabs::kDragEndAtSameIndex;
+  DragDropItem dragEvent = _dragEndAtNewIndex
+                               ? DragDropItem::kDragEndAtNewIndex
+                               : DragDropItem::kDragEndAtSameIndex;
   // If a drop animation is in progress and the drag didn't end at a new index,
   // that means the item has been dropped outside of its collection view.
   if (_dropAnimationInProgress && !_dragEndAtNewIndex) {
-    dragEvent = DragDropTabs::kDragEndInOtherCollection;
+    dragEvent = DragDropItem::kDragEndInOtherCollection;
   }
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs, dragEvent);
 

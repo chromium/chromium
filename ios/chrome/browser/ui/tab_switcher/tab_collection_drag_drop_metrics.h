@@ -11,12 +11,16 @@
 
 // Key of UMA DragDrop histograms.
 extern NSString* const kUmaTabStripViewDragDropTabs;
+extern NSString* const kUmaTabStripViewDragDropGroups;
 extern const char kUmaGridViewDragDropTabs[];
+extern const char kUmaGridViewDragDropGroups[];
 extern const char kUmaPinnedViewDragDropTabs[];
 
 // Key of UMA DragOrigin histograms.
 extern const char kUmaTabStripViewDragOrigin[];
+extern const char kUmaTabStripViewGroupDragOrigin[];
 extern const char kUmaGridViewDragOrigin[];
+extern const char kUmaGridViewGroupDragOrigin[];
 extern const char kUmaPinnedViewDragOrigin[];
 extern const char kUmaGroupViewDragOrigin[];
 
@@ -26,14 +30,14 @@ extern const char kUmaGroupViewDragOrigin[];
 
 // Values of UMA DragDrop histograms. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.
-enum class DragDropTabs {
-  // A tab is dragged.
+enum class DragDropItem {
+  // An item is dragged.
   kDragBegin = 0,
-  // A tab is dropped at the same index position.
+  // An item is dropped at the same index position.
   kDragEndAtSameIndex = 1,
-  // A tab is dropped at a new index position.
+  // An item is dropped at a new index position.
   kDragEndAtNewIndex = 2,
-  // A tab is dropped outside of its collection view.
+  // An item is dropped outside of its collection view.
   kDragEndInOtherCollection = 3,
   kMaxValue = kDragEndInOtherCollection
 };

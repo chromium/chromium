@@ -5,12 +5,19 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 
 NSString* const kUmaTabStripViewDragDropTabs = @"IOS.TabStrip.DragDropTabs";
+NSString* const kUmaTabStripViewDragDropGroups = @"IOS.TabStrip.DragDropGroups";
 extern const char kUmaGridViewDragDropTabs[] = "IOS.TabSwitcher.DragDropTabs";
+extern const char kUmaGridViewDragDropGroups[] =
+    "IOS.TabSwitcher.DragDropGroups";
 extern const char kUmaPinnedViewDragDropTabs[] =
     "IOS.TabSwitcher.PinnedTabs.DragDropTabs";
 
 extern const char kUmaTabStripViewDragOrigin[] = "IOS.TabStrip.DragOrigin";
+extern const char kUmaTabStripViewGroupDragOrigin[] =
+    "IOS.TabStrip.DragOrigin.Group";
 extern const char kUmaGridViewDragOrigin[] = "IOS.TabSwitcher.DragOrigin";
+extern const char kUmaGridViewGroupDragOrigin[] =
+    "IOS.TabSwitcher.DragOrigin.Group";
 extern const char kUmaPinnedViewDragOrigin[] =
     "IOS.TabSwitcher.PinnedTabs.DragOrigin";
 extern const char kUmaGroupViewDragOrigin[] =
