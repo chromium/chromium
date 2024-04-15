@@ -457,8 +457,10 @@ try_.builder(
             "gpu_tests",
             "release_try_builder",
             "reclient",
+            "x64",
         ],
     ),
+    cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
