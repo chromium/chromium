@@ -40,6 +40,7 @@ class QuickStartView {
   virtual void SetUserEmail(const std::string email) = 0;
   virtual void SetUserFullName(const std::string full_name) = 0;
   virtual void SetUserAvatar(const std::string avatar_url) = 0;
+  virtual void SetWillRequestWiFi(const bool will_request_wifi) = 0;
   virtual base::WeakPtr<QuickStartView> AsWeakPtr() = 0;
 };
 
@@ -72,6 +73,7 @@ class QuickStartScreenHandler final : public QuickStartView,
   void SetUserEmail(const std::string email) override;
   void SetUserFullName(const std::string full_name) override;
   void SetUserAvatar(const std::string avatar_url) override;
+  void SetWillRequestWiFi(const bool will_request_wifi) override;
   base::WeakPtr<QuickStartView> AsWeakPtr() override;
 
   // BaseScreenHandler:

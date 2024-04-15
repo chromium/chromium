@@ -736,6 +736,10 @@ bool QuickStartController::IsBluetoothDisabled() {
   return bluetooth_system_state_ == BluetoothSystemState::kDisabled;
 }
 
+bool QuickStartController::WillRequestWiFi() {
+  return !IsConnectedToWiFi();
+}
+
 void QuickStartController::OnFallbackUrlFlowSuccess() {
   if (controller_state_ == ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN) {
     SavePhoneInstanceID();

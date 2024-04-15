@@ -117,9 +117,11 @@ void QuickStartScreen::OnUiUpdateRequested(
 
   switch (state) {
     case ash::quick_start::QuickStartController::UiState::SHOWING_QR:
+      view_->SetWillRequestWiFi(controller_->WillRequestWiFi());
       view_->SetQRCode(ConvertQrCode(controller_->GetQrCode()));
       break;
     case quick_start::QuickStartController::UiState::SHOWING_PIN:
+      view_->SetWillRequestWiFi(controller_->WillRequestWiFi());
       view_->SetPIN(controller_->GetPin());
       break;
     case quick_start::QuickStartController::UiState::CONNECTING_TO_WIFI:
@@ -152,6 +154,7 @@ void QuickStartScreen::OnUiUpdateRequested(
       break;
     case ash::quick_start::QuickStartController::UiState::
         SHOWING_BLUETOOTH_DIALOG:
+      view_->SetWillRequestWiFi(controller_->WillRequestWiFi());
       view_->ShowBluetoothDialog();
       break;
     case ash::quick_start::QuickStartController::UiState::EXIT_SCREEN:

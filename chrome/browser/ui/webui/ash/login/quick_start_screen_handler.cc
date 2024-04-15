@@ -77,6 +77,10 @@ void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
   CallExternalAPI("setUserAvatarUrl", avatar_url);
 }
 
+void QuickStartScreenHandler::SetWillRequestWiFi(const bool will_request_wifi) {
+  CallExternalAPI("setWillRequestWiFi", will_request_wifi);
+}
+
 base::WeakPtr<QuickStartView> QuickStartScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -87,6 +91,8 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
   builder->Add("quickStartSetupPinTitle",
                IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE);
   builder->Add("quickStartSetupSubtitle", IDS_LOGIN_QUICK_START_SETUP_SUBTITLE);
+  builder->Add("quickStartSetupSubtitleAccountOnly",
+               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_ACCOUNT_ONLY);
   builder->Add("quickStartSetupContentFooterTurnOnWifi",
                IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT);
   builder->Add("quickStartSetupContentFooterFollowInstructions",

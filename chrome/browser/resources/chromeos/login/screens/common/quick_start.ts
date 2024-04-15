@@ -89,6 +89,10 @@ export class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: true,
       },
+      willRequestWiFi: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -99,6 +103,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   private userFullName: string;
   private userAvatarUrl: string;
   private canCancelSignin: boolean;
+  private willRequestWiFi: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
 
   constructor() {
@@ -122,14 +127,20 @@ export class QuickStartScreen extends QuickStartScreenBase {
       'setUserEmail',
       'setUserFullName',
       'setUserAvatarUrl',
+      'setWillRequestWiFi',
     ];
   }
 
   private getVerificationSubtitle(_title: string): TrustedHTML {
-    return this.i18nAdvanced('quickStartSetupSubtitle', {
-      substitutions:
-          [loadTimeData.getString('deviceType'), this.discoverableName],
-    });
+    if (this.willRequestWiFi) {
+      return this.i18nAdvanced('quickStartSetupSubtitle', {
+        substitutions: [loadTimeData.getString('deviceType')],
+      });
+    } else {
+      return this.i18nAdvanced('quickStartSetupSubtitleAccountOnly', {
+        substitutions: [loadTimeData.getString('deviceType')],
+      });
+    }
   }
 
   private getSetupCompleteTitle(locale: string): TrustedHTML {
@@ -248,6 +259,10 @@ export class QuickStartScreen extends QuickStartScreenBase {
 
   setUserAvatarUrl(userAvatarUrl: string): void {
     this.userAvatarUrl = userAvatarUrl;
+  }
+
+  setWillRequestWiFi(willRequestWiFi: boolean): void {
+    this.willRequestWiFi = willRequestWiFi;
   }
 
   showBluetoothDialog() {

@@ -154,7 +154,11 @@ found in the LICENSE file.
     </div>
   </h1>
   <div slot="subtitle">
-    <div inner-h-t-m-l="[[getVerificationSubtitle(locale, discoverableName, usePinInsteadOfQrForVerification)]]">
+    <div inner-h-t-m-l="[[getVerificationSubtitle(
+        locale, 
+        discoverableName, 
+        usePinInsteadOfQrForVerification, 
+        willRequestWiFi)]]">
     </div>
   </div>
   <div id="code" class="flex layout vertical start-justified center"

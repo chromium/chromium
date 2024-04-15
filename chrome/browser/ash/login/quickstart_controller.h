@@ -146,6 +146,11 @@ class QuickStartController
   std::string GetWiFiName() { return wifi_name_.value(); }
   std::string GetFallbackUrl() { return fallback_url_.value(); }
 
+  // If we're already connected to Wi-Fi at the start of the flow we won't
+  // request Wi-Fi details from the source device. This lets us reflect that in
+  // the UI.
+  bool WillRequestWiFi();
+
   // Called by the Gaia screen during the 'CompleteAuthentication' call. This
   // notifies us that the flow succeeded and we use this signal to show the
   // 'setup complete' step of QuickStart.
