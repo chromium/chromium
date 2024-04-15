@@ -43,7 +43,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
  protected:
   SecurePaymentConfirmationAppTest()
-      : label_(u"test instrument"),
+      : payment_instrument_label_(u"test instrument"),
         web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
     details->total = mojom::PaymentItem::New();
@@ -91,7 +91,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     on_instrument_details_error_called_ = true;
   }
 
-  std::u16string label_;
+  std::u16string payment_instrument_label_;
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
@@ -116,8 +116,9 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
 
   SecurePaymentConfirmationApp app(
-      web_contents_, "effective_rp.example",
-      /*Icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 
@@ -157,8 +158,9 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
 
   SecurePaymentConfirmationApp app(
-      web_contents_, "effective_rp.example",
-      /*Icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator));
 

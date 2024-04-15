@@ -377,12 +377,12 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
 void SecurePaymentConfirmationAppFactory::OnAppIcon(
     std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     std::unique_ptr<Request> request,
-    const SkBitmap& icon) {
+    const SkBitmap& payment_instrument_icon) {
   DCHECK(request);
   if (!request->delegate || !request->web_contents())
     return;
 
-  if (icon.drawsNothing()) {
+  if (payment_instrument_icon.drawsNothing()) {
     // If the option iconMustBeShown is true, which it is by default, in the
     // case of a failed icon download/decode, we reject the show() promise
     // without showing any user UX. To avoid a privacy leak here, we MUST do
@@ -406,13 +406,14 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
     return;
   }
 
-  std::u16string label =
+  std::u16string payment_instrument_label =
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
           request->web_contents(), credential->relying_party_id,
-          std::make_unique<SkBitmap>(icon), label,
+          payment_instrument_label,
+          std::make_unique<SkBitmap>(payment_instrument_icon),
           std::move(credential->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),

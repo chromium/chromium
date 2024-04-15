@@ -52,8 +52,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   SecurePaymentConfirmationApp(
       content::WebContents* web_contents_to_observe,
       const std::string& effective_relying_party_identity,
-      std::unique_ptr<SkBitmap> icon,
-      const std::u16string& label,
+      const std::u16string& payment_instrument_label,
+      std::unique_ptr<SkBitmap> payment_instrument_icon,
       std::vector<uint8_t> credential_id,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
@@ -107,8 +107,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   content::GlobalRenderFrameHostId authenticator_frame_routing_id_;
 
   const std::string effective_relying_party_identity_;
-  const std::unique_ptr<SkBitmap> icon_;
-  const std::u16string label_;
+  const std::u16string payment_instrument_label_;
+  const std::unique_ptr<SkBitmap> payment_instrument_icon_;
   const std::vector<uint8_t> credential_id_;
   const url::Origin merchant_origin_;
   const base::WeakPtr<PaymentRequestSpec> spec_;
