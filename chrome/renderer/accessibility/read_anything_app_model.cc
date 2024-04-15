@@ -1412,9 +1412,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     // it does, we can get stuck in an infinite loop of calling
     // CreateNextSentenceStartPosition, as it will always return the same
     // position.
-    if (possible_new_position->GetAnchor() && new_position->GetAnchor() &&
-        (possible_new_position->GetAnchor()->id() ==
-         new_position->GetAnchor()->id())) {
+    if (ArePositionsEqual(possible_new_position, new_position)) {
       use_paragraph = true;
       possible_new_position =
           new_position->CreateNextParagraphStartPosition(movement_options);
@@ -1435,9 +1433,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     // a paragraph position, go ahead and return a null position instead, as
     // ending speech early is preferable to getting stuck in an infinite
     // loop.
-    if (possible_new_position->GetAnchor() && new_position->GetAnchor() &&
-        (possible_new_position->GetAnchor()->id() ==
-         new_position->GetAnchor()->id())) {
+    if (ArePositionsEqual(possible_new_position, new_position)) {
       return ui::AXNodePosition::AXPosition::CreateNullPosition();
     }
 
@@ -1570,4 +1566,12 @@ bool ReadAnythingAppModel::IsValidAXPosition(
   bool contains_node = base::Contains(*node_ids, anchor_node->id());
 
   return !was_previously_spoken && is_text_node && contains_node;
+}
+
+bool ReadAnythingAppModel::ArePositionsEqual(
+    const ui::AXNodePosition::AXPositionInstance& position,
+    const ui::AXNodePosition::AXPositionInstance& other) const {
+  return position->GetAnchor() && other->GetAnchor() &&
+         (position->CompareTo(*other).value_or(-1) == 0) &&
+         (position->text_offset() == other->text_offset());
 }

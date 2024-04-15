@@ -394,6 +394,11 @@ class ReadAnythingAppModel {
       const ReadAnythingAppModel::ReadAloudCurrentGranularity&
           current_granularity) const;
 
+  // Returns true if both positions are non-null and equal.
+  bool ArePositionsEqual(
+      const ui::AXNodePosition::AXPositionInstance& position,
+      const ui::AXNodePosition::AXPositionInstance& other) const;
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
       tree_infos_;
