@@ -48,7 +48,7 @@ using chrome_test_util::SecondarySignInButton;
     config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
   } else if ([self
                  isRunningTest:@selector
-                 (DISABLED_testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled)]) {
+                 (testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled)]) {
     config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
   } else {
     config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
@@ -142,10 +142,7 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 // Tests that signin promo is shown even if local data exists.
-//
-// TODO(crbug.com/334908135): This test is flaky on ios-fieldtrial-rel,
-// ios-simulator-full-configs, and ios-simulator-noncq.
-- (void)DISABLED_testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled {
+- (void)testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled {
   // Simulate data from a previous account being leftover by setting
   // kGoogleServicesLastSyncingGaiaId.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
