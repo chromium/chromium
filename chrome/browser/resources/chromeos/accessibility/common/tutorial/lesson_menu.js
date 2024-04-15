@@ -12,46 +12,67 @@ import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Curriculum, Screen} from './constants.js';
-import {Localization} from './localization.js';
+import {Localization, LocalizationInterface} from './localization.js';
 
-export const LessonMenu = Polymer({
-  is: 'lesson-menu',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LocalizationInterface}
+ */
+const LessonMenuBase = mixinBehaviors([Localization], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class LessonMenu extends LessonMenuBase {
+  static get is() {
+    return 'lesson-menu';
+  }
 
-  behaviors: [Localization],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {string} */
-    headerDescription_: {type: String},
+  static get properties() {
+    return {
+      /** @private {string} */
+      headerDescription_: {type: String},
 
-    /** @private {Array<!{title: string, curriculums: !Array<Curriculum>}>} */
-    buttonData_: {type: Array},
+      /** @private {Array<!{title: string, curriculums: !Array<Curriculum>}>} */
+      buttonData_: {type: Array},
 
-    // Observed properties.
+      // Observed properties.
 
-    /** @type {Screen} */
-    activeScreen: {type: String, observer: 'maybeFocusHeader_'},
+      /** @type {Screen} */
+      activeScreen: {type: String, observer: 'maybeFocusHeader_'},
 
-    /** @type {Curriculum} */
-    curriculum: {
-      type: String,
-      value: Curriculum.NONE,
-    },
+      /** @type {Curriculum} */
+      curriculum: {
+        type: String,
+        value: Curriculum.NONE,
+      },
 
-    /** @type {number} */
-    numLessons: {type: Number},
-  },
+      /** @type {number} */
+      numLessons: {type: Number},
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*} detail
+   */
+  fire(eventName, detail) {
+    this.dispatchEvent(
+      new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @private */
   maybeFocusHeader_() {
     if (this.activeScreen === Screen.LESSON_MENU) {
       this.$.lessonMenuHeader.focus();
     }
-  },
+  }
 
   /**
    * @param {Screen} activeScreen
@@ -60,7 +81,7 @@ export const LessonMenu = Polymer({
    */
   shouldHideLessonMenu_(activeScreen) {
     return activeScreen !== Screen.LESSON_MENU;
-  },
+  }
 
   /**
    * @param {Curriculum} curriculum
@@ -76,7 +97,7 @@ export const LessonMenu = Polymer({
     const curriculumCopy = words.join(' ');
     return this.getMsg(
         'tutorial_lesson_menu_header', [curriculumCopy, this.numLessons]);
-  },
+  }
 
   /**
    * @param {!MouseEvent} evt
@@ -85,7 +106,7 @@ export const LessonMenu = Polymer({
   onButtonClicked_(evt) {
     // Fires an event with button data attached to |evt.detail|.
     this.fire('button-clicked', evt.model.data);
-  },
+  }
 
   /**
    * @param {Array<Curriculum>} validCurriculums
@@ -95,5 +116,6 @@ export const LessonMenu = Polymer({
    */
   shouldHideLessonButton_(validCurriculums, curriculum) {
     return !validCurriculums.includes(curriculum);
-  },
-});
+  }
+}
+customElements.define(LessonMenu.is, LessonMenu);
