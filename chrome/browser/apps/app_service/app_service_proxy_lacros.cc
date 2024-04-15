@@ -60,7 +60,7 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
     if (service &&
         service->IsAvailable<crosapi::mojom::BrowserAppInstanceRegistry>()) {
       browser_app_instance_tracker_ =
-          std::make_unique<apps::BrowserAppInstanceTracker>(
+          std::make_unique<apps::BrowserAppInstanceTrackerLacros>(
               profile_, app_registry_cache_);
       auto& registry =
           service->GetRemote<crosapi::mojom::BrowserAppInstanceRegistry>();

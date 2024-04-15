@@ -54,6 +54,10 @@ struct BrowserAppInstance {
 
   BrowserAppInstanceUpdate ToUpdate() const;
 
+  // TODO(b/332628771): Hide this behind BUILDFLAG(IS_CHROMEOS_ASH) in M127.
+  // Checks if `window` is the active window.
+  bool is_browser_active() const;
+
   const base::UnguessableToken id;
   const Type type;
   const std::string app_id;
@@ -62,7 +66,9 @@ struct BrowserAppInstance {
   // same for an app window.
   raw_ptr<aura::Window> window;
   std::string title;
-  bool is_browser_active;
+  // TODO(b/332628771): Remove this in M127.
+  // Use `is_browser_activated()` instead.
+  bool is_browser_active_deprecated;
   // If a tab is active in the browser's tab strip. Only applicable to instances
   // with type kAppTab. Always set to true for app instances of type kAppWindow.
   bool is_web_contents_active;
@@ -93,6 +99,10 @@ struct BrowserWindowInstance {
   std::string GetAppId() const;
 #endif
 
+  // TODO(b/332628771): Hide this behind BUILDFLAG(IS_CHROMEOS_ASH) in M127.
+  // Checks if `window` is the active window.
+  bool is_active() const;
+
   const base::UnguessableToken id;
   const raw_ptr<aura::Window> window;
   const uint32_t browser_session_id;
@@ -101,7 +111,9 @@ struct BrowserWindowInstance {
   // This value will only be non-zero when refer to a lacros browser instance.
   const uint64_t lacros_profile_id;
 
-  bool is_active;
+  // TODO(b/332628771): Remove this in M127.
+  // Do not add code which uses this state but use `is_active()` instead.
+  bool is_active_deprecated;
 };
 
 }  // namespace apps
