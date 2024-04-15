@@ -25,11 +25,16 @@ __ https://docs.rs/either/
 How to use with cargo::
 
     [dependencies]
-    either = "1.10"
+    either = "1.11"
 
 
 Recent Changes
 --------------
+
+- 1.11.0
+
+  - Add new trait ``IntoEither`` that is useful to convert to ``Either`` in method chains,
+    by @SFM61319 (#101)
 
 - 1.10.0
 

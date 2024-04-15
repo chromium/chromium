@@ -1,6 +1,6 @@
 [package]
 name = "either"
-version = "1.10.0"
+version = "1.11.0"
 authors = ["bluss"]
 edition = "2018"
 rust-version = "1.36"
@@ -32,4 +32,7 @@ no-dev-version = true
 tag-name = "{{version}}"
 
 [package.metadata.docs.rs]
+features = ["serde"]
+
+[package.metadata.playground]
 features = ["serde"]

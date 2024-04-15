@@ -92,7 +92,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."cxxbridge-macro:1.0.120"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."either:1.10.0"]
+[policy."either:1.11.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."fend-core:1.4.6"]

@@ -142,6 +142,9 @@ macro_rules! map_either {
 mod iterator;
 pub use self::iterator::IterEither;
 
+mod into_either;
+pub use self::into_either::IntoEither;
+
 impl<L: Clone, R: Clone> Clone for Either<L, R> {
     fn clone(&self) -> Self {
         match self {
