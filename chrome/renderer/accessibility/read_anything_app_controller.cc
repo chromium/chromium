@@ -1362,11 +1362,10 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
 
 void ReadAnythingAppController::SetLanguageForTesting(
     const std::string& language_code) {
-  SetDefaultLanguageCode(language_code);
+  SetLanguageCode(language_code);
 }
 
-void ReadAnythingAppController::SetDefaultLanguageCode(
-    const std::string& code) {
+void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
   model_.set_language_code(code);
 
   // Signal to the WebUI that the supported fonts may have changed.

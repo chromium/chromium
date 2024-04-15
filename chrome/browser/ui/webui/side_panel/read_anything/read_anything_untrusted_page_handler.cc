@@ -439,7 +439,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
     const std::string& code) {
   default_language_code_ = code;
-  page_->SetDefaultLanguageCode(code);
+  page_->SetLanguageCode(code);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -598,9 +598,9 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
     const std::string& code) {
   if (code.empty() || code == translate::kUnknownLanguageCode) {
-    page_->SetDefaultLanguageCode(default_language_code_);
+    page_->SetLanguageCode(default_language_code_);
   } else {
-    page_->SetDefaultLanguageCode(code);
+    page_->SetLanguageCode(code);
   }
 }
 

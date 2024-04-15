@@ -189,8 +189,9 @@ interface UntrustedPage {
   // Send an updated theme to the WebUI.
   OnThemeChanged(ReadAnythingTheme new_theme);
 
-  // Send an updated default language code to the WebUI.
-  SetDefaultLanguageCode(string code);
+  // Send an updated language code to the WebUI. Will either be the page
+  // language or the browser language depending on what's available.
+  SetLanguageCode(string code);
 
   // Send the settings values stored in prefs to the WebUI. voices maps
   // language to voice name
