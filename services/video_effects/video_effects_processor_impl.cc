@@ -74,11 +74,11 @@ namespace video_effects {
 VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-    GpuChannelHostProvider& gpu_channel_host_provider,
+    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
     base::OnceClosure on_unrecoverable_error)
     : manager_remote_(std::move(manager_remote)),
       processor_receiver_(this, std::move(processor_receiver)),
-      gpu_channel_host_provider_(gpu_channel_host_provider),
+      gpu_channel_host_provider_(std::move(gpu_channel_host_provider)),
       on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
   processor_receiver_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,

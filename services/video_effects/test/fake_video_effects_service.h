@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/test/fake_video_effects_processor.h"
+#include "services/viz/public/mojom/gpu.mojom-forward.h"
 
 namespace video_effects {
 
@@ -33,6 +34,7 @@ class FakeVideoEffectsService : public mojom::VideoEffectsService {
   // `processor` receiver will stay connected for as long as the fake is alive.
   void CreateEffectsProcessor(
       const std::string& device_id,
+      mojo::PendingRemote<viz::mojom::Gpu> gpu,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) override;
 

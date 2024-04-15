@@ -6,8 +6,10 @@
 #define COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_
 
 #include "base/auto_reset.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_effects/video_effects_manager_impl.h"
+#include "components/viz/host/gpu_client.h"
 #include "content/public/browser/browser_context.h"
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
@@ -87,6 +89,8 @@ class MediaEffectsService : public KeyedService {
   // Device ID strings mapped to effects manager instances.
   base::flat_map<std::string, std::unique_ptr<VideoEffectsManagerImpl>>
       video_effects_managers_;
+
+  std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 };
 
 #endif  // COMPONENTS_MEDIA_EFFECTS_MEDIA_EFFECTS_SERVICE_H_

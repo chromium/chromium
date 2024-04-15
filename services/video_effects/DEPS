@@ -6,6 +6,7 @@ include_rules = [
   "+media/base",
   "+media/capture/mojom",
   "+services/viz/public/cpp/gpu",
+  "+services/viz/public/mojom",
   "+services/video_effects/public/mojom",
 ]
 

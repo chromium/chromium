@@ -43,13 +43,14 @@ media::mojom::VideoBufferHandlePtr GetDummyVideoBufferHandle() {
 
 class VideoEffectsProcessorTest : public testing::Test {
   void SetUp() override {
-    gpu_channel_host_provider_.emplace(gpu_channel_);
+    auto gpu_channel_host_provider =
+        std::make_unique<TestGpuChannelHostProvider>(gpu_channel_);
 
     on_processor_error_.emplace();
 
     processor_impl_.emplace(manager_receiver_.InitWithNewPipeAndPassRemote(),
                             processor_remote_.BindNewPipeAndPassReceiver(),
-                            *gpu_channel_host_provider_,
+                            std::move(gpu_channel_host_provider),
                             on_processor_error_->GetCallback());
   }
 
@@ -57,7 +58,6 @@ class VideoEffectsProcessorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   gpu::MockGpuChannel gpu_channel_;
-  std::optional<TestGpuChannelHostProvider> gpu_channel_host_provider_;
 
   // Processor under test:
   std::optional<VideoEffectsProcessorImpl> processor_impl_;

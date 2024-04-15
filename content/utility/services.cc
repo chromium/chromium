@@ -42,7 +42,6 @@
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"  // nogncheck
 #include "services/video_effects/video_effects_service_impl.h"  // nogncheck
-#include "services/video_effects/viz_gpu_channel_host_provider.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -352,16 +351,8 @@ auto RunVideoCapture(
 auto RunVideoEffects(
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsService> receiver) {
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
-    UtilityThread::Get()->BindHostReceiver(
-        remote_gpu.InitWithNewPipeAndPassReceiver());
-    std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
-        std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
-
     return std::make_unique<video_effects::VideoEffectsServiceImpl>(
-        std::move(receiver),
-        std::make_unique<video_effects::VizGpuChannelHostProvider>(
-            std::move(viz_gpu)));
+        std::move(receiver), UtilityThread::Get()->GetIOTaskRunner());
   }
 
   return std::unique_ptr<video_effects::VideoEffectsServiceImpl>{};

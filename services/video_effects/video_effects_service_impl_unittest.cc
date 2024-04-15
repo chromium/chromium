@@ -30,9 +30,8 @@ constexpr char kDeviceId[] = "test_device";
 
 class VideoEffectsServiceTest : public testing::Test {
   void SetUp() override {
-    service_impl_.emplace(
-        service_remote_.BindNewPipeAndPassReceiver(),
-        std::make_unique<TestGpuChannelHostProvider>(gpu_channel_));
+    service_impl_.emplace(service_remote_.BindNewPipeAndPassReceiver(),
+                          task_environment_.GetMainThreadTaskRunner());
   }
 
  protected:
@@ -52,11 +51,13 @@ TEST_F(VideoEffectsServiceTest, DISABLED_CreateEffectsProcessorWorks) {
   // Calling into `VideoEffectsService:::CreateEffectsProcessor()` is expected
   // to work (irrespective of whether the passed-in pipes are usable or not).
 
+  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver;
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote;
 
   service_remote_->CreateEffectsProcessor(
-      kDeviceId, manager_receiver.InitWithNewPipeAndPassRemote(),
+      kDeviceId, gpu_receiver.InitWithNewPipeAndPassRemote(),
+      manager_receiver.InitWithNewPipeAndPassRemote(),
       processor_remote.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
@@ -71,21 +72,25 @@ TEST_F(VideoEffectsServiceTest,
   // Calling into `VideoEffectsService:::CreateEffectsProcessor()` is expected
   // to fail if the same device id is passed.
 
+  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver1;
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver1;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote1;
 
   service_remote_->CreateEffectsProcessor(
-      kDeviceId, manager_receiver1.InitWithNewPipeAndPassRemote(),
+      kDeviceId, gpu_receiver1.InitWithNewPipeAndPassRemote(),
+      manager_receiver1.InitWithNewPipeAndPassRemote(),
       processor_remote1.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processor_remote1.is_connected());
 
+  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver2;
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver2;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote2;
 
   service_remote_->CreateEffectsProcessor(
-      kDeviceId, manager_receiver2.InitWithNewPipeAndPassRemote(),
+      kDeviceId, gpu_receiver2.InitWithNewPipeAndPassRemote(),
+      manager_receiver2.InitWithNewPipeAndPassRemote(),
       processor_remote2.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
@@ -101,11 +106,13 @@ TEST_F(VideoEffectsServiceTest,
   // Calling into `VideoEffectsService:::CreateEffectsProcessor()` is expected
   // to succeed if the previous processor with that ID has been removed
 
+  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver1;
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver1;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote1;
 
   service_remote_->CreateEffectsProcessor(
-      kDeviceId, manager_receiver1.InitWithNewPipeAndPassRemote(),
+      kDeviceId, gpu_receiver1.InitWithNewPipeAndPassRemote(),
+      manager_receiver1.InitWithNewPipeAndPassRemote(),
       processor_remote1.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
@@ -115,11 +122,13 @@ TEST_F(VideoEffectsServiceTest,
   processor_remote1.reset();
   base::RunLoop().RunUntilIdle();
 
+  mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver2;
   mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver2;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote2;
 
   service_remote_->CreateEffectsProcessor(
-      kDeviceId, manager_receiver2.InitWithNewPipeAndPassRemote(),
+      kDeviceId, gpu_receiver2.InitWithNewPipeAndPassRemote(),
+      manager_receiver2.InitWithNewPipeAndPassRemote(),
       processor_remote2.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();

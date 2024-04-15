@@ -22,7 +22,19 @@
 
 namespace video_effects {
 
-class GpuChannelHostProvider;
+// Abstract interface that is used by `VideoEffectsServiceImpl` to obtain
+// instances of `gpu::GpuChannelHost`. Those are then going to be used to
+// create context providers over which the communication to GPU service will
+// happen.
+class GpuChannelHostProvider {
+ public:
+  virtual ~GpuChannelHostProvider() = default;
+
+  // Return a connected `gpu::GpuChannelHost`. Implementations should expect
+  // this method to be called somewhat frequently when a new Video Effects
+  // Processor is created.
+  virtual scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() = 0;
+};
 
 class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
                                   public viz::ContextLostObserver {
@@ -35,7 +47,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   explicit VideoEffectsProcessorImpl(
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-      GpuChannelHostProvider& gpu_channel_host_provider,
+      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
       base::OnceClosure on_unrecoverable_error);
 
   ~VideoEffectsProcessorImpl() override;
@@ -72,7 +84,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
 
-  raw_ref<GpuChannelHostProvider> gpu_channel_host_provider_;
+  std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
   // GPU state. Will be created in `Initialize()`, and should be recreated
   // on context loss.

@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "services/video_effects/video_effects_service_impl.h"
+#include "services/video_effects/video_effects_processor_impl.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 
 namespace video_effects {

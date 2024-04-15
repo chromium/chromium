@@ -16,16 +16,15 @@
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/video_effects/video_effects_processor_impl.h"
+#include "services/video_effects/viz_gpu_channel_host_provider.h"
 
 namespace video_effects {
 
 VideoEffectsServiceImpl::VideoEffectsServiceImpl(
     mojo::PendingReceiver<mojom::VideoEffectsService> receiver,
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider)
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : receiver_(this, std::move(receiver)),
-      gpu_channel_host_provider_(std::move(gpu_channel_host_provider)) {
-  CHECK(gpu_channel_host_provider_);
-}
+      io_task_runner_(std::move(io_task_runner)) {}
 
 VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -33,6 +32,7 @@ VideoEffectsServiceImpl::~VideoEffectsServiceImpl() {
 
 void VideoEffectsServiceImpl::CreateEffectsProcessor(
     const std::string& device_id,
+    mojo::PendingRemote<viz::mojom::Gpu> gpu_remote,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -41,13 +41,17 @@ void VideoEffectsServiceImpl::CreateEffectsProcessor(
     return;
   }
 
+  auto gpu = viz::Gpu::Create(std::move(gpu_remote), io_task_runner_);
+  auto gpu_channel_host_provider =
+      std::make_unique<VizGpuChannelHostProvider>(std::move(gpu));
+
   auto on_unrecoverable_processor_error =
       base::BindOnce(&VideoEffectsServiceImpl::RemoveProcessor,
                      weak_ptr_factory_.GetWeakPtr(), device_id);
 
   auto effects_processor = std::make_unique<VideoEffectsProcessorImpl>(
       std::move(manager_remote), std::move(processor_receiver),
-      *gpu_channel_host_provider_.get(),
+      std::move(gpu_channel_host_provider),
       std::move(on_unrecoverable_processor_error));
 
   if (!effects_processor->Initialize()) {

@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/test/fake_video_effects_processor.h"
+#include "services/viz/public/mojom/gpu.mojom.h"
 
 namespace video_effects {
 
@@ -20,6 +22,7 @@ FakeVideoEffectsService::~FakeVideoEffectsService() = default;
 
 void FakeVideoEffectsService::CreateEffectsProcessor(
     const std::string& device_id,
+    mojo::PendingRemote<viz::mojom::Gpu> gpu,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor) {
   processors_.insert(
