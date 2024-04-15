@@ -47,6 +47,14 @@ class Environment {
       : temp_dir_(MakeTempDir()),
         db_path_(GetTempFilePath("db.sqlite")),
         should_dump_input_(std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr) {
+    // Logging must be initialized before `ScopedLoggingSettings`. See
+    // <https://crbug.com/331909454>.
+    logging::InitLogging(logging::LoggingSettings{
+        // The default logging destination on Windows is `LOG_TO_FILE`, which
+        // would require us to set `LoggingSettings::log_file_path`.
+        .logging_dest =
+            logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR,
+    });
     logging::SetMinLogLevel(logging::LOGGING_ERROR);
   }
 
