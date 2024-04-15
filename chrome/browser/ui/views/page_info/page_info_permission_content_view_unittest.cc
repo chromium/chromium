@@ -146,11 +146,7 @@ class PageInfoPermissionContentViewTestMediaPreview
 // info camera subpage.
 TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewCamera) {
   InitializePageInfo(ContentSettingsType::MEDIASTREAM_CAMERA);
-  ASSERT_TRUE(page_info_->GetActiveDevicesMediaCoordinatorForTesting());
-
-  auto view_type = page_info_->GetActiveDevicesMediaCoordinatorForTesting()
-                       ->GetViewTypeForTesting();
-  ASSERT_EQ(MediaCoordinator::ViewType::kCameraOnly, view_type);
+  ASSERT_TRUE(page_info_->GetPreviewsCoordinatorForTesting());
 
   auto title_label = page_info_->GetTitleForTesting();
   ASSERT_TRUE(title_label);
@@ -185,11 +181,7 @@ TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewCamera) {
 // info mic subpage.
 TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewMic) {
   InitializePageInfo(ContentSettingsType::MEDIASTREAM_MIC);
-  ASSERT_TRUE(page_info_->GetActiveDevicesMediaCoordinatorForTesting());
-
-  auto view_type = page_info_->GetActiveDevicesMediaCoordinatorForTesting()
-                       ->GetViewTypeForTesting();
-  ASSERT_EQ(MediaCoordinator::ViewType::kMicOnly, view_type);
+  ASSERT_TRUE(page_info_->GetPreviewsCoordinatorForTesting());
 
   auto title_label = page_info_->GetTitleForTesting();
   ASSERT_TRUE(title_label);
@@ -224,7 +216,7 @@ TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewMic) {
 TEST_F(PageInfoPermissionContentViewTestMediaPreview,
        MediaPreviewNoCameraOrMic) {
   InitializePageInfo(ContentSettingsType::GEOLOCATION);
-  ASSERT_FALSE(page_info_->GetActiveDevicesMediaCoordinatorForTesting());
+  ASSERT_FALSE(page_info_->GetPreviewsCoordinatorForTesting());
 }
 
 #endif

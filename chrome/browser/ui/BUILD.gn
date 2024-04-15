@@ -4865,6 +4865,8 @@ static_library("ui") {
       "views/media_preview/mic_preview/mic_mediator.h",
       "views/media_preview/mic_preview/mic_view_controller.cc",
       "views/media_preview/mic_preview/mic_view_controller.h",
+      "views/media_preview/page_info_previews_coordinator.cc",
+      "views/media_preview/page_info_previews_coordinator.h",
       "views/media_preview/permission_prompt_previews_coordinator.cc",
       "views/media_preview/permission_prompt_previews_coordinator.h",
       "views/media_preview/scroll_media_preview.cc",

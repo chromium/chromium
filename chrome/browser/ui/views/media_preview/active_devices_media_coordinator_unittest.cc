@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
@@ -53,16 +54,11 @@ std::string ViewTypeToNumDevicesHistogramName(
   }
 }
 
-std::string ViewTypeToDurationHistogramName(
-    MediaCoordinator::ViewType view_type) {
-  switch (view_type) {
-    case MediaCoordinator::ViewType::kCameraOnly:
-      return "MediaPreviews.UI.PageInfo.Camera.Duration";
-    case MediaCoordinator::ViewType::kMicOnly:
-      return "MediaPreviews.UI.PageInfo.Mic.Duration";
-    default:
-      return "UnmappedViewType";
-  }
+media_preview_metrics::Context GetMetricsContext(
+    MediaCoordinator::ViewType type) {
+  return media_preview_metrics::Context(
+      media_preview_metrics::UiLocation::kPageInfo,
+      media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(type));
 }
 
 }  // namespace
@@ -88,7 +84,8 @@ class ActiveDevicesMediaCoordinatorTestParameterized
                                                             {});
     rfh_id_ = web_contents_->GetPrimaryMainFrame()->GetGlobalId();
     histogram_tester_.emplace();
-    coordinator_.emplace(web_contents_.get(), view_type, &parent_view_);
+    coordinator_.emplace(web_contents_->GetWeakPtr(), view_type, &parent_view_,
+                         GetMetricsContext(view_type));
   }
 
   void TearDown() override {
@@ -133,29 +130,16 @@ class ActiveDevicesMediaCoordinatorTestParameterized
     ResetHistogramTester();
   }
 
-  void ExpectDurationHistogramUpdate(int expected_bucket_min_value) {
-    auto duration_histogram_name = ViewTypeToDurationHistogramName(GetParam());
-    histogram_tester_->ExpectUniqueSample(duration_histogram_name,
-                                          expected_bucket_min_value,
-                                          /*expected_bucket_count=*/1);
-    ResetHistogramTester();
-  }
-
   void ResetHistogramTester() { histogram_tester_.emplace(); }
 
-  void AdvanceClock(base::TimeDelta delta) {
-    task_environment_.AdvanceClock(delta);
-  }
-
  private:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   ChromeLayoutProvider layout_provider_;
   std::unique_ptr<content::BackgroundTracingManager>
       background_tracing_manager_;
   TestingProfile profile_;
-  views::View parent_view_;
+  MediaView parent_view_;
   media_effects::FakeAudioService fake_audio_service_;
   std::optional<base::AutoReset<audio::mojom::AudioService*>>
       fake_audio_service_auto_reset_;
@@ -276,12 +260,4 @@ TEST_P(ActiveDevicesMediaCoordinatorTestParameterized,
   EXPECT_THAT(coordinator_->GetMediaCoordinatorKeys(),
               testing::ElementsAre(kDevice2Id));
   ExpectNoNumDevicesHistogramUpdate();
-}
-
-TEST_P(ActiveDevicesMediaCoordinatorTestParameterized,
-       DurationMetricLoggedOnDestruction) {
-  auto duration = base::Seconds(2.5);
-  AdvanceClock(duration);
-  coordinator_.reset();
-  ExpectDurationHistogramUpdate(/*expected_bucket_min_value=*/2);
 }

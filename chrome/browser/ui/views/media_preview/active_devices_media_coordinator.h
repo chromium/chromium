@@ -20,9 +20,11 @@
 class ActiveDevicesMediaCoordinator
     : public MediaCaptureDevicesDispatcher::Observer {
  public:
-  ActiveDevicesMediaCoordinator(content::WebContents* web_contents,
-                                MediaCoordinator::ViewType view_type,
-                                views::View* parent_view);
+  ActiveDevicesMediaCoordinator(
+      base::WeakPtr<content::WebContents> web_contents,
+      MediaCoordinator::ViewType view_type,
+      MediaView* container,
+      media_preview_metrics::Context metrics_context);
   ActiveDevicesMediaCoordinator(const ActiveDevicesMediaCoordinator&) = delete;
   ActiveDevicesMediaCoordinator& operator=(
       const ActiveDevicesMediaCoordinator&) = delete;
@@ -38,9 +40,7 @@ class ActiveDevicesMediaCoordinator
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
 
-  MediaCoordinator::ViewType GetViewTypeForTesting() const {
-    return view_type_;
-  }
+  void OnPermissionChange(bool has_permission);
 
  private:
   void UpdateMediaCoordinatorList();
@@ -48,22 +48,25 @@ class ActiveDevicesMediaCoordinator
   void GotDeviceIdsOpenedForWebContents(
       std::vector<std::string> active_device_ids);
 
+  void CreateMutableCoordinator();
+
+  void CreateImmutableCoordinators(std::vector<std::string> active_device_ids);
+
   void AddMediaCoordinatorForDevice(
       const std::optional<std::string>& active_device_id);
 
-  base::WeakPtr<content::WebContents> web_contents_;
-  MediaCoordinator::ViewType view_type_;
-  blink::mojom::MediaStreamType stream_type_;
+  const base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<MediaView> container_;
+  const MediaCoordinator::ViewType view_type_;
+  const blink::mojom::MediaStreamType stream_type_;
+  const media_preview_metrics::Context media_preview_metrics_context_;
+  bool permission_allowed_ = false;
   base::flat_map<std::string, std::unique_ptr<MediaCoordinator>>
       media_coordinators_;
   base::flat_map<std::string, raw_ptr<views::Separator>> separators_;
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           ActiveDevicesMediaCoordinator>
       media_devices_dispatcher_observer_{this};
-
-  const media_preview_metrics::Context media_preview_metrics_context_;
-  base::TimeTicks media_preview_start_time_;
 
   base::WeakPtrFactory<ActiveDevicesMediaCoordinator> weak_ptr_factory_{this};
 };

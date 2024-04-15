@@ -12,7 +12,7 @@
 #include "ui/views/view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/ui/views/media_preview/active_devices_media_coordinator.h"
+#include "chrome/browser/ui/views/media_preview/page_info_previews_coordinator.h"
 #include "components/media_effects/media_device_info.h"
 #endif
 
@@ -72,9 +72,9 @@ class PageInfoPermissionContentView
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   const raw_ptr<views::Label> GetTitleForTesting() const { return title_; }
 
-  const std::optional<ActiveDevicesMediaCoordinator>&
-  GetActiveDevicesMediaCoordinatorForTesting() const {
-    return active_devices_media_preview_coordinator_;
+  const std::optional<PageInfoPreviewsCoordinator>&
+  GetPreviewsCoordinatorForTesting() const {
+    return previews_coordinator_;
   }
 #endif
 
@@ -116,8 +116,7 @@ class PageInfoPermissionContentView
   raw_ptr<views::Checkbox> remember_setting_ = nullptr;
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-  std::optional<ActiveDevicesMediaCoordinator>
-      active_devices_media_preview_coordinator_;
+  std::optional<PageInfoPreviewsCoordinator> previews_coordinator_;
   base::ScopedObservation<media_effects::MediaDeviceInfo,
                           PageInfoPermissionContentView>
       devices_observer_{this};

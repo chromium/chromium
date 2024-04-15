@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
-#include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -55,47 +54,24 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 }  // namespace
 
 ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     MediaCoordinator::ViewType view_type,
-    views::View* parent_view)
-    : view_type_(view_type),
+    MediaView* container,
+    media_preview_metrics::Context metrics_context)
+    : web_contents_(web_contents),
+      container_(container),
+      view_type_(view_type),
       stream_type_(view_type_ == MediaCoordinator::ViewType::kCameraOnly
                        ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
                        : blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE),
-      media_preview_metrics_context_(
-          media_preview_metrics::UiLocation::kPageInfo,
-          media_coordinator::GetPreviewTypeFromMediaCoordinatorViewType(
-              view_type_)) {
-  CHECK(web_contents);
-  web_contents_ = web_contents->GetWeakPtr();
-
-  CHECK(parent_view);
-  auto* scroll_contents =
-      scroll_media_preview::CreateScrollViewAndGetContents(*parent_view);
-  CHECK(scroll_contents);
-
-  container_ = scroll_contents->AddChildView(std::make_unique<MediaView>());
-  auto distance_related_control =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  container_->SetBetweenChildSpacing(distance_related_control);
-  container_->SetProperty(views::kMarginsKey,
-                          gfx::Insets::VH(distance_related_control, 0));
-
+      media_preview_metrics_context_(metrics_context) {
+  CHECK(container_);
   media_devices_dispatcher_observer_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance());
   UpdateMediaCoordinatorList();
-
-  media_preview_start_time_ = base::TimeTicks::Now();
 }
 
-ActiveDevicesMediaCoordinator::~ActiveDevicesMediaCoordinator() {
-  media_preview_metrics::RecordMediaPreviewDuration(
-      media_preview_metrics_context_,
-      base::TimeTicks::Now() - media_preview_start_time_);
-
-  MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
-}
+ActiveDevicesMediaCoordinator::~ActiveDevicesMediaCoordinator() = default;
 
 void ActiveDevicesMediaCoordinator::UpdateDevicePreferenceRanking() {
   // A mutable coordinator will only be present in the case that there is a
@@ -137,17 +113,29 @@ void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(
     if (media_coordinators_.contains(kMutableCoordinatorId)) {
       return;
     }
-    media_coordinators_.clear();
-    separators_.clear();
-    // RemoveAllChildViews() is called to delete all separators.
-    container_->RemoveAllChildViews();
-    AddMediaCoordinatorForDevice(/*active_device_id=*/
-                                 std::nullopt);
-    CHECK(!container_->children().empty());
-    container_->children().back()->SetVisible(false);
-    return;
+    CreateMutableCoordinator();
+  } else {
+    CreateImmutableCoordinators(active_device_ids);
   }
 
+  CHECK(!container_->children().empty());
+  // Make the last child (i.e. separator) invisible. Since we only need a
+  // separator between the previews.
+  container_->children().back()->SetVisible(false);
+  OnPermissionChange(permission_allowed_);
+}
+
+void ActiveDevicesMediaCoordinator::CreateMutableCoordinator() {
+  media_coordinators_.clear();
+  separators_.clear();
+  // RemoveAllChildViews() is called to delete all separators.
+  container_->RemoveAllChildViews();
+  AddMediaCoordinatorForDevice(/*active_device_id=*/
+                               std::nullopt);
+}
+
+void ActiveDevicesMediaCoordinator::CreateImmutableCoordinators(
+    std::vector<std::string> active_device_ids) {
   base::flat_set<std::string> active_device_id_set{active_device_ids};
   for (const auto& key : GetMediaCoordinatorKeys()) {
     const auto& separator = separators_.find(key);
@@ -166,8 +154,6 @@ void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(
   for (const auto& active_device_id : active_device_id_set) {
     AddMediaCoordinatorForDevice(active_device_id);
   }
-  CHECK(!container_->children().empty());
-  container_->children().back()->SetVisible(false);
 }
 
 void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
@@ -221,6 +207,13 @@ void ActiveDevicesMediaCoordinator::OnRequestUpdate(
   if (state == content::MediaRequestState::MEDIA_REQUEST_STATE_DONE ||
       state == content::MediaRequestState::MEDIA_REQUEST_STATE_CLOSING) {
     UpdateMediaCoordinatorList();
+  }
+}
+
+void ActiveDevicesMediaCoordinator::OnPermissionChange(bool has_permission) {
+  permission_allowed_ = has_permission;
+  for (const auto& [_, media_coordinator] : media_coordinators_) {
+    media_coordinator->OnPermissionChange(has_permission);
   }
 }
 

@@ -50,6 +50,8 @@ class MediaCoordinator {
 
   void UpdateDevicePreferenceRanking();
 
+  void OnPermissionChange(bool has_permission);
+
  private:
   raw_ptr<MediaView> media_view_ = nullptr;
   std::optional<CameraCoordinator> camera_coordinator_;

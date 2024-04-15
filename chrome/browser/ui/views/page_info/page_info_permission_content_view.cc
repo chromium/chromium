@@ -174,8 +174,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
 
 PageInfoPermissionContentView::~PageInfoPermissionContentView() {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-  if (active_devices_media_preview_coordinator_) {
-    active_devices_media_preview_coordinator_->UpdateDevicePreferenceRanking();
+  if (previews_coordinator_) {
+    previews_coordinator_->UpdateDevicePreferenceRanking();
   }
 #endif
 }
@@ -209,7 +209,14 @@ void PageInfoPermissionContentView::SetPermissionInfo(
     }
   }
 
-  toggle_button_->SetIsOn(PageInfoUI::IsToggleOn(permission_));
+  bool is_toggle_on = PageInfoUI::IsToggleOn(permission_);
+  toggle_button_->SetIsOn(is_toggle_on);
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+  if (previews_coordinator_) {
+    previews_coordinator_->OnPermissionChange(is_toggle_on);
+  }
+#endif
 
   if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
       UseUpdatedFileSystemPersistentPermissionUI()) {
@@ -359,11 +366,8 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
 
   preceding_separator.GetProperty(views::kMarginsKey)->set_bottom(0);
 
-  auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
-                       ? MediaCoordinator::ViewType::kCameraOnly
-                       : MediaCoordinator::ViewType::kMicOnly;
-  active_devices_media_preview_coordinator_.emplace(web_contents, view_type,
-                                                    /*parent_view=*/this);
+  previews_coordinator_.emplace(web_contents, type_,
+                                /*parent_view=*/this);
 
   AddChildView(PageInfoViewFactory::CreateSeparator(
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
