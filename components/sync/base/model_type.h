@@ -136,7 +136,7 @@ enum ModelType {
   // Contact information from the Google Address Storage.
   CONTACT_INFO,
   // A tab group saved by a user. Currently only supported on desktop platforms
-  // (Linux, Mac, Windows, ChromeOS).
+  // (Linux, Mac, Windows, ChromeOS) and Android.
   SAVED_TAB_GROUP,
 
   // Power bookmarks are features associated with bookmarks(i.e. notes, price

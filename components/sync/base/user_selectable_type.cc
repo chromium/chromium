@@ -84,8 +84,14 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
+#if BUILDFLAG(IS_ANDROID)
+      return {kTabsTypeName, SESSIONS, {SESSIONS, SAVED_TAB_GROUP}};
+#else
       return {kTabsTypeName, SESSIONS, {SESSIONS}};
+#endif
     case UserSelectableType::kSavedTabGroups:
+      // Note: Saved tab groups is presented as a separate type only on desktop.
+      // On mobile platforms, it is bundled together with open tabs.
       return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
     case UserSelectableType::kSharedTabGroupData:
       // Note: COLLABORATION_GROUP might be re-used for other features. If this
