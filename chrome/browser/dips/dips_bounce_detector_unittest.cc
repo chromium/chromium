@@ -631,17 +631,14 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_Uncommitted) {
   EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
-                               ("[1/3] a.test/ -> b.test/ (None) -> a.test/"),
-                               ("[2/3] a.test/ -> c.test/ (None) -> a.test/"),
-                               ("[3/3] a.test/ -> d.test/ (None) -> a.test/"),
+                               ("[1/2] a.test/ -> b.test/ (None) -> d.test/"),
+                               ("[2/2] a.test/ -> c.test/ (None) -> d.test/"),
                                ("[1/1] a.test/ -> e.test/ (None) -> f.test/")));
   EXPECT_THAT(GetRecordedBounces(),
               testing::UnorderedElementsAre(
                   MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://c.test", mocked_bounce_time,
-                                  /*stateful=*/false),
-                  MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
@@ -665,9 +662,8 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
   EndPendingRedirectChain();
 
   EXPECT_THAT(redirects(), testing::ElementsAre(
-                               ("[1/3] a.test/ -> b.test/ (None) -> b.test/"),
-                               ("[2/3] a.test/ -> c.test/ (None) -> b.test/"),
-                               ("[3/3] a.test/ -> d.test/ (None) -> b.test/"),
+                               ("[1/2] a.test/ -> b.test/ (None) -> d.test/"),
+                               ("[2/2] a.test/ -> c.test/ (None) -> d.test/"),
                                ("[1/2] a.test/ -> b.test/ (None) -> f.test/"),
                                ("[2/2] a.test/ -> e.test/ (None) -> f.test/")));
   EXPECT_THAT(GetRecordedBounces(),
@@ -675,8 +671,6 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
                   MakeBounceTuple("http://b.test", mocked_bounce_time,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://c.test", mocked_bounce_time,
-                                  /*stateful=*/false),
-                  MakeBounceTuple("http://d.test", mocked_bounce_time,
                                   /*stateful=*/false),
                   MakeBounceTuple("http://e.test", mocked_bounce_time,
                                   /*stateful=*/false)));
@@ -728,8 +722,7 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://d.test")
       .AccessCookie(CookieOperation::kChange)
       .Finish(false);
-  EXPECT_THAT(GetReportedSites(),
-              testing::ElementsAre("b.test, c.test, d.test"));
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test, c.test"));
 
   // Because the previous navigation didn't commit, the following chain still
   // starts from http://a.test/.
@@ -739,7 +732,7 @@ TEST_F(DIPSBounceDetectorTest,
       .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(),
-              testing::ElementsAre("b.test, c.test, d.test", "e.test"));
+              testing::ElementsAre("b.test, c.test", "e.test"));
 }
 
 TEST_F(DIPSBounceDetectorTest,
@@ -862,14 +855,13 @@ TEST_F(DIPSBounceDetectorTest,
       .RedirectTo("http://c.test")
       .AccessCookie(CookieOperation::kChange)
       .Finish(false);
-  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test, c.test"));
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to d.test.
   // NOTE: Because the previous navigation didn't commit, the chain still
   // starts from http://a.test/.
   NavigateTo("http://d.test", kNoUserGesture);
-  EXPECT_THAT(GetReportedSites(),
-              testing::ElementsAre("b.test, c.test", "a.test"));
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "a.test"));
 }
 
 const std::vector<std::string>& GetAllRedirectMetrics() {
@@ -1289,7 +1281,8 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   ASSERT_EQ(chains.size(), 0u);
   context.HandleUncommitted(
       GURL("http://d.test/"),
-      MakeServerRedirects({"http://e.test/", "http://f.test/"}));
+      MakeServerRedirects({"http://e.test/", "http://f.test/"}),
+      GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(GURL("http://h.test/"),
                           MakeServerRedirects({"http://i.test/"}),
@@ -1301,7 +1294,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   // First, the uncommitted (middle) chain.
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://d.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(2u)));
+                    HasFinalUrl("http://g.test/"), HasLength(2u)));
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://e.test/"), HasUrl("http://f.test/")));
   // Then the initially-started chain.
@@ -1332,7 +1325,8 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   // Uncommitted navigation:
   context.HandleUncommitted(
       MakeClientRedirect("http://d.test/"),
-      MakeServerRedirects({"http://e.test/", "http://f.test/"}));
+      MakeServerRedirects({"http://e.test/", "http://f.test/"}),
+      GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(MakeClientRedirect("http://h.test/"),
                           MakeServerRedirects({"http://i.test/"}),
@@ -1346,7 +1340,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   // plus the uncommitted part (3 redirects, starting from d.test).
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
-                    HasFinalUrl("http://d.test/"), HasLength(5u)));
+                    HasFinalUrl("http://g.test/"), HasLength(5u)));
   // But only the 3 uncommitted redirects are included in the vector.
   EXPECT_THAT(chains[0].second,
               ElementsAre(HasUrl("http://d.test/"), HasUrl("http://e.test/"),
@@ -1377,8 +1371,11 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
                           false);
   ASSERT_EQ(chains.size(), 1u);
 
-  context.EndChain(GURL("http://e.test/"), false);
+  context.HandleUncommitted(GURL("http://c.test/"), {}, GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 2u);
+
+  context.EndChain(GURL("http://e.test/"), false);
+  ASSERT_EQ(chains.size(), 3u);
 
   EXPECT_THAT(chains[0].first,
               AllOf(HasInitialUrl("http://a.test/"),
@@ -1386,9 +1383,14 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
   EXPECT_THAT(chains[0].second, IsEmpty());
 
   EXPECT_THAT(chains[1].first,
+              AllOf(HasInitialUrl("http://c.test/"),
+                    HasFinalUrl("http://d.test/"), HasLength(0u)));
+  EXPECT_THAT(chains[1].second, IsEmpty());
+
+  EXPECT_THAT(chains[2].first,
               AllOf(HasInitialUrl("http://b.test/"),
                     HasFinalUrl("http://e.test/"), HasLength(0u)));
-  EXPECT_THAT(chains[1].second, IsEmpty());
+  EXPECT_THAT(chains[2].second, IsEmpty());
 }
 
 TEST(DIPSRedirectContextTest, AddLateCookieAccess) {

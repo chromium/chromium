@@ -94,7 +94,8 @@ class DIPSRedirectContext {
   // navigation. It will take into account the length and initial URL of the
   // current chain (without modifying it).
   void HandleUncommitted(DIPSNavigationStart navigation_start,
-                         std::vector<DIPSRedirectInfoPtr> server_redirects);
+                         std::vector<DIPSRedirectInfoPtr> server_redirects,
+                         GURL final_url);
 
   // Either calls for termination of the in-progress redirect chain, with a
   // start of a new one, or extends it, according to the value of
