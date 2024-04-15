@@ -12,6 +12,7 @@
     "target_cpu": "x86",
     "use_libfuzzer": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_target_cpu": "arm"
   }
 }

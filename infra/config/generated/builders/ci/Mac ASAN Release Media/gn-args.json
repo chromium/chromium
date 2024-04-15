@@ -8,6 +8,7 @@
     "is_debug": false,
     "proprietary_codecs": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_enable_verify_heap": true
   }
 }

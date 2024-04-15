@@ -5,6 +5,7 @@
     "is_debug": false,
     "is_ubsan_no_recover": true,
     "is_ubsan_vptr": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

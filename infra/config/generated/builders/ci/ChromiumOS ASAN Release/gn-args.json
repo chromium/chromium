@@ -8,6 +8,7 @@
     "is_lsan": true,
     "target_os": "chromeos",
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_enable_verify_heap": true
   }
 }
