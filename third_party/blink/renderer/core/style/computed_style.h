@@ -553,9 +553,9 @@ class ComputedStyle final : public ComputedStyleBase {
     return BorderImage().Outset();
   }
 
-  static LayoutUnit BorderWidth(EBorderStyle style, LayoutUnit width) {
+  static int BorderWidth(EBorderStyle style, int width) {
     if (style == EBorderStyle::kNone || style == EBorderStyle::kHidden) {
-      return LayoutUnit();
+      return 0;
     }
     return width;
   }
@@ -574,16 +574,16 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Border width properties.
-  LayoutUnit BorderTopWidth() const {
+  int BorderTopWidth() const {
     return BorderWidth(BorderTopStyle(), BorderTopWidthInternal());
   }
-  LayoutUnit BorderBottomWidth() const {
+  int BorderBottomWidth() const {
     return BorderWidth(BorderBottomStyle(), BorderBottomWidthInternal());
   }
-  LayoutUnit BorderLeftWidth() const {
+  int BorderLeftWidth() const {
     return BorderWidth(BorderLeftStyle(), BorderLeftWidthInternal());
   }
-  LayoutUnit BorderRightWidth() const {
+  int BorderRightWidth() const {
     return BorderWidth(BorderRightStyle(), BorderRightWidthInternal());
   }
 
@@ -608,7 +608,7 @@ class ComputedStyle final : public ComputedStyleBase {
         ColumnRuleStyle() == EBorderStyle::kHidden) {
       return 0;
     }
-    return ColumnRuleWidthInternal().ToUnsigned();
+    return ColumnRuleWidthInternal();
   }
 
   // content
@@ -659,9 +659,9 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // outline-width
-  LayoutUnit OutlineWidth() const {
+  int OutlineWidth() const {
     if (OutlineStyle() == EBorderStyle::kNone) {
-      return LayoutUnit();
+      return 0;
     }
     return OutlineWidthInternal();
   }
@@ -1262,16 +1262,16 @@ class ComputedStyle final : public ComputedStyleBase {
            BorderBottomWidth() == o.BorderBottomWidth();
   }
 
-  LayoutUnit BorderBlockEndWidth() const {
+  int BorderBlockEndWidth() const {
     return PhysicalBorderWidthToLogical().BlockEnd();
   }
-  LayoutUnit BorderBlockStartWidth() const {
+  int BorderBlockStartWidth() const {
     return PhysicalBorderWidthToLogical().BlockStart();
   }
-  LayoutUnit BorderInlineEndWidth() const {
+  int BorderInlineEndWidth() const {
     return PhysicalBorderWidthToLogical().InlineEnd();
   }
-  LayoutUnit BorderInlineStartWidth() const {
+  int BorderInlineStartWidth() const {
     return PhysicalBorderWidthToLogical().InlineStart();
   }
 
@@ -1305,8 +1305,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
     auto BorderSideVisuallyEqual =
         [](const blink::Color& color, const blink::Color& other_color,
-           EBorderStyle style, EBorderStyle other_style, LayoutUnit width,
-           LayoutUnit other_width) -> bool {
+           EBorderStyle style, EBorderStyle other_style, int width,
+           int other_width) -> bool {
       if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
         return true;
       }
@@ -2600,10 +2600,10 @@ class ComputedStyle final : public ComputedStyleBase {
                                             PaddingLeft());
   }
 
-  PhysicalToLogical<LayoutUnit> PhysicalBorderWidthToLogical() const {
-    return PhysicalToLogical<LayoutUnit>(
-        GetWritingDirection(), BorderTopWidth(), BorderRightWidth(),
-        BorderBottomWidth(), BorderLeftWidth());
+  PhysicalToLogical<int> PhysicalBorderWidthToLogical() const {
+    return PhysicalToLogical<int>(GetWritingDirection(), BorderTopWidth(),
+                                  BorderRightWidth(), BorderBottomWidth(),
+                                  BorderLeftWidth());
   }
 
   PhysicalToLogical<EBorderStyle> PhysicalBorderStyleToLogical() const {
@@ -2824,19 +2824,19 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // border-*-width
-  LayoutUnit BorderTopWidth() const {
+  int BorderTopWidth() const {
     return ComputedStyle::BorderWidth(BorderTopStyle(),
                                       BorderTopWidthInternal());
   }
-  LayoutUnit BorderBottomWidth() const {
+  int BorderBottomWidth() const {
     return ComputedStyle::BorderWidth(BorderBottomStyle(),
                                       BorderBottomWidthInternal());
   }
-  LayoutUnit BorderLeftWidth() const {
+  int BorderLeftWidth() const {
     return ComputedStyle::BorderWidth(BorderLeftStyle(),
                                       BorderLeftWidthInternal());
   }
-  LayoutUnit BorderRightWidth() const {
+  int BorderRightWidth() const {
     return ComputedStyle::BorderWidth(BorderRightStyle(),
                                       BorderRightWidthInternal());
   }
@@ -2905,9 +2905,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // column-rule-width
-  void SetColumnRuleWidth(uint16_t w) {
-    SetColumnRuleWidthInternal(LayoutUnit(w));
-  }
+  void SetColumnRuleWidth(uint16_t w) { SetColumnRuleWidthInternal(w); }
 
   // column-width
   void SetColumnWidth(float f) {

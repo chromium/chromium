@@ -901,7 +901,7 @@ void StyleAdjuster::AdjustForSVGTextElement(ComputedStyleBuilder& builder) {
   builder.SetColumnRuleStyle(
       ComputedStyleInitialValues::InitialColumnRuleStyle());
   builder.SetColumnRuleWidthInternal(
-      LayoutUnit(ComputedStyleInitialValues::InitialColumnRuleWidth()));
+      ComputedStyleInitialValues::InitialColumnRuleWidth());
   builder.SetColumnRuleColor(
       ComputedStyleInitialValues::InitialColumnRuleColor());
   builder.SetInternalVisitedColumnRuleColor(

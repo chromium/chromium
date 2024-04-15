@@ -290,8 +290,8 @@ static int CornerStart(const LayoutBox& box,
                        int max_x,
                        int thickness) {
   if (box.ShouldPlaceBlockDirectionScrollbarOnLogicalLeft())
-    return min_x + box.StyleRef().BorderLeftWidth().ToFloat();
-  return max_x - thickness - box.StyleRef().BorderRightWidth().ToFloat();
+    return min_x + box.StyleRef().BorderLeftWidth();
+  return max_x - thickness - box.StyleRef().BorderRightWidth();
 }
 
 gfx::Rect PaintLayerScrollableArea::CornerRect() const {
@@ -317,7 +317,7 @@ gfx::Rect PaintLayerScrollableArea::CornerRect() const {
   return gfx::Rect(CornerStart(*GetLayoutBox(), 0, border_box_size.width(),
                                horizontal_thickness),
                    border_box_size.height() - vertical_thickness -
-                       GetLayoutBox()->StyleRef().BorderBottomWidth().ToFloat(),
+                       GetLayoutBox()->StyleRef().BorderBottomWidth(),
                    horizontal_thickness, vertical_thickness);
 }
 

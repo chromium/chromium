@@ -200,7 +200,7 @@ class StyleBuilderConverter {
       const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
-  static LayoutUnit ConvertBorderWidth(StyleResolverState&, const CSSValue&);
+  static int ConvertBorderWidth(StyleResolverState&, const CSSValue&);
   static uint16_t ConvertColumnRuleWidth(StyleResolverState&, const CSSValue&);
   static LayoutUnit ConvertLayoutUnit(const StyleResolverState&,
                                       const CSSValue&);

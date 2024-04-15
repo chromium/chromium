@@ -394,13 +394,13 @@ TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
 
   builder = CreateComputedStyleBuilder();
   builder.SetOutlineColor(StyleColor::CurrentColor());
-  builder.SetOutlineWidth(LayoutUnit(5));
+  builder.SetOutlineWidth(5);
   style = builder.TakeStyle();
   EXPECT_FALSE(style->HasOutlineWithCurrentColor());
 
   builder = CreateComputedStyleBuilder();
   builder.SetOutlineColor(StyleColor::CurrentColor());
-  builder.SetOutlineWidth(LayoutUnit(5));
+  builder.SetOutlineWidth(5);
   builder.SetOutlineStyle(EBorderStyle::kSolid);
   style = builder.TakeStyle();
   EXPECT_TRUE(style->HasOutlineWithCurrentColor());
@@ -408,7 +408,7 @@ TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
 
 TEST_F(ComputedStyleTest, BorderWidth) {
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  builder.SetBorderBottomWidth(LayoutUnit(5));
+  builder.SetBorderBottomWidth(5);
   const ComputedStyle* style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 0);
 
@@ -456,24 +456,24 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   const ComputedStyle* other = builder.TakeStyle();
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  UPDATE_STYLE(style, SetBorderLeftWidth, LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderLeftWidth, 1);
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  UPDATE_STYLE(other, SetBorderLeftWidth, LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderLeftWidth, 1);
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  UPDATE_STYLE(style, SetBorderTopWidth, LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderTopWidth, 1);
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  UPDATE_STYLE(other, SetBorderTopWidth, LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderTopWidth, 1);
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  UPDATE_STYLE(style, SetBorderRightWidth, LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderRightWidth, 1);
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  UPDATE_STYLE(other, SetBorderRightWidth, LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderRightWidth, 1);
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  UPDATE_STYLE(style, SetBorderBottomWidth, LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderBottomWidth, 1);
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  UPDATE_STYLE(other, SetBorderBottomWidth, LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderBottomWidth, 1);
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kHidden);
@@ -1349,27 +1349,27 @@ TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
 
   const struct {
     const ComputedStyle* style;
-    double expected_px;
+    int expected_px;
     STACK_ALLOCATED();
   } tests[] = {
-      {document.getElementById(AtomicString("t1"))->GetComputedStyle(), 2.0},
-      {document.getElementById(AtomicString("t2"))->GetComputedStyle(), 6.0},
-      {document.getElementById(AtomicString("t3"))->GetComputedStyle(), 10.0},
-      {document.getElementById(AtomicString("t4"))->GetComputedStyle(), 0.0},
-      {document.getElementById(AtomicString("t5"))->GetComputedStyle(), 1.0},
-      {document.getElementById(AtomicString("t6"))->GetComputedStyle(), 1.0},
-      {document.getElementById(AtomicString("t7"))->GetComputedStyle(), 1.0},
-      {document.getElementById(AtomicString("t8"))->GetComputedStyle(), 2.0},
-      {document.getElementById(AtomicString("t9"))->GetComputedStyle(), 3.0},
-      {document.getElementById(AtomicString("t10"))->GetComputedStyle(), 6.0},
-      {document.getElementById(AtomicString("t11"))->GetComputedStyle(), 6.0},
-      {document.getElementById(AtomicString("t12"))->GetComputedStyle(), 7.0},
-      {document.getElementById(AtomicString("t13"))->GetComputedStyle(), 7.0},
+      {document.getElementById(AtomicString("t1"))->GetComputedStyle(), 2},
+      {document.getElementById(AtomicString("t2"))->GetComputedStyle(), 6},
+      {document.getElementById(AtomicString("t3"))->GetComputedStyle(), 10},
+      {document.getElementById(AtomicString("t4"))->GetComputedStyle(), 0},
+      {document.getElementById(AtomicString("t5"))->GetComputedStyle(), 1},
+      {document.getElementById(AtomicString("t6"))->GetComputedStyle(), 1},
+      {document.getElementById(AtomicString("t7"))->GetComputedStyle(), 1},
+      {document.getElementById(AtomicString("t8"))->GetComputedStyle(), 2},
+      {document.getElementById(AtomicString("t9"))->GetComputedStyle(), 3},
+      {document.getElementById(AtomicString("t10"))->GetComputedStyle(), 6},
+      {document.getElementById(AtomicString("t11"))->GetComputedStyle(), 6},
+      {document.getElementById(AtomicString("t12"))->GetComputedStyle(), 7},
+      {document.getElementById(AtomicString("t13"))->GetComputedStyle(), 7},
   };
 
   for (const auto& test : tests) {
     auto width = test.style->BorderTopWidth();
-    EXPECT_DOUBLE_EQ(test.expected_px, width.ToDouble());
+    EXPECT_EQ(test.expected_px, width);
   }
 }
 

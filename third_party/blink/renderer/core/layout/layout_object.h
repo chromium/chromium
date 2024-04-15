@@ -2798,7 +2798,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // Convenience functions to initialize outline info.
     static OutlineInfo GetFromStyle(const ComputedStyle& style) {
-      return {style.OutlineWidth().ToInt(), style.OutlineOffset().ToInt()};
+      return {style.OutlineWidth(), style.OutlineOffset().ToInt()};
     }
 
     static float getUnzoomedWidth(const ComputedStyle& style) {

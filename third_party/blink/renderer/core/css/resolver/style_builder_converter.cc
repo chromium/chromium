@@ -1674,8 +1674,8 @@ StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
   return StyleHyphenateLimitChars(values[0], values[1], values[2]);
 }
 
-LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
-                                                     const CSSValue& value) {
+int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
+                                              const CSSValue& value) {
   double result = 0;
 
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -1703,17 +1703,17 @@ LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
   }
 
   if (result > 0.0 && result < 1.0) {
-    return LayoutUnit(1);
+    return 1;
   }
 
-  return LayoutUnit(floor(result));
+  // Clamp the result to a reasonable range for layout.
+  return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
 }
 
 uint16_t StyleBuilderConverter::ConvertColumnRuleWidth(
     StyleResolverState& state,
     const CSSValue& value) {
-  return ClampTo<uint16_t>(
-      StyleBuilderConverter::ConvertBorderWidth(state, value).ToDouble());
+  return ClampTo<uint16_t>(ConvertBorderWidth(state, value));
 }
 
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(

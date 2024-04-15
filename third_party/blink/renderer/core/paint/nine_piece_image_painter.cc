@@ -107,11 +107,10 @@ void PaintPieces(GraphicsContext& context,
       image_size.width() / unzoomed_image_size.width(),
       image_size.height() / unzoomed_image_size.height());
 
-  auto border_widths = gfx::Outsets()
-                           .set_left_right(style.BorderLeftWidth().ToInt(),
-                                           style.BorderRightWidth().ToInt())
-                           .set_top_bottom(style.BorderTopWidth().ToInt(),
-                                           style.BorderBottomWidth().ToInt());
+  auto border_widths =
+      gfx::Outsets()
+          .set_left_right(style.BorderLeftWidth(), style.BorderRightWidth())
+          .set_top_bottom(style.BorderTopWidth(), style.BorderBottomWidth());
   NinePieceImageGrid grid(
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       ToPixelSnappedRect(border_image_rect), border_widths, sides_to_include);

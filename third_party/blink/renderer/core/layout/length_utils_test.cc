@@ -493,10 +493,10 @@ TEST_F(LengthUtilsTest, TestMargins) {
 
 TEST_F(LengthUtilsTest, TestBorders) {
   ComputedStyleBuilder builder(*initial_style_);
-  builder.SetBorderTopWidth(LayoutUnit(1));
-  builder.SetBorderRightWidth(LayoutUnit(2));
-  builder.SetBorderBottomWidth(LayoutUnit(3));
-  builder.SetBorderLeftWidth(LayoutUnit(4));
+  builder.SetBorderTopWidth(1);
+  builder.SetBorderRightWidth(2);
+  builder.SetBorderBottomWidth(3);
+  builder.SetBorderLeftWidth(4);
   builder.SetBorderTopStyle(EBorderStyle::kSolid);
   builder.SetBorderRightStyle(EBorderStyle::kSolid);
   builder.SetBorderBottomStyle(EBorderStyle::kSolid);
