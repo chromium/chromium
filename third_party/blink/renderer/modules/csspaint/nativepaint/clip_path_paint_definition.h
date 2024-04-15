@@ -35,10 +35,6 @@ class MODULES_EXPORT ClipPathPaintDefinition final
       const CompositorPaintWorkletInput*,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
-  scoped_refptr<Image> Paint(float zoom,
-                             const gfx::RectF& reference_box,
-                             const gfx::SizeF& clip_area_size,
-                             const Node&);
   // static method that accepts a worklet id, for use in tests. The instance
   // version of this method calls this
   static scoped_refptr<Image> Paint(float zoom,

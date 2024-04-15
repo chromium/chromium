@@ -320,16 +320,6 @@ PaintRecord ClipPathPaintDefinition::Paint(
   return paint_recorder.finishRecordingAsPicture();
 }
 
-// TODO(crbug.com/325517328): Reorganize this to simplify or eliminate clip path
-// paint definition
-scoped_refptr<Image> ClipPathPaintDefinition::Paint(
-    float zoom,
-    const gfx::RectF& reference_box,
-    const gfx::SizeF& clip_area_size,
-    const Node& node) {
-  return Paint(zoom, reference_box, clip_area_size, node, worklet_id_);
-}
-
 // Creates a deferred image of size clip_area_size that will be painted via
 // paint worklet. The clip paths will be scaled and translated according to
 // reference_box.

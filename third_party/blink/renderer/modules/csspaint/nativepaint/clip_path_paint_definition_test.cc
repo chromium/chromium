@@ -22,26 +22,6 @@ namespace blink {
 
 using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
 
-class MockClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
- public:
-  scoped_refptr<Image> Paint(float zoom,
-                             const gfx::RectF& reference_box,
-                             const gfx::SizeF& clip_area_size,
-                             const Node& node) override {
-    return ClipPathPaintDefinition::Paint(zoom, reference_box, clip_area_size,
-                                          node, 0 /* use a dummy worklet id */);
-  }
-  gfx::RectF ClipAreaRect(const Node& node,
-                          const gfx::RectF& reference_box,
-                          float zoom) const override {
-    return ClipPathPaintDefinition::ClipAreaRect(node, reference_box, zoom);
-  }
-  Animation* GetAnimationIfCompositable(const Element* element) override {
-    return ClipPathPaintDefinition::GetAnimationIfCompositable(element);
-  }
-  void Shutdown() override {}
-};
-
 class ClipPathPaintDefinitionTest : public PageTestBase {
  public:
   ClipPathPaintDefinitionTest() = default;
@@ -54,9 +34,6 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     scoped_composite_bgcolor_animation =
         std::make_unique<ScopedCompositeBGColorAnimationForTest>(false);
     PageTestBase::SetUp();
-    MockClipPathPaintImageGenerator* generator =
-        MakeGarbageCollected<MockClipPathPaintImageGenerator>();
-    GetFrame().SetClipPathPaintImageGeneratorForTesting(generator);
     GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
   }
 

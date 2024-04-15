@@ -30,6 +30,8 @@ class MODULES_EXPORT NativePaintDefinition : public PaintDefinition {
 
   void Trace(Visitor* visitor) const override;
 
+  int GetWorkletId() const;
+
  protected:
   NativePaintDefinition(LocalFrame*, PaintWorkletInput::PaintWorkletInputType);
   NativePaintDefinition() = default;

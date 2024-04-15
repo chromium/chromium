@@ -75,4 +75,8 @@ void NativePaintDefinition::Trace(Visitor* visitor) const {
   PaintDefinition::Trace(visitor);
 }
 
+int NativePaintDefinition::GetWorkletId() const {
+  return worklet_id_;
+}
+
 }  // namespace blink

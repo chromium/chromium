@@ -42,13 +42,15 @@ PaintWorkletProxyClient* PaintWorkletProxyClient::From(WorkerClients* clients) {
 // static
 PaintWorkletProxyClient* PaintWorkletProxyClient::Create(LocalDOMWindow* window,
                                                          int worklet_id) {
-  WebLocalFrameImpl* local_frame =
-      WebLocalFrameImpl::FromFrame(window->GetFrame());
   PaintWorklet* paint_worklet = PaintWorklet::From(*window);
   scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue;
-  base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paint_dispatcher =
-      local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
-          &compositor_host_queue);
+  base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paint_dispatcher;
+  if (WebLocalFrameImpl* local_frame =
+          WebLocalFrameImpl::FromFrame(window->GetFrame())) {
+    compositor_paint_dispatcher =
+        local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
+            &compositor_host_queue);
+  }
   return MakeGarbageCollected<PaintWorkletProxyClient>(
       worklet_id, paint_worklet,
       window->GetTaskRunner(TaskType::kInternalDefault),
@@ -223,19 +225,23 @@ void PaintWorkletProxyClient::RegisterForNativePaintWorklet(
   // compositor schedules the actual paint job (PaintWorkletPainter::Paint),
   // which is after commit, the |paint_dispatcher_| should have been registerted
   // and ready to use.
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
-          paint_dispatcher_, WrapCrossThreadPersistent(this), task_runner));
+  if (compositor_host_queue_) {
+    PostCrossThreadTask(
+        *compositor_host_queue_, FROM_HERE,
+        CrossThreadBindOnce(
+            &PaintWorkletPaintDispatcher::RegisterPaintWorkletPainter,
+            paint_dispatcher_, WrapCrossThreadPersistent(this), task_runner));
+  }
 }
 
 void PaintWorkletProxyClient::UnregisterForNativePaintWorklet() {
-  PostCrossThreadTask(
-      *compositor_host_queue_, FROM_HERE,
-      CrossThreadBindOnce(
-          &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
-          paint_dispatcher_, worklet_id_));
+  if (compositor_host_queue_) {
+    PostCrossThreadTask(
+        *compositor_host_queue_, FROM_HERE,
+        CrossThreadBindOnce(
+            &PaintWorkletPaintDispatcher::UnregisterPaintWorkletPainter,
+            paint_dispatcher_, worklet_id_));
+  }
   paint_dispatcher_ = nullptr;
 }
 
