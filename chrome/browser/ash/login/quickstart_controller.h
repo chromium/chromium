@@ -66,6 +66,8 @@ class QuickStartController
     ENTERPRISE_ENROLLMENT,
     QUICK_START_FLOW_COMPLETE,
     ERROR,
+    // Child accounts are not yet supported.
+    ADD_CHILD,
   };
 
   // Implemented by the QuickStartScreen

@@ -1042,7 +1042,6 @@ void WizardController::ShowLoginScreen() {
   GetLoginDisplayHost()->StartSignInScreen();
 }
 
-
 void WizardController::ShowGaiaPasswordChangedScreen(
     std::unique_ptr<UserContext> user_context) {
   wizard_context_->user_context = std::move(user_context);
@@ -1349,6 +1348,8 @@ void WizardController::OnUserCreationScreenExit(
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::ADD_CHILD:
+      MaybeAbortQuickStartFlow(
+          quick_start::QuickStartController::AbortFlowReason::ADD_CHILD);
       if (features::IsOobeSoftwareUpdateEnabled()) {
         StartupUtils::SaveScreenAfterConsumerUpdate(
             AddChildScreenView::kScreenId.name);
@@ -2313,7 +2314,8 @@ void WizardController::OnRecoveryEligibilityScreenExit(
   // QuickStart's 'Setup Complete' screen step is the first screen
   // that a user sees after logging in. It just shows a 'Next' button
   // which exits the screen into the TermsOfServiceScreen
-  if (wizard_context_->quick_start_enabled && wizard_context_->quick_start_setup_ongoing) {
+  if (wizard_context_->quick_start_enabled &&
+      wizard_context_->quick_start_setup_ongoing) {
     AdvanceToScreen(QuickStartView::kScreenId);
   } else {
     AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
@@ -2586,7 +2588,7 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-      if (features::IsOobeAiIntroEnabled()){
+      if (features::IsOobeAiIntroEnabled()) {
         ShowAiIntroScreen();
       } else if (features::IsOobeTunaEnabled()) {
         ShowTunaScreen();
@@ -2628,7 +2630,7 @@ void WizardController::OnAppDownloadingScreenExit() {
 
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
   OnScreenExit(AiIntroScreenView::kScreenId,
-    AiIntroScreen::GetResultString(result));
+               AiIntroScreen::GetResultString(result));
 
   if (features::IsOobeTunaEnabled()) {
     ShowTunaScreen();

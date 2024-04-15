@@ -157,6 +157,8 @@ ConnectionClosedReasonFromAbortFlowReason(
       [[fallthrough]];
     case QuickStartController::AbortFlowReason::SIGNIN_SCHOOL:
       [[fallthrough]];
+    case QuickStartController::AbortFlowReason::ADD_CHILD:
+      [[fallthrough]];
     case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
       return TargetDeviceBootstrapController::ConnectionClosedReason::
           kUserAborted;
@@ -835,6 +837,9 @@ std::ostream& operator<<(
       break;
     case QuickStartController::AbortFlowReason::ERROR:
       stream << "[error]";
+      break;
+    case QuickStartController::AbortFlowReason::ADD_CHILD:
+      stream << "[add child]";
       break;
   }
 
