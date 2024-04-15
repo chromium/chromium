@@ -401,7 +401,8 @@ bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
   const base::Value* required_value =
       policies.GetValueUnsafe(required_policy_name_);
   const base::Value* value = policies.GetValueUnsafe(handler_->policy_name());
-  if (value) {
+  if (!value) {
+      return true;
   }
   switch (dependency_requirement_) {
     case DependencyRequirement::kPolicyUnsetOrSetWithvalue:
