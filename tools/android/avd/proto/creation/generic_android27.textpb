@@ -39,3 +39,10 @@ avd_settings {
     value: "on"
   }
 }
+
+min_sdk: 27
+additional_apk {
+  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
+  version: "jl12Q32y8oebF7BQx4cUwT3kuWC8SKD4rqsROv0S_xMC"
+  dest_path: "generic_android27/gmscore_apks"
+}
