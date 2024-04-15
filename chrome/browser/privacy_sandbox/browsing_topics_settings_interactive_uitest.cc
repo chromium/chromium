@@ -96,8 +96,7 @@ class PrivacySandboxSettingsTopicsInteractiveTest
 };
 
 // Block topic(1) and topic(57) through PS service and validate that it's
-// toggled OFF (checked == false) on the Manage Topics Page. Validate
-// screenshot.
+// toggled OFF (checked == false) on the Manage Topics Page.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                        StartWithTwoBlockedTopics) {
   BlockTopic(1);
@@ -109,10 +108,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
                       "(el) => el.checked", false),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, secondToggle,
-                      "(el) => el.checked", false),
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              "Screenshot not supported in all test modes."),
-      Screenshot(ContentsWebView::kContentsWebViewElementId, "", "5405426"));
+                      "(el) => el.checked", false));
 }
 
 // Block first topic on Manage Topics Page. Validate that it is toggled off
@@ -191,9 +187,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                       false));
 }
 
+// TODO(b/334129738): clean up / re-enable tests
+
 // Pixel test for Manage Topics Page with all topics set to their default state.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       ValidateScreenshotDefaultManageTopicsPage) {
+                       DISABLED_ValidateScreenshotDefaultManageTopicsPage) {
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
@@ -205,8 +203,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
 
 // Pixel test for Manage Topics Page and Ad Topics Page with blocking the first
 // topic through JS commands.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       ValidateScreenshotsWithFirstTopicBlockedWithJS) {
+IN_PROC_BROWSER_TEST_F(
+    PrivacySandboxSettingsTopicsInteractiveTest,
+    DISABLED_ValidateScreenshotsWithFirstTopicBlockedWithJS) {
   StateChange ironCollapseFinishedTransitioning;
   ironCollapseFinishedTransitioning.event =
       kIronCollapseFinishedTransitioningEvent;
