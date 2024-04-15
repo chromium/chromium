@@ -2397,6 +2397,7 @@ Full version information for the fingerprint enum values:
   <int value="79646227" label="CROS Ti50 0.24.60"/>
   <int value="91611772" label="CROS Cr50 0.4.21"/>
   <int value="91664959" label="CROS Cr50 0.0.16"/>
+  <int value="100632617" label="CROS Ti50 0.23.81"/>
   <int value="113099773" label="CROS Cr50 0.0.23 Eve Flags 0x7f00(prod)"/>
   <int value="125416236" label="CROS Cr50 0.3.7"/>
   <int value="129455924" label="CROS Cr50 0.5.215"/>
@@ -2488,6 +2489,7 @@ Full version information for the fingerprint enum values:
   <int value="1039624416" label="CROS Cr50 0.3.10"/>
   <int value="1048372479" label="CROS Cr50 0.6.4"/>
   <int value="1051360156" label="CROS Cr50 0.6.230"/>
+  <int value="1052367128" label="CROS Ti50 0.24.81"/>
   <int value="1053975981" label="CROS Cr50 0.5.141"/>
   <int value="1065916186" label="CROS Cr50 0.0.19"/>
   <int value="1069046756" label="CROS Cr50 0.5.51"/>
@@ -2578,6 +2580,7 @@ Full version information for the fingerprint enum values:
   <int value="1902169266" label="CROS Cr50 0.4.16"/>
   <int value="1903933708" label="CROS Cr50 0.4.3 Flags 0x10(pre-pvt)"/>
   <int value="1911169399" label="CROS Ti50 0.23.70"/>
+  <int value="1912806644" label="CROS Ti50 0.23.74"/>
   <int value="1934507294" label="CROS Ti50 0.0.13"/>
   <int value="1935803215" label="CROS Cr50 0.3.25"/>
   <int value="1941011596" label="IFX 9655 rev 35 fw 4.34 build 03f2"/>
