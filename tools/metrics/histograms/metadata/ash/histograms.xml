@@ -4843,6 +4843,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.QuestionCountPerMahiSession" units="count"
+    expires_after="2025-02-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the count of questions in each Mahi session. Emitted when a Mahi
+    session ends, including: 1. Content is refreshed. 2. Mahi UI is closed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.QuestionSource" enum="MahiQuestionSource"
     expires_after="2025-02-01">
   <owner>andrewxu@chromium.org</owner>

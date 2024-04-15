@@ -206,6 +206,27 @@ DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::ErrorBubble)
 
 namespace ash {
 
+// MahiQuestionAnswerView::QuestionCountReporter -------------------------------
+
+MahiQuestionAnswerView::QuestionCountReporter::QuestionCountReporter() =
+    default;
+
+MahiQuestionAnswerView::QuestionCountReporter::~QuestionCountReporter() =
+    default;
+
+void MahiQuestionAnswerView::QuestionCountReporter::IncreaseQuestionCount() {
+  ++question_count_;
+}
+
+void MahiQuestionAnswerView::QuestionCountReporter::ReportDataAndReset() {
+  base::UmaHistogramCounts100(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName,
+      question_count_);
+  question_count_ = 0;
+}
+
+// MahiQuestionAnswerView ------------------------------------------------------
+
 MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
     : MahiUiController::Delegate(ui_controller), ui_controller_(ui_controller) {
   CHECK(ui_controller);
@@ -220,7 +241,9 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
                                        views::MaximumFlexSizeRule::kUnbounded));
 }
 
-MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;
+MahiQuestionAnswerView::~MahiQuestionAnswerView() {
+  question_count_reporter_.ReportDataAndReset();
+}
 
 views::View* MahiQuestionAnswerView::GetView() {
   return this;
@@ -249,6 +272,7 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
           CreateQuestionAnswerRow(update.GetAnswer(), /*is_question=*/false));
       return;
     case MahiUiUpdateType::kContentsRefreshInitiated:
+      question_count_reporter_.ReportDataAndReset();
       RemoveAllChildViews();
       return;
     case MahiUiUpdateType::kErrorReceived: {
@@ -277,6 +301,7 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
       return;
     }
     case MahiUiUpdateType::kQuestionPosted: {
+      question_count_reporter_.IncreaseQuestionCount();
       AddChildView(CreateQuestionAnswerRow(update.GetQuestion(),
                                            /*is_question=*/true));
       // Destroys `error_bubble_` if any when the user posts a new question.

@@ -94,6 +94,8 @@ inline constexpr char kMahiUserJourneyTimeHistogramName[] =
     "Ash.Mahi.UserJourneyTime";
 inline constexpr char kMahiQuestionSourceHistogramName[] =
     "Ash.Mahi.QuestionSource";
+inline constexpr char kQuestionCountPerMahiSessionHistogramName[] =
+    "Ash.Mahi.QuestionCountPerMahiSession";
 
 }  // namespace ash::mahi_constants
 

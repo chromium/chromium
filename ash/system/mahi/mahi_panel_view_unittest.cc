@@ -1824,28 +1824,106 @@ TEST_F(MahiPanelViewTest, UserJourneyTimeMetrics) {
   base::HistogramTester histogram;
   histogram.ExpectTimeBucketCount(
       mahi_constants::kMahiUserJourneyTimeHistogramName, base::Seconds(3),
-      /*count=*/0);
+      /*expected_count=*/0);
 
   task_environment()->AdvanceClock(base::Seconds(3));
 
   CreatePanelWidget();
   histogram.ExpectTimeBucketCount(
       mahi_constants::kMahiUserJourneyTimeHistogramName, base::Seconds(3),
-      /*count=*/1);
+      /*expected_count=*/1);
 
   task_environment()->AdvanceClock(base::Minutes(3));
 
   CreatePanelWidget();
   histogram.ExpectTimeBucketCount(
       mahi_constants::kMahiUserJourneyTimeHistogramName, base::Minutes(3),
-      /*count=*/1);
+      /*expected_count=*/1);
 
   task_environment()->AdvanceClock(base::Minutes(10));
 
   CreatePanelWidget();
   histogram.ExpectTimeBucketCount(
       mahi_constants::kMahiUserJourneyTimeHistogramName, base::Minutes(10),
-      /*count=*/1);
+      /*expected_count=*/1);
+}
+
+TEST_F(MahiPanelViewTest, ReportQuestionCountWhenRefresh) {
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [](const std::u16string& question, bool current_panel_content,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"answer",
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  // Ask one question then refresh. Verify that the recorded question count
+  // in this Mahi session should be one.
+  base::HistogramTester histogram_tester;
+  SubmitTestQuestion();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/1,
+      /*expected_count=*/0);
+  ui_controller()->RefreshContents();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/1,
+      /*expected_count=*/1);
+
+  // Ask two questions then refresh. Verify that the recorded question count
+  // in this Mahi session should be two.
+  SubmitTestQuestion();
+  SubmitTestQuestion();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/1,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/2,
+      /*expected_count=*/0);
+  ui_controller()->RefreshContents();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/2,
+      /*expected_count=*/1);
+}
+
+TEST_F(MahiPanelViewTest, ReportQuestionCountWhenMahiPanelDestroyed) {
+  ON_CALL(mock_mahi_manager(), AnswerQuestion)
+      .WillByDefault(
+          [](const std::u16string& question, bool current_panel_content,
+             chromeos::MahiManager::MahiAnswerQuestionCallback callback) {
+            std::move(callback).Run(u"answer",
+                                    chromeos::MahiResponseStatus::kSuccess);
+          });
+
+  // Ask one question then destroy the Mahi panel. Verify that the recorded
+  // question count in this Mahi session should be one.
+  base::HistogramTester histogram_tester;
+  SubmitTestQuestion();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/1,
+      /*expected_count=*/0);
+  ResetPanelWidget();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName, /*sample=*/1,
+      /*expected_count=*/1);
+
+  // Ask two questions then destroy the Mahi panel. Verify that the recorded
+  // question count in this Mahi session should be two.
+  CreatePanelWidget();
+  SubmitTestQuestion();
+  SubmitTestQuestion();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName,
+      /*sample=*/1,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName,
+      /*sample=*/2,
+      /*expected_count=*/0);
+  ResetPanelWidget();
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kQuestionCountPerMahiSessionHistogramName,
+      /*sample=*/2,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

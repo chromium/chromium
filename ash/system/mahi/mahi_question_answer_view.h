@@ -35,6 +35,23 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   ~MahiQuestionAnswerView() override;
 
  private:
+  // A helper class to count questions and report the metric data.
+  class QuestionCountReporter {
+   public:
+    QuestionCountReporter();
+    QuestionCountReporter(const QuestionCountReporter&) = delete;
+    QuestionCountReporter& operator=(const QuestionCountReporter&) = delete;
+    ~QuestionCountReporter();
+
+    void IncreaseQuestionCount();
+
+    // Reports `question_count_` before reset.
+    void ReportDataAndReset();
+
+   private:
+    int question_count_ = 0;
+  };
+
   // MahiUiController::Delegate:
   views::View* GetView() override;
   bool GetViewVisibility(VisibilityState state) const override;
@@ -57,6 +74,11 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView,
   // Records the time when `answer_loading_animated_image_` starts showing and
   // playing the animation. Used for metrics collection.
   base::TimeTicks answer_start_loading_time_;
+
+  // Counts questions and reports the metric data when:
+  // 1. `MahiQuestionAnswerView` is destroyed.
+  // 2. `MahiQuestionAnswerView` is refreshed.
+  QuestionCountReporter question_count_reporter_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)
