@@ -247,10 +247,6 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->GetRewrittenRootLocationForTesting(original_id);
   }
 
-  int GetRewrittenTouchInfoSizeForTesting() {
-    return injector_->GetRewrittenTouchInfoSizeForTesting();
-  }
-
   std::unique_ptr<AppDataProto> ConvertToProto() {
     return injector_->ConvertToProto();
   }
@@ -1071,109 +1067,6 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
   EXPECT_EQ(0u, event_capturer_.touch_events().size());
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterTouchToTouch) {
-  // Setup.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
-  injector_->ParseActions(json_value->GetDict());
-  injector_->RegisterEventRewriter();
-  EXPECT_FALSE(GetHasPendingTouchEvents());
-
-  // Verify initial states.
-  EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_TRUE(event_capturer_.touch_events().empty());
-  EXPECT_EQ(0, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  // Case 1: Verify key event and touch event with matching ids will be handled
-  // correctly. Press down a keyboard key (A key) that will be converted to a
-  // touch event, then a physical touch on the screen. Both initial inputs will
-  // have the same id of 0. Then release the ids.
-
-  // First, press key A with id 0.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
-  EXPECT_TRUE(GetHasPendingTouchEvents());
-  EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
-  auto* keyEvent = event_capturer_.touch_events()[0].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, keyEvent->type());
-  EXPECT_EQ(0, keyEvent->pointer_details().id);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  // Second, press touch event with same id as A key.
-  event_generator_->PressTouchId(0, gfx::Point(360, 420));
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
-
-  // Verify id has been updated to not match the A key.
-  auto* touchEvent = event_capturer_.touch_events()[1].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
-  EXPECT_NE(touchEvent->pointer_details().id, keyEvent->pointer_details().id);
-  EXPECT_EQ(1, touchEvent->pointer_details().id);
-
-  // Send release event for A key. Verify the touch id is still in our map.
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
-
-  // Send release event for touch event. Verify touch id is removed from map.
-  event_generator_->ReleaseTouchId(0);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  event_capturer_.Clear();
-
-  // Case 2: Similar to Test 2, but the order of the inputs pressed are
-  // reversed. Press down a physical touch on the screen, then a a keyboard key
-  // (A key) that will be converted to a touch event. Both initial inputs will
-  // have the id of 0. Then release the ids.
-
-  // First, press touch event with id 0.
-  event_generator_->PressTouchId(0, gfx::Point(360, 420));
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
-  touchEvent = event_capturer_.touch_events()[0].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
-  EXPECT_EQ(0, touchEvent->pointer_details().id);
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
-
-  // Second, press key A with same id as the physical touch event.
-  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
-
-  // Verify ids do not match.
-  keyEvent = event_capturer_.touch_events()[1].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, keyEvent->type());
-  EXPECT_EQ(1, keyEvent->pointer_details().id);
-  EXPECT_NE(touchEvent->pointer_details().id, keyEvent->pointer_details().id);
-
-  // Send release event for touch event. Verify touch id is removed from map.
-  event_generator_->ReleaseTouchId(0);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  // Send release event for A key. Verify our map is still empty.
-  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  event_capturer_.Clear();
-
-  // Case 3: Send a touch event in a location outside of the window content
-  // bounds. This test will verify that we do not override the id that this
-  // touch event was originally assigned, which is 10 for this test.
-  event_generator_->PressTouchId(10, gfx::Point(5, 5));
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
-  touchEvent = event_capturer_.touch_events()[0].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
-
-  // Verify the event still has id value 10 and wasn't added to our map.
-  EXPECT_EQ(10, touchEvent->pointer_details().id);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  // Send release event for touch event. Verify map still is empty.
-  event_generator_->ReleaseTouchId(10);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  event_capturer_.Clear();
-}
-
 TEST_P(VersionTouchInjectorTest, TestCleanupTouchEvents) {
   // Setup.
   auto json_value =
@@ -1185,33 +1078,25 @@ TEST_P(VersionTouchInjectorTest, TestCleanupTouchEvents) {
   // Verify initial states.
   EXPECT_TRUE(event_capturer_.key_events().empty());
   EXPECT_TRUE(event_capturer_.touch_events().empty());
-  EXPECT_EQ(0, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
 
   // Verify the logic by creating a touch by a key press, then unregistering the
   // event rewriter.
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
-
-  // Second, press touch event.
-  event_generator_->PressTouchId(0, gfx::Point(360, 420));
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
 
   // Verify DispatchTouchReleaseEvent logic through UnRegisterEventRewriter.
   EXPECT_TRUE(GetHasPendingTouchEvents());
   injector_->UnRegisterEventRewriter();
   EXPECT_FALSE(GetHasPendingTouchEvents());
 
-  // Verify the existing events have generated release events.
-  EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
-  auto* touch_event = event_capturer_.touch_events()[2].get();
+  // Verify the existing event have generated a release event.
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
+  auto* touch_event = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touch_event->type());
+  touch_event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touch_event->type());
-  touch_event = event_capturer_.touch_events()[3].get();
-  EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, touch_event->type());
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 
   event_capturer_.Clear();
 }
@@ -1228,20 +1113,13 @@ TEST_P(VersionTouchInjectorTest, TestActivePlayMode) {
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/0u,
                    /*expected_touch_event_size=*/0u);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 
-  // Verify mouse event is discarded in the active play mode.
+  // 1. Verify mouse event is discarded in the active play mode.
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/0u,
                    /*expected_touch_event_size=*/1u);
   EXPECT_TRUE(GetHasPendingTouchEvents());
-
-  event_generator_->PressTouchId(/*touch_id=*/0, gfx::Point(360, 420));
-  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
-                   /*expected_mouse_event_size=*/0u,
-                   /*expected_touch_event_size=*/2u);
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
 
   // Mouse starts to interrupt and verify the mouse event is discarded and other
   // touch events stay the same.
@@ -1249,24 +1127,40 @@ TEST_P(VersionTouchInjectorTest, TestActivePlayMode) {
   event_generator_->ClickLeftButton();
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/0u,
-                   /*expected_touch_event_size=*/2u);
-  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+                   /*expected_touch_event_size=*/1u);
   EXPECT_TRUE(GetHasPendingTouchEvents());
 
-  // Release the key A and release the native touch event.
-  event_generator_->ReleaseTouchId(/*touch_id=*/0);
+  // Release the key A.
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/0u,
-                   /*expected_touch_event_size=*/4u);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+                   /*expected_touch_event_size=*/2u);
 
   // Mouse event is resumed if it is not in the active play mode anymore.
   event_generator_->PressLeftButton();
   VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
                    /*expected_mouse_event_size=*/1u,
+                   /*expected_touch_event_size=*/2u);
+  event_capturer_.Clear();
+
+  // 2. Verify original touch event cancels the simulated touch events.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/1u);
+
+  event_generator_->PressTouchId(/*touch_id=*/0, gfx::Point(360, 420));
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/3u);
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/0);
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
+                   /*expected_touch_event_size=*/3u);
+  event_generator_->ReleaseTouchId(/*touch_id=*/0);
+  VerifyEventsSize(event_capturer_, /*expected_key_event_size=*/0u,
+                   /*expected_mouse_event_size=*/0u,
                    /*expected_touch_event_size=*/4u);
-  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 }
 
 TEST_P(VersionTouchInjectorTest, TestProtoConversion) {

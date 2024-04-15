@@ -286,7 +286,6 @@ class TouchInjector : public ui::EventRewriter {
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
-  int GetRewrittenTouchInfoSizeForTesting();
   DisplayOverlayController* GetControllerForTesting();
 
   // TouchInjector is created when targeted `window_` is created and is

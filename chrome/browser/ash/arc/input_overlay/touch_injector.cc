@@ -628,6 +628,17 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
 
+  // Don't rewrite unrelated events.
+  if (event.IsTouchEvent() || event.IsGestureEvent() || event.IsScrollEvent() ||
+      event.IsCancelModeEvent()) {
+    // TODO(b/334233813): When real touch or gesture event happens, clean up
+    // simulated touch events and send the real touch or gesture event as it is.
+    // Supporting both simulated touch events and real touch events should be
+    // re-considered.
+    CleanupTouchEvents();
+    return SendEvent(continuation, &event);
+  }
+
   if (IsBeta()) {
     if (!can_rewrite_event_) {
       return SendEvent(continuation, &event);
@@ -684,35 +695,6 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   }
 
   if (!touch_injector_enable_ || text_input_active_) {
-    return SendEvent(continuation, &event);
-  }
-
-  if (event.IsTouchEvent()) {
-    auto* touch_event = event.AsTouchEvent();
-    auto location = touch_event->root_location();
-    window_->GetHost()->ConvertPixelsToDIP(&location);
-    auto location_f = gfx::PointF(location);
-    // Send touch event as it is if the event is outside of the content bounds.
-    if (!content_bounds_f_.Contains(location_f)) {
-      return SendEvent(continuation, &event);
-    }
-
-    std::unique_ptr<ui::TouchEvent> new_touch_event =
-        RewriteOriginalTouch(touch_event);
-
-    if (new_touch_event) {
-      has_pending_touch_events_ = true;
-      return SendEventFinally(continuation, new_touch_event.get());
-    }
-
-    // TODO(b/237037540): workaround for b/233785660. Theoretically it
-    // should discard the event if original touch-move or touch-release with
-    // same ID is not rewritten due to missing original touch-press. But
-    // thinking of real world user cases, it's unlikely to trigger any issues
-    // with sending original event. The logic is already complicated in
-    // `RewriteEvent()` so here it uses a workaround. The menu entry will be
-    // removed and simplify the logic in future version, then it will be
-    // fundamentally improved.
     return SendEvent(continuation, &event);
   }
 
@@ -1107,10 +1089,6 @@ gfx::PointF TouchInjector::GetRewrittenRootLocationForTesting(
   DCHECK(it != rewritten_touch_infos_.end());
 
   return it->second.touch_root_location;
-}
-
-int TouchInjector::GetRewrittenTouchInfoSizeForTesting() {
-  return rewritten_touch_infos_.size();
 }
 
 DisplayOverlayController* TouchInjector::GetControllerForTesting() {

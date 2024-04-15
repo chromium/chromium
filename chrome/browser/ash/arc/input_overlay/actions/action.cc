@@ -530,8 +530,7 @@ bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
 
 bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   if (!touch_id_) {
-    LOG(ERROR) << "There should be a touch ID for the release {"
-               << ui::KeycodeConverter::DomCodeToCodeString(code) << "}.";
+    // The simulated touch events may be released by other events forcely.
     DCHECK_EQ(keys_pressed_.size(), 0u);
     return false;
   }
