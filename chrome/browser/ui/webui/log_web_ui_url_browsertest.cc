@@ -22,6 +22,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -70,6 +71,10 @@ IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestHistoryPage) {
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestSettingsPage) {
   RunTest(IDS_SETTINGS_SETTINGS, GURL(chrome::kChromeUISettingsURL));
+}
+
+IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestDinoPage) {
+  RunTest(-1, content::GetWebUIURL(content::kChromeUIDinoHost));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
