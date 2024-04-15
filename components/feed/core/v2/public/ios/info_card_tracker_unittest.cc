@@ -22,7 +22,7 @@ const int multiple_trigger_count = 3;
 const int view_fraction_threshold = 2;
 const int minimum_seconds_between_views = 1;
 
-class InfoCardTrackerTest : public testing::Test {
+class IOSInfoCardTrackerTest : public testing::Test {
  public:
   void SetUp() override {
     feed::RegisterProfilePrefs(browser_state_prefs_.registry());
@@ -33,7 +33,7 @@ class InfoCardTrackerTest : public testing::Test {
 };
 
 // Test a tracking command that triggers an explicit dismissal.
-TEST_F(InfoCardTrackerTest, OnExplicitDismissal) {
+TEST_F(IOSInfoCardTrackerTest, OnExplicitDismissal) {
   InfoCardTracker tracker(&browser_state_prefs_);
 
   // Get the info card tracking state, which should be defaulted with 0 explicit
@@ -72,7 +72,7 @@ TEST_F(InfoCardTrackerTest, OnExplicitDismissal) {
 }
 
 // Test a tracking command that triggers a view.
-TEST_F(InfoCardTrackerTest, OnView) {
+TEST_F(IOSInfoCardTrackerTest, OnView) {
   InfoCardTracker tracker(&browser_state_prefs_);
 
   // Get the info card tracking state, which should be defaulted with 0 views.
@@ -122,7 +122,7 @@ TEST_F(InfoCardTrackerTest, OnView) {
 }
 
 // Test a tracking command that triggers a click.
-TEST_F(InfoCardTrackerTest, OnClick) {
+TEST_F(IOSInfoCardTrackerTest, OnClick) {
   InfoCardTracker tracker(&browser_state_prefs_);
 
   // Get the info card tracking state, which should be defaulted with 0 clicks.
@@ -156,7 +156,7 @@ TEST_F(InfoCardTrackerTest, OnClick) {
 }
 
 // Test a tracking command that resets the tracking state.
-TEST_F(InfoCardTrackerTest, OnResetState) {
+TEST_F(IOSInfoCardTrackerTest, OnResetState) {
   InfoCardTracker tracker(&browser_state_prefs_);
 
   // Store the default tracking state to later compare after resetting the
