@@ -32,15 +32,6 @@ namespace {
 // Versions up to this version will be uninstalled.
 constexpr char kCleanupVersionMax[] = "117.0.5859.0";
 
-// TODO(crbug/5002644): we should remove this once we believe the cache has
-// been deleted by the majority of clients.
-void TempCleanupCache(UpdaterScope scope) {
-  std::optional<base::FilePath> cache_dir = GetCrxDiffCacheDirectory(scope);
-  if (cache_dir.has_value()) {
-    base::DeletePathRecursively(cache_dir.value());
-  }
-}
-
 void CleanupGoogleUpdate(UpdaterScope scope) {
 #if BUILDFLAG(IS_WIN)
   // Delete anything other than `GoogleUpdate.exe` under `\Google\Update`.
@@ -96,7 +87,6 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
-            TempCleanupCache(scope);
           },
           scope_),
       std::move(callback));

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_client.h"
@@ -240,7 +241,8 @@ class Component {
     // State overrides.
     void DoHandle() override;
     bool CanTryDiffUpdate() const;
-    void CheckIfCacheContainsCrxComplete(bool crx_is_in_cache);
+    void GetNextCrxFromCacheComplete(const CrxCache::Result& result);
+    void CheckIfCacheContainsPreviousCrxComplete(bool crx_is_in_cache);
   };
 
   class StateUpToDate : public State {

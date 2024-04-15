@@ -28,7 +28,6 @@
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/configurator.h"
-#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/features.h"
 #include "components/update_client/network.h"
@@ -54,29 +53,39 @@
 //     |                        kChecking
 //     |                            |
 //     V                error       V     no           no
-//  kUpdateError <------------- [update?] -> [action?] -> kUpToDate  kUpdated
-//     ^                            |           |            ^        ^
-//     |                        yes |           | yes        |        |
-//     |     update disabled        V           |            |        |
-//     +-<--------------------- kCanUpdate      +--------> kRun       |
-//     |                            |                                 |
-//     |                no          V                                 |
-//     |               +-<- [differential update?]                    |
-//     |               |               |                              |
-//     |               |           yes |                              |
-//     |               | error         V                              |
-//     |               +-<----- kDownloadingDiff            kRun---->-+
-//     |               |               |                     ^        |
-//     |               |               |                 yes |        |
-//     |               | error         V                     |        |
-//     |               +-<----- kUpdatingDiff ---------> [action?] ->-+
-//     |               |                                     ^     no
-//     |    error      V                                     |
-//     +-<-------- kDownloading                              |
-//     |               |                                     |
-//     |               |                                     |
-//     |    error      V                                     |
-//     +-<-------- kUpdating --------------------------------+
+//  kUpdateError <------------- [update?] -> [action?] -> kUpToDate
+//     ^                            |           |            ^
+//     |                        yes |           | yes        |
+//     |     update disabled        V           |            |
+//     +-<--------------------- kCanUpdate      +--------> kRun
+//     |                            |
+//     |                            V           yes
+//     |                    [download cached?] --------------+
+//     |                               |                     |
+//     |                            no |                     |
+//     |                no             |                     |
+//     |               +-<- [differential update?]           |
+//     |               |               |                     |
+//     |               |           yes |                     |
+//     |               | error         V                     |
+//     |               +-<----- kDownloadingDiff             |
+//     |               |               |                     |
+//     |               |               |                     |
+//     |               | error         V                     |
+//     |               +-<----- kUpdatingDiff                |
+//     |               |               |                     |
+//     |    error      V               |                     |
+//     +-<-------- kDownloading        |                     |
+//     |               |               |                     |
+//     |               |               |                     |
+//     |    error      V               V      no             |
+//     +-<-------- kUpdating -----> [action?] -> kUpdated    |
+//                     ^               |            ^        |
+//                     |               | yes        |        |
+//                     |               |            |        |
+//                     |               +--------> kRun       |
+//                     |                                     |
+//                     +-------------------------------------+
 
 // The state machine for a check for update only.
 //
@@ -257,16 +266,10 @@ void PuffinUnpackCompleteOnBlockingTaskRunner(
         FROM_HERE, base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
                                   static_cast<int>(result.error),
                                   result.extended_error, std::nullopt));
-  } else if (!base::FeatureList::IsEnabled(features::kPuffinPatches) ||
-             !optional_crx_cache.has_value()) {
+  } else if (!optional_crx_cache.has_value()) {
     // If we were unable to create the crx_cache, skip the CrxCache::Put call.
     // Since we don't need the cache to perform full updates, ignore the error
-    if (base::FeatureList::IsEnabled(features::kPuffinPatches)) {
-      DVLOG(2) << "No crx cache provided, proceeding without crx retention.";
-    } else {
-      DVLOG(2)
-          << "Puffin Patches are disabled, proceeding without crx retention.";
-    }
+    DVLOG(2) << "No crx cache provided, proceeding without crx retention.";
     update_client::DeleteFileAndEmptyParentDirectory(crx_path);
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
@@ -963,19 +966,15 @@ void Component::StateCanUpdate::DoHandle() {
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
   CHECK(component.update_context_->crx_cache_);
-  if (CanTryDiffUpdate()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&update_client::CrxCache::Contains,
-                       component.update_context_->crx_cache_.value(),
-                       component.crx_component()->app_id,
-                       component.previous_fp_),
-        base::BindOnce(
-            &Component::StateCanUpdate::CheckIfCacheContainsCrxComplete,
-            base::Unretained(this)));
-    return;
-  }
-  TransitionState(std::make_unique<StateDownloading>(&component));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &update_client::CrxCache::Get,
+          component.update_context_->crx_cache_.value(),
+          component.crx_component()->app_id, component.next_fp_,
+          base::BindOnce(
+              &Component::StateCanUpdate::GetNextCrxFromCacheComplete,
+              base::Unretained(this))));
 }
 
 // Returns true if a differential update is available, it has not failed yet,
@@ -990,7 +989,31 @@ bool Component::StateCanUpdate::CanTryDiffUpdate() const {
          component.update_context_->config->EnabledDeltas();
 }
 
-void Component::StateCanUpdate::CheckIfCacheContainsCrxComplete(
+void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
+    const CrxCache::Result& result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto& component = State::component();
+  if (result.error == UnpackerError::kNone) {
+    component.payload_path_ = result.crx_cache_path;
+    TransitionState(std::make_unique<StateUpdating>(&component));
+    return;
+  }
+  if (CanTryDiffUpdate()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&update_client::CrxCache::Contains,
+                       component.update_context_->crx_cache_.value(),
+                       component.crx_component()->app_id,
+                       component.previous_fp_),
+        base::BindOnce(
+            &Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete,
+            base::Unretained(this)));
+    return;
+  }
+  TransitionState(std::make_unique<StateDownloading>(&component));
+}
+
+void Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete(
     bool crx_is_in_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();

@@ -86,6 +86,11 @@ CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
     return result;
   }
   base::FilePath dest_path = BuildCrxFilePath(id, fp);
+  if (crx_path == dest_path) {
+    result.error = UnpackerError::kNone;
+    result.crx_cache_path = dest_path;
+    return result;
+  }
   RemoveAll(id);
   result.error = MoveFileToCache(crx_path, dest_path);
   if (result.error == UnpackerError::kNone) {

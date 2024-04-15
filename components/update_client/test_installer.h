@@ -49,6 +49,10 @@ class TestInstaller : public CrxInstaller {
     installer_progress_samples_.swap(installer_progress_samples);
   }
 
+  void set_install_error(InstallError install_error) {
+    install_error_ = install_error;
+  }
+
  protected:
   ~TestInstaller() override;
 
@@ -60,6 +64,9 @@ class TestInstaller : public CrxInstaller {
   int install_count_;
 
  private:
+  // Contains the error code returned by the installer when it completes.
+  InstallError install_error_;
+
   // Contains the |unpack_path| argument of the Install call.
   base::FilePath unpack_path_;
 

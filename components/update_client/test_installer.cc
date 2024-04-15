@@ -25,6 +25,7 @@ namespace update_client {
 TestInstaller::TestInstaller()
     : error_(0),
       install_count_(0),
+      install_error_(InstallError::NONE),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 TestInstaller::~TestInstaller() {
@@ -50,7 +51,7 @@ void TestInstaller::Install(const base::FilePath& unpack_path,
   install_params_ = std::move(install_params);
 
   InstallComplete(std::move(callback), progress_callback,
-                  Result(InstallError::NONE));
+                  Result(install_error_));
 }
 
 void TestInstaller::InstallComplete(Callback callback,

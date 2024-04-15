@@ -77,8 +77,7 @@ UpdateEngine::UpdateEngine(
       ping_manager_(ping_manager),
       notify_observers_callback_(notify_observers_callback) {
   std::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
-  if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
-      crx_cache_path.has_value()) {
+  if (crx_cache_path.has_value()) {
     CrxCache::Options options(crx_cache_path.value());
     crx_cache_ = std::optional<scoped_refptr<CrxCache>>(
         base::MakeRefCounted<CrxCache>(options));
