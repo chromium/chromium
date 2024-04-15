@@ -68,7 +68,6 @@ export class ModuleRegistry {
           });
       NewTabPageProxy.getInstance().handler.updateDisabledModules();
     });
-
     const descriptorsMap: Map<string, ModuleDescriptor> =
         new Map(this.descriptors_.map(d => [d.id, d]));
     const descriptors: ModuleDescriptor[] =
@@ -99,7 +98,6 @@ export class ModuleRegistry {
         return 0;  // Keep current order.
       });
     }
-
     const elements =
         await Promise.all(descriptors.map(d => d.initialize(timeout)));
     return elements.map((e, i) => ({elements: e, descriptor: descriptors[i]}))

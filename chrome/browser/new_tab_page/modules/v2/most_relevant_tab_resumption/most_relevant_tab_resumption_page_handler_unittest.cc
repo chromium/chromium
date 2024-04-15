@@ -27,7 +27,21 @@ class MostRelevantTabResumptionPageHandlerTest
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     handler_ = std::make_unique<MostRelevantTabResumptionPageHandler>(
+        mojo::PendingReceiver<
+            ntp::most_relevant_tab_resumption::mojom::PageHandler>(),
         web_contents_.get());
+  }
+
+  void SetUpMockCalls(
+      std::vector<history::mojom::TabPtr>& tabs_mojom,
+      base::MockCallback<MostRelevantTabResumptionPageHandler::GetTabsCallback>&
+          callback) {
+    EXPECT_CALL(callback, Run(testing::_))
+        .Times(1)
+        .WillOnce(testing::Invoke(
+            [&tabs_mojom](std::vector<history::mojom::TabPtr> tabs_arg) {
+              tabs_mojom = std::move(tabs_arg);
+            }));
   }
 
   void TearDown() override {
@@ -42,4 +56,30 @@ class MostRelevantTabResumptionPageHandlerTest
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MostRelevantTabResumptionPageHandler> handler_;
 };
+
+TEST_F(MostRelevantTabResumptionPageHandlerTest, GetFakeTabs) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpMostRelevantTabResumptionModule,
+           {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
+             "Fake Data"}}},
+      },
+      {});
+  std::vector<history::mojom::TabPtr> tabs_mojom;
+  base::MockCallback<MostRelevantTabResumptionPageHandler::GetTabsCallback>
+      callback;
+
+  SetUpMockCalls(tabs_mojom, callback);
+
+  handler().GetTabs(callback.Get());
+
+  ASSERT_EQ(3u, tabs_mojom.size());
+
+  for (const auto& tab_mojom : tabs_mojom) {
+    ASSERT_EQ("Test Session", tab_mojom->session_name);
+    ASSERT_EQ("5 mins ago", tab_mojom->relative_time_text);
+    ASSERT_EQ(GURL("https://www.google.com"), tab_mojom->url);
+  }
+}
 }  // namespace

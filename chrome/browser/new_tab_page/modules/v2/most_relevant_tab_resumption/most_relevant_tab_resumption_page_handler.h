@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_MOST_RELEVANT_TAB_RESUMPTION_MOST_RELEVANT_TAB_RESUMPTION_PAGE_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_MOST_RELEVANT_TAB_RESUMPTION_MOST_RELEVANT_TAB_RESUMPTION_PAGE_HANDLER_H_
 
+#include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "components/history/core/browser/history_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,9 +17,13 @@ class WebContents;
 }  // namespace content
 
 // The handler for communication between the WebUI.
-class MostRelevantTabResumptionPageHandler {
+class MostRelevantTabResumptionPageHandler
+    : public ntp::most_relevant_tab_resumption::mojom::PageHandler {
  public:
-  explicit MostRelevantTabResumptionPageHandler(
+  MostRelevantTabResumptionPageHandler(
+      mojo::PendingReceiver<
+          ntp::most_relevant_tab_resumption::mojom::PageHandler>
+          pending_page_handler,
       content::WebContents* web_contents);
 
   MostRelevantTabResumptionPageHandler(
@@ -26,13 +31,17 @@ class MostRelevantTabResumptionPageHandler {
   MostRelevantTabResumptionPageHandler& operator=(
       const MostRelevantTabResumptionPageHandler&) = delete;
 
-  ~MostRelevantTabResumptionPageHandler();
+  ~MostRelevantTabResumptionPageHandler() override;
 
-  void GetTabs();
+  // most_relevant_tab_resumption::mojom::PageHandler:
+  void GetTabs(GetTabsCallback callback) override;
 
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+
+  mojo::Receiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>
+      page_handler_;
 
   base::WeakPtrFactory<MostRelevantTabResumptionPageHandler> weak_ptr_factory_{
       this};

@@ -8321,6 +8321,7 @@ test("unit_tests") {
       "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
+      "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings",
       "//chrome/browser/resource_coordinator:tab_manager_features",
       "//chrome/browser/resources:component_extension_resources_grit",

@@ -159,6 +159,7 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/payments/payment_request_factory.h"
@@ -1313,6 +1314,13 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::tab_resumption::mojom::PageHandler, NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpMostRelevantTabResumptionModule)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ntp::most_relevant_tab_resumption::mojom::PageHandler, NewTabPageUI>(
+        map);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

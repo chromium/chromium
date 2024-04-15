@@ -4652,6 +4652,7 @@ static_library("browser") {
       "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/safe_browsing:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/history_clusters:mojo_bindings",
+      "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings",
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",

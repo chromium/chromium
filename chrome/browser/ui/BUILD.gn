@@ -2077,6 +2077,7 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/history_clusters:mojo_bindings",
+      "//chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/push_notification:push_notification",

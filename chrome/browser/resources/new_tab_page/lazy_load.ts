@@ -58,6 +58,8 @@ export {HistoryClusterImageDisplayState as HistoryClusterV2ImageDisplayState, hi
 export {VisitTileModuleElement} from './modules/v2/history_clusters/visit_tile.js';
 export {ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
+export {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionModuleElement} from './modules/v2/most_relevant_tab_resumption/module.js';
+export {MostRelevantTabResumptionProxyImpl} from './modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {tabResumptionDescriptor, TabResumptionModuleElement} from './modules/v2/tab_resumption/module.js';
 export {TabResumptionProxyImpl} from './modules/v2/tab_resumption/tab_resumption_proxy.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

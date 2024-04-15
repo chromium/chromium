@@ -276,6 +276,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("historyClustersImagesEnabled",
                      !base::FeatureList::IsEnabled(
                          ntp_features::kNtpHistoryClustersModuleTextOnly));
+  source->AddBoolean("mostRelevantTabResumptionEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpMostRelevantTabResumptionModule));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},
@@ -936,6 +939,14 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   history_clusters_handler_v2_ = std::make_unique<HistoryClustersPageHandlerV2>(
       std::move(pending_page_handler), web_contents());
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>
+        pending_page_handler) {
+  most_relevant_tab_resumption_handler_ =
+      std::make_unique<MostRelevantTabResumptionPageHandler>(
+          std::move(pending_page_handler), web_contents());
 }
 
 void NewTabPageUI::BindInterface(

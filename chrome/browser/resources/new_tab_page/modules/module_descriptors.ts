@@ -23,6 +23,7 @@ import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
 import {fileSuggestionDescriptor} from './v2/file_suggestion/module.js';
 import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
+import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resumption/module.js';
 import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 
 const modulesRedesignedEnabled: boolean =
@@ -36,8 +37,11 @@ descriptors.push(feedDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? historyClustersV2Descriptor :
                                historyClustersDescriptor);
-
-descriptors.push(tabResumptionDescriptor);
+if (loadTimeData.getBoolean('mostRelevantTabResumptionEnabled')) {
+  descriptors.push(mostRelevantTabResumptionDescriptor);
+} else {
+  descriptors.push(tabResumptionDescriptor);
+}
 descriptors.push(googleCalendarDescriptor);
 
 // <if expr="not is_official_build">

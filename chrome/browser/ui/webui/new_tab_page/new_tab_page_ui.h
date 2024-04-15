@@ -18,6 +18,7 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -87,6 +88,7 @@ class FeedHandler;
 }
 class HistoryClustersPageHandler;
 class HistoryClustersPageHandlerV2;
+class MostRelevantTabResumptionPageHandler;
 class TabResumptionPageHandler;
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -205,6 +207,10 @@ class NewTabPageUI
       mojo::PendingReceiver<ntp::history_clusters_v2::mojom::PageHandler>
           pending_page_handler);
 
+  void BindInterface(mojo::PendingReceiver<
+                     ntp::most_relevant_tab_resumption::mojom::PageHandler>
+                         pending_page_handler);
+
   void BindInterface(
       mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
           pending_page_handler);
@@ -295,6 +301,8 @@ class NewTabPageUI
   std::unique_ptr<CartHandler> cart_handler_;
   std::unique_ptr<HistoryClustersPageHandler> history_clusters_handler_;
   std::unique_ptr<HistoryClustersPageHandlerV2> history_clusters_handler_v2_;
+  std::unique_ptr<MostRelevantTabResumptionPageHandler>
+      most_relevant_tab_resumption_handler_;
   std::unique_ptr<TabResumptionPageHandler> tab_resumption_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;

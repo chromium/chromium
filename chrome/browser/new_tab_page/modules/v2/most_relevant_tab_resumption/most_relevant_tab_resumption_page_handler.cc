@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_types.h"
@@ -59,9 +60,12 @@ history::mojom::TabPtr SessionTabToMojom(const std::string& session_name) {
 }  // namespace
 
 MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
+    mojo::PendingReceiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>
+        pending_page_handler,
     content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
 }
@@ -69,7 +73,7 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
 MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
     default;
 
-void MostRelevantTabResumptionPageHandler::GetTabs() {
+void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
@@ -80,6 +84,7 @@ void MostRelevantTabResumptionPageHandler::GetTabs() {
     for (int i = 0; i < kSampleVisitsCount; i++) {
       tabs_mojom.push_back(SessionTabToMojom("Test Session"));
     }
+    std::move(callback).Run(std::move(tabs_mojom));
     return;
   }
 }
