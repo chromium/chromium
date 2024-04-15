@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -50,6 +51,81 @@ bool IsUserTypeAllowed(const user_manager::User& user) {
     case user_manager::UserType::kArcKioskApp:
       return false;
   }
+}
+
+// Returns whether or not lacros is allowed for the Primary user,
+// with given LacrosAvailability policy.
+bool IsAllowedInternal(const user_manager::User* user,
+                       LacrosAvailability lacros_availability) {
+  if (IsLacrosDisallowedByCommand() || !BrowserSupport::IsCpuSupported()) {
+    // This happens when Ash is restarted in multi-user session, meaning there
+    // are more than two users logged in to the device. This will not cause an
+    // accidental removal of Lacros data because for the primary user, the fact
+    // that the device is in multi-user session means that Lacros was not
+    // enabled beforehand. And for secondary users, data removal does not happen
+    // even if Lacros is disabled.
+    return false;
+  }
+
+  if (!user) {
+    // User is not available. Practically, this is accidentally happening
+    // if related function is called before session, or in testing.
+    // TODO(crbug.com/1408962): We should limit this at least only for
+    // testing.
+    return false;
+  }
+
+  if (!IsUserTypeAllowed(*user)) {
+    return false;
+  }
+
+  switch (lacros_availability) {
+    case LacrosAvailability::kLacrosDisallowed:
+      return false;
+    case LacrosAvailability::kUserChoice:
+    case LacrosAvailability::kLacrosOnly:
+      return true;
+  }
+}
+
+// Returns whether the standalone browser (a.k.a. Lacros) is enabled.
+// Practically, before invoking this, BrowserSupport::IsAllowedInternal()
+// needs to be called and make sure it returns true.
+bool IsEnabledInternal(const user_manager::User* user,
+                       LacrosAvailability lacros_availability,
+                       bool check_migration_status) {
+  DCHECK(user);
+
+  // If profile migration is enabled, the completion of it is necessary for
+  // Lacros to be enabled.
+  if (check_migration_status &&
+      !base::FeatureList::IsEnabled(
+          features::kLacrosProfileMigrationForceOff)) {
+    PrefService* local_state =
+        user_manager::UserManager::Get()->GetLocalState();
+    // Note that local_state can be nullptr in tests.
+    if (local_state && !migrator_util::IsProfileMigrationCompletedForUser(
+                           local_state, user->username_hash())) {
+      // If migration has not been completed, do not enable lacros.
+      return false;
+    }
+  }
+
+  switch (lacros_availability) {
+    case LacrosAvailability::kUserChoice:
+      break;
+    case LacrosAvailability::kLacrosDisallowed:
+      NOTREACHED();  // Guarded by IsLacrosAllowedInternal, called before.
+      return false;
+    case LacrosAvailability::kLacrosOnly:
+      return true;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kLacrosOnly)) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -126,39 +202,15 @@ void BrowserSupport::SetCpuSupportedForTesting(std::optional<bool> value) {
   g_cpu_supported_override_ = value;
 }
 
-// Returns whether or not lacros is allowed for the Primary user,
-// with given LacrosAvailability policy.
-bool BrowserSupport::IsAllowedInternal(const user_manager::User* user,
-                                       LacrosAvailability lacros_availability) {
-  if (IsLacrosDisallowedByCommand() || !IsCpuSupported()) {
-    // This happens when Ash is restarted in multi-user session, meaning there
-    // are more than two users logged in to the device. This will not cause an
-    // accidental removal of Lacros data because for the primary user, the fact
-    // that the device is in multi-user session means that Lacros was not
-    // enabled beforehand. And for secondary users, data removal does not happen
-    // even if Lacros is disabled.
+bool BrowserSupport::IsEnabledInternal(const user_manager::User* user,
+                                       LacrosAvailability lacros_availability,
+                                       bool check_migration_status) {
+  if (!IsAllowedInternal(user, lacros_availability)) {
     return false;
   }
 
-  if (!user) {
-    // User is not available. Practically, this is accidentally happening
-    // if related function is called before session, or in testing.
-    // TODO(crbug.com/1408962): We should limit this at least only for
-    // testing.
-    return false;
-  }
-
-  if (!IsUserTypeAllowed(*user)) {
-    return false;
-  }
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kUserChoice:
-    case LacrosAvailability::kLacrosOnly:
-      return true;
-  }
+  return ash::standalone_browser::IsEnabledInternal(user, lacros_availability,
+                                                    check_migration_status);
 }
 
 }  // namespace ash::standalone_browser

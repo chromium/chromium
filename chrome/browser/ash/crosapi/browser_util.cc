@@ -190,50 +190,6 @@ std::optional<LacrosAvailability> GetLacrosAvailability(
   }
 }
 
-// Returns whether the lacros is enabled currently.
-bool IsLacrosEnabledInternal(const User* user,
-                             LacrosAvailability lacros_availability,
-                             bool check_migration_status) {
-  if (!ash::standalone_browser::BrowserSupport::IsAllowedInternal(
-          user, lacros_availability)) {
-    return false;
-  }
-
-  DCHECK(user);
-
-  // If profile migration is enabled, the completion of it is necessary for
-  // Lacros to be enabled.
-  if (check_migration_status &&
-      !base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kLacrosProfileMigrationForceOff)) {
-    PrefService* local_state = g_browser_process->local_state();
-    // Note that local_state can be nullptr in tests.
-    if (local_state && !ash::standalone_browser::migrator_util::
-                           IsProfileMigrationCompletedForUser(
-                               local_state, user->username_hash())) {
-      // If migration has not been completed, do not enable lacros.
-      return false;
-    }
-  }
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kUserChoice:
-      break;
-    case LacrosAvailability::kLacrosDisallowed:
-      NOTREACHED();  // Guarded by IsLacrosAllowedInternal.
-      return false;
-    case LacrosAvailability::kLacrosOnly:
-      return true;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          ash::standalone_browser::features::kLacrosOnly)) {
-    return true;
-  }
-
-  return false;
-}
-
 }  // namespace
 
 constexpr char kLacrosStabilitySwitch[] = "lacros-stability";
@@ -332,9 +288,9 @@ bool IsLacrosAllowedToBeEnabled() {
 }
 
 bool IsLacrosEnabled() {
-  return IsLacrosEnabledInternal(GetPrimaryUser(),
-                                 GetCachedLacrosAvailability(),
-                                 /*check_migration_status=*/true);
+  return ash::standalone_browser::BrowserSupport::IsEnabledInternal(
+      GetPrimaryUser(), GetCachedLacrosAvailability(),
+      /*check_migration_status=*/true);
 }
 
 bool IsLacrosEnabledForMigration(const User* user,
@@ -344,8 +300,8 @@ bool IsLacrosEnabledForMigration(const User* user,
   if (!lacros_availability.has_value()) {
     return false;
   }
-  return IsLacrosEnabledInternal(user, *lacros_availability,
-                                 /*check_migration_status=*/false);
+  return ash::standalone_browser::BrowserSupport::IsEnabledInternal(
+      user, *lacros_availability, /*check_migration_status=*/false);
 }
 
 bool IsProfileMigrationEnabled(const user_manager::User* user,
