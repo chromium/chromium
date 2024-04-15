@@ -18,8 +18,9 @@ using protocol::Maybe;
 using protocol::String;
 
 namespace autofill {
-class ContentAutofillDriver;
+class AutofillClient;
 class AutofillProfile;
+class ContentAutofillDriver;
 class CreditCard;
 }
 
@@ -74,6 +75,10 @@ class AutofillHandler : public protocol::Autofill::Backend,
   // Returns the driver for the outermost frame, not the one that created the
   // `DevToolsAgentHost` and iniated the session.
   autofill::ContentAutofillDriver* GetAutofillDriver();
+
+  // Returns the client for the webcontents/tab where the devtools window is
+  // open.
+  autofill::AutofillClient* GetAutofillClient();
 
   const std::string target_id_;
   bool enabled_ = false;

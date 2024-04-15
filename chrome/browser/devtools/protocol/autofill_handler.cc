@@ -12,6 +12,7 @@
 #include "chrome/browser/devtools/protocol/autofill.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -91,7 +92,9 @@ AutofillHandler::AutofillHandler(protocol::UberDispatcher* dispatcher,
   }
 }
 
-AutofillHandler::~AutofillHandler() = default;
+AutofillHandler::~AutofillHandler() {
+  Disable();
+}
 
 protocol::Response AutofillHandler::Trigger(
     int field_id,
@@ -176,6 +179,11 @@ protocol::Response AutofillHandler::Trigger(
 void AutofillHandler::SetAddresses(
     std::unique_ptr<protocol::Array<protocol::Autofill::Address>> addresses,
     std::unique_ptr<SetAddressesCallback> callback) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillTestFormWithTestAddresses)) {
+    return;
+  }
+
   if (!content::DevToolsAgentHost::GetForId(target_id_)) {
     std::move(callback)->sendFailure(Response::ServerError("Target not found"));
     return;
@@ -404,11 +412,27 @@ autofill::ContentAutofillDriver* AutofillHandler::GetAutofillDriver() {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
   CHECK(host);
 
+  if (!host->GetWebContents()) {
+    return nullptr;
+  }
+
   content::RenderFrameHost* outermost_primary_rfh =
       host->GetWebContents()->GetOutermostWebContents()->GetPrimaryMainFrame();
 
   return autofill::ContentAutofillDriver::GetForRenderFrameHost(
       outermost_primary_rfh);
+}
+
+autofill::AutofillClient* AutofillHandler::GetAutofillClient() {
+  auto host = content::DevToolsAgentHost::GetForId(target_id_);
+  CHECK(host);
+
+  if (!host->GetWebContents()) {
+    return nullptr;
+  }
+
+  return autofill::ContentAutofillClient::FromWebContents(
+      host->GetWebContents());
 }
 
 Response AutofillHandler::Enable() {
@@ -437,5 +461,9 @@ Response AutofillHandler::Enable() {
 Response AutofillHandler::Disable() {
   enabled_ = false;
   autofill_manager_observation_.Reset();
+  autofill::AutofillClient* autofill_client = GetAutofillClient();
+  if (autofill_client) {
+    autofill_client->set_test_addresses({});
+  }
   return Response::Success();
 }

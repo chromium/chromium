@@ -975,7 +975,6 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   if (test_addresses.empty()) {
     return std::nullopt;
   }
-
   Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);
   suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};

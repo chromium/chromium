@@ -168,6 +168,8 @@ BASE_DECLARE_FEATURE(kAutofillGranularFillingAvailable);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillForUnclassifiedFieldsAvailable);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillTestFormWithTestAddresses);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTestFormWithDevtools);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport);
