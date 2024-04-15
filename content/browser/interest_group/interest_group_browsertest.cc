@@ -717,6 +717,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeSampleDebugReports, {}},
          // These are in field trial config, but we want this consistent among
          // bots.
+         {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
          {blink::features::kFledgeReportingTimeout, {}}},
