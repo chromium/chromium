@@ -634,14 +634,22 @@ TEST(PredictPreconnectableOrigins, FilterUrls) {
 TEST(PredictUnusedPreloads, Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+      {{blink::features::kLCPPDeferUnusedPreload,
+        {{blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.name,
+          "0.5"}}}},
+      {});
+
   EXPECT_EQ(std::vector<GURL>(), PredictUnusedPreloads({}));
 }
 
 TEST(PredictUnusedPreloads, SingleEntry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+      {{blink::features::kLCPPDeferUnusedPreload,
+        {{blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.name,
+          "0.5"}}}},
+      {});
+
   LcppData lcpp_data;
   lcpp_data.mutable_lcpp_stat()
       ->mutable_unused_preload_stat()
@@ -654,7 +662,11 @@ TEST(PredictUnusedPreloads, SingleEntry) {
 TEST(PredictUnusedPreloads, SortedByFrequencyInDescendingOrder) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+      {{blink::features::kLCPPDeferUnusedPreload,
+        {{blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.name,
+          "0"}}}},
+      {});
+
   LcppData lcpp_data;
   auto* buckets = lcpp_data.mutable_lcpp_stat()
                       ->mutable_unused_preload_stat()
@@ -671,7 +683,11 @@ TEST(PredictUnusedPreloads, SortedByFrequencyInDescendingOrder) {
 TEST(PredictUnusedPreloads, FilterUrls) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+      {{blink::features::kLCPPDeferUnusedPreload,
+        {{blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.name,
+          "0"}}}},
+      {});
+
   LcppData lcpp_data;
   auto* buckets = lcpp_data.mutable_lcpp_stat()
                       ->mutable_unused_preload_stat()
@@ -685,6 +701,24 @@ TEST(PredictUnusedPreloads, FilterUrls) {
   EXPECT_EQ(4U, buckets->size());
   EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
                                GURL("https://example.com/a.jpeg")}),
+            PredictUnusedPreloads(lcpp_data));
+}
+
+TEST(PredictUnusedPreloads, Threshold) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPDeferUnusedPreload,
+        {{blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.name,
+          "0.5"}}}},
+      {});
+
+  LcppData lcpp_data;
+  auto* buckets = lcpp_data.mutable_lcpp_stat()
+                      ->mutable_unused_preload_stat()
+                      ->mutable_main_buckets();
+  buckets->insert({"https://example.com/a.jpeg", 0.9});
+  buckets->insert({"https://example.com/b.jpeg", 0.1});
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
             PredictUnusedPreloads(lcpp_data));
 }
 

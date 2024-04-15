@@ -687,6 +687,8 @@ std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
 }
 
 std::vector<GURL> PredictUnusedPreloads(const LcppData& data) {
+  const double frequency_threshold =
+      blink::features::kLCPPDeferUnusedPreloadFrequencyThreshold.Get();
   std::vector<GURL> unused_preloads;
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
     return unused_preloads;
@@ -694,6 +696,10 @@ std::vector<GURL> PredictUnusedPreloads(const LcppData& data) {
 
   for (const auto& [frequency, url] :
        ConvertToFrequencyStringPair(data.lcpp_stat().unused_preload_stat())) {
+    // The frequencies are reverse sorted by `ConvertToFrequencyStringPair`.
+    if (frequency < frequency_threshold) {
+      break;
+    }
     GURL parsed_url(url);
     if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
       continue;

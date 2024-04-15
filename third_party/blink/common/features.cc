@@ -1381,6 +1381,9 @@ BASE_FEATURE(kLCPPDeferUnusedPreload,
              "LCPPDeferUnusedPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<double> kLCPPDeferUnusedPreloadFrequencyThreshold{
+    &kLCPPDeferUnusedPreload, "lcpp_unused_preload_frequency_threshold", 0.5};
+
 BASE_FEATURE(kLCPPFontURLPredictor,
              "LCPPFontURLPredictor",
              base::FEATURE_DISABLED_BY_DEFAULT);

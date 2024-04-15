@@ -803,6 +803,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // If enabled, unused preload requests are deferred to the timing on LCP.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPDeferUnusedPreload);
 
+// Unused preload requests are deferred if frequencies are above this threshold.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kLCPPDeferUnusedPreloadFrequencyThreshold;
+
 // If enabled, fetched font URLs are observed to predict font usage in the
 // future navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);
