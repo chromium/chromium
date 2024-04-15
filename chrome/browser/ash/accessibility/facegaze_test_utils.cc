@@ -23,6 +23,8 @@
 
 namespace ash {
 
+using FaceGazeGesture = FaceGazeTestUtils::FaceGazeGesture;
+using MacroName = FaceGazeTestUtils::MacroName;
 using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 
 namespace {
@@ -36,6 +38,41 @@ constexpr char kTestSupportPath[] =
 
 PrefService* GetPrefs() {
   return AccessibilityManager::Get()->profile()->GetPrefs();
+}
+
+std::string ToString(const FaceGazeGesture& gesture) {
+  switch (gesture) {
+    case FaceGazeGesture::BROW_INNER_UP:
+      return "browInnerUp";
+    case FaceGazeGesture::BROWS_DOWN:
+      return "browsDown";
+    case FaceGazeGesture::EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case FaceGazeGesture::EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case FaceGazeGesture::EYES_BLINK:
+      return "eyesBlink";
+    case FaceGazeGesture::EYES_LOOK_DOWN:
+      return "eyesLookDown";
+    case FaceGazeGesture::EYES_LOOK_LEFT:
+      return "eyesLookLeft";
+    case FaceGazeGesture::EYES_LOOK_RIGHT:
+      return "eyesLookRight";
+    case FaceGazeGesture::EYES_LOOK_UP:
+      return "eyesLookUp";
+    case FaceGazeGesture::JAW_OPEN:
+      return "jawOpen";
+    case FaceGazeGesture::MOUTH_LEFT:
+      return "mouthLeft";
+    case FaceGazeGesture::MOUTH_PUCKER:
+      return "mouthPucker";
+    case FaceGazeGesture::MOUTH_RIGHT:
+      return "mouthRight";
+    case FaceGazeGesture::MOUTH_SMILE:
+      return "mouthSmile";
+    case FaceGazeGesture::MOUTH_UPPER_UP:
+      return "mouthUpperUp";
+  }
 }
 
 std::string ToString(const MediapipeGesture& gesture) {
@@ -222,16 +259,28 @@ void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
 }
 
 void FaceGazeTestUtils::SetGesturesToMacros(
-    const base::Value::Dict& gestures_to_macros) {
+    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
+  // Copy the stricly-typed mapping of gestures to macros into a dictionary
+  // value that can be used as the preference value.
+  base::Value::Dict dict;
+  for (const auto& mapping : gestures_to_macros) {
+    dict.Set(ToString(mapping.first), mapping.second);
+  }
   GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
-                      gestures_to_macros.Clone());
+                      std::move(dict));
   GetPrefs()->CommitPendingWrite();
 }
 
 void FaceGazeTestUtils::SetGestureConfidences(
-    const base::Value::Dict& gesture_confidences) {
+    const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
+  // Copy the stricly-typed mapping of gestures to confidences into a dictionary
+  // value that can be used as the preference value.
+  base::Value::Dict dict;
+  for (const auto& mapping : gesture_confidences) {
+    dict.Set(ToString(mapping.first), mapping.second);
+  }
   GetPrefs()->SetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence,
-                      gesture_confidences.Clone());
+                      std::move(dict));
   GetPrefs()->CommitPendingWrite();
 }
 

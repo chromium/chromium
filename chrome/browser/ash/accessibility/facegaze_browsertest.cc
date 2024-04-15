@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "ash/shell.h"
+#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
@@ -24,6 +25,8 @@
 namespace ash {
 
 using CursorSpeeds = FaceGazeTestUtils::CursorSpeeds;
+using FaceGazeGesture = FaceGazeTestUtils::FaceGazeGesture;
+using MacroName = FaceGazeTestUtils::MacroName;
 using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
 
@@ -31,111 +34,6 @@ namespace {
 
 const int kMouseDeviceId = 1;
 const char* kDefaultDisplaySize = "1200x800";
-
-// The facial gestures that are supported by FaceGaze. Ensure this enum stays in
-// sync with the source of truth in
-// ash/webui/common/resources/accessibility/facial_gestures.ts.
-enum class FaceGazeGesture {
-  BROW_INNER_UP,
-  BROWS_DOWN,
-  EYE_SQUINT_LEFT,
-  EYE_SQUINT_RIGHT,
-  EYES_BLINK,
-  EYES_LOOK_DOWN,
-  EYES_LOOK_LEFT,
-  EYES_LOOK_RIGHT,
-  EYES_LOOK_UP,
-  JAW_OPEN,
-  MOUTH_LEFT,
-  MOUTH_PUCKER,
-  MOUTH_RIGHT,
-  MOUTH_SMILE,
-  MOUTH_UPPER_UP,
-};
-
-std::string ToString(const FaceGazeGesture& gesture) {
-  switch (gesture) {
-    case FaceGazeGesture::BROW_INNER_UP:
-      return "browInnerUp";
-    case FaceGazeGesture::BROWS_DOWN:
-      return "browsDown";
-    case FaceGazeGesture::EYE_SQUINT_LEFT:
-      return "eyeSquintLeft";
-    case FaceGazeGesture::EYE_SQUINT_RIGHT:
-      return "eyeSquintRight";
-    case FaceGazeGesture::EYES_BLINK:
-      return "eyesBlink";
-    case FaceGazeGesture::EYES_LOOK_DOWN:
-      return "eyesLookDown";
-    case FaceGazeGesture::EYES_LOOK_LEFT:
-      return "eyesLookLeft";
-    case FaceGazeGesture::EYES_LOOK_RIGHT:
-      return "eyesLookRight";
-    case FaceGazeGesture::EYES_LOOK_UP:
-      return "eyesLookUp";
-    case FaceGazeGesture::JAW_OPEN:
-      return "jawOpen";
-    case FaceGazeGesture::MOUTH_LEFT:
-      return "mouthLeft";
-    case FaceGazeGesture::MOUTH_PUCKER:
-      return "mouthPucker";
-    case FaceGazeGesture::MOUTH_RIGHT:
-      return "mouthRight";
-    case FaceGazeGesture::MOUTH_SMILE:
-      return "mouthSmile";
-    case FaceGazeGesture::MOUTH_UPPER_UP:
-      return "mouthUpperUp";
-  }
-}
-
-// Macros used by accessibility features on ChromeOS.
-// Ensure this enum stays in sync with the source of truth in
-// ash/webui/common/resources/accessibility/macro_names.ts.
-enum MacroName {
-  UNSPECIFIED = 0,
-  INPUT_TEXT_VIEW = 1,
-  DELETE_PREV_CHAR = 2,
-  NAV_PREV_CHAR = 3,
-  NAV_NEXT_CHAR = 4,
-  NAV_PREV_LINE = 5,
-  NAV_NEXT_LINE = 6,
-  COPY_SELECTED_TEXT = 7,
-  PASTE_TEXT = 8,
-  CUT_SELECTED_TEXT = 9,
-  UNDO_TEXT_EDIT = 10,
-  REDO_ACTION = 11,
-  SELECT_ALL_TEXT = 12,
-  UNSELECT_TEXT = 13,
-  LIST_COMMANDS = 14,
-  NEW_LINE = 15,
-  TOGGLE_DICTATION = 16,
-  DELETE_PREV_WORD = 17,
-  DELETE_PREV_SENT = 18,
-  NAV_NEXT_WORD = 19,
-  NAV_PREV_WORD = 20,
-  SMART_DELETE_PHRASE = 21,
-  SMART_REPLACE_PHRASE = 22,
-  SMART_INSERT_BEFORE = 23,
-  SMART_SELECT_BTWN_INCL = 24,
-  NAV_NEXT_SENT = 25,
-  NAV_PREV_SENT = 26,
-  DELETE_ALL_TEXT = 27,
-  NAV_START_TEXT = 28,
-  NAV_END_TEXT = 29,
-  SELECT_PREV_WORD = 30,
-  SELECT_NEXT_WORD = 31,
-  SELECT_NEXT_CHAR = 32,
-  SELECT_PREV_CHAR = 33,
-  REPEAT = 34,
-  MOUSE_CLICK_LEFT = 35,
-  MOUSE_CLICK_RIGHT = 36,
-  RESET_CURSOR = 37,
-  KEY_PRESS_SPACE = 38,
-  KEY_PRESS_LEFT = 39,
-  KEY_PRESS_RIGHT = 40,
-  KEY_PRESS_UP = 41,
-  KEY_PRESS_DOWN = 42,
-};
 
 aura::Window* GetRootWindow() {
   auto* root_window = Shell::GetRootWindowForNewWindows();
@@ -219,15 +117,15 @@ class Config {
     return *this;
   }
 
-  // TODO(b/309121742): Enforce the usage of FaceGazeGesture in this method.
-  Config& WithGesturesToMacros(const base::Value::Dict& gestures_to_macros) {
-    gestures_to_macros_ = gestures_to_macros.Clone();
+  Config& WithGesturesToMacros(
+      const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
+    gestures_to_macros_ = std::move(gestures_to_macros);
     return *this;
   }
 
-  // TODO(b/309121742): Enforce the usage of FaceGazeGesture in this method.
-  Config& WithGestureConfidences(const base::Value::Dict& gesture_confidences) {
-    gesture_confidences_ = gesture_confidences.Clone();
+  Config& WithGestureConfidences(
+      const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
+    gesture_confidences_ = std::move(gesture_confidences);
     return *this;
   }
 
@@ -240,10 +138,12 @@ class Config {
   const gfx::Point& cursor_location() const { return cursor_location_; }
   int buffer_size() const { return buffer_size_; }
   bool use_cursor_acceleration() const { return use_cursor_acceleration_; }
-  const std::optional<base::Value::Dict>& gestures_to_macros() const {
+  const std::optional<base::flat_map<FaceGazeGesture, MacroName>>&
+  gestures_to_macros() const {
     return gestures_to_macros_;
   }
-  const std::optional<base::Value::Dict>& gesture_confidences() const {
+  const std::optional<base::flat_map<FaceGazeGesture, int>>&
+  gesture_confidences() const {
     return gesture_confidences_;
   }
   const std::optional<CursorSpeeds>& cursor_speeds() const {
@@ -258,8 +158,8 @@ class Config {
   bool use_cursor_acceleration_;
 
   // Optional properties.
-  std::optional<base::Value::Dict> gestures_to_macros_;
-  std::optional<base::Value::Dict> gesture_confidences_;
+  std::optional<base::flat_map<FaceGazeGesture, MacroName>> gestures_to_macros_;
+  std::optional<base::flat_map<FaceGazeGesture, int>> gesture_confidences_;
   std::optional<CursorSpeeds> cursor_speeds_;
 };
 
@@ -379,10 +279,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   ConfigureFaceGaze(
       Config()
           .AsDefault()
-          .WithGesturesToMacros(base::Value::Dict().Set(
-              ToString(FaceGazeGesture::JAW_OPEN), MacroName::RESET_CURSOR))
-          .WithGestureConfidences(base::Value::Dict().Set(
-              ToString(FaceGazeGesture::JAW_OPEN), 70)));
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}})
+          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 70}}));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -412,10 +311,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ConfigureFaceGaze(
       Config()
           .AsDefault()
-          .WithGesturesToMacros(base::Value::Dict().Set(
-              ToString(FaceGazeGesture::JAW_OPEN), MacroName::RESET_CURSOR))
-          .WithGestureConfidences(base::Value::Dict().Set(
-              ToString(FaceGazeGesture::JAW_OPEN), 100)));
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::JAW_OPEN, MacroName::RESET_CURSOR}})
+          .WithGestureConfidences({{FaceGazeGesture::JAW_OPEN, 100}}));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -452,13 +350,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
-  ConfigureFaceGaze(Config()
-                        .AsDefault()
-                        .WithGesturesToMacros(base::Value::Dict().Set(
-                            ToString(FaceGazeGesture::MOUTH_LEFT),
-                            MacroName::KEY_PRESS_SPACE))
-                        .WithGestureConfidences(base::Value::Dict().Set(
-                            ToString(FaceGazeGesture::MOUTH_LEFT), 70)));
+  ConfigureFaceGaze(
+      Config()
+          .AsDefault()
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::MOUTH_LEFT, MacroName::KEY_PRESS_SPACE}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_LEFT, 70}}));
 
   // Open jaw for space key press.
   event_handler().ClearEvents();
