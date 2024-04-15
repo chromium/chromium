@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 
 namespace cc {
@@ -113,8 +114,8 @@ uint32_t TransferCacheTestHelper::CreateEntryInternal(
 
   // Serialize data.
   uint32_t size = client_entry.SerializedSize();
-  std::unique_ptr<uint8_t[]> data(new uint8_t[size]);
-  auto span = base::make_span(data.get(), size);
+  auto data = base::HeapArray<uint8_t>::Uninit(size);
+  auto span = base::make_span(data.data(), size);
   bool success = client_entry.Serialize(span);
   DCHECK(success);
   CreateEntryDirect(key, span);
