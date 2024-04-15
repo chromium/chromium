@@ -162,6 +162,9 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForRelu(
       const mojom::Relu& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForResample2d(
+      const mojom::Resample2d& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSoftsign(
       const mojom::Softsign& operation,
       CoreML::Specification::MILSpec::Block& block);

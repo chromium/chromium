@@ -122,6 +122,10 @@ constexpr char kOpLogicalLessEqual[] = "less_equal";
 constexpr char kOpAvgPoolTypeName[] = "avg_pool";
 constexpr char kOpL2PoolTypeName[] = "l2_pool";
 constexpr char kOpMaxPoolTypeName[] = "max_pool";
+// Resample2d operators.
+constexpr char kOpUpsampleBilinearTypeName[] = "upsample_bilinear";
+constexpr char kOpUpsampleNearestNeighborTypeName[] =
+    "upsample_nearest_neighbor";
 
 // General op params that are shared across multiple ops.
 constexpr char kOpParamX[] = "x";
@@ -579,6 +583,11 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForRelu(*operation->get_relu(), block));
         break;
       }
+      case mojom::Operation::Tag::kResample2d: {
+        RETURN_IF_ERROR(
+            AddOperationForResample2d(*operation->get_resample2d(), block));
+        break;
+      }
       case mojom::Operation::Tag::kSoftsign: {
         RETURN_IF_ERROR(
             AddOperationForSoftsign(*operation->get_softsign(), block));
@@ -609,7 +618,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kReduce:
-      case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReshape:
       case mojom::Operation::Tag::kSigmoid:
       case mojom::Operation::Tag::kSlice:
@@ -1106,6 +1114,77 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForRelu(
                    input_operand_info.coreml_name);
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForResample2d(
+    const mojom::Resample2d& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  // WebNN's "resample2d" maps to variants of the "upsample" operator in CoreML:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_bilinear
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.image_resizing.upsample_nearest_neighbor
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  const std::array<size_t, 2> supported_axes = {2, 3};
+  if (!base::ranges::equal(operation.axes, supported_axes)) {
+    // TODO: crbug.com/334914468 - Support axes of {0, 1} and {1, 2}.
+    return NewNotSupportedError("Unsupported axes.");
+  }
+
+  static constexpr char kParamScaleFactorHeight[] = "scale_factor_height";
+  static constexpr char kParamScaleFactorWidth[] = "scale_factor_width";
+  static constexpr char kParamAlignCorners[] = "align_corners";
+
+  CoreML::Specification::MILSpec::Operation& op = *block.add_operations();
+  switch (operation.mode) {
+    case mojom::Resample2d::InterpolationMode::kLinear:
+      op.set_type(kOpUpsampleBilinearTypeName);
+
+      // TODO: crbug.com/334914468 - Follow along with
+      // https://github.com/webmachinelearning/webnn/issues/270.
+      SetInputWithValue(*op.mutable_inputs(), kParamAlignCorners,
+                        CreateScalarImmediateValue(false));
+      break;
+    case mojom::Resample2d::InterpolationMode::kNearestNeighbor:
+      op.set_type(kOpUpsampleNearestNeighborTypeName);
+      break;
+  }
+
+  SetInputWithName(*op.mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  // Use explicit scales if given, otherwise, compute scales from output
+  // dimensions / input dimensions.
+  //
+  // TODO: crbug.com/334914468 - Move this logic to the renderer such that
+  // `operation.scales` cannot be optional.
+  //
+  // TODO: crbug.com/334914468 - Consider utilizing CoreML's support for int32
+  // scales.
+  std::array<float, 2> scales;
+  if (operation.scales) {
+    scales = {operation.scales->at(0), operation.scales->at(1)};
+  } else {
+    const OperandInfo& output_operand_info =
+        GetOperandInfo(operation.output_operand_id);
+    for (size_t i = 0; i < supported_axes.size(); ++i) {
+      scales[i] = base::checked_cast<float>(
+                      output_operand_info.dimensions[supported_axes[i]]) /
+                  input_operand_info.dimensions[supported_axes[i]];
+    }
+  }
+
+  SetInputsWithValues(
+      *op.mutable_inputs(),
+      {{kParamScaleFactorHeight, CreateScalarImmediateValue(scales[0])},
+       {kParamScaleFactorWidth, CreateScalarImmediateValue(scales[1])}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op.add_outputs());
   return base::ok();
 }
 

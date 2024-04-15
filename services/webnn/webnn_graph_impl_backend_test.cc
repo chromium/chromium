@@ -352,6 +352,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorL2Pool2d",
       "BuildAndComputeSingleOperatorMaxPool2d",
       "BuildAndComputeSingleOperatorRelu",
+      "BuildAndComputeSingleOperatorResample2d",
       "BuildAndComputeSingleOperatorSoftsign",
       "BuildAndComputeSingleOperatorTranspose",
       "BuildAndComputeGraphWithTwoTranspose",
