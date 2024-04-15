@@ -10,6 +10,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
@@ -298,18 +299,16 @@ PA_ALWAYS_INLINE const PartitionFreelistDispatcher*
 PartitionFreelistDispatcher::Create(PartitionFreelistEncoding encoding) {
   switch (encoding) {
     case PartitionFreelistEncoding::kEncodedFreeList: {
-      static constinit PartitionFreelistDispatcherImpl<
-          PartitionFreelistEncoding::kEncodedFreeList>
-          encoded = PartitionFreelistDispatcherImpl<
-              PartitionFreelistEncoding::kEncodedFreeList>();
-      return &encoded;
+      static base::NoDestructor<PartitionFreelistDispatcherImpl<
+          PartitionFreelistEncoding::kEncodedFreeList>>
+          encoded_impl;
+      return encoded_impl.get();
     }
     case PartitionFreelistEncoding::kPoolOffsetFreeList: {
-      static constinit PartitionFreelistDispatcherImpl<
-          PartitionFreelistEncoding::kPoolOffsetFreeList>
-          pool = PartitionFreelistDispatcherImpl<
-              PartitionFreelistEncoding::kPoolOffsetFreeList>();
-      return &pool;
+      static base::NoDestructor<PartitionFreelistDispatcherImpl<
+          PartitionFreelistEncoding::kPoolOffsetFreeList>>
+          pool_offset_impl;
+      return pool_offset_impl.get();
     }
   }
 }
