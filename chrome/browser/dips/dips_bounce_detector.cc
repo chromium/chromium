@@ -315,8 +315,9 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
 
 void DIPSRedirectContext::HandleUncommitted(
     DIPSNavigationStart navigation_start,
-    std::vector<DIPSRedirectInfoPtr> server_redirects,
-    GURL final_url) {
+    std::vector<DIPSRedirectInfoPtr> server_redirects) {
+  // Uncommitted navigations leave the user on the last-committed page; use that
+  // for `final_url`.
   absl::visit(  //
       base::Overloaded{
           [&](DIPSRedirectInfoPtr client_redirect) {
@@ -328,6 +329,8 @@ void DIPSRedirectContext::HandleUncommitted(
             DIPSRedirectContext temp_context(handler_, issue_handler_,
                                              initial_url_,
                                              GetRedirectChainLength());
+            // Copy the URL of `client_redirect` before moving it.
+            GURL final_url = client_redirect->url;
             temp_context.AppendClientRedirect(std::move(client_redirect));
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url);
@@ -343,9 +346,11 @@ void DIPSRedirectContext::HandleUncommitted(
                                              previous_nav_last_committed_url,
                                              /*redirect_prefix_count=*/0);
             temp_context.AppendServerRedirects(std::move(server_redirects));
-            temp_context.ReportIssue(final_url);
-            temp_context.EndChain(std::move(final_url),
-                                  /*current_page_has_sticky_activation=*/false);
+            temp_context.ReportIssue(
+                /*final_url=*/previous_nav_last_committed_url);
+            temp_context.EndChain(
+                /*final_url=*/std::move(previous_nav_last_committed_url),
+                /*current_page_has_sticky_activation=*/false);
           },
       },
       std::move(navigation_start));
@@ -965,9 +970,17 @@ void DIPSBounceDetector::DidFinishNavigation(
         std::move(server_state->navigation_start), std::move(redirects),
         navigation_handle->GetURL(), current_page_has_sticky_activation);
   } else {
+    // For uncommitted navigations, treat the last URL visited as a server
+    // redirect, so it is considered a potential tracker.
+    const size_t i = access_types.size() - 1;
+    redirects.push_back(std::make_unique<DIPSRedirectInfo>(
+        /*url=*/navigation_handle->GetRedirectChain()[i],
+        /*redirect_type=*/DIPSRedirectType::kServer,
+        /*access_type=*/access_types[i],
+        /*source_id=*/navigation_handle->GetRedirectSourceId(i),
+        /*time=*/clock_->Now()));
     committed_redirect_context_.HandleUncommitted(
-        std::move(server_state->navigation_start), std::move(redirects),
-        navigation_handle->GetURL());
+        std::move(server_state->navigation_start), std::move(redirects));
   }
 
   if (navigation_handle->HasCommitted()) {
