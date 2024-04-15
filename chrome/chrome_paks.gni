@@ -231,6 +231,7 @@ template("chrome_extra_paks") {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/ash/system/mahi/resources/mahi_resources.pak",
+        "$root_gen_dir/ash/system/video_conference/resources/vc_resources.pak",
         "$root_gen_dir/ash/webui/ash_camera_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_color_internals_resources.pak",
         "$root_gen_dir/ash/webui/ash_demo_mode_app_resources.pak",
@@ -313,6 +314,7 @@ template("chrome_extra_paks") {
         "//ash/components/arc/input_overlay/resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//ash/system/mahi/resources:mahi_resources",
+        "//ash/system/video_conference/resources:vc_resources",
         "//ash/webui/color_internals/resources:resources",
         "//ash/webui/common/resources:resources",
         "//ash/webui/common/resources/office_fallback:resources",

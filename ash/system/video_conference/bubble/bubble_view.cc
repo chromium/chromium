@@ -45,6 +45,7 @@ namespace {
 constexpr int kLinuxAppWarningViewTopPadding = 12;
 constexpr int kLinuxAppWarningViewSpacing = 1;
 constexpr int kLinuxAppWarningIconSize = 16;
+constexpr int kScrollViewBetweenChildSpacing = 10;
 
 CameraEffectsController* GetCameraEffectsController() {
   return Shell::Get()->camera_effects_controller();
@@ -161,6 +162,7 @@ void BubbleView::AddedToWidget() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
   scroll_contents_view->SetInsideBorderInsets(
       gfx::Insets::VH(16, kVideoConferenceBubbleHorizontalPadding));
+  scroll_contents_view->SetBetweenChildSpacing(kScrollViewBetweenChildSpacing);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that
   // they scroll (if more effects are present than can fit in the available

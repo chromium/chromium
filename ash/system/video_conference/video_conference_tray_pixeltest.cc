@@ -40,7 +40,9 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
                               features::kVcStopAllScreenShare,
                               chromeos::features::kJelly,
                               features::kFeatureManagementVideoConference},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kVcBackgroundReplace});
+    // TODO(b/334375880): Add a specific pixel test for the feature
+    // VcBackgroundReplace.
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

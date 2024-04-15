@@ -1161,6 +1161,9 @@
   "ash/system/mahi/resources/mahi_resources.grd": {
     "structures":[7620],
   },
+  "ash/system/video_conference/resources/vc_resources.grd": {
+    "structures":[7630],
+  },
   "base/tracing/protos/resources.grd": {
     "includes": [7640],
   },
