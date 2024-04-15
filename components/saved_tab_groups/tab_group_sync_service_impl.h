@@ -89,6 +89,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::vector<std::pair<base::Uuid, LocalTabGroupID>>
       saved_guid_to_local_group_id_mapping_;
 
+  // Groups with zero tabs are groups that still haven't received their tabs
+  // from sync. UI can't handle these groups, hence the service needs to wait
+  // before notifying the observers.
+  std::set<base::Uuid> empty_groups_;
+
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;
 };

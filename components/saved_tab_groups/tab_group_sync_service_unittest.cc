@@ -317,6 +317,46 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdated) {
   model_->UpdatedVisualDataFromSync(group_1_.saved_guid(), &visual_data);
 }
 
+TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
+  // Create a group with no tabs. Observers won't be notified.
+  SavedTabGroup group_4 = test::CreateTestSavedTabGroupWithNoTabs();
+  base::Uuid group_id = group_4.saved_guid();
+  EXPECT_CALL(*observer_,
+              OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  model_->AddedFromSync(group_4);
+
+  // Update visuals. Observers still won't be notified.
+  EXPECT_CALL(*observer_,
+              OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  EXPECT_CALL(*observer_,
+              OnTabGroupUpdated(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+  model_->UpdatedVisualDataFromSync(group_id, &visual_data);
+
+  // Add a tab to the group. Observers will be notified as an Add event.
+  EXPECT_CALL(*observer_,
+              OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(1);
+  EXPECT_CALL(*observer_,
+              OnTabGroupUpdated(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  SavedTabGroupTab tab =
+      test::CreateSavedTabGroupTab("A_Link", u"Tab", group_id);
+  model_->AddTabToGroupFromSync(group_id, tab);
+
+  // Update visuals. Observers will be notified as an Update event.
+  EXPECT_CALL(*observer_,
+              OnTabGroupAdded(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(0);
+  EXPECT_CALL(*observer_,
+              OnTabGroupUpdated(UuidEq(group_id), Eq(TriggerSource::REMOTE)))
+      .Times(1);
+  model_->UpdatedVisualDataFromSync(group_id, &visual_data);
+}
+
 TEST_F(TabGroupSyncServiceTest, OnTabGroupRemoved) {
   // Removig group having local ID.
   EXPECT_CALL(*observer_,

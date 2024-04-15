@@ -91,6 +91,14 @@ SavedTabGroup CreateTestSavedTabGroup() {
   return group;
 }
 
+SavedTabGroup CreateTestSavedTabGroupWithNoTabs() {
+  const std::u16string title = u"Test Test";
+  const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
+  SavedTabGroup group(title, color, std::vector<SavedTabGroupTab>(),
+                      std::nullopt);
+  return group;
+}
+
 TabGroupVisualData CreateTabGroupVisualData() {
   const std::u16string title = u"Visuals Test";
   const tab_groups::TabGroupColorId& color =

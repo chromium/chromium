@@ -30,11 +30,13 @@ void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
 bool CompareSavedTabGroups(const SavedTabGroup& g1, const SavedTabGroup& g2);
 
 // Helper method to create saved tabs and groups.
-SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
-                                        const std::u16string& title,
-                                        const base::Uuid& group_guid,
-                                        std::optional<int> position);
+SavedTabGroupTab CreateSavedTabGroupTab(
+    const std::string& url,
+    const std::u16string& title,
+    const base::Uuid& group_guid,
+    std::optional<int> position = std::nullopt);
 SavedTabGroup CreateTestSavedTabGroup();
+SavedTabGroup CreateTestSavedTabGroupWithNoTabs();
 TabGroupVisualData CreateTabGroupVisualData();
 
 }  // namespace tab_groups::test

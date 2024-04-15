@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -164,6 +165,12 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
   const SavedTabGroup* saved_tab_group = model_->Get(guid);
   CHECK(saved_tab_group);
+  if (saved_tab_group->saved_tabs().empty()) {
+    // Wait for another sync update with tabs before notifying the UI.
+    empty_groups_.emplace(guid);
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupAdded(*saved_tab_group, TriggerSource::REMOTE);
   }
@@ -174,6 +181,17 @@ void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
     const std::optional<base::Uuid>& tab_guid) {
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
   CHECK(saved_tab_group);
+
+  if (saved_tab_group->saved_tabs().empty()) {
+    return;
+  }
+
+  if (base::Contains(empty_groups_, group_guid)) {
+    empty_groups_.erase(group_guid);
+    SavedTabGroupAddedFromSync(group_guid);
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::REMOTE);
   }
