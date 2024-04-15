@@ -71,7 +71,7 @@ gfx::Size DeskButton::CalculatePreferredSize() const {
   int width =
       GetButtonInsets().width() + desk_name_label_->GetPreferredSize().width();
   if (desk_button_container_->ShouldShowDeskProfilesUi()) {
-    width += desk_avatar_view_->GetPreferredSize().width() +
+    width += kDeskButtonAvatarSize.width() +
              kDeskButtonChildSpacingHorizontalExpanded;
     width = std::clamp(width, kDeskButtonWidthHorizontalZeroWithAvatar,
                        kDeskButtonWidthHorizontalExpandedWithAvatar);
