@@ -35,6 +35,7 @@ if (is_android) {
 
 if (is_ios) {
   import("//build/config/ios/bundle_data_from_filelist.gni")
+  import("//build/ios/extension_bundle_data.gni")
 }
 
 # Use a static library here because many test binaries depend on this but don't
@@ -1003,6 +1004,7 @@ source_set("default_content_test_launcher") {
   deps = [
     ":browsertest_support",
     ":test_support",
+    "//build:ios_buildflags",
     "//content/shell:content_shell_lib",
   ]
 }
@@ -1866,9 +1868,13 @@ test("content_browsertests") {
   ]
 
   if (is_ios) {
+    entitlements_path = "//content/app/ios/appex/app.entitlements"
     bundle_deps = [
+      ":content_process_bundle",
       ":content_test_bundle_data",
       ":content_test_perfetto_bundle_data",
+      ":gpu_process_bundle",
+      ":network_process_bundle",
       "//media/test:media_bundle_data",
       "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
@@ -3444,6 +3450,29 @@ if (is_ios) {
   bundle_data_from_filelist("content_test_bundle_data") {
     testonly = true
     filelist_name = "content_test_bundle_data.filelist"
+  }
+
+  if (current_toolchain == default_toolchain) {
+    _extension_toolchain = "${current_toolchain}_blink_app_ext"
+    extension_bundle_data("content_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
+      extension_name = "test_content_process.appex"
+      extension_target = "//content/test/ios/appex:test_content_process(${_extension_toolchain})"
+    }
+    extension_bundle_data("network_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
+      extension_name = "test_network_process.appex"
+      extension_target = "//content/test/ios/appex:test_network_process(${_extension_toolchain})"
+    }
+    extension_bundle_data("gpu_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
+      extension_name = "test_gpu_process.appex"
+      extension_target =
+          "//content/test/ios/appex:test_gpu_process(${_extension_toolchain})"
+    }
   }
 }
 if (is_apple) {

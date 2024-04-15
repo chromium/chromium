@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/test_launcher.h"
-
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
@@ -13,9 +11,11 @@
 #include "base/test/test_suite.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/ios_buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_browser_test_shell_main_delegate.h"
 #include "content/public/test/content_test_suite_base.h"
+#include "content/public/test/test_launcher.h"
 #include "content/shell/common/shell_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
@@ -79,7 +79,12 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
 
 }  // namespace content
 
-int main(int argc, char** argv) {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(IS_IOS_APP_EXTENSION)
+extern "C" int ContentProcessMain(int argc, const char** argv)
+#else
+int main(int argc, char** argv)
+#endif
+{
   base::CommandLine::Init(argc, argv);
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
   if (parallel_jobs == 0U)
@@ -91,5 +96,6 @@ int main(int argc, char** argv) {
   base::win::PinUser32();
 #endif  // BUILDFLAG(IS_WIN)
   content::ContentTestLauncherDelegate launcher_delegate;
-  return LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
+  return LaunchTests(&launcher_delegate, parallel_jobs, argc,
+                     const_cast<char**>(argv));
 }

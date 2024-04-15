@@ -40,19 +40,17 @@ compile_entitlements("gpu_process_entitlements") {
       [ "../../../app/ios/appex/gpu_process.appex.entitlements" ]
 }
 
-ios_appex_bundle("content_process") {
+ios_appex_bundle("test_content_process") {
   testonly = true
-  output_name = "content_process"
-
-  sources = [ "../shell_main.cc" ]
+  output_name = "test_content_process"
 
   ldflags = [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
 
   deps = [
     "//content/app/ios/appex:content_process",
     "//content/public/app",
-    "//content/shell:content_shell_app",
     "//content/shell:content_shell_lib",
+    "//content/test:default_content_test_launcher",
   ]
   bundle_deps = [
     "//content/shell:content_shell_framework_resources",
@@ -64,11 +62,9 @@ ios_appex_bundle("content_process") {
   bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
 }
 
-ios_appex_bundle("network_process") {
+ios_appex_bundle("test_network_process") {
   testonly = true
-  output_name = "network_process"
-
-  sources = [ "../shell_main.cc" ]
+  output_name = "test_network_process"
 
   ldflags = [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
 
@@ -77,6 +73,7 @@ ios_appex_bundle("network_process") {
     "//content/public/app",
     "//content/shell:content_shell_app",
     "//content/shell:content_shell_lib",
+    "//content/test:default_content_test_launcher",
   ]
   bundle_deps = [
     "//content/shell:content_shell_framework_resources",
@@ -88,11 +85,9 @@ ios_appex_bundle("network_process") {
   bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
 }
 
-ios_appex_bundle("gpu_process") {
+ios_appex_bundle("test_gpu_process") {
   testonly = true
-  output_name = "gpu_process"
-
-  sources = [ "../shell_main.cc" ]
+  output_name = "test_gpu_process"
 
   ldflags = [ "-Wl,--ignore-auto-link-option=CoreAudioTypes" ]
 
@@ -101,6 +96,7 @@ ios_appex_bundle("gpu_process") {
     "//content/public/app",
     "//content/shell:content_shell_app",
     "//content/shell:content_shell_lib",
+    "//content/test:default_content_test_launcher",
   ]
   bundle_deps = [
     "//content/shell:content_shell_framework_resources",

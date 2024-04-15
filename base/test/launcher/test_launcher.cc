@@ -689,6 +689,11 @@ ChildProcessResults DoLaunchChildTestProcess(
 
   LaunchOptions options;
 
+#if BUILDFLAG(IS_IOS)
+  // We need to allow XPC to start extension processes so magically we set this
+  // flag to 1.
+  options.environment.emplace("XPC_FLAGS", "1");
+#endif
   // Tell the child process to use its designated temporary directory.
   if (!process_temp_dir.empty())
     SetTemporaryDirectory(process_temp_dir, &options.environment);

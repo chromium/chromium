@@ -47,24 +47,6 @@ declare_args() {
   content_shell_major_version = "999"
 }
 
-template("extension2_bundle_data") {
-  assert(defined(invoker.extension_target),
-         "extension_target must be defined for $target_name")
-
-  _extension_name = get_label_info(invoker.extension_target, "name") + ".appex"
-  if (defined(invoker.extension_name)) {
-    _extension_name = invoker.extension_name
-  }
-
-  bundle_data(target_name) {
-    testonly = true
-    public_deps = [ invoker.extension_target ]
-    outputs = [ "{{bundle_contents_dir}}/Extensions/{{source_file_part}}" ]
-    sources = [ get_label_info(invoker.extension_target, "root_out_dir") +
-                "/$_extension_name" ]
-  }
-}
-
 config("content_shell_lib_warnings") {
   if (is_clang) {
     # TODO(thakis): Remove this once http://crbug.com/383820 is figured out
@@ -635,7 +617,7 @@ if (is_android) {
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
     ios_content_shell_entitlements_path =
-        "//content/shell/app/ios/content_shell.entitlements"
+        "//content/app/ios/appex/app.entitlements"
   }
 
   ios_app_bundle("content_shell") {
@@ -664,17 +646,23 @@ if (is_android) {
 
   if (current_toolchain == default_toolchain) {
     _extension_toolchain = "${current_toolchain}_blink_app_ext"
-    extension2_bundle_data("content_process_bundle") {
+    extension_bundle_data("content_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
       extension_name = "content_process.appex"
       extension_target =
           "//content/shell/app/ios:content_process(${_extension_toolchain})"
     }
-    extension2_bundle_data("network_process_bundle") {
+    extension_bundle_data("network_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
       extension_name = "network_process.appex"
       extension_target =
           "//content/shell/app/ios:network_process(${_extension_toolchain})"
     }
-    extension2_bundle_data("gpu_process_bundle") {
+    extension_bundle_data("gpu_process_bundle") {
+      testonly = true
+      extension_dir = "Extensions"
       extension_name = "gpu_process.appex"
       extension_target =
           "//content/shell/app/ios:gpu_process(${_extension_toolchain})"
