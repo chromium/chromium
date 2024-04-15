@@ -368,9 +368,6 @@ class CONTENT_EXPORT MediaDevicesManager
                           bool has_permission,
                           const MediaDeviceEnumeration& enumeration);
 
-#if BUILDFLAG(IS_MAC)
-  void StartMonitoringOnUIThread();
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void RegisterVideoCaptureDevicesChangedObserver();
 #endif

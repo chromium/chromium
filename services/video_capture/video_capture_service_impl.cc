@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/device_factory_impl.h"
-#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/testing_controls_impl.h"
 #include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
@@ -245,10 +244,7 @@ VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     system_monitor_ = std::make_unique<base::SystemMonitor>();
   }
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          features::kCameraMonitoringInVideoCaptureService)) {
     InitializeDeviceMonitor();
-  }
 #endif
 }
 
@@ -402,8 +398,6 @@ void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
 
 void VideoCaptureServiceImpl::InitializeDeviceMonitor() {
 #if BUILDFLAG(IS_MAC)
-  CHECK(base::FeatureList::IsEnabled(
-      features::kCameraMonitoringInVideoCaptureService));
   if (video_capture_device_monitor_mac_) {
     return;
   }

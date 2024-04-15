@@ -149,7 +149,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
-#include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_memory_dump_provider.h"
@@ -216,8 +215,6 @@
 #include "sandbox/win/src/process_mitigations.h"
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "media/device_monitors/device_monitor_udev.h"
-#elif BUILDFLAG(IS_MAC)
-#include "media/device_monitors/device_monitor_mac.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1215,13 +1212,11 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
 
 // The device monitors are using |system_monitor_| as dependency, so delete
 // them before |system_monitor_| goes away.
-// On Mac and windows, the monitor needs to be destroyed on the same thread
+// On windows, the monitor needs to be destroyed on the same thread
 // as they were created. On Linux, the monitor will be deleted when IO thread
 // goes away.
 #if BUILDFLAG(IS_WIN)
   system_message_window_.reset();
-#elif BUILDFLAG(IS_MAC)
-  device_monitor_mac_.reset();
 #endif
 
   if (BrowserGpuChannelHostFactory::instance())
@@ -1399,15 +1394,6 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   system_message_window_ = std::make_unique<media::SystemMessageWindowWin>();
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
-#elif BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1448798): Clean up |device_monitor_mac_| in BrowserMainLoop
-  // once |kCameraMonitoringInVideoCaptureService| is fully launched.
-  if (!base::FeatureList::IsEnabled(
-          video_capture::features::kCameraMonitoringInVideoCaptureService)) {
-    device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
-        base::ThreadPool::CreateSingleThreadTaskRunner(
-            {base::TaskPriority::USER_VISIBLE}));
-  }
 #endif
 
   // Instantiated once using CreateSingletonInstance(), and accessed only using

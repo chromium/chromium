@@ -56,9 +56,6 @@ class SystemMessageWindowWin;
 class DeviceMonitorLinux;
 #endif
 class UserInputMonitor;
-#if BUILDFLAG(IS_MAC)
-class DeviceMonitorMac;
-#endif
 }  // namespace media
 
 namespace midi {
@@ -220,12 +217,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   void GetCompositingModeReporter(
       mojo::PendingReceiver<viz::mojom::CompositingModeReporter> receiver);
 
-#if BUILDFLAG(IS_MAC)
-  media::DeviceMonitorMac* device_monitor_mac() const {
-    return device_monitor_mac_.get();
-  }
-#endif
-
   SmsProvider* GetSmsProvider();
   void SetSmsProviderForTesting(std::unique_ptr<SmsProvider>);
 
@@ -378,8 +369,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   std::unique_ptr<media::SystemMessageWindowWin> system_message_window_;
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   std::unique_ptr<media::DeviceMonitorLinux> device_monitor_linux_;
-#elif BUILDFLAG(IS_MAC)
-  std::unique_ptr<media::DeviceMonitorMac> device_monitor_mac_;
 #endif
 
   std::unique_ptr<MediaStreamManager> media_stream_manager_;

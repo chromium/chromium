@@ -43,7 +43,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
-#include "services/video_capture/public/cpp/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
@@ -634,15 +633,7 @@ void MediaDevicesManager::StartMonitoring() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
-          video_capture::features::kCameraMonitoringInVideoCaptureService)) {
     RegisterVideoCaptureDevicesChangedObserver();
-  } else {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaDevicesManager::StartMonitoringOnUIThread,
-                       base::Unretained(this)));
-  }
 #endif
 #if BUILDFLAG(IS_WIN)
   if (switches::IsMediaFoundationCameraUsageMonitoringEnabled() &&
@@ -652,18 +643,6 @@ void MediaDevicesManager::StartMonitoring() {
   }
 #endif
 }
-
-#if BUILDFLAG(IS_MAC)
-void MediaDevicesManager::StartMonitoringOnUIThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(!base::FeatureList::IsEnabled(
-      video_capture::features::kCameraMonitoringInVideoCaptureService));
-  BrowserMainLoop* browser_main_loop = content::BrowserMainLoop::GetInstance();
-  if (!browser_main_loop)
-    return;
-  browser_main_loop->device_monitor_mac()->StartMonitoring();
-}
-#endif
 
 void MediaDevicesManager::StopMonitoring() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
