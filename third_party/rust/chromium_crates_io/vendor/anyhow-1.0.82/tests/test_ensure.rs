@@ -464,7 +464,9 @@ fn test_trailer() {
 fn test_whitespace() {
     #[derive(Debug)]
     pub struct Point {
+        #[allow(dead_code)]
         pub x: i32,
+        #[allow(dead_code)]
         pub y: i32,
     }
 

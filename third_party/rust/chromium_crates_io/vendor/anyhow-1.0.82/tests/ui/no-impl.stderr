@@ -27,6 +27,6 @@ note: the traits `Into` and `std::fmt::Display` must be implemented
   = help: items from traits can only be used if the trait is implemented and in scope
   = note: the following traits define an item `anyhow_kind`, perhaps you need to implement one of them:
           candidate #1: `anyhow::kind::AdhocKind`
-          candidate #2: `anyhow::kind::TraitKind`
-          candidate #3: `anyhow::kind::BoxedKind`
+          candidate #2: `anyhow::kind::BoxedKind`
+          candidate #3: `anyhow::kind::TraitKind`
   = note: this error originates in the macro `anyhow` (in Nightly builds, run with -Z macro-backtrace for more info)

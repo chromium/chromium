@@ -206,7 +206,7 @@
 //! will require an explicit `.map_err(Error::msg)` when working with a
 //! non-Anyhow error type inside a function that returns Anyhow's error type.
 
-#![doc(html_root_url = "https://docs.rs/anyhow/1.0.81")]
+#![doc(html_root_url = "https://docs.rs/anyhow/1.0.82")]
 #![cfg_attr(error_generic_member_access, feature(error_generic_member_access))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![no_std]
@@ -383,7 +383,7 @@ pub use anyhow as format_err;
 ///     # Ok(())
 /// }
 /// ```
-#[cfg_attr(not(doc), repr(transparent))]
+#[repr(transparent)]
 pub struct Error {
     inner: Own<ErrorImpl>,
 }

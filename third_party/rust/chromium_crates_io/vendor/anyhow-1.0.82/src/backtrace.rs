@@ -65,7 +65,8 @@ macro_rules! backtrace_if_absent {
 
 #[cfg(all(not(std_backtrace), feature = "backtrace"))]
 mod capture {
-    use alloc::borrow::Cow;
+    use alloc::borrow::{Cow, ToOwned as _};
+    use alloc::vec::Vec;
     use backtrace::{BacktraceFmt, BytesOrWideString, Frame, PrintFmt, SymbolName};
     use core::cell::UnsafeCell;
     use core::fmt::{self, Debug, Display};
