@@ -1481,10 +1481,10 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(cert_chain.get(), "smallstrategies.com", flags, &verify_result);
+      Verify(cert_chain.get(), "foo.chickentools.org", flags, &verify_result);
   EXPECT_THAT(error, IsOk())
       << "This test relies on a real certificate that "
-      << "expires on Nov 29 2024. If failing on/after "
+      << "expires on May 11 2025. If failing on/after "
       << "that date, please disable and file a bug "
       << "against mattm. Current time: " << base::Time::Now();
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
