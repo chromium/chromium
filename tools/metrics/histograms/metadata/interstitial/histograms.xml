@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision"
-    enum="SecurityInterstitialDecision" expires_after="2024-08-11">
+    enum="SecurityInterstitialDecision" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2024-05-26">
+    enum="SecurityInterstitialInteraction" expires_after="2025-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
