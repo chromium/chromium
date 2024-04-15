@@ -114,12 +114,7 @@ class Parcel {
     return absl::get<DataFragment>(data_.storage).memory();
   }
 
-  absl::Span<Ref<APIObject>> objects_view() const {
-    if (!objects_) {
-      return {};
-    }
-    return objects_->view;
-  }
+  absl::Span<Ref<APIObject>> objects_view() const { return objects_.view; }
 
   size_t num_objects() const { return objects_view().size(); }
 
@@ -237,9 +232,8 @@ class Parcel {
   DataStorageWithView data_;
 
   // The set of APIObjects attached to this parcel, and a view of the objects
-  // not yet consumed from it. Heap-allocated to keep Parcels small in the
-  // common case of no object attachments.
-  std::unique_ptr<ObjectStorageWithView> objects_;
+  // not yet consumed from it.
+  ObjectStorageWithView objects_;
 
   // By default, all parcels have a single subparcel (theirself) at index 0. On
   // any Parcel that exists as a subparcel of another, these fields will be
