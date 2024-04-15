@@ -79,7 +79,7 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
   DVLOG(1) << "ModelLoadManager: Initializing for "
            << ModelTypeSetToDebugString(preferred_types_without_errors_);
 
-  notified_about_ready_for_configure_ = false;
+  delegate_waiting_for_ready_for_configure_ = true;
 
   if (sync_mode_changed) {
     // When the sync mode changes (between full-sync and transport mode),
@@ -205,7 +205,7 @@ void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   }
 
   load_models_timeout_timer_.Stop();
-  notified_about_ready_for_configure_ = true;
+  delegate_waiting_for_ready_for_configure_ = false;
 
   preferred_types_without_errors_.Clear();
 }
@@ -235,7 +235,7 @@ void ModelLoadManager::ModelLoadCallback(ModelType type,
 }
 
 void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
-  if (notified_about_ready_for_configure_) {
+  if (!delegate_waiting_for_ready_for_configure_) {
     return;
   }
 
@@ -259,7 +259,7 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
   // Cancel the timer since all the desired types are now loaded.
   load_models_timeout_timer_.Stop();
 
-  notified_about_ready_for_configure_ = true;
+  delegate_waiting_for_ready_for_configure_ = false;
   delegate_->OnAllDataTypesReadyForConfigure();
 }
 
