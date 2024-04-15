@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_CHILD_PROCESS_H_
-#define CONTENT_BROWSER_METRICS_HISTOGRAM_CHILD_PROCESS_H_
+#ifndef COMPONENTS_METRICS_HISTOGRAM_CHILD_PROCESS_H_
+#define COMPONENTS_METRICS_HISTOGRAM_CHILD_PROCESS_H_
 
 #include "components/metrics/public/mojom/histogram_fetcher.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace content {
+namespace metrics {
 
 // Interface that is implemented by the various child process types that can
 // be added to HistogramController for collecting histogram data.
@@ -17,10 +17,9 @@ class HistogramChildProcess {
   // Called to connect to a ChildHistogramFetcherFactory implementation in the
   // child process.
   virtual void BindChildHistogramFetcherFactory(
-      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
-          factory) = 0;
+      mojo::PendingReceiver<mojom::ChildHistogramFetcherFactory> factory) = 0;
 };
 
-}  // namespace content
+}  // namespace metrics
 
-#endif  // CONTENT_BROWSER_METRICS_HISTOGRAM_CHILD_PROCESS_H_
+#endif  // COMPONENTS_METRICS_HISTOGRAM_CHILD_PROCESS_H_

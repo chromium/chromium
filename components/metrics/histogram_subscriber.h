@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_SUBSCRIBER_H_
-#define CONTENT_BROWSER_METRICS_HISTOGRAM_SUBSCRIBER_H_
+#ifndef COMPONENTS_METRICS_HISTOGRAM_SUBSCRIBER_H_
+#define COMPONENTS_METRICS_HISTOGRAM_SUBSCRIBER_H_
 
 #include <string>
 #include <vector>
 
-namespace content {
+namespace metrics {
 
 // Objects interested in receiving histograms derive from HistogramSubscriber.
 class HistogramSubscriber {
@@ -28,6 +28,6 @@ class HistogramSubscriber {
       const std::vector<std::string>& pickled_histograms) = 0;
 };
 
-}  // namespace content
+}  // namespace metrics
 
-#endif  // CONTENT_BROWSER_METRICS_HISTOGRAM_SUBSCRIBER_H_
+#endif  // COMPONENTS_METRICS_HISTOGRAM_SUBSCRIBER_H_

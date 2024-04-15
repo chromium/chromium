@@ -69,6 +69,7 @@
 #include "cc/base/switches.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
+#include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
@@ -102,7 +103,6 @@
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
-#include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/metrics/histogram_shared_memory_config.h"
 #include "content/browser/mime_registry_impl.h"
 #include "content/browser/network_service_instance_impl.h"
@@ -4896,9 +4896,9 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
 }
 
 void RenderProcessHostImpl::ShareMetricsMemoryRegion() {
-  HistogramController::GetInstance()->SetHistogramMemory(
+  metrics::HistogramController::GetInstance()->SetHistogramMemory(
       this, std::move(metrics_memory_region_),
-      HistogramController::ChildProcessMode::kGetHistogramData);
+      metrics::HistogramController::ChildProcessMode::kGetHistogramData);
 }
 
 ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(
@@ -4979,7 +4979,7 @@ void RenderProcessHostImpl::ProcessDied(
 
   compositing_mode_reporter_.reset();
 
-  HistogramController::GetInstance()->NotifyChildDied(this);
+  metrics::HistogramController::GetInstance()->NotifyChildDied(this);
   // This object is not deleted at this point and might be reused later.
   // TODO(darin): clean this up
 }

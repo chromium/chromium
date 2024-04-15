@@ -13,7 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "content/browser/metrics/histogram_subscriber.h"
+#include "components/metrics/histogram_subscriber.h"
 
 namespace content {
 
@@ -47,7 +47,7 @@ namespace content {
 // outstanding sequence number, the pickled data is accepted into the browser,
 // but there is no impact on the counters.
 
-class HistogramSynchronizer : public HistogramSubscriber {
+class HistogramSynchronizer : public metrics::HistogramSubscriber {
  public:
   enum ProcessHistogramRequester {
     UNKNOWN,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_CONTROLLER_H_
-#define CONTENT_BROWSER_METRICS_HISTOGRAM_CONTROLLER_H_
+#ifndef COMPONENTS_METRICS_HISTOGRAM_CONTROLLER_H_
+#define COMPONENTS_METRICS_HISTOGRAM_CONTROLLER_H_
 
 #include <map>
 #include <string>
@@ -12,21 +12,22 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "components/metrics/histogram_child_process.h"
 #include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
-#include "content/browser/metrics/histogram_child_process.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace content {
+namespace metrics {
 
 class HistogramSubscriber;
 
 // HistogramController is used on the browser process to collect histogram data.
-// Only the browser UI thread is allowed to interact with the
+// Only one thread (typically the UI thread) is allowed to interact with the
 // HistogramController object.
 class HistogramController {
  public:
-  // Returns the HistogramController object for the current process, or NULL if
+  // Returns the HistogramController object for the current process, or null if
   // none.
   static HistogramController* GetInstance();
 
@@ -41,7 +42,6 @@ class HistogramController {
 
   // Register the subscriber so that it will be called when for example
   // OnHistogramDataCollected is returning histogram data from a child process.
-  // This is called on UI thread.
   void Register(HistogramSubscriber* subscriber);
 
   // Unregister the subscriber so that it will not be called when for example
@@ -51,12 +51,6 @@ class HistogramController {
 
   // Contact all processes and get their histogram data.
   void GetHistogramData(int sequence_number);
-
-  // Send the |histogram| back to the |subscriber_|.
-  // This can be called from any thread.
-  void OnHistogramDataCollected(
-      int sequence_number,
-      const std::vector<std::string>& pickled_histograms);
 
   enum class ChildProcessMode {
     // This child process should be included when gathering non-persistent
@@ -82,8 +76,7 @@ class HistogramController {
 
   void InsertChildHistogramFetcherInterface(
       HistogramChildProcess* host,
-      mojo::Remote<metrics::mojom::ChildHistogramFetcher>
-          child_histogram_fetcher,
+      mojo::Remote<mojom::ChildHistogramFetcher> child_histogram_fetcher,
       ChildProcessMode mode);
 
   // Calls PingChildProcess() on ~10% of child processes. Not all child
@@ -95,15 +88,20 @@ class HistogramController {
   // histograms (both on the browser process and the child process), with the
   // goal of quantifying the amount of histogram samples lost from child
   // processes.
-  void PingChildProcess(metrics::mojom::ChildHistogramFetcherProxy* fetcher,
-                        metrics::mojom::UmaPingCallSource call_source);
+  void PingChildProcess(mojom::ChildHistogramFetcherProxy* fetcher,
+                        mojom::UmaPingCallSource call_source);
 
   // Callback for when a child process has received a ping (see
   // PingChildProcess()).
-  void Pong(metrics::mojom::UmaPingCallSource call_source);
+  void Pong(mojom::UmaPingCallSource call_source);
 
   void RemoveChildHistogramFetcherInterface(
       MayBeDangling<HistogramChildProcess> host);
+
+  // Records the histogram data collected from a child process.
+  void OnHistogramDataCollected(
+      int sequence_number,
+      const std::vector<std::string>& pickled_histograms);
 
   struct ChildHistogramFetcher;
   using ChildHistogramFetcherMap =
@@ -112,8 +110,10 @@ class HistogramController {
 
   // Used to call PingAllChildProcesses() every 5 minutes.
   base::RepeatingTimer timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace metrics
 
-#endif  // CONTENT_BROWSER_METRICS_HISTOGRAM_CONTROLLER_H_
+#endif  // COMPONENTS_METRICS_HISTOGRAM_CONTROLLER_H_

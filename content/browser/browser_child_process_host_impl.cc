@@ -28,11 +28,11 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/histogram_controller.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_host_impl.h"
-#include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/metrics/histogram_shared_memory_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
@@ -609,19 +609,19 @@ void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
 void BrowserChildProcessHostImpl::ShareMetricsAllocatorToProcess() {
   // Only get histograms from content process types; skip "embedder" process
   // types.
-  HistogramController::ChildProcessMode histogram_mode =
+  metrics::HistogramController::ChildProcessMode histogram_mode =
       data_.process_type >= PROCESS_TYPE_CONTENT_END
-          ? HistogramController::ChildProcessMode::kPingOnly
-          : HistogramController::ChildProcessMode::kGetHistogramData;
+          ? metrics::HistogramController::ChildProcessMode::kPingOnly
+          : metrics::HistogramController::ChildProcessMode::kGetHistogramData;
 
   if (metrics_allocator_) {
-    HistogramController::GetInstance()->SetHistogramMemory(
+    metrics::HistogramController::GetInstance()->SetHistogramMemory(
         this, std::move(metrics_shared_region_), histogram_mode);
     DVLOG(1) << "metrics_shared_region_ has been moved: " << "pid=" << data_.id
              << "; process_type="
              << GetProcessTypeNameInEnglish(data_.process_type);
   } else {
-    HistogramController::GetInstance()->SetHistogramMemory(
+    metrics::HistogramController::GetInstance()->SetHistogramMemory(
         this, base::UnsafeSharedMemoryRegion(), histogram_mode);
   }
 }

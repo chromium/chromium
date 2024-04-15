@@ -18,9 +18,9 @@
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/metrics/histogram_child_process.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/metrics/histogram_child_process.h"
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/buildflags.h"
 #include "content/common/child_process.mojom.h"
@@ -59,7 +59,7 @@ class BrowserMessageFilter;
 class BrowserChildProcessHostImpl
     : public BrowserChildProcessHost,
       public ChildProcessHostDelegate,
-      public HistogramChildProcess,
+      public metrics::HistogramChildProcess,
 #if BUILDFLAG(IS_WIN)
       public base::win::ObjectWatcher::Delegate,
 #endif

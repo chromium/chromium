@@ -29,12 +29,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/histogram_child_process.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
 #include "content/browser/child_process_launcher.h"
-#include "content/browser/metrics/histogram_child_process.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/storage_partition_impl.h"
@@ -191,7 +191,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       public mojom::RendererHost,
       public blink::mojom::DomStorageProvider,
       public memory_instrumentation::mojom::CoordinatorConnector,
-      public HistogramChildProcess
+      public metrics::HistogramChildProcess
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     ,
       public media::stable::mojom::StableVideoDecoderTracker

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/metrics/histogram_controller.h"
+#include "components/metrics/histogram_controller.h"
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -10,28 +10,25 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "components/metrics/histogram_subscriber.h"
 #include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
-#include "content/browser/metrics/histogram_subscriber.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
-namespace content {
+namespace metrics {
 
 namespace {
-const char* GetPingHistogramName(
-    metrics::mojom::UmaPingCallSource call_source) {
+const char* GetPingHistogramName(mojom::UmaPingCallSource call_source) {
   switch (call_source) {
-    case metrics::mojom::UmaPingCallSource::PERIODIC:
+    case mojom::UmaPingCallSource::PERIODIC:
       return "UMA.ChildProcess.Ping.Periodic";
-    case metrics::mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP:
+    case mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP:
       return "UMA.ChildProcess.Ping.SharedMemorySetUp";
   }
 }
 }  // namespace
 
 struct HistogramController::ChildHistogramFetcher {
-  mojo::Remote<metrics::mojom::ChildHistogramFetcher> remote;
+  mojo::Remote<mojom::ChildHistogramFetcher> remote;
   ChildProcessMode mode;
 };
 
@@ -49,35 +46,20 @@ HistogramController::HistogramController() : subscriber_(nullptr) {
 
 HistogramController::~HistogramController() = default;
 
-void HistogramController::OnHistogramDataCollected(
-    int sequence_number,
-    const std::vector<std::string>& pickled_histograms) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HistogramController::OnHistogramDataCollected,
-                       base::Unretained(this), sequence_number,
-                       pickled_histograms));
-    return;
-  }
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (subscriber_) {
-    subscriber_->OnHistogramDataCollected(sequence_number, pickled_histograms);
-  }
-}
-
 void HistogramController::Register(HistogramSubscriber* subscriber) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!subscriber_);
   subscriber_ = subscriber;
 }
 
 void HistogramController::Unregister(const HistogramSubscriber* subscriber) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(subscriber_, subscriber);
   subscriber_ = nullptr;
 }
 
 void HistogramController::NotifyChildDied(HistogramChildProcess* host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveChildHistogramFetcherInterface(
       MayBeDangling<HistogramChildProcess>(host));
 }
@@ -86,20 +68,21 @@ void HistogramController::SetHistogramMemory(
     HistogramChildProcess* host,
     base::UnsafeSharedMemoryRegion shared_region,
     ChildProcessMode mode) {
-  mojo::Remote<metrics::mojom::ChildHistogramFetcherFactory> factory;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::Remote<mojom::ChildHistogramFetcherFactory> factory;
   host->BindChildHistogramFetcherFactory(factory.BindNewPipeAndPassReceiver());
 
-  mojo::Remote<metrics::mojom::ChildHistogramFetcher> fetcher;
+  mojo::Remote<mojom::ChildHistogramFetcher> fetcher;
   factory->CreateFetcher(std::move(shared_region),
                          fetcher.BindNewPipeAndPassReceiver());
   PingChildProcess(fetcher.get(),
-                   metrics::mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
+                   mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
   InsertChildHistogramFetcherInterface(host, std::move(fetcher), mode);
 }
 
 void HistogramController::InsertChildHistogramFetcherInterface(
     HistogramChildProcess* host,
-    mojo::Remote<metrics::mojom::ChildHistogramFetcher> child_histogram_fetcher,
+    mojo::Remote<mojom::ChildHistogramFetcher> child_histogram_fetcher,
     ChildProcessMode mode) {
   // Broken pipe means remove this from the map. The map size is a proxy for
   // the number of known processes
@@ -120,14 +103,14 @@ void HistogramController::PingChildProcesses() {
   for (const auto& fetcher : child_histogram_fetchers_) {
     if (base::RandGenerator(/*range=*/10) == 0) {
       PingChildProcess(fetcher.second.remote.get(),
-                       metrics::mojom::UmaPingCallSource::PERIODIC);
+                       mojom::UmaPingCallSource::PERIODIC);
     }
   }
 }
 
 void HistogramController::PingChildProcess(
-    metrics::mojom::ChildHistogramFetcherProxy* fetcher,
-    metrics::mojom::UmaPingCallSource call_source) {
+    mojom::ChildHistogramFetcherProxy* fetcher,
+    mojom::UmaPingCallSource call_source) {
   // 1) Emit a histogram, 2) ping the child process (which should also emit a
   // histogram), and 3) call Pong(), which again emits a histogram.
   // If no histograms are lost, in total, the histograms should all be emitted
@@ -135,19 +118,18 @@ void HistogramController::PingChildProcess(
   // emitted more often because this may be called early on in the lifecycle of
   // the child process, and some child processes are killed very early on,
   // before any IPC messages are processed.
-  base::UmaHistogramEnumeration(
-      GetPingHistogramName(call_source),
-      metrics::mojom::UmaChildPingStatus::BROWSER_SENT_IPC);
+  base::UmaHistogramEnumeration(GetPingHistogramName(call_source),
+                                mojom::UmaChildPingStatus::BROWSER_SENT_IPC);
   // Unretained is safe because |this| is leaky.
   fetcher->Ping(call_source,
                 base::BindOnce(&HistogramController::Pong,
                                base::Unretained(this), call_source));
 }
 
-void HistogramController::Pong(metrics::mojom::UmaPingCallSource call_source) {
+void HistogramController::Pong(mojom::UmaPingCallSource call_source) {
   base::UmaHistogramEnumeration(
       GetPingHistogramName(call_source),
-      metrics::mojom::UmaChildPingStatus::BROWSER_REPLY_CALLBACK);
+      mojom::UmaChildPingStatus::BROWSER_REPLY_CALLBACK);
 }
 
 void HistogramController::RemoveChildHistogramFetcherInterface(
@@ -156,7 +138,7 @@ void HistogramController::RemoveChildHistogramFetcherInterface(
 }
 
 void HistogramController::GetHistogramData(int sequence_number) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int pending_processes = 0;
   for (const auto& fetcher : child_histogram_fetchers_) {
@@ -177,4 +159,13 @@ void HistogramController::GetHistogramData(int sequence_number) {
   }
 }
 
-}  // namespace content
+void HistogramController::OnHistogramDataCollected(
+    int sequence_number,
+    const std::vector<std::string>& pickled_histograms) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (subscriber_) {
+    subscriber_->OnHistogramDataCollected(sequence_number, pickled_histograms);
+  }
+}
+
+}  // namespace metrics

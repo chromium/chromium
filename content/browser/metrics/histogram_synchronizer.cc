@@ -16,7 +16,7 @@
 #include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "content/browser/metrics/histogram_controller.h"
+#include "components/metrics/histogram_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -159,7 +159,7 @@ HistogramSynchronizer::HistogramSynchronizer()
     : lock_(),
       last_used_sequence_number_(kNeverUsableSequenceNumber),
       async_sequence_number_(kNeverUsableSequenceNumber) {
-  HistogramController::GetInstance()->Register(this);
+  metrics::HistogramController::GetInstance()->Register(this);
 }
 
 HistogramSynchronizer::~HistogramSynchronizer() {
@@ -231,7 +231,8 @@ void HistogramSynchronizer::RegisterAndNotifyAllProcesses(
   RequestContext::Register(std::move(callback), sequence_number);
 
   // Get histogram data from renderer and browser child processes.
-  HistogramController::GetInstance()->GetHistogramData(sequence_number);
+  metrics::HistogramController::GetInstance()->GetHistogramData(
+      sequence_number);
 
   // Post a task that would be called after waiting for wait_time.  This acts
   // as a watchdog, to cancel the requests for non-responsive processes.
