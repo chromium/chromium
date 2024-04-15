@@ -1102,14 +1102,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
     case IDC_SET_BROWSER_AS_DEFAULT:
       base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-          ->StartSetAsDefault(
-              base::IgnoreArgs<shell_integration::DefaultWebClientState>(
-                  base::BindOnce(
-                      &DefaultBrowserPromptManager::CloseAllPrompts,
-                      base::Unretained(
-                          DefaultBrowserPromptManager::GetInstance()))));
+          ->StartSetAsDefault(base::DoNothing());
       DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
           browser_->profile());
+      DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts();
       break;
 #endif
     default:

@@ -133,11 +133,7 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   // message loops of the FILE and UI thread will hold references to it
   // and it will be automatically freed once all its tasks have finished.
   base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
-      ->StartSetAsDefault(
-          base::IgnoreArgs<shell_integration::DefaultWebClientState>(
-              base::BindOnce(&DefaultBrowserPromptManager::CloseAllPrompts,
-                             base::Unretained(
-                                 DefaultBrowserPromptManager::GetInstance()))));
+      ->StartSetAsDefault(base::DoNothing());
 
   return ConfirmInfoBarDelegate::Accept();
 }

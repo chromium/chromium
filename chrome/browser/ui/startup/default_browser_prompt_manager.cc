@@ -142,7 +142,7 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
       ->RemoveObserver(this);
 
   if (user_initiated_info_bar_close_pending_) {
-    CloseAllInfoBars();
+    CloseAllPrompts();
     user_initiated_info_bar_close_pending_ = false;
   }
 }
