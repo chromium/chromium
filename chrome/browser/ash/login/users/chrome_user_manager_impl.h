@@ -178,9 +178,6 @@ class ChromeUserManagerImpl
   void RemoveNonCryptohomeDataPostExternalDataRemoval(
       const AccountId& account_id);
 
-  // Interface to the signed settings store.
-  raw_ptr<CrosSettings> cros_settings_;
-
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;

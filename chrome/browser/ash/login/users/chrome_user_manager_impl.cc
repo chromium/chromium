@@ -291,8 +291,8 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
           base::SingleThreadTaskRunner::HasCurrentDefault()
               ? base::SingleThreadTaskRunner::GetCurrentDefault()
               : nullptr,
-          g_browser_process ? g_browser_process->local_state() : nullptr),
-      cros_settings_(CrosSettings::Get()),
+          g_browser_process ? g_browser_process->local_state() : nullptr,
+          CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
       multi_user_sign_in_policy_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
@@ -315,25 +315,25 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                        weak_factory_.GetWeakPtr()));
   }
 
-  allow_guest_subscription_ = cros_settings_->AddSettingsObserver(
+  allow_guest_subscription_ = cros_settings()->AddSettingsObserver(
       kAccountsPrefAllowGuest,
       base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
                           weak_factory_.GetWeakPtr()));
   // For user allowlist.
-  users_subscription_ = cros_settings_->AddSettingsObserver(
+  users_subscription_ = cros_settings()->AddSettingsObserver(
       kAccountsPrefUsers,
       base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
                           weak_factory_.GetWeakPtr()));
-  family_link_accounts_subscription_ = cros_settings_->AddSettingsObserver(
+  family_link_accounts_subscription_ = cros_settings()->AddSettingsObserver(
       kAccountsPrefFamilyLinkAccountsAllowed,
       base::BindRepeating(&UserManager::NotifyUsersSignInConstraintsChanged,
                           weak_factory_.GetWeakPtr()));
 
-  ephemeral_users_enabled_subscription_ = cros_settings_->AddSettingsObserver(
+  ephemeral_users_enabled_subscription_ = cros_settings()->AddSettingsObserver(
       kAccountsPrefEphemeralUsersEnabled,
       base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                           weak_factory_.GetWeakPtr()));
-  local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
+  local_accounts_subscription_ = cros_settings()->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                           weak_factory_.GetWeakPtr()));
@@ -343,7 +343,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   // to ensure that owner changes are reflected in |this|.
   // TODO(crbug.com/1307359): Investigate using RetrieveTrustedDevicePolicies
   // instead of UpdateOwnerId.
-  owner_subscription_ = cros_settings_->AddSettingsObserver(
+  owner_subscription_ = cros_settings()->AddSettingsObserver(
       kDeviceOwner, base::BindRepeating(&ChromeUserManagerImpl::UpdateOwnerId,
                                         weak_factory_.GetWeakPtr()));
 
@@ -358,27 +358,27 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
 
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::UserAvatarImageExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::WallpaperImageExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::PrintersExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::PrintServersExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::CrostiniAnsiblePlaybookExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
   cloud_external_data_policy_handlers_.push_back(
       std::make_unique<policy::PreconfiguredDeskTemplatesExternalDataHandler>(
-          cros_settings_, device_local_account_policy_service));
+          cros_settings(), device_local_account_policy_service));
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
   std::string owner_email;
-  cros_settings_->GetString(kDeviceOwner, &owner_email);
+  cros_settings()->GetString(kDeviceOwner, &owner_email);
 
   user_manager::KnownUser known_user(GetLocalState());
   const AccountId owner_account_id = known_user.GetAccountId(
@@ -490,21 +490,19 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
 void ChromeUserManagerImpl::RemoveUserInternal(
     const AccountId& account_id,
     user_manager::UserRemovalReason reason) {
-  CrosSettings* cros_settings = CrosSettings::Get();
-
   auto callback =
       base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
                      weak_factory_.GetWeakPtr(), account_id, reason);
 
   // Ensure the value of owner email has been fetched.
   if (CrosSettingsProvider::TRUSTED !=
-      cros_settings->PrepareTrustedValues(std::move(callback))) {
+      cros_settings()->PrepareTrustedValues(std::move(callback))) {
     // Value of owner email is not fetched yet.  RemoveUserInternal will be
     // called again after fetch completion.
     return;
   }
   std::string owner;
-  cros_settings->GetString(kDeviceOwner, &owner);
+  cros_settings()->GetString(kDeviceOwner, &owner);
   if (account_id == AccountId::FromUserEmail(owner)) {
     // Owner is not allowed to be removed from the device.
     return;
@@ -607,16 +605,16 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
   // Schedule a callback if device policy has not yet been verified.
   if (CrosSettingsProvider::TRUSTED !=
-      cros_settings_->PrepareTrustedValues(
+      cros_settings()->PrepareTrustedValues(
           base::BindOnce(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                          weak_factory_.GetWeakPtr()))) {
     return;
   }
 
-  SetEphemeralModeConfig(CreateEphemeralModeConfig(cros_settings_));
+  SetEphemeralModeConfig(CreateEphemeralModeConfig(cros_settings()));
 
   std::string owner_email;
-  cros_settings_->GetString(kDeviceOwner, &owner_email);
+  cros_settings()->GetString(kDeviceOwner, &owner_email);
   user_manager::KnownUser known_user(GetLocalState());
   const AccountId owner_account_id = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
@@ -625,7 +623,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   EnsureUsersLoaded();
 
   bool changed = UpdateAndCleanUpDeviceLocalAccounts(
-      policy::GetDeviceLocalAccounts(cros_settings_));
+      policy::GetDeviceLocalAccounts(cros_settings()));
 
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
@@ -861,20 +859,20 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
 
 bool ChromeUserManagerImpl::IsGuestSessionAllowed() const {
   // In tests CrosSettings might not be initialized.
-  if (!cros_settings_) {
+  if (!cros_settings()) {
     return false;
   }
 
   bool is_guest_allowed = false;
-  cros_settings_->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
+  cros_settings()->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
   return is_guest_allowed;
 }
 
 bool ChromeUserManagerImpl::IsGaiaUserAllowed(
     const user_manager::User& user) const {
   DCHECK(user.HasGaiaAccount());
-  return cros_settings_->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
-                                           nullptr, user.GetType());
+  return cros_settings()->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
+                                            nullptr, user.GetType());
 }
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {

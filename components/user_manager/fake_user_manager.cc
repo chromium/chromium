@@ -44,7 +44,8 @@ namespace user_manager {
 FakeUserManager::FakeUserManager(PrefService* local_state)
     : UserManagerBase(std::make_unique<FakeUserManagerDelegate>(),
                       new FakeTaskRunner(),
-                      local_state) {}
+                      local_state,
+                      /*cros_settings=*/nullptr) {}
 
 FakeUserManager::~FakeUserManager() = default;
 

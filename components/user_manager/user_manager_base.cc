@@ -111,10 +111,12 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
 UserManagerBase::UserManagerBase(
     std::unique_ptr<Delegate> delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    PrefService* local_state)
+    PrefService* local_state,
+    ash::CrosSettings* cros_settings)
     : delegate_(std::move(delegate)),
       task_runner_(std::move(task_runner)),
-      local_state_(local_state) {
+      local_state_(local_state),
+      cros_settings_(cros_settings) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();

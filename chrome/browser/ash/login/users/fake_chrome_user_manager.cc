@@ -72,7 +72,8 @@ FakeChromeUserManager::FakeChromeUserManager()
     : UserManagerBase(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
           new FakeTaskRunner(),
-          g_browser_process ? g_browser_process->local_state() : nullptr) {
+          g_browser_process ? g_browser_process->local_state() : nullptr,
+          /*cros_settings=*/nullptr) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 

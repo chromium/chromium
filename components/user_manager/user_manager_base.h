@@ -29,9 +29,13 @@
 
 class PrefRegistrySimple;
 
+namespace ash {
+class CrosSettings;
+}  // namespace ash
+
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace user_manager {
 
@@ -83,7 +87,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // |local_state|. |local_state| must outlive this UserManager.
   UserManagerBase(std::unique_ptr<Delegate> delegate,
                   scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                  PrefService* local_state);
+                  PrefService* local_state,
+                  ash::CrosSettings* cros_settings);
 
   UserManagerBase(const UserManagerBase&) = delete;
   UserManagerBase& operator=(const UserManagerBase&) = delete;
@@ -208,6 +213,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                      std::set<AccountId>* users_set);
 
  protected:
+  ash::CrosSettings* cros_settings() { return cros_settings_; }
+  const ash::CrosSettings* cros_settings() const { return cros_settings_; }
+
   // Adds |user| to users list, and adds it to front of LRU list. It is assumed
   // that there is no user with same id.
   virtual void AddUserRecord(User* user);
@@ -396,6 +404,14 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   std::unique_ptr<Delegate> delegate_;
 
+  // TaskRunner for UI thread.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
+
+  // Interface to the signed settings store.
+  const raw_ptr<ash::CrosSettings> cros_settings_;
+
   // Indicates stage of loading user from prefs.
   UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;
 
@@ -439,11 +455,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // because pref will be overidden once session restore starts.
   AccountId last_session_active_account_id_ = EmptyAccountId();
   bool last_session_active_account_id_initialized_ = false;
-
-  // TaskRunner for UI thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
 };
