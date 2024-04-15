@@ -49,6 +49,7 @@ const char kInfoCardStates[] = "feed.info_card_states";
 const char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
 const char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
 const char kExperimentsV2[] = "feedv2.experiments_v2";
+const char kInfoCardTrackingStateDict[] = "info-card-tracking-state-dict";
 
 // Deprecated October 2022
 const char kExperimentsDeprecated[] = "feedv2.experiments";
@@ -95,6 +96,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(feed::prefs::kLastBadgeAnimationTime,
                              base::Time());
   registry->RegisterDictionaryPref(feed::prefs::kExperimentsV2);
+  registry->RegisterDictionaryPref(feed::prefs::kInfoCardTrackingStateDict);
 
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,
