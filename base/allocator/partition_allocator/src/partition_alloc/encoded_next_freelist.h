@@ -257,14 +257,14 @@ class EncodedNextFreelistEntry {
       const EncodedNextFreelistEntry* next) {
     // Don't allow the freelist to be blindly followed to any location.
     // Checks following constraints:
-    // - `shadow_` must match an inversion of `next_` (if present).
-    // - next cannot point inside the metadata area.
-    // - here and next must belong to the same superpage, unless this is in the
-    //   thread cache (they even always belong to the same slot span).
-    // - next is marked as free in the free slot bitmap (if present).
+    // - `here->shadow_` must match an inversion of `here->next_` (if present).
+    // - `next` cannot point inside the metadata area.
+    // - `here` and `next` must belong to the same superpage, unless this is in
+    //   the thread cache (they even always belong to the same slot span).
+    // - `next` is marked as free in the free slot bitmap (if present).
 
-    uintptr_t here_address = SlotStartPtr2Addr(here);
-    uintptr_t next_address = SlotStartPtr2Addr(next);
+    const uintptr_t here_address = SlotStartPtr2Addr(here);
+    const uintptr_t next_address = SlotStartPtr2Addr(next);
 
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;
@@ -275,22 +275,23 @@ class EncodedNextFreelistEntry {
     // This is necessary but not sufficient when quarantine is enabled, see
     // SuperPagePayloadBegin() in partition_page.h. However we don't want to
     // fetch anything from the root in this function.
-    bool not_in_metadata =
+    const bool not_in_metadata =
         (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
 
     if constexpr (for_thread_cache) {
       return shadow_ptr_ok & not_in_metadata;
     }
 
-    bool same_superpage = (here_address & kSuperPageBaseMask) ==
-                          (next_address & kSuperPageBaseMask);
+    const bool same_super_page = (here_address & kSuperPageBaseMask) ==
+                                 (next_address & kSuperPageBaseMask);
+
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
     bool marked_as_free_in_bitmap = !FreeSlotBitmapSlotIsUsed(next_address);
 #else
-    bool marked_as_free_in_bitmap = true;
+    constexpr bool marked_as_free_in_bitmap = true;
 #endif
 
-    return shadow_ptr_ok & same_superpage & marked_as_free_in_bitmap &
+    return shadow_ptr_ok & same_super_page & marked_as_free_in_bitmap &
            not_in_metadata;
   }
 

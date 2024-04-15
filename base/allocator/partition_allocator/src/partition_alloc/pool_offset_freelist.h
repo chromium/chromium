@@ -203,23 +203,15 @@ class PoolOffsetFreelistEntry {
       const PoolOffsetFreelistEntry* next) {
     // Don't allow the freelist to be blindly followed to any location.
     // Checks following constraints:
-    // - `shadow_` must match an inversion of `next_` (if present).
-    // - next must not have bits in the pool base mask except a MTE tag.
-    // - here and next must belong to the same superpage, unless this is in the
-    //   thread cache (they even always belong to the same slot span).
-    // - next cannot point inside the metadata area.
-
-    // TODO(crbug.com/1461983): Add support for freeslot bitmaps.
-    static_assert(!BUILDFLAG(USE_FREESLOT_BITMAP),
-                  "USE_FREESLOT_BITMAP not supported");
+    // - `here->shadow_` must match an inversion of `here->next_` (if present).
+    // - `next` must not have bits in the pool base mask except a MTE tag.
+    // - `next` cannot point inside the metadata area.
+    // - `here` and `next` must belong to the same superpage, unless this is in
+    //   the thread cache (they even always belong to the same slot span).
+    // - `next` is marked as free in the free slot bitmap (if present).
 
     const uintptr_t here_address = SlotStartPtr2Addr(here);
     const uintptr_t next_address = SlotStartPtr2Addr(next);
-
-    const bool no_bit_in_pool_base_mask = !(here->next_ & pool_info.base_mask);
-
-    const bool not_in_metadata =
-        (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
 
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = (~here->next_) == here->shadow_;
@@ -227,14 +219,30 @@ class PoolOffsetFreelistEntry {
     constexpr bool shadow_ptr_ok = true;
 #endif
 
+    const bool no_bit_in_pool_base_mask = !(here->next_ & pool_info.base_mask);
+
+    // This is necessary but not sufficient when quarantine is enabled, see
+    // SuperPagePayloadBegin() in partition_page.h. However we don't want to
+    // fetch anything from the root in this function.
+    const bool not_in_metadata =
+        (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
+
     if constexpr (for_thread_cache) {
       return no_bit_in_pool_base_mask & shadow_ptr_ok & not_in_metadata;
     }
 
     const bool same_super_page = (here_address & kSuperPageBaseMask) ==
                                  (next_address & kSuperPageBaseMask);
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+    // TODO(crbug.com/1461983): Add support for freeslot bitmaps.
+    static_assert(false, "USE_FREESLOT_BITMAP not supported");
+#else
+    constexpr bool marked_as_free_in_bitmap = true;
+#endif
+
     return no_bit_in_pool_base_mask & shadow_ptr_ok & same_super_page &
-           not_in_metadata;
+           marked_as_free_in_bitmap & not_in_metadata;
   }
 
   // Expresses the next entry in the freelist as an offset in the
