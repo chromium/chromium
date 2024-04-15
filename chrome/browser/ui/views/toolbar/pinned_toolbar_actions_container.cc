@@ -622,9 +622,14 @@ views::View* PinnedToolbarActionsContainer::GetContainerView() {
 
 bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
     gfx::Size available_size) const {
-  views::ProposedLayout proposed_layout =
-      GetAnimatingLayoutManager()->target_layout_manager()->GetProposedLayout(
-          available_size);
+  views::ProposedLayout proposed_layout;
+  if (GetAnimatingLayoutManager()->is_animating()) {
+    proposed_layout = GetAnimatingLayoutManager()->target_layout();
+  } else {
+    proposed_layout =
+        GetAnimatingLayoutManager()->target_layout_manager()->GetProposedLayout(
+            available_size);
+  }
   for (PinnedActionToolbarButton* pinned_button : pinned_buttons_) {
     if (views::ChildLayout* child_layout =
             proposed_layout.GetLayoutFor(pinned_button)) {

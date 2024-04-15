@@ -211,9 +211,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
     return starting_layout_;
   }
 
-  const ProposedLayout& target_layout_for_testing() const {
-    return target_layout_;
-  }
+  const ProposedLayout& target_layout() const { return target_layout_; }
 
  protected:
   // LayoutManagerBase:
