@@ -360,33 +360,50 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
     [colorButton setTag:static_cast<NSInteger>(colorID)];
 
     UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration filledButtonConfiguration];
-    buttonConfiguration.baseBackgroundColor =
-        TabGroup::ColorForTabGroupColorId(colorID);
-    buttonConfiguration.background.cornerRadius = kColoredButtonSize / 2;
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.baseBackgroundColor = [UIColor clearColor];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(8, 8, 8, 8);
     colorButton.configuration = buttonConfiguration;
 
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-        configurationWithPointSize:kColorSelectionImageSize
-                            weight:UIImageSymbolWeightBold
-                             scale:UIImageSymbolScaleLarge];
-    UIImage* image =
-        DefaultSymbolWithConfiguration(kCircleSymbol, configuration);
-    image = [image imageWithTintColor:[UIColor colorNamed:kGrey100Color]
+        configurationWithPointSize:kColoredButtonSize
+                            weight:UIImageSymbolWeightRegular
+                             scale:UIImageSymbolScaleDefault];
+    UIImage* baseImage =
+        DefaultSymbolWithConfiguration(kCircleFillSymbol, configuration);
+    baseImage =
+        [baseImage imageWithTintColor:TabGroup::ColorForTabGroupColorId(colorID)
                         renderingMode:UIImageRenderingModeAlwaysOriginal];
-    UIImage* emptyImage = [[UIImage alloc] init];
 
-    [colorButton setImage:emptyImage forState:UIControlStateNormal];
-    [colorButton setImage:image forState:UIControlStateSelected];
+    UIImageSymbolConfiguration* selectionConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kColorSelectionImageSize
+                                weight:UIImageSymbolWeightBold
+                                 scale:UIImageSymbolScaleLarge];
+    UIImage* selectionRingImage =
+        DefaultSymbolWithConfiguration(kCircleSymbol, selectionConfiguration);
+    selectionRingImage = [selectionRingImage
+        imageWithTintColor:[UIColor colorNamed:kGrey100Color]
+             renderingMode:UIImageRenderingModeAlwaysOriginal];
+    UIGraphicsBeginImageContextWithOptions(baseImage.size, NO, 0.0f);
+    [baseImage drawInRect:CGRectMake(0, 0, baseImage.size.width,
+                                     baseImage.size.height)];
+    [selectionRingImage
+        drawInRect:CGRectMake(baseImage.size.width / 2 -
+                                  selectionRingImage.size.width / 2,
+                              baseImage.size.height / 2 -
+                                  selectionRingImage.size.height / 2,
+                              selectionRingImage.size.width,
+                              selectionRingImage.size.height)];
+    UIImage* selectionImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    [colorButton setImage:baseImage forState:UIControlStateNormal];
+    [colorButton setImage:selectionImage forState:UIControlStateSelected];
 
     [colorButton addTarget:self
                     action:@selector(coloredButtonTapped:)
           forControlEvents:UIControlEventTouchUpInside];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [colorButton.heightAnchor constraintEqualToConstant:kColoredButtonSize],
-      [colorButton.widthAnchor constraintEqualToConstant:kColoredButtonSize],
-    ]];
 
     [buttons addObject:colorButton];
   }
@@ -400,19 +417,23 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   colorsView.distribution = UIStackViewDistributionEqualSpacing;
   colorsView.alignment = UIStackViewAlignmentCenter;
   colorsView.translatesAutoresizingMaskIntoConstraints = NO;
-  // Add empty view before and after so the equal spacing distribution do not
-  // put dots at view's boundary and dots stay completely inside the view.
-  [colorsView addArrangedSubview:[[UIView alloc] init]];
+
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  scrollView.canCancelContentTouches = YES;
+  [scrollView addSubview:colorsView];
+
   for (UIButton* button in _colorSelectionButtons) {
     [colorsView addArrangedSubview:button];
   }
-  [colorsView addArrangedSubview:[[UIView alloc] init]];
 
+  AddSameConstraints(colorsView, scrollView);
   [NSLayoutConstraint activateConstraints:@[
     [colorsView.heightAnchor constraintEqualToConstant:kColorListViewHeight],
+    [scrollView.heightAnchor constraintEqualToConstant:kColorListViewHeight],
   ]];
 
-  return colorsView;
+  return scrollView;
 }
 
 // YES if the given button is the default one.
