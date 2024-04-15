@@ -72,10 +72,14 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Starts locking (with slow pre-lock animation) that can be cancelled.
   void StartLockAnimation();
 
-  // Starts shutting down (with slow animation) that can be cancelled.
-  void StartShutdownAnimation(ShutdownReason reason);
+  // The difference between this and `RequestShutdown` is that this one starts
+  // the shutdown that can be canceled. It is true if the `pre_shutdown_timer_`
+  // is still running (CanCancelShutdownAnimation). Please use only when
+  // necessary, e.g., requesting through the physical power button that it can
+  // be released with a very short press.
+  void RequestCancelableShutdown(ShutdownReason reason);
 
-  // Requests restart with the same animation as `StartShutdownAnimation`.
+  // Requests restart with the same animation as `RequestShutdown`.
   // `description` is a human-readable string describing the source of request
   // the restart.
   void RequestRestart(power_manager::RequestRestartReason reason,

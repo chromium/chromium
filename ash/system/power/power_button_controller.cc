@@ -49,7 +49,7 @@ constexpr base::TimeDelta kShowMenuWhenScreenOffTimeout =
 
 // Time that power button should be pressed after power menu is shown before
 // starting the cancellable pre-shutdown animation.
-constexpr base::TimeDelta kStartShutdownAnimationTimeout =
+constexpr base::TimeDelta kRequestCancelableShutdownTimeout =
     base::Milliseconds(650);
 
 enum PowerButtonUpState {
@@ -141,7 +141,8 @@ PowerButtonController::~PowerButtonController() {
 }
 
 void PowerButtonController::OnPreShutdownTimeout() {
-  lock_state_controller_->StartShutdownAnimation(ShutdownReason::POWER_BUTTON);
+  lock_state_controller_->RequestCancelableShutdown(
+      ShutdownReason::POWER_BUTTON);
   // |menu_widget_| might be reset on login status change while shutting down.
   if (!menu_widget_) {
     return;
@@ -212,7 +213,8 @@ void PowerButtonController::OnPowerButtonEvent(
     display_controller_->SetBacklightsForcedOff(false);
 
     if (menu_shown_when_power_button_down_) {
-      pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
+      pre_shutdown_timer_.Start(FROM_HERE, kRequestCancelableShutdownTimeout,
+                                this,
                                 &PowerButtonController::OnPreShutdownTimeout);
       return;
     }
@@ -559,7 +561,8 @@ void PowerButtonController::SetShowMenuAnimationDone() {
   show_menu_animation_done_ = true;
   if (button_type_ != ButtonType::LEGACY &&
       shutdown_reason_ == ShutdownReason::POWER_BUTTON) {
-    pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
+    pre_shutdown_timer_.Start(FROM_HERE, kRequestCancelableShutdownTimeout,
+                              this,
                               &PowerButtonController::OnPreShutdownTimeout);
   }
 }

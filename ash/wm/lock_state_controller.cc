@@ -314,7 +314,7 @@ void LockStateController::StartLockAnimation() {
   OnLockStateEvent(LockStateObserver::EVENT_PRELOCK_ANIMATION_STARTED);
 }
 
-void LockStateController::StartShutdownAnimation(ShutdownReason reason) {
+void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
   shutdown_reason_ = reason;
 
   HideAndMaybeLockCursor(/*lock=*/false);
@@ -328,7 +328,7 @@ void LockStateController::RequestRestart(
     restart_reason_ = reason;
     restart_description_ = description;
     HideAndMaybeLockCursor(/*lock=*/false);
-    TakePineImageAndShutdown(/*with_pre_animation=*/true);
+    TakePineImageAndShutdown(/*with_pre_animation=*/false);
   } else {
     chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
   }
