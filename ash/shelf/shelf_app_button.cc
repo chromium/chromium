@@ -685,8 +685,6 @@ void ShelfAppButton::OnDragStarted(const ui::LocatedEvent* event) {
 }
 
 void ShelfAppButton::OnMenuClosed() {
-  DCHECK_EQ(views::InkDropState::ACTIVATED,
-            views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState());
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::DEACTIVATED);
   context_menu_target_visibility_ = false;
