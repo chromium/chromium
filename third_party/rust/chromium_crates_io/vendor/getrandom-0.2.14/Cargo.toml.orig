@@ -1,6 +1,6 @@
 [package]
 name = "getrandom"
-version = "0.2.12" # Also update html_root_url in lib.rs when bumping this
+version = "0.2.14" # Also update html_root_url in lib.rs when bumping this
 edition = "2018"
 authors = ["The Rand Project Developers"]
 license = "MIT OR Apache-2.0"
@@ -32,6 +32,9 @@ wasm-bindgen-test = "0.3.18"
 [features]
 # Implement std-only traits for getrandom::Error
 std = []
+# Disable `/dev/urandom` fallback for Linux and Android targets.
+# Bumps minimum supported Linux kernel version to 3.17 and Android API level to 23 (Marshmallow).
+linux_disable_fallback = []
 # Feature to enable fallback RDRAND-based implementation on x86/x86_64
 rdrand = []
 # Feature to enable JavaScript bindings on wasm*-unknown-unknown

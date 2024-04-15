@@ -151,3 +151,16 @@ pub unsafe fn open_readonly(path: &str) -> Result<libc::c_int, Error> {
         }
     }
 }
+
+/// Thin wrapper around the `getrandom()` Linux system call
+#[cfg(any(target_os = "android", target_os = "linux"))]
+pub fn getrandom_syscall(buf: &mut [MaybeUninit<u8>]) -> libc::ssize_t {
+    unsafe {
+        libc::syscall(
+            libc::SYS_getrandom,
+            buf.as_mut_ptr() as *mut libc::c_void,
+            buf.len(),
+            0,
+        ) as libc::ssize_t
+    }
+}

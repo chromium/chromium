@@ -1,7 +1,7 @@
-//! Implementation for Linux / Android
+//! Implementation for Linux / Android with `/dev/urandom` fallback
 use crate::{
     lazy::LazyBool,
-    util_libc::{last_os_error, sys_fill_exact},
+    util_libc::{getrandom_syscall, last_os_error, sys_fill_exact},
     {use_file, Error},
 };
 use core::mem::MaybeUninit;
@@ -10,31 +10,24 @@ pub fn getrandom_inner(dest: &mut [MaybeUninit<u8>]) -> Result<(), Error> {
     // getrandom(2) was introduced in Linux 3.17
     static HAS_GETRANDOM: LazyBool = LazyBool::new();
     if HAS_GETRANDOM.unsync_init(is_getrandom_available) {
-        sys_fill_exact(dest, |buf| unsafe {
-            getrandom(buf.as_mut_ptr() as *mut libc::c_void, buf.len(), 0)
-        })
+        sys_fill_exact(dest, getrandom_syscall)
     } else {
         use_file::getrandom_inner(dest)
     }
 }
 
 fn is_getrandom_available() -> bool {
-    let res = unsafe { getrandom(core::ptr::null_mut(), 0, libc::GRND_NONBLOCK) };
-    if res < 0 {
+    if getrandom_syscall(&mut []) < 0 {
         match last_os_error().raw_os_error() {
             Some(libc::ENOSYS) => false, // No kernel support
-            Some(libc::EPERM) => false,  // Blocked by seccomp
+            // The fallback on EPERM is intentionally not done on Android since this workaround
+            // seems to be needed only for specific Linux-based products that aren't based
+            // on Android. See https://github.com/rust-random/getrandom/issues/229.
+            #[cfg(target_os = "linux")]
+            Some(libc::EPERM) => false, // Blocked by seccomp
             _ => true,
         }
     } else {
         true
     }
-}
-
-unsafe fn getrandom(
-    buf: *mut libc::c_void,
-    buflen: libc::size_t,
-    flags: libc::c_uint,
-) -> libc::ssize_t {
-    libc::syscall(libc::SYS_getrandom, buf, buflen, flags) as libc::ssize_t
 }

@@ -1,8 +1,6 @@
-#![cfg_attr(docsrs, doc(cfg(feature = "std")))]
 extern crate std;
 
 use crate::Error;
-use core::convert::From;
 use std::io;
 
 impl From<Error> for io::Error {

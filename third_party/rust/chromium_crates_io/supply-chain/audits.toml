@@ -545,6 +545,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "0.2.11 -> 0.2.12"
 
+[[audits.getrandom]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.12 -> 0.2.14"
+
 [[audits.heck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
