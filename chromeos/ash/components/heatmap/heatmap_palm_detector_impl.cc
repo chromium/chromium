@@ -38,6 +38,14 @@ MetadataMap GetHeatmapModelMetadata() {
                .input_node = 0,
                .output_node = 23,
                .palm_threshold = 0.6,
+           }},
+          {HeatmapPalmDetectorImpl::ModelId::kGeralt,
+           {
+               .model_file =
+                   "mlservice-model-poncho-palm_rejection_g-20240313-v0.tflite",
+               .input_node = 0,
+               .output_node = 21,
+               .palm_threshold = 0.6,
            }}};
 }
 

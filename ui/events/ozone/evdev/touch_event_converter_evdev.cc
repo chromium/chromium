@@ -120,12 +120,20 @@ struct SupportedHidrawDevice {
 
 // Returns a list of supported hidraw spi devices.
 std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
-  return {{
-      .name = "spi 04F3:4222",
-      .vendor_id = 0x04F3,
-      .product_id = 0x4222,
-      .model_id = ui::HeatmapPalmDetector::ModelId::kRex,
-  }};
+  return {
+      {
+          .name = "spi 04F3:4222",
+          .vendor_id = 0x04F3,
+          .product_id = 0x4222,
+          .model_id = ui::HeatmapPalmDetector::ModelId::kRex,
+      },
+      {
+          .name = "hid-hxtp 4858:1002",
+          .vendor_id = 0x4858,
+          .product_id = 0x1002,
+          .model_id = ui::HeatmapPalmDetector::ModelId::kGeralt,
+      },
+  };
 }
 
 ui::HeatmapPalmDetector::ModelId GetHidrawModelId(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 // Datatypes and interfaces of models for the Machine Learning API.
 
@@ -50,6 +50,8 @@ enum BuiltinModelId {
   [MinVersion=3] ADAPTIVE_CHARGING_20230314= 9,
   // The Poncho Palm Rejection ML model v0.
   [MinVersion=4] PONCHO_PALM_REJECTION_20230907 = 10,
+  // Poncho Geralt first test model
+  [MinVersion=5] PONCHO_PALM_REJECTION_20240313 = 11,
 };
 
 // Graphics API to use with the GPU delegate.
