@@ -45,11 +45,13 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
   auto link0 = NodeLink::CreateInactive(
       broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
       Node::Type::kNormal, 0, non_broker->features(), transport0,
-      NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
+      NodeLinkMemory::Create(broker, LinkSide::kA, non_broker->features(),
+                             std::move(buffer.mapping)));
   auto link1 = NodeLink::CreateInactive(
       non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
       Node::Type::kNormal, 0, broker->features(), transport1,
-      NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
+      NodeLinkMemory::Create(non_broker, LinkSide::kB, broker->features(),
+                             buffer.memory.Map()));
   link0->Activate();
   link1->Activate();
   return {link0, link1};
@@ -106,11 +108,15 @@ TEST_F(NodeLinkTest, AvailableFeatures) {
 
   // The node0-node1 link supports mem_v2 because both nodes enabled it.
   EXPECT_TRUE(link01->available_features().mem_v2());
+  EXPECT_TRUE(link01->memory().available_features().mem_v2());
   EXPECT_TRUE(link10->available_features().mem_v2());
+  EXPECT_TRUE(link10->memory().available_features().mem_v2());
 
   // The node0-node2 link doesn't support mem_v2 because node2 didn't enable it.
   EXPECT_FALSE(link02->available_features().mem_v2());
+  EXPECT_FALSE(link02->memory().available_features().mem_v2());
   EXPECT_FALSE(link20->available_features().mem_v2());
+  EXPECT_FALSE(link20->memory().available_features().mem_v2());
 
   link01->Deactivate(context);
   link10->Deactivate(context);

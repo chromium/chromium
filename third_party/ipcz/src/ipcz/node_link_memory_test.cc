@@ -48,11 +48,13 @@ class NodeLinkMemoryTest : public testing::Test {
     links.first = NodeLink::CreateInactive(
         broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
         Node::Type::kNormal, 0, Features{}, transports.first,
-        NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
+        NodeLinkMemory::Create(broker, LinkSide::kA, Features{},
+                               std::move(buffer.mapping)));
     links.second = NodeLink::CreateInactive(
         non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
         Node::Type::kBroker, 0, Features{}, transports.second,
-        NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
+        NodeLinkMemory::Create(non_broker, LinkSide::kB, Features{},
+                               buffer.memory.Map()));
     broker->AddConnection(non_broker_name, {.link = links.first});
     non_broker->AddConnection(broker->GetAssignedName(),
                               {.link = links.second, .broker = links.first});

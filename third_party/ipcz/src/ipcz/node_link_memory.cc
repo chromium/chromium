@@ -13,6 +13,7 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/fragment_descriptor.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/link_side.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -151,8 +152,12 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
 };
 
 NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
+                               LinkSide side,
+                               const Features& remote_features,
                                DriverMemoryMapping primary_buffer_memory)
     : node_(std::move(node)),
+      link_side_(side),
+      available_features_(node_->features().Intersect(remote_features)),
       allow_memory_expansion_for_parcel_data_(
           (node_->options().memory_flags & IPCZ_MEMORY_FIXED_PARCEL_CAPACITY) ==
           0),
@@ -237,16 +242,32 @@ DriverMemoryWithMapping NodeLinkMemory::AllocateMemory(
 
 // static
 Ref<NodeLinkMemory> NodeLinkMemory::Create(Ref<Node> node,
+                                           LinkSide side,
+                                           const Features& remote_features,
                                            DriverMemoryMapping memory) {
-  return AdoptRef(new NodeLinkMemory(std::move(node), std::move(memory)));
+  return AdoptRef(new NodeLinkMemory(std::move(node), side, remote_features,
+                                     std::move(memory)));
 }
 
 BufferId NodeLinkMemory::AllocateNewBufferId() {
+  if (available_features_.mem_v2()) {
+    const uint64_t side_bit =
+        link_side_.is_side_b() ? 1ull << kLinkSideBIdBit : 0;
+    return BufferId{next_buffer_id_.fetch_add(1, std::memory_order_relaxed) |
+                    side_bit};
+  }
   return BufferId{primary_buffer_.header.next_buffer_id.fetch_add(
       1, std::memory_order_relaxed)};
 }
 
 SublinkId NodeLinkMemory::AllocateSublinkIds(size_t count) {
+  if (available_features_.mem_v2()) {
+    const uint64_t side_bit =
+        link_side_.is_side_b() ? 1ull << kLinkSideBIdBit : 0;
+    return SublinkId{
+        next_sublink_id_.fetch_add(count, std::memory_order_relaxed) |
+        side_bit};
+  }
   return SublinkId{primary_buffer_.header.next_sublink_id.fetch_add(
       count, std::memory_order_relaxed)};
 }

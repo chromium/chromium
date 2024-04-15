@@ -438,7 +438,9 @@ bool NodeLink::OnNonBrokerReferralAccepted(
   Ref<NodeLink> link_to_referree = NodeLink::CreateInactive(
       node_, LinkSide::kA, local_node_name_, accepted.v0()->name,
       Node::Type::kNormal, protocol_version, remote_features,
-      std::move(transport), NodeLinkMemory::Create(node_, std::move(mapping)));
+      std::move(transport),
+      NodeLinkMemory::Create(node_, LinkSide::kA, remote_features,
+                             std::move(mapping)));
   callback(link_to_referree, accepted.v0()->num_initial_portals);
   link_to_referree->Activate();
   return true;
@@ -495,7 +497,8 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
       *this, accept.v0()->name, accept.v0()->link_side,
       accept.v0()->remote_node_type, accept.v0()->remote_protocol_version,
       remote_features, std::move(transport),
-      NodeLinkMemory::Create(node(), std::move(mapping)));
+      NodeLinkMemory::Create(node(), accept.v0()->link_side, remote_features,
+                             std::move(mapping)));
   return true;
 }
 

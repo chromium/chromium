@@ -80,7 +80,7 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
         node_, LinkSide::kA, broker_name_, new_remote_node_name_,
         Node::Type::kNormal, connect.v0()->protocol_version, remote_features,
         transport_,
-        NodeLinkMemory::Create(node_,
+        NodeLinkMemory::Create(node_, LinkSide::kA, remote_features,
                                std::move(link_memory_allocation_.mapping)));
     AcceptConnection({.link = link}, connect.v0()->num_initial_portals);
     return true;
@@ -138,7 +138,8 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
         node_, LinkSide::kB, connect.v0()->receiver_name,
         connect.v0()->broker_name, Node::Type::kBroker,
         connect.v0()->protocol_version, remote_features, transport_,
-        NodeLinkMemory::Create(node_, std::move(mapping)));
+        NodeLinkMemory::Create(node_, LinkSide::kB, remote_features,
+                               std::move(mapping)));
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(new_link);
     }
@@ -268,7 +269,9 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
     auto broker_link = NodeLink::CreateActive(
         node_, LinkSide::kB, connect.v0()->name, connect.v0()->broker_name,
         Node::Type::kBroker, broker_protocol_version, broker_features,
-        transport_, NodeLinkMemory::Create(node_, std::move(broker_mapping)));
+        transport_,
+        NodeLinkMemory::Create(node_, LinkSide::kB, broker_features,
+                               std::move(broker_mapping)));
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(broker_link);
     }
@@ -283,7 +286,8 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         node_, LinkSide::kB, connect.v0()->name, connect.v0()->referrer_name,
         Node::Type::kNormal, referrer_protocol_version, referrer_features,
         std::move(referrer_transport),
-        NodeLinkMemory::Create(node_, std::move(referrer_mapping)));
+        NodeLinkMemory::Create(node_, LinkSide::kB, referrer_features,
+                               std::move(referrer_mapping)));
 
     AcceptConnection({.link = referrer_link, .broker = broker_link},
                      connect.v0()->num_initial_portals);
@@ -347,7 +351,8 @@ class NodeConnectorForBrokerReferral : public NodeConnector {
     Ref<NodeLink> link_to_referree = NodeLink::CreateActive(
         node_, LinkSide::kA, broker_name_, referred_node_name_,
         Node::Type::kNormal, protocol_version, remote_features, transport_,
-        NodeLinkMemory::Create(node_, std::move(link_memory_.mapping)));
+        NodeLinkMemory::Create(node_, LinkSide::kA, remote_features,
+                               std::move(link_memory_.mapping)));
     AcceptConnection({.link = link_to_referree}, /*num_remote_portals=*/0);
 
     // Now we can create a new link to introduce both clients -- the referrer
@@ -479,7 +484,8 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
     Ref<NodeLink> link = NodeLink::CreateActive(
         node_, this_side, local_name_, remote_name, Node::Type::kBroker,
         connect.v0()->protocol_version, remote_features, transport_,
-        NodeLinkMemory::Create(node_, std::move(primary_buffer_mapping)));
+        NodeLinkMemory::Create(node_, this_side, remote_features,
+                               std::move(primary_buffer_mapping)));
     AcceptConnection({.link = link, .broker = link},
                      connect.v0()->num_initial_portals);
     return true;
