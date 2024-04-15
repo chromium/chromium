@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Fingerprint.AuthSignal"
-    enum="CryptohomeFingerprintScanResult" expires_after="2024-05-18">
+    enum="CryptohomeFingerprintScanResult" expires_after="2025-05-18">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Fingerprint.EnrollSignal"
-    enum="CryptohomeFingerprintScanResult" expires_after="2024-05-18">
+    enum="CryptohomeFingerprintScanResult" expires_after="2025-05-18">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
