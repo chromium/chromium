@@ -31,8 +31,6 @@ source_set("web_applications") {
     "commands/generated_icon_fix_command.h",
     "commands/install_app_locally_command.cc",
     "commands/install_app_locally_command.h",
-    "commands/install_from_info_and_replace_command.cc",
-    "commands/install_from_info_and_replace_command.h",
     "commands/install_from_info_command.cc",
     "commands/install_from_info_command.h",
     "commands/install_from_sync_command.cc",

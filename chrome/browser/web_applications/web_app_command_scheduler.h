@@ -131,17 +131,6 @@ class WebAppCommandScheduler {
       const WebAppInstallParams& install_params,
       const base::Location& location = FROM_HERE);
 
-  void InstallFromInfoWithParams(
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      bool overwrite_existing_manifest_fields,
-      webapps::WebappInstallSource install_surface,
-      base::OnceCallback<void(const webapps::AppId& app_id,
-                              webapps::InstallResultCode code,
-                              bool did_uninstall_and_replace)> install_callback,
-      const WebAppInstallParams& install_params,
-      const std::vector<webapps::AppId>& apps_to_uninstall,
-      const base::Location& location = FROM_HERE);
-
   // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,

@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
-#include "chrome/browser/web_applications/commands/install_from_info_and_replace_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
@@ -152,24 +151,6 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
           &profile_.get(), std::move(install_info),
           overwrite_existing_manifest_fields, install_surface,
           std::move(install_callback), install_params),
-      location);
-}
-
-void WebAppCommandScheduler::InstallFromInfoWithParams(
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    bool overwrite_existing_manifest_fields,
-    webapps::WebappInstallSource install_surface,
-    base::OnceCallback<void(const webapps::AppId& app_id,
-                            webapps::InstallResultCode code,
-                            bool did_uninstall_and_replace)> install_callback,
-    const WebAppInstallParams& install_params,
-    const std::vector<webapps::AppId>& apps_to_uninstall,
-    const base::Location& location) {
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromInfoAndReplaceCommand>(
-          &profile_.get(), std::move(install_info),
-          overwrite_existing_manifest_fields, std::move(install_surface),
-          std::move(install_callback), install_params, apps_to_uninstall),
       location);
 }
 
