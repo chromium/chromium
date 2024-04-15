@@ -29,8 +29,7 @@ const char* g_preinstalled_app_for_testing = nullptr;
 // TODO(b/268221237): Remove this allow-list.
 const char kDefaultAllowedExtensionIds[] =
     "alhngdkjgnedakdlnamimgfihgkmenbh,"
-    "gnddkmpjjjcimefninepfmmddpgaaado,"
-    "jdfhpkjeckflbbleddjlpimecpbjdeep";
+    "gnddkmpjjjcimefninepfmmddpgaaado";
 
 BASE_FEATURE(kChromeAppsDeprecationExcludeForceInstalls,
              "ChromeAppsDeprecationExcludeForceInstalls",
