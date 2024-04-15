@@ -15,12 +15,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_client.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -296,7 +299,38 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.swap_contents_and_description;
     mojom_match->type = AutocompleteMatchType::ToString(match.type);
     mojom_match->supports_deletion = match.SupportsDeletion();
-    if (match.answer.has_value()) {
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+        match.answer_template.has_value()) {
+      const omnibox::AnswerData& answer_data =
+          match.answer_template->answers(0);
+      const omnibox::FormattedString& headline = answer_data.headline();
+      const std::string& headline_text = headline.text();
+      // Grab the substring of headline starting after the first fragment text
+      // ends. Not making use of the first fragment because it contains the same
+      // data as `match.contents` but with HTML tags.
+      const std::u16string headline_substr =
+          base::UTF8ToUTF16(headline_text.substr(
+              headline.fragments(0).text().size(),
+              headline_text.size() - headline.fragments(0).text().size()));
+
+      const auto& subhead_text =
+          base::UTF8ToUTF16(answer_data.subhead().text());
+      // Reusing SuggestionAnswer because `headline` and `subhead` are
+      // equivalent to `first_line` and `second_line`.
+      mojom_match->answer = searchbox::mojom::SuggestionAnswer::New(
+          headline_substr.empty()
+              ? match.contents
+              : base::JoinString({match.contents, headline_substr}, u" "),
+          subhead_text);
+      mojom_match->image_url = answer_data.image().url();
+      if (base::FeatureList::IsEnabled(
+              ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+        mojom_match->is_weather_answer_suggestion =
+            match.answer_template->answer_type() ==
+            omnibox::RichAnswerTemplate::WEATHER;
+      }
+    } else if (match.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
       mojom_match->answer = searchbox::mojom::SuggestionAnswer::New(
@@ -315,7 +349,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     mojom_match->is_rich_suggestion =
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
-        (match.answer.has_value());
+        (match.answer_template.has_value()) || (match.answer.has_value());
     if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       for (const auto& action : match.actions) {
         const OmniboxAction::LabelStrings& label_strings =
