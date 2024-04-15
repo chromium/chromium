@@ -789,6 +789,8 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
                             pw_form.password_element_renderer_id.value());
     SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.fields.size",
                             form_structure.fields().size());
+    SCOPED_CRASH_KEY_NUMBER("crbug1523259", "fs.form_signature",
+                            form_structure.form_signature().value());
     SCOPED_CRASH_KEY_STRING1024("crbug1523259", "fs.fields.global_ids", [&] {
       std::ostringstream ss;
       for (size_t i = 0;

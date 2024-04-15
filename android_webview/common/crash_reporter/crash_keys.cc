@@ -56,6 +56,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "crbug1523259-pw_form.password_id",
     "crbug1523259-fs.fields.size",
     "crbug1523259-fs.fields.global_ids",
+    "crbug1523259-fs.fields.global_ids",
 
     // components/viz
     "viz_deserialization",
