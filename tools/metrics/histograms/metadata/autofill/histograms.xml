@@ -1756,6 +1756,23 @@ chromium-metrics-reviews@google.com.
   <token key="Category" variants="AutofillProfileCategory"/>
 </histogram>
 
+<histogram
+    name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
+    units="Rank" expires_after="2024-09-01">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every profile, records the minimum number of fields in which the profile
+    differs from some other profile of the same country. That is, the minimum
+    number of fields that prevent us from deduplicating the profile. Emitted on
+    browser startup, for every user with at least 2 profiles. Profiles of
+    different countries are not considered, since they can never be merged due
+    to the data model differences. If no possible merge candidate exists, a
+    sample is emitted into the overflow bucket.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.DeveloperEngagement"
     enum="AutofillDeveloperEngagement" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

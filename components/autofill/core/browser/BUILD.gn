@@ -1166,6 +1166,7 @@ source_set("unit_tests") {
     "metrics/payments/virtual_card_standalone_cvc_suggestion_metrics_unittest.cc",
     "metrics/payments/wallet_usage_data_metrics_unittest.cc",
     "metrics/placeholder_metrics_unittest.cc",
+    "metrics/profile_deduplication_metrics_unittest.cc",
     "metrics/profile_import_metrics_unittest.cc",
     "metrics/profile_token_quality_metrics_unittest.cc",
     "metrics/quality_metrics_unittest.cc",
