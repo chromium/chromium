@@ -246,8 +246,8 @@ int64_t CompiledChromeRootStoreVersion() {
   return kRootStoreVersion;
 }
 
-bssl::ParsedCertificateList CompiledChromeRootStoreAnchors() {
-  bssl::ParsedCertificateList parsed_cert_list;
+std::vector<ChromeRootStoreData::Anchor> CompiledChromeRootStoreAnchors() {
+  std::vector<ChromeRootStoreData::Anchor> anchors;
   for (const auto& cert_info : kChromeRootCertList) {
     bssl::UniquePtr<CRYPTO_BUFFER> cert =
         x509_util::CreateCryptoBufferFromStaticDataUnsafe(
@@ -256,10 +256,15 @@ bssl::ParsedCertificateList CompiledChromeRootStoreAnchors() {
     auto parsed = bssl::ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     DCHECK(parsed);
-    parsed_cert_list.push_back(std::move(parsed));
+
+    std::vector<ChromeRootCertConstraints> cert_constraints;
+    for (const auto& constraint : cert_info.constraints) {
+      cert_constraints.emplace_back(constraint);
+    }
+    anchors.emplace_back(std::move(parsed), std::move(cert_constraints));
   }
 
-  return parsed_cert_list;
+  return anchors;
 }
 
 }  // namespace net

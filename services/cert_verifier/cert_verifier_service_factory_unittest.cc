@@ -48,6 +48,7 @@
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "base/version_info/version_info.h"  // nogncheck
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
@@ -522,9 +523,129 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
             base::HexEncode(root_hash.data));
 }
 
+std::string CurVersionString() {
+  return version_info::GetVersion().GetString();
+}
+std::string NextVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  return base::Version(
+             {components[0], components[1], components[2], components[3] + 1})
+      .GetString();
+}
+std::string PrevVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  if (components[3] > 0) {
+    return base::Version(
+               {components[0], components[1], components[2], components[3] - 1})
+        .GetString();
+  } else {
+    return base::Version(
+               {components[0], components[1], components[2] - 1, UINT32_MAX})
+        .GetString();
+  }
+}
+
+TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithVersionConstraintUnmet) {
+  // Create leaf and root certs.
+  base::test::TaskEnvironment task_environment;
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+
+  base::Time now = base::Time::Now();
+  leaf->SetValidity(now - base::Days(1), now + base::Days(1));
+
+  // Create updated Chrome Root Store with just the root cert from above.
+  chrome_root_store::RootStore root_store_proto;
+  root_store_proto.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
+  chrome_root_store::TrustAnchor* anchor = root_store_proto.add_trust_anchors();
+  anchor->set_der(root->GetDER());
+  chrome_root_store::ConstraintSet* constraint = anchor->add_constraints();
+
+  // root should not be trusted
+  constraint->set_max_version_exclusive(PrevVersionString());
+
+  std::string proto_serialized;
+  root_store_proto.SerializeToString(&proto_serialized);
+  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
+      cert_verifier::mojom::ChromeRootStore::New(
+          base::as_bytes(base::make_span(proto_serialized)));
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  // Feed factory the new Chrome Root Store.
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+  base::RunLoop request_completed_run_loop;
+  cv_service_factory_remote->GetChromeRootStoreInfo(base::BindOnce(
+      &GetRootStoreInfo, &info_ptr, request_completed_run_loop.QuitClosure()));
+  request_completed_run_loop.Run();
+  ASSERT_TRUE(info_ptr);
+  EXPECT_EQ(info_ptr->version, root_store_proto.version_major());
+  ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(0));
+}
+
+TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithVersionConstraintMet) {
+  // Create leaf and root certs.
+  base::test::TaskEnvironment task_environment;
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+
+  base::Time now = base::Time::Now();
+  leaf->SetValidity(now - base::Days(1), now + base::Days(1));
+
+  // Create updated Chrome Root Store with just the root cert from above.
+  chrome_root_store::RootStore root_store_proto;
+  root_store_proto.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
+  chrome_root_store::TrustAnchor* anchor = root_store_proto.add_trust_anchors();
+  anchor->set_der(root->GetDER());
+  // Root should not be trusted because of this constraint ...
+  chrome_root_store::ConstraintSet* constraint = anchor->add_constraints();
+  constraint->set_max_version_exclusive(PrevVersionString());
+  // .. but should be trusted because of this.
+  constraint = anchor->add_constraints();
+  constraint->set_min_version(PrevVersionString());
+  constraint->set_max_version_exclusive(NextVersionString());
+
+  std::string proto_serialized;
+  root_store_proto.SerializeToString(&proto_serialized);
+  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
+      cert_verifier::mojom::ChromeRootStore::New(
+          base::as_bytes(base::make_span(proto_serialized)));
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  // Feed factory the new Chrome Root Store.
+  {
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        std::move(root_store_ptr), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+  base::RunLoop request_completed_run_loop;
+  cv_service_factory_remote->GetChromeRootStoreInfo(base::BindOnce(
+      &GetRootStoreInfo, &info_ptr, request_completed_run_loop.QuitClosure()));
+  request_completed_run_loop.Run();
+  ASSERT_TRUE(info_ptr);
+  EXPECT_EQ(info_ptr->version, root_store_proto.version_major());
+  ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(1));
+}
+
 TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   base::test::TaskEnvironment task_environment;
-  bssl::ParsedCertificateList anchors = net::CompiledChromeRootStoreAnchors();
+  std::vector<net::ChromeRootStoreData::Anchor> anchors =
+      net::CompiledChromeRootStoreAnchors();
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
@@ -537,7 +658,11 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
 
   ASSERT_TRUE(info_ptr);
   EXPECT_EQ(info_ptr->version, net::CompiledChromeRootStoreVersion());
-  EXPECT_EQ(info_ptr->root_cert_info.size(), anchors.size());
+  // In cases where the compiled Chrome Root Store has roots with version
+  // constraints, there might be less trusted roots depending on what version #
+  // the test is running at.
+  EXPECT_LE(info_ptr->root_cert_info.size(), anchors.size());
+  EXPECT_GT(info_ptr->root_cert_info.size(), static_cast<std::size_t>(0));
 }
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

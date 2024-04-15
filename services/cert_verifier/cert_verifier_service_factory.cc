@@ -40,6 +40,7 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include <optional>
 
+#include "base/version_info/version_info.h"  // nogncheck
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
@@ -115,6 +116,37 @@ std::string GetHash(const bssl::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
   return base::HexEncode(hash.data);
+}
+
+bool IsVersionConstraintSatisified(
+    const net::ChromeRootCertConstraints constraint) {
+  if (constraint.min_version.has_value() &&
+      version_info::GetVersion() < constraint.min_version.value()) {
+    return false;
+  }
+
+  if (constraint.max_version_exclusive.has_value() &&
+      version_info::GetVersion() >= constraint.max_version_exclusive.value()) {
+    return false;
+  }
+
+  return true;
+}
+
+// we only check any version constraints, as we don't have a certificate here to
+// check any SCT constraints.
+bool IsAnchorTrustedOnThisChromeVersion(
+    const net::ChromeRootStoreData::Anchor& anchor) {
+  if (anchor.constraints.empty()) {
+    return true;
+  }
+
+  for (const auto& constraint : anchor.constraints) {
+    if (IsVersionConstraintSatisified(constraint)) {
+      return true;
+    }
+  }
+  return false;
 }
 #endif
 
@@ -318,13 +350,20 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
   if (proc_params_.root_store_data) {
     info_ptr->version = proc_params_.root_store_data->version();
     for (const auto& anchor : proc_params_.root_store_data->anchors()) {
+      if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
+        continue;
+      }
       const bssl::ParsedCertificate* cert = anchor.certificate.get();
       info_ptr->root_cert_info.push_back(
           mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }
   } else {
     info_ptr->version = net::CompiledChromeRootStoreVersion();
-    for (const auto& cert : net::CompiledChromeRootStoreAnchors()) {
+    for (const auto& anchor : net::CompiledChromeRootStoreAnchors()) {
+      if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
+        continue;
+      }
+      const bssl::ParsedCertificate* cert = anchor.certificate.get();
       info_ptr->root_cert_info.push_back(
           mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }

@@ -71,6 +71,8 @@ class CertVerifierServiceFactoryImpl
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
+  // Will not return anchors that are not trusted for the current running
+  // version of Chrome.
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)

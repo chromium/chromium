@@ -61,7 +61,7 @@ struct NET_EXPORT ChromeRootCertConstraints {
 // Store data in a single class.
 class NET_EXPORT ChromeRootStoreData {
  public:
-  struct Anchor {
+  struct NET_EXPORT Anchor {
     Anchor(std::shared_ptr<const bssl::ParsedCertificate> certificate,
            std::vector<ChromeRootCertConstraints> constraints);
     ~Anchor();
@@ -153,7 +153,8 @@ NET_EXPORT int64_t CompiledChromeRootStoreVersion();
 
 // Returns the anchors of the Chrome Root Store that were compiled into the
 // binary.
-NET_EXPORT bssl::ParsedCertificateList CompiledChromeRootStoreAnchors();
+NET_EXPORT std::vector<ChromeRootStoreData::Anchor>
+CompiledChromeRootStoreAnchors();
 
 }  // namespace net
 
