@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -271,17 +272,18 @@ class CopyOutputScalingPixelTest
     // through.
     const int y_width = result_width;
     const int y_stride = y_width + 7;
-    std::unique_ptr<uint8_t[]> y_data(new uint8_t[y_stride * result_height]);
+    auto y_data = base::HeapArray<uint8_t>::Uninit(y_stride * result_height);
     const int chroma_width = (result_width + 1) / 2;
     const int u_stride = chroma_width + 11;
     const int v_stride = chroma_width + 17;
     const int chroma_height = (result_height + 1) / 2;
-    std::unique_ptr<uint8_t[]> u_data(new uint8_t[u_stride * chroma_height]);
-    std::unique_ptr<uint8_t[]> v_data(new uint8_t[v_stride * chroma_height]);
+    auto u_data = base::HeapArray<uint8_t>::Uninit(u_stride * chroma_height);
+    auto v_data = base::HeapArray<uint8_t>::Uninit(v_stride * chroma_height);
 
     // Do the read.
-    const bool success = result.ReadI420Planes(
-        y_data.get(), y_stride, u_data.get(), u_stride, v_data.get(), v_stride);
+    const bool success =
+        result.ReadI420Planes(y_data.data(), y_stride, u_data.data(), u_stride,
+                              v_data.data(), v_stride);
     CHECK(success);
 
     // Convert to an SkBitmap.
@@ -290,8 +292,8 @@ class CopyOutputScalingPixelTest
                                          kBGRA_8888_SkColorType,
                                          kPremul_SkAlphaType));
     const int error_code = libyuv::I420ToARGB(
-        y_data.get(), y_stride, u_data.get(), u_stride, v_data.get(), v_stride,
-        static_cast<uint8_t*>(bitmap.getPixels()), bitmap.rowBytes(),
+        y_data.data(), y_stride, u_data.data(), u_stride, v_data.data(),
+        v_stride, static_cast<uint8_t*>(bitmap.getPixels()), bitmap.rowBytes(),
         result_width, result_height);
     CHECK_EQ(0, error_code);
 
