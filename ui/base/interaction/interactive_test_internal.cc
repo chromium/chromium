@@ -5,6 +5,7 @@
 #include "ui/base/interaction/interactive_test_internal.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/check.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -177,7 +177,7 @@ void InteractiveTestPrivate::OnSequenceAborted(
 
 void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
                     ElementSpecifier element) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&builder](ElementIdentifier id) { builder.SetElementID(id); },
           [&builder](base::StringPiece name) { builder.SetElementName(name); }},
@@ -185,7 +185,7 @@ void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
 }
 
 std::string DescribeElement(ElementSpecifier element) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](ElementIdentifier id) { return id.GetName(); },
                        [](base::StringPiece name) {
                          return base::StringPrintf("\"%s\"", name.data());

@@ -10,6 +10,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -20,7 +21,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -259,7 +259,7 @@ class InteractiveTestApi {
       ElementSpecifier element_to_check);
 
   // Specifies an element not relative to any particular other element.
-  using AbsoluteElementSpecifier = absl::variant<
+  using AbsoluteElementSpecifier = std::variant<
       // Specify an element that is known at the time the sequence is created.
       // The element must persist until the step executes.
       TrackedElement*,

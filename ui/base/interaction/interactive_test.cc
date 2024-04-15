@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
@@ -375,7 +376,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
 InteractiveTestApi::FindElementCallback
 InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
   using ContextCallback = base::OnceCallback<TrackedElement*(ElementContext)>;
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](TrackedElement* el) {
             CHECK(el) << "NameView(TrackedElement*): view must be set.";

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -31,7 +32,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -767,10 +767,10 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element,
   //
   // WebContents are typically only referred to via their assigned IDs.
   // TODO(dfried): possibly handle (rare) cases where a name has been assigned.
-  if (!absl::holds_alternative<ui::ElementIdentifier>(element)) {
+  if (!std::holds_alternative<ui::ElementIdentifier>(element)) {
     return MultiStep();
   }
-  const auto element_id = absl::get<ui::ElementIdentifier>(element);
+  const auto element_id = std::get<ui::ElementIdentifier>(element);
 
   // Do a `WaitForWebContentsPainted()`, but only if the ID has been assigned to
   // an instrumented `WebContents`.
@@ -786,7 +786,7 @@ InteractiveBrowserTestApi::MaybeWaitForPaint(ElementSpecifier element,
 Browser* InteractiveBrowserTestApi::GetBrowserFor(
     ui::ElementContext current_context,
     BrowserSpecifier spec) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](AnyBrowser) -> Browser* { return nullptr; },
                        [current_context](CurrentBrowser) {
                          Browser* const browser =

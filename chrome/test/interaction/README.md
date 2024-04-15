@@ -729,9 +729,9 @@ RunTestSequence(
 );
 ```
 
-For `PollElement()` and `PollView()`, the state value is an `absl::optional` and
+For `PollElement()` and `PollView()`, the state value is an `std::optional` and
 if the element or view is not present in the target context the value will be
-`absl::nullopt`.
+`std::nullopt`.
 
 Be aware that for transient or short-lived states, the correct value might be
 missed between polls, so polling should only be used for states that should

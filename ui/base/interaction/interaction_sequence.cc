@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -21,7 +22,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -191,7 +191,7 @@ InteractionSequence::Builder& InteractionSequence::Builder::AddStep(
       << " kShown steps with transition_only_on_event are not compatible with"
          " named elements since a named element ceases to be valid when it"
          " becomes hidden.";
-  if (auto* context = absl::get_if<ElementContext>(&step->context)) {
+  if (auto* context = std::get_if<ElementContext>(&step->context)) {
     DCHECK(*context) << "Explicit context must be valid.";
     if (!configuration_->context)
       configuration_->context = *context;
@@ -274,7 +274,7 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
     StepContext context) {
   DCHECK(context != StepContext(ElementContext()));
   step_->context = context;
-  if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
+  if (const ContextMode* mode = std::get_if<ContextMode>(&context)) {
     step_->in_any_context = *mode == ContextMode::kAny;
   } else {
     step_->in_any_context = false;
@@ -718,10 +718,10 @@ void InteractionSequence::OnElementHiddenWaitingForEvent(
   // Figure out which contexts to look in based on the pending step.
   ElementContext ctx;
   if (const ElementContext* ctx_ptr =
-          absl::get_if<ElementContext>(&next_step()->context)) {
+          std::get_if<ElementContext>(&next_step()->context)) {
     ctx = *ctx_ptr;
   } else {
-    switch (absl::get<ContextMode>(next_step()->context)) {
+    switch (std::get<ContextMode>(next_step()->context)) {
       case ContextMode::kInitial:
         ctx = context();
         break;
@@ -970,7 +970,7 @@ void InteractionSequence::StageNextStep() {
   // those cases should be true (any other ContextMode would have been
   // overwritten).
   ElementContext context;
-  if (auto* context_ptr = absl::get_if<ElementContext>(&next->context)) {
+  if (auto* context_ptr = std::get_if<ElementContext>(&next->context)) {
     context = *context_ptr;
   } else {
     DCHECK(StepContext(ContextMode::kAny) == next->context);
@@ -1194,9 +1194,10 @@ ElementContext InteractionSequence::UpdateNextStepContext(
   // A different mechanism is used to determine the context for named elements.
   CHECK(!next.uses_named_element());
   // If the context is already set, nothing needs to be done.
-  if (auto* context = absl::get_if<ElementContext>(&next.context))
+  if (auto* context = std::get_if<ElementContext>(&next.context)) {
     return *context;
-  switch (absl::get<ContextMode>(next.context)) {
+  }
+  switch (std::get<ContextMode>(next.context)) {
     case ContextMode::kAny:
       // Any is a valid context already.
       return ElementContext();
@@ -1207,7 +1208,7 @@ ElementContext InteractionSequence::UpdateNextStepContext(
       ElementContext current_context = context();
       if (current_step) {
         const ElementContext* const temp =
-            absl::get_if<ElementContext>(&current_step->context);
+            std::get_if<ElementContext>(&current_step->context);
         DCHECK(temp)
             << "Previous step should always have a context set at this point.";
         if (temp)

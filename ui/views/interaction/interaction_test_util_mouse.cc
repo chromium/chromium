@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -408,7 +409,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
 
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     if (MouseButtonGesture* const button =
-            absl::get_if<MouseButtonGesture>(&gesture)) {
+            std::get_if<MouseButtonGesture>(&gesture)) {
       switch (button->second) {
         case ui_controls::UP: {
           CHECK(buttons_down_.erase(button->first));
@@ -475,7 +476,7 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
           break;
       }
     } else {
-      const auto& move = absl::get<MouseMoveGesture>(gesture);
+      const auto& move = std::get<MouseMoveGesture>(gesture);
 #if defined(USE_AURA)
       if (!buttons_down_.empty()) {
         CHECK(base::Contains(buttons_down_, ui_controls::LEFT));

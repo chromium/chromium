@@ -10,6 +10,7 @@
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -21,7 +22,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -99,7 +99,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   using ViewMatcher = base::RepeatingCallback<bool(const View*)>;
 
   // Specifies a View not relative to any particular other View.
-  using AbsoluteViewSpecifier = absl::variant<
+  using AbsoluteViewSpecifier = std::variant<
       // Specify a view that is known at the time the sequence is created. The
       // View must persist until the step executes.
       View*,
@@ -111,7 +111,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       base::OnceCallback<View*()>>;
 
   // Specifies a view relative to its parent.
-  using ChildViewSpecifier = absl::variant<
+  using ChildViewSpecifier = std::variant<
       // The index of the child in the parent view. An out of bounds index will
       // generate an error.
       size_t,
@@ -300,7 +300,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
 
   // Specifies an absolute position for a mouse move or drag that does not need
   // a reference element.
-  using AbsolutePositionSpecifier = absl::variant<
+  using AbsolutePositionSpecifier = std::variant<
       // Use this specific position. This value is stored when the sequence is
       // created; use gfx::Point* if you want to capture a point during sequence
       // execution.
@@ -320,7 +320,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
 
   // Specifies how the target position of a mouse operation (in screen
   // coordinates) will be determined.
-  using RelativePositionSpecifier = absl::variant<
+  using RelativePositionSpecifier = std::variant<
       // Default to the centerpoint of the reference element, which should be a
       // views::View.
       CenterPoint,

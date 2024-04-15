@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -180,7 +180,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   static SubsequenceCondition AlwaysRun();
 
   // A step context is either an explicit context or a ContextMode.
-  using StepContext = absl::variant<ElementContext, ContextMode>;
+  using StepContext = std::variant<ElementContext, ContextMode>;
 
   // Callback when a step in the sequence starts. If |element| is no longer
   // available, it will be null.

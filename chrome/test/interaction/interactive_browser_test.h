@@ -11,6 +11,7 @@
 #include <optional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -25,7 +26,6 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -100,7 +100,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   struct AnyBrowser {};
 
   // Specifies which browser to use when instrumenting a tab.
-  using BrowserSpecifier = absl::variant<
+  using BrowserSpecifier = std::variant<
       // Use the browser associated with the context of the current test step;
       // if unspecified use the default context for the sequence.
       CurrentBrowser,

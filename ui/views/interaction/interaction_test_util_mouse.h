@@ -9,12 +9,12 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
@@ -46,7 +46,7 @@ class InteractionTestUtilMouse {
   using MouseButtonGesture =
       std::pair<ui_controls::MouseButton, ui_controls::MouseButtonState>;
   using MouseMoveGesture = gfx::Point;
-  using MouseGesture = absl::variant<MouseMoveGesture, MouseButtonGesture>;
+  using MouseGesture = std::variant<MouseMoveGesture, MouseButtonGesture>;
   using MouseGestures = std::list<MouseGesture>;
 
   // These factory methods create individual or compound gestures. They can be

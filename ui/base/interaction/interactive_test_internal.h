@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 #include <type_traits>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
@@ -25,7 +26,6 @@
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -194,7 +194,7 @@ class InteractiveTestPrivate {
 };
 
 // Specifies an element either by ID or by name.
-using ElementSpecifier = absl::variant<ElementIdentifier, base::StringPiece>;
+using ElementSpecifier = std::variant<ElementIdentifier, base::StringPiece>;
 
 class StateObserverElement : public TestElementBase {
  public:
