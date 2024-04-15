@@ -119,15 +119,18 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   const bool type_is_desk_button =
       bar_view->type() == DeskBarViewBase::Type::kDeskButton;
 
-  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
-    return;
-  }
-
   auto* view = type_is_desk_button ? bar_view->background_view() : bar_view;
   view->SetPaintToLayer();
 
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
+
+  if (features::IsForestFeatureEnabled() && !type_is_desk_button) {
+    // Forests feature needs a transparent desks bar background. Still needs the
+    // view layer to perform animations.
+    return;
+  }
+
   if (features::IsBackgroundBlurEnabled()) {
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
