@@ -563,6 +563,12 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (ui::IsLink(GetRole()))
     return false;
 
+  // For Android only, tab-panels are never leaves. We do this to temporarily
+  // get around the gap for aria-labelledby in the Android API. See b/241526393.
+  if (GetRole() == ax::mojom::Role::kTabPanel) {
+    return false;
+  }
+
   BrowserAccessibilityManagerAndroid* manager_android =
       static_cast<BrowserAccessibilityManagerAndroid*>(manager());
   if (manager_android->prune_tree_for_screen_reader()) {
