@@ -67,6 +67,7 @@ UIColor* GetCheckedBackgroundColor() {
   return [[UIColor colorNamed:kBlueColor]
       colorWithAlphaComponent:kCheckedBackgroundColorAlpha];
 }
+
 // Color for the tint of the radio button of the selected element.
 UIColor* GetCheckedTintColor() {
   return [UIColor colorNamed:kBlueColor];
@@ -318,9 +319,19 @@ UIColor* GetCheckedTintColor() {
 
 #pragma mark - UIView
 
-- (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [super touchesEnded:touches withEvent:event];
+- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  [super touchesBegan:touches withEvent:event];
   self.backgroundColor = GetCheckedBackgroundColor();
+}
+
+- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+  [super touchesCancelled:touches withEvent:event];
+  if (!_checked) {
+    // This case can happen if the user taps on the selected search engine,
+    // and cancels the tap by moving the finger away. The button background
+    // color needs to be selected.
+    self.backgroundColor = nil;
+  }
 }
 
 - (void)layoutSubviews {
