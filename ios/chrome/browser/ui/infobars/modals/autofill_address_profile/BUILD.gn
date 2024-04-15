@@ -16,6 +16,7 @@ source_set("modals") {
   deps = [
     "//base",
     "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model:public",

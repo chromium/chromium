@@ -77,6 +77,20 @@ using autofill_address_profile_infobar_overlays::
 #pragma mark - SaveAddressProfileInfobarModalOverlayMediatorDelegate
 
 - (void)showEditView {
+  if (base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    if (!self.config) {
+      return;
+    }
+
+    web::WebState* webState =
+        self.browser->GetWebStateList()->GetActiveWebState();
+    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+        AutofillBottomSheetTabHelper::FromWebState(webState);
+    bottomSheetTabHelper->ShowEditAddressBottomSheet(self.config->GetProfile());
+    return;
+  }
+
   [self.baseViewController
       dismissViewControllerAnimated:YES
                          completion:^{
@@ -92,53 +106,43 @@ using autofill_address_profile_infobar_overlays::
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(webState);
-    bottomSheetTabHelper->ShowEditAddressBottomSheet(self.config->GetProfile());
-  } else {
-    SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
-        static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
-            self.modalMediator);
-    _autofillProfile = std::make_unique<autofill::AutofillProfile>(
-        *(self.config->GetProfile()));
-    autofill::PersonalDataManager* personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-    self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
-           initWithDelegate:self
-        personalDataManager:personalDataManager
-            autofillProfile:_autofillProfile.get()
-                countryCode:nil
-          isMigrationPrompt:self.config->is_migration_to_account()];
+  SaveAddressProfileInfobarModalOverlayMediator* modalMediator =
+      static_cast<SaveAddressProfileInfobarModalOverlayMediator*>(
+          self.modalMediator);
+  _autofillProfile =
+      std::make_unique<autofill::AutofillProfile>(*(self.config->GetProfile()));
+  autofill::PersonalDataManager* personalDataManager =
+      autofill::PersonalDataManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+  self.sharedEditViewMediator = [[AutofillProfileEditMediator alloc]
+         initWithDelegate:self
+      personalDataManager:personalDataManager
+          autofillProfile:_autofillProfile.get()
+              countryCode:nil
+        isMigrationPrompt:self.config->is_migration_to_account()];
 
-    LegacyInfobarEditAddressProfileTableViewController*
-        editModalViewController =
-            [[LegacyInfobarEditAddressProfileTableViewController alloc]
-                initWithModalDelegate:modalMediator];
-    self.sharedEditViewController =
-        [[AutofillProfileEditTableViewController alloc]
-            initWithDelegate:self.sharedEditViewMediator
-                   userEmail:(self.config->user_email()
-                                  ? base::SysUTF16ToNSString(
-                                        self.config->user_email().value())
-                                  : nil)controller:editModalViewController
-                settingsView:NO];
-    self.sharedEditViewMediator.consumer = self.sharedEditViewController;
-    editModalViewController.handler = self.sharedEditViewController;
+  LegacyInfobarEditAddressProfileTableViewController* editModalViewController =
+      [[LegacyInfobarEditAddressProfileTableViewController alloc]
+          initWithModalDelegate:modalMediator];
+  self.sharedEditViewController =
+      [[AutofillProfileEditTableViewController alloc]
+          initWithDelegate:self.sharedEditViewMediator
+                 userEmail:(self.config->user_email()
+                                ? base::SysUTF16ToNSString(
+                                      self.config->user_email().value())
+                                : nil)controller:editModalViewController
+              settingsView:NO];
+  self.sharedEditViewMediator.consumer = self.sharedEditViewController;
+  editModalViewController.handler = self.sharedEditViewController;
 
-    modalMediator.editAddressConsumer = editModalViewController;
-    self.modalMediator = modalMediator;
-    self.modalViewController = editModalViewController;
+  modalMediator.editAddressConsumer = editModalViewController;
+  self.modalMediator = modalMediator;
+  self.modalViewController = editModalViewController;
 
-    [self configureViewController];
-    [self.baseViewController presentViewController:self.viewController
-                                          animated:YES
-                                        completion:nil];
-  }
+  [self configureViewController];
+  [self.baseViewController presentViewController:self.viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate

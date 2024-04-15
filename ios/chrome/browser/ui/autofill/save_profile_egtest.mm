@@ -113,7 +113,8 @@ BOOL WaitForKeyboardToAppear() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)]) {
+  if ([self isRunningTest:@selector
+            (DISABLED_testUserData_LocalEditViaBottomSheet)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -374,7 +375,10 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the user can edit a field in the edit via in the save address
 // flow.
-- (void)testUserData_LocalEditViaBottomSheet {
+// TODO(crbug.com/1482269): Re-enable the test when the save functionality is
+// implemented. Currently, the test appears flaky beacuse after a certain number
+// of tries, the save prompt is not presented if no action is taken on it.
+- (void)DISABLED_testUserData_LocalEditViaBottomSheet {
   // Fill and submit the form.
   [self fillPresidentProfileAndShowSaveModal];
 

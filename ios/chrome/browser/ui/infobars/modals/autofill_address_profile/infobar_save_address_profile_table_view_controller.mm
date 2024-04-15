@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -272,6 +273,10 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 }
 
 - (void)showEditAddressProfileModal {
+  if (base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
+  }
   [self.saveAddressProfileModalDelegate showEditView];
 }
 
