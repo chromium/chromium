@@ -127,6 +127,36 @@ class CORE_EXPORT V8CodeCache final {
       const KURL& source_url,
       const WTF::TextEncoding&,
       OpaqueMode);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class GetMetadataType {
+    kNone = 0,
+    kHotTimestamp = 1,
+    kColdTimestamp = 2,
+    kLocalCompileHintsWithHotTimestamp = 3,
+    kLocalCompileHintsWithColdTimestamp = 4,
+    kCodeCache = 5,
+    kMaxValue = kCodeCache
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SetMetadataType {
+    kTimestamp = 0,
+    kLocalCompileHintsAtFMP = 1,
+    kLocalCompileHintsAtInteractive = 2,
+    kCodeCache = 3,
+    kMaxValue = kCodeCache
+  };
+
+  static void RecordCacheGetStatistics(
+      const CachedMetadataHandler* cache_handler);
+  static void RecordCacheGetStatistics(const CachedMetadata* cached_metadata,
+                                       const String& encoding);
+  static void RecordCacheGetStatistics(GetMetadataType metadata_type);
+
+  static void RecordCacheSetStatistics(SetMetadataType metadata_type);
 };
 
 }  // namespace blink
