@@ -2480,14 +2480,16 @@ void SyncServiceImpl::GetLocalDataDescriptions(
     return;
   }
 
-  // Only retain types that are not only preferred but also active, that is,
-  // those which are configured and have not encountered any error.
-  types.RetainAll(GetActiveDataTypes());
+  // Return early if sync is disabled, or paused because of a persistent auth
+  // error.
+  if (GetTransportState() == TransportState::DISABLED ||
+      GetTransportState() == TransportState::PAUSED) {
+    std::move(callback).Run({});
+    return;
+  }
 
-  // PAUSED and DISABLED sync state should both lead to GetActiveDataTypes()
-  // returning empty.
-  CHECK(types.empty() || (GetTransportState() != TransportState::DISABLED &&
-                          GetTransportState() != TransportState::PAUSED));
+  // Only retain the types that are enabled.
+  types.RetainAll(GetPreferredDataTypes());
 
   sync_client_->GetLocalDataDescriptions(types, std::move(callback));
 }
@@ -2499,14 +2501,15 @@ void SyncServiceImpl::TriggerLocalDataMigration(ModelTypeSet types) {
     return;
   }
 
-  // Only retain types that are not only preferred but also active, that is,
-  // those which are configured and have not encountered any error.
-  types.RetainAll(GetActiveDataTypes());
+  // Return early if sync is disabled, or paused because of a persistent auth
+  // error.
+  if (GetTransportState() == TransportState::DISABLED ||
+      GetTransportState() == TransportState::PAUSED) {
+    return;
+  }
 
-  // PAUSED and DISABLED sync state should both lead to GetActiveDataTypes()
-  // returning empty.
-  CHECK(types.empty() || (GetTransportState() != TransportState::DISABLED &&
-                          GetTransportState() != TransportState::PAUSED));
+  // Only retain the types that are enabled.
+  types.RetainAll(GetPreferredDataTypes());
 
   sync_client_->TriggerLocalDataMigration(types);
 }
