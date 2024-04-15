@@ -1082,7 +1082,7 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoInheritCookies) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
 }
 
-TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritSetting) {
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritWebsiteSetting) {
   // Website settings marked DONT_INHERIT_IN_INCOGNITO in
   // WebsiteSettingsRegistry (e.g. usb chooser data) don't inherit any values
   // from from regular to incognito.
@@ -1110,7 +1110,7 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritSetting) {
       host, host, ContentSettingsType::USB_CHOOSER_DATA,
       base::Value(test_dict.Clone()));
 
-  // The setting is not inherted by |otr_map|.
+  // The setting is not inherited by |otr_map|.
   base::Value stored_value = host_content_settings_map->GetWebsiteSetting(
       host, host, ContentSettingsType::USB_CHOOSER_DATA);
   EXPECT_EQ(stored_value, test_dict);
@@ -1123,6 +1123,42 @@ TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritSetting) {
     // Nothing gets inherited here, and there is no default.
     ASSERT_EQ(0u, otr_settings.size());
   }
+}
+
+TEST_P(IndexedHostContentSettingsMapTest, IncognitoDontInheritContentSetting) {
+  // Content settings marked DONT_INHERIT_IN_INCOGNITO in
+  // ContentSettingsRegistry (e.g. top-level scoped 3pcd, which is a special
+  // case) don't inherit any values from from regular to incognito.
+  TestingProfile profile;
+  Profile* otr_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  HostContentSettingsMap* otr_map =
+      HostContentSettingsMapFactory::GetForProfile(otr_profile);
+
+  GURL host("https://example.com/");
+
+  // top-level scoped 3pcd defaults to ALLOW.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(
+                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            otr_map->GetContentSetting(
+                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
+
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(host),
+      ContentSettingsPattern::FromURLNoWildcard(host),
+      ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, CONTENT_SETTING_BLOCK);
+
+  // The setting is not inherited by |otr_map|.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(
+                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            otr_map->GetContentSetting(
+                host, host, ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL));
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, PrefExceptionsOperation) {

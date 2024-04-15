@@ -147,6 +147,10 @@ base::Value ProcessIncognitoInheritanceBehavior(
     switch (behaviour) {
       case ContentSettingsInfo::INHERIT_IN_INCOGNITO:
         return value;
+      case ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO:
+        return content_settings_info->website_settings_info()
+            ->initial_default_value()
+            .Clone();
       case ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE:
         ContentSetting setting = content_settings::ValueToContentSetting(value);
         const base::Value& initial_value =
@@ -154,8 +158,9 @@ base::Value ProcessIncognitoInheritanceBehavior(
                 ->initial_default_value();
         ContentSetting initial_setting =
             content_settings::ValueToContentSetting(initial_value);
-        if (content_settings::IsMorePermissive(setting, initial_setting))
+        if (content_settings::IsMorePermissive(setting, initial_setting)) {
           return content_settings::ContentSettingToValue(initial_setting);
+        }
         return value;
     }
   }

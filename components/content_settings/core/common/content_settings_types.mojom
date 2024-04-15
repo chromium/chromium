@@ -360,6 +360,13 @@ enum ContentSettingsType {
   // requesting-origin/top-level-site combination and persistent.
   TOP_LEVEL_TPCD_TRIAL,
 
+  // Content Setting for a first-party origin trial that allows websites to
+  // enable third-party cookie deprecation.
+  // ALLOW (default): no effect (e.g. third-party cookies allowed, if not
+  //                  blocked otherwise).
+  // BLOCK: third-party cookies blocked, but 3PCD mitigations enabled.
+  TOP_LEVEL_TPCD_ORIGIN_TRIAL,
+
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
   AUTO_PICTURE_IN_PICTURE,

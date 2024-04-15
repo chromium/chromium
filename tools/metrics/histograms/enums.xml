@@ -3647,6 +3647,7 @@ Called by update_net_error_codes.py.-->
   <int value="121" label="Pointer lock"/>
   <int value="122" label="Abusive notification site permissions"/>
   <int value="123" label="Tracking Protection"/>
+  <int value="124" label="Top-level 3PCD Origin Trial"/>
 </enum>
 
 <enum name="ContextMenuOptionAndroid">

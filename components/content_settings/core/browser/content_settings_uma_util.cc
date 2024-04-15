@@ -135,6 +135,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::POINTER_LOCK, 121},
     {ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, 122},
     {ContentSettingsType::TRACKING_PROTECTION, 123},
+    {ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, 124},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
