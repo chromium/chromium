@@ -82,12 +82,10 @@ gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   if (ash::features::IsPersonalizationJellyEnabled()) {
-    // TODO(b/267332833): The sizing does not look right. May need updating as
-    // Jelly is implemented.
     if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
       bounds.ClampToCenteredSize({826, 881});
     } else {
-      bounds.ClampToCenteredSize({826, 608});
+      bounds.ClampToCenteredSize({826, 708});
     }
   } else {
     bounds.ClampToCenteredSize({826, 745});
