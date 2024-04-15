@@ -29,12 +29,12 @@
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/dips/persistent_repeating_timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -278,12 +278,12 @@ DIPSService::DIPSService(content::BrowserContext* context)
   }
 }
 
-std::unique_ptr<signin::PersistentRepeatingTimer> DIPSService::CreateTimer(
+std::unique_ptr<dips::PersistentRepeatingTimer> DIPSService::CreateTimer(
     Profile* profile) {
   DCHECK(profile);
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
-  return std::make_unique<signin::PersistentRepeatingTimer>(
+  return std::make_unique<dips::PersistentRepeatingTimer>(
       profile->GetPrefs(), prefs::kDIPSTimerLastUpdate,
       features::kDIPSTimerDelay.Get(),
       base::BindRepeating(&DIPSService::OnTimerFired, base::Unretained(this)));

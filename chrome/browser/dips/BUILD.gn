@@ -13,6 +13,7 @@ source_set("unit_tests") {
     "dips_service_unittest.cc",
     "dips_storage_unittest.cc",
     "dips_utils_unittest.cc",
+    "persistent_repeating_timer_unittest.cc",
   ]
 
   deps = [

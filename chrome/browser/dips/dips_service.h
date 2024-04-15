@@ -31,7 +31,7 @@ namespace content_settings {
 class CookieSettings;
 }
 
-namespace signin {
+namespace dips {
 class PersistentRepeatingTimer;
 }
 
@@ -134,8 +134,7 @@ class DIPSService : public KeyedService {
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
   explicit DIPSService(content::BrowserContext* context);
-  std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
-      Profile* profile);
+  std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer(Profile* profile);
   void Shutdown() override;
   bool IsShuttingDown() const { return !cookie_settings_; }
 
@@ -190,7 +189,7 @@ class DIPSService : public KeyedService {
   // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
   // given for its `timer_delay` parameter.
   // See base/time/time_delta_from_string.h for how that param should be given.
-  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
+  std::unique_ptr<dips::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
   base::ObserverList<Observer> observers_;
   std::optional<DIPSBrowserSigninDetector> dips_browser_signin_detector_;

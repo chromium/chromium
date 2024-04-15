@@ -1,0 +1,60 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_
+#define CHROME_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_
+
+#include <string>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+
+class PrefService;
+
+// We copied this class from
+// //components/signin/public/base/persistent_repeating_timer.h in order to
+// modify it for moving to //content. To ensure the copies don't get mixed up,
+// we temporarily put it in the `dips` namespace. After the move, it will be in
+// ::content.
+namespace dips {
+
+// This class fires a task repeatedly, across application restarts. The timer
+// stores the date of the last invocation in a preference, which is persisted
+// to disk.
+class PersistentRepeatingTimer {
+ public:
+  // The timer is not started at creation.
+  PersistentRepeatingTimer(PrefService* prefs,
+                           const char* timer_last_update_pref_name,
+                           base::TimeDelta delay,
+                           base::RepeatingClosure task);
+
+  ~PersistentRepeatingTimer();
+
+  // Starts the timer. Calling Start() when the timer is running has no effect.
+  void Start();
+
+ private:
+  // Reads the date of the last event from the pref.
+  base::Time GetLastFired();
+
+  // Updates the pref with the current time.
+  void SetLastFiredNow();
+
+  // Called when |timer_| fires.
+  void OnTimerFired();
+
+  raw_ptr<PrefService> prefs_;
+  std::string last_fired_pref_name_;
+  base::TimeDelta delay_;
+  base::RepeatingClosure user_task_;
+
+  base::RetainingOneShotTimer timer_;
+};
+
+}  // namespace dips
+
+#endif  // CHROME_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_
