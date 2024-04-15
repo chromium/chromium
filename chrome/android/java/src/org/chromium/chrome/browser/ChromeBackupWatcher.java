@@ -59,7 +59,7 @@ public class ChromeBackupWatcher {
                         });
 
         mPrefChangeRegistrar = new PrefChangeRegistrar();
-        for (String name : ChromeBackupAgentImpl.BACKUP_NATIVE_BOOL_PREFS) {
+        for (String name : ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS) {
             mPrefChangeRegistrar.addObserver(name, this::onBackupPrefsChanged);
         }
         mPrefChangeRegistrar.addObserver(

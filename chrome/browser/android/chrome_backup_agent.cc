@@ -12,7 +12,9 @@
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_prefs.h"
 
 static_assert(51 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it to "
@@ -43,6 +45,17 @@ void JNI_ChromeBackupAgentImpl_SetDict(
   chrome_backup_agent::SetDict(
       PrefServiceAndroid::FromPrefServiceAndroid(j_prefs), pref_name,
       serialized_dict);
+}
+
+void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_prefs,
+    std::string& gaia_id) {
+  PrefService* pref_service =
+      PrefServiceAndroid::FromPrefServiceAndroid(j_prefs);
+  syncer::SyncPrefs sync_prefs(pref_service);
+  sync_prefs.MigrateGlobalDataTypePrefsToAccount(
+      pref_service, signin::GaiaIdHash::FromGaiaId(gaia_id));
 }
 
 namespace chrome_backup_agent {
