@@ -1226,9 +1226,16 @@ TEST_F(AccessibilityControllerTest, StickyKeysTrayMenuVisibility) {
   EXPECT_FALSE(controller->IsStickyKeysSettingVisibleInTray());
 }
 
-TEST_F(AccessibilityControllerTest, DisableLargeCursorResetsSize) {
+TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
+  auto* shell = Shell::Get();
+  shell->cursor_manager()->ShowCursor();
+  auto* cursor_window_controller =
+      shell->window_tree_host_manager()->cursor_window_controller();
+  ASSERT_NE(nullptr, cursor_window_controller);
+  EXPECT_FALSE(cursor_window_controller->is_cursor_compositing_enabled());
+
   PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+      shell->session_controller()->GetLastActiveUserPrefService();
   EXPECT_EQ(kDefaultLargeCursorSize,
             prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
 
@@ -1236,11 +1243,25 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorResetsSize) {
   // custom size.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
   prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize, 48);
+  EXPECT_EQ(48, prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
 
-  // Turning off large cursor resets the size to the default.
+  // Cursor compositing should be enabled and the size should be 48 dip.
+  EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
+  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
+  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
+
+  // Turning off large cursor does not reset the size to the default.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
-  EXPECT_EQ(kDefaultLargeCursorSize,
-            prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
+  EXPECT_EQ(48, prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
+  // It does stop cursor compositing, though, and the cursor is small again.
+  EXPECT_FALSE(cursor_window_controller->is_cursor_compositing_enabled());
+
+  // Turning it on again doesn't impact the preferred size pref either.
+  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+  EXPECT_EQ(48, prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
+  EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
+  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
+  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
 }
 
 TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {

@@ -2622,14 +2622,10 @@ FloatingMenuPosition AccessibilityController::GetFloatingMenuPosition() {
 
 void AccessibilityController::UpdateLargeCursorFromPref() {
   DCHECK(active_user_prefs_);
-  const bool enabled =
-      active_user_prefs_->GetBoolean(prefs::kAccessibilityLargeCursorEnabled);
-  // Reset large cursor size to the default size when large cursor is disabled.
-  if (!enabled) {
-    active_user_prefs_->ClearPref(prefs::kAccessibilityLargeCursorDipSize);
-  }
-  const int size =
-      active_user_prefs_->GetInteger(prefs::kAccessibilityLargeCursorDipSize);
+  const bool enabled = large_cursor().enabled();
+  const int size = enabled ? active_user_prefs_->GetInteger(
+                                 prefs::kAccessibilityLargeCursorDipSize)
+                           : kDefaultLargeCursorSize;
 
   if (large_cursor_size_in_dip_ == size) {
     return;
@@ -2640,9 +2636,8 @@ void AccessibilityController::UpdateLargeCursorFromPref() {
   NotifyAccessibilityStatusChanged();
 
   Shell* shell = Shell::Get();
-  shell->cursor_manager()->SetCursorSize(large_cursor().enabled()
-                                             ? ui::CursorSize::kLarge
-                                             : ui::CursorSize::kNormal);
+  shell->cursor_manager()->SetCursorSize(enabled ? ui::CursorSize::kLarge
+                                                 : ui::CursorSize::kNormal);
   shell->SetLargeCursorSizeInDip(large_cursor_size_in_dip_);
   shell->UpdateCursorCompositingEnabled();
 }
@@ -3107,10 +3102,6 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
           enabled);
       break;
     case FeatureType::kLargeCursor:
-      if (!enabled) {
-        active_user_prefs_->ClearPref(prefs::kAccessibilityLargeCursorDipSize);
-      }
-
       Shell::Get()->cursor_manager()->SetCursorSize(
           large_cursor().enabled() ? ui::CursorSize::kLarge
                                    : ui::CursorSize::kNormal);
