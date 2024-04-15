@@ -79,6 +79,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   };
 
   class TabSharingInfoBarDelegateButton;
+  class StopButton;
   class ShareTabInsteadButton;
   class SwitchToTabButton;
   class CscIndicatorButton;
@@ -160,6 +161,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Indicates whether this instance is used for casting or capturing.
   const TabShareType capture_type_;
 
+  std::unique_ptr<StopButton> stop_button_;
   std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
   std::unique_ptr<SwitchToTabButton> quick_nav_button_;
   std::unique_ptr<CscIndicatorButton> csc_indicator_button_;
