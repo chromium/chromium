@@ -18,6 +18,35 @@ namespace ash {
 // A class that can be used to exercise FaceGaze in browsertests.
 class FaceGazeTestUtils {
  public:
+  // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync
+  // with the source of truth in chrome/browser/resources/chromeos/\
+  // accessibility/accessibility_common/facegaze/gesture_detector.ts.
+  enum class MediapipeGesture {
+    BROW_DOWN_LEFT,
+    BROW_DOWN_RIGHT,
+    BROW_INNER_UP,
+    EYE_BLINK_LEFT,
+    EYE_BLINK_RIGHT,
+    EYE_LOOK_DOWN_LEFT,
+    EYE_LOOK_DOWN_RIGHT,
+    EYE_LOOK_IN_LEFT,
+    EYE_LOOK_IN_RIGHT,
+    EYE_LOOK_OUT_LEFT,
+    EYE_LOOK_OUT_RIGHT,
+    EYE_LOOK_UP_LEFT,
+    EYE_LOOK_UP_RIGHT,
+    EYE_SQUINT_LEFT,
+    EYE_SQUINT_RIGHT,
+    JAW_OPEN,
+    MOUTH_LEFT,
+    MOUTH_PUCKER,
+    MOUTH_RIGHT,
+    MOUTH_SMILE_LEFT,
+    MOUTH_SMILE_RIGHT,
+    MOUTH_UPPER_UP_LEFT,
+    MOUTH_UPPER_UP_RIGHT,
+  };
+
   // A struct that holds cursor speed values.
   struct CursorSpeeds {
     int up;
@@ -41,7 +70,7 @@ class FaceGazeTestUtils {
       return forehead_location_;
     }
 
-    MockFaceLandmarkerResult& WithGesture(const std::string& gesture,
+    MockFaceLandmarkerResult& WithGesture(const MediapipeGesture& gesture,
                                           int confidence);
     const base::Value::List& recognized_gestures() const {
       return recognized_gestures_;

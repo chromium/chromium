@@ -23,6 +23,8 @@
 
 namespace ash {
 
+using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
+
 namespace {
 
 constexpr char kMediapipeTestFilePath[] =
@@ -34,6 +36,57 @@ constexpr char kTestSupportPath[] =
 
 PrefService* GetPrefs() {
   return AccessibilityManager::Get()->profile()->GetPrefs();
+}
+
+std::string ToString(const MediapipeGesture& gesture) {
+  switch (gesture) {
+    case MediapipeGesture::BROW_DOWN_LEFT:
+      return "browDownLeft";
+    case MediapipeGesture::BROW_DOWN_RIGHT:
+      return "browDownRight";
+    case MediapipeGesture::BROW_INNER_UP:
+      return "browInnerUp";
+    case MediapipeGesture::EYE_BLINK_LEFT:
+      return "eyeBlinkLeft";
+    case MediapipeGesture::EYE_BLINK_RIGHT:
+      return "eyeBlinkRight";
+    case MediapipeGesture::EYE_LOOK_DOWN_LEFT:
+      return "eyeLookDownLeft";
+    case MediapipeGesture::EYE_LOOK_DOWN_RIGHT:
+      return "eyeLookDownRight";
+    case MediapipeGesture::EYE_LOOK_IN_LEFT:
+      return "eyeLookInLeft";
+    case MediapipeGesture::EYE_LOOK_IN_RIGHT:
+      return "eyeLookInRight";
+    case MediapipeGesture::EYE_LOOK_OUT_LEFT:
+      return "eyeLookOutLeft";
+    case MediapipeGesture::EYE_LOOK_OUT_RIGHT:
+      return "eyeLookOutRight";
+    case MediapipeGesture::EYE_LOOK_UP_LEFT:
+      return "eyeLookUpLeft";
+    case MediapipeGesture::EYE_LOOK_UP_RIGHT:
+      return "eyeLookUpRight";
+    case MediapipeGesture::EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case MediapipeGesture::EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case MediapipeGesture::JAW_OPEN:
+      return "jawOpen";
+    case MediapipeGesture::MOUTH_LEFT:
+      return "mouthLeft";
+    case MediapipeGesture::MOUTH_PUCKER:
+      return "mouthPucker";
+    case MediapipeGesture::MOUTH_RIGHT:
+      return "mouthRight";
+    case MediapipeGesture::MOUTH_SMILE_LEFT:
+      return "mouthSmileLeft";
+    case MediapipeGesture::MOUTH_SMILE_RIGHT:
+      return "mouthSmileRight";
+    case MediapipeGesture::MOUTH_UPPER_UP_LEFT:
+      return "mouthUpperUpLeft";
+    case MediapipeGesture::MOUTH_UPPER_UP_RIGHT:
+      return "mouthUpperUpRight";
+  }
 }
 
 }  // namespace
@@ -54,7 +107,7 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithNormalizedForeheadLocation(
 
 FaceGazeTestUtils::MockFaceLandmarkerResult&
 FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
-    const std::string& gesture,
+    const MediapipeGesture& gesture,
     int confidence) {
   // For readability and consistency with the gesture confidence pref, this
   // method accepts confidence values [0, 100]. However, the FaceLandmarker
@@ -62,7 +115,7 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
   // confidence to a decimal before processing it.
   recognized_gestures_.Append(
       base::Value::Dict()
-          .Set("categoryName", gesture)
+          .Set("categoryName", ToString(gesture))
           .Set("score", static_cast<double>(confidence) / 100.0));
   return *this;
 }
