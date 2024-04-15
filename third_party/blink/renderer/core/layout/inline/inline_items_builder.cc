@@ -715,7 +715,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     // LayoutBR does not set preserve_newline, but should be preserved.
     if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
                  layout_object && layout_object->IsBR())) {
-      if (UNLIKELY(is_text_combine_)) {
+      // https://drafts.csswg.org/css-ruby/#anon-gen-unbreak
+      if (UNLIKELY(is_text_combine_ || ruby_text_nesting_level_ > 0)) {
         AppendTextItem(TransformedString(" "), layout_object);
       } else {
         AppendForcedBreakCollapseWhitespace(layout_object);
@@ -1412,6 +1413,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
 
   has_ruby_ = has_ruby_ || node->IsInlineRubyText();
   if (node->IsInlineRubyText()) {
+    ++ruby_text_nesting_level_;
     if (!node->Parent()->IsInlineRuby()) {
       // This creates a ruby column with a placeholder-only ruby-base.
       AppendOpaque(InlineItem::kOpenRubyColumn,
@@ -1513,6 +1515,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
   AppendOpaque(InlineItem::kCloseTag, node);
 
   if (node->IsInlineRubyText()) {
+    --ruby_text_nesting_level_;
     if (node->Parent()->IsInlineRuby()) {
       LayoutObject* ruby_container = node->Parent();
       AppendOpaque(InlineItem::kCloseRubyColumn,
