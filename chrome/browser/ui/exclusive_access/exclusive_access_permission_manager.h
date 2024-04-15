@@ -87,6 +87,7 @@ class ExclusiveAccessPermissionManager : public content::WebContentsObserver {
 
   void HandleRequestResult(
       content::GlobalRenderFrameHostId rfh_id,
+      base::WeakPtr<content::WebContents> web_contents,
       base::OnceClosure granted_callback,
       base::OnceClosure denied_callback,
       const std::vector<blink::mojom::PermissionStatus>& status);

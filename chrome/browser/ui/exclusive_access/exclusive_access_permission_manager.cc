@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -109,7 +110,7 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
             rfh, std::move(description),
             base::BindOnce(
                 &ExclusiveAccessPermissionManager::HandleRequestResult,
-                weak_factory_.GetWeakPtr(), rfh_id,
+                weak_factory_.GetWeakPtr(), rfh_id, web_contents,
                 std::move(request.granted_callback),
                 std::move(request.denied_callback)));
   }
@@ -119,10 +120,16 @@ void ExclusiveAccessPermissionManager::RequestPermissions(
   if (requests_it != pending_requests_.end()) {
     requests_it->second.pending.clear();
   }
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents.get());
+  if (media_session) {
+    media_session->StartDucking();
+  }
 }
 
 void ExclusiveAccessPermissionManager::HandleRequestResult(
     content::GlobalRenderFrameHostId rfh_id,
+    base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure granted_callback,
     base::OnceClosure denied_callback,
     const std::vector<blink::mojom::PermissionStatus>& status) {
@@ -143,17 +150,25 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
       requests.result_callbacks.push_back(std::move(denied_callback));
       break;
   }
-  if (requests.result_callbacks.size() == requests.waiting_responses) {
-    // We queue the granted/denied callbacks until all the requests have been
-    // responded to, then call them all at once. If we don't do this, in the
-    // case where both pointer lock and keyboard lock are requested but the
-    // pointer lock permission has already been granted, pointer can be locked
-    // first and then immediately unlocked by the permission prompt for keyboard
-    // lock.
-    for (base::OnceClosure& result_callback : requests.result_callbacks) {
-      std::move(result_callback).Run();
-    }
-    pending_requests_.erase(requests_it);
+  if (requests.result_callbacks.size() != requests.waiting_responses) {
+    return;
+  }
+  // We queue the granted/denied callbacks until all the requests have been
+  // responded to, then call them all at once. If we don't do this, in the
+  // case where both pointer lock and keyboard lock are requested but the
+  // pointer lock permission has already been granted, pointer can be locked
+  // first and then immediately unlocked by the permission prompt for keyboard
+  // lock.
+  for (base::OnceClosure& result_callback : requests.result_callbacks) {
+    std::move(result_callback).Run();
+  }
+  pending_requests_.erase(requests_it);
+
+  content::MediaSession* media_session =
+      web_contents ? content::MediaSession::GetIfExists(web_contents.get())
+                   : nullptr;
+  if (media_session) {
+    media_session->StopDucking();
   }
 }
 
