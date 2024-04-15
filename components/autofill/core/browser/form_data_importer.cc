@@ -1032,7 +1032,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     types_seen.insert(field_type);
 
     // If |field| is an HTML5 month input, handle it as a special case.
-    if (field->form_control_type == FormControlType::kInputMonth) {
+    if (field->form_control_type() == FormControlType::kInputMonth) {
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, field_type);
       result.card.SetInfoForMonthInputType(value);
       continue;
@@ -1087,7 +1087,7 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
       return;
     }
     std::u16string old_value = result.card.GetInfo(field.Type(), app_locale);
-    if (field.form_control_type == FormControlType::kInputMonth) {
+    if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                 field.Type().GetStorableType());

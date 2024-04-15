@@ -123,7 +123,7 @@ auto HasSingleElementWhich(auto... element_matchers) {
 }
 
 auto HasType(FormControlType type) {
-  return Field(&FormFieldData::form_control_type, type);
+  return Property(&FormFieldData::form_control_type, type);
 }
 
 // Matches a FormFieldData if its `i`th field's `member` matches the

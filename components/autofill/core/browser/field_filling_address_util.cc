@@ -437,7 +437,7 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
-                                    field_data.form_control_type);
+                                    field_data.form_control_type());
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(

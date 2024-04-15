@@ -336,11 +336,11 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* label = field_dict.FindString("label_attr")) {
     field.label = base::UTF8ToUTF16(*label);
   }
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   if (const std::string* json_type = field_dict.FindString("type_attr")) {
     std::string type = *json_type == "select" ? "select-one" : *json_type;
-    field.form_control_type = autofill::StringToFormControlTypeDiscouraged(
-        type, /*fallback=*/autofill::FormControlType::kInputText);
+    field.set_form_control_type(autofill::StringToFormControlTypeDiscouraged(
+        type, /*fallback=*/autofill::FormControlType::kInputText));
   }
   if (const std::string* autocomplete =
           field_dict.FindString("autocomplete_attr")) {

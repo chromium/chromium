@@ -372,7 +372,7 @@ std::u16string GetFillingValueForCreditCardForInput(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
-  if (field.form_control_type == FormControlType::kInputMonth) {
+  if (field.form_control_type() == FormControlType::kInputMonth) {
     return GetExpirationForMonthControl(credit_card);
   }
   switch (FieldType storable_type = field.Type().GetStorableType()) {

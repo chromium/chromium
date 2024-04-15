@@ -322,7 +322,7 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountries) {
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
   AutofillField field;
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  field.form_control_type = FormControlType::kTextArea;
+  field.set_form_control_type(FormControlType::kTextArea);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            ADDRESS_HOME_STREET_ADDRESS);
 
@@ -345,7 +345,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
   AutofillField field;
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_server_predictions(
       {::autofill::test::CreateFieldPrediction(ADDRESS_HOME_STREET_ADDRESS)});
 

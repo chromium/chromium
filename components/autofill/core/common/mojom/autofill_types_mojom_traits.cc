@@ -215,7 +215,7 @@ bool StructTraits<
     if (!data.ReadFormControlType(&form_control_type)) {
       return false;
     }
-    out->form_control_type = std::move(form_control_type);
+    out->set_form_control_type(std::move(form_control_type));
   }
   {
     std::string autocomplete_attribute;

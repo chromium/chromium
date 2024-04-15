@@ -281,8 +281,9 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
 
   field_data->name = base::UTF8ToUTF16(*name);
-  field_data->form_control_type = autofill::StringToFormControlTypeDiscouraged(
-      *form_control_type, /*fallback=*/std::nullopt);
+  field_data->set_form_control_type(
+      autofill::StringToFormControlTypeDiscouraged(*form_control_type,
+                                                   /*fallback=*/std::nullopt));
 
   const std::string* renderer_id = field.FindString("renderer_id");
   if (renderer_id && !renderer_id->empty()) {

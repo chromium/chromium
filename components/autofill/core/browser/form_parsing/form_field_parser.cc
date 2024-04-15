@@ -362,7 +362,7 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
         match_params = (*projection)(match_params);
       }
     }
-    if (!MatchesFormControlType(field.form_control_type,
+    if (!MatchesFormControlType(field.form_control_type(),
                                 match_params.field_types)) {
       continue;
     }
@@ -423,7 +423,7 @@ bool FormFieldParser::ParseFieldSpecificsWithLegacyPattern(
     return false;
   }
   AutofillField* field = scanner->Cursor();
-  if (!MatchesFormControlType(field->form_control_type,
+  if (!MatchesFormControlType(field->form_control_type(),
                               match_type.field_types)) {
     return false;
   }

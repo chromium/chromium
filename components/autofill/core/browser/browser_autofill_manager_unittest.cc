@@ -528,7 +528,7 @@ void ExpectFilledField(const char* expected_label,
   EXPECT_EQ(UTF8ToUTF16(expected_label), field.label);
   EXPECT_EQ(UTF8ToUTF16(expected_name), field.name);
   EXPECT_EQ(UTF8ToUTF16(expected_value), field.value());
-  EXPECT_EQ(expected_form_control_type, field.form_control_type);
+  EXPECT_EQ(expected_form_control_type, field.form_control_type());
 }
 
 // Verifies that the |filled_form| has been filled with the given data.
@@ -5028,7 +5028,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   // reject default values for text fields.
   FormFieldData* state_field = form.FindFieldByName(u"state");
   ASSERT_TRUE(state_field != nullptr);
-  state_field->form_control_type = form_control_type;
+  state_field->set_form_control_type(form_control_type);
   state_field->set_value(base::UTF8ToUTF16(GetElvisAddressFillData().state));
 
   test->FormsSeen({form});
@@ -6920,7 +6920,7 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
       .WillByDefault(Return(&compose_delegate));
 
   FormData form = CreateTestAddressFormData();
-  form.fields[3].form_control_type = FormControlType::kTextArea;
+  form.fields[3].set_form_control_type(FormControlType::kTextArea);
   FormsSeen({form});
 
   // The third field is meant to correspond to address line 1. For that (unlike
@@ -6948,7 +6948,7 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
       .WillByDefault(Return(&compose_delegate));
 
   FormData form = CreateTestAddressFormData();
-  form.fields[3].form_control_type = FormControlType::kTextArea;
+  form.fields[3].set_form_control_type(FormControlType::kTextArea);
   FormsSeen({form});
 
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)

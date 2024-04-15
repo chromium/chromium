@@ -166,7 +166,7 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 
   // Return false if the field is not a selection box.
   if (!MatchesFormControlType(
-          field->form_control_type,
+          field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kSelectList})) {
     return false;
   }

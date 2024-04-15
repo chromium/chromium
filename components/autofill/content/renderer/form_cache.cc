@@ -449,11 +449,11 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
 void FormCache::SaveInitialValues(base::span<const FormFieldData> fields) {
   for (const FormFieldData& field : fields) {
-    if (field.form_control_type == FormControlType::kSelectOne) {
+    if (field.form_control_type() == FormControlType::kSelectOne) {
       initial_select_values_.insert({field.renderer_id, field.value()});
-    } else if (field.form_control_type == FormControlType::kSelectList) {
+    } else if (field.form_control_type() == FormControlType::kSelectList) {
       initial_selectlist_values_.insert({field.renderer_id, field.value()});
-    } else if (form_util::IsCheckable(field.form_control_type)) {
+    } else if (form_util::IsCheckable(field.form_control_type())) {
       initial_checked_state_.insert(
           {field.renderer_id,
            field.check_status == FormFieldData::CheckStatus::kChecked});

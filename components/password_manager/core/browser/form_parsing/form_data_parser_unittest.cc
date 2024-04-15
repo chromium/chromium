@@ -202,7 +202,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   result << "Form contains " << form_data.fields.size() << " fields:\n";
   for (const FormFieldData& field : form_data.fields) {
     result << "type="
-           << autofill::FormControlTypeToString(field.form_control_type)
+           << autofill::FormControlTypeToString(field.form_control_type())
            << ", name=" << field.name << ", value=" << field.value()
            << ", unique id=" << field.renderer_id.value() << "\n";
   }
@@ -250,7 +250,7 @@ void CheckAllValuesUnique(const AlternativeElementVector& v) {
 // `AutofillTestEnvironment` instance to generate the renderer id.
 FormFieldData CreateField(FormControlType type, std::u16string value) {
   FormFieldData field;
-  field.form_control_type = type;
+  field.set_form_control_type(type);
   field.set_value(std::move(value));
   field.renderer_id = autofill::test::MakeFieldRendererId();
   return field;
@@ -304,7 +304,7 @@ class FormParserTest : public testing::Test {
         field.name = std::u16string(field_description.name);
       }
       field.name_attribute = field.name;
-      field.form_control_type = field_description.form_control_type;
+      field.set_form_control_type(field_description.form_control_type);
       field.is_focusable = field_description.is_focusable;
       field.is_enabled = field_description.is_enabled;
       field.is_readonly = field_description.is_readonly;

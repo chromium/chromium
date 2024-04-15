@@ -1489,7 +1489,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
@@ -1501,7 +1501,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
@@ -1513,7 +1513,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-description";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
@@ -1576,7 +1576,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
@@ -1587,7 +1587,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
@@ -1598,7 +1598,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.label = u"field-label";
   field.aria_label = u"field-aria-label";
   field.aria_description = u"field-aria-descriptionm";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.css_classes = u"field-css-classes";
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);

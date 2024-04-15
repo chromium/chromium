@@ -52,7 +52,7 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.name = std::move(name);
   f.name_attribute = f.name;
   f.id_attribute = u"some_id";
-  f.form_control_type = FormControlType::kInputText;
+  f.set_form_control_type(FormControlType::kInputText);
   f.check_status = FormFieldData::CheckStatus::kChecked;
   f.role = FormFieldData::RoleAttribute::kOther;
   f.is_focusable = true;

@@ -255,7 +255,7 @@ TEST(FormStructureRationalizationEngine,
 
   // Matching label but incorrect type.
   field.label = u"colonia";
-  field.form_control_type = FormControlType::kInputMonth;
+  field.set_form_control_type(FormControlType::kInputMonth);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_regex_match_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(

@@ -288,7 +288,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   PasswordForm pending = CreatePending(u"nameofuser", u"wordToP4a55");
   FormFieldData field;
   field.name = u"name";
-  field.form_control_type = autofill::FormControlType::kInputPassword;
+  field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_value(u"value");
   field.label = u"label";
   field.placeholder = u"placeholder";
@@ -317,7 +317,7 @@ TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   const FormFieldData& saved_field = saved.form_data.fields[0];
   EXPECT_EQ(u"name", saved_field.name);
   EXPECT_EQ(autofill::FormControlType::kInputPassword,
-            saved_field.form_control_type);
+            saved_field.form_control_type());
   EXPECT_TRUE(saved_field.value().empty());
   EXPECT_TRUE(saved_field.label.empty());
   EXPECT_TRUE(saved_field.placeholder.empty());

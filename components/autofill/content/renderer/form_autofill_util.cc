@@ -1928,8 +1928,8 @@ void WebFormControlElementToFormField(
   field->renderer_id = renderer_id;
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
-  field->form_control_type =
-      ToAutofillFormControlType(element.FormControlTypeForAutofill());
+  field->set_form_control_type(
+      ToAutofillFormControlType(element.FormControlTypeForAutofill()));
   field->max_length = GetMaxLength(element);
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
   field->parsed_autocomplete =
@@ -2086,7 +2086,7 @@ void WebFormControlElementToFormField(
     // The typed value is preserved for all passwords. It is also preserved for
     // potential usernames and credit cards, as long as the |value| is not
     // deemed acceptable.
-    if (field->form_control_type == FormControlType::kInputPassword ||
+    if (field->form_control_type() == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
             field->value(), user_input, *field_data_manager)) {
       field->user_input = user_input.substr(0, kMaxStringLength);
@@ -2187,7 +2187,7 @@ std::optional<FormData> FindFormForContentEditable(
       !field.id_attribute.empty() ? field.id_attribute : field.name_attribute;
   field.renderer_id = GetFieldRendererId(content_editable);
   field.host_form_id = GetFormRendererId(content_editable);
-  field.form_control_type = FormControlType::kContentEditable;
+  field.set_form_control_type(FormControlType::kContentEditable);
   field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);
   field.parsed_autocomplete =
       ParseAutocompleteAttribute(field.autocomplete_attribute);

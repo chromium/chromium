@@ -116,8 +116,8 @@ bool DeserializeSection1(base::PickleIterator* iter,
     // TODO(crbug.com/1353392,crbug.com/1482526): Why does the Password Manager
     // (de)serialize form control types? Remove it or migrate it to the enum
     // values.
-    field_data->form_control_type = StringToFormControlTypeDiscouraged(
-        form_control_type, /*fallback=*/FormControlType::kInputText);
+    field_data->set_form_control_type(StringToFormControlTypeDiscouraged(
+        form_control_type, /*fallback=*/FormControlType::kInputText));
   }
   return success;
 }
@@ -253,7 +253,7 @@ bool DeserializeSection11(base::PickleIterator* iter,
 auto IdentityTuple(const FormFieldData& f) {
   return std::tuple_cat(
       std::tie(f.label, f.name, f.name_attribute, f.id_attribute,
-               f.form_control_type, f.autocomplete_attribute, f.placeholder,
+               f.form_control_type(), f.autocomplete_attribute, f.placeholder,
                f.max_length, f.css_classes, f.is_focusable,
                f.should_autocomplete, f.role, f.text_direction, f.options),
       std::make_tuple(IsCheckable(f.check_status)));
@@ -367,25 +367,25 @@ bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
 }
 
 bool FormFieldData::IsTextInputElement() const {
-  return form_control_type == FormControlType::kInputText ||
-         form_control_type == FormControlType::kInputPassword ||
-         form_control_type == FormControlType::kInputSearch ||
-         form_control_type == FormControlType::kInputTelephone ||
-         form_control_type == FormControlType::kInputUrl ||
-         form_control_type == FormControlType::kInputEmail ||
-         form_control_type == FormControlType::kInputNumber;
+  return form_control_type() == FormControlType::kInputText ||
+         form_control_type() == FormControlType::kInputPassword ||
+         form_control_type() == FormControlType::kInputSearch ||
+         form_control_type() == FormControlType::kInputTelephone ||
+         form_control_type() == FormControlType::kInputUrl ||
+         form_control_type() == FormControlType::kInputEmail ||
+         form_control_type() == FormControlType::kInputNumber;
 }
 
 bool FormFieldData::IsPasswordInputElement() const {
-  return form_control_type == FormControlType::kInputPassword;
+  return form_control_type() == FormControlType::kInputPassword;
 }
 
 bool FormFieldData::IsSelectElement() const {
-  return form_control_type == FormControlType::kSelectOne;
+  return form_control_type() == FormControlType::kSelectOne;
 }
 
 bool FormFieldData::IsSelectListElement() const {
-  return form_control_type == FormControlType::kSelectList;
+  return form_control_type() == FormControlType::kSelectList;
 }
 
 bool FormFieldData::IsSelectOrSelectListElement() const {
@@ -484,7 +484,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString16(field_data.label);
   pickle->WriteString16(field_data.name);
   pickle->WriteString16(field_data.value());
-  pickle->WriteString(FormControlTypeToString(field_data.form_control_type));
+  pickle->WriteString(FormControlTypeToString(field_data.form_control_type()));
   // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
   pickle->WriteUInt64(field_data.max_length);
@@ -646,7 +646,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
             << field.origin.Serialize() << "' " << "name='" << field.name
             << "' " << "id_attribute='" << field.id_attribute << "' "
             << "name_attribute='" << field.name_attribute << "' " << "value='"
-            << field.value() << "' " << "control='" << field.form_control_type
+            << field.value() << "' " << "control='" << field.form_control_type()
             << "' " << "autocomplete='" << field.autocomplete_attribute << "' "
             << "parsed_autocomplete='"
             << (field.parsed_autocomplete
@@ -685,7 +685,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   const std::u16string truncated_label =
       field.label.substr(0, std::min(field.label.length(), kMaxLabelSize));
   buffer << Tr{} << "Label:" << truncated_label;
-  buffer << Tr{} << "Form control type:" << field.form_control_type;
+  buffer << Tr{} << "Form control type:" << field.form_control_type();
   buffer << Tr{} << "Autocomplete attribute:" << field.autocomplete_attribute;
   buffer << Tr{} << "Parsed autocomplete attribute:"
          << (field.parsed_autocomplete ? field.parsed_autocomplete->ToString()

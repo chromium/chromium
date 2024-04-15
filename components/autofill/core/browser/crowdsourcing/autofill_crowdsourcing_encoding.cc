@@ -262,7 +262,7 @@ void PopulateRandomizedFieldMetadata(
   }
   EncodeRandomizedValue(encoder, form_signature, field_signature,
                         RandomizedEncoder::FIELD_CONTROL_TYPE,
-                        FormControlTypeToString(field.form_control_type),
+                        FormControlTypeToString(field.form_control_type()),
                         /*include_checksum=*/false, metadata->mutable_type());
   if (!field.label.empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,

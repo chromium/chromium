@@ -101,8 +101,9 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
       field->SetHtmlType(type, field->html_mode());
     };
     // Some of the following rationalization operates only on text fields.
-    bool is_text_field = field->IsTextInputElement() ||
-                         field->form_control_type == FormControlType::kTextArea;
+    bool is_text_field =
+        field->IsTextInputElement() ||
+        field->form_control_type() == FormControlType::kTextArea;
     switch (field->html_type()) {
       case HtmlFieldType::kAdditionalName:
         if (!is_text_field) {
@@ -189,7 +190,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
 void FormStructureRationalizer::RationalizeContentEditables(
     LogManager* log_manager) {
   for (const auto& field : *fields_) {
-    if (field->form_control_type == FormControlType::kContentEditable) {
+    if (field->form_control_type() == FormControlType::kContentEditable) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
     }
   }

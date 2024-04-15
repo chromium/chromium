@@ -17,7 +17,7 @@ testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
   result << "Form contains " << form_data.fields.size() << " fields:\n";
   for (const FormFieldData& field : form_data.fields) {
-    result << "type=" << FormControlTypeToString(field.form_control_type)
+    result << "type=" << FormControlTypeToString(field.form_control_type())
            << ", name=" << field.name << ", label=" << field.label << "\n";
   }
   return result;
@@ -87,8 +87,8 @@ FormFieldData CreateFieldByRole(FieldType role) {
 
 FormFieldData GetFormFieldData(const FieldDescription& fd) {
   FormFieldData ff = CreateFieldByRole(fd.role);
-  ff.form_control_type = fd.form_control_type;
-  if (ff.form_control_type == FormControlType::kSelectOne &&
+  ff.set_form_control_type(fd.form_control_type);
+  if (ff.form_control_type() == FormControlType::kSelectOne &&
       !fd.select_options.empty()) {
     ff.options = fd.select_options;
   }

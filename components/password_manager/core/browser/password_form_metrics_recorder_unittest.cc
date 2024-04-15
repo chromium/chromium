@@ -612,9 +612,9 @@ PasswordForm ConvertToPasswordForm(
     if (field.automatically_filled)
       form_field.properties_mask |= FieldPropertiesFlags::kAutofilledOnPageLoad;
 
-    form_field.form_control_type =
+    form_field.set_form_control_type(
         field.is_password ? autofill::FormControlType::kInputPassword
-                          : autofill::FormControlType::kInputText;
+                          : autofill::FormControlType::kInputText);
 
     std::u16string value =
         ASCIIToUTF16(field.user_input.empty() ? field.value : field.user_input);

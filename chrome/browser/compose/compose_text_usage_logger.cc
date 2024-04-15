@@ -83,7 +83,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
         form_structure->GetFieldById(field);
     if (field_data) {
       form_type = FieldTypeGroupToFormType(field_data->Type().group());
-      form_control_type = static_cast<int64_t>(field_data->form_control_type);
+      form_control_type = static_cast<int64_t>(field_data->form_control_type());
     }
   }
 

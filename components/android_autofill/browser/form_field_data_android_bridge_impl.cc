@@ -75,8 +75,8 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF8ToJavaString(env, field.autocomplete_attribute),
       field.should_autocomplete,
       ConvertUTF16ToJavaString(env, field.placeholder),
-      ConvertUTF8ToJavaString(env,
-                              FormControlTypeToString(field.form_control_type)),
+      ConvertUTF8ToJavaString(
+          env, FormControlTypeToString(field.form_control_type())),
       ConvertUTF16ToJavaString(env, field.id_attribute),
       /*optionValues=*/ProjectOptions(field.options, &SelectOption::value),
       /*optionContents=*/ProjectOptions(field.options, &SelectOption::content),

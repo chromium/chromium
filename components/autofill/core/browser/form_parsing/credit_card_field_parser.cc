@@ -287,7 +287,7 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type,
+          field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kSelectList,
            FormControlType::kInputSearch})) {
     return false;
@@ -321,7 +321,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          field->form_control_type,
+          field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kSelectList,
            FormControlType::kInputSearch})) {
     return false;
@@ -402,7 +402,7 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
   AutofillField* field = scanner->Cursor();
 
   if (!MatchesFormControlType(
-          field->form_control_type,
+          field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kSelectList,
            FormControlType::kInputSearch})) {
     return false;
@@ -533,7 +533,7 @@ void CreditCardFieldParser::AddClassifications(
 bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
                                                 AutofillScanner* scanner) {
   if (!expiration_date_ &&
-      scanner->Cursor()->form_control_type == FormControlType::kInputMonth) {
+      scanner->Cursor()->form_control_type() == FormControlType::kInputMonth) {
     expiration_date_ = scanner->Cursor();
     expiration_month_ = nullptr;
     expiration_year_ = nullptr;

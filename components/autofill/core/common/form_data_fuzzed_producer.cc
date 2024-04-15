@@ -61,8 +61,8 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     const bool force_empty_value = bools[1];
     result.fields[i].is_focusable = bools[2];
 
-    result.fields[i].form_control_type =
-        provider.ConsumeEnum<FormControlType>();
+    result.fields[i].set_form_control_type(
+        provider.ConsumeEnum<FormControlType>());
     result.fields[i].autocomplete_attribute =
         provider.ConsumeRandomLengthString();
     result.fields[i].label = ConsumeU16String(provider);

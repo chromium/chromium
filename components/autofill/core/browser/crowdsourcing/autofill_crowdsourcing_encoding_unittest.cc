@@ -1269,10 +1269,11 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
                                          RandomizedEncoder::FIELD_NAME,
                                          field.name_attribute));
     }
-    EXPECT_EQ(metadata.type().encoded_bits(),
-              encoder.Encode(form_signature, field_signature,
-                             RandomizedEncoder::FIELD_CONTROL_TYPE,
-                             FormControlTypeToString(field.form_control_type)));
+    EXPECT_EQ(
+        metadata.type().encoded_bits(),
+        encoder.Encode(form_signature, field_signature,
+                       RandomizedEncoder::FIELD_CONTROL_TYPE,
+                       FormControlTypeToString(field.form_control_type())));
     if (field.label.empty()) {
       EXPECT_FALSE(metadata.has_label());
     } else {
@@ -1336,7 +1337,7 @@ TEST_F(AutofillCrowdsourcingEncoding, Metadata_OnlySendFullUrlWithUserConsent) {
 
     // One form field needed to be valid form.
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     field.label = u"email";
     field.name = u"email";
     field.renderer_id = test::MakeFieldRendererId();
@@ -1560,7 +1561,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
@@ -2232,7 +2233,7 @@ TEST_F(
     // Create an iframe form with a single field.
     std::vector<FormFieldData> fields;
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     field.name = u"name";
     field.renderer_id = test::MakeFieldRendererId();
     field.host_form_signature = FormSignature(host_form_signature);
@@ -3290,7 +3291,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Add 6 fields.
   for (int i = 0; i < 6; i++) {
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     field.label = field.name = base::NumberToString16(i);
     field.renderer_id = test::MakeFieldRendererId();
     form_data.fields.push_back(field);

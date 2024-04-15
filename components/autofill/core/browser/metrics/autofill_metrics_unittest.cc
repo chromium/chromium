@@ -439,7 +439,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   FieldSignature field_signature[2];
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"fullname";
   field.name = u"fullname";
@@ -537,7 +537,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   FieldSignature field_signature[3];
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Country";
   field.name = u"country";
@@ -556,7 +556,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   field.label = u"State";
   field.name = u"state";
   field.is_focusable = false;
-  field.form_control_type = FormControlType::kSelectOne;
+  field.set_form_control_type(FormControlType::kSelectOne);
   form.fields.push_back(field);
   // Regardless of the order of appearance, hidden fields are rationalized
   // before their corresponding visible one.
@@ -5340,7 +5340,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     form.url = GURL("http://foo.com");
     form.main_frame_origin = url::Origin::Create(GURL("http://foo_root.com"));
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
 
     field.label = u"fullname";
     field.name = u"fullname";
@@ -5353,7 +5353,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     // Checkable fields should be ignored in parsing.
     FormFieldData checkable_field;
     checkable_field.label = u"radio_button";
-    checkable_field.form_control_type = FormControlType::kInputRadio;
+    checkable_field.set_form_control_type(FormControlType::kInputRadio);
     checkable_field.check_status =
         FormFieldData::CheckStatus::kCheckableButUnchecked;
     form.fields.push_back(checkable_field);
@@ -5367,7 +5367,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
 
     field.label = u"password";
     field.name = u"password";
-    field.form_control_type = FormControlType::kInputPassword;
+    field.set_form_control_type(FormControlType::kInputPassword);
     form.fields.push_back(field);
 
     owned_forms_.push_back(std::make_unique<FormStructure>(form));

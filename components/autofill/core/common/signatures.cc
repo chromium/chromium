@@ -127,8 +127,9 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
       // changing the signature algorithm is non-trivial. If and when the
       // sectioning algorithm, we could use the raw FormControlType enum
       // instead.
-      base::StrAppend(&form_signature_field_types,
-                      {"&", FormControlTypeToString(field.form_control_type)});
+      base::StrAppend(
+          &form_signature_field_types,
+          {"&", FormControlTypeToString(field.form_control_type())});
     }
   }
 
@@ -163,7 +164,7 @@ FieldSignature CalculateFieldSignatureByNameAndType(
 FieldSignature CalculateFieldSignatureForField(
     const FormFieldData& field_data) {
   return CalculateFieldSignatureByNameAndType(field_data.name,
-                                              field_data.form_control_type);
+                                              field_data.form_control_type());
 }
 
 uint64_t StrToHash64Bit(std::string_view str) {

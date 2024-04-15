@@ -359,7 +359,7 @@ class ExpirationYearTest
 TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   auto test_case = GetParam();
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
@@ -467,7 +467,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   }
 
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
@@ -946,7 +946,7 @@ TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithCreditCardType) {
 
 TEST_F(FieldFillingPaymentsUtilTest, FillMonthControl) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputMonth;
+  field.set_form_control_type(FormControlType::kInputMonth);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
@@ -1141,7 +1141,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_EXP_MONTH);
 
   // A month with two digits should return two dots.
@@ -1164,7 +1164,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
 // field is `kSelectOne`, i.e., is a combobox or listbox.
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonthOneSelectOne_Empty) {
   AutofillField field;
-  field.form_control_type = FormControlType::kSelectOne;
+  field.set_form_control_type(FormControlType::kSelectOne);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_EXP_MONTH);
 
   CreditCard card = test::GetVirtualCard();
@@ -1176,7 +1176,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonthOneSelectOne_Empty) {
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
@@ -1200,7 +1200,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
 TEST_F(FieldFillingPaymentsUtilTest,
        PreviewVirtualFourDigitYearOnSelectOne_Empty) {
   AutofillField field;
-  field.form_control_type = FormControlType::kSelectOne;
+  field.set_form_control_type(FormControlType::kSelectOne);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
@@ -1216,7 +1216,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        PreviewVirtualTwoDigitYearOnSelectOne_Empty) {
   AutofillField field;
-  field.form_control_type = FormControlType::kSelectOne;
+  field.set_form_control_type(FormControlType::kSelectOne);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
@@ -1231,7 +1231,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
   // Test reducing 4 digit year to 2 digits.
   AutofillField field;
   field.max_length = 2;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
@@ -1245,7 +1245,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
   field.max_length = 7;
@@ -1277,7 +1277,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
   // Test reducing dates to various max length field values.
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.max_length = 4;
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
@@ -1318,7 +1318,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVC) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_VERIFICATION_CODE);
 
@@ -1332,7 +1332,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVC) {
 
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVCAmericanExpress) {
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            CREDIT_CARD_VERIFICATION_CODE);
 
@@ -1347,7 +1347,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCVCAmericanExpress) {
 TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardNumber) {
   AutofillField field;
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   CreditCard credit_card = test::GetVirtualCard();
   credit_card.SetNumber(u"5454545454545454");
@@ -1370,7 +1370,7 @@ TEST_F(FieldFillingPaymentsUtilTest,
   AutofillField field;
   field.max_length = 17;
   field.set_credit_card_number_offset(18);
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
   CreditCard credit_card = test::GetVirtualCard();
@@ -1391,7 +1391,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualCardholderName) {
   std::u16string name = u"Jone Doe";
 
   AutofillField field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NAME_FULL);
 
   CreditCard credit_card = test::GetVirtualCard();

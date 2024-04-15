@@ -152,7 +152,7 @@ TEST_F(AutofillAgentTests,
   form.renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
-  field.form_control_type = autofill::FormControlType::kInputText;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
   field.label = u"Card number";
   field.name = u"number";
   field.name_attribute = field.name;
@@ -203,7 +203,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
                                                         &client_, nil, locale);
 
   autofill::FormFieldData field;
-  field.form_control_type = autofill::FormControlType::kInputText;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
   field.label = u"Card number";
   field.name = u"number";
   field.name_attribute = field.name;
@@ -230,7 +230,7 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
       &fake_web_state_, &client_, autofill_agent_, locale);
 
   autofill::FormFieldData field;
-  field.form_control_type = autofill::FormControlType::kInputText;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
   field.label = u"Card number";
   field.name = u"number";
   field.name_attribute = field.name;
@@ -261,7 +261,7 @@ TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
       &fake_web_state_, &client_, autofill_agent_, locale);
 
   autofill::FormFieldData field;
-  field.form_control_type = autofill::FormControlType::kInputText;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
   field.label = u"Card number";
   field.name = u"number";
   field.name_attribute = field.name;

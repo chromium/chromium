@@ -133,7 +133,7 @@ std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
       ScrubElementID(field.name).c_str(),
       base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
       ScrubElementID(std::string(autofill::FormControlTypeToString(
-                         field.form_control_type)))
+                         field.form_control_type())))
           .c_str(),
       NumberToString(*field.renderer_id).c_str(), is_visible, is_empty,
       autocomplete.c_str());

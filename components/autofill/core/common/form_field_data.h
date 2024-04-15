@@ -292,7 +292,12 @@ struct FormFieldData {
   // TODO(crbug.com/1501362): Extract on iOS.
   std::u16string selected_text;
 
-  FormControlType form_control_type = FormControlType::kInputText;
+  const FormControlType& form_control_type() const {
+    return form_control_type_;
+  }
+  void set_form_control_type(FormControlType form_control_type) {
+    form_control_type_ = std::move(form_control_type);
+  }
   std::string autocomplete_attribute;
   std::optional<AutocompleteParsingResult> parsed_autocomplete;
   std::u16string placeholder;
@@ -421,6 +426,7 @@ struct FormFieldData {
 
  private:
   std::u16string value_;
+  FormControlType form_control_type_ = FormControlType::kInputText;
 };
 
 // Structure containing necessary information to be sent from the browser to the
@@ -500,7 +506,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.label, actual.label);                                   \
     EXPECT_EQ(expected.name, actual.name);                                     \
     EXPECT_EQ(expected.value(), actual.value());                               \
-    EXPECT_EQ(expected.form_control_type, actual.form_control_type);           \
+    EXPECT_EQ(expected.form_control_type(), actual.form_control_type());       \
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
     EXPECT_EQ(expected.parsed_autocomplete, actual.parsed_autocomplete);       \
     EXPECT_EQ(expected.placeholder, actual.placeholder);                       \

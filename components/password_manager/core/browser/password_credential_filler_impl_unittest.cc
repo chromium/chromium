@@ -57,10 +57,10 @@ const FormData PrepareFormData(
         field.is_focusable =
             (type == FormFieldFocusabilityType::kFocusableInput ||
              type == FormFieldFocusabilityType::kFocusableCheckbox);
-        field.form_control_type =
+        field.set_form_control_type(
             (type == FormFieldFocusabilityType::kFocusableCheckbox)
                 ? autofill::FormControlType::kInputCheckbox
-                : autofill::FormControlType::kInputText;
+                : autofill::FormControlType::kInputText);
         return field;
       });
   return form;

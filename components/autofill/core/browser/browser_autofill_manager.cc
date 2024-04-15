@@ -1166,8 +1166,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                             kShowPromptAfterDialogClosedNonManualFallback;
 
   if (should_offer_other_suggestions &&
-      (field.form_control_type == FormControlType::kTextArea ||
-       field.form_control_type == FormControlType::kContentEditable)) {
+      (field.form_control_type() == FormControlType::kTextArea ||
+       field.form_control_type() == FormControlType::kContentEditable)) {
     if (std::optional<Suggestion> maybe_compose_suggestion =
             MaybeGetComposeSuggestion(field, trigger_source)) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));

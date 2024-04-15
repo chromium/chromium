@@ -34,6 +34,7 @@ using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::MockFunction;
 using ::testing::Not;
+using ::testing::Property;
 
 // Returns a matcher that matches a `FormFieldData::id_attribute`.
 auto HasFieldIdAttribute(std::u16string id_attribute) {
@@ -42,7 +43,7 @@ auto HasFieldIdAttribute(std::u16string id_attribute) {
 
 // Returns a matcher that matches a `FormFieldData::form_control_type`.
 auto HasType(FormControlType type) {
-  return Field(&FormFieldData::form_control_type, type);
+  return Property(&FormFieldData::form_control_type, type);
 }
 
 auto IsContentEditable() {

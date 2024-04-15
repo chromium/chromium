@@ -134,7 +134,7 @@ FormStructure::FormStructure(const FormData& form)
       ++active_field_count_;
     }
 
-    if (field.form_control_type == FormControlType::kInputPassword) {
+    if (field.form_control_type() == FormControlType::kInputPassword) {
       has_password_field_ = true;
     } else {
       all_fields_are_passwords_ = false;
@@ -749,7 +749,7 @@ size_t FormStructure::active_field_count() const {
 bool FormStructure::is_form_element() const {
   return !renderer_id_.is_null() ||
          (!fields_.empty() &&
-          fields_.begin()->get()->form_control_type ==
+          fields_.begin()->get()->form_control_type() ==
               FormControlType::kContentEditable &&
           *fields_.begin()->get()->renderer_id == *renderer_id_);
 }

@@ -79,8 +79,8 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   CancelPendingQueries();
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
-      field.form_control_type == FormControlType::kTextArea ||
-      field.form_control_type == FormControlType::kContentEditable ||
+      field.form_control_type() == FormControlType::kTextArea ||
+      field.form_control_type() == FormControlType::kContentEditable ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(field.global_id(), field.value(),
                                      std::move(on_suggestions_returned)));
@@ -302,7 +302,7 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   return is_value_valid && IsMeaningfulFieldName(field.name) &&
          !field.name.empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
-         field.form_control_type != FormControlType::kInputNumber &&
+         field.form_control_type() != FormControlType::kInputNumber &&
          field.should_autocomplete && !IsValidCreditCardNumber(field.value()) &&
          !IsSSN(field.value()) &&
          (field.properties_mask & kUserTyped || field.is_focusable) &&

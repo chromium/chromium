@@ -118,7 +118,7 @@ void PhoneFieldParserTest::CheckField(const FieldGlobalId id,
 autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
     const TestFieldData& field_data) {
   FormFieldData field;
-  field.form_control_type = field_data.type;
+  field.set_form_control_type(field_data.type);
   field.label = field_data.label;
   field.name = field_data.name;
   field.max_length = field_data.max_length;

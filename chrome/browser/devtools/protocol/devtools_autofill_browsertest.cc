@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue(
                     "htmlType", std::string(autofill::FormControlTypeToString(
-                                    af->form_control_type))));
+                                    af->form_control_type()))));
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("name", af->name_attribute));
     EXPECT_EQ(*ff.GetDict().FindIntByDottedPath("fieldId"),

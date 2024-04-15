@@ -238,7 +238,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   // not by autofill.
   field.label = u"username";
   field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -249,7 +249,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   // not by autofill.
   field.label = u"password";
   field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
+  field.set_form_control_type(FormControlType::kInputPassword);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -259,7 +259,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   // be picked up by autofill only if there is no minimum field enforcement.
   field.label = u"Full Name";
   field.name = u"fullname";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -269,7 +269,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   // be picked up by autofill only if there is no minimum field enforcement.
   field.label = u"Address Line 1";
   field.name = u"address1";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -278,7 +278,7 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   // We now have three auto-fillable fields. It's always autofillable.
   field.label = u"Email";
   field.name = u"email";
-  field.form_control_type = FormControlType::kInputEmail;
+  field.set_form_control_type(FormControlType::kInputEmail);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -317,7 +317,7 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
 
   void AddTextField() {
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     AddField(field);
   }
 
@@ -346,7 +346,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
   {
     FormFieldData field;
     field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-    field.form_control_type = FormControlType::kInputRadio;
+    field.set_form_control_type(FormControlType::kInputRadio);
     AddField(field);
   }
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
@@ -357,7 +357,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
   {
     FormFieldData field;
     field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-    field.form_control_type = FormControlType::kInputCheckbox;
+    field.set_form_control_type(FormControlType::kInputCheckbox);
     AddField(field);
   }
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
@@ -392,7 +392,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
   {
     FormFieldData field;
-    field.form_control_type = FormControlType::kSelectOne;
+    field.set_form_control_type(FormControlType::kSelectOne);
     AddField(field);
   }
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
@@ -408,7 +408,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectListField) {
   {
     FormFieldData field;
-    field.form_control_type = FormControlType::kSelectList;
+    field.set_form_control_type(FormControlType::kSelectList);
     AddField(field);
   }
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
@@ -447,7 +447,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
   {
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputPassword;
+    field.set_form_control_type(FormControlType::kInputPassword);
     AddField(field);
   }
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
@@ -464,7 +464,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
 
   {
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputPassword;
+    field.set_form_control_type(FormControlType::kInputPassword);
     AddField(field);
   }
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
@@ -495,7 +495,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
     FormFieldData field;
     field.parsed_autocomplete = AutocompleteParsingResult{
         .section = "my-billing-section", .field_type = HtmlFieldType::kName};
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     AddField(field);
   }
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
@@ -874,7 +874,7 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"First Name";
   field.name = u"firstname";
@@ -945,7 +945,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Promo Code";
   field.name = u"promocode";
@@ -1164,7 +1164,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Your First Name:";
   field.name = u"bill.first";
@@ -1213,7 +1213,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -1256,7 +1256,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"E-mail address";
   field.name = u"email";
@@ -1291,7 +1291,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   field.label = std::u16string();
   field.name = u"Submit";
   field.set_value(u"continue");
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -1327,7 +1327,7 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"First Name";
   field.name = std::u16string();
@@ -1366,7 +1366,7 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -1405,7 +1405,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
@@ -1434,7 +1434,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -1467,7 +1467,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
@@ -1503,7 +1503,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -1538,7 +1538,7 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Address Line1";
   field.name = u"Address";
@@ -1584,7 +1584,7 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Address Line1";
   field.name = u"shipping.address.addressLine1";
@@ -1633,7 +1633,7 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Street:";
   field.name = u"FOPIH_RgWebCC_0_IHAddress_ads1";
@@ -1681,7 +1681,7 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Address Line1";
   field.name = u"address1";
@@ -1719,7 +1719,7 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Address Line1";
   field.name = u"Address";
@@ -1758,7 +1758,7 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"First Name*:";
   field.name = u"editBillingAddress$firstNameBox";
@@ -1845,7 +1845,7 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Phone:";
   field.name = u"dayphone1";
@@ -1894,7 +1894,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Name on Card";
   field.name = u"name_on_card";
@@ -1951,7 +1951,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Card number";
   field.name = u"ccnumber";
@@ -2017,7 +2017,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"Cardholder Name";
   field.name = u"cc_first_name";
@@ -2120,7 +2120,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   FormData form;
 
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
 
   field.label = u"email";
   field.name = u"email";
@@ -2135,7 +2135,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   // Checkable fields shouldn't affect the signature.
   field.label = u"Select";
   field.name = u"Select";
-  field.form_control_type = FormControlType::kInputCheckbox;
+  field.set_form_control_type(FormControlType::kInputCheckbox);
   field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -2167,7 +2167,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.check_status = FormFieldData::CheckStatus::kNotCheckable;
   field.label = u"Random Field label";
   field.name = u"random1234";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2198,19 +2198,19 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureLarge) {
   large_form.url = GURL("http://foo.com/login?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
+  field1.set_form_control_type(FormControlType::kInputText);
   large_form.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
+  field2.set_form_control_type(FormControlType::kInputText);
   large_form.fields.push_back(field2);
 
   FormFieldData field3;
-  field3.form_control_type = FormControlType::kInputEmail;
+  field3.set_form_control_type(FormControlType::kInputEmail);
   large_form.fields.push_back(field3);
 
   FormFieldData field4;
-  field4.form_control_type = FormControlType::kInputTelephone;
+  field4.set_form_control_type(FormControlType::kInputTelephone);
   large_form.fields.push_back(field4);
 
   // Alternative form signature string of a form with more than two fields
@@ -2226,11 +2226,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallPath) {
   small_form_path.url = GURL("http://foo.com/login?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
+  field1.set_form_control_type(FormControlType::kInputText);
   small_form_path.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
+  field2.set_form_control_type(FormControlType::kInputText);
   small_form_path.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less should
@@ -2246,11 +2246,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallRef) {
   small_form_ref.url = GURL("http://foo.com?q=a#ref");
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
+  field1.set_form_control_type(FormControlType::kInputText);
   small_form_ref.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
+  field2.set_form_control_type(FormControlType::kInputText);
   small_form_ref.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
@@ -2267,11 +2267,11 @@ TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallQuery) {
   small_form_query.url = GURL("http://foo.com?q=a");
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
+  field1.set_form_control_type(FormControlType::kInputText);
   small_form_query.fields.push_back(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
+  field2.set_form_control_type(FormControlType::kInputText);
   small_form_query.fields.push_back(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
@@ -2293,19 +2293,19 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   FormFieldData field;
   field.label = u"username";
   field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = u"password";
   field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
+  field.set_form_control_type(FormControlType::kInputPassword);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = std::u16string();
   field.name = u"Submit";
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2318,7 +2318,7 @@ TEST_F(FormStructureTestImpl, OneFieldPasswordFormShouldNotBeUpload) {
   FormData form;
   FormFieldData field;
   field.name = u"Password";
-  field.form_control_type = FormControlType::kInputPassword;
+  field.set_form_control_type(FormControlType::kInputPassword);
   field.renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
@@ -2332,7 +2332,7 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.max_length = 10000;
 
   field.label = u"Full Name";
@@ -2691,7 +2691,7 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = FormControlType::kInputText;
+  field.set_form_control_type(FormControlType::kInputText);
   field.max_length = 10000;
 
   field.label = u"Full Name";
@@ -2772,7 +2772,7 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
                            LocalFrameToken frame_token,
                            FormRendererId host_form_id) {
     FormFieldData field;
-    field.form_control_type = FormControlType::kInputText;
+    field.set_form_control_type(FormControlType::kInputText);
     field.name = name;
     field.renderer_id = test::MakeFieldRendererId();
     field.host_frame = frame_token;

@@ -285,7 +285,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
             .SetName(base::UTF16ToUTF8(autofill_field->name_attribute))
             .SetValue(base::UTF16ToUTF8(filled_value))
             .SetHtmlType(std::string(autofill::FormControlTypeToString(
-                autofill_field->form_control_type)))
+                autofill_field->form_control_type())))
             .SetAutofillType(
                 std::string(FieldTypeToDeveloperRepresentationString(
                     autofill_field->Type().GetStorableType())))

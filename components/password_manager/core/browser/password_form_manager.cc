@@ -1656,7 +1656,7 @@ bool HasObservedFormChanged(const FormData& form_data,
       differences_bitmask |= PasswordFormMetricsRecorder::kRendererFieldIDs;
     }
 
-    if (lhs_field.form_control_type != rhs_field.form_control_type) {
+    if (lhs_field.form_control_type() != rhs_field.form_control_type()) {
       differences_bitmask |= PasswordFormMetricsRecorder::kFormControlTypes;
     }
 
