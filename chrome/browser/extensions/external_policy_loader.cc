@@ -11,11 +11,6 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#endif
-
 namespace extensions {
 
 ExternalPolicyLoader::ExternalPolicyLoader(Profile* profile,
@@ -37,16 +32,6 @@ void ExternalPolicyLoader::OnExtensionManagementSettingsChanged() {
 void ExternalPolicyLoader::AddExtension(base::Value::Dict& dict,
                                         const std::string& extension_id,
                                         const std::string& update_url) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Ash Chrome is no longer functioning as a browser and the extension is
-  // not meant to run in Ash, do not load the extension.
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-      !(extensions::ExtensionRunsInOS(extension_id) ||
-        extensions::ExtensionAppRunsInOS(extension_id))) {
-    return;
-  }
-#endif
-
   dict.SetByDottedPath(
       base::StringPrintf("%s.%s", extension_id.c_str(),
                          ExternalProviderImpl::kExternalUpdateUrl),

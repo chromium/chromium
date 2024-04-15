@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/external_policy_loader.h"
+
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/values.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -19,19 +20,8 @@
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif
 
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
@@ -43,7 +33,7 @@ class ExternalPolicyLoaderTest : public testing::Test {
   ExternalPolicyLoaderTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-  ~ExternalPolicyLoaderTest() override {}
+  ~ExternalPolicyLoaderTest() override = default;
 
  private:
   // Needed to satisfy BrowserThread::CurrentlyOn(BrowserThread::UI) checks in
@@ -54,8 +44,7 @@ class ExternalPolicyLoaderTest : public testing::Test {
 class MockExternalPolicyProviderVisitor
     : public ExternalProviderInterface::VisitorInterface {
  public:
-  MockExternalPolicyProviderVisitor() {
-  }
+  MockExternalPolicyProviderVisitor() = default;
 
   MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
       delete;
@@ -86,13 +75,13 @@ class MockExternalPolicyProviderVisitor
   }
 
   bool OnExternalExtensionFileFound(
-      const extensions::ExternalInstallInfoFile& info) override {
+      const ExternalInstallInfoFile& info) override {
     ADD_FAILURE() << "There should be no external extensions from files.";
     return false;
   }
 
   bool OnExternalExtensionUpdateUrlFound(
-      const extensions::ExternalInstallInfoUpdateUrl& info,
+      const ExternalInstallInfoUpdateUrl& info,
       bool force_update) override {
     // Extension has the correct location.
     EXPECT_EQ(ManifestLocation::kExternalPolicyDownload,
@@ -135,11 +124,11 @@ class MockExternalPolicyProviderVisitor
 TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {
   base::Value::Dict forced_extensions;
   std::set<std::string> expected_extensions;
-  extensions::ExternalPolicyLoader::AddExtension(
-      forced_extensions, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "http://www.example.com/crx?a=5;b=6");
+  ExternalPolicyLoader::AddExtension(forced_extensions,
+                                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                                     "http://www.example.com/crx?a=5;b=6");
   expected_extensions.insert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-  extensions::ExternalPolicyLoader::AddExtension(
+  ExternalPolicyLoader::AddExtension(
       forced_extensions, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "https://clients2.google.com/service/update2/crx");
   expected_extensions.insert("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
@@ -152,9 +141,9 @@ TEST_F(ExternalPolicyLoaderTest, InvalidEntriesIgnored) {
   base::Value::Dict forced_extensions;
   std::set<std::string> expected_extensions;
 
-  extensions::ExternalPolicyLoader::AddExtension(
-      forced_extensions, "cccccccccccccccccccccccccccccccc",
-      "http://www.example.com/crx");
+  ExternalPolicyLoader::AddExtension(forced_extensions,
+                                     "cccccccccccccccccccccccccccccccc",
+                                     "http://www.example.com/crx");
   expected_extensions.insert("cccccccccccccccccccccccccccccccc");
 
   // Add invalid entries.
@@ -165,86 +154,4 @@ TEST_F(ExternalPolicyLoaderTest, InvalidEntriesIgnored) {
   MockExternalPolicyProviderVisitor mv;
   mv.Visit(forced_extensions, expected_extensions);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ExternalPolicyLoaderAshTest : public ExternalPolicyLoaderTest {
- public:
-  void SetUp() override {
-    ExternalPolicyLoaderTest::SetUp();
-    // This setup is required to set the primary profile, which in turn is
-    // required to enabled Lacros.
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
-
-    AccountId account_id = AccountId::FromUserEmail("test@gmail.com");
-    const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
-  }
-
- private:
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-};
-
-TEST_F(ExternalPolicyLoaderAshTest, BlockNonOSExtensionsIfAshBrowserDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
-  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
-
-  base::Value::Dict forced_extensions;
-  std::set<std::string> expected_extensions;
-
-  // Add an arbitrary extension.
-  ExternalPolicyLoader::AddExtension(forced_extensions,
-                                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                     "http://www.example.com/crx");
-  // Add an extension in keep list. Check `ExtensionRunsInOS()` for details.
-  ExternalPolicyLoader::AddExtension(
-      forced_extensions, extension_misc::kAccessibilityCommonExtensionId,
-      "http://www.access.com/crx");
-  // Add an extension app in keep list. Check `ExtensionAppRunsInOS()` for
-  // details.
-  ExternalPolicyLoader::AddExtension(forced_extensions,
-                                     extension_misc::kGnubbyAppId,
-                                     "http://www.gnubby.com/crx");
-
-  // Only extensions that are allowed to run in Ash should be added i.e. an
-  // arbitrary non-OS extension should not be installed.
-  expected_extensions.insert(extension_misc::kAccessibilityCommonExtensionId);
-  expected_extensions.insert(extension_misc::kGnubbyAppId);
-  MockExternalPolicyProviderVisitor mv;
-  mv.Visit(forced_extensions, expected_extensions);
-}
-
-TEST_F(ExternalPolicyLoaderAshTest, AllowNonOSExtensionsIfAshBrowserEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, ash::standalone_browser::GetFeatureRefs());
-  ASSERT_TRUE(crosapi::browser_util::IsAshWebBrowserEnabled());
-
-  base::Value::Dict forced_extensions;
-  std::set<std::string> expected_extensions;
-
-  ExternalPolicyLoader::AddExtension(forced_extensions,
-                                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                     "http://www.example.com/crx");
-  ExternalPolicyLoader::AddExtension(
-      forced_extensions, extension_misc::kAccessibilityCommonExtensionId,
-      "http://www.access.com/crx");
-  ExternalPolicyLoader::AddExtension(forced_extensions,
-                                     extension_misc::kGnubbyAppId,
-                                     "http://www.gnubby.com/crx");
-
-  // If Ash is running as a web browser, all extensions should be added.
-  expected_extensions.insert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-  expected_extensions.insert(extension_misc::kAccessibilityCommonExtensionId);
-  expected_extensions.insert(extension_misc::kGnubbyAppId);
-  MockExternalPolicyProviderVisitor mv;
-  mv.Visit(forced_extensions, expected_extensions);
-}
-#endif
-
 }  // namespace extensions

@@ -6,21 +6,23 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -28,13 +30,18 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/pref_names.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 namespace {
@@ -63,6 +70,26 @@ bool IsValidUpdateUrl(const std::string& update_url) {
   }
   return update_gurl.SchemeIsHTTPOrHTTPS() || update_gurl.SchemeIsFile();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// If Ash Chrome is no longer functioning as a browser and the extension is not
+// meant to run in Ash, do not load the extension.
+void FilterOutExtensionsMeantToRunInLacros(base::Value::Dict& extensions) {
+  auto iterator = extensions.begin();
+
+  while (iterator != extensions.end()) {
+    const std::string& extension_id = iterator->first;
+    if (ExtensionRunsInOS(extension_id) || ExtensionAppRunsInOS(extension_id)) {
+      // Keep extension meant to run in Ash
+      iterator++;
+    } else {
+      // Remove extension meant to run in Lacros
+      iterator = extensions.erase(iterator);
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 // ExtensionListPolicyHandler implementation -----------------------------------
 
@@ -73,7 +100,7 @@ ExtensionListPolicyHandler::ExtensionListPolicyHandler(const char* policy_name,
       pref_path_(pref_path),
       allow_wildcards_(allow_wildcards) {}
 
-ExtensionListPolicyHandler::~ExtensionListPolicyHandler() {}
+ExtensionListPolicyHandler::~ExtensionListPolicyHandler() = default;
 
 bool ExtensionListPolicyHandler::CheckListEntry(const base::Value& value) {
   const std::string& str = value.GetString();
@@ -111,6 +138,12 @@ void ExtensionInstallForceListPolicyHandler::ApplyPolicySettings(
   base::Value::Dict dict;
   if (CheckAndGetValue(policies, nullptr, &value) && value &&
       ParseList(value, &dict, nullptr)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (crosapi::browser_util::IsLacrosEnabled()) {
+      FilterOutExtensionsMeantToRunInLacros(dict);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     prefs->SetValue(pref_names::kInstallForceList,
                     base::Value(std::move(dict)));
   }
@@ -190,8 +223,7 @@ base::Value::Dict ExtensionInstallForceListPolicyHandler::GetPolicyDict(
     PrefValueMap pref_value_map;
     ApplyPolicySettings(policies, &pref_value_map);
     const base::Value* value;
-    if (pref_value_map.GetValue(extensions::pref_names::kInstallForceList,
-                                &value) &&
+    if (pref_value_map.GetValue(pref_names::kInstallForceList, &value) &&
         value->is_dict()) {
       return value->GetDict().Clone();
     }
@@ -203,7 +235,7 @@ base::Value::Dict ExtensionInstallForceListPolicyHandler::GetPolicyDict(
 
 ExtensionInstallBlockListPolicyHandler::ExtensionInstallBlockListPolicyHandler()
     : list_handler_(policy::key::kExtensionInstallBlocklist,
-                    extensions::pref_names::kInstallDenyList,
+                    pref_names::kInstallDenyList,
                     /*allow_wildcards*/ true) {}
 
 ExtensionInstallBlockListPolicyHandler::
@@ -238,7 +270,8 @@ ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(
     : policy::TypeCheckingPolicyHandler(policy_name, base::Value::Type::LIST),
       pref_path_(pref_path) {}
 
-ExtensionURLPatternListPolicyHandler::~ExtensionURLPatternListPolicyHandler() {}
+ExtensionURLPatternListPolicyHandler::~ExtensionURLPatternListPolicyHandler() =
+    default;
 
 bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
@@ -303,7 +336,7 @@ ExtensionSettingsPolicyHandler::ExtensionSettingsPolicyHandler(
           chrome_schema.GetKnownProperty(policy::key::kExtensionSettings),
           policy::SCHEMA_ALLOW_UNKNOWN) {}
 
-ExtensionSettingsPolicyHandler::~ExtensionSettingsPolicyHandler() {}
+ExtensionSettingsPolicyHandler::~ExtensionSettingsPolicyHandler() = default;
 
 void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     base::Value* policy_value,
