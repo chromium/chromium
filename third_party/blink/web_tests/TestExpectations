@@ -297,6 +297,8 @@ crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/w
 crbug.com/333739950 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/clip-path-larger-than-border-box-on-child-of-named-element.html [ Failure Pass ]
 crbug.com/333739950 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/clip-path-larger-than-border-box-on-child-of-named-element.html [ Failure Pass ]
 crbug.com/333739950 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
+crbug.com/333739950 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
+crbug.com/333739950 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-* [ Failure Pass ]
 
 # View transition SPA failures with MPA serialization.
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
