@@ -135,15 +135,35 @@ WrappedGraphiteTextureBacking::WrappedGraphiteTextureBacking(
                                       format.EstimatedSizeInBytes(size),
                                       thread_safe),
       context_state_(std::move(context_state)) {
-  CHECK(!!context_state_);
+  CHECK(context_state_);
   CHECK(context_state_->graphite_context());
+
+  if (is_thread_safe()) {
+    // If the backing is thread safe then it may be destroyed on a different
+    // thread. Store the task runner so textures can be destroyed on the same
+    // thread they were created on.
+    CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
+    created_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
 }
 
 WrappedGraphiteTextureBacking::~WrappedGraphiteTextureBacking() {
-  for (auto& texture : graphite_textures_) {
-    if (texture.isValid()) {
-      context_state_->graphite_context()->deleteBackendTexture(texture);
-    }
+  auto destroy_resources =
+      [](scoped_refptr<SharedContextState> context_state,
+         std::vector<skgpu::graphite::BackendTexture> textures) {
+        for (auto& texture : textures) {
+          if (texture.isValid()) {
+            context_state->graphite_context()->deleteBackendTexture(texture);
+          }
+        }
+      };
+
+  if (created_task_runner_ && !created_task_runner_->BelongsToCurrentThread()) {
+    created_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(destroy_resources, std::move(context_state_),
+                                  std::move(graphite_textures_)));
+  } else {
+    destroy_resources(std::move(context_state_), std::move(graphite_textures_));
   }
 }
 
@@ -235,7 +255,10 @@ void WrappedGraphiteTextureBacking::Update(
 
 bool WrappedGraphiteTextureBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
+  // Using `context_state_` isn't compatible with a thread safe backing.
+  CHECK(!is_thread_safe());
   CHECK_EQ(pixmaps.size(), graphite_textures_.size());
+
   if (context_state_->context_lost()) {
     return false;
   }
@@ -256,7 +279,10 @@ bool WrappedGraphiteTextureBacking::UploadFromMemory(
 
 bool WrappedGraphiteTextureBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
+  // Using `context_state_` isn't compatible with a thread safe backing.
+  CHECK(!is_thread_safe());
   CHECK_EQ(pixmaps.size(), graphite_textures_.size());
+
   if (context_state_->context_lost()) {
     return false;
   }
@@ -337,10 +363,6 @@ WrappedGraphiteTextureBacking::ProduceSkiaGraphite(
   if (context_state->context_lost()) {
     return nullptr;
   }
-  // This method should only be called on the same thread on which this
-  // backing is created on. Hence adding a check on context_state to ensure
-  // this.
-  CHECK_EQ(context_state_, context_state);
   return std::make_unique<SkiaGraphiteImageRepresentationImpl>(
       manager, this, tracker, std::move(context_state));
 }

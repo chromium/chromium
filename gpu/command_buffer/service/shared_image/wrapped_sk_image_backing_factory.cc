@@ -110,8 +110,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
         color_space, surface_origin, alpha_type, usage, std::move(debug_label),
-        context_state_,
-        /*is_thread_safe=*/false);
+        context_state_, is_thread_safe);
     if (!backing->Initialize()) {
       return nullptr;
     }
@@ -144,8 +143,7 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
         color_space, surface_origin, alpha_type, usage, std::move(debug_label),
-        context_state_,
-        /*is_thread_safe=*/false);
+        context_state_, is_thread_safe);
     if (!backing->InitializeWithData(data)) {
       return nullptr;
     }
@@ -215,9 +213,12 @@ bool WrappedSkImageBackingFactory::IsSupported(
   // the reads/writes using semaphores. For this backing to support thread
   // safety across multiple queues, we need to synchronize the reads/writes via
   // semaphores.
-  if (thread_safe &&
-      (!is_drdc_enabled_ || gr_context_type != GrContextType::kVulkan)) {
-    return false;
+  if (thread_safe) {
+    bool is_vulkan = gr_context_type == GrContextType::kVulkan ||
+                     context_state_->IsGraphiteDawnVulkan();
+    if (!is_drdc_enabled_ || !is_vulkan) {
+      return false;
+    }
   }
 
   if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
