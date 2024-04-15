@@ -31,15 +31,12 @@ MediaStreamTrackPlatform::GetCaptureHandle() {
   return MediaStreamTrackPlatform::CaptureHandle();
 }
 
-MediaStreamTrackPlatform::AudioFrameStats::AudioFrameStats() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+MediaStreamTrackPlatform::AudioFrameStats::AudioFrameStats() = default;
 
 void MediaStreamTrackPlatform::AudioFrameStats::Update(
     const media::AudioParameters& params,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta current_latency = base::TimeTicks::Now() - capture_time;
 
   delivered_frames_ += params.frames_per_buffer();
@@ -54,7 +51,6 @@ void MediaStreamTrackPlatform::AudioFrameStats::Update(
 }
 
 void MediaStreamTrackPlatform::AudioFrameStats::Absorb(AudioFrameStats& from) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |from| should have newer stats, so |from|'s counters should be at least as
   // high as |this|.
   CHECK_GE(from.delivered_frames_, delivered_frames_);
@@ -87,7 +83,6 @@ void MediaStreamTrackPlatform::AudioFrameStats::Absorb(AudioFrameStats& from) {
 void MediaStreamTrackPlatform::AudioFrameStats::MergeLatencyExtremes(
     base::TimeDelta new_minumum,
     base::TimeDelta new_maximum) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If we already have latency stats, we need to merge them.
   if (interval_frames_ > 0) {
     interval_minimum_latency_ =
@@ -101,45 +96,37 @@ void MediaStreamTrackPlatform::AudioFrameStats::MergeLatencyExtremes(
 }
 
 size_t MediaStreamTrackPlatform::AudioFrameStats::DeliveredFrames() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delivered_frames_;
 }
 
 base::TimeDelta
 MediaStreamTrackPlatform::AudioFrameStats::DeliveredFramesDuration() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delivered_frames_duration_;
 }
 
 size_t MediaStreamTrackPlatform::AudioFrameStats::TotalFrames() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delivered_frames_ + glitch_frames_;
 }
 
 base::TimeDelta
 MediaStreamTrackPlatform::AudioFrameStats::TotalFramesDuration() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delivered_frames_duration_ + glitch_frames_duration_;
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::Latency() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_latency_;
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::AverageLatency() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return interval_frames_ > 0 ? interval_frames_latency_sum_ / interval_frames_
                               : last_latency_;
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::MinimumLatency() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return interval_minimum_latency_;
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::MaximumLatency() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return interval_maximum_latency_;
 }
 

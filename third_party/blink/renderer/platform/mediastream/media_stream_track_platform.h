@@ -123,8 +123,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     // extremes.
     void MergeLatencyExtremes(base::TimeDelta new_minumum,
                               base::TimeDelta new_maximum);
-
-    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   struct CaptureHandle {
