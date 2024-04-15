@@ -321,6 +321,7 @@ enum Setting {
   kMouseKeysMaxSpeed = 1542,
   kMouseKeysDominantHand = 1543,
   kCaretBlinkInterval = 1544,
+  kPdfOcrOnOff = 1546,
 
   // Reset section.
   kPowerwash = 1600,

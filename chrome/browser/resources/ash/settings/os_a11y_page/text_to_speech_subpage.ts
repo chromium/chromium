@@ -110,6 +110,7 @@ export class SettingsTextToSpeechSubpageElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kChromeVox,
+          Setting.kPdfOcrOnOff,
           Setting.kSelectToSpeak,
         ]),
       },

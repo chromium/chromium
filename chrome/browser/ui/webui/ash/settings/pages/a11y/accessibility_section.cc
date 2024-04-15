@@ -327,6 +327,14 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kEnableCursorColor},
        {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT1,
         IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT2, SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR,
+       mojom::kTextToSpeechPagePath,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
+                        : mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPdfOcrOnOff},
+       {IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -1495,6 +1503,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kColorCorrectionFilterAmount,
       mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
+      mojom::Setting::kPdfOcrOnOff,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);

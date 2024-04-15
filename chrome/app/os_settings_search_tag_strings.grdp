@@ -1511,6 +1511,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is tritanopia, and color correction filters include a tritanopia filter.">
     Tritanomaly
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable PDF OCR.">
+    PDF OCR
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable PDF OCR. Alternate phrase for: 'PDF OCR'">
+    Extract text from PDF
+  </message>
 
   <!-- Reset section. -->
   <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">
