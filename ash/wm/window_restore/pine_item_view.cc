@@ -113,39 +113,48 @@ PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
   }
 
   // Use a barrier callback so that we only layout once after all favicons are
-  // added as views.
-  auto barrier = base::BarrierCallback<const gfx::ImageSkia&>(
+  // added as views. Pair each `gfx::ImageSkia` with its index so we can
+  // restore the order after all icons have loaded, as `BarrierCallback` is not
+  // guaranteed to maintain the order that the callbacks are initially run.
+  auto barrier = base::BarrierCallback<const IndexedImagePair&>(
       /*num_callbacks=*/favicons.size(),
       /*done_callback=*/base::BindOnce(&PineItemView::OnAllFaviconsLoaded,
                                        weak_ptr_factory_.GetWeakPtr()));
 
   auto* delegate = Shell::Get()->saved_desk_delegate();
-  for (const GURL& url : favicons) {
+  for (int i = 0; i < static_cast<int>(favicons.size()); ++i) {
+    const GURL& url = favicons[i];
     delegate->GetFaviconForUrl(url.spec(), app_info.lacros_profile_id,
                                base::BindOnce(&PineItemView::OnOneFaviconLoaded,
-                                              GetWeakPtr(), barrier),
+                                              GetWeakPtr(), barrier, i),
                                &cancelable_favicon_task_tracker_);
   }
 }
 
 PineItemView::~PineItemView() = default;
 
-void PineItemView::OnOneFaviconLoaded(
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-    const gfx::ImageSkia& favicon) {
-  std::move(callback).Run(favicon);
+void PineItemView::OnOneFaviconLoaded(IndexedImageCallback callback,
+                                      int index,
+                                      const gfx::ImageSkia& favicon) {
+  std::move(callback).Run({index, favicon});
 }
 
 void PineItemView::OnAllFaviconsLoaded(
-    const std::vector<gfx::ImageSkia>& favicons) {
+    std::vector<IndexedImagePair> indexed_favicons) {
+  base::ranges::sort(indexed_favicons,
+                     [](const auto& element_a, const auto& element_b) {
+                       return element_a.first < element_b.first;
+                     });
+
   bool needs_layout = false;
-  const size_t elements = favicons.size();
+  const size_t elements = indexed_favicons.size();
   CHECK_GE(elements, 1u);
   CHECK_LE(elements, 5u);
 
-  for (int i = 0; i < static_cast<int>(elements); ++i) {
+  int count = 0;
+  for (const auto& [_, favicon] : indexed_favicons) {
     // If there are overflow windows, save the last slot for a count.
-    if (tab_count_ > kTabMaxElements && i >= kTabOverflowThreshold) {
+    if (tab_count_ > kTabMaxElements && count >= kTabOverflowThreshold) {
       break;
     }
 
@@ -163,7 +172,6 @@ void PineItemView::OnAllFaviconsLoaded(
     }
 
     // If the image data is null, use a default cube icon instead.
-    const gfx::ImageSkia& favicon = favicons[i];
     if (favicon.isNull()) {
       builder
           .SetImage(ui::ImageModel::FromVectorIcon(
@@ -176,6 +184,7 @@ void PineItemView::OnAllFaviconsLoaded(
     }
 
     favicon_container_view_->AddChildView(std::move(builder).Build());
+    ++count;
   }
 
   // Insert a count of the overflow tabs that could not be individually

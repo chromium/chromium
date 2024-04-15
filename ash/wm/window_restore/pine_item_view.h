@@ -27,6 +27,13 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemView, views::BoxLayoutView)
 
  public:
+  using IndexedImagePair = std::pair</*index=*/int, gfx::ImageSkia>;
+
+  // Callback that passes a `gfx::ImageSkia` (favicon) paired with its index in
+  // the list of favicons, so we can maintain order after loading.
+  using IndexedImageCallback =
+      base::OnceCallback<void(const IndexedImagePair&)>;
+
   PineItemView(const PineContentsData::AppInfo& app_info,
                bool inside_screenshot);
   PineItemView(const PineItemView&) = delete;
@@ -40,11 +47,11 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   }
 
  private:
-  void OnOneFaviconLoaded(
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-      const gfx::ImageSkia& favicon);
+  void OnOneFaviconLoaded(IndexedImageCallback callback,
+                          int index,
+                          const gfx::ImageSkia& favicon);
 
-  void OnAllFaviconsLoaded(const std::vector<gfx::ImageSkia>& favicons);
+  void OnAllFaviconsLoaded(std::vector<IndexedImagePair> indexed_favicons);
 
   // Updates the title label on creation, and if/when the app is updated.
   void UpdateTitle();
