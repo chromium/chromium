@@ -55,6 +55,8 @@
       composite_op_statement: ctx.globalCompositeOperation = 'multiply';
     composite:
       composite_op_statement: ctx.globalCompositeOperation = 'source-in';
+    copy:
+      composite_op_statement: ctx.globalCompositeOperation = 'copy';
   - no-shadow:
       shadow_statement: // No shadow.
     shadow:
