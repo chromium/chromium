@@ -114,9 +114,11 @@ process but are generated using a script that pulls them from outside the repo.-
   </outputs>
   <translations>
   <!-- The below files are generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify them manually. -->
+    <file path="strings/search_engine_descriptions_strings_af.xtb" lang="af" />
     <file path="strings/search_engine_descriptions_strings_am.xtb" lang="am" />
     <file path="strings/search_engine_descriptions_strings_ar.xtb" lang="ar" />
     <file path="strings/search_engine_descriptions_strings_as.xtb" lang="as" />
+    <file path="strings/search_engine_descriptions_strings_az.xtb" lang="az" />
     <file path="strings/search_engine_descriptions_strings_be.xtb" lang="be" />
     <file path="strings/search_engine_descriptions_strings_bg.xtb" lang="bg" />
     <file path="strings/search_engine_descriptions_strings_bn.xtb" lang="bn" />
@@ -134,7 +136,6 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_fil.xtb" lang="fil" />
     <file path="strings/search_engine_descriptions_strings_fr.xtb" lang="fr" />
     <file path="strings/search_engine_descriptions_strings_fr-CA.xtb" lang="fr-CA" />
-    <file path="strings/search_engine_descriptions_strings_ga.xtb" lang="ga" />
     <file path="strings/search_engine_descriptions_strings_gl.xtb" lang="gl" />
     <file path="strings/search_engine_descriptions_strings_gu.xtb" lang="gu" />
     <file path="strings/search_engine_descriptions_strings_he.xtb" lang="he" />
@@ -148,7 +149,6 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_ja.xtb" lang="ja" />
     <file path="strings/search_engine_descriptions_strings_ka.xtb" lang="ka" />
     <file path="strings/search_engine_descriptions_strings_kk.xtb" lang="kk" />
-    <file path="strings/search_engine_descriptions_strings_km.xtb" lang="km" />
     <file path="strings/search_engine_descriptions_strings_kn.xtb" lang="kn" />
     <file path="strings/search_engine_descriptions_strings_ko.xtb" lang="ko" />
     <file path="strings/search_engine_descriptions_strings_ky.xtb" lang="ky" />
@@ -169,6 +169,7 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_pl.xtb" lang="pl" />
     <file path="strings/search_engine_descriptions_strings_pt-PT.xtb" lang="pt-PT" />
     <file path="strings/search_engine_descriptions_strings_ro.xtb" lang="ro" />
+    <file path="strings/search_engine_descriptions_strings_ru.xtb" lang="ru" />
     <file path="strings/search_engine_descriptions_strings_si.xtb" lang="si" />
     <file path="strings/search_engine_descriptions_strings_sk.xtb" lang="sk" />
     <file path="strings/search_engine_descriptions_strings_sl.xtb" lang="sl" />
@@ -193,7 +194,7 @@ process but are generated using a script that pulls them from outside the repo.-
     <messages fallback_to_english="true">
       <!-- The below strings are generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify them manually. -->
       <message name="IDS_BING_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Microsoft Bing is an AI search engine powered by GPT-4
+        Powered by ChatGPT’s GPT-4
       </message>
       <message name="IDS_BRAVE_SEARCH_DESCRIPTION" use_name_for_id="true">
         Block ads while you browse, trackers while you search. Better privacy online.
@@ -202,10 +203,10 @@ process but are generated using a script that pulls them from outside the repo.-
         Private. Fast. Fewer Ads. DuckDuckGo never tracks you.
       </message>
       <message name="IDS_ECOSIA_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Plant trees as you browse. Over 200 million trees planted.
+        Plant trees as you search, for free. 200 million trees planted already.
       </message>
       <message name="IDS_GOOGLE_SEARCH_DESCRIPTION" use_name_for_id="true">
-        Find what you need with the world's most used search engine.
+        Find what you need
       </message>
       <message name="IDS_KARMA_SEARCH_DESCRIPTION" use_name_for_id="true">
         Protect animals and biodiversity - make every search count!
