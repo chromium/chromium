@@ -72,19 +72,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Starts locking (with slow pre-lock animation) that can be cancelled.
   void StartLockAnimation();
 
-  // The difference between this and `RequestShutdown` is that this one starts
-  // the shutdown that can be canceled. It is true if the `pre_shutdown_timer_`
-  // is still running (CanCancelShutdownAnimation). Please use only when
-  // necessary, e.g., requesting through the physical power button that it can
-  // be released with a very short press.
-  void RequestCancelableShutdown(ShutdownReason reason);
-
-  // Requests restart with the same animation as `RequestShutdown`.
-  // `description` is a human-readable string describing the source of request
-  // the restart.
-  void RequestRestart(power_manager::RequestRestartReason reason,
-                      const std::string& description);
-
   // Starts locking without slow animation.
   void LockWithoutAnimation();
 
@@ -92,24 +79,8 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // confirmation yet.
   bool LockRequested();
 
-  // Returns true if we are shutting down.
-  bool ShutdownRequested();
-
   // Cancels locking and reverts lock animation.
   void CancelLockAnimation();
-
-  // Cancels unlock animation.
-  void CancelUnlockAnimation();
-
-  // Returns true if we are within cancellable shutdown timeframe.
-  bool CanCancelShutdownAnimation();
-
-  // Cancels shutting down and reverts shutdown animation.
-  void CancelShutdownAnimation();
-
-  // Displays the shutdown animation and requests a system shutdown or system
-  // restart depending on the the state of the |RebootOnShutdown| device policy.
-  void RequestShutdown(ShutdownReason reason);
 
   // Called when ScreenLocker is ready to close, but not yet destroyed.
   // Can be used to display "hiding" animations on unlock.
@@ -119,6 +90,32 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   // Sets up the callback that should be called once lock animation is finished.
   // Callback is guaranteed to be called once and then discarded.
   void SetLockScreenDisplayedCallback(base::OnceClosure callback);
+
+  // Displays the shutdown animation and requests a system shutdown or system
+  // restart depending on the the state of the |RebootOnShutdown| device policy.
+  void RequestShutdown(ShutdownReason reason);
+
+  // The difference between this and `RequestShutdown` is that this one starts
+  // the shutdown that can be canceled. It is true if the `pre_shutdown_timer_`
+  // is still running (CanCancelShutdownAnimation). Please use only when
+  // necessary, e.g., requesting through the physical power button that it can
+  // be released with a very short press.
+  void RequestCancelableShutdown(ShutdownReason reason);
+
+  // Returns true if we are shutting down.
+  bool ShutdownRequested();
+
+  // Returns true if we are within cancellable shutdown timeframe.
+  bool CanCancelShutdownAnimation();
+
+  // Cancels shutting down and reverts shutdown animation.
+  void CancelShutdownAnimation();
+
+  // Requests restart with the same animation as `RequestShutdown`.
+  // `description` is a human-readable string describing the source of request
+  // the restart.
+  void RequestRestart(power_manager::RequestRestartReason reason,
+                      const std::string& description);
 
   // aura::WindowTreeHostObserver override:
   void OnHostCloseRequested(aura::WindowTreeHost* host) override;
@@ -139,22 +136,11 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
     bool wallpaper_is_hidden;
   };
 
+  // Cancels unlock animation.
+  void CancelUnlockAnimation();
+
   // Reverts the pre-lock animation, reports the error.
   void OnLockFailTimeout();
-
-  // Starts timer for undoable shutdown animation.
-  void StartPreShutdownAnimationTimer();
-
-  // Calls StartRealShutdownTimer().
-  void OnPreShutdownAnimationTimeout();
-
-  // Starts timer for final shutdown animation.
-  // If |with_animation_time| is true, it will also include time of "fade to
-  // white" shutdown animation.
-  void StartRealShutdownTimer(bool with_animation_time);
-
-  // Request that the machine be shut down.
-  void OnRealPowerTimeout();
 
   void PreLockAnimation(SessionStateAnimator::AnimationSpeed speed,
                         bool request_lock_on_completion);
@@ -194,6 +180,20 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   // Notifies observers.
   void OnLockStateEvent(LockStateObserver::EventType event);
+
+  // Starts timer for undoable shutdown animation.
+  void StartPreShutdownAnimationTimer();
+
+  // Calls StartRealShutdownTimer().
+  void OnPreShutdownAnimationTimeout();
+
+  // Starts timer for final shutdown animation.
+  // If |with_animation_time| is true, it will also include time of "fade to
+  // white" shutdown animation.
+  void StartRealShutdownTimer(bool with_animation_time);
+
+  // Request that the machine be shut down.
+  void OnRealPowerTimeout();
 
   // Triggers the shutdown way on `Pine`.
   void ShutdownOnPine(bool with_pre_animation);
