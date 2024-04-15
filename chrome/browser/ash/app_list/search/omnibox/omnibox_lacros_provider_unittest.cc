@@ -16,16 +16,11 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
-#include "chrome/browser/ash/crosapi/search_provider_ash.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/crosapi/search_controller_ash.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -151,11 +146,6 @@ class OmniboxLacrosProviderTest : public testing::Test {
   ~OmniboxLacrosProviderTest() override = default;
 
   void SetUp() override {
-    // The `CrosapiManager` requires:
-    //   - An active profile manager and profile.
-    //   - Various services disabled that can't run in unit tests.
-    //   - A valid login state.
-
     // Create the profile manager and an active profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -166,23 +156,13 @@ class OmniboxLacrosProviderTest : public testing::Test {
         {{TemplateURLServiceFactory::GetInstance(),
           base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
 
-    // The idle service has dependencies we can't instantiate in unit tests.
-    crosapi::IdleServiceAsh::DisableForTesting();
-
-    // The crosapi manager reads the global login state.
-    ash::LoginState::Initialize();
-
-    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
-
     // Create client of our provider.
     search_controller_ = std::make_unique<TestSearchController>();
 
     // Create the object to actually test.
     auto omnibox_provider = std::make_unique<OmniboxLacrosProvider>(
         profile_, &list_controller_, base::BindLambdaForTesting([this] {
-          return crosapi_manager_->crosapi_ash()
-              ->search_provider_ash()
-              ->GetController();
+          return crosapi_search_controller_ash_.get();
         }));
     omnibox_provider_ = omnibox_provider.get();
     search_controller_->AddProvider(std::move(omnibox_provider));
@@ -191,17 +171,15 @@ class OmniboxLacrosProviderTest : public testing::Test {
   void TearDown() override {
     omnibox_provider_ = nullptr;
     search_controller_.reset();
-    crosapi_manager_.reset();
-    ash::LoginState::Shutdown();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
 
   void RegisterSearchController(
       mojo::PendingRemote<cam::SearchController> search_controller) {
-    crosapi_manager_->crosapi_ash()
-        ->search_provider_ash()
-        ->RegisterSearchController(std::move(search_controller));
+    crosapi_search_controller_ash_ =
+        std::make_unique<crosapi::SearchControllerAsh>(
+            std::move(search_controller));
   }
 
   // Starts a search and waits for the query to be sent to "lacros" over a Mojo
@@ -229,7 +207,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
+  std::unique_ptr<crosapi::SearchControllerAsh> crosapi_search_controller_ash_;
 
   raw_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
