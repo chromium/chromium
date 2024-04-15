@@ -196,6 +196,7 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
 void DedicatedWorker::Start() {
+  TRACE_EVENT("blink.worker", "DedicatedWorker::Start");
   DCHECK(GetExecutionContext()->IsContextThread());
 
   // This needs to be done after the UpdateStateIfNeeded is called as
@@ -203,6 +204,9 @@ void DedicatedWorker::Start() {
   v8_stack_trace_id_ = ThreadDebugger::From(GetExecutionContext()->GetIsolate())
                            ->StoreCurrentStackTrace("Worker Created");
   if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink.worker",
+                                      "PlzDedicatedWorker Specific Setup",
+                                      TRACE_ID_LOCAL(this));
     // For classic script, always use "same-origin" credentials mode.
     // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
     // For module script, respect the credentials mode specified by
@@ -335,6 +339,10 @@ void DedicatedWorker::OnScriptLoadStarted(
         mojom::blink::BackForwardCacheControllerHostInterfaceBase>
         back_forward_cache_controller_host) {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("blink.worker",
+                                  "PlzDedicatedWorker Specific Setup",
+                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStarted");
   // Specify empty source code here because scripts will be fetched on the
   // worker thread.
   ContinueStart(script_request_url_, std::move(worker_main_script_load_params),
@@ -346,6 +354,11 @@ void DedicatedWorker::OnScriptLoadStarted(
 
 void DedicatedWorker::OnScriptLoadStartFailed() {
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("blink.worker",
+                                  "PlzDedicatedWorker Specific Setup",
+                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT("blink.worker", "DedicatedWorker::OnScriptLoadStartFailed");
+  // Specify empty source code here because scripts will be fetched on the
   context_proxy_->DidFailToFetchScript();
   factory_client_.reset();
 }
