@@ -233741,6 +233741,21 @@
        {}
       ]
      ],
+     "new-content-changes-overflow-left.html": [
+      "e362dce76acd0456698c6400143bc60357b4561c",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-changes-overflow-left-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "new-content-changes-overflow.html": [
       "9dbd25883396b330fa14a95f9a465e5d995968fd",
       [
@@ -327778,18 +327793,6 @@
       "0ccc20dfb3a8a07be48e528279d05f1c944ce5df",
       []
      ],
-     "font-face-002-expected.txt": [
-      "840e9666fff992ed3fc1232921dffe9bc1a19729",
-      []
-     ],
-     "font-face-003-expected.txt": [
-      "da2aa2a4f2185c058477a33d95562a338c288f08",
-      []
-     ],
-     "font-face-004-expected.txt": [
-      "865903ef9f20329ffb44d06ab19e3b08b5a142a3",
-      []
-     ],
      "font-face-005-expected.txt": [
       "e808174513245057d6da71845dfb8de3bd1affc3",
       []
@@ -339866,6 +339869,10 @@
      ],
      "new-content-captures-spans-ref.html": [
       "f7bba2d683c740844cfef1d6ac5f03cbf9f39f05",
+      []
+     ],
+     "new-content-changes-overflow-left-ref.html": [
+      "e86e5197da9d365b931733d890052236f4275567",
       []
      ],
      "new-content-changes-overflow-ref.html": [
@@ -459055,63 +459062,63 @@
       ]
      ],
      "font-face-001.html": [
-      "7e47d18cbaa240af93b4cc598545aeba69ae2d17",
+      "4496786449f7fa63f7c437ea2ae43cf7df3b7525",
       [
        null,
        {}
       ]
      ],
      "font-face-002.html": [
-      "2e3272c44f7cc27b5cf3e28a4712ef0c3ca65cb6",
+      "3a20d0b808892db1f4dea21936bcd50e11f3df8f",
       [
        null,
        {}
       ]
      ],
      "font-face-003.html": [
-      "d3f83e4ec3720af544daac1640258e7e3324b3b5",
+      "adf0bba8dfaf27289bf80e44d5ed0eabdf524eaa",
       [
        null,
        {}
       ]
      ],
      "font-face-004.html": [
-      "6ac50bd4323339b0ab78a4777015227eaeda7b9a",
+      "957f48050e9c8b2f09ec44b9a9fcf37313fb0c46",
       [
        null,
        {}
       ]
      ],
      "font-face-005.html": [
-      "fdf86fb56e298cbdd60d232a99869140710442d2",
+      "de102f253e60f3fc2e62e68a3fa3c574a56b5d7c",
       [
        null,
        {}
       ]
      ],
      "font-face-006.html": [
-      "8c6e341713376eb633752044f377b5d8917b485f",
+      "e72d4ec2aa72a84d3394cea05295da8de7e9b1ad",
       [
        null,
        {}
       ]
      ],
      "font-face-007.html": [
-      "ae669f638fe8787fcb96fcce0f1d99d52ced28bf",
+      "c644a5498673b5bea3a013cae049f3db49f6ae25",
       [
        null,
        {}
       ]
      ],
      "font-face-008.html": [
-      "a40b0247d134ae45fbe1c6ac5814c5886e30c234",
+      "52c7869f9f8d48a3a093d20f74dd7e66805f6373",
       [
        null,
        {}
       ]
      ],
      "font-face-009.html": [
-      "5d770929cad0b6ce52005937bb1a20099425bea9",
+      "4e08162dcdbacb5f92a9c998e91e29d35f07d539",
       [
        null,
        {}
