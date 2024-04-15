@@ -164,9 +164,6 @@ void AuraTestHelper::SetUp() {
 void AuraTestHelper::TearDown() {
   g_instance = nullptr;
 
-  if (test_screen_ && (display::Screen::GetScreen() == GetTestScreen()))
-    display::Screen::SetScreenInstance(nullptr);
-
   if (!env_)
     Env::GetInstance()->set_context_factory(context_factory_to_restore_);
 
@@ -184,7 +181,12 @@ void AuraTestHelper::TearDown() {
   capture_client_.reset();
   focus_client_.reset();
   host_.reset();
+
+  if (test_screen_ && (display::Screen::GetScreen() == GetTestScreen())) {
+    display::Screen::SetScreenInstance(nullptr);
+  }
   test_screen_.reset();
+
   context_factories_.reset();
   env_.reset();
   zero_duration_mode_.reset();
