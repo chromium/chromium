@@ -9,31 +9,39 @@
 
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
-import {BrailleKeyCommand, BrailleKeyEvent} from '../common/braille/braille_key_types.js';
+import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
 import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
-import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
+import Gesture = chrome.accessibilityPrivate.Gesture;
+type Tab = chrome.tabs.Tab;
+
 const TARGET = BridgeConstants.LearnMode.TARGET;
 const Action = BridgeConstants.LearnMode.Action;
 
-/**
- * Class to manage the keyboard explorer.
- */
+declare namespace window {
+  let backgroundWindow: Window;
+  function close(): void;
+}
+
+/** Class to manage the keyboard explorer. */
 export class LearnMode {
-  /**
-   * Initialize keyboard explorer.
-   */
-  static init() {
+  /** Indicates when speech output should flush previous speech. */
+  private static shouldFlushSpeech_ = true;
+  /** Last time a touch explore gesture was described. */
+  private static lastTouchExplore_ = new Date();
+
+  /** Initialize keyboard explorer. */
+  static init(): void {
     // Export global objects from the background page context into this one.
-    window.backgroundWindow = chrome.extension.getBackgroundPage();
+    window.backgroundWindow = chrome.extension.getBackgroundPage() as Window;
 
     window.backgroundWindow.addEventListener(
         'keydown', LearnMode.onKeyDown, true);
@@ -50,8 +58,8 @@ export class LearnMode {
 
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
 
-    $('instruction').textContent = Msgs.getMsg('learn_mode_intro');
-    LearnMode.shouldFlushSpeech_ = true;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    $('instruction')!.textContent = Msgs.getMsg('learn_mode_intro');
 
     // Learn mode may be created more than once. Clear the listeners to avoid
     // duplicate assignment errors.
@@ -59,17 +67,20 @@ export class LearnMode {
 
     BridgeHelper.registerHandler(
         TARGET, Action.CLEAR_TOUCH_EXPLORE_OUTPUT_TIME,
-        () => LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0);
+        () => MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS = 0);
     BridgeHelper.registerHandler(
         TARGET, Action.ON_ACCESSIBILITY_GESTURE,
-        gesture => LearnMode.onAccessibilityGesture(gesture));
+        (gesture: Gesture) => LearnMode.onAccessibilityGesture(gesture));
     BridgeHelper.registerHandler(
         TARGET, Action.ON_BRAILLE_KEY_EVENT,
-        event => LearnMode.onBrailleKeyEvent(event));
+        (event: chrome.brailleDisplayPrivate.KeyEvent) =>
+          LearnMode.onBrailleKeyEvent(event));
     BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_DOWN, event => LearnMode.onKeyDown(event));
+        TARGET, Action.ON_KEY_DOWN,
+        (event: KeyboardEvent) => LearnMode.onKeyDown(event));
     BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_UP, event => LearnMode.onKeyUp(event));
+        TARGET, Action.ON_KEY_UP,
+        (event: KeyboardEvent) => LearnMode.onKeyUp(event));
     BridgeHelper.registerHandler(TARGET, Action.READY, () => readyPromise);
 
     readyCallback();
@@ -78,10 +89,9 @@ export class LearnMode {
   /**
    * Handles keydown events by speaking the human understandable name of the
    * key.
-   * @param {Event} evt key event.
-   * @return {boolean} True if the default action should be performed.
+   * @return True if the default action should be performed.
    */
-  static onKeyDown(evt) {
+  static onKeyDown(evt: KeyboardEvent): boolean {
     // Process this event only once; it isn't a repeat (i.e. a user is holding a
     // key down).
     if (!evt.repeat) {
@@ -107,11 +117,7 @@ export class LearnMode {
     return false;
   }
 
-  /**
-   * Handles keyup events.
-   * @param {Event} evt key event.
-   */
-  static onKeyUp(evt) {
+  static onKeyUp(evt: KeyboardEvent): void {
     LearnMode.shouldFlushSpeech_ = true;
     LearnMode.maybeClose_();
     LearnMode.clearRange();
@@ -119,51 +125,45 @@ export class LearnMode {
     evt.stopPropagation();
   }
 
-  /**
-   * Handles keypress events.
-   * @param {Event} evt key event.
-   */
-  static onKeyPress(evt) {
+  static onKeyPress(evt: KeyboardEvent): void {
     LearnMode.clearRange();
     evt.preventDefault();
     evt.stopPropagation();
   }
 
-  /**
-   * @param {BrailleKeyEvent} evt The key event.
-   */
-  static onBrailleKeyEvent(evt) {
+  static onBrailleKeyEvent(evt: chrome.brailleDisplayPrivate.KeyEvent): void {
     LearnMode.shouldFlushSpeech_ = true;
     LearnMode.maybeClose_();
     let msgid;
-    const msgArgs = [];
+    const msgArgs: string[] = [];
     let text;
     let callback;
     switch (evt.command) {
-      case BrailleKeyCommand.PAN_LEFT:
+      case chrome.brailleDisplayPrivate.KeyCommand.PAN_LEFT:
         msgid = 'braille_pan_left';
         break;
-      case BrailleKeyCommand.PAN_RIGHT:
+      case chrome.brailleDisplayPrivate.KeyCommand.PAN_RIGHT:
         msgid = 'braille_pan_right';
         break;
-      case BrailleKeyCommand.LINE_UP:
+      case chrome.brailleDisplayPrivate.KeyCommand.LINE_UP:
         msgid = 'braille_line_up';
         break;
-      case BrailleKeyCommand.LINE_DOWN:
+      case chrome.brailleDisplayPrivate.KeyCommand.LINE_DOWN:
         msgid = 'braille_line_down';
         break;
-      case BrailleKeyCommand.TOP:
+      case chrome.brailleDisplayPrivate.KeyCommand.TOP:
         msgid = 'braille_top';
         break;
-      case BrailleKeyCommand.BOTTOM:
+      case chrome.brailleDisplayPrivate.KeyCommand.BOTTOM:
         msgid = 'braille_bottom';
         break;
-      case BrailleKeyCommand.ROUTING:
-      case BrailleKeyCommand.SECONDARY_ROUTING:
+      case chrome.brailleDisplayPrivate.KeyCommand.ROUTING:
+      case chrome.brailleDisplayPrivate.KeyCommand.SECONDARY_ROUTING:
         msgid = 'braille_routing';
-        msgArgs.push(/** @type {number} */ (evt.displayPosition + 1));
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        msgArgs.push(String(evt.displayPosition! + 1));
         break;
-      case BrailleKeyCommand.CHORD:
+      case chrome.brailleDisplayPrivate.KeyCommand.CHORD:
         const dots = evt.brailleDots;
         if (!dots) {
           return;
@@ -183,7 +183,7 @@ export class LearnMode {
         // Next, check for the modifier mappings.
         const mods = BrailleKeyEvent.brailleDotsToModifiers[dots];
         if (mods) {
-          const outputs = [];
+          const outputs: string[] = [];
           for (const mod in mods) {
             if (mod === 'ctrlKey') {
               outputs.push('control');
@@ -204,7 +204,7 @@ export class LearnMode {
         }
         text = BrailleCommandData.makeShortcutText(dots, true);
         break;
-      case BrailleKeyCommand.DOTS: {
+      case chrome.brailleDisplayPrivate.KeyCommand.DOTS: {
         const dots = evt.brailleDots;
         if (!dots) {
           return;
@@ -219,7 +219,7 @@ export class LearnMode {
         });
       }
         return;
-      case BrailleKeyCommand.STANDARD_KEY:
+      case chrome.brailleDisplayPrivate.KeyCommand.STANDARD_KEY:
         break;
     }
     if (msgid) {
@@ -232,21 +232,21 @@ export class LearnMode {
 
   /**
    * Handles accessibility gestures from the touch screen.
-   * @param {string} gesture The gesture to handle, based on the
+   * @param gesture The gesture to handle, based on the
    *     ax::mojom::Gesture enum defined in ui/accessibility/ax_enums.mojom
    */
-  static onAccessibilityGesture(gesture) {
+  static onAccessibilityGesture(gesture: string): void {
     LearnMode.shouldFlushSpeech_ = true;
     LearnMode.maybeClose_();
 
     let callback;
-    if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
-      if ((new Date() - LearnMode.lastTouchExplore_) <
-          LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_) {
+    if (gesture === Gesture.TOUCH_EXPLORE) {
+      if ((Number(new Date()) - Number(LearnMode.lastTouchExplore_)) <
+          MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS) {
         return;
       }
       LearnMode.lastTouchExplore_ = new Date();
-    } else if (gesture === chrome.accessibilityPrivate.Gesture.SWIPE_LEFT2) {
+    } else if (gesture === Gesture.SWIPE_LEFT2) {
       callback = LearnMode.close_;
     }
 
@@ -267,10 +267,9 @@ export class LearnMode {
 
   /**
    * Queues up command description.
-   * @param {!Command} command
-   * @return {boolean|undefined} True if command existed and was handled.
+   * @return True if command existed and was handled.
    */
-  static onCommand(command) {
+  static onCommand(command: Command): boolean | undefined {
     const msg = CommandStore.messageForCommand(command);
     if (msg) {
       const commandText = Msgs.getMsg(msg);
@@ -278,33 +277,29 @@ export class LearnMode {
       LearnMode.clearRange();
       return true;
     }
+    return undefined;
   }
 
-  /**
-   * @param {string} text
-   * @param {function()=} opt_outputCallback A callback to run after output is
-   *     requested.
-   */
-  static output(text, opt_outputCallback) {
+  /** @param outputCallback A callback to run after output is requested. */
+  static output(text: string, outputCallback?: VoidFunction): void {
     BackgroundBridge.TtsBackground.speak(
         text,
         LearnMode.shouldFlushSpeech_ ? QueueMode.CATEGORY_FLUSH :
                                        QueueMode.QUEUE,
-        new TtsSpeechProperties({endCallback: opt_outputCallback}));
+        new TtsSpeechProperties({endCallback: outputCallback}));
     BackgroundBridge.Braille.write(text);
     LearnMode.shouldFlushSpeech_ = false;
-    if (opt_outputCallback) {
-      opt_outputCallback();
+    if (outputCallback) {
+      outputCallback();
     }
   }
 
   /** Clears ChromeVox range. */
-  static async clearRange() {
+  static async clearRange(): Promise<void> {
     await BackgroundBridge.ChromeVoxRange.clearCurrentRange();
   }
 
-  /** @private */
-  static resetListeners_() {
+  private static resetListeners_(): void {
     window.backgroundWindow.removeEventListener(
         'keydown', LearnMode.onKeyDown, true);
     window.backgroundWindow.removeEventListener(
@@ -320,15 +315,14 @@ export class LearnMode {
     BackgroundBridge.GestureCommandHandler.setBypass(false);
   }
 
-  /** @private */
-  static maybeClose_() {
+  private static maybeClose_(): void {
     // Reset listeners and close this page if we somehow move outside of the
     // explorer window.
-    chrome.windows.getLastFocused({populate: true}, focusedWindow => {
+    chrome.windows.getLastFocused(
+        {populate: true}, (focusedWindow: chrome.windows.Window) => {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       if (focusedWindow && focusedWindow.focused &&
-          focusedWindow.tabs.find(tab => {
-            return tab.url === location.href;
-          })) {
+          focusedWindow.tabs!.find((tab: Tab) => tab.url === location.href)) {
         return;
       }
 
@@ -336,47 +330,35 @@ export class LearnMode {
     });
   }
 
-  /** @private */
-  static close_() {
+  private static close_(): void {
     LearnMode.output(Msgs.getMsg('learn_mode_outtro'));
     LearnMode.resetListeners_();
     window.close();
   }
 }
 
-/**
- * Indicates when speech output should flush previous speech.
- * @private {boolean}
- */
-LearnMode.shouldFlushSpeech_ = false;
-
-/**
- * Last time a touch explore gesture was described.
- * @private {!Date}
- */
-LearnMode.lastTouchExplore_ = new Date();
-
-/**
- * The minimum time to wait before describing another touch explore gesture.
- * @private {number}
- */
-LearnMode.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 1000;
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function(): void {
   LearnMode.init();
 }, false);
+
+// Local to module.
 
 /**
  * Shortcut for document.getElementById.
  * @param {string} id of the element.
  * @return {Element} with the id.
  */
-function $(id) {
+function $(id: string): HTMLElement | null {
   return document.getElementById(id);
 }
 
-/** @private {function()} */
-let readyCallback;
 
-/** @private {!Promise} */
-const readyPromise = new Promise(resolve => readyCallback = resolve);
+/**
+ * The minimum time to wait before describing another touch explore gesture.
+ */
+let MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS = 1000;
+
+
+let readyCallback: VoidFunction;
+const readyPromise =
+    new Promise(resolve => readyCallback = resolve as VoidFunction);

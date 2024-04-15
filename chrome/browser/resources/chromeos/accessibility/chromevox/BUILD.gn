@@ -72,6 +72,7 @@ ts_modules = [
   "common/key_util.ts",
   "common/msgs.ts",
   "common/tts_types.ts",
+  "learn_mode/learn_mode.ts",
   "log_page/log.ts",
   "log_page/log_loader.ts",
   "panel/i_search_ui.ts",
@@ -170,7 +171,6 @@ js_modules = [
   "common/spannable.js",
   "common/settings_manager.js",
   "common/tree_dumper.js",
-  "learn_mode/learn_mode.js",
   "panel/menu_manager.js",
   "panel/panel_menu.js",
 ]
@@ -210,6 +210,7 @@ ts_library("ts_build") {
     "../definitions/windows.d.ts",
     "../definitions/accessibility_private_mv2.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/braille_display_private.d.ts",
     "../definitions/chromeos_info_private.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
