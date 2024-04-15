@@ -764,6 +764,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_page_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_perspective.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_perspective.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_position_try_descriptors.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_position_try_descriptors.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_position_try_rule.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_position_try_rule.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_css_position_value.cc",

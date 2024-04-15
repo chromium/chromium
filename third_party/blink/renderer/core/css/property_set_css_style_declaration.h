@@ -40,6 +40,7 @@ class CORE_EXPORT PropertySetCSSStyleDeclaration
       : AbstractPropertySetCSSStyleDeclaration(execution_context),
         property_set_(&property_set) {}
 
+  bool IsPropertyValid(CSSPropertyID) const override { return true; }
   void Trace(Visitor*) const override;
 
  protected:

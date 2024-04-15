@@ -230,6 +230,8 @@ blink_core_sources_css = [
   "css_pending_substitution_value.h",
   "css_pending_system_font_value.cc",
   "css_pending_system_font_value.h",
+  "css_position_try_descriptors.cc",
+  "css_position_try_descriptors.h",
   "css_position_try_rule.cc",
   "css_position_try_rule.h",
   "css_primitive_value.cc",

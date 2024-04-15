@@ -42,6 +42,7 @@ class InlineCSSStyleDeclaration final
             parent_element ? parent_element->GetExecutionContext() : nullptr),
         parent_element_(parent_element) {}
 
+  bool IsPropertyValid(CSSPropertyID) const override { return true; }
   void Trace(Visitor*) const override;
 
  private:

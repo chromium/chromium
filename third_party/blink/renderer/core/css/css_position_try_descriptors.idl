@@ -1,0 +1,79 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/css-anchor-position-1/#om-position-try
+
+[Exposed=Window, RuntimeEnabled=CSSAnchorPositioning]
+interface CSSPositionTryDescriptors : CSSStyleDeclaration {
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString margin;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginTop;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginRight;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginBottom;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginLeft;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginBlock;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginBlockStart;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginBlockEnd;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginInline;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginInlineStart;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginInlineEnd;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginTop] attribute CSSOMString margin-top;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginRight] attribute CSSOMString margin-right;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginBottom] attribute CSSOMString margin-bottom;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginLeft] attribute CSSOMString margin-left;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginBlock] attribute CSSOMString margin-block;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginBlockStart] attribute CSSOMString margin-block-start;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginBlockEnd] attribute CSSOMString margin-block-end;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginInline] attribute CSSOMString margin-inline;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginInlineStart] attribute CSSOMString margin-inline-start;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=marginInlineEnd] attribute CSSOMString margin-inline-end;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString inset;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetBlock;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetBlockStart;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetBlockEnd;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetInline;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetInlineStart;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetInlineEnd;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString top;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString left;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString right;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString bottom;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetBlock] attribute CSSOMString inset-block;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetBlockStart] attribute CSSOMString inset-block-start;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetBlockEnd] attribute CSSOMString inset-block-end;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetInline] attribute CSSOMString inset-inline;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetInlineStart] attribute CSSOMString inset-inline-start;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetInlineEnd] attribute CSSOMString inset-inline-end;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString width;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString minWidth;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString maxWidth;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString height;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString minHeight;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString maxHeight;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString blockSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString minBlockSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString maxBlockSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString inlineSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString minInlineSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString maxInlineSize;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=minWidth] attribute CSSOMString min-width;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=maxWidth] attribute CSSOMString max-width;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=minHeight] attribute CSSOMString min-height;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=maxHeight] attribute CSSOMString max-height;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=blockSize] attribute CSSOMString block-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=minBlockSize] attribute CSSOMString min-block-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=maxBlockSize] attribute CSSOMString max-block-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=inlineSize] attribute CSSOMString inline-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=minInlineSize] attribute CSSOMString min-inline-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=maxInlineSize] attribute CSSOMString max-inline-size;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString placeSelf;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString alignSelf;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString justifySelf;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=placeSelf] attribute CSSOMString place-self;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=alignSelf] attribute CSSOMString align-self;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=justifySelf] attribute CSSOMString justify-self;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString positionAnchor;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=positionAnchor] attribute CSSOMString position-anchor;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetArea;
+  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetArea] attribute CSSOMString inset-area;
+};

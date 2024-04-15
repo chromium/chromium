@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/css_position_try_descriptors.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
-#include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -51,10 +51,9 @@ MutableCSSPropertyValueSet& StyleRulePositionTry::MutableProperties() {
 
 CSSStyleDeclaration* CSSPositionTryRule::style() const {
   if (!properties_cssom_wrapper_) {
-    properties_cssom_wrapper_ =
-        MakeGarbageCollected<StyleRuleCSSStyleDeclaration>(
-            position_try_rule_->MutableProperties(),
-            const_cast<CSSPositionTryRule*>(this));
+    properties_cssom_wrapper_ = MakeGarbageCollected<CSSPositionTryDescriptors>(
+        position_try_rule_->MutableProperties(),
+        const_cast<CSSPositionTryRule*>(this));
   }
   return properties_cssom_wrapper_.Get();
 }

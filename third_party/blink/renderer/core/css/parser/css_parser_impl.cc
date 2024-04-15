@@ -123,6 +123,8 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
       return StyleRule::kProperty;
     case kCSSFontPaletteValuesRuleMode:
       return StyleRule::kFontPaletteValues;
+    case kCSSPositionTryRuleMode:
+      return StyleRule::kPositionTry;
     default:
       return StyleRule::kStyle;
   }
@@ -2047,7 +2049,7 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
 
   return MakeGarbageCollected<StyleRulePositionTry>(
       AtomicString(name),
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+      CreateCSSPropertyValueSet(parsed_properties_, kCSSPositionTryRuleMode,
                                 context_->GetDocument()));
 }
 
