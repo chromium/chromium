@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <vector>
 
+namespace device::enclave {
+
 // Verify that the enclave is running an endorsed binary.
 //
 // |enclave_signature| should be returned to the client in the first message
@@ -26,5 +28,7 @@ bool VerifyEnclave(std::vector<std::vector<uint8_t>> evidence,
                    std::vector<std::vector<uint8_t>> endorsements,
                    std::vector<uint8_t> handshake_hash,
                    std::vector<uint8_t> enclave_signature);
+
+}  // namespace device::enclave
 
 #endif  // DEVICE_FIDO_ENCLAVE_VERIFY_VERIFY_H_
