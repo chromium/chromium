@@ -187,18 +187,16 @@ namespace autofill {
 // Helper class that provides access to private members of
 // BrowserAutofillManager, FormDataImporter and CreditCardSaveManager. This
 // class is friend with some autofill internal classes to access private fields.
-class SaveCardInfobarEGTestHelper
-    : public CreditCardSaveManager::ObserverForTest {
+class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
  public:
-  static SaveCardInfobarEGTestHelper* SharedInstance() {
-    return base::Singleton<SaveCardInfobarEGTestHelper>::get();
+  static FakeCreditCardServer* SharedInstance() {
+    return base::Singleton<FakeCreditCardServer>::get();
   }
 
-  SaveCardInfobarEGTestHelper() {}
-  ~SaveCardInfobarEGTestHelper() override {}
-  SaveCardInfobarEGTestHelper(const SaveCardInfobarEGTestHelper&) = delete;
-  SaveCardInfobarEGTestHelper& operator=(const SaveCardInfobarEGTestHelper&) =
-      delete;
+  FakeCreditCardServer() {}
+  ~FakeCreditCardServer() override {}
+  FakeCreditCardServer(const FakeCreditCardServer&) = delete;
+  FakeCreditCardServer& operator=(const FakeCreditCardServer&) = delete;
 
   // Access the CreditCardSaveManager.
   static CreditCardSaveManager* GetCreditCardSaveManager() {
@@ -319,7 +317,7 @@ class SaveCardInfobarEGTestHelper
             test_url_loader_factory_.get());
 
     payments::PaymentsNetworkInterface* payments_network_interface =
-        SaveCardInfobarEGTestHelper::GetPaymentsNetworkInterface();
+        FakeCreditCardServer::GetPaymentsNetworkInterface();
     payments_network_interface->set_url_loader_factory_for_testing(
         shared_url_loader_factory_);
 
@@ -329,14 +327,14 @@ class SaveCardInfobarEGTestHelper
 
     // Observe actions in CreditCardSaveManager.
     CreditCardSaveManager* credit_card_save_manager =
-        SaveCardInfobarEGTestHelper::GetCreditCardSaveManager();
+        FakeCreditCardServer::GetCreditCardSaveManager();
     credit_card_save_manager->SetEventObserverForTesting(this);
   }
 
   void TearDown() {
     ClearCreditCardSaveStrikes();
     CreditCardSaveManager* credit_card_save_manager =
-        SaveCardInfobarEGTestHelper::GetCreditCardSaveManager();
+        FakeCreditCardServer::GetCreditCardSaveManager();
     credit_card_save_manager->SetEventObserverForTesting(nullptr);
     event_waiter_.reset();
     shared_url_loader_factory_.reset();
@@ -481,40 +479,39 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
   return base::SysUTF16ToNSString(card.NetworkAndLastFourDigits());
 }
 
-+ (void)setUpSaveCardInfobarEGTestHelper {
-  autofill::SaveCardInfobarEGTestHelper::SharedInstance()->SetUp();
++ (void)setUpFakeCreditCardServer {
+  autofill::FakeCreditCardServer::SharedInstance()->SetUp();
 }
 
-+ (void)tearDownSaveCardInfobarEGTestHelper {
-  autofill::SaveCardInfobarEGTestHelper::SharedInstance()->TearDown();
++ (void)tearDownFakeCreditCardServer {
+  autofill::FakeCreditCardServer::SharedInstance()->TearDown();
 }
 
 + (void)resetEventWaiterForEvents:(NSArray*)events
                           timeout:(base::TimeDelta)timeout {
-  autofill::SaveCardInfobarEGTestHelper::SharedInstance()
-      ->ResetEventWaiterForEvents(events, timeout);
+  autofill::FakeCreditCardServer::SharedInstance()->ResetEventWaiterForEvents(
+      events, timeout);
 }
 
 + (BOOL)waitForEvents {
-  return autofill::SaveCardInfobarEGTestHelper::SharedInstance()
-      ->WaitForEvents();
+  return autofill::FakeCreditCardServer::SharedInstance()->WaitForEvents();
 }
 
 + (void)setPaymentsResponse:(NSString*)response
                  forRequest:(NSString*)request
               withErrorCode:(int)error {
-  return autofill::SaveCardInfobarEGTestHelper::SharedInstance()
-      ->SetPaymentsResponse(request, response, error);
+  return autofill::FakeCreditCardServer::SharedInstance()->SetPaymentsResponse(
+      request, response, error);
 }
 
 + (void)setFormFillMaxStrikes:(int)max forCard:(NSString*)card {
-  return autofill::SaveCardInfobarEGTestHelper::SharedInstance()
+  return autofill::FakeCreditCardServer::SharedInstance()
       ->SetFormFillMaxStrikes(card, max);
 }
 
 + (void)setPaymentsRiskData:(NSString*)riskData {
-  return autofill::SaveCardInfobarEGTestHelper::SharedInstance()
-      ->SetPaymentsRiskData(base::SysNSStringToUTF8(riskData));
+  return autofill::FakeCreditCardServer::SharedInstance()->SetPaymentsRiskData(
+      base::SysNSStringToUTF8(riskData));
 }
 
 + (void)considerCreditCardFormSecureForTesting {

@@ -153,7 +153,7 @@ class StrikeDatabaseIntegratorBase {
                            RemoveExpiredStrikesTestLogsUMA);
   FRIEND_TEST_ALL_PREFIXES(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
                            RemoveExpiredStrikesUniqueIdTest);
-  friend class SaveCardInfobarEGTestHelper;
+  friend class FakeCreditCardServer;
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
 

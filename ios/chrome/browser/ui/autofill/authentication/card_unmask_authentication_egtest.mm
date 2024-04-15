@@ -112,7 +112,7 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
 
 - (void)setUp {
   [super setUp];
-  [AutofillAppInterface setUpSaveCardInfobarEGTestHelper];
+  [AutofillAppInterface setUpFakeCreditCardServer];
   _enrolledCardNameAndLastFour =
       [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
   [self setUpServer];
@@ -133,7 +133,7 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
 
 - (void)tearDown {
   [AutofillAppInterface clearAllServerDataForTesting];
-  [AutofillAppInterface tearDownSaveCardInfobarEGTestHelper];
+  [AutofillAppInterface tearDownFakeCreditCardServer];
   [super tearDown];
 }
 

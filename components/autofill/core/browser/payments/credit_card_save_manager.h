@@ -188,7 +188,7 @@ class CreditCardSaveManager {
   friend class LocalCardMigrationBrowserTest;
   friend class TestCreditCardSaveManager;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
-  friend class SaveCardInfobarEGTestHelper;
+  friend class FakeCreditCardServer;
   friend class ::SaveCardOfferObserver;
   FRIEND_TEST_ALL_PREFIXES(
       SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,

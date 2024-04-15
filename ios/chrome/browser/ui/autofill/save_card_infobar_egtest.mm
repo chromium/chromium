@@ -117,7 +117,7 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
   // Observe histograms in tests.
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
-  [AutofillAppInterface setUpSaveCardInfobarEGTestHelper];
+  [AutofillAppInterface setUpFakeCreditCardServer];
 }
 
 - (void)tearDown {
@@ -128,7 +128,7 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
   [AutofillAppInterface clearProfilesStore];
 
   // Clear CreditCardSave StrikeDatabase.
-  [AutofillAppInterface tearDownSaveCardInfobarEGTestHelper];
+  [AutofillAppInterface tearDownFakeCreditCardServer];
 
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
