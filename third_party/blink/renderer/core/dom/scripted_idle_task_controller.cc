@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -31,9 +32,14 @@ class IdleRequestCallbackWrapper
   }
   virtual ~IdleRequestCallbackWrapper() = default;
 
+  void ScheduleTimeout(base::TimeDelta delay) {
+    timeout_.StartOneShot(delay, FROM_HERE);
+  }
+
   static void IdleTaskFired(
       scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper,
       base::TimeTicks deadline) {
+    callback_wrapper->timeout_.Stop();
     if (ScriptedIdleTaskController* controller =
             callback_wrapper->Controller()) {
       // If we are going to yield immediately, reschedule the callback for
@@ -49,14 +55,12 @@ class IdleRequestCallbackWrapper
     callback_wrapper->Cancel();
   }
 
-  static void TimeoutFired(
-      scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper) {
-    if (ScriptedIdleTaskController* controller =
-            callback_wrapper->Controller()) {
-      controller->CallbackFired(callback_wrapper->Id(), base::TimeTicks::Now(),
+  void TimeoutFired(TimerBase*) {
+    if (ScriptedIdleTaskController* controller = Controller()) {
+      controller->CallbackFired(Id(), base::TimeTicks::Now(),
                                 IdleDeadline::CallbackType::kCalledByTimeout);
     }
-    callback_wrapper->Cancel();
+    Cancel();
   }
 
   void Cancel() { controller_ = nullptr; }
@@ -67,10 +71,16 @@ class IdleRequestCallbackWrapper
  private:
   IdleRequestCallbackWrapper(ScriptedIdleTaskController::CallbackId id,
                              ScriptedIdleTaskController* controller)
-      : id_(id), controller_(controller) {}
+      : id_(id),
+        controller_(controller),
+        timeout_(controller->GetExecutionContext()->GetTaskRunner(
+                     TaskType::kIdleTask),
+                 this,
+                 &IdleRequestCallbackWrapper::TimeoutFired) {}
 
   ScriptedIdleTaskController::CallbackId id_;
   WeakPersistent<ScriptedIdleTaskController> controller_;
+  TaskRunnerTimer<IdleRequestCallbackWrapper> timeout_;
 };
 
 }  // namespace internal
@@ -131,13 +141,7 @@ void ScriptedIdleTaskController::ScheduleCallback(
       WTF::BindOnce(&internal::IdleRequestCallbackWrapper::IdleTaskFired,
                     callback_wrapper));
   if (timeout_millis > 0) {
-    GetExecutionContext()
-        ->GetTaskRunner(TaskType::kIdleTask)
-        ->PostDelayedTask(
-            FROM_HERE,
-            WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                          callback_wrapper),
-            base::Milliseconds(timeout_millis));
+    callback_wrapper->ScheduleTimeout(base::Milliseconds(timeout_millis));
   }
 }
 
@@ -241,7 +245,7 @@ void ScriptedIdleTaskController::ContextUnpaused() {
         ->PostTask(
             FROM_HERE,
             WTF::BindOnce(&internal::IdleRequestCallbackWrapper::TimeoutFired,
-                          callback_wrapper));
+                          callback_wrapper, nullptr));
   }
   pending_timeouts_.clear();
 
