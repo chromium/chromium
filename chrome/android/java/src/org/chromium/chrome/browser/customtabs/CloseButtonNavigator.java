@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.NavigationController;
@@ -45,20 +46,24 @@ public class CloseButtonNavigator {
     @Nullable private Predicate<String> mLandingPagePredicate;
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
+    private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     private final boolean mButtonClosesChildTab;
 
     @Inject
     public CloseButtonNavigator(
             CustomTabActivityTabController tabController,
             CustomTabActivityTabProvider tabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabMinimizationManagerHolder minimizationManagerHolder) {
         mTabController = tabController;
         mTabProvider = tabProvider;
         mButtonClosesChildTab = intentDataProvider.isWebappOrWebApkActivity();
+        mMinimizationManagerHolder = minimizationManagerHolder;
     }
 
     /**
      * Sets the criteria for the page to go back to.
+     *
      * @param criteria A predicate that returns true when given the URL of a landing page.
      */
     public void setLandingPageCriteria(Predicate<String> criteria) {
@@ -92,7 +97,13 @@ public class CloseButtonNavigator {
                 return;
             }
 
-            if (mTabController.onlyOneTabRemaining()) {
+            // If the tab is currently minimized, finishing the Activity without closing all the
+            // tabs prevents the `CustomTabTabObserver#onAllTabsClosed` from being sent. So, we
+            // should let the last tab get closed if the tab is minimized because the flashing won't
+            // be visible in that case.
+            var minimizationManager = mMinimizationManagerHolder.getMinimizationManager();
+            boolean isMinimized = minimizationManager != null && minimizationManager.isMinimized();
+            if (mTabController.onlyOneTabRemaining() && !isMinimized) {
                 // If we call mTabController.closeTab() and wait for the Activity to close as a
                 // result, we have a blank screen flashing before closing. https://crbug.com/1518767
                 finishActivity.onFinish(USER_NAVIGATION);

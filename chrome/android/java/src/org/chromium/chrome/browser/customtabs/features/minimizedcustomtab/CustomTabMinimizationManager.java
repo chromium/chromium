@@ -271,7 +271,6 @@ public class CustomTabMinimizationManager
                     MinimizationEvents.MINIMIZE,
                     MinimizationEvents.COUNT);
         } else {
-            mMinimized = false;
             mActivity.removeOnPictureInPictureModeChangedListener(this);
             notifyObservers(false);
             maybeClearLastMinimizedTabRef();
@@ -293,6 +292,7 @@ public class CustomTabMinimizationManager
                 return;
             }
 
+            mMinimized = false;
             updateTabForMaximization(tab);
             CustomTabsConnection.getInstance().onUnminimized(mIntentData.getSession());
             RecordHistogram.recordEnumeratedHistogram(
