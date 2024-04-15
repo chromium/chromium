@@ -21,10 +21,16 @@
 namespace ash {
 
 namespace {
+constexpr char kButtonPressMetric[] =
+    "Accessibility.CrosSelectToSpeak.BubbleButtonPress";
+constexpr char kKeyPressMetric[] =
+    "Accessibility.CrosSelectToSpeak.BubbleKeyPress";
 constexpr char kMenuBubbleDurationMetric[] =
     "Accessibility.CrosSelectToSpeak.MenuBubbleVisibleDuration";
 constexpr char kSpeedBubbleDurationMetric[] =
     "Accessibility.CrosSelectToSpeak.SpeedBubbleVisibleDuration";
+constexpr char kSpeedValueMetric[] =
+    "Accessibility.CrosSelectToSpeak.SpeedSetFromBubble";
 }  // namespace
 
 class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
@@ -81,6 +87,18 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
                                                         /*speech_rate=*/1.2);
   }
 
+  void ExpectButtonHistogramCount(SelectToSpeakPanelAction action,
+                                  int expected_count) {
+    histogram_tester_.ExpectBucketCount(kButtonPressMetric, action,
+                                        expected_count);
+  }
+
+  void ExpectKeyPressHistogramCount(SelectToSpeakPanelAction action,
+                                    int expected_count) {
+    histogram_tester_.ExpectBucketCount(kKeyPressMetric, action,
+                                        expected_count);
+  }
+
   void ExpectTotalMenuBubbleDurationSamples(int expected_count) {
     histogram_tester_.ExpectTotalCount(kMenuBubbleDurationMetric,
                                        expected_count);
@@ -89,6 +107,11 @@ class SelectToSpeakMenuBubbleControllerTest : public AshTestBase {
   void ExpectTotalSpeedBubbleDurationSamples(int expected_count) {
     histogram_tester_.ExpectTotalCount(kSpeedBubbleDurationMetric,
                                        expected_count);
+  }
+
+  void ExpectSpeedHistogramCount(int speed_percentage, int expected_count) {
+    histogram_tester_.ExpectBucketCount(kSpeedValueMetric, speed_percentage,
+                                        expected_count);
   }
 
  protected:
@@ -135,154 +158,205 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, HideSelectToSpeakPanel) {
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PauseButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPause, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPause);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPause, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPause, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ResumeButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/true);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kResume, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kResume);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kResume, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kResume, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevParagraphButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevParagraph);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPreviousParagraph);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevParagraphKeyPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_UP, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPreviousParagraph);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPrevSentence);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPreviousSentence);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPreviousSentence);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressedRtl) {
   base::i18n::SetICUDefaultLocale("he");
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kPreviousSentence);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextParagraph);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextParagraph);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextParagraphKeyPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_DOWN, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextParagraph);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kNextSentence);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextSentence);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextSentence, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextSentence);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressedRtl) {
   base::i18n::SetICUDefaultLocale("he");
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kNextSentence);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, StopButtonPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kExit, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kStop);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kExit);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kExit, 1);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kExit, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, StopKeyPressed) {
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kExit, 0);
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   EXPECT_EQ(client.last_select_to_speak_panel_action(),
             SelectToSpeakPanelAction::kExit);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kExit, 1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kExit, 0);
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
   ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 0);
+
   FloatingMenuButton* button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kSpeed);
   GetEventGenerator()->GestureTapAt(button->GetBoundsInScreen().CenterPoint());
@@ -290,6 +364,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
   EXPECT_TRUE(GetSpeedBubbleController() &&
               GetSpeedBubbleController()->IsVisible());
 
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 1);
   ExpectTotalSpeedBubbleDurationSamples(0);
 
   // Clicking button again closes the speed selection bubble.
@@ -298,6 +373,27 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ChangeSpeedButtonPressed) {
               !GetSpeedBubbleController()->IsVisible());
 
   ExpectTotalSpeedBubbleDurationSamples(1);
+  ExpectButtonHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 2);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 0);
+}
+
+TEST_F(SelectToSpeakMenuBubbleControllerTest, RandomKeyPressIgnored) {
+  TestAccessibilityControllerClient client;
+  ShowSelectToSpeakPanel(/*is_paused=*/false);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 0);
+
+  GetEventGenerator()->PressKey(ui::VKEY_A, ui::EF_NONE);
+
+  EXPECT_EQ(client.last_select_to_speak_panel_action(),
+            SelectToSpeakPanelAction::kNone);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousParagraph, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPause, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kResume, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextParagraph, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kExit, 0);
+  ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kChangeSpeed, 0);
 }
 
 }  // namespace ash

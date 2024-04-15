@@ -34,6 +34,16 @@ constexpr int kButtonSize = 36;
 constexpr int kStopButtonPadding = 14;
 constexpr int kSeparatorHeight = 16;
 
+void RecordButtonMetric(SelectToSpeakPanelAction action) {
+  base::UmaHistogramEnumeration(
+      "Accessibility.CrosSelectToSpeak.BubbleButtonPress", action);
+}
+
+void RecordKeyPressMetric(SelectToSpeakPanelAction action) {
+  base::UmaHistogramEnumeration(
+      "Accessibility.CrosSelectToSpeak.BubbleKeyPress", action);
+}
+
 // Histograms in which user action statistics are recorded. These values
 // correspond to their respective entries in histograms.xml, so if they are
 // changed, please deprecate the corresponding histograms there.
@@ -247,6 +257,8 @@ void SelectToSpeakMenuView::OnKeyEvent(ui::KeyEvent* key_event) {
       return;
   }
 
+  RecordKeyPressMetric(action);
+
   delegate_->OnActionSelected(action);
   key_event->SetHandled();
   key_event->StopPropagation();
@@ -276,6 +288,8 @@ void SelectToSpeakMenuView::SetSpeedButtonToggled(bool toggled) {
 void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
   SelectToSpeakPanelAction action =
       PanelActionForButtonID(sender->GetID(), is_paused_);
+
+  RecordButtonMetric(action);
 
   switch (action) {
     case SelectToSpeakPanelAction::kPreviousParagraph:

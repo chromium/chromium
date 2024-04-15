@@ -23,8 +23,10 @@
 namespace ash {
 
 namespace {
+
 const int kAnchorRectVerticalSpacing = 12;
 const int kPreferredWidth = 368;
+
 }  // namespace
 
 SelectToSpeakMenuBubbleController::SelectToSpeakMenuBubbleController() {

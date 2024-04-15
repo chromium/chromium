@@ -27,6 +27,11 @@ namespace {
 // Start offset in pixels to use for option views.
 constexpr int kOptionInset = 16;
 
+void RecordSpeedMetric(int value) {
+  base::UmaHistogramSparse("Accessibility.CrosSelectToSpeak.SpeedSetFromBubble",
+                           value);
+}
+
 }  // namespace
 
 SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
@@ -60,8 +65,10 @@ void SelectToSpeakSpeedView::AddMenuItem(int option_id,
 
 void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
   unsigned int speed_index = sender->GetID() - 1;
+  double speech_rate = kSelectToSpeakSpeechRates[speed_index];
   if (speed_index >= 0 && speed_index < std::size(kSelectToSpeakSpeechRates)) {
-    delegate_->OnSpeechRateSelected(kSelectToSpeakSpeechRates[speed_index]);
+    delegate_->OnSpeechRateSelected(speech_rate);
+    RecordSpeedMetric(floor(speech_rate * 100));
   }
 }
 

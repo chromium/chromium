@@ -759,6 +759,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosSelectToSpeak.BubbleButtonPress"
+    enum="CrosSelectToSpeakAction" expires_after="2025-02-28">
+  <owner>anastasi@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records each action the user selects in the Select-to-Speak bubble.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosSelectToSpeak.BubbleDismissMethod"
     enum="CrosSelectToSpeakActivationMethod" expires_after="2025-02-28">
   <owner>ajitnarayanan@google.com</owner>
@@ -839,6 +849,17 @@ chromium-metrics-reviews@google.com.
     Records the duration that Select-to-Speak is continuously talking. This is
     recorded every time a new speech request is completed in Select-to-Speak,
     and does not reflect total talking time during a user session.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosSelectToSpeak.SpeedSetFromBubble"
+    enum="CrosSelectToSpeakOverrideSpeechRateMultiplier"
+    expires_after="2025-02-28">
+  <owner>anastasi@google.com</owner>
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the speed the user selects from the Select-to-Speak speed bubble.
   </summary>
 </histogram>
 

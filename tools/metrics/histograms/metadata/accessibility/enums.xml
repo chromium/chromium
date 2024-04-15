@@ -956,6 +956,18 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="AccessibilityCommon extension"/>
 </enum>
 
+<enum name="CrosSelectToSpeakAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Previous paragraph"/>
+  <int value="2" label="Previous sentence"/>
+  <int value="3" label="Pause"/>
+  <int value="4" label="Resume"/>
+  <int value="5" label="Next sentence"/>
+  <int value="6" label="Next paragraph"/>
+  <int value="7" label="Exit"/>
+  <int value="8" label="Change speed"/>
+</enum>
+
 <enum name="CrosSelectToSpeakActivationMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Canceled with menu button"/>
