@@ -113,7 +113,7 @@ BASE_FEATURE(kUseUniversalGetTextureTargetFunction,
 
 BASE_FEATURE(kDestroySharedImageAutomatically,
              "DestroySharedImageAutomatically",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
