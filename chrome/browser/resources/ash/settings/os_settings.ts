@@ -138,6 +138,7 @@ export {ExtensionControlledIndicatorElement} from './controls/extension_controll
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
+export {PrefControlMixinInternal} from './controls/v2/pref_control_mixin_internal.js';
 export {SettingsAudioElement} from './device_page/audio.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {SettingsDevicePageElement} from './device_page/device_page.js';

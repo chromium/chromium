@@ -361,6 +361,7 @@ build_webui("build") {
     "common/route_origin_mixin.ts",
     "common/setting_id_param_util.ts",
     "common/types.ts",
+    "controls/v2/pref_control_mixin_internal.ts",
     "os_files_page/google_drive_browser_proxy.ts",
     "os_files_page/one_drive_browser_proxy.ts",
     "crostini_page/crostini_browser_proxy.ts",

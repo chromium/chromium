@@ -221,6 +221,10 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, SettingsToggleButton) {
   RunSettingsTest("controls/settings_toggle_button_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, PrefControlMixinInternal) {
+  RunSettingsTest("controls/v2/pref_control_mixin_internal_test.js");
+}
+
 class OSSettingsCrostiniTestRevampEnabled
     : public OSSettingsMochaTestRevampEnabled {
  protected:
