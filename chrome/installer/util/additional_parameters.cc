@@ -160,9 +160,8 @@ ChannelParseState MakeChannelParseState(
     std::wstring_view literal;
     bool is_stable;  // if false, the channel name is embedded in `literal`.
   } kLiteralChannels[] = {
-      {L"x64-stable", true}, {L"x86-stable", true}, {L"arm64-stable", true},
-      {L"x64-beta", false},  {L"x86-beta", false},  {L"x64-dev", false},
-      {L"x86-dev", false},
+      {L"x64-stable", true}, {L"x86-stable", true}, {L"x64-beta", false},
+      {L"x86-beta", false},  {L"x64-dev", false},   {L"x86-dev", false},
   };
   for (const auto& literal_channel : kLiteralChannels) {
     auto pos = ap.find(literal_channel.literal);
@@ -243,7 +242,7 @@ std::wstring GetChannelIdentifier(version_info::Channel channel,
 #elif defined(ARCH_CPU_X86)
       return L"stable-arch_x86";
 #elif defined(ARCH_CPU_ARM64)
-      return L"arm64-stable";
+      return L"stable-arch_arm64";
 #else
 #error unsupported processor architecture.
 #endif
