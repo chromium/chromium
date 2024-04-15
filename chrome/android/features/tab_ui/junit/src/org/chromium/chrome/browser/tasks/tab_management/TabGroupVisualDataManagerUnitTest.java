@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
-import androidx.collection.ArraySet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /** Tests for {@link TabGroupVisualDataManager}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
@@ -245,52 +243,6 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mRemoveEditorTitle).apply();
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
-    }
-
-    // TODO(b/41490324): Remove this test when introducing TabGroupCreationDialog logic.
-    @Test
-    public void didCreateNewGroup_StoreColor() {
-        // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
-        // None of the tab groups have colors associated with them.
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
-
-        // Create roodId set and mock that it has no color stored.
-        Set<Integer> rootIdsSet = new ArraySet<>();
-        rootIdsSet.add(TAB1_ID);
-        when(mTabGroupModelFilter.getAllTabGroupRootIds()).thenReturn(rootIdsSet);
-        when(mSharedPreferencesColor.getInt(String.valueOf(TAB1_ID), INVALID_COLOR_ID))
-                .thenReturn(INVALID_COLOR_ID);
-
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didCreateNewGroup(mTab1, mTabGroupModelFilter);
-
-        // Verify that a default color was stored.
-        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(COLOR1_ID));
-    }
-
-    // TODO(b/41490324): Remove this test when introducing TabGroupCreationDialog logic.
-    @Test
-    public void didCreateNewGroup_StoreAlreadyExistingColor() {
-        // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
-        // None of the tab groups have colors associated with them.
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
-
-        // Create roodId set and mock that it has a color stored.
-        Set<Integer> rootIdsSet = new ArraySet<>();
-        rootIdsSet.add(TAB1_ID);
-        when(mTabGroupModelFilter.getAllTabGroupRootIds()).thenReturn(rootIdsSet);
-        when(mSharedPreferencesColor.getInt(String.valueOf(TAB1_ID), INVALID_COLOR_ID))
-                .thenReturn(COLOR2_ID);
-
-        mTabGroupModelFilterObserverCaptor
-                .getValue()
-                .didCreateNewGroup(mTab1, mTabGroupModelFilter);
-
-        // Verify that the same color was stored.
-        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(COLOR2_ID));
     }
 
     @Test

@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
-import org.chromium.components.tab_groups.TabGroupColorId;
 
 /**
  * Manages observers that monitor for updates to tab group visual aspects such as colors and titles.
@@ -53,18 +52,6 @@ public class TabGroupVisualDataManager {
 
         mFilterObserver =
                 new TabGroupModelFilterObserver() {
-                    @Override
-                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
-                        // TODO(b/41490324): Store a default color as none will exist, but this
-                        // should be enforced later on with the intro of TabGroupCreationDialog.
-                        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                            final @TabGroupColorId int colorId =
-                                    TabGroupColorUtils.getOrCreateTabGroupColor(
-                                            destinationTab.getRootId(), filter);
-                            filter.setTabGroupColor(destinationTab.getRootId(), colorId);
-                        }
-                    }
-
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
