@@ -235,16 +235,19 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   }
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // The focused tab will be loaded by Browser, and TabLoader will load the
-  // rest.
-  if (!select) {
+  // The tab may have been made active even if `select` is false if it is the
+  // only tab in `browser_`.
+  const bool is_active =
+      browser_->tab_strip_model()->GetActiveWebContents() == web_contents;
+  // The active tab will be loaded by Browser, and TabLoader will load the rest.
+  if (!is_active) {
     // Regression check: make sure that the tab hasn't started to load
     // immediately.
     DCHECK(web_contents->GetController().NeedsReload());
     DCHECK(!web_contents->IsLoading());
   }
   std::vector<TabLoader::RestoredTab> restored_tabs;
-  restored_tabs.emplace_back(web_contents, select, !extension_app_id.empty(),
+  restored_tabs.emplace_back(web_contents, is_active, !extension_app_id.empty(),
                              pin, group);
   TabLoader::RestoreTabs(restored_tabs, base::TimeTicks::Now());
 #else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
