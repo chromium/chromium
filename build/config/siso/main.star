@@ -68,6 +68,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/chrome/test/test_support_ui/web_app_integration_test_driver.o",
         "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.o",
         "./obj/chrome/test/unit_tests/chrome_shelf_controller_unittest.o",
+        "./obj/chrome/test/unit_tests/render_view_context_menu_unittest.o",
         "./obj/content/browser/browser/browser_interface_binders.o",
 
         # Fallback happens with follwoing args.gn (try/linux-lacros-rel-compilator).
