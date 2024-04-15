@@ -50,6 +50,8 @@
 
 constexpr gfx::Size HatsNextWebDialog::kMinSize;
 constexpr gfx::Size HatsNextWebDialog::kMaxSize;
+constexpr char kHatsSurveyCompletedHistogram[] =
+    "Feedback.HappinessTrackingSurvey.SurveyCompleted";
 
 // WebView which contains the WebContents displaying the HaTS Next survey.
 class HatsNextWebDialog::HatsWebView : public views::WebView {
@@ -362,6 +364,8 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
     OnSurveyLoaded();
   } else if (state == "close") {
     OnSurveyClosed();
+  } else if (state == "completed") {
+    base::UmaHistogramBoolean(kHatsSurveyCompletedHistogram, true);
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;

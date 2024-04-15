@@ -5758,6 +5758,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.HappinessTrackingSurvey.SurveyCompleted"
+    enum="Boolean" expires_after="M135">
+  <owner>ravjit@google.com</owner>
+  <owner>fjacky@google.com</owner>
+  <summary>
+    Recorded whenever a Happiness Tracking Survey (HaTS) survey is completed.
+    Only recorded the survey is fully completed.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.RedactionTool" enum="PIIType"
     expires_after="2024-09-15">
   <owner>nikj@google.com</owner>
