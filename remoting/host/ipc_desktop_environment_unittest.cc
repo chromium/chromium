@@ -568,7 +568,7 @@ TEST_F(IpcDesktopEnvironmentTest, TouchEventsCapabilities) {
       new protocol::MockClipboardStub());
   EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
 
-  std::string expected_capabilities = "rateLimitResizeRequests";
+  std::string expected_capabilities = "rateLimitResizeRequests multiStream";
   if (InputInjector::SupportsTouchEvents()) {
     expected_capabilities += " touchEvents";
   }

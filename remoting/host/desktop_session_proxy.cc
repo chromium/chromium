@@ -151,6 +151,9 @@ std::string DesktopSessionProxy::GetCapabilities() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string result = protocol::kRateLimitResizeRequests;
+  result += " ";
+  result += protocol::kMultiStreamCapability;
+
   // Ask the client to send its resolution unconditionally.
   if (options_.enable_curtaining()) {
     result += " ";
