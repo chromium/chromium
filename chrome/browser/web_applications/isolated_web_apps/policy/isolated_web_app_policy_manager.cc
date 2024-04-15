@@ -48,6 +48,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -490,6 +491,14 @@ void IsolatedWebAppPolicyManager::ProcessPolicy() {
 
   policy_is_being_processed_ = true;
   current_process_log_ = std::move(process_log);
+
+  if(!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
+    current_process_log_.Set(
+        "error",
+        "policy is ignored because isolated web apps are not enabled.");
+    OnPolicyProcessed();
+    return;
+  }
 
   // So far we support only MGS.
   if (!chromeos::IsManagedGuestSession()) {

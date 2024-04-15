@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/to_string.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -48,6 +49,7 @@
 #include "components/user_manager/user.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -326,7 +328,9 @@ constexpr char kUpdateManifestValueApp2[] = R"(
 class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
  public:
   IsolatedWebAppPolicyManagerTestBase()
-      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {}
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory()) {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+      }
 
   void SetUpServedIwas() {
     web_app::TestSignedWebBundle swbn_app1 =
@@ -771,6 +775,13 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
                                empty_policy.Generate());
 
     uninstall_observer.Wait();
+
+    // WebAppTestUninstallObserver already triggers when the app is not fully
+    // uninstalled. This causes issues with references to destroyed profiles
+    // (see https://crbug.com/41484323#comment7). Wait until the app is actually
+    // uninstalled here.
+    task_environment()->RunUntilIdle();
+
     EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
               0U);
   }
