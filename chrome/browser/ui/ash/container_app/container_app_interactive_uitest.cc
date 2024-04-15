@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,6 +23,9 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/base64.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
@@ -30,7 +34,11 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
@@ -73,6 +81,7 @@ using ::testing::WithParamInterface;
 // Elements --------------------------------------------------------------------
 
 // Identifiers.
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserWebContentsElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContainerAppWebContentsElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsAppWebContentsElementId);
 
@@ -178,6 +187,35 @@ bool IsShelfAppButtonForWebApp(
          shelf.get()->GetShelfAppButton(item->id) == view;
 }
 
+// Waiters ---------------------------------------------------------------------
+
+// Class which waits for `BrowserListObserver::OnBrowserSetLastActive()` events.
+class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
+ public:
+  void Wait() {
+    CHECK(!run_loop_);
+
+    base::ScopedObservation<BrowserList, BrowserListObserver> observer(this);
+    observer.Observe(BrowserList::GetInstance());
+
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override {
+    CHECK(run_loop_);
+    run_loop_->Quit();
+  }
+
+  // Used to wait for `OnBrowserSetLastActive()` events.
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 }  // namespace
 
 // ContainerAppInteractiveUiTestBase -------------------------------------------
@@ -210,6 +248,15 @@ class ContainerAppInteractiveUiTestBase
         base::BindRepeating([](views::Widget* widget) {
           return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
         }));
+  }
+
+  // Returns a builder for a step which assigns the last active browser to the
+  // specified `ptr_ref`.
+  [[nodiscard]] auto AssignLastActiveBrowser(
+      std::reference_wrapper<Browser*> ptr_ref) {
+    return Do([ptr_ref]() {
+      ptr_ref.get() = BrowserList::GetInstance()->GetLastActive();
+    });
   }
 
   // Returns a builder for a step which assigns the view associated with the
@@ -246,6 +293,12 @@ class ContainerAppInteractiveUiTestBase
   template <typename T>
   [[nodiscard]] static auto Reset(std::reference_wrapper<raw_ptr<T>> ptr) {
     return Do([ptr]() { ptr.get() = nullptr; });
+  }
+
+  // Returns a builder for a step which waits for a
+  // `BrowserList::OnBrowserSetLastActive()` event.
+  [[nodiscard]] auto WaitForOnBrowserSetLastActive() {
+    return Do([]() { OnBrowserSetLastActiveWaiter().Wait(); });
   }
 
  protected:
@@ -562,6 +615,66 @@ IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromShelf) {
       // Launch container app.
       InstrumentNextTab(kContainerAppWebContentsElementId, AnyBrowser()),
       DoDefaultAction(kContainerAppElementName),
+
+      // Check container app browser.
+      CheckElement(kContainerAppWebContentsElementId,
+                   base::BindOnce(&AsInstrumentedWebContents)
+                       .Then(base::BindOnce(
+                           &WebContentsInteractionTestUtil::web_contents))
+                       .Then(base::BindOnce(&chrome::FindBrowserWithTab))
+                       .Then(base::BindOnce(&IsBrowserForWebApp,
+                                            web_app::kContainerAppId))),
+
+      // Check container app launch URL.
+      WaitForWebContentsReady(kContainerAppWebContentsElementId,
+                              GetContainerAppLaunchUrl()));
+}
+
+// Initializes user state and restarts Chrome before
+// `PreferredAppForSupportedLinks`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest,
+                       PRE_PreferredAppForSupportedLinks) {}
+
+// Verifies that the container app is the preferred app for supported links.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest,
+                       PreferredAppForSupportedLinks) {
+  // Browser.
+  Browser* container_app_browser = nullptr;
+
+  // Test.
+  RunTestSequence(
+      // Navigate browser to page with supported link.
+      AddInstrumentedTab(
+          kBrowserWebContentsElementId,
+          GURL(base::StrCat({"data:text/html;base64,",
+                             base::Base64Encode(base::ReplaceStringPlaceholders(
+                                 R"(<DOCTYPE html>
+                                    <html>
+                                      <head>
+                                        <style>
+                                          html, body, a {
+                                            display: block;
+                                            height: 100%;
+                                            width: 100%;
+                                          }
+                                        </style>
+                                      </head>
+                                      <body>
+                                        <a href="$1" target="_blank"></a>
+                                      </body>
+                                    </html>)",
+                                 /*subst=*/{GetContainerAppLaunchUrl().spec()},
+                                 /*offsets=*/nullptr))}))),
+
+      // Launch container app via supported link.
+      MoveMouseTo(kBrowserViewElementId), ClickMouse(),
+
+      // Instrument container app browser.
+      WaitForOnBrowserSetLastActive(),
+      AssignLastActiveBrowser(std::ref(container_app_browser)),
+      InstrumentTab(kContainerAppWebContentsElementId,
+                    /*tab_index=*/std::nullopt,
+                    std::ref(container_app_browser)),
 
       // Check container app browser.
       CheckElement(kContainerAppWebContentsElementId,
