@@ -200,6 +200,7 @@ class MessageReceiverImplTest : public testing::Test {
   ~MessageReceiverImplTest() override = default;
 
   void SetUp() override {
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
     phone_hub_structured_metrics_logger_ =
         std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
     message_receiver_ = std::make_unique<MessageReceiverImpl>(

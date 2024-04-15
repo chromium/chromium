@@ -31,7 +31,7 @@ BASE_FEATURE(kEnabledStructuredMetricsService,
 
 BASE_FEATURE(kPhoneHubStructuredMetrics,
              "PhoneHubStructuredMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 100};

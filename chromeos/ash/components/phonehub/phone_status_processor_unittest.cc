@@ -140,6 +140,8 @@ class PhoneStatusProcessorTest : public testing::Test {
   ~PhoneStatusProcessorTest() override = default;
 
   void SetUp() override {
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubCameraRoll},
@@ -178,8 +180,6 @@ class PhoneStatusProcessorTest : public testing::Test {
             fake_connection_manager_.get());
     phone_hub_structured_metrics_logger_ =
         std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
-
-    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
   }
 
   void CreatePhoneStatusProcessor() {

@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -26,6 +27,9 @@ class ConnectionSchedulerImplTest : public testing::Test {
   ~ConnectionSchedulerImplTest() override = default;
 
   void SetUp() override {
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
+    phone_hub_structured_metrics_logger_ =
+        std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
     fake_connection_manager_ =
         std::make_unique<secure_channel::FakeConnectionManager>();
     fake_feature_status_provider_ =
@@ -54,6 +58,7 @@ class ConnectionSchedulerImplTest : public testing::Test {
   std::unique_ptr<PhoneHubStructuredMetricsLogger>
       phone_hub_structured_metrics_logger_;
   std::unique_ptr<ConnectionSchedulerImpl> connection_scheduler_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(ConnectionSchedulerImplTest, SuccesssfullyAttemptConnection) {
