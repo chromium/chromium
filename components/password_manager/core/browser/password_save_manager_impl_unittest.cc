@@ -217,21 +217,21 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    field.renderer_id = autofill::FieldRendererId(1);
+    field.set_renderer_id(autofill::FieldRendererId(1));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"username");
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    field.renderer_id = autofill::FieldRendererId(2);
+    field.set_renderer_id(autofill::FieldRendererId(2));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"password");
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
-    field.renderer_id = autofill::FieldRendererId(3);
+    field.set_renderer_id(autofill::FieldRendererId(3));
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -239,7 +239,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
-    field.renderer_id = autofill::FieldRendererId(5);
+    field.set_renderer_id(autofill::FieldRendererId(5));
     observed_form_only_password_fields_.fields.push_back(field);
 
     submitted_form_ = observed_form_;
@@ -974,7 +974,8 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
 
   PasswordForm expected = password_save_manager_impl()->GetPendingCredentials();
   expected.password_value = password;
-  expected.password_element_renderer_id = submitted_form.fields[0].renderer_id;
+  expected.password_element_renderer_id =
+      submitted_form.fields[0].renderer_id();
   expected.password_element = submitted_form.fields[0].name();
 
   // Simulate that the user updates value to save for the first password field

@@ -1707,7 +1707,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     return provisionally_saved_form();
   }
   auto has_been_user_edited = [this](const FormFieldData& field) {
-    return formless_elements_user_edited_.contains(field.renderer_id);
+    return formless_elements_user_edited_.contains(field.renderer_id());
   };
   // The three cases handled by this function:
   bool user_autofilled_or_edited_owned_form = !!last_interacted_form().GetId();

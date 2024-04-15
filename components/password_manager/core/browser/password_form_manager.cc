@@ -313,7 +313,7 @@ bool PasswordFormManager::DoesManage(
   return base::ranges::any_of(
       observed_form()->fields,
       [field_renderer_id](const autofill::FormFieldData& field) {
-        return field.renderer_id == field_renderer_id;
+        return field.renderer_id() == field_renderer_id;
       });
 }
 
@@ -692,7 +692,7 @@ void PasswordFormManager::UpdateStateOnUserInput(
   // Update the observed field value.
   auto modified_field = base::ranges::find_if(
       mutable_observed_form()->fields, [&field_id](const FormFieldData& field) {
-        return field.renderer_id == field_id;
+        return field.renderer_id() == field_id;
       });
   if (modified_field == mutable_observed_form()->fields.end())
     return;
@@ -724,7 +724,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
         possible_usernames) {
   bool data_found = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {
-    FieldRendererId field_id = field.renderer_id;
+    FieldRendererId field_id = field.renderer_id();
     if (!field_data_manager.HasFieldData(field_id))
       continue;
     field.user_input = field_data_manager.GetUserInput(field_id);
@@ -1141,7 +1141,7 @@ bool PasswordFormManager::ObservedFormHasField(int driver_id,
   }
   CHECK(observed_form());
   for (const auto& field : observed_form()->fields) {
-    if (field.renderer_id == field_id) {
+    if (field.renderer_id() == field_id) {
       LogUsingPossibleUsername(client_, /*is_used*/ false, "Same form");
       return true;
     }
@@ -1652,7 +1652,7 @@ bool HasObservedFormChanged(const FormData& form_data,
     const FormFieldData& lhs_field = lhs.fields[i];
     const FormFieldData& rhs_field = rhs.fields[i];
 
-    if (lhs_field.renderer_id != rhs_field.renderer_id) {
+    if (lhs_field.renderer_id() != rhs_field.renderer_id()) {
       differences_bitmask |= PasswordFormMetricsRecorder::kRendererFieldIDs;
     }
 

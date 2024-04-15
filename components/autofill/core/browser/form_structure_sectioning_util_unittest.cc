@@ -58,7 +58,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
   for (const auto& t : field_templates) {
     const auto& f =
         result.emplace_back(std::make_unique<AutofillField>(FormFieldData()));
-    f->renderer_id = test::MakeFieldRendererId();
+    f->set_renderer_id(test::MakeFieldRendererId());
     f->set_form_control_type(t.form_control_type);
     f->SetTypeTo(AutofillType(t.field_type));
     DCHECK_EQ(f->Type().GetStorableType(), t.field_type);

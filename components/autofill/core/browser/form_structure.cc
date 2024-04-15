@@ -751,7 +751,7 @@ bool FormStructure::is_form_element() const {
          (!fields_.empty() &&
           fields_.begin()->get()->form_control_type() ==
               FormControlType::kContentEditable &&
-          *fields_.begin()->get()->renderer_id == *renderer_id_);
+          *fields_.begin()->get()->renderer_id() == *renderer_id_);
 }
 
 FormData FormStructure::ToFormData() const {
@@ -1170,7 +1170,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     const AutofillField* field = form.field(i);
     buffer << "\n  Identifiers:"
            << base::StrCat({"renderer id: ",
-                            base::NumberToString(field->renderer_id.value()),
+                            base::NumberToString(field->renderer_id().value()),
                             ", host frame: ",
                             field->renderer_form_id().frame_token.ToString(),
                             " (", field->origin.Serialize(),
@@ -1251,7 +1251,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tag{"table"};
     buffer << Tr{} << "Identifiers:"
            << base::StrCat({"renderer id: ",
-                            base::NumberToString(field->renderer_id.value()),
+                            base::NumberToString(field->renderer_id().value()),
                             ", host frame: ",
                             field->renderer_form_id().frame_token.ToString(),
                             " (", field->origin.Serialize(),

@@ -93,7 +93,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.options = fd.select_options;
   }
 
-  ff.renderer_id = fd.renderer_id.value_or(MakeFieldRendererId());
+  ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));
   ff.host_form_id = MakeFormRendererId();
   ff.is_focusable = fd.is_focusable;
   ff.is_visible = fd.is_visible;

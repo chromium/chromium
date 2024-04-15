@@ -217,7 +217,7 @@ struct FormFieldData {
   // for details.
   //
   // Must not be leaked to renderer process. See FieldGlobalId for details.
-  FieldGlobalId global_id() const { return {host_frame, renderer_id}; }
+  FieldGlobalId global_id() const { return {host_frame, renderer_id()}; }
 
   // An identifier of the renderer form that contained this field.
   // This may be different from the browser form that contains this field in the
@@ -316,7 +316,10 @@ struct FormFieldData {
   // field DOM elements in the same frame.
   // In the browser process, use global_id() instead.
   // See global_id() for details on the properties and pitfalls.
-  FieldRendererId renderer_id;
+  const FieldRendererId& renderer_id() const { return renderer_id_; }
+  void set_renderer_id(FieldRendererId renderer_id) {
+    renderer_id_ = std::move(renderer_id);
+  }
 
   // Renderer ID of the owning form in the same frame.
   FormRendererId host_form_id;
@@ -429,6 +432,7 @@ struct FormFieldData {
   std::u16string name_;
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
+  FieldRendererId renderer_id_;
 };
 
 // Structure containing necessary information to be sent from the browser to the

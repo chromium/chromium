@@ -1143,7 +1143,7 @@ class FormForestTestUpdateFieldAdd
     size_t target_index = GetParam().field_index;
     FormFieldData field = target_form.fields.front();
     field.set_name(base::StrCat({field.name(), u"_copy"}));
-    field.renderer_id = test::MakeFieldRendererId();
+    field.set_renderer_id(test::MakeFieldRendererId());
     target_form.fields.insert(target_form.fields.begin() + target_index, field);
   }
 };

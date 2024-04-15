@@ -40,7 +40,7 @@ class CategoryResolvedKeyMetricsTest
     FormData form = CreateEmptyForm();
     form.fields.resize(3);
     for (FormFieldData& field : form.fields) {
-      field.renderer_id = autofill_test_environment_.NextFieldRendererId();
+      field.set_renderer_id(autofill_test_environment_.NextFieldRendererId());
     }
     autofill_manager().AddSeenForm(
         form, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});

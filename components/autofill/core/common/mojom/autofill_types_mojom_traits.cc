@@ -279,7 +279,7 @@ bool StructTraits<
     if (!data.ReadRendererId(&renderer_id)) {
       return false;
     }
-    out->renderer_id = std::move(renderer_id);
+    out->set_renderer_id(std::move(renderer_id));
   }
 
   {

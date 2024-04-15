@@ -216,14 +216,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.set_name(u"fname");
   field_data.set_value(u"John");
   field_data.is_autofilled = true;
-  field_data.renderer_id = form_util::GetFieldRendererId(fname_element);
+  field_data.set_renderer_id(form_util::GetFieldRendererId(fname_element));
   data.fields.push_back(field_data);
 
   if (!lname_element.IsNull()) {
     field_data.set_name(u"lname");
     field_data.set_value(u"Smith");
     field_data.is_autofilled = true;
-    field_data.renderer_id = form_util::GetFieldRendererId(lname_element);
+    field_data.set_renderer_id(form_util::GetFieldRendererId(lname_element));
     data.fields.push_back(field_data);
   }
 
@@ -297,20 +297,20 @@ void SimulateFillFormWithNonFillableFields(
   field.set_name(u"fname");
   field.set_value(u"John");
   field.is_autofilled = true;
-  field.renderer_id = form_util::GetFieldRendererId(fname_element);
+  field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
   form.fields.push_back(field);
 
   field.set_name(u"lname");
   field.set_value(u"Smith");
   field.is_autofilled = true;
-  field.renderer_id = form_util::GetFieldRendererId(lname_element);
+  field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
   form.fields.push_back(field);
 
   // Additional non-autofillable field.
   field.set_name(u"mname");
   field.set_value(u"James");
   field.is_autofilled = false;
-  field.renderer_id = form_util::GetFieldRendererId(mname_element);
+  field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
   form.fields.push_back(field);
 
   // This call is necessary to setup the autofill agent appropriate for the

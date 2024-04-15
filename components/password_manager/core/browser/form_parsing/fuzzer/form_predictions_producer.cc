@@ -66,7 +66,7 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
       PasswordFieldPrediction field_prediction;
       SetPredictionType(pick_meaningful_type, provider, field_prediction);
       field_prediction.may_use_prefilled_placeholder = use_placeholder;
-      field_prediction.renderer_id = field.renderer_id;
+      field_prediction.renderer_id = field.renderer_id();
       predictions.fields.push_back(std::move(field_prediction));
     }
   }

@@ -126,7 +126,7 @@ autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
     field.options.push_back(
         {.value = u"", .content = base::UTF8ToUTF16(element)});
   }
-  field.renderer_id = MakeFieldRendererId();
+  field.set_renderer_id(MakeFieldRendererId());
   list_.push_back(std::make_unique<AutofillField>(field));
   return list_.back()->global_id();
 }

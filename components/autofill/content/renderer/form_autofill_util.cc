@@ -1138,17 +1138,17 @@ struct CompareByRendererId {
   bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
                   const std::pair<FormFieldData*, ShadowFieldData>& g) const {
     DCHECK(f.first && g.first);
-    return f.first->renderer_id < g.first->renderer_id;
+    return f.first->renderer_id() < g.first->renderer_id();
   }
   bool operator()(const FieldRendererId f,
                   const std::pair<FormFieldData*, ShadowFieldData>& g) const {
     DCHECK(g.first);
-    return f < g.first->renderer_id;
+    return f < g.first->renderer_id();
   }
   bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
                   FieldRendererId g) const {
     DCHECK(f.first);
-    return f.first->renderer_id < g;
+    return f.first->renderer_id() < g;
   }
 };
 
@@ -1925,7 +1925,7 @@ void WebFormControlElementToFormField(
   field->set_name(element.NameForAutofill().Utf16());
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = GetAttribute<kName>(element).Utf16();
-  field->renderer_id = renderer_id;
+  field->set_renderer_id(renderer_id);
   field->host_form_id = GetFormRendererId(form_element);
   field->form_control_ax_id = element.GetAxId();
   field->set_form_control_type(
@@ -2185,7 +2185,7 @@ std::optional<FormData> FindFormForContentEditable(
   field.name_attribute = GetAttribute<kName>(content_editable).Utf16();
   field.set_name(!field.id_attribute.empty() ? field.id_attribute
                                              : field.name_attribute);
-  field.renderer_id = GetFieldRendererId(content_editable);
+  field.set_renderer_id(GetFieldRendererId(content_editable));
   field.host_form_id = GetFormRendererId(content_editable);
   field.set_form_control_type(FormControlType::kContentEditable);
   field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);

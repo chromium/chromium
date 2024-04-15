@@ -298,7 +298,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                             target_id_,
                             autofill_field->global_id().frame_token->ToString())
                             .value_or(""))
-            .SetFieldId(autofill_field->renderer_id.value())
+            .SetFieldId(autofill_field->renderer_id().value())
             .Build());
   }
 

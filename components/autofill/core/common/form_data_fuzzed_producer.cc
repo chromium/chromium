@@ -69,8 +69,8 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     result.fields[i].set_name(ConsumeU16String(provider));
     result.fields[i].name_attribute = result.fields[i].name();
     result.fields[i].id_attribute = ConsumeU16String(provider);
-    result.fields[i].renderer_id =
-        FieldRendererId(provider.ConsumeIntegralInRange(-32, 31));
+    result.fields[i].set_renderer_id(
+        FieldRendererId(provider.ConsumeIntegralInRange(-32, 31)));
 
     if (same_value_field) {
       if (first_field_with_same_value == -1) {

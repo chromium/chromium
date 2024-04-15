@@ -153,7 +153,7 @@ FormData MakePasswordFormData() {
   field.id_attribute = field.name();
   field.name_attribute = field.name();
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
-  field.renderer_id = FieldRendererId(123);
+  field.set_renderer_id(FieldRendererId(123));
   form_data.fields.push_back(field);
 
   return form_data;
@@ -1381,7 +1381,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/false));
   GetClient()->FocusedInputChanged(driver.get(),
-                                   observed_form_data.fields[0].renderer_id,
+                                   observed_form_data.fields[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
 }
 
@@ -1415,7 +1415,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/true));
   GetClient()->FocusedInputChanged(driver.get(),
-                                   observed_form_data.fields[0].renderer_id,
+                                   observed_form_data.fields[0].renderer_id(),
                                    FocusedFieldType::kFillablePasswordField);
 }
 

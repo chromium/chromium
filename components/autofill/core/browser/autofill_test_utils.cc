@@ -854,7 +854,7 @@ void GenerateTestAutofillPopup(
   form.host_frame = MakeLocalFrameToken();
   form.renderer_id = MakeFormRendererId();
   field.host_frame = MakeLocalFrameToken();
-  field.renderer_id = MakeFieldRendererId();
+  field.set_renderer_id(MakeFieldRendererId());
   field.is_focusable = true;
   field.should_autocomplete = true;
   autofill_external_delegate->OnQuery(

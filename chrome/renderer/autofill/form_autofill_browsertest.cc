@@ -3040,7 +3040,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
       forms[0].GetFormControlElements();
   for (size_t i = 0; i < fields.size(); ++i)
     EXPECT_EQ(GetFieldRendererId(form_control_elements[i]),
-              fields[i].renderer_id);
+              fields[i].renderer_id());
 }
 
 TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {

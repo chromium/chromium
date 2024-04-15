@@ -287,9 +287,11 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   const std::string* renderer_id = field.FindString("renderer_id");
   if (renderer_id && !renderer_id->empty()) {
-    StringToUint(*renderer_id, &field_data->renderer_id.value());
+    FieldRendererId field_renderer_id;
+    StringToUint(*renderer_id, &field_renderer_id.value());
+    field_data->set_renderer_id(field_renderer_id);
   } else {
-    field_data->renderer_id = FieldRendererId();
+    field_data->set_renderer_id(FieldRendererId());
   }
 
   // Optional fields.
@@ -375,11 +377,11 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
 
   // Fill user input and properties mask.
-  if (field_data_manager.HasFieldData(field_data->renderer_id)) {
+  if (field_data_manager.HasFieldData(field_data->renderer_id())) {
     field_data->user_input =
-        field_data_manager.GetUserInput(field_data->renderer_id);
+        field_data_manager.GetUserInput(field_data->renderer_id());
     field_data->properties_mask =
-        field_data_manager.GetFieldPropertiesMask(field_data->renderer_id);
+        field_data_manager.GetFieldPropertiesMask(field_data->renderer_id());
   }
 
   return true;

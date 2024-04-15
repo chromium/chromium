@@ -288,7 +288,7 @@ std::map<FormSignature, FormPredictions> CreatePredictions(
   FormPredictions predictions;
   for (const auto& index_prediction : field_predictions) {
     autofill::FieldRendererId renderer_id =
-        form.fields[index_prediction.first].renderer_id;
+        form.fields[index_prediction.first].renderer_id();
     FieldType server_type = index_prediction.second;
     predictions.fields.emplace_back();
 
@@ -408,14 +408,14 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    field.renderer_id = autofill::FieldRendererId(2);
+    field.set_renderer_id(autofill::FieldRendererId(2));
     observed_form_.fields.push_back(field);
 
     field.set_name(u"username");
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    field.renderer_id = autofill::FieldRendererId(3);
+    field.set_renderer_id(autofill::FieldRendererId(3));
     observed_form_.fields.push_back(field);
 
     non_password_form_ = observed_form_;
@@ -424,7 +424,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
-    field.renderer_id = autofill::FieldRendererId(4);
+    field.set_renderer_id(autofill::FieldRendererId(4));
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -432,7 +432,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name();
     field.name_attribute = field.name();
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
-    field.renderer_id = autofill::FieldRendererId(5);
+    field.set_renderer_id(autofill::FieldRendererId(5));
     observed_form_only_password_fields_.fields.push_back(field);
 
     submitted_form_ = observed_form_;
@@ -746,7 +746,7 @@ TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(observed_form_.renderer_id, generation_data.form_renderer_id);
 #else
-  EXPECT_EQ(observed_form_.fields.back().renderer_id,
+  EXPECT_EQ(observed_form_.fields.back().renderer_id(),
             generation_data.new_password_renderer_id);
   EXPECT_TRUE(generation_data.confirmation_password_renderer_id.is_null());
 #endif
@@ -758,12 +758,12 @@ TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   // Make |observed_form_| to be sign-up form.
   observed_form_.fields.back().autocomplete_attribute = "new-password";
   const autofill::FieldRendererId new_password_render_id =
-      observed_form_.fields.back().renderer_id;
+      observed_form_.fields.back().renderer_id();
   // Add a confirmation field.
   FormFieldData field;
   const autofill::FieldRendererId confirm_password_render_id(
       new_password_render_id.value() + 1);
-  field.renderer_id = confirm_password_render_id;
+  field.set_renderer_id(confirm_password_render_id);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.autocomplete_attribute = "new-password";
   observed_form_.fields.push_back(field);
@@ -2042,7 +2042,8 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedRendererIds) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  form.fields[kUsernameFieldIndex].renderer_id.value() += 100;
+  form.fields[kUsernameFieldIndex].set_renderer_id(FieldRendererId(
+      form.fields[kUsernameFieldIndex].renderer_id().value() + 100));
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2131,11 +2132,13 @@ TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
   Mock::VerifyAndClearExpectations(&driver_);
 
   FormData form = observed_form_;
-  form.fields[kUsernameFieldIndex].renderer_id.value() += 1000;
+  form.fields[kUsernameFieldIndex].set_renderer_id(FieldRendererId(
+      form.fields[kUsernameFieldIndex].renderer_id().value() + 1000));
   form.fields[kUsernameFieldIndex].set_name(
       form.fields[kUsernameFieldIndex].name() + u"1");
   form.fields[kUsernameFieldIndex].id_attribute += u"1";
-  form.fields[kPasswordFieldIndex].renderer_id.value() += 1000;
+  form.fields[kPasswordFieldIndex].set_renderer_id(FieldRendererId(
+      form.fields[kPasswordFieldIndex].renderer_id().value() + 1000));
 
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
@@ -2143,11 +2146,11 @@ TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
   form_manager_->Fill();
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  EXPECT_EQ(form.fields[kUsernameFieldIndex].renderer_id,
+  EXPECT_EQ(form.fields[kUsernameFieldIndex].renderer_id(),
             fill_data.username_element_renderer_id);
   EXPECT_EQ(saved_match_.username_value,
             fill_data.preferred_login.username_value);
-  EXPECT_EQ(form.fields[kPasswordFieldIndex].renderer_id,
+  EXPECT_EQ(form.fields[kPasswordFieldIndex].renderer_id(),
             fill_data.password_element_renderer_id);
   EXPECT_EQ(saved_match_.password_value,
             fill_data.preferred_login.password_value);
@@ -2182,8 +2185,10 @@ TEST_P(PasswordFormManagerTest, UpdateFormManagerWithFormChangesResetsTimer) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   FormData changed_form = observed_form_;
-  changed_form.fields[kUsernameFieldIndex].renderer_id.value() += 1000;
-  changed_form.fields[kPasswordFieldIndex].renderer_id.value() += 1000;
+  changed_form.fields[kUsernameFieldIndex].set_renderer_id(FieldRendererId(
+      changed_form.fields[kUsernameFieldIndex].renderer_id().value() + 1000));
+  changed_form.fields[kPasswordFieldIndex].set_renderer_id(FieldRendererId(
+      changed_form.fields[kPasswordFieldIndex].renderer_id().value() + 1000));
 
   // Check that no filling happens until server predictions arrive or the
   // filling timeout expires.
@@ -2205,9 +2210,9 @@ TEST_P(PasswordFormManagerTest, UpdateFormManagerWithFormChangesResetsTimer) {
 
   // Check that the new fill task triggers form filling.
   task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(changed_form.fields[kUsernameFieldIndex].renderer_id,
+  EXPECT_EQ(changed_form.fields[kUsernameFieldIndex].renderer_id(),
             fill_data.username_element_renderer_id);
-  EXPECT_EQ(changed_form.fields[kPasswordFieldIndex].renderer_id,
+  EXPECT_EQ(changed_form.fields[kPasswordFieldIndex].renderer_id(),
             fill_data.password_element_renderer_id);
 }
 
@@ -2509,7 +2514,7 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   // Use |generated_password| different from value in field to test that the
   // generated password is saved.
   const std::u16string generated_password = u"gen_pw";
-  FieldRendererId generation_element = password_field.renderer_id;
+  FieldRendererId generation_element = password_field.renderer_id();
   form_manager_->SetGenerationElement(generation_element);
 
   PasswordForm saved_form;
@@ -2535,7 +2540,7 @@ TEST_P(PasswordFormManagerTest, iOSUpdateStateWithoutPresaving) {
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
   FieldRendererId password_field =
-      observed_form_.fields[kPasswordFieldIndex].renderer_id;
+      observed_form_.fields[kPasswordFieldIndex].renderer_id();
   const std::u16string new_field_value = u"some_password";
 
   // Check that nothing is saved on changing password, in case when there was no
@@ -2553,11 +2558,11 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   CreateFormManager(observed_form_);
 
   auto field_data_manager = base::MakeRefCounted<autofill::FieldDataManager>();
-  field_data_manager->UpdateFieldDataMap(observed_form_.fields[1].renderer_id,
+  field_data_manager->UpdateFieldDataMap(observed_form_.fields[1].renderer_id(),
                                          u"typed_username",
                                          FieldPropertiesFlags::kUserTyped);
   field_data_manager->UpdateFieldDataMap(
-      observed_form_.fields[2].renderer_id, u"autofilled_pw",
+      observed_form_.fields[2].renderer_id(), u"autofilled_pw",
       FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
@@ -2586,7 +2591,7 @@ TEST_P(PasswordFormManagerTest,
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   auto field_data_manager = base::MakeRefCounted<autofill::FieldDataManager>();
-  field_data_manager->UpdateFieldDataMap(observed_form.fields[0].renderer_id,
+  field_data_manager->UpdateFieldDataMap(observed_form.fields[0].renderer_id(),
                                          u"typed_password",
                                          FieldPropertiesFlags::kUserTyped);
 
@@ -2763,7 +2768,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
 
   // Create possible username data for a username field from `observed_form_`.
   autofill::FieldRendererId kUsernameFieldRendererId =
-      observed_form_.fields[1].renderer_id;
+      observed_form_.fields[1].renderer_id();
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
       GetSignonRealm(observed_form_.url), kUsernameFieldRendererId,
@@ -3334,7 +3339,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowFillSingleUsernameForm) {
   form_manager_->ProcessServerPredictions(predictions);
 
   // Verify the fill data used for autofilling the single username form.
-  EXPECT_EQ(non_password_form_.fields[kUsernameFieldIndex].renderer_id,
+  EXPECT_EQ(non_password_form_.fields[kUsernameFieldIndex].renderer_id(),
             fill_data.username_element_renderer_id);
   EXPECT_EQ(saved_match_.username_value,
             fill_data.preferred_login.username_value);
@@ -3687,7 +3692,7 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
   username_field.set_name(u"username");
   username_field.set_form_control_type(autofill::FormControlType::kInputText);
   username_field.set_value(u"oldusername");
-  username_field.renderer_id = autofill::FieldRendererId(2);
+  username_field.set_renderer_id(autofill::FieldRendererId(2));
   submitted_form.fields.insert(std::begin(submitted_form.fields),
                                username_field);
 
@@ -4173,7 +4178,7 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsIgnoredOnLocalhost) {
   observed_form.renderer_id = FormRendererId(1);
   FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  field.renderer_id = kSingleUsernameFieldRendererId;
+  field.set_renderer_id(kSingleUsernameFieldRendererId);
   observed_form.fields.push_back(field);
   CreateFormManager(observed_form);
 

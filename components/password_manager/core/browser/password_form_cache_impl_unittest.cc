@@ -109,9 +109,9 @@ TEST_F(PasswordFormCacheTest, GetMatchedManager) {
 
   ASSERT_TRUE(matched_manager->DoesManage(form.renderer_id, &driver()));
   for (const FormFieldData& field : form.fields) {
-    ASSERT_TRUE(matched_manager->DoesManage(field.renderer_id, &driver()));
+    ASSERT_TRUE(matched_manager->DoesManage(field.renderer_id(), &driver()));
     ASSERT_EQ(matched_manager,
-              cache().GetMatchedManager(&driver(), field.renderer_id));
+              cache().GetMatchedManager(&driver(), field.renderer_id()));
   }
 }
 

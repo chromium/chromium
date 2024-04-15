@@ -248,7 +248,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 
   static autofill::FieldRendererId renderer_id(
       const autofill::FormFieldData& r) {
-    return r.renderer_id;
+    return r.renderer_id();
   }
 
   static autofill::FormRendererId host_form_id(

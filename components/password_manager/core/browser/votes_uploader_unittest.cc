@@ -133,7 +133,7 @@ class VotesUploaderTest : public testing::Test {
     for (int i = 0; i < kNumberOfFields; ++i) {
       FormFieldData field;
       field.set_name(GetFieldNameByIndex(i));
-      field.renderer_id = FieldRendererId(i);
+      field.set_renderer_id(FieldRendererId(i));
       form_to_upload_.form_data.fields.push_back(field);
       submitted_form_.form_data.fields.push_back(field);
     }
@@ -329,7 +329,7 @@ TEST_F(VotesUploaderTest, SendVoteOnCredentialsReuseFlow) {
 
   FormFieldData field;
   field.set_name(GetFieldNameByIndex(6));
-  field.renderer_id = FieldRendererId(6);
+  field.set_renderer_id(FieldRendererId(6));
 
   PasswordForm pending;
   pending.times_used_in_html_form = 1;
@@ -416,11 +416,11 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
 
   FormFieldData username_field;
   username_field.set_value(prefilled_username);
-  username_field.renderer_id = username_field_renderer_id;
+  username_field.set_renderer_id(username_field_renderer_id);
 
   FormFieldData other_field;
   other_field.set_value(u"some_field");
-  other_field.renderer_id = FieldRendererId(3234);
+  other_field.set_renderer_id(FieldRendererId(3234));
 
   form_data.fields = {other_field, username_field};
 
@@ -440,7 +440,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
 
   int found_fields = 0;
   for (auto& f : form_structure) {
-    if (f->renderer_id == username_field_renderer_id) {
+    if (f->renderer_id() == username_field_renderer_id) {
       found_fields++;
       ASSERT_TRUE(f->initial_value_hash());
       EXPECT_EQ(f->initial_value_hash().value(), expected_hash);

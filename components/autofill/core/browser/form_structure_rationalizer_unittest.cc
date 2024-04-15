@@ -110,7 +110,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
         field_template.host_form.value_or(form.global_id()).frame_token;
     field.host_form_id =
         field_template.host_form.value_or(form.global_id()).renderer_id;
-    field.renderer_id = test::MakeFieldRendererId();
+    field.set_renderer_id(test::MakeFieldRendererId());
     form.fields.push_back(std::move(field));
   }
 

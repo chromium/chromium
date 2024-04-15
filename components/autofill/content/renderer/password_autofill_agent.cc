@@ -482,7 +482,7 @@ size_t GetIndexOfElement(const FormData& form_data,
     return form_data.fields.size();
   }
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
-    if (form_data.fields[i].renderer_id ==
+    if (form_data.fields[i].renderer_id() ==
         form_util::GetFieldRendererId(element)) {
       return i;
     }
@@ -1732,7 +1732,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   const bool show_webauthn_credentials =
       field.parsed_autocomplete && field.parsed_autocomplete->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      field.renderer_id, form, trigger_source,
+      field.renderer_id(), form, trigger_source,
       GetIndexOfElement(form, username_element),
       GetIndexOfElement(form, password_element), field.text_direction,
       typed_username, show_webauthn_credentials,
@@ -2109,7 +2109,7 @@ PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
     const FormFieldData& form_field = form_data.fields[i];
 
     FormFieldInfo& field_info = result.fields[i];
-    field_info.renderer_id = form_field.renderer_id;
+    field_info.renderer_id = form_field.renderer_id();
     field_info.form_control_type = form_field.form_control_type();
     field_info.autocomplete_attribute = form_field.autocomplete_attribute;
     field_info.is_focusable = form_field.is_focusable;

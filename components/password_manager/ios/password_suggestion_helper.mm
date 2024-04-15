@@ -313,7 +313,7 @@ enum class FormExtractionStatus {
   const auto& fields = form_structure->fields();
   auto itEnd = fields.end();
   auto it = std::find_if(fields.begin(), itEnd, [&](auto& field) {
-    return formQuery.fieldRendererID == field->renderer_id;
+    return formQuery.fieldRendererID == field->renderer_id();
   });
   if (it == itEnd) {
     return YES;

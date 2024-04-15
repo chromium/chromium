@@ -139,7 +139,7 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   FormControlType type) {
   FormFieldData field;
   field.host_frame = MakeLocalFrameToken();
-  field.renderer_id = MakeFieldRendererId();
+  field.set_renderer_id(MakeFieldRendererId());
   field.label = base::UTF8ToUTF16(label);
   field.set_name(base::UTF8ToUTF16(name));
   field.set_value(base::UTF8ToUTF16(value));

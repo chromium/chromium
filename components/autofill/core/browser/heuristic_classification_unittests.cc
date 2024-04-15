@@ -363,7 +363,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.origin = form_data.main_frame_origin;
   field.host_frame = form_data.host_frame;
   field.host_form_id = form_data.renderer_id;
-  field.renderer_id = test::MakeFieldRendererId();
+  field.set_renderer_id(test::MakeFieldRendererId());
   if (const base::Value::List* options =
           field_dict.FindList("select_options")) {
     for (const base::Value& option : *options) {

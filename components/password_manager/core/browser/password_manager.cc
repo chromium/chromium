@@ -224,8 +224,9 @@ bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
     return true;
 
   for (auto const& field : submitted_form.form_data.fields) {
-    if (submitted_form.password_element_renderer_id == field.renderer_id ||
-        submitted_form.new_password_element_renderer_id == field.renderer_id) {
+    if (submitted_form.password_element_renderer_id == field.renderer_id() ||
+        submitted_form.new_password_element_renderer_id ==
+            field.renderer_id()) {
       if (field.is_focusable)
         return false;
     }

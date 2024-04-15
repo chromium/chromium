@@ -899,7 +899,7 @@ void FormFiller::TriggerRefill(const FormData& form,
             field->global_id() == filling_context->filled_field_id,
             field->GetFieldSignature() ==
                 filling_context->filled_field_signature,
-            field->renderer_id);
+            field->renderer_id());
       };
   auto it =
       base::ranges::max_element(*form_structure, {}, comparison_attributes);

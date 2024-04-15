@@ -767,12 +767,12 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
     const FormStructure& form_structure) {
   PasswordParserOverrides result;
   for (const std::unique_ptr<AutofillField>& field : form_structure) {
-    if (field->renderer_id == pw_form.username_element_renderer_id) {
+    if (field->renderer_id() == pw_form.username_element_renderer_id) {
       if (result.username_field_id) {
         return std::nullopt;
       }
       result.username_field_id = field->global_id();
-    } else if (field->renderer_id == pw_form.password_element_renderer_id) {
+    } else if (field->renderer_id() == pw_form.password_element_renderer_id) {
       if (result.password_field_id) {
         return std::nullopt;
       }

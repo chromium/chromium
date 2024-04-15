@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("name", af->name_attribute));
     EXPECT_EQ(*ff.GetDict().FindIntByDottedPath("fieldId"),
-              (int)(ffd->renderer_id.value()));
+              (int)(ffd->renderer_id().value()));
   }
 
   // The first filled field uses autocomplete attribute as filling strategy.

@@ -85,7 +85,7 @@ MATCHER(EqualsFillData, "") {
   FormFieldData lhs_field = std::get<0>(arg);
   FormFieldData::FillData rhs_field = std::get<1>(arg);
   return lhs_field.value() == rhs_field.value &&
-         lhs_field.renderer_id == rhs_field.renderer_id &&
+         lhs_field.renderer_id() == rhs_field.renderer_id &&
          lhs_field.host_form_id == rhs_field.host_form_id &&
          lhs_field.section == rhs_field.section &&
          lhs_field.is_autofilled == rhs_field.is_autofilled &&
