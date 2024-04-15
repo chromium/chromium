@@ -189,6 +189,12 @@ class FactoryTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.get_port(target='unknown')
 
+    def test_both_configuration_and_target_uses_configuration_without_gn(self):
+        port = self.get_port(
+            target='Debug',
+            configuration='Release')
+        self.assertEqual(port._options.configuration, 'Release')
+
     def test_both_configuration_and_target_is_an_error(self):
         with self.assertRaises(ValueError):
             self.get_port(

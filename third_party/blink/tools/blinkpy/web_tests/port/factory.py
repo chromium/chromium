@@ -802,6 +802,9 @@ def _update_configuration_and_target(host, options):
         options.configuration = gn_configuration
         return
 
+    if getattr(options, 'configuration', None):
+        return
+
     if options.target in ('Debug', 'Debug_x64'):
         options.configuration = 'Debug'
     elif options.target in ('Release', 'Release_x64'):
