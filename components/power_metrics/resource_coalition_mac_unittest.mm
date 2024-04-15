@@ -82,7 +82,8 @@ void BurnCPU() {
 
 }  // namespace
 
-TEST(ResourceCoalitionMacTest, Busy) {
+// TODO(crbug.com/328102500): Test failing on Mac builders, hence disabled.
+TEST(ResourceCoalitionMacTest, DISABLED_Busy) {
   absl::optional<uint64_t> coalition_id =
       GetProcessCoalitionId(base::GetCurrentProcId());
   ASSERT_TRUE(coalition_id.has_value());
