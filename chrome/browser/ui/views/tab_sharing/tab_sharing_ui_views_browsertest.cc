@@ -102,7 +102,7 @@ ui::ImageModel GetShareThisTabInsteadButtonImage(Browser* browser, int tab) {
 bool ShareThisTabInsteadButtonIsEnabled(Browser* browser, int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonEnabled(TabSharingInfoBarButton::kShareThisTabInstead);
+      ->IsButtonEnabled(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 bool HasQuickNavButton(Browser* browser, int tab) {

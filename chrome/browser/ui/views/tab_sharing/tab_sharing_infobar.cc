@@ -61,7 +61,7 @@ TabSharingInfoBar::TabSharingInfoBar(
                                        : ui::ButtonStyle::kTonal);
     button->SetImageModel(views::Button::STATE_NORMAL,
                           delegate_ptr->GetButtonImage(type));
-    button->SetEnabled(delegate_ptr->GetButtonEnabled(type));
+    button->SetEnabled(delegate_ptr->IsButtonEnabled(type));
     button->SetTooltipText(delegate_ptr->GetButtonTooltip(type));
     return button;
   };

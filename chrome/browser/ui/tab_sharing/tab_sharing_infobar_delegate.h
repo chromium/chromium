@@ -116,7 +116,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   std::u16string GetMessageText() const;
   std::u16string GetButtonLabel(TabSharingInfoBarButton button) const;
   ui::ImageModel GetButtonImage(TabSharingInfoBarButton button) const;
-  bool GetButtonEnabled(TabSharingInfoBarButton button) const;
+  bool IsButtonEnabled(TabSharingInfoBarButton button) const;
   std::u16string GetButtonTooltip(TabSharingInfoBarButton button) const;
   int GetButtons() const;
 

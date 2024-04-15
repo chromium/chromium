@@ -395,7 +395,7 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
   return GetButton(button).GetImage();
 }
 
-bool TabSharingInfoBarDelegate::GetButtonEnabled(
+bool TabSharingInfoBarDelegate::IsButtonEnabled(
     TabSharingInfoBarButton button) const {
   return GetButton(button).IsEnabled();
 }
