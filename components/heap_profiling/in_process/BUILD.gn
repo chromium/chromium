@@ -13,6 +13,8 @@ source_set("in_process") {
       "heap_profiler_controller.h",
       "heap_profiler_parameters.cc",
       "heap_profiler_parameters.h",
+      "switches.cc",
+      "switches.h",
     ]
 
     deps = [

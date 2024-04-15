@@ -11,12 +11,15 @@
 #include <vector>
 
 #include "base/allocator/dispatcher/reentry_guard.h"
-#include "base/check.h"
+#include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
@@ -29,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
+#include "components/heap_profiling/in_process/switches.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
@@ -36,6 +40,24 @@
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace heap_profiling {
+
+BASE_FEATURE(kHeapProfilerIncludeZero,
+             "HeapProfilerIncludeZero",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHeapProfilerCentralControl,
+             "HeapProfilerCentralControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The probability profiling will be enabled in a renderer when it's enabled in
+// the browser process.
+constexpr base::FeatureParam<double> kRendererProbability{
+    &kHeapProfilerCentralControl, "renderer-probability", 0.1};
+
+// The probability profiling will be enabled in a utility process when it's
+// enabled in the browser process.
+constexpr base::FeatureParam<double> kUtilityProbability{
+    &kHeapProfilerCentralControl, "utility-probability", 0.1};
 
 namespace {
 
@@ -244,10 +266,6 @@ class StackQualityMetricsRecorder {
 
 }  // namespace
 
-BASE_FEATURE(kHeapProfilerIncludeZero,
-             "HeapProfilerIncludeZero",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 HeapProfilerController::SnapshotParams::SnapshotParams(
     base::TimeDelta mean_interval,
     bool use_random_interval,
@@ -276,6 +294,54 @@ ProfilingEnabled HeapProfilerController::GetProfilingEnabled() {
   return g_profiling_enabled;
 }
 
+// static
+void HeapProfilerController::AppendCommandLineSwitchForChildProcess(
+    base::CommandLine* command_line,
+    version_info::Channel channel,
+    metrics::CallStackProfileParams::Process process_type) {
+  if (!base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
+    return;
+  }
+  CHECK_NE(process_type, ProcessType::kBrowser);
+  switch (g_profiling_enabled) {
+    case ProfilingEnabled::kNoController:
+      // Do nothing.
+      return;
+    case ProfilingEnabled::kDisabled:
+      // Never enable subprocess profiling if the browser process isn't being
+      // profiled.
+      command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
+      return;
+    case ProfilingEnabled::kEnabled: {
+      if (!GetHeapProfilerParametersForProcess(process_type).is_supported) {
+        command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
+        return;
+      }
+      double probability;
+      // Renderers and utility processes must be sub-sampled. Profile other
+      // process types whenever profiling is enabled for the browser process.
+      switch (process_type) {
+        case ProcessType::kRenderer:
+          probability = kRendererProbability.Get();
+          break;
+        case ProcessType::kUtility:
+          probability = kUtilityProbability.Get();
+          break;
+        default:
+          probability = 1.0;
+          break;
+      }
+      if (base::RandDouble() >= probability) {
+        command_line->AppendSwitch(switches::kNoSubprocessHeapProfiling);
+        return;
+      }
+      command_line->AppendSwitch(switches::kSubprocessHeapProfiling);
+      return;
+    }
+  }
+  NOTREACHED_NORETURN();
+}
+
 HeapProfilerController::HeapProfilerController(version_info::Channel channel,
                                                ProcessType process_type)
     : process_type_(process_type),
@@ -283,8 +349,26 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
   // Only one HeapProfilerController should exist at a time in each
   // process. The class is not a singleton so it can be created and
   // destroyed in tests.
-  DCHECK_EQ(g_profiling_enabled, ProfilingEnabled::kNoController);
-  g_profiling_enabled = DecideIfCollectionIsEnabled(channel, process_type);
+  CHECK_EQ(g_profiling_enabled, ProfilingEnabled::kNoController);
+
+  // Check the feature before the process type so that users are assigned to
+  // groups in the browser process.
+  if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl) &&
+      process_type != ProcessType::kBrowser) {
+    g_profiling_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              switches::kSubprocessHeapProfiling)
+                              ? ProfilingEnabled::kEnabled
+                              : ProfilingEnabled::kDisabled;
+    // If this check fails, some code path that launches a child process hasn't
+    // set the appropriate switch.
+    // TODO(https://crbug.com/40840943): Remove kNoSubprocessHeapProfiling after
+    // validating that this check never fails.
+    CHECK(g_profiling_enabled == ProfilingEnabled::kEnabled ||
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kNoSubprocessHeapProfiling));
+  } else {
+    g_profiling_enabled = DecideIfCollectionIsEnabled(channel, process_type);
+  }
 
   // Before starting the profiler, record the ReentryGuard's TLS slot to a crash
   // key to debug reentry into the profiler.

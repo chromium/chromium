@@ -204,6 +204,7 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/ppapi_utils.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/common/secure_origin_allowlist.h"
@@ -239,6 +240,7 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -2869,6 +2871,15 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
   ThreadProfilerConfiguration::Get()->AppendCommandLineSwitchForChildProcess(
       command_line);
+
+  if (process_type != switches::kZygoteProcess) {
+    // The switch value depends on the "HeapProfilerCentralControl" feature, and
+    // the zygote starts before the FeatureList is available.
+    heap_profiling::HeapProfilerController::
+        AppendCommandLineSwitchForChildProcess(
+            command_line, chrome::GetChannel(),
+            GetProfileParamsProcess(*command_line));
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Opt into a hardened stack canary mitigation if it hasn't already been

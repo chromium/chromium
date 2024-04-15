@@ -14,12 +14,20 @@
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
 
+namespace base {
+class CommandLine;
+}
+
 namespace heap_profiling {
 
 // If this is enabled, reports with 0 samples (from clients who allocated less
 // than the sampling rate threshold) will be uploaded so that they're included
 // in the average as 0 bytes allocated.
 BASE_DECLARE_FEATURE(kHeapProfilerIncludeZero);
+
+// If this is enabled, heap profiling in subprocesses is controlled centrally
+// from the browser process.
+BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
@@ -36,15 +44,22 @@ class HeapProfilerController {
   // function returns kNoController.
   static ProfilingEnabled GetProfilingEnabled();
 
+  // Appends a switch to enable or disable profiling for the given `channel` and
+  // `process_type` to `command_line`. Does nothing if no HeapProfilerController
+  // exists or kHeapProfilerCentralControl is disabled.
+  static void AppendCommandLineSwitchForChildProcess(
+      base::CommandLine* command_line,
+      version_info::Channel channel,
+      metrics::CallStackProfileParams::Process process_type);
+
   // Checks if heap profiling should be enabled for this process. If so, starts
   // sampling heap allocations immediately but does not schedule snapshots of
   // the samples until Start() is called. `channel` is used to determine the
   // probability that this client will be opted in to profiling. `process_type`
   // is the current process, which can be retrieved with GetProfileParamsProcess
   // in chrome/common/profiler/process_type.h.
-  explicit HeapProfilerController(
-      version_info::Channel channel,
-      metrics::CallStackProfileParams::Process process_type);
+  HeapProfilerController(version_info::Channel channel,
+                         metrics::CallStackProfileParams::Process process_type);
 
   HeapProfilerController(const HeapProfilerController&) = delete;
   HeapProfilerController& operator=(const HeapProfilerController&) = delete;
