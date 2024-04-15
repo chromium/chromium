@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Clear-Site-Data with "cache" directive must unregister dictionary
-  assert_equals: expected ":U5abz16WDg7b8KS93msLPpOB4Vbef1uRzoORYkJw9BY=:" but got "\\"available-dictionary\\" header is not available"
-Harness: the test ran to completion.
-
