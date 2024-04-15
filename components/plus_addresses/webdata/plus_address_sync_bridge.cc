@@ -29,7 +29,7 @@ namespace plus_addresses {
 PlusAddressSyncBridge::PlusAddressSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     scoped_refptr<WebDatabaseBackend> db_backend,
-    base::RepeatingClosure notify_data_changed_by_sync)
+    DataChangedBySyncCallback notify_data_changed_by_sync)
     : ModelTypeSyncBridge(std::move(change_processor)),
       db_backend_(std::move(db_backend)),
       notify_data_changed_by_sync_(std::move(notify_data_changed_by_sync)) {
@@ -78,21 +78,39 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
     return syncer::ModelError(FROM_HERE, "Failed to begin transaction.");
   }
 
+  std::vector<PlusAddressSyncDataChange> profile_changes;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
-        if (!GetPlusAddressTable()->AddOrUpdatePlusProfile(
-                PlusProfileFromEntityData(change->data()))) {
+        std::optional<PlusProfile> existing_profile =
+            GetPlusAddressTable()->GetPlusProfileForId(change->storage_key());
+        PlusProfile profile = PlusProfileFromEntityData(change->data());
+        if (!GetPlusAddressTable()->AddOrUpdatePlusProfile(profile)) {
           return syncer::ModelError(
               FROM_HERE, "Failed to add/update profile in database.");
         }
+        // When a plus address entry is updated, `profile_changes` will contain
+        // both a REMOVE and ADD change for the old and new profiles
+        // respectively.
+        if (existing_profile) {
+          profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+                                       std::move(*existing_profile));
+        }
+        profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kAdd,
+                                     std::move(profile));
         break;
       }
       case syncer::EntityChange::ACTION_DELETE: {
+        std::optional<PlusProfile> profile =
+            GetPlusAddressTable()->GetPlusProfileForId(change->storage_key());
         if (!GetPlusAddressTable()->RemovePlusProfile(change->storage_key())) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to remove profile in database.");
+        }
+        if (profile) {
+          profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+                                       std::move(*profile));
         }
         break;
       }
@@ -106,7 +124,7 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
   if (!transaction.Commit()) {
     return syncer::ModelError(FROM_HERE, "Failed to commit transaction.");
   }
-  notify_data_changed_by_sync_.Run();
+  notify_data_changed_by_sync_.Run(std::move(profile_changes));
   return std::nullopt;
 }
 
@@ -116,6 +134,12 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
   if (!transaction.Begin()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to begin transaction."});
+  }
+
+  std::vector<PlusAddressSyncDataChange> profile_changes;
+  for (PlusProfile& profile : GetPlusAddressTable()->GetPlusProfiles()) {
+    profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+                                 std::move(profile));
   }
 
   if (!GetPlusAddressTable()->ClearPlusProfiles()) {
@@ -134,7 +158,7 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to commit transaction."});
     return;
   }
-  notify_data_changed_by_sync_.Run();
+  notify_data_changed_by_sync_.Run(std::move(profile_changes));
 }
 
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,

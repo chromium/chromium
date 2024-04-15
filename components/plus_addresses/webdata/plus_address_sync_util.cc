@@ -11,6 +11,15 @@
 
 namespace plus_addresses {
 
+PlusAddressSyncDataChange::PlusAddressSyncDataChange(Type type,
+                                                     PlusProfile profile)
+    : type_(type), profile_(std::move(profile)) {}
+PlusAddressSyncDataChange::PlusAddressSyncDataChange(
+    const PlusAddressSyncDataChange& other) = default;
+PlusAddressSyncDataChange& PlusAddressSyncDataChange::operator=(
+    const PlusAddressSyncDataChange& change) = default;
+PlusAddressSyncDataChange::~PlusAddressSyncDataChange() = default;
+
 PlusProfile PlusProfileFromEntityData(const syncer::EntityData& entity_data) {
   CHECK(entity_data.specifics.has_plus_address());
   sync_pb::PlusAddressSpecifics specifics =

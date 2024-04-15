@@ -35,6 +35,9 @@ namespace plus_addresses {
 
 namespace {
 
+using DataChangedBySyncCallbackMock =
+    base::MockRepeatingCallback<void(std::vector<PlusAddressSyncDataChange>)>;
+
 class PlusAddressSyncBridgeTest : public testing::Test {
  public:
   PlusAddressSyncBridgeTest()
@@ -78,7 +81,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
   }
 
   // Called by the sync bridge whenever it modifies data in `table()`.
-  base::MockRepeatingClosure& on_data_changed_callback() {
+  DataChangedBySyncCallbackMock& on_data_changed_callback() {
     return on_data_changed_callback_;
   }
 
@@ -86,7 +89,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<WebDatabaseBackend> db_backend_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
-  testing::NiceMock<base::MockRepeatingClosure> on_data_changed_callback_;
+  testing::NiceMock<DataChangedBySyncCallbackMock> on_data_changed_callback_;
   std::unique_ptr<PlusAddressSyncBridge> bridge_;
 };
 
@@ -130,20 +133,31 @@ TEST_F(PlusAddressSyncBridgeTest, GetStorageKey) {
 }
 
 TEST_F(PlusAddressSyncBridgeTest, MergeFullSyncData) {
-  const PlusProfile profile = test::CreatePlusProfile();
-  EXPECT_CALL(on_data_changed_callback(), Run);
-  EXPECT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
+  EXPECT_CALL(on_data_changed_callback(),
+              Run(/*changes=*/testing::ElementsAre(
+                  PlusAddressSyncDataChange(
+                      PlusAddressSyncDataChange::Type::kAdd, profile1),
+                  PlusAddressSyncDataChange(
+                      PlusAddressSyncDataChange::Type::kAdd, profile2))));
+  EXPECT_TRUE(StartSyncing(/*remote_profiles=*/{profile1, profile2}));
   EXPECT_THAT(table().GetPlusProfiles(),
-              testing::UnorderedElementsAre(profile));
+              testing::UnorderedElementsAre(profile1, profile2));
 }
 
 TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
   PlusProfile profile1 = test::CreatePlusProfile();
+  EXPECT_CALL(
+      on_data_changed_callback(),
+      Run(/*changes=*/testing::UnorderedElementsAre(PlusAddressSyncDataChange(
+          PlusAddressSyncDataChange::Type::kAdd, profile1))));
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile1}));
 
   // Simulate receiving an incremental update.
   // Update `profile1`.
   syncer::EntityChangeList change_list;
+  PlusProfile old_profile1 = profile1;
   profile1.plus_address = "new-" + profile1.plus_address;
   syncer::EntityData entity_data = EntityDataFromPlusProfile(profile1);
   std::string storage_key = bridge().GetStorageKey(entity_data);
@@ -156,7 +170,14 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
   change_list.push_back(
       syncer::EntityChange::CreateAdd(storage_key, std::move(entity_data)));
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
-  EXPECT_CALL(on_data_changed_callback(), Run);
+  EXPECT_CALL(on_data_changed_callback(),
+              Run(/*changes=*/testing::ElementsAre(
+                  PlusAddressSyncDataChange(
+                      PlusAddressSyncDataChange::Type::kRemove, old_profile1),
+                  PlusAddressSyncDataChange(
+                      PlusAddressSyncDataChange::Type::kAdd, profile1),
+                  PlusAddressSyncDataChange(
+                      PlusAddressSyncDataChange::Type::kAdd, profile2))));
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(change_list)));
 
@@ -173,7 +194,9 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   change_list.push_back(syncer::EntityChange::CreateDelete(
       bridge().GetStorageKey(EntityDataFromPlusProfile(profile))));
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
-  EXPECT_CALL(on_data_changed_callback(), Run);
+  EXPECT_CALL(on_data_changed_callback(),
+              Run(/*changes=*/testing::ElementsAre(PlusAddressSyncDataChange(
+                  PlusAddressSyncDataChange::Type::kRemove, profile))));
   EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
       bridge().CreateMetadataChangeList(), std::move(change_list)));
 
@@ -181,8 +204,11 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
 }
 
 TEST_F(PlusAddressSyncBridgeTest, ApplyDisableSyncChanges) {
-  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{test::CreatePlusProfile()}));
-  EXPECT_CALL(on_data_changed_callback(), Run);
+  const PlusProfile profile = test::CreatePlusProfile();
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  EXPECT_CALL(on_data_changed_callback(),
+              Run(/*changes=*/testing::ElementsAre(PlusAddressSyncDataChange(
+                  PlusAddressSyncDataChange::Type::kRemove, profile))));
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
   EXPECT_THAT(table().GetPlusProfiles(), testing::IsEmpty());
 }

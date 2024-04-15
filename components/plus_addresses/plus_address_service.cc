@@ -22,6 +22,7 @@
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -335,8 +336,25 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
-    const std::vector<PlusProfile>& profiles) {
-  ReplacePlusProfiles(profiles);
+    const PlusAddressSyncDataChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (change.type()) {
+    case PlusAddressSyncDataChange::Type::kAdd: {
+      plus_profiles_.insert(change.profile());
+      plus_addresses_.insert(change.profile().plus_address);
+      break;
+    }
+    case PlusAddressSyncDataChange::Type::kRemove: {
+      plus_profiles_.erase(change.profile());
+      plus_addresses_.erase(change.profile().plus_address);
+      break;
+    }
+  }
+
+  for (Observer& o : observers_) {
+    o.OnPlusAddressesChanged();
+  }
 }
 
 void PlusAddressService::OnWebDataServiceRequestDone(

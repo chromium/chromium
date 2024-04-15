@@ -79,8 +79,7 @@ class PlusAddressService : public KeyedService,
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
 
   // PlusAddressWebDataService::Observer:
-  void OnWebDataChangedBySync(
-      const std::vector<PlusProfile>& profiles) override;
+  void OnWebDataChangedBySync(const PlusAddressSyncDataChange& change) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(

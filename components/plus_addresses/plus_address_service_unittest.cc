@@ -28,6 +28,7 @@
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
@@ -764,15 +765,26 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 };
 
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
-  const PlusProfile profile = test::CreatePlusProfile();
-  // Simulate adding a `profile` to the database directly, as sync would. This
-  // triggers `OnWebDataChangedBySync()`. Prior to the notification, `service()`
-  // has no way of knowing about this data.
-  table().AddOrUpdatePlusProfile(profile);
+  const PlusProfile profile1 = test::CreatePlusProfile();
+  const PlusProfile profile2 = test::CreatePlusProfile2();
+  // Simulate adding and removing profiles to the database directly, as sync
+  // would. This triggers `OnWebDataChangedBySync()`. Prior to the notification,
+  // `service()` has no way of knowing about this data.
+  table().AddOrUpdatePlusProfile(profile1);
+  table().AddOrUpdatePlusProfile(profile2);
   EXPECT_THAT(service().GetPlusProfiles(), testing::IsEmpty());
-  service().OnWebDataChangedBySync({profile});
+  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
+      PlusAddressSyncDataChange::Type::kAdd, profile1));
+  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
+      PlusAddressSyncDataChange::Type::kAdd, profile2));
   EXPECT_THAT(service().GetPlusProfiles(),
-              testing::UnorderedElementsAre(profile));
+              testing::UnorderedElementsAre(profile1, profile2));
+
+  table().RemovePlusProfile(profile1.profile_id);
+  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
+      PlusAddressSyncDataChange::Type::kRemove, profile1));
+  EXPECT_THAT(service().GetPlusProfiles(),
+              testing::UnorderedElementsAre(profile2));
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
