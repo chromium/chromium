@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin.services;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -77,10 +78,10 @@ public class IdentityServicesProvider {
 
     @NativeMethods
     public interface Natives {
-        IdentityManager getIdentityManager(Profile profile);
+        IdentityManager getIdentityManager(@JniType("Profile*") Profile profile);
 
-        AccountTrackerService getAccountTrackerService(Profile profile);
+        AccountTrackerService getAccountTrackerService(@JniType("Profile*") Profile profile);
 
-        SigninManager getSigninManager(Profile profile);
+        SigninManager getSigninManager(@JniType("Profile*") Profile profile);
     }
 }

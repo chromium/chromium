@@ -23,6 +23,16 @@ namespace {
 const char kProfileAndroidKey[] = "profile_android";
 }  // namespace
 
+namespace jni_zero {
+
+template <>
+Profile* FromJniType<Profile*, jobject>(JNIEnv* env,
+                                        const JavaRef<jobject>& j_profile) {
+  return ProfileAndroid::FromProfileAndroid(j_profile);
+}
+
+}  // namespace jni_zero
+
 // static
 ProfileAndroid* ProfileAndroid::FromProfile(Profile* profile) {
   if (!profile)
