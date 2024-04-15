@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
+
 #include <cstddef>
 #include <vector>
 
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -190,6 +192,17 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
 }
 
 PrivacySandboxSettingsImpl::~PrivacySandboxSettingsImpl() = default;
+
+void PrivacySandboxSettingsImpl::Shutdown() {
+  observers_.Clear();
+  delegate_.reset();
+  host_content_settings_map_ = nullptr;
+  cookie_settings_.reset();
+  tracking_protection_settings_ = nullptr;
+  pref_service_ = nullptr;
+  pref_change_registrar_.Reset();
+  tracking_protection_settings_observation_.Reset();
+}
 
 PrivacySandboxSettingsImpl::Status
 PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {

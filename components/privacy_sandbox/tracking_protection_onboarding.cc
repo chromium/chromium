@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -357,6 +358,12 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
+
+void TrackingProtectionOnboarding::Shutdown() {
+  observers_.Clear();
+  pref_service_ = nullptr;
+  pref_change_registrar_.Reset();
+}
 
 void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
   // We notify observers of all changes to the onboarding pref.

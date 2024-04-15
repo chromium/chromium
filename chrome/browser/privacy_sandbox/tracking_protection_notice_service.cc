@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
+
 #include <memory>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -17,15 +19,6 @@
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/pref_names.h"
-#include "components/feature_engagement/public/feature_constants.h"
-
-#include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,6 +26,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -107,6 +102,15 @@ TrackingProtectionNoticeService::TrackingProtectionNoticeService(
 }
 
 TrackingProtectionNoticeService::~TrackingProtectionNoticeService() = default;
+
+void TrackingProtectionNoticeService::Shutdown() {
+  profile_ = nullptr;
+  onboarding_service_ = nullptr;
+  onboarding_notice_.reset();
+  offboarding_notice_.reset();
+  silent_onboarding_notice_.reset();
+  onboarding_observation_.Reset();
+}
 
 void TrackingProtectionNoticeService::InitializeTabStripTracker() {
   if (tab_strip_tracker_) {

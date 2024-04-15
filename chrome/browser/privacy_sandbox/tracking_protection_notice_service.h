@@ -1,4 +1,3 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -7,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_TRACKING_PROTECTION_NOTICE_SERVICE_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -55,6 +55,9 @@ class TrackingProtectionNoticeService
       Profile* profile,
       TrackingProtectionOnboarding* onboarding_service);
   ~TrackingProtectionNoticeService() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   enum class TrackingProtectionMetricsNoticeEvent {
     kNoticeObjectCreated = 0,

@@ -29,6 +29,9 @@ class TrackingProtectionSettings
       bool is_incognito);
   ~TrackingProtectionSettings() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   virtual void AddObserver(TrackingProtectionSettingsObserver* observer);
   virtual void RemoveObserver(TrackingProtectionSettingsObserver* observer);
 

@@ -131,6 +131,9 @@ class TrackingProtectionOnboarding : public KeyedService {
                                bool is_silent_onboarding_enabled = false);
   ~TrackingProtectionOnboarding() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   virtual void AddObserver(Observer* observer);
   virtual void RemoveObserver(Observer* observer);
 

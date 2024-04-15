@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -77,6 +78,14 @@ TrackingProtectionSettings::TrackingProtectionSettings(
 }
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
+
+void TrackingProtectionSettings::Shutdown() {
+  observers_.Clear();
+  pref_change_registrar_.Reset();
+  pref_service_ = nullptr;
+  onboarding_service_ = nullptr;
+  onboarding_observation_.Reset();
+}
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
   // True if either debug flag or pref is enabled.
