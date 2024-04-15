@@ -3819,6 +3819,7 @@ if (!is_android) {
         "../browser/extensions/gpu_browsertest.cc",
         "../browser/extensions/isolated_world_csp_browsertest.cc",
         "../browser/extensions/lazy_background_page_apitest.cc",
+        "../browser/extensions/loading_predictor_extension_browsertest.cc",
         "../browser/extensions/manifest_v3_browsertest.cc",
         "../browser/extensions/mutation_observers_apitest.cc",
         "../browser/extensions/native_bindings_apitest.cc",

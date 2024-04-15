@@ -1,0 +1,16 @@
+{
+  "name": "reactive prefetch",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Checks that prefetches triggered by loading predictor are seen by extensions",
+  "permissions": [
+    "webRequest"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

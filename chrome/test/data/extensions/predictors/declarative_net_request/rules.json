@@ -1,0 +1,9 @@
+[{
+  "id": 1,
+  "priority": 1,
+  "action": {"type": "block"},
+  "condition": {
+    "urlFilter": "predictor/empty.js",
+    "resourceTypes": ["script"]
+  }
+}]

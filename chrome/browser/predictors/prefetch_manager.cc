@@ -22,15 +22,22 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_loader_throttles.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/empty_url_loader_client.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/browser_context_keyed_api_factory.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace predictors {
 
@@ -252,7 +259,22 @@ void PrefetchManager::PrefetchUrl(
       net::IsolationInfo::RequestType::kOther, top_frame_origin, frame_origin,
       net::SiteForCookies::FromUrl(info.url));
 
-  // TODO(crbug.com/1092329): Ensure the request is seen by extensions.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  network::URLLoaderFactoryBuilder factory_builder;
+  auto* web_request_api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          profile_);
+  if (web_request_api) {
+    web_request_api->MaybeProxyURLLoaderFactory(
+        profile_, /*frame=*/nullptr, /*render_process_id=*/0,
+        content::ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+        /*navigation_id=*/std::nullopt, ukm::kInvalidSourceIdObj,
+        factory_builder, /*header_client=*/nullptr,
+        /*navigation_response_task_runner=*/nullptr,
+        /*request_initiator=*/url::Origin());
+  }
+  factory = std::move(factory_builder).Finish(factory);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Set up throttles. Use null values for frame/navigation-related params, for
   // now, since this is just the browser prefetching resources and the requests
