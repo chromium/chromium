@@ -504,6 +504,7 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
   base::ScopedFD device_fd(HANDLE_EINTR(
       open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
   if (!device_fd.is_valid()) {
+    PLOG(ERROR) << "Could not open " << kVideoDeviceDriverPath;
     return std::nullopt;
   }
 

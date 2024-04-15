@@ -145,6 +145,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // one started by e.g. RearmCAPTUREQueueMonitoring().
   base::ScopedFD wake_event_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // VideoDecoderConfigs supported by the driver. Cached on first Initialize().
+  SupportedVideoDecoderConfigs supported_configs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Bitstream information and other stuff collected during Initialize().
   VideoDecoderConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
   PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);

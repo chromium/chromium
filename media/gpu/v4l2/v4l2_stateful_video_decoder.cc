@@ -289,13 +289,14 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
+  if (supported_configs_.empty()) {
+    supported_configs_ = GetSupportedV4L2DecoderConfigs().value_or(
+        SupportedVideoDecoderConfigs());
+    DCHECK(!supported_configs_.empty());
+  }
   // Make sure that the |config| requested is supported by the driver,
   // which must provide such information.
-  const auto supported_configs = GetSupportedV4L2DecoderConfigs();
-  if (!IsVideoDecoderConfigSupported(supported_configs.has_value()
-                                         ? supported_configs.value()
-                                         : SupportedVideoDecoderConfigs{},
-                                     config)) {
+  if (!IsVideoDecoderConfigSupported(supported_configs_, config)) {
     VLOGF(1) << "Video configuration is not supported: "
              << config.AsHumanReadableString();
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not supported: "
