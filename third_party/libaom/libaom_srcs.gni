@@ -249,6 +249,7 @@ aom_av1_encoder_intrin_ssse3 = [
 
 aom_av1_encoder_intrin_sve = [
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_error_sve.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_sve.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/wedge_utils_sve.c",
 ]
 
