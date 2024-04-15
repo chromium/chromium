@@ -31,6 +31,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -118,7 +119,8 @@ END_METADATA
 
 }  // namespace
 
-MahiCondensedMenuView::MahiCondensedMenuView() {
+MahiCondensedMenuView::MahiCondensedMenuView()
+    : view_shadow_(std::make_unique<views::ViewShadow>(this, /*elevation=*/2)) {
   SetUseDefaultFillLayout(true);
   SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface, views::LayoutProvider::Get()->GetCornerRadiusMetric(

@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_CONDENSED_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_CONDENSED_MENU_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class LabelButton;
+class ViewShadow;
 }  // namespace views
 
 namespace chromeos::mahi {
@@ -33,6 +36,10 @@ class MahiCondensedMenuView
  private:
   // Owned by the views hierarchy.
   raw_ptr<views::LabelButton> menu_button_;
+
+  // TODO(http:/b/334748450): Remove this when `MahiCondensedMenuView` overrides
+  // `ReadWriteCardsView`.
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 };
 
 }  // namespace chromeos::mahi
