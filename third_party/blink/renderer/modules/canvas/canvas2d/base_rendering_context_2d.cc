@@ -500,6 +500,13 @@ void BaseRenderingContext2D::ResetInternal() {
     recorder->RestartRecording();
   }
 
+  // If we are in WebGPU access, orphan the texture. The canvas no longer needs
+  // it, but the Javascript program can continue using the texture indefinitely.
+  // The texture will eventually be garbage collected when there are no more
+  // Javascript references. From the canvas' perspective, nulling out this
+  // texture effectively ends the WebGPU access session.
+  webgpu_access_texture_ = nullptr;
+
   // Clear the frame in case a flush previously drew to the canvas surface.
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     int width = Width();  // Keeping results to avoid repetitive virtual calls.

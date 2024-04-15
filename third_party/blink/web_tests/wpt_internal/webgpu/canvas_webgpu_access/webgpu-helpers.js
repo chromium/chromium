@@ -55,8 +55,8 @@ function test_beginWebGPUAccess_untouched_canvas(device, canvas) {
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
   assert_equals(tex.label, "hello, webgpu!");
-  assert_equals(tex.width, ctx.canvas.width);
-  assert_equals(tex.height, ctx.canvas.height);
+  assert_equals(tex.width, canvas.width);
+  assert_equals(tex.height, canvas.height);
 }
 
 /** beginWebGPUAccess() should create a texture from an initialized canvas. */
@@ -72,8 +72,8 @@ function test_beginWebGPUAccess_initialized_canvas(device, canvas) {
   // Confirm that we now have a GPU texture that matches our request.
   assert_true(tex instanceof GPUTexture, 'not a GPUTexture');
   assert_equals(tex.label, 'hello, webgpu!');
-  assert_equals(tex.width, ctx.canvas.width);
-  assert_equals(tex.height, ctx.canvas.height);
+  assert_equals(tex.width, canvas.width);
+  assert_equals(tex.height, canvas.height);
 }
 
 /**
@@ -124,7 +124,7 @@ function test_beginWebGPUAccess_unbalanced_access(device, canvas) {
   try {
     // Try to start a second WebGPU access session.
     tex = ctx.beginWebGPUAccess({device: device});
-    assert_unreached('InvalidStateError should have been thrown');
+    assert_unreached('InvalidStateError should have been thrown.');
   } catch (ex) {
     assert_true(ex instanceof DOMException);
     assert_equals(ex.name, 'InvalidStateError');
@@ -175,8 +175,8 @@ function test_endWebGPUAccess_canvas_readback(adapterInfo, device,
 
   // Verify that the canvas contains our chosen color across every pixel.
   // The ImageData `data` array holds RGBA elements in uint8 format.
-  const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-  for (let idx = 0; idx < ctx.canvas.width * ctx.canvas.height * 4; idx += 4) {
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  for (let idx = 0; idx < canvas.width * canvas.height * 4; idx += 4) {
     assert_array_equals([imageData.data[idx + 0],
                          imageData.data[idx + 1],
                          imageData.data[idx + 2],
@@ -238,5 +238,47 @@ function test_endWebGPUAccess_destroys_texture(device, canvas) {
       assert_true(readError instanceof GPUValidationError);
       assert_true(writeError instanceof GPUValidationError);
     });
+  });
+}
+
+/** Resizing a canvas during WebGPU access should throw an exception. */
+function test_canvas_reset_orphans_texture(adapterInfo, device, canvas,
+                                           resetType) {
+  // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
+  if (isMacSwiftShader(adapterInfo)) {
+    return;
+  }
+
+  // Begin a WebGPU access session.
+  const ctx = canvas.getContext('2d');
+  const tex = ctx.beginWebGPUAccess({device: device});
+
+  // Reset the canvas. This should abort the WebGPU access session. The canvas'
+  // GPUTexture is still accessible from Javascript.
+  if (resetType == 'resize') {
+    canvas.width = canvas.width;
+  } else {
+    assert_equals(resetType, 'api');
+    ctx.reset();
+  }
+
+  // Verify that the WebGPU access was terminated by starting a new WebGPU
+  // access session. This would throw if the initial beginWebGPUAccess session
+  // were still active.
+  ctx.beginWebGPUAccess({device: device});
+  ctx.endWebGPUAccess();
+
+  // Verify that the texture from the initial WebGPU access session is still
+  // usable by accessing its contents. This would cause a GPUValidationError if
+  // the texture had been destroyed, invalidated, or reabsorbed into the canvas.
+  device.pushErrorScope('validation');
+
+  const buf = device.createBuffer({usage: GPUBufferUsage.COPY_DST, size: 4});
+  const texToBufEncoder = device.createCommandEncoder();
+  texToBufEncoder.copyTextureToBuffer({texture: tex}, {buffer: buf}, [1, 1]);
+  device.queue.submit([texToBufEncoder.finish()]);
+
+  return device.popErrorScope().then((errors) => {
+    assert_equals(errors, null);
   });
 }
