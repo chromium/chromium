@@ -257,9 +257,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kBrowsingTopicsFirstTimeoutRetryDelay;
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kIncrementLocalSurfaceIdForMainframeSameDocNavigation);
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCORSErrorsIssueOnly);

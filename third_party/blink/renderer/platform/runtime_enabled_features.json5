@@ -448,6 +448,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      // Used to enable Blink side of features flags for Default Nav Transition.
+      name: "BackForwardTransitions",
+    },
+    {
       name: "BackgroundFetch",
       public: true,
       status: "stable",
@@ -2112,6 +2116,11 @@
     },
     {
       name: "IncomingCallNotifications",
+    },
+    {
+       // When enabled, every traversable mainframe same-doc navigation will
+       // increment the `viz::LocalSurfaceId` from the impl thread.
+      name: "IncrementLocalSurfaceIdForMainframeSameDocNavigation",
     },
     {
       name: "InertDisplayTransition",

@@ -191,7 +191,7 @@ class NavigationEntryScreenshotBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {features::kBackForwardTransitions, {}}};
+        {blink::features::kBackForwardTransitions, {}}};
 
     if (GetParam().enable_bfcache) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -218,7 +218,7 @@ class NavigationEntryScreenshotBrowserTest
     ContentBrowserTest::SetUpOnMainThread();
 
     ASSERT_TRUE(
-        base::FeatureList::IsEnabled(features::kBackForwardTransitions));
+        base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions));
 
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(

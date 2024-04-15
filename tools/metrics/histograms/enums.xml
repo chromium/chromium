@@ -17288,6 +17288,8 @@ from previous Chrome versions.
       label="WebViewCpuAffinityRestrictToLittleCores:disabled"/>
   <int value="-1726047833" label="AutofillEnableServerIban:enabled"/>
   <int value="-1725507605" label="enable-web-midi"/>
+  <int value="-1725376391"
+      label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:disabled"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1721353722"
       label="HttpsFirstModeV2ForTypicallySecureUsers:enabled"/>
@@ -24373,6 +24375,8 @@ from previous Chrome versions.
   <int value="1442830837" label="MemoryAblation:disabled"/>
   <int value="1442843126"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:enabled"/>
+  <int value="1442854659"
+      label="IncrementLocalSurfaceIdForMainframeSameDocNavigation:enabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1443836294"
       label="AboutThisSitePersistentSidePanelEntry:enabled"/>

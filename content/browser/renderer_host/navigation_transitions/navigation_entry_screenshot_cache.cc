@@ -32,7 +32,7 @@ std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshotFromEntry(
 bool AreBackForwardTransitionsEnabled() {
   // TODO(https://crbug.com/1414164): We might want to disable this feature on
   // low-end devices.
-  return base::FeatureList::IsEnabled(features::kBackForwardTransitions);
+  return base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions);
 }
 
 NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(

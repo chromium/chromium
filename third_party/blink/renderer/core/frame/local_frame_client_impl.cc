@@ -429,9 +429,8 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
       CHECK(frame_widget);
-      if (base::FeatureList::IsEnabled(
-              features::
-                  kIncrementLocalSurfaceIdForMainframeSameDocNavigation)) {
+      if (RuntimeEnabledFeatures::
+              IncrementLocalSurfaceIdForMainframeSameDocNavigationEnabled()) {
         frame_widget->RequestNewLocalSurfaceId();
       }
       frame_widget->NotifyPresentationTime(WTF::BindOnce(

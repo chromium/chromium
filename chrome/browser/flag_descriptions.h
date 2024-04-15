@@ -1178,6 +1178,10 @@ extern const char kIgnoreGpuBlocklistDescription[];
 extern const char kImprovedKeyboardShortcutsName[];
 extern const char kImprovedKeyboardShortcutsDescription[];
 
+extern const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[];
+extern const char
+    kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription[];
+
 extern const char kIncognitoReauthenticationForAndroidName[];
 extern const char kIncognitoReauthenticationForAndroidDescription[];
 

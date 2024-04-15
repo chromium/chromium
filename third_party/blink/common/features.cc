@@ -484,12 +484,6 @@ const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
 const base::FeatureParam<base::TimeDelta> kBrowsingTopicsFirstTimeoutRetryDelay{
     &kBrowsingTopicsParameters, "first_timeout_retry_delay", base::Minutes(1)};
 
-// When enabled, every mainframe same-doc navigation will increment the
-// `viz::LocalSurfaceId` from the impl thread.
-BASE_FEATURE(kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
-             "IncrementLocalSurfaceIdForMainframeSameDocNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
 BASE_FEATURE(kCORSErrorsIssueOnly,

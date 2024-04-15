@@ -56,11 +56,6 @@ BASE_FEATURE(kBackForwardCache,
              "BackForwardCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable showing a page preview during back/forward navigations.
-BASE_FEATURE(kBackForwardTransitions,
-             "BackForwardTransitions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows pages that created a MediaSession service to stay eligible for the
 // back/forward cache.
 BASE_FEATURE(kBackForwardCacheMediaSessionService,

@@ -129,7 +129,7 @@ WebContentsViewAndroid::WebContentsViewAndroid(
   parent_for_web_page_widgets_ = cc::slim::Layer::Create();
   view_.GetLayer()->AddChild(parent_for_web_page_widgets_);
 
-  if (base::FeatureList::IsEnabled(features::kBackForwardTransitions)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBackForwardTransitions)) {
     back_forward_animation_manager_ =
         std::make_unique<BackForwardTransitionAnimationManagerAndroid>(
             this, &web_contents_->GetController());

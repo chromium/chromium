@@ -8021,7 +8021,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"back-forward-transitions", flag_descriptions::kBackForwardTransitionsName,
      flag_descriptions::kBackForwardTransitionsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kBackForwardTransitions)},
+     FEATURE_VALUE_TYPE(blink::features::kBackForwardTransitions)},
 #endif
 
     {"windows-scrolling-personality",
@@ -8672,6 +8672,16 @@ const FeatureEntry kFeatureEntries[] = {
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
+
+    {"increment-local-surface-id-for-mainframe-same-doc-navigation",
+     flag_descriptions::
+         kIncrementLocalSurfaceIdForMainframeSameDocNavigationName,
+     flag_descriptions::
+         kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         blink::features::
+             kIncrementLocalSurfaceIdForMainframeSameDocNavigation)},
 
     {"show-performance-metrics-hud",
      flag_descriptions::kShowPerformanceMetricsHudName,
