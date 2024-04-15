@@ -312,8 +312,10 @@ blink_mac_builder(
             "reclient",
             "chrome_with_codecs",
             "minimal_symbols",
+            "x64",
         ],
     ),
+    cpu = cpu.ARM64,
 )
 
 blink_mac_builder(
