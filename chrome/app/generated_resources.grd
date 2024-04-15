@@ -6292,23 +6292,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_UNSUPPORTED_DISABLED_TITLE" desc="Title of the dialog shown when unsupported extensions have been disabled">
         Unsupported extensions disabled
       </message>
-      <message name="IDS_EXTENSIONS_DISABLED_AND_N_MORE" desc="Used for a count of additional items in the IDS_EXTENSIONS_UNSUPPORTED_DISABLED_BODY dialog shown when unsupported extensions have been disabled, if we could not fit them all in the dialog">
-        and <ph name="NUMBER_ADDITIONAL_DISABLED">$1<ex>5</ex></ph> more
-      </message>
-      <message name="IDS_EXTENSIONS_UNSUPPORTED_DISABLED_BUTTON" desc="Text of the button on the dialog shown when unsupported extensions have been disabled">
-      OK, got it
-      </message>
       <message name="IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE" desc="Text shown in the extensions settings for items that might have been forcefully added to Chrome without the user's knowledge">
         This extension is not listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph> and may have been added without your knowledge.
       </message>
       <message name="IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about disabled extensions.">
         Learn more about disabled extensions.
-      </message>
-      <message name="IDS_EXTENSIONS_DISABLE_DEVELOPER_MODE_TITLE" desc="Title of a dialog warning users they have development mode extensions running">
-        Disable developer mode extensions
-      </message>
-      <message name="IDS_EXTENSIONS_DISABLE_DEVELOPER_MODE_BODY" desc="Body of a dialog warning users they have development mode extensions running">
-        Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.
       </message>
 
       <!-- Begin Extension Settings Overridden Dialog strings. -->
