@@ -1,6 +1,6 @@
 caption: Enable extensions system logging
 desc: |-
-  Enterprise extensions can add logs via the chrome.enterprise.systemLog API to a system log file.
+  Enterprise extensions can add logs via the chrome.systemLog API to a system log file.
 
   Setting the policy to Enabled will allow the logs to be persisted in the system log file for a limited amount of time.
   Setting the policy to Disabled or leaving it unset does not allow the logs to be added to the system log file which means that logs will not be persisted between sessions.
