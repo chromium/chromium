@@ -161,6 +161,10 @@ struct ChoiceScreenDisplayState {
   ChoiceScreenDisplayState(const ChoiceScreenDisplayState& other);
   ~ChoiceScreenDisplayState();
 
+  base::Value::Dict ToDict() const;
+  static std::optional<ChoiceScreenDisplayState> FromDict(
+      const base::Value::Dict& dict);
+
   // `SearchEngineType`s of the search engines displayed on the choice screen,
   // listed in an order matching their display order.
   // Note that the screen shows items from a list specific for each EEA

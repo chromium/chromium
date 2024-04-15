@@ -84,6 +84,8 @@ class SearchEngineChoiceService : public KeyedService {
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
+  void ProcessPendingChoiceScreenDisplayState();
+
   int GetCountryIdInternal();
 
 #if BUILDFLAG(IS_ANDROID)

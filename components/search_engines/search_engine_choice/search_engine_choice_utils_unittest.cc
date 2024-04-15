@@ -33,9 +33,12 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace search_engines {
+
+const int kFranceCountryId = country_codes::CountryStringToCountryID("FR");
 
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
@@ -118,6 +121,84 @@ TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
 #else
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
 #endif
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {
+  ChoiceScreenDisplayState display_state(
+      /*search_engines=*/{SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
+                          SEARCH_ENGINE_GOOGLE},
+      /*country_id=*/kFranceCountryId,
+      /*list_is_modified_by_current_default=*/false,
+      /*selected_engine_index=*/1);
+
+  base::Value::Dict dict = display_state.ToDict();
+  EXPECT_THAT(
+      *dict.FindList("search_engines"),
+      testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
+                           SEARCH_ENGINE_GOOGLE));
+  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId);
+  EXPECT_EQ(dict.FindBool("list_is_modified_by_current_default"), false);
+  EXPECT_EQ(dict.FindInt("selected_engine_index"), 1);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       ChoiceScreenDisplayState_ToDict_WithoutSelection) {
+  ChoiceScreenDisplayState display_state(
+      /*search_engines=*/{SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
+                          SEARCH_ENGINE_GOOGLE},
+      /*country_id=*/kFranceCountryId,
+      /*list_is_modified_by_current_default=*/true);
+
+  base::Value::Dict dict = display_state.ToDict();
+  EXPECT_THAT(
+      *dict.FindList("search_engines"),
+      testing::ElementsAre(SEARCH_ENGINE_QWANT, SEARCH_ENGINE_DUCKDUCKGO,
+                           SEARCH_ENGINE_GOOGLE));
+  EXPECT_EQ(dict.FindInt("country_id"), kFranceCountryId);
+  EXPECT_EQ(dict.FindBool("list_is_modified_by_current_default"), true);
+  EXPECT_FALSE(dict.contains("selected_engine_index"));
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict) {
+  base::Value::Dict dict;
+  dict.Set("country_id", kFranceCountryId);
+  dict.Set("list_is_modified_by_current_default", true);
+  dict.Set("selected_engine_index", 0);
+  auto* search_engines = dict.EnsureList("search_engines");
+  search_engines->Append(SEARCH_ENGINE_DUCKDUCKGO);
+  search_engines->Append(SEARCH_ENGINE_GOOGLE);
+  search_engines->Append(SEARCH_ENGINE_BING);
+
+  std::optional<ChoiceScreenDisplayState> display_state =
+      ChoiceScreenDisplayState::FromDict(dict);
+  EXPECT_TRUE(display_state.has_value());
+  EXPECT_THAT(display_state->search_engines,
+              testing::ElementsAre(SEARCH_ENGINE_DUCKDUCKGO,
+                                   SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING));
+  EXPECT_EQ(display_state->country_id, kFranceCountryId);
+  EXPECT_TRUE(display_state->list_is_modified_by_current_default);
+  EXPECT_TRUE(display_state->selected_engine_index.has_value());
+  EXPECT_EQ(display_state->selected_engine_index.value(), 0);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict_Errors) {
+  base::Value::Dict dict;
+  EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+
+  dict.Set("country_id", kFranceCountryId);
+  EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+
+  auto* search_engines = dict.EnsureList("search_engines");
+  search_engines->Append(SEARCH_ENGINE_DUCKDUCKGO);
+  search_engines->Append(SEARCH_ENGINE_GOOGLE);
+  search_engines->Append(SEARCH_ENGINE_BING);
+  EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+
+  dict.Set("list_is_modified_by_current_default", true);
+  EXPECT_TRUE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+
+  dict.Set("selected_engine_index", 0);
+  EXPECT_TRUE(ChoiceScreenDisplayState::FromDict(dict).has_value());
 }
 
 }  // namespace search_engines

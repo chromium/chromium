@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
@@ -47,6 +48,14 @@ namespace {
 // Defines `kSearchEngineResourceIdMap`.
 #include "components/search_engines/generated_search_engine_resource_ids-inc.cc"
 #endif
+
+// Serialization keys for `ChoiceScreenDisplayState`.
+constexpr char kDisplayStateCountryIdKey[] = "country_id";
+constexpr char kDisplayStateListIsModifiedByCurrentDefaultKey[] =
+    "list_is_modified_by_current_default";
+constexpr char kDisplayStateSearchEnginesKey[] = "search_engines";
+constexpr char kDisplayStateSelectedEngineIndexKey[] = "selected_engine_index";
+
 }  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
@@ -101,6 +110,57 @@ ChoiceScreenDisplayState::ChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& other) = default;
 
 ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
+
+base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
+  auto dict = base::Value::Dict();
+
+  dict.Set(kDisplayStateCountryIdKey, country_id);
+  dict.Set(kDisplayStateListIsModifiedByCurrentDefaultKey,
+           list_is_modified_by_current_default);
+
+  base::Value::List* search_engines_array =
+      dict.EnsureList(kDisplayStateSearchEnginesKey);
+  for (SearchEngineType search_engine_type : search_engines) {
+    search_engines_array->Append(static_cast<int>(search_engine_type));
+  }
+
+  if (selected_engine_index.has_value()) {
+    dict.Set(kDisplayStateSelectedEngineIndexKey,
+             selected_engine_index.value());
+  }
+
+  return dict;
+}
+
+// static
+std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
+    const base::Value::Dict& dict) {
+  std::optional<int> parsed_country_id =
+      dict.FindInt(kDisplayStateCountryIdKey);
+  std::optional<bool> parsed_list_is_modified_by_current_default =
+      dict.FindBool(kDisplayStateListIsModifiedByCurrentDefaultKey);
+  const base::Value::List* parsed_search_engines =
+      dict.FindList(kDisplayStateSearchEnginesKey);
+  std::optional<int> parsed_selected_engine_index =
+      dict.FindInt(kDisplayStateSelectedEngineIndexKey);
+
+  if (!parsed_country_id.has_value() ||
+      !parsed_list_is_modified_by_current_default.has_value() ||
+      !parsed_search_engines) {
+    return std::nullopt;
+  }
+
+  std::vector<SearchEngineType> search_engines;
+  for (const base::Value& search_engine_type : *parsed_search_engines) {
+    search_engines.push_back(
+        static_cast<SearchEngineType>(search_engine_type.GetInt()));
+  }
+
+  return ChoiceScreenDisplayState(
+      search_engines, parsed_country_id.value(),
+      parsed_list_is_modified_by_current_default.value(),
+      parsed_selected_engine_index);
+}
 
 ChoiceScreenData::ChoiceScreenData(
     TemplateURL::OwnedTemplateURLVector owned_template_urls,
@@ -217,6 +277,8 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
     profile_prefs.ClearPref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+    profile_prefs.ClearPref(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
 
 #if BUILDFLAG(IS_IOS)
     profile_prefs.ClearPref(

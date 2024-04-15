@@ -53,6 +53,15 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
 
+// Display state of the choice screen from which the user selected their
+// default search engine. It is stored for logging purposes, only for a limited
+// time, and cleared when that time runs out, or when we are able to report
+// the choice screen display state.
+// The preference is stored as a dictionary, see
+// `ChoiceScreenDisplayState::FromDict()`.
+inline constexpr char kDefaultSearchProviderPendingChoiceScreenDisplayState[] =
+    "default_search_provider.pending_choice_screen_display_state";
+
 // Random number to use as a profile-constant seed for the random shuffling of
 // the choice screen elements.
 inline constexpr char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =

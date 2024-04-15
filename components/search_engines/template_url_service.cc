@@ -485,6 +485,8 @@ void TemplateURLService::RegisterProfilePrefs(
     registry->RegisterStringPref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
         std::string());
+    registry->RegisterDictionaryPref(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
 
 #if BUILDFLAG(IS_IOS)
     registry->RegisterIntegerPref(
