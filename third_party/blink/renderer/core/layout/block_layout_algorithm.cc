@@ -923,7 +923,8 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
                                      previous_inflow_position);
   }
 
-  if (UNLIKELY(line_clamp_data_.ShouldRelayoutWithNoForcedTruncate())) {
+  if (UNLIKELY(constraint_space.IsNewFormattingContext() &&
+               line_clamp_data_.ShouldRelayoutWithNoForcedTruncate())) {
     // Truncation of the last line was forced, but there are no lines after the
     // truncated line. Rerun layout without forcing truncation. This is only
     // done if line-clamp was specified on the element as the element containing

@@ -72,19 +72,17 @@ struct BlockLineClampData {
   bool ShouldHideForPaint() const { return data.ShouldHideForPaint(); }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
-    return LinesUntilClamp() == 0 && is_original_line_clamp_context &&
+    return LinesUntilClamp() == 0 &&
            intrinsic_block_size_when_clamped.has_value();
   }
 
   void UpdateLinesFromStyle(int lines_until_clamp) {
-    DCHECK(!is_original_line_clamp_context);
     if (data.state == LineClampData::kDontTruncate) {
       return;
     }
 
     data.state = LineClampData::kEnabled;
     data.lines_until_clamp = lines_until_clamp;
-    is_original_line_clamp_context = true;
   }
 
   void UpdateAfterLayout(int lines_until_clamp,
@@ -106,10 +104,6 @@ struct BlockLineClampData {
   // block element at the time of the clamp. Can only be set if
   // data.state == kEnabled.
   std::optional<LayoutUnit> intrinsic_block_size_when_clamped;
-
-  // True if the line-clamp or -webkit-line-clamp properties were specified on
-  // the element, rather than on some ancestor.
-  bool is_original_line_clamp_context = false;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).
