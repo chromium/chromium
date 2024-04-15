@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
+import androidx.core.os.BuildCompat;
 
 import org.jni_zero.CalledByNative;
 
@@ -71,7 +71,7 @@ public class PdfUtils {
         if (sShouldOpenPdfInlineForTesting) return true;
         // TODO(https://crbug.com/327492784): Update checks once release plan is finalized.
         return ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+                && BuildCompat.isAtLeastV();
     }
 
     public static PdfInfo getPdfInfo(NativePage nativePage) {
