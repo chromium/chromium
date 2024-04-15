@@ -908,10 +908,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO(crbug.com/1474951): Ensure the highlight is shown after playing the
-  //  previous granularity.
   private playPreviousGranularity_() {
     this.synth.cancel();
+    // This must be called BEFORE calling
+    // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
+    // determine what's currently being highlighted.
     this.resetPreviousHighlightAndRemoveCurrentHighlight();
     // Reset the word boundary index whenever we move the granularity position.
     this.resetToDefaultWordBoundaryState();
@@ -947,7 +948,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (chrome.readingMode.linksEnabled && pausedFromButton) {
         this.updateLinks();
         // Now that links are toggled, ensure that the new nodes are also
-        // highlighted
+        // highlighted.
         this.highlightNodes(chrome.readingMode.getCurrentText());
       }
 
@@ -1356,10 +1357,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
+  // This must be called BEFORE calling
+  // chrome.readingMode.movePositionToPreviousGranularity so we can accurately
+  // determine what's currently being highlighted.
   private resetPreviousHighlightAndRemoveCurrentHighlight() {
-    const lastElement = this.previousHighlight_.pop();
-    if (lastElement) {
-      lastElement.className = '';
+    // The most recent highlight could have been spread across multiple segments
+    // so clear the formatting for all of the segments.
+    for (let i = 0; i < chrome.readingMode.getCurrentText().length; i++) {
+      const lastElement = this.previousHighlight_.pop();
+      if (lastElement) {
+        lastElement.className = '';
+      }
     }
 
     this.resetPreviousHighlight();
