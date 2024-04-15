@@ -166,8 +166,9 @@ using base::SysNSStringToUTF8;
   }
 
   if (self.contentView.subviews.count == 0) {
-    [self createViewHierarchy:card.recordType];
+    [self createViewHierarchy];
   }
+
   self.contentInjector = contentInjector;
   self.navigationDelegate = navigationDelegate;
   self.card = card;
@@ -179,7 +180,7 @@ using base::SysNSStringToUTF8;
 #pragma mark - Private
 
 // Creates and sets up the view hierarchy.
-- (void)createViewHierarchy:(autofill::CreditCard::RecordType)cardRecordType {
+- (void)createViewHierarchy {
   self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -196,11 +197,11 @@ using base::SysNSStringToUTF8;
   // otherwise use the buttons.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
-    if (cardRecordType == kVirtualCard) {
-      self.virtualCardInstructionTextView =
-          [self createVirtualCardInstructionTextView];
-      [self.contentView addSubview:self.virtualCardInstructionTextView];
-    }
+    // Virtual card instruction textview is always created, but hidden for
+    // non-virtual cards.
+    self.virtualCardInstructionTextView =
+        [self createVirtualCardInstructionTextView];
+    [self.contentView addSubview:self.virtualCardInstructionTextView];
     self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCardNumber:)];
@@ -234,14 +235,11 @@ using base::SysNSStringToUTF8;
     [self.contentView addSubview:self.cardholderButton];
   }
 
-  [self horizontallyArrangeViews:cardRecordType
-      withExpirationDateSeparator:expirationDateSeparatorLabel];
+  [self horizontallyArrangeViews:expirationDateSeparatorLabel];
 }
 
 // Horizontally positions the UIViews.
-- (void)horizontallyArrangeViews:
-            (autofill::CreditCard::RecordType)cardRecordType
-     withExpirationDateSeparator:(UILabel*)expirationDateSeparatorLabel {
+- (void)horizontallyArrangeViews:(UILabel*)expirationDateSeparatorLabel {
   CreateGraySeparatorForContainer(self.contentView);
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
@@ -257,11 +255,9 @@ using base::SysNSStringToUTF8;
   // regular buttons.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
-    if (cardRecordType == kVirtualCard) {
       AppendHorizontalConstraintsForViews(
           staticConstraints, @[ self.virtualCardInstructionTextView ],
           self.layoutGuide);
-    }
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.cardNumberLabeledChip ], self.layoutGuide,
         kChipsHorizontalMargin,
