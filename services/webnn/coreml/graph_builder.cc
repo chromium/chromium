@@ -103,6 +103,7 @@ constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpSoftsignTypeName[] = "softsign";
+constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTransposeTypeName[] = "transpose";
 // Elementwise binary operators.
 constexpr char kOpAddTypeName[] = "add";
@@ -593,6 +594,10 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForSoftsign(*operation->get_softsign(), block));
         break;
       }
+      case mojom::Operation::Tag::kTanh: {
+        RETURN_IF_ERROR(AddOperationForTanh(*operation->get_tanh(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -624,7 +629,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSoftplus:
       case mojom::Operation::Tag::kSplit:
-      case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
         return NewNotSupportedError("This operator is not implemented.");
@@ -1200,6 +1204,26 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSoftsign(
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpSoftsignTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTanh(
+    const mojom::Tanh& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpTanhTypeName);
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
