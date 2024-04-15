@@ -88,13 +88,23 @@ uint32_t ComputeTextureTargetForSharedImage(
     return GL_TEXTURE_2D;
   }
 
-  // The client should configure an SI to use external sampling only if they
-  // have provided a native buffer to back that SI.
-  // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
-  // turn this into a CHECK.
-  DUMP_WILL_BE_CHECK(
-      GMBIsNative(client_gmb_type) ||
-      allow_external_sampling_without_native_buffers_for_testing);
+  // Software video decode on ChromeOS for single P010 GpuMemoryBuffers with
+  // legacy multiplanar SI codepath, always fallback to VideoResourceUpdater
+  // instead of GMBVideoFramePool; this is due to mismatch in BufferUsage flags
+  // which is not supported and causes this CHECK to surface. Accordingly, just
+  // perform the CHECK for non-legacy multiplanar SI path that avoids preferring
+  // external sampler when shared memory GMB is used and thus does not fallback.
+  // TODO(crbug.com/40239769): Remove condition once multiplanar SI launches
+  // everywhere.
+  if (!metadata.format.IsLegacyMultiplanar()) {
+    // The client should configure an SI to use external sampling only if they
+    // have provided a native buffer to back that SI.
+    // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
+    // turn this into a CHECK.
+    DUMP_WILL_BE_CHECK(
+        GMBIsNative(client_gmb_type) ||
+        allow_external_sampling_without_native_buffers_for_testing);
+  }
 
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
