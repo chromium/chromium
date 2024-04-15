@@ -175,15 +175,6 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   views::test::ButtonTestApi(primary_button).NotifyClick(event);
 }
 
-std::string ExtensionsMenuTestUtil::GetTooltip(
-    const extensions::ExtensionId& id) {
-  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
-  DCHECK(view);
-  ExtensionsMenuButton* primary_button =
-      view->primary_action_button_for_testing();
-  return base::UTF16ToUTF8(primary_button->GetTooltipText(gfx::Point()));
-}
-
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
   ToolbarActionViewController* popup_owner =
       extensions_container_->popup_owner_for_testing();

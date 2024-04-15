@@ -34,7 +34,6 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   bool HasIcon(const extensions::ExtensionId& id) override;
   gfx::Image GetIcon(const extensions::ExtensionId& id) override;
   void Press(const extensions::ExtensionId& id) override;
-  std::string GetTooltip(const extensions::ExtensionId& id) override;
   gfx::NativeView GetPopupNativeView() override;
   bool HasPopup() override;
   bool HidePopup() override;

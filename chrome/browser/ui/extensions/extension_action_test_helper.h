@@ -59,9 +59,6 @@ class ExtensionActionTestHelper {
   // Simulates a user click on the action button for the given `id`.
   virtual void Press(const extensions::ExtensionId& id) = 0;
 
-  // Returns the current tooltip of the action for the given `id`.
-  virtual std::string GetTooltip(const extensions::ExtensionId& id) = 0;
-
   virtual gfx::NativeView GetPopupNativeView() = 0;
 
   // Spins a RunLoop until the NativeWindow hosting |GetPopupNativeView()| is

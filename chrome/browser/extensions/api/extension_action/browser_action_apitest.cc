@@ -514,31 +514,34 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  // Test that there is a browser action in the toolbar and that it has an icon.
-  ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
+  ExtensionAction* extension_action =
+      ExtensionActionManager::Get(browser()->profile())
+          ->GetExtensionAction(*extension);
+  ASSERT_TRUE(extension_action);
 
   // Execute the action, its title should change.
   ResultCatcher catcher;
   GetBrowserActionsBar()->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
-  EXPECT_EQ("Showing icon 2",
-            GetBrowserActionsBar()->GetTooltip(extension->id()));
+  int first_tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Open a new tab, the title should go back.
   chrome::NewTab(browser());
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
+  int second_tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ("hi!", extension_action->GetTitle(second_tab_id));
 
   // Go back to first tab, changed title should reappear.
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  EXPECT_EQ("Showing icon 2",
-            GetBrowserActionsBar()->GetTooltip(extension->id()));
+  EXPECT_EQ("Showing icon 2", extension_action->GetTitle(first_tab_id));
 
   // Reload that tab, default title should come back.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
+  EXPECT_EQ("hi!", extension_action->GetTitle(first_tab_id));
 }
 
 // Test that calling chrome.browserAction.setIcon() can set the icon for
