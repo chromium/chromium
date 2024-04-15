@@ -189,6 +189,9 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_SUM(),
              /* min_version = */ 1,
              /* max_version = */ 2);
+  AddBuiltin(::tflite::BuiltinOperator_TANH,
+             ::tflite::ops::builtin::Register_TANH(), /* min_version = */ 1,
+             /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_TRANSPOSE,
              ::tflite::ops::builtin::Register_TRANSPOSE(),
              /* min_version = */ 1,

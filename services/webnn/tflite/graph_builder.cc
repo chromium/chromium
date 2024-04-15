@@ -211,6 +211,8 @@ GetActivationFunctionType(const mojom::Activation& activation) {
     }
     case mojom::Activation::Tag::kRelu:
       return ::tflite::ActivationFunctionType_RELU;
+    case mojom::Activation::Tag::kTanh:
+      return ::tflite::ActivationFunctionType_TANH;
     case mojom::Activation::Tag::kElu:
       return base::unexpected("Elu activation is not supported.");
     case mojom::Activation::Tag::kHardSigmoid:
@@ -227,8 +229,6 @@ GetActivationFunctionType(const mojom::Activation& activation) {
       return base::unexpected("Softplus activation is not supported.");
     case mojom::Activation::Tag::kSoftsign:
       return base::unexpected("Softsign activation is not supported.");
-    case mojom::Activation::Tag::kTanh:
-      return base::unexpected("Tanh activation is not supported.");
   }
 }
 
@@ -380,6 +380,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeSplit(*op.get_split()));
       break;
     }
+    case mojom::Operation::Tag::kTanh:
+      operator_offset = SerializeTanh(*op.get_tanh());
+      break;
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;
@@ -411,8 +414,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
       return base::unexpected("softsign is not implemented");
-    case mojom::Operation::Tag::kTanh:
-      return base::unexpected("tanh is not implemented");
     case mojom::Operation::Tag::kTriangular:
       return base::unexpected("triangular is not implemented");
     case mojom::Operation::Tag::kWhere:
@@ -1578,6 +1579,11 @@ auto GraphBuilder::SerializeSplit(const mojom::Split& split)
       builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
       builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_SplitVOptions, split_options.Union());
+}
+
+auto GraphBuilder::SerializeTanh(const mojom::Tanh& tanh) -> OperatorOffset {
+  return SerializeUnaryOperation(::tflite::BuiltinOperator_TANH,
+                                 tanh.input_operand_id, tanh.output_operand_id);
 }
 
 auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
