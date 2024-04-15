@@ -37,6 +37,7 @@ namespace {
 // changing this value.
 // LINT.IfChange
 constexpr int kTailoredWarningVersion = 3;
+constexpr int kTailoredWarningVersionDownloadReportWithoutUserDecision = 4;
 // LINT.ThenChange(components/safe_browsing/core/common/proto/csd.proto)
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
@@ -299,7 +300,11 @@ void DownloadRequestMaker::OnGotTabRedirects(
 
 void DownloadRequestMaker::PopulateTailoredInfo() {
   ClientDownloadRequest::TailoredInfo tailored_info;
-  tailored_info.set_version(kTailoredWarningVersion);
+  int version = base::FeatureList::IsEnabled(
+                    safe_browsing::kDownloadReportWithoutUserDecision)
+                    ? kTailoredWarningVersionDownloadReportWithoutUserDecision
+                    : kTailoredWarningVersion;
+  tailored_info.set_version(version);
   *request_->mutable_tailored_info() = tailored_info;
 }
 
