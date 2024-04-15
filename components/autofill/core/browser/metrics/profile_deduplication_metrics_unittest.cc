@@ -28,7 +28,8 @@ class ProfileDeduplicationMetricsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(ProfileDeduplicationMetricsTest, RankOfStoredQuasiDuplicateProfiles) {
+TEST_F(ProfileDeduplicationMetricsTest,
+       Startup_RankOfStoredQuasiDuplicateProfiles) {
   // Create a pair of profiles with duplication rank 2.
   AutofillProfile a = test::GetFullProfile();
   AutofillProfile b = test::GetFullProfile();
@@ -46,7 +47,7 @@ TEST_F(ProfileDeduplicationMetricsTest, RankOfStoredQuasiDuplicateProfiles) {
 
 // Tests that when the user doesn't have other profiles, no metrics are emitted.
 TEST_F(ProfileDeduplicationMetricsTest,
-       RankOfStoredQuasiDuplicateProfiles_NoProfiles) {
+       Startup_RankOfStoredQuasiDuplicateProfiles_NoProfiles) {
   AutofillProfile a = test::GetFullProfile();
   base::HistogramTester histogram_tester;
   LogDeduplicationStartupMetrics({&a}, kLocale);
@@ -57,7 +58,7 @@ TEST_F(ProfileDeduplicationMetricsTest,
       0);
 }
 
-TEST_F(ProfileDeduplicationMetricsTest, TypeOfQuasiDuplicateToken) {
+TEST_F(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {
   // `a` differs from `b` and `c` only in a single type.
   AutofillProfile a = test::GetFullProfile();
   AutofillProfile b = test::GetFullProfile();
@@ -77,6 +78,36 @@ TEST_F(ProfileDeduplicationMetricsTest, TypeOfQuasiDuplicateToken) {
       base::BucketsAre(
           base::Bucket(SettingsVisibleFieldTypeForMetrics::kCompany, 2),
           base::Bucket(SettingsVisibleFieldTypeForMetrics::kEmailAddress, 2)));
+}
+
+TEST_F(ProfileDeduplicationMetricsTest,
+       Import_RankOfStoredQuasiDuplicateProfiles) {
+  AutofillProfile existing_profile = test::GetFullProfile();
+  // `import_candidate` has duplication rank 1 with `existing_profile`.
+  AutofillProfile import_candidate = test::GetFullProfile();
+  import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
+  base::HistogramTester histogram_tester;
+  LogDeduplicationImportMetrics(/*did_user_accept=*/true, import_candidate,
+                                {&existing_profile}, kLocale);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Deduplication.NewProfile.Accepted."
+      "RankOfStoredQuasiDuplicateProfiles",
+      1, 1);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest, Import_TypeOfQuasiDuplicateToken) {
+  AutofillProfile existing_profile = test::GetFullProfile();
+  // `import_candidate` has duplication rank 1 with `existing_profile`.
+  AutofillProfile import_candidate = test::GetFullProfile();
+  import_candidate.SetRawInfo(COMPANY_NAME, u"different company");
+  base::HistogramTester histogram_tester;
+  LogDeduplicationImportMetrics(/*did_user_accept=*/false, import_candidate,
+                                {&existing_profile}, kLocale);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Deduplication.NewProfile.Declined."
+                  "TypeOfQuasiDuplicateToken.1"),
+              base::BucketsAre(base::Bucket(
+                  SettingsVisibleFieldTypeForMetrics::kCompany, 1)));
 }
 
 }  // namespace

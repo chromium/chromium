@@ -143,6 +143,8 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   DCHECK(personal_data_manager_);
 
+  const std::vector<AutofillProfile*> existing_profiles =
+      personal_data_manager_->address_data_manager().GetProfiles();
   import_process->ApplyImport();
 
   AdjustNewProfileStrikes(*import_process);
@@ -159,7 +161,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
   }
 
   import_process->CollectMetrics(client_->GetUkmRecorder(),
-                                 client_->GetUkmSourceId());
+                                 client_->GetUkmSourceId(), existing_profiles);
   ClearPendingImport(std::move(import_process));
 }
 

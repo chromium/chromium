@@ -211,10 +211,13 @@ class ProfileImportProcess {
       AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> edited_profile = std::nullopt);
 
-  // Records UMA and UKM metrics. Should only be called after a user decision
-  // was supplied or a silent update happens.
-  void CollectMetrics(ukm::UkmRecorder* ukm_recorder,
-                      ukm::SourceId source_id) const;
+  // Records UMA and UKM metrics after the import was applied. Should only be
+  // called after a user decision was supplied or a silent update happens.
+  // `existing_profiles` are the profiles before the import was applied.
+  void CollectMetrics(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      const std::vector<AutofillProfile*>& existing_profiles) const;
 
  private:
   // Determines the import type of |observed_profile_| with respect to

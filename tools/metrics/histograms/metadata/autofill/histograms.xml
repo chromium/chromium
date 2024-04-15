@@ -1757,7 +1757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.Deduplication.ExistingProfiles.RankOfStoredQuasiDuplicateProfiles"
+    name="Autofill.Deduplication.{Scenario}.RankOfStoredQuasiDuplicateProfiles"
     units="Rank" expires_after="2024-09-01">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
@@ -1766,15 +1766,21 @@ chromium-metrics-reviews@google.com.
     For every profile, records the minimum number of fields in which the profile
     differs from some other profile of the same country. That is, the minimum
     number of fields that prevent us from deduplicating the profile. Emitted on
-    browser startup, for every user with at least 2 profiles. Profiles of
-    different countries are not considered, since they can never be merged due
-    to the data model differences. If no possible merge candidate exists, a
-    sample is emitted into the overflow bucket.
+    browser startup (ExistingProfiles) or on form import (NewProfile), for every
+    user with at least 2 profiles. Profiles of different countries are not
+    considered, since they can never be merged due to the data model
+    differences. If no possible merge candidate exists, a sample is emitted into
+    the overflow bucket.
   </summary>
+  <token key="Scenario">
+    <variant name="ExistingProfiles"/>
+    <variant name="NewProfile.Accepted"/>
+    <variant name="NewProfile.Declined"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Autofill.Deduplication.ExistingProfiles.TypeOfQuasiDuplicateToken.{DuplicationRank}"
+    name="Autofill.Deduplication.{Scenario}.TypeOfQuasiDuplicateToken.{DuplicationRank}"
     enum="AutofillSettingsVisibleTypes" expires_after="2024-09-01">
   <owner>koerber@chromium.org</owner>
   <owner>fleimgruber@chromium.org</owner>
@@ -1783,11 +1789,16 @@ chromium-metrics-reviews@google.com.
     For every profile, records the types of the minimum set of fields in which
     the profile differs from some other profile of the same country. That is,
     the set of types that prevent us from deduplicating the profile. Emitted on
-    browser startup, for every user with at least 2 profiles. Profiles of
-    different countries are not considered, since they can never be merged due
-    to the data model differences. The metric is split by the size of this set
-    (duplication rank).
+    browser startup (ExistingProfiles) or on form import (NewProfile), for every
+    user with at least 2 profiles. Profiles of different countries are not
+    considered, since they can never be merged due to the data model
+    differences. The metric is split by the size of this set (duplication rank).
   </summary>
+  <token key="Scenario">
+    <variant name="ExistingProfiles"/>
+    <variant name="NewProfile.Accepted"/>
+    <variant name="NewProfile.Declined"/>
+  </token>
   <token key="DuplicationRank">
     <variant name="1"/>
     <variant name="2"/>

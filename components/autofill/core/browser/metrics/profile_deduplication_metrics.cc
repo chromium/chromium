@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -25,17 +26,30 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
-constexpr std::string_view kHistogramPrefix =
+constexpr std::string_view kStartupHistogramPrefix =
     "Autofill.Deduplication.ExistingProfiles.";
+constexpr std::string_view kImportHistogramPrefix =
+    "Autofill.Deduplication.NewProfile.";
 
+// Given the result of `CalculateMinimalIncompatibleTypeSets()`, returns the
+// minimum number of fields whose removal makes `profile` a duplicate.
+int GetDuplicationRank(const std::vector<FieldTypeSet>& min_incompatible_sets) {
+  // All elements of `min_incompatible_sets` have the same size.
+  return min_incompatible_sets.empty() ? std::numeric_limits<int>::max()
+                                       : min_incompatible_sets.back().size();
+}
+
+// Logs the types that prevent a profile from being a duplicate, if its
+// `duplication_rank` is sufficiently low (i.e. not many conflicting types).
 void LogTypeOfQuasiDuplicateTokenMetric(
+    std::string_view metric_name_prefix,
     int duplication_rank,
     std::vector<FieldTypeSet> min_incompatible_sets) {
   if (duplication_rank < 1 || duplication_rank > 5) {
     return;
   }
   const std::string metric_name =
-      base::StrCat({kHistogramPrefix, "TypeOfQuasiDuplicateToken.",
+      base::StrCat({metric_name_prefix, "TypeOfQuasiDuplicateToken.",
                     base::NumberToString(duplication_rank)});
   for (const FieldTypeSet& types : min_incompatible_sets) {
     for (FieldType type : types) {
@@ -48,15 +62,13 @@ void LogTypeOfQuasiDuplicateTokenMetric(
 void LogDeduplicationStartupMetricsForProfile(
     const AutofillProfile& profile,
     std::vector<FieldTypeSet> min_incompatible_sets) {
-  // The minimum number of fields whose removal makes `profile` a duplicate.
-  const int duplication_rank = min_incompatible_sets.empty()
-                                   ? std::numeric_limits<int>::max()
-                                   : min_incompatible_sets.back().size();
-
+  const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
   base::UmaHistogramCounts100(
-      base::StrCat({kHistogramPrefix, "RankOfStoredQuasiDuplicateProfiles"}),
+      base::StrCat(
+          {kStartupHistogramPrefix, "RankOfStoredQuasiDuplicateProfiles"}),
       duplication_rank);
-  LogTypeOfQuasiDuplicateTokenMetric(duplication_rank, min_incompatible_sets);
+  LogTypeOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, duplication_rank,
+                                     min_incompatible_sets);
   // TODO(b/325452461): Implement more metrics.
 }
 
@@ -82,12 +94,50 @@ void LogDeduplicationStartupMetrics(
   // on a background thread. Create a copy of the `profiles`, to avoid passing
   // pointers between threads.
   std::vector<AutofillProfile> profiles_copy;
+  profiles_copy.reserve(profiles.size());
   for (const AutofillProfile* profile : profiles) {
     profiles_copy.push_back(*profile);
   }
   base::ThreadPool::PostTask(
       FROM_HERE,
       base::BindOnce(log_metrics, std::move(profiles_copy), app_locale));
+}
+
+void LogDeduplicationImportMetrics(
+    bool did_user_accept,
+    const AutofillProfile& import_candidate,
+    const std::vector<AutofillProfile*>& existing_profiles,
+    const std::string& app_locale) {
+  DCHECK(!base::Contains(
+      existing_profiles, import_candidate.guid(),
+      [](const AutofillProfile* profile) { return profile->guid(); }));
+  if (existing_profiles.empty()) {
+    // Don't pollute metrics with cases where obviously no duplicates exists.
+    return;
+  }
+
+  // Calculate the `duplication_rank`. Unfortunately, a vector of non-pointers
+  // is needed for `CalculateMinimalIncompatibleTypeSets()`.
+  std::vector<AutofillProfile> existing_profiles_copy;
+  existing_profiles_copy.reserve(existing_profiles.size());
+  for (const AutofillProfile* profile : existing_profiles) {
+    existing_profiles_copy.push_back(*profile);
+  }
+  std::vector<FieldTypeSet> min_incompatible_sets =
+      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+          import_candidate, existing_profiles_copy,
+          AutofillProfileComparator(app_locale));
+  const int duplication_rank = GetDuplicationRank(min_incompatible_sets);
+
+  // Emit the actual metrics, based on the user decision.
+  const std::string metric_name_prefix = base::StrCat(
+      {kImportHistogramPrefix, did_user_accept ? "Accepted" : "Declined", "."});
+  base::UmaHistogramCounts100(
+      base::StrCat({metric_name_prefix, "RankOfStoredQuasiDuplicateProfiles"}),
+      duplication_rank);
+  LogTypeOfQuasiDuplicateTokenMetric(metric_name_prefix, duplication_rank,
+                                     min_incompatible_sets);
+  // TODO(b/325452461): Implement more metrics.
 }
 
 }  // namespace autofill::autofill_metrics

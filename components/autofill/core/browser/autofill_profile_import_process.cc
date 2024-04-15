@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
@@ -419,8 +420,10 @@ void ProfileImportProcess::set_prompt_was_shown() {
   prompt_shown_ = true;
 }
 
-void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
-                                          ukm::SourceId source_id) const {
+void ProfileImportProcess::CollectMetrics(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    const std::vector<AutofillProfile*>& existing_profiles) const {
   // Metrics should only be recorded after a user decision was supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
@@ -452,6 +455,13 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(user_decision_);
     LogUkmMetrics(num_edited_fields);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillLogDeduplicationMetrics)) {
+      autofill_metrics::LogDeduplicationImportMetrics(
+          UserAccepted(),
+          UserAccepted() ? *confirmed_import_candidate_ : *import_candidate_,
+          existing_profiles, app_locale_);
+    }
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(user_decision_);
 
