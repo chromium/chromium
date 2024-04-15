@@ -194,6 +194,57 @@ class NET_EXPORT HostResolver {
     virtual void ChangeRequestPriority(RequestPriority priority) {}
   };
 
+  // Handler for a service endpoint resolution request. Unlike
+  // ResolveHostRequest, which waits for all responses, this could provide
+  // intermediate endpoint candidates in the middle of the resolution.
+  //
+  // A client owns an instance of this class. Destruction cancels the request.
+  class ServiceEndpointRequest {
+   public:
+    class Delegate {
+     public:
+      virtual ~Delegate() = default;
+
+      // Called when the request has updated endpoints.
+      virtual void OnServiceEndpointsUpdated() = 0;
+
+      // Called when all queries are responded or an error occurred.
+      // Note that this can be called without OnServiceEndpointsUpdated().
+      virtual void OnServiceEndpointRequestFinished(int rv) = 0;
+    };
+
+    virtual ~ServiceEndpointRequest() = default;
+
+    // Starts resolving service endpoints. `delegate` is used only when this
+    // method returns ERR_IO_PENDING. When the return value is other than
+    // ERR_IO_PENDING, resolution completed (or an error occurred)
+    // synchronously, and GetEndpointResults() will return finalized results.
+    virtual int Start(Delegate* delegate) = 0;
+
+    // The current available service endpoints. These can be changed over time
+    // while resolution is still ongoing. Changes are signaled by a call to the
+    // delegate's OnServiceEndpointsUpdated(). Results are finalized when
+    // Start() finished synchronously (returning other than ERR_IO_PENDING), or
+    // delegate's OnServiceEndpointRequestFinished() is called.
+    virtual const std::vector<ServiceEndpoint>& GetEndpointResults() = 0;
+
+    // Any DNS record aliases, such as CNAME aliases, found as a result of
+    // addresses and HTTPS queries. These can be changed over time while
+    // resolution is still ongoing. See also the comment on
+    // Request::GetDnsAliasResults() for details.
+    virtual const std::set<std::string>& GetDnsAliasResults() = 0;
+
+    // True if the client of this request can attempt cryptographic handshakes.
+    // If false, the provided service endpoints via GetEndpointResults() are not
+    // finalized to the point to allow completing transactions, and data or
+    // cryptographic handshakes must not be sent. This can be changed over time
+    // while resolution is still ongoing.
+    // TODO(crbug.com/41493696): Consider renaming this to
+    // `IsSvcbResolutionCompleted()` when Chrome supports HTTPS follow-up
+    // queries.
+    virtual bool EndpointsCryptoReady() = 0;
+  };
+
   // Handler for an activation of probes controlled by a HostResolver. Created
   // by HostResolver::CreateDohProbeRequest().
   class ProbeRequest {

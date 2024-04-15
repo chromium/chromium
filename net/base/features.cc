@@ -81,6 +81,10 @@ BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseServiceEndpointRequest,
+             "UseServiceEndpointRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
     &kUseAlternativePortForGloballyReachableCheck,
     "AlternativePortForGloballyReachableCheck", 443};

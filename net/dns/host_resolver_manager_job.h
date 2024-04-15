@@ -12,12 +12,14 @@
 
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/address_family.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/base/prioritized_dispatcher.h"
+#include "net/dns/dns_task_results_manager.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
@@ -60,7 +62,8 @@ struct HostResolverManager::JobKey {
 // Aggregates all Requests for the same Key. Dispatched via
 // PrioritizedDispatcher.
 class HostResolverManager::Job : public PrioritizedDispatcher::Job,
-                                 public HostResolverDnsTask::Delegate {
+                                 public HostResolverDnsTask::Delegate,
+                                 public DnsTaskResultsManager::Delegate {
  public:
   // Creates new job for |key| where |request_net_log| is bound to the
   // request that spawned it.
@@ -86,6 +89,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Detach cancelled request. If it was the last active Request, also finishes
   // this Job.
   void CancelRequest(RequestImpl* request);
+
+  void AddServiceEndpointRequest(ServiceEndpointRequestImpl* request);
+
+  // Similar to CancelRequest(), if `request` was the last active one, finishes
+  // this job.
+  void CancelServiceEndpointRequest(ServiceEndpointRequestImpl* request);
 
   // Called from AbortJobsWithoutTargetNetwork(). Completes all requests and
   // destroys the job. This currently assumes the abort is due to a network
@@ -129,6 +138,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   bool HasTargetNetwork() const {
     return key_.GetTargetNetwork() != handles::kInvalidNetworkHandle;
+  }
+
+  DnsTaskResultsManager* dns_task_results_manager() const {
+    return dns_task_results_manager_.get();
   }
 
  private:
@@ -184,6 +197,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // so signals it is complete.
   void ReduceByOneJobSlot();
 
+  // Common helper methods for adding and canceling a request.
+  void AddRequestCommon(RequestPriority request_priority,
+                        const NetLogWithSource& request_net_log,
+                        bool is_speculative);
+  void CancelRequestCommon(RequestPriority request_priority,
+                           const NetLogWithSource& request_net_log);
+
   void UpdatePriority();
 
   // PrioritizedDispatcher::Job:
@@ -221,6 +241,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       std::optional<HostResolverDnsTask::SingleTransactionResults>
           single_transaction_results) override;
   void AddTransactionTimeQueued(base::TimeDelta time_queued) override;
+
+  // DnsTaskResultsManager::Delegate implementation:
+  void OnServiceEndpointsUpdated() override;
 
   void StartMdnsTask();
   void OnMdnsTaskComplete();
@@ -323,6 +346,14 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   // All Requests waiting for the result of this Job. Some can be canceled.
   base::LinkedList<RequestImpl> requests_;
+
+  // All ServiceEndpointRequests waiting for the result of this Job. Some can
+  // be canceled.
+  base::LinkedList<ServiceEndpointRequestImpl> service_endpoint_requests_;
+
+  // Builds and updates intermediate service endpoints while executing
+  // a DnsTransaction.
+  std::unique_ptr<DnsTaskResultsManager> dns_task_results_manager_;
 
   // A handle used for |dispatcher_|.
   PrioritizedDispatcher::Handle handle_;

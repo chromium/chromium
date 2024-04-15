@@ -109,6 +109,7 @@ class NET_EXPORT HostResolverManager
   struct NET_EXPORT_PRIVATE JobKey;
   class NET_EXPORT_PRIVATE Job;
   class NET_EXPORT_PRIVATE RequestImpl;
+  class NET_EXPORT_PRIVATE ServiceEndpointRequestImpl;
 
   // Creates a HostResolver as specified by |options|. Blocking tasks are run in
   // ThreadPool.
@@ -168,6 +169,15 @@ class NET_EXPORT HostResolverManager
       ResolveContext* resolve_context);
   std::unique_ptr<MdnsListener> CreateMdnsListener(const HostPortPair& host,
                                                    DnsQueryType query_type);
+
+  // Creates a service endpoint resolution request.
+  std::unique_ptr<HostResolver::ServiceEndpointRequest>
+  CreateServiceEndpointRequest(
+      url::SchemeHostPort scheme_host_port,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      ResolveHostParameters parameters,
+      ResolveContext* resolve_context);
 
   // Enables or disables the built-in asynchronous DnsClient. If enabled, by
   // default (when no |ResolveHostParameters::source| is specified), the
@@ -350,6 +360,12 @@ class NET_EXPORT HostResolverManager
       std::deque<TaskType> tasks,
       RequestPriority priority,
       const NetLogWithSource& source_net_log);
+
+  // Similar to CreateAndStartJob(), but for a ServiceEndpointRequest.
+  void CreateAndStartJobForServiceEndpointRequest(
+      JobKey key,
+      std::deque<TaskType> tasks,
+      ServiceEndpointRequestImpl* request);
 
   // Resolves the IP literal hostname represented by `ip_address`.
   HostCache::Entry ResolveAsIP(DnsQueryTypeSet query_types,
