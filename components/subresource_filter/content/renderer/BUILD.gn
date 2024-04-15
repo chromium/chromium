@@ -11,20 +11,25 @@ static_library("renderer") {
     "web_document_subresource_filter_impl.cc",
     "web_document_subresource_filter_impl.h",
   ]
-  deps = [
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_deps = [
     "//base",
-    "//components/subresource_filter/content/common",
     "//components/subresource_filter/content/mojom",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/mojom",
-    "//content/public/common",
+    "//components/url_pattern_index/proto:url_pattern_index",
     "//content/public/renderer",
-    "//third_party/blink/public:blink",
-    "//third_party/blink/public/common",
+    "//mojo/public/cpp/bindings",
     "//url",
   ]
-  public_deps = [ "//ipc" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [
+    "//components/subresource_filter/content/shared/common",
+    "//content/public/common",
+    "//ipc",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common",
+  ]
 }
 
 source_set("unit_tests") {
@@ -34,7 +39,6 @@ source_set("unit_tests") {
     ":renderer",
     "//base",
     "//base/test:test_support",
-    "//components/subresource_filter/content/common",
     "//components/subresource_filter/content/mojom",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/common:test_support",

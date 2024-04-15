@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/activation_state_computing_navigation_throttle.h"
+#include "components/subresource_filter/content/shared/browser/activation_state_computing_navigation_throttle.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

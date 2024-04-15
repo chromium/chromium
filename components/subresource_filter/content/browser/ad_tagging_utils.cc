@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/browser/ad_tagging_utils.h"
 
-#include "content/public/common/url_utils.h"
+#include <optional>
+
+#include "components/subresource_filter/core/common/load_policy.h"
+#include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-shared.h"
 
 namespace subresource_filter {
-
-bool ShouldInheritActivation(const GURL& url) {
-  return !content::IsURLHandledByNetworkStack(url);
-}
 
 blink::mojom::FilterListResult InterpretLoadPolicyAsEvidence(
     const std::optional<LoadPolicy>& load_policy) {

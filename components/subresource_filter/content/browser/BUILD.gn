@@ -6,8 +6,8 @@ import("//build/config/features.gni")
 
 static_library("browser") {
   sources = [
-    "activation_state_computing_navigation_throttle.cc",
-    "activation_state_computing_navigation_throttle.h",
+    "ad_tagging_utils.cc",
+    "ad_tagging_utils.h",
     "ads_intervention_manager.cc",
     "ads_intervention_manager.h",
     "child_frame_navigation_filtering_throttle.cc",
@@ -50,8 +50,8 @@ static_library("browser") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
-    "//components/subresource_filter/content/common",
     "//components/subresource_filter/content/shared/browser",
+    "//components/subresource_filter/content/shared/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
     "//components/ukm:ukm",
@@ -120,7 +120,6 @@ static_library("test_support") {
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
-    "//components/subresource_filter/content/common",
     "//components/subresource_filter/content/shared/browser",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
@@ -147,7 +146,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "activation_state_computing_navigation_throttle_unittest.cc",
     "ads_intervention_manager_unittest.cc",
     "child_frame_navigation_filtering_throttle_unittest.cc",
     "content_activation_list_utils_unittest.cc",
@@ -171,8 +169,8 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
-    "//components/subresource_filter/content/common",
     "//components/subresource_filter/content/shared/browser",
+    "//components/subresource_filter/content/shared/common",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
     "//components/subresource_filter/core/common",

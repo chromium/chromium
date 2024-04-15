@@ -7,13 +7,14 @@ static_library("common") {
     "subresource_filter_utils.cc",
     "subresource_filter_utils.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
-    "//base",
     "//components/subresource_filter/core/common",
-    "//content/public/common",
-    "//ipc",
-    "//services/network/public/cpp",
+    "//content/public/browser",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [
+    "//base",
+    "//content/public/common",
+  ]
 }

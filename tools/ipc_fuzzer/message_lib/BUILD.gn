@@ -15,7 +15,6 @@ static_library("ipc_message_lib") {
     "//components/nacl/common:buildflags",
     "//components/safe_browsing/core/common",
     "//components/spellcheck/common",
-    "//components/subresource_filter/content/common",
     "//content/child",
     "//content/public/child",
     "//gpu/ipc/common",

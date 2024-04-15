@@ -5,7 +5,7 @@
 #include "components/subresource_filter/content/browser/navigation_console_logger.h"
 
 #include "base/memory/ptr_util.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 

@@ -492,6 +492,7 @@ test("components_unittests") {
       "//components/session_proto_db:unit_tests",
       "//components/subresource_filter/content/browser:unit_tests",
       "//components/subresource_filter/content/renderer:unit_tests",
+      "//components/subresource_filter/content/shared/browser:unit_tests",
       "//components/tracing:unit_tests",
       "//components/translate/content/browser:unit_tests",
       "//components/translate/content/renderer:unit_tests",
