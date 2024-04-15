@@ -31,10 +31,66 @@ namespace {
 const int kMouseDeviceId = 1;
 const char* kDefaultDisplaySize = "1200x800";
 
+// The facial gestures that are supported by FaceGaze. Ensure this enum stays in
+// sync with the source of truth in
+// ash/webui/common/resources/accessibility/facial_gestures.ts.
+enum class FaceGazeGesture {
+  BROW_INNER_UP,
+  BROWS_DOWN,
+  EYE_SQUINT_LEFT,
+  EYE_SQUINT_RIGHT,
+  EYES_BLINK,
+  EYES_LOOK_DOWN,
+  EYES_LOOK_LEFT,
+  EYES_LOOK_RIGHT,
+  EYES_LOOK_UP,
+  JAW_OPEN,
+  MOUTH_LEFT,
+  MOUTH_PUCKER,
+  MOUTH_RIGHT,
+  MOUTH_SMILE,
+  MOUTH_UPPER_UP,
+};
+
+std::string ToString(const FaceGazeGesture& gesture) {
+  switch (gesture) {
+    case FaceGazeGesture::BROW_INNER_UP:
+      return "browInnerUp";
+    case FaceGazeGesture::BROWS_DOWN:
+      return "browsDown";
+    case FaceGazeGesture::EYE_SQUINT_LEFT:
+      return "eyeSquintLeft";
+    case FaceGazeGesture::EYE_SQUINT_RIGHT:
+      return "eyeSquintRight";
+    case FaceGazeGesture::EYES_BLINK:
+      return "eyesBlink";
+    case FaceGazeGesture::EYES_LOOK_DOWN:
+      return "eyesLookDown";
+    case FaceGazeGesture::EYES_LOOK_LEFT:
+      return "eyesLookLeft";
+    case FaceGazeGesture::EYES_LOOK_RIGHT:
+      return "eyesLookRight";
+    case FaceGazeGesture::EYES_LOOK_UP:
+      return "eyesLookUp";
+    case FaceGazeGesture::JAW_OPEN:
+      return "jawOpen";
+    case FaceGazeGesture::MOUTH_LEFT:
+      return "mouthLeft";
+    case FaceGazeGesture::MOUTH_PUCKER:
+      return "mouthPucker";
+    case FaceGazeGesture::MOUTH_RIGHT:
+      return "mouthRight";
+    case FaceGazeGesture::MOUTH_SMILE:
+      return "mouthSmile";
+    case FaceGazeGesture::MOUTH_UPPER_UP:
+      return "mouthUpperUp";
+  }
+}
+
 // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync with
 // the source of truth in chrome/browser/resources/chromeos/accessibility/\
 // accessibility_common/facegaze/gesture_detector.ts.
-enum Gesture {
+enum class MediapipeGesture {
   BROW_DOWN_LEFT,
   BROW_DOWN_RIGHT,
   BROW_INNER_UP,
@@ -60,53 +116,53 @@ enum Gesture {
   MOUTH_UPPER_UP_RIGHT,
 };
 
-std::string ToString(const Gesture& gesture) {
+std::string ToString(const MediapipeGesture& gesture) {
   switch (gesture) {
-    case BROW_DOWN_LEFT:
+    case MediapipeGesture::BROW_DOWN_LEFT:
       return "browDownLeft";
-    case BROW_DOWN_RIGHT:
+    case MediapipeGesture::BROW_DOWN_RIGHT:
       return "browDownRight";
-    case BROW_INNER_UP:
+    case MediapipeGesture::BROW_INNER_UP:
       return "browInnerUp";
-    case EYE_BLINK_LEFT:
+    case MediapipeGesture::EYE_BLINK_LEFT:
       return "eyeBlinkLeft";
-    case EYE_BLINK_RIGHT:
+    case MediapipeGesture::EYE_BLINK_RIGHT:
       return "eyeBlinkRight";
-    case EYE_LOOK_DOWN_LEFT:
+    case MediapipeGesture::EYE_LOOK_DOWN_LEFT:
       return "eyeLookDownLeft";
-    case EYE_LOOK_DOWN_RIGHT:
+    case MediapipeGesture::EYE_LOOK_DOWN_RIGHT:
       return "eyeLookDownRight";
-    case EYE_LOOK_IN_LEFT:
+    case MediapipeGesture::EYE_LOOK_IN_LEFT:
       return "eyeLookInLeft";
-    case EYE_LOOK_IN_RIGHT:
+    case MediapipeGesture::EYE_LOOK_IN_RIGHT:
       return "eyeLookInRight";
-    case EYE_LOOK_OUT_LEFT:
+    case MediapipeGesture::EYE_LOOK_OUT_LEFT:
       return "eyeLookOutLeft";
-    case EYE_LOOK_OUT_RIGHT:
+    case MediapipeGesture::EYE_LOOK_OUT_RIGHT:
       return "eyeLookOutRight";
-    case EYE_LOOK_UP_LEFT:
+    case MediapipeGesture::EYE_LOOK_UP_LEFT:
       return "eyeLookUpLeft";
-    case EYE_LOOK_UP_RIGHT:
+    case MediapipeGesture::EYE_LOOK_UP_RIGHT:
       return "eyeLookUpRight";
-    case EYE_SQUINT_LEFT:
+    case MediapipeGesture::EYE_SQUINT_LEFT:
       return "eyeSquintLeft";
-    case EYE_SQUINT_RIGHT:
+    case MediapipeGesture::EYE_SQUINT_RIGHT:
       return "eyeSquintRight";
-    case JAW_OPEN:
+    case MediapipeGesture::JAW_OPEN:
       return "jawOpen";
-    case MOUTH_LEFT:
+    case MediapipeGesture::MOUTH_LEFT:
       return "mouthLeft";
-    case MOUTH_PUCKER:
+    case MediapipeGesture::MOUTH_PUCKER:
       return "mouthPucker";
-    case MOUTH_RIGHT:
+    case MediapipeGesture::MOUTH_RIGHT:
       return "mouthRight";
-    case MOUTH_SMILE_LEFT:
+    case MediapipeGesture::MOUTH_SMILE_LEFT:
       return "mouthSmileLeft";
-    case MOUTH_SMILE_RIGHT:
+    case MediapipeGesture::MOUTH_SMILE_RIGHT:
       return "mouthSmileRight";
-    case MOUTH_UPPER_UP_LEFT:
+    case MediapipeGesture::MOUTH_UPPER_UP_LEFT:
       return "mouthUpperUpLeft";
-    case MOUTH_UPPER_UP_RIGHT:
+    case MediapipeGesture::MOUTH_UPPER_UP_RIGHT:
       return "mouthUpperUpRight";
   }
 }
@@ -401,9 +457,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
       Config()
           .AsDefault()
           .WithGesturesToMacros(base::Value::Dict().Set(
-              ToString(Gesture::JAW_OPEN), MacroName::RESET_CURSOR))
-          .WithGestureConfidences(
-              base::Value::Dict().Set(ToString(Gesture::JAW_OPEN), 70)));
+              ToString(FaceGazeGesture::JAW_OPEN), MacroName::RESET_CURSOR))
+          .WithGestureConfidences(base::Value::Dict().Set(
+              ToString(FaceGazeGesture::JAW_OPEN), 70)));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -414,8 +470,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
   event_handler().ClearEvents();
 
   // Reset the cursor to the center of the screen using a gesture.
-  utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithGesture(ToString(Gesture::JAW_OPEN), 90));
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      ToString(MediapipeGesture::JAW_OPEN), 90));
   AssertCursorAt(gfx::Point(600, 400));
 
   // We expect one mouse move event to be received because the FaceGaze
@@ -434,9 +490,9 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
       Config()
           .AsDefault()
           .WithGesturesToMacros(base::Value::Dict().Set(
-              ToString(Gesture::JAW_OPEN), MacroName::RESET_CURSOR))
-          .WithGestureConfidences(
-              base::Value::Dict().Set(ToString(Gesture::JAW_OPEN), 100)));
+              ToString(FaceGazeGesture::JAW_OPEN), MacroName::RESET_CURSOR))
+          .WithGestureConfidences(base::Value::Dict().Set(
+              ToString(FaceGazeGesture::JAW_OPEN), 100)));
 
   // Move cursor.
   utils()->ProcessFaceLandmarkerResult(
@@ -448,8 +504,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   // This gesture will be ignored because the gesture doesn't have high enough
   // confidence.
   event_handler().ClearEvents();
-  utils()->ProcessFaceLandmarkerResult(
-      MockFaceLandmarkerResult().WithGesture(ToString(Gesture::JAW_OPEN), 90));
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      ToString(MediapipeGesture::JAW_OPEN), 90));
   AssertCursorAt(gfx::Point(360, 560));
   ASSERT_EQ(0u, event_handler().mouse_events().size());
 }
@@ -473,18 +529,18 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
-  ConfigureFaceGaze(
-      Config()
-          .AsDefault()
-          .WithGesturesToMacros(base::Value::Dict().Set(
-              ToString(Gesture::MOUTH_LEFT), MacroName::KEY_PRESS_SPACE))
-          .WithGestureConfidences(
-              base::Value::Dict().Set(ToString(Gesture::MOUTH_LEFT), 70)));
+  ConfigureFaceGaze(Config()
+                        .AsDefault()
+                        .WithGesturesToMacros(base::Value::Dict().Set(
+                            ToString(FaceGazeGesture::MOUTH_LEFT),
+                            MacroName::KEY_PRESS_SPACE))
+                        .WithGestureConfidences(base::Value::Dict().Set(
+                            ToString(FaceGazeGesture::MOUTH_LEFT), 70)));
 
   // Open jaw for space key press.
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
-      ToString(Gesture::MOUTH_LEFT), 90));
+      ToString(MediapipeGesture::MOUTH_LEFT), 90));
   ASSERT_EQ(0u, event_handler().mouse_events().size());
   std::vector<ui::KeyEvent> key_events = event_handler().key_events();
   ASSERT_EQ(1u, key_events.size());
@@ -493,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
 
   // Release gesture for space key release.
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
-      ToString(Gesture::MOUTH_LEFT), 10));
+      ToString(MediapipeGesture::MOUTH_LEFT), 10));
   ASSERT_EQ(0u, event_handler().mouse_events().size());
   key_events = event_handler().key_events();
   ASSERT_EQ(2u, event_handler().key_events().size());
