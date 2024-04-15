@@ -82,7 +82,7 @@ NET_EXPORT_PRIVATE bool GetTLSServerEndPointChannelBinding(
 //
 // Use this certificate only after the above risks are acknowledged.
 NET_EXPORT bool CreateKeyAndSelfSignedCert(
-    const std::string& subject,
+    std::string_view subject,
     uint32_t serial_number,
     base::Time not_valid_before,
     base::Time not_valid_after,
@@ -101,6 +101,21 @@ struct NET_EXPORT Extension {
   base::span<const uint8_t> contents;
 };
 
+// Create a certificate signed by |issuer_key| and write it to |der_encoded|.
+//
+// |subject| and |issuer| specify names as in AddName(). If you want to create
+// a self-signed certificate, see |CreateSelfSignedCert|.
+NET_EXPORT bool CreateCert(EVP_PKEY* subject_key,
+                           DigestAlgorithm digest_alg,
+                           std::string_view subject,
+                           uint32_t serial_number,
+                           base::Time not_valid_before,
+                           base::Time not_valid_after,
+                           const std::vector<Extension>& extension_specs,
+                           std::string_view issuer,
+                           EVP_PKEY* issuer_key,
+                           std::string* der_encoded);
+
 // Creates a self-signed certificate from a provided key, using the specified
 // hash algorithm.
 //
@@ -108,7 +123,7 @@ struct NET_EXPORT Extension {
 NET_EXPORT bool CreateSelfSignedCert(
     EVP_PKEY* key,
     DigestAlgorithm alg,
-    const std::string& subject,
+    std::string_view subject,
     uint32_t serial_number,
     base::Time not_valid_before,
     base::Time not_valid_after,
