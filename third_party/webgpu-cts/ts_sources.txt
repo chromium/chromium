@@ -773,6 +773,7 @@ src/webgpu/shader/validation/expression/call/builtin/log.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/log2.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/max.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/min.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/mix.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/modf.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/normalize.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/pack2x16float.spec.ts
@@ -846,6 +847,7 @@ src/webgpu/shader/validation/parse/enable.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
 src/webgpu/shader/validation/parse/literal.spec.ts
 src/webgpu/shader/validation/parse/must_use.spec.ts
+src/webgpu/shader/validation/parse/phony.spec.ts
 src/webgpu/shader/validation/parse/pipeline_stage.spec.ts
 src/webgpu/shader/validation/parse/requires.spec.ts
 src/webgpu/shader/validation/parse/semicolon.spec.ts
@@ -867,10 +869,12 @@ src/webgpu/shader/validation/shader_io/layout_constraints.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
 src/webgpu/shader/validation/shader_io/size.spec.ts
 src/webgpu/shader/validation/shader_io/workgroup_size.spec.ts
+src/webgpu/shader/validation/statement/phony.spec.ts
 src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/array.spec.ts
 src/webgpu/shader/validation/types/atomics.spec.ts
 src/webgpu/shader/validation/types/matrix.spec.ts
+src/webgpu/shader/validation/types/pointer.spec.ts
 src/webgpu/shader/validation/types/ref.spec.ts
 src/webgpu/shader/validation/types/struct.spec.ts
 src/webgpu/shader/validation/types/textures.spec.ts
