@@ -2827,6 +2827,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_NOTIFICATION_UNSUBSCRIBE_BUTTON" desc="Text of a button shown by the system on all notifications, allowing the user to unsubscribe from notifications from a web site in a single click (with an option to undo later). Note: there is very little horizontal space for this button. If it isn't possible to fit within the char limit, the string will be ellipsized if 3 buttons are shown side by side, so try to ensure that the user can guess the meaning from the first 8 characters. [CHAR_LIMIT=11]">
         Unsubscribe
       </message>
+      <message name="IDS_NOTIFICATION_UNSUBSCRIBING_LABEL" desc="Text of a label shown by the system on a notifications in place of an [Unsubscribe] button after the user clicked it.">
+        Unsubscribing…
+      </message>
       <message name="IDS_NOTIFICATION_PROVISIONALLY_UNSUBSCRIBED_TITLE" desc="Title of a system notification informing the user that they have successfully unsubscribed from receiving notifications from a web site.">
         Unsubscribed from notifications
       </message>

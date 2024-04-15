@@ -263,6 +263,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.home_modules_tab_resumption_one_tab_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.home_modules_tab_resumption_multiple_tabs_title` appears to be unused"/>
 
+    <!-- TODO(https://crbug.com/324827395): Remove after the intermediate state for OneTapUnsubscribe is implemented. -->
+    <ignore regexp="The resource `R.string.notification_unsubscribing_label` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
