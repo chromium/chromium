@@ -678,10 +678,12 @@ fyi_mac_builder(
             "perfetto",
             "release_builder",
             "reclient",
+            "x64",
         ],
     ),
     builderless = True,
-    cores = 8,
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),

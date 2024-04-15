@@ -139,6 +139,7 @@ try_.builder(
             "no_symbols",
         ],
     ),
+    cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

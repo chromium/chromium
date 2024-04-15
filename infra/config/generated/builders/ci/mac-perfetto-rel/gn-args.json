@@ -3,6 +3,7 @@
     "dcheck_always_on": false,
     "is_component_build": false,
     "is_debug": false,
+    "target_cpu": "x64",
     "use_perfetto_client_library": true,
     "use_remoteexec": true
   }
