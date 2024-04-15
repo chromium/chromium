@@ -188,6 +188,46 @@ struct DeleteVkDeviceTraits {
 };
 using ScopedVkDevice = base::ScopedGeneric<VkDevice, DeleteVkDeviceTraits>;
 
+struct DeleteVkPipelineTraits {
+  VkDevice vk_device;
+  static VkPipeline InvalidValue();
+  void Free(VkPipeline pipeline);
+};
+using ScopedVkPipeline =
+    base::ScopedGeneric<VkPipeline, DeleteVkPipelineTraits>;
+
+struct DeleteVkPipelineLayoutTraits {
+  VkDevice vk_device;
+  static VkPipelineLayout InvalidValue();
+  void Free(VkPipelineLayout pipeline_layout);
+};
+using ScopedVkPipelineLayout =
+    base::ScopedGeneric<VkPipelineLayout, DeleteVkPipelineLayoutTraits>;
+
+struct DeleteVkSamplerTraits {
+  VkDevice vk_device;
+  static VkSampler InvalidValue();
+  void Free(VkSampler sampler);
+};
+using ScopedVkSampler = base::ScopedGeneric<VkSampler, DeleteVkSamplerTraits>;
+
+struct DeleteVkDescriptorSetLayoutTraits {
+  VkDevice vk_device;
+  static VkDescriptorSetLayout InvalidValue();
+  void Free(VkDescriptorSetLayout descriptor_set_layout);
+};
+using ScopedVkDescriptorSetLayout =
+    base::ScopedGeneric<VkDescriptorSetLayout,
+                        DeleteVkDescriptorSetLayoutTraits>;
+
+struct DeleteVkDescriptorPoolTraits {
+  VkDevice vk_device;
+  static VkDescriptorPool InvalidValue();
+  void Free(VkDescriptorPool descriptor_pool);
+};
+using ScopedVkDescriptorPool =
+    base::ScopedGeneric<VkDescriptorPool, DeleteVkDescriptorPoolTraits>;
+
 struct DeleteVkCommandPoolTraits {
   VkDevice vk_device;
   static VkCommandPool InvalidValue();

@@ -49,7 +49,9 @@ class ScopedVulkanRenderFrame {
  public:
   ScopedVulkanRenderFrame(VulkanClient* client,
                           VkFramebuffer framebuffer,
-                          SkColor clear_color)
+                          SkColor clear_color,
+                          int frame,
+                          bool use_texture)
       : client_(client) {
     static const VkCommandBufferBeginInfo vk_command_buffer_begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -98,6 +100,31 @@ class ScopedVulkanRenderFrame {
     };
     vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
+
+    if (use_texture) {
+      vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        client_->vk_pipeline_->get());
+      VkViewport viewport{
+          .x = 0.0f,
+          .y = 0.0f,
+          .width = 256.0f,
+          .height = 256.0f,
+          .minDepth = 0.0f,
+          .maxDepth = 1.0f,
+      };
+      vkCmdSetViewport(command_buffer_, 0, 1, &viewport);
+
+      VkRect2D scissor{
+          .offset = {0, 0},
+          .extent = {256, 256},
+      };
+      vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
+      vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                              client_->vk_pipeline_layout_->get(), 0, 1,
+                              &(client_->vk_descriptor_sets_[frame]), 0,
+                              nullptr);
+      vkCmdDraw(command_buffer_, 6, 1, 0, 0);
+    }
   }
 
   ScopedVulkanRenderFrame(const ScopedVulkanRenderFrame&) = delete;
@@ -146,9 +173,11 @@ void VulkanClient::Run(const ClientBase::InitParams& params) {
       static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK,
                                         SK_ColorGREEN};
 
+      int frame_parity = frame_count % 2;
       ScopedVulkanRenderFrame vulkan_frame(
           this, buffer->vk_framebuffer->get(),
-          kColors[++frame_count % std::size(kColors)]);
+          kColors[frame_count % std::size(kColors)], frame_parity,
+          params.use_vulkan_texture);
 
       // This is where the drawing code would go.
       // This client is not drawing anything. Just clearing the fb.

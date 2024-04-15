@@ -14,9 +14,11 @@
 #include <stylus-unstable-v2-client-protocol.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <vulkan/vulkan_core.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,6 +26,7 @@
 
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/raw_ptr.h"
@@ -94,6 +97,10 @@ const char kFullscreen[] = "fullscreen";
 
 // Specifies if client should run with vulkan debug logs.
 const char kVulkanDebug[] = "vk-debug";
+
+// Specifies if vulkan clients should run with a texture (default is to only use
+// a clear color).
+const char kVulkanTexture[] = "vk-texture";
 
 // Specifies if client should y-invert the dmabuf surfaces.
 const char kYInvert[] = "y-invert";
@@ -300,6 +307,575 @@ std::unique_ptr<ScopedVkCommandPool> CreateVkCommandPool(
   return vk_command_pool;
 }
 
+static std::vector<char> ReadFile(const std::string& filename) {
+  base::File file(base::FilePath(filename),
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
+    return std::vector<char>();
+  }
+
+  size_t fileSize = (size_t)file.GetLength();
+  std::vector<char> buffer(fileSize);
+
+  fileSize = file.Read(0, buffer.data(), fileSize);
+  file.Close();
+
+  CHECK_EQ(fileSize, buffer.size())
+      << "Shader file " << filename << " can't be read properly.";
+
+  return buffer;
+}
+
+VkShaderModule CreateShaderModule(VkDevice device,
+                                  const std::string& filename) {
+  VkShaderModule shader_module;
+  auto shader_code = ReadFile(filename);
+  VkShaderModuleCreateInfo create_info{
+      .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+      .codeSize = shader_code.size(),
+      .pCode = reinterpret_cast<const uint32_t*>(shader_code.data())};
+
+  VkResult result =
+      vkCreateShaderModule(device, &create_info, nullptr, &shader_module);
+  CHECK_EQ(result, VK_SUCCESS)
+      << "failed to create shader module for: " << filename;
+  return shader_module;
+}
+
+std::unique_ptr<ScopedVkDescriptorSetLayout> CreateDescriptorSetLayout(
+    VkDevice device) {
+  VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+  samplerLayoutBinding.binding = 0;
+  samplerLayoutBinding.descriptorCount = 1;
+  samplerLayoutBinding.descriptorType =
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  samplerLayoutBinding.pImmutableSamplers = nullptr;
+  samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo{};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = 1;
+  layoutInfo.pBindings = &samplerLayoutBinding;
+
+  std::unique_ptr<ScopedVkDescriptorSetLayout> descriptor_set_layout(
+      new ScopedVkDescriptorSetLayout());
+  VkResult result = vkCreateDescriptorSetLayout(
+      device, &layoutInfo, nullptr,
+      ScopedVkDescriptorSetLayout::Receiver(*descriptor_set_layout).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create descriptor set layout.";
+
+  return descriptor_set_layout;
+}
+
+std::unique_ptr<ScopedVkDescriptorPool> CreateDescriptorPool(
+    VkDevice device,
+    uint32_t max_frames_in_flight) {
+  std::array<VkDescriptorPoolSize, 2> poolSizes{};
+  poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  poolSizes[0].descriptorCount = max_frames_in_flight;
+  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  poolSizes[1].descriptorCount = max_frames_in_flight;
+
+  VkDescriptorPoolCreateInfo poolInfo{};
+  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+  poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+  poolInfo.pPoolSizes = poolSizes.data();
+  poolInfo.maxSets = max_frames_in_flight;
+
+  std::unique_ptr<ScopedVkDescriptorPool> descriptor_pool(
+      new ScopedVkDescriptorPool);
+  VkResult result = vkCreateDescriptorPool(
+      device, &poolInfo, nullptr,
+      ScopedVkDescriptorPool::Receiver(*descriptor_pool).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create descriptor pool.";
+
+  return descriptor_pool;
+}
+
+std::unique_ptr<ScopedVkPipelineLayout> CreatePipelineLayout(
+    VkDevice device,
+    VkDescriptorSetLayout descriptor_set_layout) {
+  VkPipelineLayoutCreateInfo pipelineLayoutInfo{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+      .setLayoutCount = 1,
+      .pSetLayouts = &descriptor_set_layout,
+      .pushConstantRangeCount = 0,
+      .pPushConstantRanges = nullptr,
+  };
+
+  std::unique_ptr<ScopedVkPipelineLayout> pipeline_layout(
+      new ScopedVkPipelineLayout());
+  VkResult result = vkCreatePipelineLayout(
+      device, &pipelineLayoutInfo, nullptr,
+      ScopedVkPipelineLayout::Receiver(*pipeline_layout).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create pipeline layout.";
+
+  return pipeline_layout;
+}
+
+std::unique_ptr<ScopedVkPipeline> CreateGraphicsPipeline(
+    VkDevice device,
+    VkRenderPass render_pass,
+    VkPipelineLayout pipeline_layout,
+    const gfx::Size& viewport_size) {
+  VkShaderModule vert_shader_module =
+      CreateShaderModule(device, "shaders/vert.spv");
+
+  VkShaderModule frag_shader_module =
+      CreateShaderModule(device, "shaders/frag.spv");
+
+  VkPipelineShaderStageCreateInfo vert_shader_stage_info{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_VERTEX_BIT,
+      .module = vert_shader_module,
+      .pName = "main",
+  };
+
+  VkPipelineShaderStageCreateInfo frag_shader_stage_info{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+      .module = frag_shader_module,
+      .pName = "main",
+  };
+
+  VkPipelineShaderStageCreateInfo shader_stages[] = {vert_shader_stage_info,
+                                                     frag_shader_stage_info};
+
+  std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT,
+                                               VK_DYNAMIC_STATE_SCISSOR};
+
+  VkPipelineDynamicStateCreateInfo dynamicState{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+      .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
+      .pDynamicStates = dynamicStates.data(),
+  };
+
+  VkPipelineVertexInputStateCreateInfo vertex_input_info{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+      .vertexBindingDescriptionCount = 0,
+      .pVertexBindingDescriptions = nullptr,
+      .vertexAttributeDescriptionCount = 0,
+      .pVertexAttributeDescriptions = nullptr,
+  };
+
+  VkPipelineInputAssemblyStateCreateInfo input_assembly{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+      .primitiveRestartEnable = VK_FALSE,
+  };
+
+  VkViewport viewport{
+      .x = 0.0f,
+      .y = 0.0f,
+      .width = static_cast<float>(viewport_size.width()),
+      .height = static_cast<float>(viewport_size.height()),
+      .minDepth = 0.0f,
+      .maxDepth = 1.0f,
+  };
+  VkRect2D scissor{.offset = {0, 0},
+                   .extent = {static_cast<uint32_t>(viewport_size.width()),
+                              static_cast<uint32_t>(viewport_size.height())}};
+  VkPipelineViewportStateCreateInfo viewportState{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+      .viewportCount = 1,
+      .pViewports = &viewport,
+      .scissorCount = 1,
+      .pScissors = &scissor,
+  };
+
+  VkPipelineRasterizationStateCreateInfo rasterizer{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+      .depthClampEnable = VK_FALSE,
+      .rasterizerDiscardEnable = VK_FALSE,
+      .polygonMode = VK_POLYGON_MODE_FILL,
+      .cullMode = VK_CULL_MODE_BACK_BIT,
+      .frontFace = VK_FRONT_FACE_CLOCKWISE,
+      .depthBiasEnable = VK_FALSE,
+      .depthBiasConstantFactor = 0.0f,
+      .depthBiasClamp = 0.0f,
+      .depthBiasSlopeFactor = 0.0f,
+      .lineWidth = 1.0f,
+  };
+  VkPipelineMultisampleStateCreateInfo multisampling{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+      .sampleShadingEnable = VK_FALSE,
+      .minSampleShading = 1.0f,
+      .pSampleMask = nullptr,
+      .alphaToCoverageEnable = VK_FALSE,
+      .alphaToOneEnable = VK_FALSE,
+  };
+
+  VkPipelineColorBlendAttachmentState colorBlendAttachment{
+      .blendEnable = VK_FALSE,
+      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .colorBlendOp = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+      .alphaBlendOp = VK_BLEND_OP_ADD,
+      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
+  };
+
+  VkPipelineColorBlendStateCreateInfo colorBlending{
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+      .logicOpEnable = VK_FALSE,
+      .logicOp = VK_LOGIC_OP_COPY,
+      .attachmentCount = 1,
+      .pAttachments = &colorBlendAttachment,
+      .blendConstants = {0.0f, 0.0f, 0.0f, 0.0f},
+  };
+
+  VkGraphicsPipelineCreateInfo pipeline_info{
+      .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      .stageCount = 2,
+      .pStages = shader_stages,
+      .pVertexInputState = &vertex_input_info,
+      .pInputAssemblyState = &input_assembly,
+      .pViewportState = &viewportState,
+      .pRasterizationState = &rasterizer,
+      .pMultisampleState = &multisampling,
+      .pColorBlendState = &colorBlending,
+      .pDynamicState = &dynamicState,
+      .layout = pipeline_layout,
+      .renderPass = render_pass,
+      .subpass = 0,
+      .basePipelineHandle = VK_NULL_HANDLE,
+  };
+
+  std::unique_ptr<ScopedVkPipeline> pipeline(new ScopedVkPipeline());
+
+  VkResult result = vkCreateGraphicsPipelines(
+      device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr,
+      ScopedVkPipeline::Receiver(*pipeline).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create graphics pipeline";
+
+  vkDestroyShaderModule(device, frag_shader_module, nullptr);
+  vkDestroyShaderModule(device, vert_shader_module, nullptr);
+
+  return pipeline;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Texture
+
+uint32_t FindMemoryType(VkInstance vk_instance,
+                        int32_t typeFilter,
+                        VkMemoryPropertyFlags properties) {
+  uint32_t physical_devices_number = 1;
+  VkPhysicalDevice physical_device;
+  VkResult result = vkEnumeratePhysicalDevices(
+      vk_instance, &physical_devices_number, &physical_device);
+  CHECK_EQ(result, VK_SUCCESS)
+      << "failed to find suitable physical device type";
+
+  VkPhysicalDeviceMemoryProperties memProperties;
+  vkGetPhysicalDeviceMemoryProperties(physical_device, &memProperties);
+
+  for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+    if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
+                                    properties) == properties) {
+      return i;
+    }
+  }
+
+  LOG(ERROR) << "failed to find suitable memory type";
+  return 0;
+}
+
+void CreateBuffer(VkInstance vk_instance,
+                  VkDevice device,
+                  VkDeviceSize size,
+                  VkBufferUsageFlags usage,
+                  VkMemoryPropertyFlags properties,
+                  VkBuffer& buffer,
+                  VkDeviceMemory& bufferMemory) {
+  VkBufferCreateInfo bufferInfo{
+      .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+      .size = size,
+      .usage = usage,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+  };
+
+  VkResult result = vkCreateBuffer(device, &bufferInfo, nullptr, &buffer);
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create buffer.";
+
+  VkMemoryRequirements memRequirements;
+  vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo{
+      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      .allocationSize = memRequirements.size,
+      .memoryTypeIndex = FindMemoryType(
+          vk_instance, memRequirements.memoryTypeBits, properties),
+  };
+
+  result = vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory);
+  CHECK_EQ(result, VK_SUCCESS) << "failed to allocate buffer memory";
+
+  vkBindBufferMemory(device, buffer, bufferMemory, 0);
+}
+
+VkCommandBuffer BeginSingleTimeCommands(VkDevice device,
+                                        VkCommandPool command_pool) {
+  VkCommandBufferAllocateInfo allocInfo{
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .commandPool = command_pool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1,
+  };
+
+  VkCommandBuffer command_buffer;
+  vkAllocateCommandBuffers(device, &allocInfo, &command_buffer);
+
+  VkCommandBufferBeginInfo beginInfo{};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+  vkBeginCommandBuffer(command_buffer, &beginInfo);
+
+  return command_buffer;
+}
+
+void EndSingleTimeCommands(VkDevice device,
+                           VkCommandPool command_pool,
+                           VkQueue queue,
+                           VkCommandBuffer command_buffer) {
+  vkEndCommandBuffer(command_buffer);
+
+  VkSubmitInfo submitInfo{
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .commandBufferCount = 1,
+      .pCommandBuffers = &command_buffer,
+  };
+  vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+  vkQueueWaitIdle(queue);
+
+  vkFreeCommandBuffers(device, command_pool, 1, &command_buffer);
+}
+
+void TransitionImageLayout(VkDevice device,
+                           VkCommandPool command_pool,
+                           VkQueue queue,
+                           VkImage image,
+                           VkFormat format,
+                           VkImageLayout oldLayout,
+                           VkImageLayout newLayout) {
+  VkCommandBuffer command_buffer =
+      BeginSingleTimeCommands(device, command_pool);
+
+  VkImageSubresourceRange subresource_range{
+      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      .baseMipLevel = 0,
+      .levelCount = 1,
+      .baseArrayLayer = 0,
+      .layerCount = 1,
+  };
+
+  VkImageMemoryBarrier barrier{
+      .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+      .oldLayout = oldLayout,
+      .newLayout = newLayout,
+      .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+      .image = image,
+      .subresourceRange = subresource_range,
+  };
+  vkCmdPipelineBarrier(command_buffer, 0 /* TODO */, 0 /* TODO */, 0, 0,
+                       nullptr, 0, nullptr, 1, &barrier);
+
+  EndSingleTimeCommands(device, command_pool, queue, command_buffer);
+}
+
+void CopyBufferToImage(VkDevice device,
+                       VkCommandPool command_pool,
+                       VkQueue queue,
+                       VkBuffer buffer,
+                       VkImage image,
+                       uint32_t width,
+                       uint32_t height) {
+  VkCommandBuffer commandBuffer = BeginSingleTimeCommands(device, command_pool);
+
+  VkBufferImageCopy region{
+      .bufferOffset = 0,
+      .bufferRowLength = 0,
+      .bufferImageHeight = 0,
+      .imageSubresource{
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .mipLevel = 0,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      },
+      .imageOffset = {0, 0, 0},
+      .imageExtent = {width, height, 1},
+  };
+
+  vkCmdCopyBufferToImage(commandBuffer, buffer, image,
+                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+  EndSingleTimeCommands(device, command_pool, queue, commandBuffer);
+}
+
+void CreateTexture(VkInstance vk_instance,
+                   VkDevice device,
+                   VkCommandPool command_pool,
+                   VkQueue queue,
+                   gfx::Size size,
+                   VkImage* textureImage,
+                   VkDeviceMemory* textureImageMemory) {
+  VkBuffer stagingBuffer;
+  VkDeviceMemory stagingBufferMemory;
+  VkDeviceSize imageSize = size.width() * size.height() * 4;
+
+  CreateBuffer(vk_instance, device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+               stagingBuffer, stagingBufferMemory);
+
+  void* data;
+  vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+  memset(data, 128, static_cast<size_t>(imageSize));
+  vkUnmapMemory(device, stagingBufferMemory);
+
+  VkImageCreateInfo imageInfo{
+      .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+      .imageType = VK_IMAGE_TYPE_2D,
+      .format = VK_FORMAT_A8B8G8R8_UNORM_PACK32,
+      .extent{
+          .width = static_cast<uint32_t>(size.width()),
+          .height = static_cast<uint32_t>(size.height()),
+          .depth = 1,
+      },
+      .mipLevels = 1,
+      .arrayLayers = 1,
+      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      .usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+      .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+  };
+
+  VkResult result = vkCreateImage(device, &imageInfo, nullptr, textureImage);
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create image";
+
+  VkMemoryRequirements memRequirements;
+  vkGetImageMemoryRequirements(device, *textureImage, &memRequirements);
+
+  VkMemoryAllocateInfo allocInfo{
+      .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+      .allocationSize = memRequirements.size,
+      .memoryTypeIndex =
+          FindMemoryType(vk_instance, memRequirements.memoryTypeBits,
+                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
+  };
+  result = vkAllocateMemory(device, &allocInfo, nullptr, textureImageMemory);
+  CHECK_EQ(result, VK_SUCCESS) << "failed to allocate image memory";
+
+  result = vkBindImageMemory(device, *textureImage, *textureImageMemory, 0);
+  CHECK_EQ(result, VK_SUCCESS) << "failed to bind image memory";
+
+  TransitionImageLayout(device, command_pool, queue, *textureImage,
+                        VK_FORMAT_A8B8G8R8_UNORM_PACK32,
+                        VK_IMAGE_LAYOUT_UNDEFINED,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  CopyBufferToImage(device, command_pool, queue, stagingBuffer, *textureImage,
+                    size.width(), size.height());
+
+  TransitionImageLayout(device, command_pool, queue, *textureImage,
+                        VK_FORMAT_A8B8G8R8_UNORM_PACK32,
+                        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  vkDestroyBuffer(device, stagingBuffer, nullptr);
+  vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+std::unique_ptr<ScopedVkImageView> CreateImageView(VkDevice device,
+                                                   VkImage image,
+                                                   VkFormat format) {
+  VkImageViewCreateInfo viewInfo{
+      .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+      .image = image,
+      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .format = format,
+      .subresourceRange{
+          .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+          .baseMipLevel = 0,
+          .levelCount = 1,
+          .baseArrayLayer = 0,
+          .layerCount = 1,
+      },
+  };
+
+  std::unique_ptr<ScopedVkImageView> imageView(new ScopedVkImageView());
+  VkResult result =
+      vkCreateImageView(device, &viewInfo, nullptr,
+                        ScopedVkImageView::Receiver(*imageView).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create texture image view";
+
+  return imageView;
+}
+
+std::unique_ptr<ScopedVkSampler> CreateTextureSampler(VkDevice device) {
+  VkSamplerCreateInfo samplerInfo{
+      .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+      .magFilter = VK_FILTER_LINEAR,
+      .minFilter = VK_FILTER_LINEAR,
+      .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      .anisotropyEnable = VK_FALSE,
+      .maxAnisotropy = 1.0f,
+  };
+  std::unique_ptr<ScopedVkSampler> textureSampler(new ScopedVkSampler());
+  VkResult result =
+      vkCreateSampler(device, &samplerInfo, nullptr,
+                      ScopedVkSampler::Receiver(*textureSampler).get());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to create texture sampler";
+
+  return textureSampler;
+}
+
+std::vector<VkDescriptorSet> CreateDescriptorSets(
+    VkDevice device,
+    VkImageView textureImageView,
+    VkSampler textureSampler,
+    VkDescriptorSetLayout descriptorSetLayout,
+    VkDescriptorPool descriptorPool,
+    size_t max_frames_in_flight) {
+  std::vector<VkDescriptorSetLayout> layouts(max_frames_in_flight,
+                                             descriptorSetLayout);
+  VkDescriptorSetAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  allocInfo.descriptorPool = descriptorPool;
+  allocInfo.descriptorSetCount = static_cast<uint32_t>(max_frames_in_flight);
+  allocInfo.pSetLayouts = layouts.data();
+
+  std::vector<VkDescriptorSet> descriptor_sets(max_frames_in_flight);
+  VkResult result =
+      vkAllocateDescriptorSets(device, &allocInfo, descriptor_sets.data());
+  CHECK_EQ(result, VK_SUCCESS) << "failed to allocate descriptor sets";
+
+  for (size_t i = 0; i < max_frames_in_flight; i++) {
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageView = textureImageView;
+    imageInfo.sampler = textureSampler;
+
+    VkWriteDescriptorSet descriptorWrites;
+
+    descriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrites.dstSet = descriptor_sets[i];
+    descriptorWrites.dstBinding = 0;
+    descriptorWrites.dstArrayElement = 0;
+    descriptorWrites.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrites.descriptorCount = 1;
+    descriptorWrites.pImageInfo = &imageInfo;
+    vkUpdateDescriptorSets(device, 1, &descriptorWrites, 0, nullptr);
+  }
+  return descriptor_sets;
+}
+
 #endif  // defined(USE_VULKAN)
 #endif  // defined(USE_GBM)
 
@@ -372,6 +948,8 @@ bool ClientBase::InitParams::FromCommandLine(
     wayland_socket = command_line.GetSwitchValueASCII(switches::kWaylandSocket);
 
   enable_vulkan_debug = command_line.HasSwitch(switches::kVulkanDebug);
+
+  use_vulkan_texture = command_line.HasSwitch(switches::kVulkanTexture);
 
   return true;
 }
@@ -551,6 +1129,37 @@ bool ClientBase::Init(const InitParams& params) {
 
       vk_command_pool_ =
           CreateVkCommandPool(vk_device_->get(), queue_family_index);
+
+      if (params.use_vulkan_texture) {
+        // pipeline initialization
+        vk_descriptor_set_layout_ =
+            CreateDescriptorSetLayout(vk_device_->get());
+        vk_pipeline_layout_ = CreatePipelineLayout(
+            vk_device_->get(), vk_descriptor_set_layout_->get());
+        vk_descriptor_pool_ =
+            CreateDescriptorPool(vk_device_->get(), params.num_buffers);
+        vk_pipeline_ =
+            CreateGraphicsPipeline(vk_device_->get(), vk_render_pass_->get(),
+                                   vk_pipeline_layout_->get(), size_);
+
+        // texture initialization
+        vk_texture_image_.reset(
+            new ScopedVkImage(VK_NULL_HANDLE, {vk_device_->get()}));
+        vk_texture_image_memory_.reset(
+            new ScopedVkDeviceMemory(VK_NULL_HANDLE, {vk_device_->get()}));
+        CreateTexture(
+            vk_instance_->get(), vk_device_->get(), vk_command_pool_->get(),
+            vk_queue_, size_, ScopedVkImage::Receiver(*vk_texture_image_).get(),
+            ScopedVkDeviceMemory::Receiver(*vk_texture_image_memory_).get());
+        vk_texture_image_view_ =
+            CreateImageView(vk_device_->get(), vk_texture_image_->get(),
+                            VK_FORMAT_A8B8G8R8_UNORM_PACK32);
+        vk_texture_sampler_ = CreateTextureSampler(vk_device_->get());
+        vk_descriptor_sets_ = CreateDescriptorSets(
+            vk_device_->get(), vk_texture_image_view_->get(),
+            vk_texture_sampler_->get(), vk_descriptor_set_layout_->get(),
+            vk_descriptor_pool_->get(), params.num_buffers);
+      }
     }
 #endif  // defined(USE_VULKAN)
   }

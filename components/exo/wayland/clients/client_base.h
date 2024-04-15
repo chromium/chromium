@@ -74,6 +74,9 @@ class ClientBase {
     std::optional<std::string> wayland_socket = {};
     uint32_t linux_dmabuf_version = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
     bool enable_vulkan_debug = false;
+    // by default clients only clear buffers with a solid color, this flag is
+    // meant to ensure that the rendering actually draws a textured quad.
+    bool use_vulkan_texture = false;
   };
 
   struct Buffer {
@@ -217,8 +220,17 @@ class ClientBase {
   std::unique_ptr<gpu::VulkanImplementation> vk_implementation_;
   std::unique_ptr<ScopedVkInstance> vk_instance_;
   std::unique_ptr<ScopedVkDevice> vk_device_;
+  std::unique_ptr<ScopedVkDescriptorPool> vk_descriptor_pool_;
+  std::unique_ptr<ScopedVkPipeline> vk_pipeline_;
+  std::unique_ptr<ScopedVkDescriptorSetLayout> vk_descriptor_set_layout_;
   std::unique_ptr<ScopedVkCommandPool> vk_command_pool_;
   std::unique_ptr<ScopedVkRenderPass> vk_render_pass_;
+  std::unique_ptr<ScopedVkPipelineLayout> vk_pipeline_layout_;
+  std::unique_ptr<ScopedVkImage> vk_texture_image_;
+  std::unique_ptr<ScopedVkDeviceMemory> vk_texture_image_memory_;
+  std::unique_ptr<ScopedVkImageView> vk_texture_image_view_;
+  std::unique_ptr<ScopedVkSampler> vk_texture_sampler_;
+  std::vector<VkDescriptorSet> vk_descriptor_sets_;
   VkQueue vk_queue_;
 #endif
 #endif
