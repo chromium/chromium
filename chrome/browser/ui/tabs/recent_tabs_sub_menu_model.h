@@ -45,8 +45,8 @@ class AcceleratorProvider;
 }
 
 // A menu model that builds the contents of "Recent tabs" submenu, which include
-// the recently closed tabs/windows of current device i.e. local entries, and
-// opened tabs of other devices.
+// the recently closed tabs/groups/windows of current device i.e. local entries,
+// and opened tabs of other devices.
 class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                                public ui::SimpleMenuModel::Delegate,
                                public sessions::TabRestoreServiceObserver {
@@ -83,8 +83,19 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void RegisterLogMenuMetricsCallback(LogMenuMetricsCallback callback);
 
  private:
-  struct TabNavigationItem;
-  using TabNavigationItems = std::map<int, TabNavigationItem>;
+  // The various command types this menu supports.
+  enum CommandType {
+    Tab,          // Includes local and remote tabs.
+    LocalTab,     // Tabs originating from this device.
+    RemoteTab,    // Tabs originating from other devices.
+    Group,        // Tab groups and their tabs.
+    Window,       // Windows including their groups and tabs.
+    Submenu,      // Items in the submenus such as separators.
+    OtherDevice,  // Other devices.
+  };
+
+  struct TabItem;
+  using TabItems = std::map<int, TabItem>;
   using WindowItems = std::map<int, SessionID>;
   using GroupItems = std::map<int, SessionID>;
   struct SubMenuItem;
@@ -177,9 +188,9 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Clears all tabs from other devices.
   void ClearTabsFromOtherDevices();
 
-  // Returns the corresponding local or other devices' TabNavigationItems in
-  // |tab_items|.
-  TabNavigationItems* GetTabVectorForCommandId(int command_id);
+  // Returns the corresponding local or other devices' TabItems in
+  // |local_tab_items_| or |remote_tab_items_|.
+  TabItems* GetTabVectorForCommandId(int command_id);
 
   // Convenience function to access OpenTabsUIDelegate provided by
   // SessionSyncService. Can return null if session sync is not running.
@@ -197,29 +208,13 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // an id.
   int GetAndIncrementNextMenuID();
 
-  // Returns true if the command id identifies a tab menu item, either local or
-  // from another device.
-  bool IsTabModelCommandId(int command_id) const;
+  // Executes the commands for entries that do something other than restore tabs
+  // such as the "History", "Group History", and "Sign in to see tabs from other
+  // devices" menu items. Returns true if `command_id` was executed.
+  bool ExecuteCustomCommand(int command_id, int event_flags);
 
-  // Returns true if the command id identifies a local tab menu item.
-  bool IsLocalTabModelCommandId(int command_id) const;
-
-  // Returns true if the command id identifies a tab menu item from another
-  // device.
-  bool IsOtherDeviceTabModelCommandId(int command_id) const;
-
-  // Returns true if the command id identifies a window menu item.
-  bool IsWindowModelCommandId(int command_id) const;
-
-  // Returns true if the command id identifies a group menu item.
-  bool IsGroupModelCommandId(int command_id) const;
-
-  // Returns true if the command id identifies a sub menu item.
-  bool IsSubMenuModelCommandId(int command_id) const;
-
-  // Returns true if the command id identifies a sub menu item representing
-  // other device tabs.
-  bool IsDeviceSubMenuModelCommandId(int command_id) const;
+  // Returns true if `command_id` identifies as `command_type`.
+  bool IsCommandType(CommandType command_type, int command_id) const;
 
   const raw_ptr<Browser> browser_;  // Weak.
 
@@ -237,36 +232,29 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // ID of the next menu item.
   int next_menu_id_;
 
-  // Navigation items for local recently closed tabs. Upon invocation of the
-  // menu, the navigation information is retrieved from
-  // |local_tab_navigation_items_| and used to navigate to the item specified.
-  TabNavigationItems local_tab_navigation_items_;
+  // Tab items for local recently closed tabs.
+  TabItems local_tab_items_;
 
-  // Similar to |local_tab_navigation_items_| except the tabs are opened tabs
-  // from other devices.
-  TabNavigationItems other_devices_tab_navigation_items_;
+  // Similar to `local_tab_items_` except the tabs are opened on remote devices.
+  TabItems remote_tab_items_;
 
-  // Window items for local recently closed windows. Upon invocation of the
-  // menu, information is retrieved from |local_window_items_| and used to
-  // create the specified window.
+  // Window items for local recently closed windows.
   WindowItems local_window_items_;
 
-  // Group items for local recently closed groups. Upon invocation of the menu,
-  // information is retrieved from |local_group_items_| and used to create the
-  // specified group.
+  // Group items for local recently closed groups.
   GroupItems local_group_items_;
 
   // Sub menu items for sub menu entry points representing local recently
   // closed groups and windows. These are not executable.
   SubMenuItems local_sub_menu_items_;
 
-  // Sub menu items for sub menus representing other device tabs.
-  SubMenuItems device_sub_menu_items_;
+  // Menu items representing other devices.
+  SubMenuItems remote_sub_menu_items_;
 
-  // Index of "Recently closed" title item.
-  std::optional<size_t> recently_closed_title_index_;
+  // Index of "Recent tabs" title item.
+  std::optional<size_t> recent_tabs_title_index_;
 
-  // Index of the last local entry (recently closed tab or window or group) in
+  // Index of the last local entry (recently closed tab, window, or group) in
   // the menumodel.
   size_t last_local_model_index_ = 0;
 
