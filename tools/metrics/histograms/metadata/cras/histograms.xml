@@ -1089,6 +1089,16 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.WakeDelayCountPer10kWakes" units="count"
+    expires_after="2025-03-21">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Logs how many times the audio thread delayed waking up per 10k wakes. Delays
+    less than 1ms are ignored.
+  </summary>
+</histogram>
+
 <histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelAverageRms"
     units="dBFS (negated)" expires_after="2024-01-14">
   <owner>hychao@chromium.org</owner>
