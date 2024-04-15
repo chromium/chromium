@@ -222,8 +222,13 @@ ThrottleCheckResult AppInstallNavigationThrottle::WillRedirectRequest() {
 
 ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   const GURL& url = navigation_handle()->GetURL();
-  if (!url.SchemeIs(chromeos::kAppInstallUriScheme) ||
-      url.path_piece() != kAppInstallPath) {
+
+  if (!url.SchemeIs(chromeos::kAppInstallUriScheme) &&
+      !url.SchemeIs(chromeos::kLegacyAppInstallUriScheme)) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  if (url.path_piece() != kAppInstallPath) {
     return content::NavigationThrottle::PROCEED;
   }
 

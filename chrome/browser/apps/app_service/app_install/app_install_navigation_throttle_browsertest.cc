@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
     EXPECT_TRUE(content::ExecJs(
         browser()->tab_strip_model()->GetActiveWebContents(),
         base::StringPrintf(
-            "window.open('almanac://install-app?package_id=%s');",
+            "window.open('cros-apps://install-app?package_id=%s');",
             package_id.ToString().c_str())));
 
     // This should trigger the sequence:
@@ -211,6 +211,34 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", true, 1);
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 0);
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
+  base::HistogramTester histograms;
+
+  auto [app_id, package_id] = SetupDefaultServerResponse();
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
+
+  // Make install prompts auto accept.
+  AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
+
+  // Open install-app URI.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      base::StringPrintf("window.open('almanac://install-app?package_id=%s');",
+                         package_id.ToString().c_str())));
+
+  // This should trigger the sequence:
+  // - AppInstallNavigationThrottle
+  // - AppInstallServiceAsh
+  // - NavigateAndTriggerInstallDialogCommand
+
+  // Await install to complete.
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -243,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::StringPrintf(
-          "window.location.href='almanac://install-app?package_id=%s'",
+          "window.location.href='cros-apps://install-app?package_id=%s'",
           package_id.ToString().c_str())));
 
   // This should trigger the sequence:
@@ -288,12 +316,12 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleUserGestureBrowserTest,
 
   content::ExecuteScriptAsyncWithoutUserGesture(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      "location.href = 'almanac://install-app?package_id=web:test';");
+      "location.href = 'cros-apps://install-app?package_id=web:test';");
 
   EXPECT_FALSE(future.Get());
 
-  // window.open() is another method of opening the almanac:// URI however it is
-  // already blocked if there is no user gesture.
+  // window.open() is another method of opening the cros-apps:// URI however it
+  // is already blocked if there is no user gesture.
 }
 
 }  // namespace apps

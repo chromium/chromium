@@ -1088,6 +1088,26 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenAlmanacScheme) {
             apps::PackageId::FromString("web:test"));
 }
 
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2CanOpenCrosAppsScheme) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  base::test::TestFuture<apps::PackageId> future;
+  apps::AppInstallServiceAsh::InstallAppCallbackForTesting() =
+      future.GetCallback();
+  constexpr char kScript[] = R"(
+    (() => {
+      location.href = 'cros-apps://install-app?package_id=web:test';
+      return true;
+    })();
+  )";
+  EXPECT_EQ(true,
+            content::EvalJs(
+                SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  EXPECT_EQ(future.Get<apps::PackageId>(),
+            apps::PackageId::FromString("web:test"));
+}
+
 // Test that the Help App opens when Gesture help requested.
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
