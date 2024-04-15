@@ -208,14 +208,23 @@ class NET_EXPORT_PRIVATE HttpStream {
   // before any requests are made.
   virtual std::string_view GetAcceptChViaAlps() const = 0;
 
-  // If `this` is using a Quic stream, set the `connection_error` of the Quic
-  // stream. Otherwise returns nullopt.
-  virtual std::optional<quic::QuicErrorCode> GetQuicErrorCode() const;
+  // Represents detailed QUIC errors returned by GetQuicErrorDetails().
+  struct QuicErrorDetails {
+    // Internal connection error of the stream.
+    quic::QuicErrorCode connection_error = quic::QUIC_NO_ERROR;
+    // Internal stream error of the stream.
+    quic::QuicRstStreamErrorCode stream_error = quic::QUIC_STREAM_NO_ERROR;
+    // Connection error sent or received on the wire protocol.
+    uint64_t connection_wire_error = 0;
+    // Application error sent or received on the wire protocol.
+    uint64_t ietf_application_error = 0;
+  };
 
-  // If `this` is using a Quic stream, set the `stream_error' status of the Quic
-  // stream. Otherwise returns nullopt.
-  virtual std::optional<quic::QuicRstStreamErrorCode>
-  GetQuicRstStreamErrorCode() const;
+  // If `this` is using a QUIC stream, returns error details of the QUIC stream.
+  // Otherwise returns nullopt. Detailed QUIC errors are only available after
+  // the stream has been initialized. Use PopulateNetErrorDetails() for errors
+  // that happened during the initialization.
+  virtual std::optional<QuicErrorDetails> GetQuicErrorDetails() const;
 };
 
 }  // namespace net

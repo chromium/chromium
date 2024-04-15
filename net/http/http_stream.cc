@@ -6,12 +6,8 @@
 
 namespace net {
 
-std::optional<quic::QuicErrorCode> HttpStream::GetQuicErrorCode() const {
-  return std::nullopt;
-}
-
-std::optional<quic::QuicRstStreamErrorCode>
-HttpStream::GetQuicRstStreamErrorCode() const {
+std::optional<HttpStream::QuicErrorDetails> HttpStream::GetQuicErrorDetails()
+    const {
   return std::nullopt;
 }
 

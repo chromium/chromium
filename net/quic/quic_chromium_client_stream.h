@@ -133,6 +133,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     quic::QuicStreamId id() const;
     quic::QuicErrorCode connection_error() const;
     quic::QuicRstStreamErrorCode stream_error() const;
+    uint64_t connection_wire_error() const;
+    uint64_t ietf_application_error() const;
     bool fin_sent() const;
     bool fin_received() const;
     uint64_t stream_bytes_read() const;
@@ -215,6 +217,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     quic::QuicStreamId id_;
     quic::QuicErrorCode connection_error_;
     quic::QuicRstStreamErrorCode stream_error_;
+    uint64_t connection_wire_error_ = 0;
+    uint64_t ietf_application_error_ = 0;
     bool fin_sent_;
     bool fin_received_;
     uint64_t stream_bytes_read_;

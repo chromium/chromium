@@ -75,9 +75,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void SetRequestIdempotency(Idempotency idempotency) override;
   const std::set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
-  std::optional<quic::QuicErrorCode> GetQuicErrorCode() const override;
-  std::optional<quic::QuicRstStreamErrorCode> GetQuicRstStreamErrorCode()
-      const override;
+  std::optional<QuicErrorDetails> GetQuicErrorDetails() const override;
 
   static HttpConnectionInfo ConnectionInfoFromQuicVersion(
       quic::ParsedQuicVersion quic_version);
@@ -204,8 +202,10 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   // the default value of false.
   bool closed_is_first_stream_ = false;
 
-  std::optional<quic::QuicErrorCode> connection_error_;
-  std::optional<quic::QuicRstStreamErrorCode> stream_error_;
+  quic::QuicErrorCode connection_error_ = quic::QUIC_NO_ERROR;
+  quic::QuicRstStreamErrorCode stream_error_ = quic::QUIC_STREAM_NO_ERROR;
+  uint64_t connection_wire_error_ = 0;
+  uint64_t ietf_application_error_ = 0;
 
   // The caller's callback to be used for asynchronous operations.
   CompletionOnceCallback callback_;

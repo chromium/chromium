@@ -391,6 +391,23 @@ quic::QuicRstStreamErrorCode QuicChromiumClientStream::Handle::stream_error()
   return stream_->stream_error();
 }
 
+uint64_t QuicChromiumClientStream::Handle::connection_wire_error() const {
+  if (!stream_) {
+    return connection_wire_error_;
+  }
+  // TODO(crbug.com/40715622): Don't access session. Instead, modify
+  // quic::QuicStream::OnConnectionClosed() to take the wire error code.
+  CHECK(stream_->session());
+  return stream_->session()->wire_error();
+}
+
+uint64_t QuicChromiumClientStream::Handle::ietf_application_error() const {
+  if (!stream_) {
+    return ietf_application_error_;
+  }
+  return stream_->ietf_application_error();
+}
+
 bool QuicChromiumClientStream::Handle::fin_sent() const {
   if (!stream_)
     return fin_sent_;
@@ -457,6 +474,11 @@ void QuicChromiumClientStream::Handle::SaveState() {
   id_ = stream_->id();
   connection_error_ = stream_->connection_error();
   stream_error_ = stream_->stream_error();
+  // TODO(crbug.com/40715622): Don't access stream_->session(). Instead, update
+  // quic::QuicStream::OnConnectionClosed() to take the wire error code.
+  CHECK(stream_->session());
+  connection_wire_error_ = stream_->session()->wire_error();
+  ietf_application_error_ = stream_->ietf_application_error();
   is_done_reading_ = stream_->IsDoneReading();
   is_first_stream_ = stream_->IsFirstStream();
   stream_bytes_read_ = stream_->stream_bytes_read();

@@ -2109,11 +2109,9 @@ void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
   if (!stream_) {
     return;
   }
-  std::optional<quic::QuicErrorCode> connection_error =
-      stream_->GetQuicErrorCode();
-  std::optional<quic::QuicRstStreamErrorCode> stream_error =
-      stream_->GetQuicRstStreamErrorCode();
-  if (!connection_error || !stream_error) {
+  std::optional<HttpStream::QuicErrorDetails> error_details =
+      stream_->GetQuicErrorDetails();
+  if (!error_details) {
     return;
   }
   switch (retry_status) {
@@ -2133,8 +2131,10 @@ void HttpNetworkTransaction::RecordQuicProtocolErrorMetrics(
       histogram += ".RetryAltServiceNotBroken";
       break;
   }
-  base::UmaHistogramSparse(histogram + ".QuicErrorCode", *connection_error);
-  base::UmaHistogramSparse(histogram + ".QuicStreamErrorCode", *stream_error);
+  base::UmaHistogramSparse(histogram + ".QuicErrorCode",
+                           error_details->connection_error);
+  base::UmaHistogramSparse(histogram + ".QuicStreamErrorCode",
+                           error_details->stream_error);
 }
 
 // static
