@@ -339,7 +339,13 @@ public class IdentityDiscController
 
     private String getContentDescription(@Nullable String email) {
         if (email == null) {
-            return mContext.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
+            if (shouldShowNewSigninFlow()) {
+                return mContext.getString(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc);
+            } else {
+                return mContext.getString(
+                        R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc);
+            }
         }
 
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(email);
@@ -371,12 +377,12 @@ public class IdentityDiscController
                         .getSigninManager(mProfileSupplier.get().getOriginalProfile());
         if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
             // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive.
-            if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                    && !BuildInfo.getInstance().isAutomotive) {
-                // TODO(crbug.com/41493775): Update the bottom sheet subtitle string.
+            if (shouldShowNewSigninFlow()) {
                 AccountPickerBottomSheetStrings bottomSheetStrings =
                         new AccountPickerBottomSheetStrings.Builder(R.string.sign_in_to_chrome)
+                                .setSubtitleStringId(
+                                        R.string
+                                                .signin_account_picker_bottom_sheet_benefits_subtitle)
                                 .build();
                 SigninAndHistoryOptInActivityLauncherImpl.get()
                         .launchActivityIfAllowed(
@@ -401,5 +407,12 @@ public class IdentityDiscController
     @VisibleForTesting
     boolean isProfileDataCacheEmpty() {
         return mProfileDataCache == null;
+    }
+
+    @VisibleForTesting
+    static boolean shouldShowNewSigninFlow() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && !BuildInfo.getInstance().isAutomotive;
     }
 }

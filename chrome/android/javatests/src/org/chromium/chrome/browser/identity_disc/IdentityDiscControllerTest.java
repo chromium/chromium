@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import androidx.annotation.StringRes;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -147,7 +148,8 @@ public class IdentityDiscControllerTest {
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
                         withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                                R.string
+                                        .accessibility_toolbar_btn_signed_out_with_sync_identity_disc)));
 
         // Clicking the signed-out avatar should lead to the sync consent screen.
         ActivityTestUtils.waitForActivity(
@@ -161,12 +163,16 @@ public class IdentityDiscControllerTest {
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testIdentityDiscSignedOut_replaceSyncBySigninEnabled() throws Exception {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
+        @StringRes
+        int descriptionId =
+                BuildInfo.getInstance().isAutomotive
+                        ? R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc
+                        : R.string.accessibility_toolbar_btn_signed_out_identity_disc;
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withContentDescription(descriptionId)));
 
         // Clicking the signed-out avatar should lead to the correct sign-in screen.
         // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive and update the
@@ -208,8 +214,7 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withContentDescription(getSignedOutAvatarDescription())));
 
         // Clicking the signed-out avatar should lead to the settings screen.
         ActivityTestUtils.waitForActivity(
@@ -244,8 +249,7 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withContentDescription(getSignedOutAvatarDescription())));
     }
 
     @Test
@@ -274,8 +278,7 @@ public class IdentityDiscControllerTest {
                 allOf(
                         withId(R.id.optional_toolbar_button),
                         isDisplayed(),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+                        withContentDescription(getSignedOutAvatarDescription())));
     }
 
     @Test
@@ -304,8 +307,7 @@ public class IdentityDiscControllerTest {
         ViewUtils.isEventuallyVisible(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc),
+                        withContentDescription(getSignedOutAvatarDescription()),
                         isDisplayed()));
     }
 
@@ -332,8 +334,7 @@ public class IdentityDiscControllerTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(
-                                R.string.accessibility_toolbar_btn_signed_out_identity_disc),
+                        withContentDescription(getSignedOutAvatarDescription()),
                         isDisplayed()));
     }
 
@@ -431,5 +432,11 @@ public class IdentityDiscControllerTest {
 
     private PrimaryAccountChangeEvent newSigninEvent(int eventType) {
         return new PrimaryAccountChangeEvent(eventType, ConsentLevel.SIGNIN);
+    }
+
+    private @StringRes int getSignedOutAvatarDescription() {
+        return (IdentityDiscController.shouldShowNewSigninFlow())
+                ? R.string.accessibility_toolbar_btn_signed_out_identity_disc
+                : R.string.accessibility_toolbar_btn_signed_out_with_sync_identity_disc;
     }
 }
