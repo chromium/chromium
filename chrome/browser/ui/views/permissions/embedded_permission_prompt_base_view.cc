@@ -114,14 +114,18 @@ void EmbeddedPermissionPromptBaseView::CreateWidget() {
 std::unique_ptr<views::FlexLayoutView>
 EmbeddedPermissionPromptBaseView::CreateLoadingIcon() {
   auto throbber_container = std::make_unique<views::FlexLayoutView>();
-  throbber_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  throbber_container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  throbber_container->SetOrientation(views::LayoutOrientation::kVertical);
   auto throbber = std::make_unique<views::Throbber>();
   throbber->SetPreferredSize(
       gfx::Size(GetPermissionIconSize(), GetPermissionIconSize()));
-  throbber->SetProperty(views::kMarginsKey,
-                        gfx::Insets().set_top_bottom(1, 25));
+
   throbber->Start();
   throbber_container->AddChildView(std::move(throbber));
+
+  // Also add a filler view to fill in vertical space below the throbber.
+  auto filler = std::make_unique<views::View>();
+  throbber_container->AddChildView(std::move(filler));
   return throbber_container;
 }
 
