@@ -200,7 +200,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       case VIEW_ID_QS_POWER_OFF_MENU_BUTTON:
         quick_settings_metrics_util::RecordQsButtonActivated(
             QsButtonCatalogName::kPowerOffMenuButton);
-        Shell::Get()->lock_state_controller()->RequestShutdown(
+        Shell::Get()->lock_state_controller()->StartShutdownAnimation(
             ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
         break;
       case VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON:
