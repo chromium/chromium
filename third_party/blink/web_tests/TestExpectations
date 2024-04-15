@@ -405,6 +405,11 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.rotation.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation.w.html [ Failure ]
+# Composite operation grid
+crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.globalCompositeOperation.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.globalCompositeOperation.html [ Failure ]
+crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.globalCompositeOperation.w.html [ Failure ]
+
 
 # Off by one pixel error on ref test
 crbug.com/1259367 [ Mac11-arm64 Release ] printing/offscreencanvas-webgl-printing.html [ Failure ]
