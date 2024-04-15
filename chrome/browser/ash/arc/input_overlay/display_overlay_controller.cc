@@ -1437,8 +1437,9 @@ TargetView* DisplayOverlayController::GetTargetView() const {
 
 void DisplayOverlayController::AddRichNudge() {
   if (GetTargetView()) {
-    rich_nudge_widget_ = views::BubbleDialogDelegateView::CreateBubble(
-        std::make_unique<RichNudge>(target_widget_->GetNativeWindow()));
+    rich_nudge_widget_ =
+        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+            std::make_unique<RichNudge>(target_widget_->GetNativeWindow())));
     rich_nudge_widget_->ShowInactive();
   }
 }
@@ -1446,7 +1447,7 @@ void DisplayOverlayController::AddRichNudge() {
 void DisplayOverlayController::RemoveRichNudge() {
   if (rich_nudge_widget_) {
     rich_nudge_widget_->Close();
-    rich_nudge_widget_ = nullptr;
+    rich_nudge_widget_.reset();
   }
 }
 
