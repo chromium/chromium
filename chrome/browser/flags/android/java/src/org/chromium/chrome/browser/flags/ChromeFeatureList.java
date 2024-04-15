@@ -495,8 +495,6 @@ public abstract class ChromeFeatureList {
     public static final String SHARED_PASSWORD_NOTIFICATION_UI = "SharedPasswordNotificationUI";
     public static final String UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION =
             "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration";
-    public static final String UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_WITH_MIGRATION =
-            "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration";
     public static final String UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING =
             "UnifiedPasswordManagerLocalPasswordsMigrationWarning";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
