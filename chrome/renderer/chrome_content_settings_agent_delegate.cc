@@ -28,9 +28,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "components/pdf/common/pdf_util.h"
-#include "pdf/pdf_features.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/origin.h"
 #endif
@@ -84,10 +82,9 @@ bool ChromeContentSettingsAgentDelegate::IsFrameAllowlistedForStorageAccess(
   // are opaque and shouldn't be able to access storage. However, the Chrome PDF
   // viewer is an internal use case and does not need to adhere to the web spec.
 
-  // OOPIF PDF viewer only. The origin should match the PDF extension's origin.
-  // A PDF extension frame should always have a parent (the PDF embedder frame).
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      IsPdfExtensionOrigin(url::Origin(frame->GetSecurityOrigin())) &&
+  // The origin should match the PDF extension's origin. A PDF extension frame
+  // should always have a parent (the PDF embedder frame).
+  if (IsPdfExtensionOrigin(url::Origin(frame->GetSecurityOrigin())) &&
       frame->Parent()) {
     return true;
   }

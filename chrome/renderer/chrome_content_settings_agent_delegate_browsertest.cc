@@ -11,8 +11,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/test/scoped_feature_list.h"
-#include "pdf/pdf_features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -83,8 +81,6 @@ TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
 
   blink::WebFrame* child_frame = GetMainFrame()->FirstChild();
   ASSERT_TRUE(child_frame);
-
-  base::test::ScopedFeatureList feature_list(chrome_pdf::features::kPdfOopif);
 
   // The PDF extension frame should be allowlisted for storage access.
   EXPECT_TRUE(delegate->IsFrameAllowlistedForStorageAccess(child_frame));
