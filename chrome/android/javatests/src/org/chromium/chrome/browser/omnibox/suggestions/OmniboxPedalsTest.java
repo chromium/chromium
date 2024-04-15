@@ -41,7 +41,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -214,7 +213,10 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/333905073")
+    @DisableFeatures({
+        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_NO_MIGRATION,
+        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_WITH_MIGRATION
+    })
     public void testManagePasswords() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);

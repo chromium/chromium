@@ -325,6 +325,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
     &password_manager::features::
+        kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+    &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kPermissionsPromptSurvey,
     &privacy_sandbox::kIpProtectionUx,
