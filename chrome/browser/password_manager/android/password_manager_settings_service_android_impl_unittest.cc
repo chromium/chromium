@@ -218,6 +218,8 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kSettingsMigratedToUPMLocal, false);
+  test_pref_service_.registry()->RegisterBooleanPref(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
 }
 
 // This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` off.
