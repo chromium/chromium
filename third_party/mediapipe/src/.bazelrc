@@ -50,6 +50,8 @@ build:android --linkopt=-ldl
 build:android --linkopt=-llog
 build:android --linkopt=-lm
 build:android --linkopt=-Wl,--gc-sections
+# TODO: Remove this flag once we updated to NDK 25
+build:android --define=xnn_enable_arm_i8mm=false
 
 build:android_arm --config=android
 build:android_arm --cpu=armeabi-v7a
@@ -89,6 +91,9 @@ build:ios_fat --watchos_cpus=armv7k
 
 build:ios_sim_fat --config=ios
 build:ios_sim_fat --ios_multi_cpus=x86_64,sim_arm64
+
+build:ios_sim_device_fat --config=ios
+build:ios_sim_device_fat --ios_multi_cpus=x86_64,sim_arm64,arm64
 
 build:darwin_x86_64 --apple_platform_type=macos
 build:darwin_x86_64 --macos_minimum_os=10.12

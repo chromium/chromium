@@ -50,6 +50,7 @@ cc_library_with_tflite(
         "//mediapipe/util/tflite/operations:landmarks_to_transform_matrix",
         "//mediapipe/util/tflite/operations:max_pool_argmax",
         "//mediapipe/util/tflite/operations:max_unpooling",
+        "//mediapipe/util/tflite/operations:resampler",
         "//mediapipe/util/tflite/operations:transform_landmarks",
         "//mediapipe/util/tflite/operations:transform_tensor_bilinear",
         "//mediapipe/util/tflite/operations:transpose_conv_bias",
@@ -69,6 +70,15 @@ cc_library(
         "@org_tensorflow//tensorflow/lite:minimal_logging",
         "@org_tensorflow//tensorflow/lite:stateful_error_reporter",
         "@org_tensorflow//tensorflow/lite/core/api:error_reporter",
+    ],
+)
+
+cc_test(
+    name = "error_reporter_test",
+    srcs = ["error_reporter_test.cc"],
+    deps = [
+        ":error_reporter",
+        "//mediapipe/framework/port:gtest_main",
     ],
 )
 
@@ -124,8 +134,14 @@ cc_library(
                "//conditions:default": [],
            }) + [
         "//mediapipe/framework:port",
+        "//mediapipe/gpu:gl_base",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@org_tensorflow//tensorflow/lite/core:framework",
         "@org_tensorflow//tensorflow/lite/core/api",
+        "@org_tensorflow//tensorflow/lite/delegates/gpu/common:data_type",
+        "@org_tensorflow//tensorflow/lite/delegates/gpu/common:shape",
     ],
 )
 
@@ -138,11 +154,15 @@ cc_library_with_tflite(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        ":error_reporter",
         "//mediapipe/framework/api2:packet",
+        "//mediapipe/framework/port:file_helpers",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
-        "//mediapipe/framework/port:statusor",
         "//mediapipe/util:resource_util",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -167,5 +187,43 @@ cc_test_with_tflite(
         "//mediapipe/framework/tool:tag_map_helper",
         "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "tflite_signature_reader",
+    srcs = ["tflite_signature_reader.cc"],
+    hdrs = ["tflite_signature_reader.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework/port:ret_check",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+    ],
+)
+
+cc_test(
+    name = "tflite_signature_reader_test",
+    srcs = ["tflite_signature_reader_test.cc"],
+    data = [
+        ":testdata/test_single_signature_key_model.tflite",
+        ":testdata/test_two_signature_keys_model.tflite",
+    ],
+    deps = [
+        ":tflite_model_loader",
+        ":tflite_signature_reader",
+        "//mediapipe/framework:packet",
+        "//mediapipe/framework/deps:file_path",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:status",
+        "//mediapipe/framework/port:status_matchers",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@org_tensorflow//tensorflow/lite:framework_stable",
+        "@org_tensorflow//tensorflow/lite:test_util",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )

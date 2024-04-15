@@ -356,6 +356,16 @@ cc_library(
     }),
 )
 
+cc_test(
+    name = "gpu_buffer_format_test",
+    srcs = ["gpu_buffer_format_test.cc"],
+    deps = [
+        ":gl_base_hdr",
+        ":gpu_buffer_format",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "gpu_buffer_storage",
     srcs = ["gpu_buffer_storage.cc"],
@@ -392,7 +402,7 @@ cc_library(
 mediapipe_cc_test(
     name = "gpu_buffer_storage_cv_pixel_buffer_test",
     size = "small",
-    timeout = "moderate",
+    timeout = "long",
     srcs = ["gpu_buffer_storage_cv_pixel_buffer_test.cc"],
     platforms = ["ios"],
     deps = [
@@ -708,6 +718,7 @@ cc_library(
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/functional:any_invocable",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/synchronization",
     ],
@@ -812,6 +823,7 @@ cc_library(
     hdrs = ["egl_surface_holder.h"],
     deps = [
         ":gl_base",
+        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/synchronization",
     ],
 )
@@ -1019,6 +1031,7 @@ cc_library(
         ":gl_quad_renderer",
         ":gl_scaler_calculator_cc_proto",
         ":gl_simple_shaders",
+        ":gpu_buffer_format",
         ":shader_util",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:image",
@@ -1035,16 +1048,20 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":egl_surface_holder",
+        ":gl_base_hdr",
         ":gl_calculator_helper",
         ":gl_quad_renderer",
         ":gl_surface_sink_calculator_cc_proto",
         ":gpu_buffer",
-        ":shader_util",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:packet",
+        "//mediapipe/framework/api2:port",
+        "//mediapipe/framework/formats:image",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/synchronization",
     ],
     alwayslink = 1,

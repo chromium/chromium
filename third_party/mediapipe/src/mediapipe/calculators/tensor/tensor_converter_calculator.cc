@@ -32,6 +32,8 @@
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/tensor.h"
+#include "mediapipe/framework/memory_manager.h"
+#include "mediapipe/framework/memory_manager_service.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
@@ -43,11 +45,7 @@
 #include "mediapipe/gpu/gpu_origin.pb.h"
 
 #if MEDIAPIPE_METAL_ENABLED
-#import <CoreVideo/CoreVideo.h>
-#import <Metal/Metal.h>
-#import <MetalKit/MetalKit.h>
-
-#include "mediapipe/framework/formats/tensor_mtl_buffer_view.h"
+#include "mediapipe/calculators/tensor/tensor_converter_metal.h"
 #import "mediapipe/gpu/MPPMetalHelper.h"
 #elif MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
 #include "mediapipe/gpu/gl_calculator_helper.h"
@@ -170,7 +168,6 @@ class TensorConverterCalculator : public CalculatorBase {
 
 #if MEDIAPIPE_METAL_ENABLED
   MPPMetalHelper* gpu_helper_ = nullptr;
-  id<MTLComputePipelineState> to_buffer_program_;
 #elif MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
   GlCalculatorHelper gpu_helper_;
 #endif  // MEDIAPIPE_METAL_ENABLED
@@ -182,6 +179,9 @@ class TensorConverterCalculator : public CalculatorBase {
   int max_num_channels_ = 3;
 
   std::unique_ptr<TensorConverterGpu> tensor_converter_gpu_;
+
+  // Enable pooling of AHWBs in Tensor instances.
+  MemoryManager* memory_manager_ = nullptr;
 };
 REGISTER_CALCULATOR(TensorConverterCalculator);
 
@@ -199,7 +199,7 @@ absl::Status TensorConverterCalculator::GetContract(CalculatorContract* cc) {
   if (cc->Inputs().HasTag(kMatrixTag)) {
     cc->Inputs().Tag(kMatrixTag).Set<Matrix>();
   }
-
+  cc->UseService(kMemoryManagerService).Optional();
 #if !MEDIAPIPE_DISABLE_GPU
   if (cc->Inputs().HasTag(kGpuBufferTag)) {
     cc->Inputs().Tag(kGpuBufferTag).Set<mediapipe::GpuBuffer>();
@@ -217,6 +217,9 @@ absl::Status TensorConverterCalculator::GetContract(CalculatorContract* cc) {
 }
 
 absl::Status TensorConverterCalculator::Open(CalculatorContext* cc) {
+  if (cc->Service(kMemoryManagerService).IsAvailable()) {
+    memory_manager_ = &cc->Service(kMemoryManagerService).GetObject();
+  }
   cc->SetOffset(TimestampDiff(0));
 
 #if !MEDIAPIPE_DISABLE_GPU
@@ -254,7 +257,7 @@ absl::Status TensorConverterCalculator::Close(CalculatorContext* cc) {
 #if !MEDIAPIPE_DISABLE_GPU
   if (use_gpu_) {
 #if MEDIAPIPE_METAL_ENABLED
-    to_buffer_program_ = nil;
+    tensor_converter_gpu_.reset();
 #elif MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
     gpu_helper_.RunInGlContext([this] { tensor_converter_gpu_.reset(); });
 #endif  // MEDIAPIPE_METAL_ENABLED
@@ -271,21 +274,23 @@ absl::Status TensorConverterCalculator::ProcessCPU(CalculatorContext* cc) {
     }
     const auto& image_frame =
         cc->Inputs().Tag(kImageFrameTag).Get<ImageFrame>();
-    MP_ASSIGN_OR_RETURN(Tensor output,
-                        ConvertImageFrameToTensorOnCpu(
-                            image_frame,
-                            output_range_.has_value() ? output_range_.value()
-                                                      : kDefaultOutputRange,
-                            flip_vertically_, max_num_channels_));
-    output_tensors->emplace_back(std::move(output));
+    MP_ASSIGN_OR_RETURN(
+        Tensor output,
+        ConvertImageFrameToTensorOnCpu(
+            image_frame,
+            output_range_.has_value() ? output_range_.value()
+                                      : kDefaultOutputRange,
+            flip_vertically_, max_num_channels_, memory_manager_));
+    output_tensors->push_back(std::move(output));
   } else if (cc->Inputs().HasTag(kMatrixTag)) {
     if (cc->Inputs().Tag(kMatrixTag).IsEmpty()) {
       return absl::OkStatus();
     }
     const auto& matrix = cc->Inputs().Tag(kMatrixTag).Get<Matrix>();
-    MP_ASSIGN_OR_RETURN(Tensor output,
-                        ConvertMatrixToTensorOnCpu(matrix, row_major_matrix_));
-    output_tensors->emplace_back(std::move(output));
+    MP_ASSIGN_OR_RETURN(
+        Tensor output,
+        ConvertMatrixToTensorOnCpu(matrix, row_major_matrix_, memory_manager_));
+    output_tensors->push_back(std::move(output));
   } else {
     return absl::OkStatus();
   }
@@ -306,32 +311,15 @@ absl::Status TensorConverterCalculator::ProcessGPU(CalculatorContext* cc) {
       cc->Inputs().Tag(kGpuBufferTag).Get<mediapipe::GpuBuffer>();
   auto output_tensors = std::make_unique<std::vector<Tensor>>();
 #if MEDIAPIPE_METAL_ENABLED
-  id<MTLCommandBuffer> command_buffer = [gpu_helper_ commandBuffer];
-  command_buffer.label = @"TensorConverterCalculatorConvert";
-  id<MTLComputeCommandEncoder> compute_encoder =
-      [command_buffer computeCommandEncoder];
-  [compute_encoder setComputePipelineState:to_buffer_program_];
-  id<MTLTexture> src_texture = [gpu_helper_ metalTextureWithGpuBuffer:input];
-  [compute_encoder setTexture:src_texture atIndex:0];
-  auto output_view =
-      MtlBufferView::GetWriteView(output_tensors->at(0), command_buffer);
-  [compute_encoder setBuffer:output_view.buffer() offset:0 atIndex:1];
-  MTLSize threads_per_group = MTLSizeMake(kWorkgroupSize, kWorkgroupSize, 1);
-  MTLSize threadgroups =
-      MTLSizeMake(NumGroups(input.width(), kWorkgroupSize),
-                  NumGroups(input.height(), kWorkgroupSize), 1);
-  [compute_encoder dispatchThreadgroups:threadgroups
-                  threadsPerThreadgroup:threads_per_group];
-  [compute_encoder endEncoding];
-  [command_buffer commit];
+  Tensor output = tensor_converter_gpu_->Convert(input);
+  output_tensors->push_back(std::move(output));
 #elif MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
   MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext(
       [this, &output_tensors, &input]() -> absl::Status {
         Tensor output = tensor_converter_gpu_->Convert(input);
-        output_tensors->emplace_back(std::move(output));
+        output_tensors->push_back(std::move(output));
         return absl::OkStatus();
       }));
-
 #endif  // MEDIAPIPE_METAL_ENABLED
   cc->Outputs()
       .Tag(kTensorsTag)
@@ -371,68 +359,30 @@ absl::Status TensorConverterCalculator::InitGpu(CalculatorContext* cc) {
   }
 
 #if MEDIAPIPE_METAL_ENABLED
-  id<MTLDevice> device = gpu_helper_.mtlDevice;
-  // Shader to convert GL Texture to Metal Buffer,
-  // with normalization to either: [0,1] or [-1,1].
-  const std::string shader_source = absl::Substitute(
-      R"glsl(
-  #include <metal_stdlib>
-
-  using namespace metal;
-
-  kernel void convertKernel(
-      texture2d<half, access::sample> in_tex  [[ texture(0) ]],
-      device float*                   out_buf [[ buffer(1) ]],
-      uint2                           gid     [[ thread_position_in_grid ]]) {
-    if (gid.x >= in_tex.get_width() || gid.y >= in_tex.get_height()) return;
-    constexpr sampler texture_sampler(coord::pixel, address::clamp_to_edge);
-    const float2 coord = float2(gid.x, gid.y);
-    half4 pixel = in_tex.sample(texture_sampler, coord);
-    $0   // normalize [-1,1]
-    const int linear_index = $1 * ($2 * in_tex.get_width() + gid.x);
-    out_buf[linear_index + 0] = pixel.x;
-    $3  // g & b channels
-    $4  // alpha channel
-  }
-      )glsl",
-      /*$0=*/
-      output_range_.has_value()
-          ? absl::Substitute("pixel = pixel * half($0) + half($1);",
-                             (output_range_->second - output_range_->first),
-                             output_range_->first)
-          : "",
-      /*$1=*/max_num_channels_,
-      /*$2=*/flip_vertically_ ? "(in_tex.get_height() - 1 - gid.y)" : "gid.y",
-      /*$3=*/
-      single_channel ? "" : R"glsl(out_buf[linear_index + 1] = pixel.y;
-                                   out_buf[linear_index + 2] = pixel.z;)glsl",
-      /*$4=*/include_alpha ? "out_buf[linear_index + 3] = pixel.w;" : "");
-
-  NSString* library_source =
-      [NSString stringWithUTF8String:shader_source.c_str()];
-  NSError* error = nil;
-  id<MTLLibrary> library =
-      [device newLibraryWithSource:library_source options:nullptr error:&error];
-  RET_CHECK(library != nil) << "Couldn't create shader library "
-                            << [[error localizedDescription] UTF8String];
-  id<MTLFunction> kernel_func = nil;
-  kernel_func = [library newFunctionWithName:@"convertKernel"];
-  RET_CHECK(kernel_func != nil) << "Couldn't create kernel function.";
-  to_buffer_program_ =
-      [device newComputePipelineStateWithFunction:kernel_func error:&error];
-  RET_CHECK(to_buffer_program_ != nil) << "Couldn't create pipeline state " <<
-      [[error localizedDescription] UTF8String];
+  MP_ASSIGN_OR_RETURN(
+      tensor_converter_gpu_,
+      CreateTensorConverterMetal(gpu_helper_, memory_manager_, output_range_,
+                                 include_alpha, single_channel,
+                                 flip_vertically_, max_num_channels_));
 #elif MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
   MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext(
       [this, &input, &include_alpha, &single_channel]() -> absl::Status {
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
-        tensor_converter_gpu_ = CreateTensorConverterGl31(gpu_helper_);
+        MP_ASSIGN_OR_RETURN(
+            tensor_converter_gpu_,
+            CreateTensorConverterGl31(
+                gpu_helper_, memory_manager_, input.width(), input.height(),
+                output_range_, include_alpha, single_channel, flip_vertically_,
+                max_num_channels_));
 #else
-        tensor_converter_gpu_ = CreateTensorConverterGl30(gpu_helper_);
+        MP_ASSIGN_OR_RETURN(
+            tensor_converter_gpu_,
+            CreateTensorConverterGl30(
+                gpu_helper_, memory_manager_, input.width(), input.height(),
+                output_range_, include_alpha, single_channel, flip_vertically_,
+                max_num_channels_));
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
-        return tensor_converter_gpu_->Init(
-            input.width(), input.height(), output_range_, include_alpha,
-            single_channel, flip_vertically_, max_num_channels_);
+        return absl::OkStatus();
       }));
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_30
 #endif  // !MEDIAPIPE_DISABLE_GPU

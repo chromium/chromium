@@ -14,17 +14,24 @@
 
 #include "mediapipe/calculators/tensor/inference_calculator_utils.h"
 
+#include <cstdint>
 #include <cstring>
+#include <ostream>
 #include <vector>
 
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_join.h"
+#include "absl/types/span.h"
 #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port.h"  // NOLINT: provides MEDIAPIPE_ANDROID/IOS
+#include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status_macros.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/interpreter.h"
+#include "tensorflow/lite/portable_type_to_tflitetype.h"
 
 #if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
 #include "mediapipe/util/cpu_util.h"
@@ -47,7 +54,7 @@ int GetXnnpackDefaultNumThreads() {
 }
 
 // Checks if a MediaPipe Tensor's type matches a TfLite's data type.
-bool DoTypesMatch(Tensor::ElementType tensor_type, TfLiteType tflite_type) {
+bool operator==(Tensor::ElementType tensor_type, TfLiteType tflite_type) {
   switch (tensor_type) {
     // Do these two match?
     case Tensor::ElementType::kNone:
@@ -62,6 +69,8 @@ bool DoTypesMatch(Tensor::ElementType tensor_type, TfLiteType tflite_type) {
       return tflite_type == TfLiteType::kTfLiteInt8;
     case Tensor::ElementType::kInt32:
       return tflite_type == TfLiteType::kTfLiteInt32;
+    case Tensor::ElementType::kInt64:
+      return tflite_type == TfLiteType::kTfLiteInt64;
     case Tensor::ElementType::kBool:
       return tflite_type == TfLiteType::kTfLiteBool;
     // Seems like TfLite does not have a char type support?
@@ -72,29 +81,59 @@ bool DoTypesMatch(Tensor::ElementType tensor_type, TfLiteType tflite_type) {
 
 template <typename T>
 absl::Status CopyTensorBufferToInterpreter(const Tensor& input_tensor,
-                                           tflite::Interpreter& interpreter,
-                                           int input_tensor_index) {
+                                           TfLiteTensor& tflite_tensor) {
   auto input_tensor_view = input_tensor.GetCpuReadView();
   const T* input_tensor_buffer = input_tensor_view.buffer<T>();
-  if (input_tensor_buffer == nullptr) {
-    return absl::InternalError("Input tensor buffer is null.");
-  }
-  T* local_tensor_buffer =
-      interpreter.typed_input_tensor<T>(input_tensor_index);
-  if (local_tensor_buffer == nullptr) {
-    return absl::InvalidArgumentError(
-        "Interpreter's input tensor buffer is null, may because it does not "
-        "support the input type specified.");
-  }
-  const TfLiteTensor* local_tensor =
-      interpreter.input_tensor(input_tensor_index);
-  if (local_tensor->bytes != input_tensor.bytes()) {
-    return absl::InvalidArgumentError(
-        absl::StrCat("Interpreter's input size do not match the input tensor's "
-                     "size for index ",
-                     input_tensor_index, "."));
-  }
+  RET_CHECK(input_tensor_buffer) << "Input tensor buffer is null.";
+  RET_CHECK_EQ(tflite_tensor.type, tflite::typeToTfLiteType<T>())
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "Interpreter's input tensor buffer is null, may because it does not "
+         "support the input type specified.";
+  void* local_tensor_buffer = tflite_tensor.data.raw;
+  RET_CHECK(local_tensor_buffer)
+      << "Interpreter's input tensor buffer is null.";
+  RET_CHECK_EQ(tflite_tensor.bytes, input_tensor.bytes())
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "Interpreter's input size do not match the input tensor's size.";
   std::memcpy(local_tensor_buffer, input_tensor_buffer, input_tensor.bytes());
+  return absl::OkStatus();
+}
+
+bool operator==(const TfLiteIntArray& lhs, const std::vector<int>& rhs) {
+  if (lhs.size != rhs.size()) return false;
+  for (int i = 0; i < lhs.size; ++i) {
+    if (lhs.data[i] != rhs[i]) return false;
+  }
+  return true;
+}
+
+std::ostream& operator<<(std::ostream& os, const TfLiteIntArray& array) {
+  return os << '[' << absl::StrJoin(absl::MakeSpan(array.data, array.size), ",")
+            << ']';
+}
+
+template <typename T>
+absl::Status CopyTfLiteTensorToTensor(const TfLiteTensor& tflite_tensor,
+                                      Tensor& output_tensor) {
+  auto output_tensor_view = output_tensor.GetCpuWriteView();
+  T* output_tensor_buffer = output_tensor_view.buffer<T>();
+  RET_CHECK(output_tensor_buffer) << "Output tensor buffer is null.";
+  RET_CHECK_EQ(tflite_tensor.type, tflite::typeToTfLiteType<T>())
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "TfLite tensor type and requested output type do not match.";
+  const Tensor::ElementType output_tensor_type = output_tensor.element_type();
+  RET_CHECK(output_tensor_type == tflite_tensor.type)
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "Output and TfLite tensor type do not match";
+  const void* local_tensor_buffer = tflite_tensor.data.raw;
+  RET_CHECK(local_tensor_buffer) << "TfLiteTensor tensor buffer is null.";
+  // Not using RET_CHECK_EQ because the macros triggers array copy. Explicitly
+  // use == to compare with const reference.
+  RET_CHECK(*tflite_tensor.dims == output_tensor.shape().dims)
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "TfLiteTensor and Tensor shape do not match: " << tflite_tensor.dims
+      << " vs [" << absl::StrJoin(output_tensor.shape().dims, ",") << ']';
+  std::memcpy(output_tensor_buffer, local_tensor_buffer, output_tensor.bytes());
   return absl::OkStatus();
 }
 
@@ -114,24 +153,35 @@ int GetXnnpackNumThreads(
 absl::Status CopyCpuInputIntoInterpreterTensor(const Tensor& input_tensor,
                                                tflite::Interpreter& interpreter,
                                                int input_tensor_index) {
-  const TfLiteType interpreter_tensor_type =
-      interpreter.input_tensor(input_tensor_index)->type;
+  auto* tflite_tensor = interpreter.input_tensor(input_tensor_index);
+  RET_CHECK(tflite_tensor);
+  MP_RETURN_IF_ERROR(CopyCpuInputIntoTfLiteTensor(input_tensor, *tflite_tensor))
+      << " at index " << input_tensor_index;
+  return absl::OkStatus();
+}
+
+absl::Status CopyCpuInputIntoTfLiteTensor(const Tensor& input_tensor,
+                                          TfLiteTensor& tflite_tensor) {
+  const TfLiteType interpreter_tensor_type = tflite_tensor.type;
   const Tensor::ElementType input_tensor_type = input_tensor.element_type();
-  if (!DoTypesMatch(input_tensor_type, interpreter_tensor_type)) {
-    return absl::InvalidArgumentError(absl::StrCat(
-        "Input and interpreter tensor type mismatch: ", input_tensor_type,
-        " vs. ", interpreter_tensor_type));
-  }
+  RET_CHECK(input_tensor_type == interpreter_tensor_type)
+          .SetCode(absl::StatusCode::kInvalidArgument)
+      << "Input and interpreter tensor type do not match.";
   switch (interpreter_tensor_type) {
     case TfLiteType::kTfLiteFloat16:
     case TfLiteType::kTfLiteFloat32: {
-      MP_RETURN_IF_ERROR(CopyTensorBufferToInterpreter<float>(
-          input_tensor, interpreter, input_tensor_index));
+      MP_RETURN_IF_ERROR(
+          CopyTensorBufferToInterpreter<float>(input_tensor, tflite_tensor));
       break;
     }
     case TfLiteType::kTfLiteInt32: {
-      MP_RETURN_IF_ERROR(CopyTensorBufferToInterpreter<int>(
-          input_tensor, interpreter, input_tensor_index));
+      MP_RETURN_IF_ERROR(
+          CopyTensorBufferToInterpreter<int>(input_tensor, tflite_tensor));
+      break;
+    }
+    case TfLiteType::kTfLiteInt64: {
+      MP_RETURN_IF_ERROR(
+          CopyTensorBufferToInterpreter<int64_t>(input_tensor, tflite_tensor));
       break;
     }
     default:
@@ -139,6 +189,64 @@ absl::Status CopyCpuInputIntoInterpreterTensor(const Tensor& input_tensor,
           absl::StrCat("Unsupported input data type: ", input_tensor_type));
   }
   return absl::OkStatus();
+}
+
+absl::Status CopyInterpreterTensorIntoCpuOutput(
+    const tflite::Interpreter& interpreter, int output_tensor_index,
+    Tensor& output_tensor) {
+  const auto* tflite_tensor = interpreter.tensor(output_tensor_index);
+  RET_CHECK(tflite_tensor);
+  MP_RETURN_IF_ERROR(
+      CopyTfLiteTensorIntoCpuOutput(*tflite_tensor, output_tensor))
+      << " at index " << output_tensor_index;
+  return absl::OkStatus();
+}
+
+absl::Status CopyTfLiteTensorIntoCpuOutput(const TfLiteTensor& tflite_tensor,
+                                           Tensor& output_tensor) {
+  const TfLiteType tflite_tensor_type = tflite_tensor.type;
+  switch (tflite_tensor_type) {
+    case TfLiteType::kTfLiteFloat16:
+    case TfLiteType::kTfLiteFloat32: {
+      MP_RETURN_IF_ERROR(
+          CopyTfLiteTensorToTensor<float>(tflite_tensor, output_tensor));
+      break;
+    }
+    case TfLiteType::kTfLiteInt32: {
+      MP_RETURN_IF_ERROR(
+          CopyTfLiteTensorToTensor<int>(tflite_tensor, output_tensor));
+      break;
+    }
+    default:
+      return absl::InvalidArgumentError(
+          absl::StrCat("Unsupported output data type: ", tflite_tensor_type));
+  }
+  return absl::OkStatus();
+}
+
+absl::StatusOr<Tensor> ConvertTfLiteTensorToTensor(
+    const TfLiteTensor& tflite_tensor) {
+  Tensor::Shape shape{
+      std::vector<int>{tflite_tensor.dims->data,
+                       tflite_tensor.dims->data + tflite_tensor.dims->size}};
+  switch (tflite_tensor.type) {
+    case TfLiteType::kTfLiteFloat16:
+    case TfLiteType::kTfLiteFloat32: {
+      Tensor output_tensor(Tensor::ElementType::kFloat32, shape);
+      MP_RETURN_IF_ERROR(
+          CopyTfLiteTensorToTensor<float>(tflite_tensor, output_tensor));
+      return output_tensor;
+    }
+    case TfLiteType::kTfLiteInt32: {
+      Tensor output_tensor(Tensor::ElementType::kInt32, shape);
+      MP_RETURN_IF_ERROR(
+          CopyTfLiteTensorToTensor<int>(tflite_tensor, output_tensor));
+      return output_tensor;
+    }
+    default:
+      return absl::InvalidArgumentError(
+          absl::StrCat("Unsupported output data type: ", tflite_tensor.type));
+  }
 }
 
 }  // namespace mediapipe

@@ -1,14 +1,14 @@
-From b0d78772a044284949bd93d6ab5a70b7908a5123 Mon Sep 17 00:00:00 2001
-From: Sophie Chang <sophiechang@chromium.org>
-Date: Tue, 2 Jan 2024 21:40:54 +0000
-Subject: [PATCH] patch
+From 469b9fb31deffff60d9d6c66ba9d43d356de16fd Mon Sep 17 00:00:00 2001
+From: Clark DuVall <cduvall@chromium.org>
+Date: Mon, 15 Apr 2024 10:44:51 -0700
+Subject: [PATCH] no consume
 
 ---
  .../src/mediapipe/framework/packet.h          | 73 +------------------
  1 file changed, 3 insertions(+), 70 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/packet.h b/third_party/mediapipe/src/mediapipe/framework/packet.h
-index 0b660f0d7fde6..bd0050d1678fa 100644
+index d5cc87001d80d..bd0050d1678fa 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/packet.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/packet.h
 @@ -635,53 +635,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
@@ -19,7 +19,7 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // Clients who use this function are responsible for ensuring that no
 -  // other thread is doing anything with this Packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
 -        holder_->As<T>()->Release();
@@ -42,7 +42,7 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
      typename std::enable_if<!std::is_array<T>::value>::type*) {
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
 -        holder_->As<T>()->Release();
@@ -73,7 +73,7 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
                              std::extent<T>::value != 0>::type*) {
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
 -        holder_->As<T>()->Release();
@@ -105,5 +105,5 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
  
  template <typename T>
 -- 
-2.43.0.195.gebba966016-goog
+2.44.0.683.g7961c838ac-goog
 
