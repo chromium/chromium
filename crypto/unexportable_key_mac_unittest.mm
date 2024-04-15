@@ -60,6 +60,14 @@ TEST_F(UnexportableKeyMacTest, DeleteUnknownSigningKey) {
   EXPECT_FALSE(provider->DeleteSigningKey(std::vector<uint8_t>{1, 2, 3}));
 }
 
+TEST_F(UnexportableKeyMacTest, GetSecKeyRef) {
+  auto provider = GetUnexportableKeyProvider(config);
+  ASSERT_TRUE(provider);
+  auto key = provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  EXPECT_TRUE(key->GetSecKeyRef());
+}
+
 }  // namespace
 
 }  // namespace crypto

@@ -9,7 +9,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "crypto/ec_signature_creator.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/notreached.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace enterprise_connectors {
 
@@ -29,6 +34,10 @@ class ECSigningKey : public crypto::UnexportableSigningKey {
   std::vector<uint8_t> GetWrappedKey() const override;
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override;
+
+#if BUILDFLAG(IS_MAC)
+  SecKeyRef GetSecKeyRef() const override;
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   std::unique_ptr<crypto::ECPrivateKey> key_;
@@ -73,6 +82,13 @@ std::optional<std::vector<uint8_t>> ECSigningKey::SignSlowly(
   DCHECK(ok);
   return signature;
 }
+
+#if BUILDFLAG(IS_MAC)
+SecKeyRef ECSigningKey::GetSecKeyRef() const {
+  NOTREACHED();
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 

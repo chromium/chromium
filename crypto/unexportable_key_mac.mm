@@ -154,6 +154,8 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
     return CFDataToVec(signature.get());
   }
 
+  SecKeyRef GetSecKeyRef() const override { return key_.get(); }
+
  private:
   // The wrapped key as returned by the Keychain API.
   const base::apple::ScopedCFTypeRef<SecKeyRef> key_;

@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "build/build_config.h"
 
 namespace crypto {
 

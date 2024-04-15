@@ -80,6 +80,7 @@ TEST_F(SecureEnclaveSigningKeyTest, GenerateSigningKeySlowly) {
   SetUnexportableKey();
   ASSERT_TRUE(key_);
   EXPECT_EQ(key_->Algorithm(), crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_TRUE(key_->GetSecKeyRef());
 }
 
 // Tests that the LoadStoredSigningKeySlowly invokes the SE client's

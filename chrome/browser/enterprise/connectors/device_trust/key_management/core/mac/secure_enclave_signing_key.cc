@@ -37,6 +37,7 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
   std::vector<uint8_t> GetWrappedKey() const override;
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override;
+  SecKeyRef GetSecKeyRef() const override;
 
  private:
   base::apple::ScopedCFTypeRef<SecKeyRef> key_;
@@ -91,6 +92,10 @@ std::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
   }
 
   return signature;
+}
+
+SecKeyRef SecureEnclaveSigningKey::GetSecKeyRef() const {
+  return key_.get();
 }
 
 }  // namespace

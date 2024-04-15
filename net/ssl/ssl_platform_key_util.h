@@ -41,7 +41,8 @@ NET_EXPORT_PRIVATE bool GetClientCertInfo(const X509Certificate* certificate,
 
 // Parses a DER-encoded SPKI buffer and returns the public key as an |EVP_PKEY|,
 // or nullptr on error.
-bssl::UniquePtr<EVP_PKEY> ParseSpki(base::span<const uint8_t> spki);
+NET_EXPORT_PRIVATE bssl::UniquePtr<EVP_PKEY> ParseSpki(
+    base::span<const uint8_t> spki);
 
 // Determines the key type and maximum signature length of the public key
 // encoded in |spki|. |*out_type| will be set to one of the |EVP_PKEY_*|

@@ -8,8 +8,13 @@
 #include <memory>
 #include <optional>
 
+#include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "crypto/signature_verifier.h"
+
+#if BUILDFLAG(IS_MAC)
+#import <Security/Security.h>
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto {
 
@@ -55,6 +60,12 @@ class CRYPTO_EXPORT UnexportableSigningKey {
   // Note: this may take a second or more to run.
   virtual std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) = 0;
+
+#if BUILDFLAG(IS_MAC)
+  // Returns the underlying reference to a Keychain key owned by the current
+  // instance.
+  virtual SecKeyRef GetSecKeyRef() const = 0;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 // UnexportableKeyProvider creates |UnexportableSigningKey|s.

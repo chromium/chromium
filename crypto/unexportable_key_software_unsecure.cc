@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "crypto/unexportable_key.h"
-
 #include "base/check.h"
+#include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
+#include "crypto/unexportable_key.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/notreached.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto {
 
@@ -60,6 +64,13 @@ class SoftwareECDSA : public UnexportableSigningKey {
     ret.resize(ret_size);
     return ret;
   }
+
+#if BUILDFLAG(IS_MAC)
+  SecKeyRef GetSecKeyRef() const override {
+    NOTREACHED();
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   bssl::UniquePtr<EC_KEY> key_;

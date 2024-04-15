@@ -10,6 +10,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "net/ssl/ssl_platform_key_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "net/ssl/ssl_platform_key_mac.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace client_certificates {
@@ -47,8 +49,9 @@ SSLKeyConverterImpl::ConvertUnexportableKeySlowly(
     const crypto::UnexportableSigningKey& key) {
 #if BUILDFLAG(IS_WIN)
   return net::WrapUnexportableKeySlowly(key);
+#elif BUILDFLAG(IS_MAC)
+  return net::WrapUnexportableKey(key);
 #else
-  // TODO(b/319255700): Implement on Mac as well.
   return nullptr;
 #endif  // BUILDFLAG(IS_WIN)
 }
