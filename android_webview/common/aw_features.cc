@@ -248,5 +248,10 @@ BASE_FEATURE(kWebViewEnableCrash,
              "WebViewEnableCrash",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the built-in DNS resolver (Async DNS) on WebView.
+BASE_FEATURE(kWebViewAsyncDns,
+             "WebViewAsyncDns",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview

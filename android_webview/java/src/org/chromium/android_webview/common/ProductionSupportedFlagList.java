@@ -965,6 +965,8 @@ public final class ProductionSupportedFlagList {
                 "InputStreamOptimizations", "Enables optimizations to input stream handling."),
         Flag.baseFeature("WebViewOptimizeXrwNavigationFlow"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_ASYNC_DNS, "Enables the built-in DNS resolver (Async DNS)."),
+        Flag.baseFeature(
                 "UseMoveNotCopyInAXTreeCombiner",
                 "Enables moves instead of copies of snapshot tree data when combining updates."),
         Flag.baseFeature(

@@ -276,6 +276,12 @@ void AwContentBrowserClient::OnNetworkServiceCreated(
       network::mojom::HttpAuthStaticParams::New());
   content::GetNetworkService()->ConfigureHttpAuthPrefs(
       AwBrowserProcess::GetInstance()->CreateHttpAuthDynamicParams());
+  if (base::FeatureList::IsEnabled(features::kWebViewAsyncDns)) {
+    content::GetNetworkService()->ConfigureStubHostResolver(
+        /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
+        net::DnsOverHttpsConfig(),
+        /*additional_dns_types_enabled=*/true);
+  }
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(

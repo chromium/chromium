@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kWebViewZoomKeyboardShortcuts);
 BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
+BASE_DECLARE_FEATURE(kWebViewAsyncDns);
 
 }  // namespace features
 }  // namespace android_webview
