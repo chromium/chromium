@@ -14,11 +14,11 @@
 namespace ash {
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
 
-TEST(PickerModel, AvailableCategoriesWithNoFocusAndCapsLockOff) {
+TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(false);
   PickerModel model(/*focused_client=*/nullptr, &fake_ime_keyboard);
   EXPECT_THAT(
       model.GetAvailableCategories(),
@@ -28,21 +28,8 @@ TEST(PickerModel, AvailableCategoriesWithNoFocusAndCapsLockOff) {
                   PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
-TEST(PickerModel, AvailableCategoriesWithNoFocusAndCapsLockOn) {
+TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(true);
-  PickerModel model(/*focused_client=*/nullptr, &fake_ime_keyboard);
-  EXPECT_THAT(
-      model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOff, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
-}
-
-TEST(PickerModel, AvailableCategoriesWithNoSelectedTextAndCapsLockOff) {
-  input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(false);
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0));
 
@@ -55,22 +42,7 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextAndCapsLockOff) {
                   PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
-TEST(PickerModel, AvailableCategoriesWithNoSelectedTextAndCapsLockOn) {
-  input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(true);
-  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
-  client.SetTextAndSelection(u"a", gfx::Range(0));
-
-  PickerModel model(&client, &fake_ime_keyboard);
-  EXPECT_THAT(
-      model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOff, PickerCategory::kLinks,
-                  PickerCategory::kExpressions, PickerCategory::kClipboard,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
-                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
-}
-
-TEST(PickerModel, AvailableCategoriesWithSelectedText) {
+TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
   client.SetTextAndSelection(u"a", gfx::Range(0, 1));
@@ -80,6 +52,26 @@ TEST(PickerModel, AvailableCategoriesWithSelectedText) {
       model.GetAvailableCategories(),
       ElementsAre(PickerCategory::kUpperCase, PickerCategory::kLowerCase,
                   PickerCategory::kSentenceCase, PickerCategory::kTitleCase));
+}
+
+TEST(PickerModel, AvailableCategoriesShowsCapsOffWhenCapsIsOn) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  fake_ime_keyboard.SetCapsLockEnabled(true);
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Contains(PickerCategory::kCapsOff));
+}
+
+TEST(PickerModel, AvailableCategoriesShowsCapsOnWhenCapsIsOff) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  fake_ime_keyboard.SetCapsLockEnabled(false);
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Contains(PickerCategory::kCapsOn));
 }
 
 TEST(PickerModel, GetsEmptySelectedText) {
