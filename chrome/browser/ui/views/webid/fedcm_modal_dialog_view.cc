@@ -106,13 +106,15 @@ void FedCmModalDialogView::ResizeAndFocusPopupWindow() {
 }
 
 void FedCmModalDialogView::WebContentsDestroyed() {
+  // The popup window is going away, make sure we don't keep a dangling pointer.
+  // This should happen before notifying the observer, where `this` will be
+  // destroyed.
+  popup_window_ = nullptr;
+
   // Let the observer know that the pop-up window has been destroyed.
   if (observer_) {
     observer_->OnPopupWindowDestroyed();
   }
-
-  // The popup window is going away, make sure we don't keep a danging pointer.
-  popup_window_ = nullptr;
 
   UMA_HISTOGRAM_ENUMERATION(
       "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
