@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash::video_conference_utils {
 
@@ -57,6 +59,25 @@ std::u16string GetMediaAppDisplayText(
   }
 
   return std::u16string();
+}
+
+cc::SkottieColorMap CreateColorMapForGradientAnimation(
+    const ui::ColorProvider* color_provider) {
+  cc::SkottieColorMap map;
+  if (DarkLightModeController::Get()->IsDarkModeEnabled()) {
+    map[cc::HashSkottieResourceId("cros.sys.illo.complement")] =
+        color_provider->GetColor(
+            cros_tokens::CrosRefColorIds::kCrosRefSparkleComplement20);
+    map[cc::HashSkottieResourceId("cros.sys.illo.analog")] =
+        color_provider->GetColor(
+            cros_tokens::CrosRefColorIds::kCrosRefSparkleAnalog30);
+  } else {
+    map[cc::HashSkottieResourceId("cros.sys.illo.complement")] =
+        color_provider->GetColor(ui::kColorNativeComplementColor);
+    map[cc::HashSkottieResourceId("cros.sys.illo.analog")] =
+        color_provider->GetColor(ui::kColorNativeAnalogColor);
+  }
+  return map;
 }
 
 }  // namespace ash::video_conference_utils

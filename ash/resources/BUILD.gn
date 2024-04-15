@@ -17,10 +17,12 @@ repack("ash_test_resources_unscaled") {
   sources = [
     "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
     "$root_gen_dir/ash/system/mahi/resources/mahi_resources.pak",
+    "$root_gen_dir/ash/system/video_conference/resources/vc_resources.pak",
   ]
   deps = [
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/system/mahi/resources:mahi_resources",
+    "//ash/system/video_conference/resources:vc_resources",
   ]
 
   if (include_ash_ambient_animation_resources) {

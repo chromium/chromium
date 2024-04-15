@@ -72,6 +72,15 @@ constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
 constexpr char kVideoConferenceTrayBothUseWhileDisabledNudgeId[] =
     "video_conference_tray_nudge_ids.camera_microphone_use_while_disabled";
 
+// Boolean prefs used to determine whether to show the gradient animation on the
+// buttons. When the value is false, it means that we haved showed the animation
+// at some point and the user has clicked on the button in such a way that the
+// animation no longer needs to be displayed again.
+constexpr char kShowImageButtonAnimation[] =
+    "ash.vc.show_inmage_button_animation";
+constexpr char kShowCreateWithAiButtonAnimation[] =
+    "ash.vc.show_create_with_ai_button_animation";
+
 // VC nudge ids vector that is iterated whenever `CloseAllVcNudges()` is
 // called. Please keep in sync whenever adding/removing/updating a nudge id.
 const char* const kNudgeIds[] = {
@@ -127,6 +136,15 @@ VideoConferenceTray* GetVcTrayInActiveWindow() {
   return status_area_widget->video_conference_tray();
 }
 
+PrefService* GetActiveUserPrefService() {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service;
+}
+
 }  // namespace
 
 VideoConferenceTrayController::VideoConferenceTrayController()
@@ -151,6 +169,12 @@ VideoConferenceTrayController::~VideoConferenceTrayController() {
 }
 
 // static
+void VideoConferenceTrayController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kShowImageButtonAnimation, true);
+  registry->RegisterBooleanPref(kShowCreateWithAiButtonAnimation, true);
+}
+
 VideoConferenceTrayController* VideoConferenceTrayController::Get() {
   return g_controller_instance;
 }
@@ -286,6 +310,26 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge() {
       kSpeakOnMuteOptInNudgeMaxShownCount) {
     pref_service->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge, false);
   }
+}
+
+void VideoConferenceTrayController::DismissImageButtonAnimationForever() {
+  GetActiveUserPrefService()->SetBoolean(kShowImageButtonAnimation, false);
+}
+
+void VideoConferenceTrayController::
+    DismissCreateWithAiButtonAnimationForever() {
+  GetActiveUserPrefService()->SetBoolean(kShowCreateWithAiButtonAnimation,
+                                         false);
+}
+
+bool VideoConferenceTrayController::ShouldShowImageButtonAnimation() const {
+  return GetActiveUserPrefService()->GetBoolean(kShowImageButtonAnimation);
+}
+
+bool VideoConferenceTrayController::ShouldShowCreateWithAiButtonAnimation()
+    const {
+  return GetActiveUserPrefService()->GetBoolean(
+      kShowCreateWithAiButtonAnimation);
 }
 
 void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction(bool opt_in) {

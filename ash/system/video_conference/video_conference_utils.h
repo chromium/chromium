@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "cc/paint/skottie_color_map.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ui/color/color_provider.h"
 
 namespace ash {
 
@@ -28,6 +30,12 @@ std::string GetEffectHistogramNameForInitialState(VcEffectId effect_id);
 std::u16string GetMediaAppDisplayText(
     const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
         media_app);
+
+// Lottie animation doesn't support dark mode color, in order to make the
+// animation look good in both dark and light modes, we manually override the
+// colors used in the animation.
+cc::SkottieColorMap CreateColorMapForGradientAnimation(
+    const ui::ColorProvider* color_provider);
 
 }  // namespace video_conference_utils
 
