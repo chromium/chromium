@@ -185,7 +185,10 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   static void ContinueSAMLSignin(std::unique_ptr<content::WebContents> contents,
                                  Browser* browser) {
     DCHECK(browser);
-    browser->tab_strip_model()->ReplaceWebContentsAt(0, std::move(contents));
+    // Make a new tab with the desired contents and close the old tab.
+    browser->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                  /*foreground=*/true);
+    browser->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
         ProfileMetrics::ProfileSignedInFlowOutcome::kSAML);
