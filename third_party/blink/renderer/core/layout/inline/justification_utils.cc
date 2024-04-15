@@ -97,7 +97,8 @@ String BuildJustificationText(const String& text_content,
   return line_text_builder.ReleaseString();
 }
 
-void JustifyResults(String line_text,
+void JustifyResults(const String& text_content,
+                    String line_text,
                     unsigned line_text_start_offset,
                     ShapeResultSpacing<String>& spacing,
                     InlineItemResults& results) {
@@ -107,6 +108,19 @@ void JustifyResults(String line_text,
       break;
     }
     if (item_result.shape_result) {
+#if DCHECK_IS_ON()
+      // This `if` is necessary for external/wpt/css/css-text/text-justify/
+      // text-justify-and-trailing-spaces-*.html.
+      if (item_result.StartOffset() - line_text_start_offset +
+              item_result.Length() <=
+          line_text.length()) {
+        DCHECK_EQ(StringView(text_content, item_result.StartOffset(),
+                             item_result.Length()),
+                  StringView(line_text,
+                             item_result.StartOffset() - line_text_start_offset,
+                             item_result.Length()));
+      }
+#endif
       ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
@@ -141,7 +155,7 @@ void JustifyResults(String line_text,
                item_result.ruby_column) {
       LineInfo& base_line = item_result.ruby_column->base_line;
       if (item_result.inline_size == base_line.Width()) {
-        JustifyResults(line_text, line_text_start_offset, spacing,
+        JustifyResults(text_content, line_text, line_text_start_offset, spacing,
                        *base_line.MutableResults());
         base_line.SetWidth(base_line.AvailableWidth(),
                            base_line.ComputeWidth());
@@ -236,9 +250,9 @@ std::optional<LayoutUnit> ApplyJustificationInternal(
       line_info.Results().front().StartOffset();
 
   // Construct the line text to compute spacing for.
+  String text_content = line_info.ItemsData().text_content;
   String line_text = BuildJustificationText(
-      line_info.ItemsData().text_content, line_info.Results(),
-      line_text_start_offset, end_offset,
+      text_content, line_info.Results(), line_text_start_offset, end_offset,
       line_info.MayHaveTextCombineOrRubyItem());
   if (line_text.empty()) {
     return std::nullopt;
@@ -273,7 +287,8 @@ std::optional<LayoutUnit> ApplyJustificationInternal(
 
   if (results) {
     DCHECK_EQ(&line_info.Results(), results);
-    JustifyResults(line_text, line_text_start_offset, spacing, *results);
+    JustifyResults(text_content, line_text, line_text_start_offset, spacing,
+                   *results);
   }
   return inset / 2;
 }
