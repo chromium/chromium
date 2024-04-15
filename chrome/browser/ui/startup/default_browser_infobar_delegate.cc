@@ -120,6 +120,10 @@ std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
 
 bool DefaultBrowserInfoBarDelegate::Accept() {
   action_taken_ = true;
+  // |profile_| may be null in tests.
+  if (profile_) {
+    DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(profile_);
+  }
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Accept"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
                             ACCEPT_INFO_BAR,

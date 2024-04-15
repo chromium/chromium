@@ -1111,6 +1111,8 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
                       &DefaultBrowserPromptManager::CloseAllPrompts,
                       base::Unretained(
                           DefaultBrowserPromptManager::GetInstance()))));
+      DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
+          browser_->profile());
       break;
 #endif
     default:
