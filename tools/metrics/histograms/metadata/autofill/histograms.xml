@@ -5095,6 +5095,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.TestAddressesEvent"
+    enum="AutofillInDevtoolsTestAddressesEvents" expires_after="2024-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded when a test address suggestion is shown or selected. These
+    suggestions are displayed when devtools is open, therefore only in desktop.
+    A top level test address suggestion will be shown when the user clicks on an
+    address classified field while devtools is open. This suggestion has child
+    suggestions representing well-formatted addressses from different countries,
+    choosing one of them will fill the form and emit an selected event.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.TestAddressSelected"
+    enum="AutofillInDevtoolsAvailableTestAddressesCountries"
+    expires_after="2024-12-12">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded when a test address suggestion is selected. Test address
+    suggestions are displayed when devtools is open, therefore only in desktop.
+    A top level test address suggestion will be shown when the user clicks on an
+    address classified field while devtools is open. This suggestion has child
+    suggestions representing well-formatted addressses from different countries,
+    choosing one of them will fill the form and emit this metric, representing
+    which country was chosen.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Timing.{AutofillTimedFunction}" units="ms"
     expires_after="2024-12-12">
   <owner>schwering@chromium.org</owner>

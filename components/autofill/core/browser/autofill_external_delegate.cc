@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -354,6 +355,10 @@ void AutofillExternalDelegate::OnPopupShown() {
   } else if (has_autofill_suggestions) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutofillAvailable);
+    if (base::Contains(shown_suggestion_types_,
+                       PopupItemId::kDevtoolsTestAddresses)) {
+      autofill_metrics::OnDevtoolsTestAddressesShown();
+    }
   } else {
     // We send autocomplete availability event even though there might be no
     // autocomplete suggestions shown.
@@ -1148,13 +1153,22 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       ShowDeleteAddressProfileDialog(
           suggestion.GetBackendId<Suggestion::Guid>().value());
       break;
-    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry: {
+      const AutofillProfile* profile = GetTestAddressByGUID(
+          manager_->client().GetTestAddresses(),
+          absl::get<Suggestion::Guid>(
+              suggestion.GetPayload<Suggestion::BackendId>())
+              .value());
+      CHECK(profile);
+      autofill_metrics::OnDevtoolsTestAddressesAccepted(
+          profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
+    }
     default:
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }

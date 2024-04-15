@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -1494,6 +1495,23 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
       SuggestionPosition{.row = 2});
 }
 
+TEST_F(AutofillExternalDelegateUnitTest,
+       TestAddressSuggestionShown_MetricsEmitted) {
+  base::HistogramTester histogram_tester;
+  client().set_test_addresses({test::GetFullProfile()});
+  IssueOnQuery();
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {test::CreateAutofillSuggestion(PopupItemId::kDevtoolsTestAddresses,
+                                      u"Devtools")});
+  external_delegate().OnPopupShown();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.TestAddressesEvent",
+      autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
+          kTestAddressesSuggestionShown,
+      1);
+}
+
 // Test that an accepted test address autofill suggestion will fill the form.
 TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
   IssueOnQuery();
@@ -1502,6 +1520,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
   const Suggestion suggestion = test::CreateAutofillSuggestion(
       PopupItemId::kDevtoolsTestAddressEntry, u"John Legend",
       Suggestion::Guid(profile.guid()));
+  base::HistogramTester histogram_tester;
 
   // Test preview.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm(
@@ -1517,6 +1536,11 @@ TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.TestAddressesEvent",
+      autofill_metrics::AutofillInDevtoolsTestAddressesEvents::
+          kTestAddressesSuggestionSelected,
+      1);
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,

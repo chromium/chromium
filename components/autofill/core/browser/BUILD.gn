@@ -303,6 +303,8 @@ static_library("browser") {
     "metrics/address_data_cleaner_metrics.h",
     "metrics/address_save_metrics.cc",
     "metrics/address_save_metrics.h",
+    "metrics/autofill_in_devtools_metrics.cc",
+    "metrics/autofill_in_devtools_metrics.h",
     "metrics/autofill_metrics.cc",
     "metrics/autofill_metrics.h",
     "metrics/autofill_metrics_utils.cc",
