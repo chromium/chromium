@@ -141,6 +141,7 @@ bool TestChildLauncher::WaitForSuccessfulProcessTermination(pid_t pid) {
 }
 
 pid_t TestChildLauncher::Launch(std::string_view node_name,
+                                std::string_view feature_set,
                                 reference_drivers::FileDescriptor socket) {
   pid_t child_pid = fork();
   ABSL_HARDENING_ASSERT(child_pid >= 0);
@@ -162,8 +163,9 @@ pid_t TestChildLauncher::Launch(std::string_view node_name,
   // Execute the test binary with an extra command-line switch that circumvents
   // the normal test runner path and instead runs the named TestNode's body.
   ArgList child_args = GetArgList();
-  std::string test_main_name = absl::StrCat(
-      node_name.data(), "/", internal::kMultiprocessTestDriverName);
+  std::string test_main_name =
+      absl::StrCat(node_name.data(), "/", internal::kMultiprocessTestDriverName,
+                   "_", feature_set);
   child_args.push_back(MakeSwitch(kTestChildProcess, test_main_name));
   child_args.push_back(MakeSwitch(kSocketFd, socket.release()));
 
