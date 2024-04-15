@@ -50,25 +50,15 @@ void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   // Use AGC2 digital and input volume controller.
-  // TODO(crbug.com/1375239): Remove `kWebRtcAllowInputVolumeAdjustment` safely.
-  if (kInputVolumeAdjustmentOverrideAllowed &&
-      !base::FeatureList::IsEnabled(
-          ::features::kWebRtcAllowInputVolumeAdjustment)) {
-    // Disable AGC2 input volume controller to disable input volume adjustment.
-    apm_config.gain_controller2.input_volume_controller.enabled = false;
-  } else {
-    // Enable AGC2 input volume controller.
-    apm_config.gain_controller2.input_volume_controller.enabled = true;
-  }
+  // TODO(crbug.com/1375239): Remove `kWebRtcAllowInputVolumeAdjustment` safely
+  // and set `input_volume_controller.enabled` true.
+  apm_config.gain_controller2.input_volume_controller.enabled =
+      !kInputVolumeAdjustmentOverrideAllowed ||
+      base::FeatureList::IsEnabled(
+          ::features::kWebRtcAllowInputVolumeAdjustment);
   // Enable AGC2 digital.
   apm_config.gain_controller2.enabled = true;
-  apm_config.gain_controller2.fixed_digital.gain_db = 0.0f;
   apm_config.gain_controller2.adaptive_digital.enabled = true;
-  apm_config.gain_controller2.adaptive_digital.max_gain_db = 50;
-  apm_config.gain_controller2.adaptive_digital.initial_gain_db = 15;
-  apm_config.gain_controller2.adaptive_digital.max_gain_change_db_per_second =
-      6;
-  apm_config.gain_controller2.adaptive_digital.headroom_db = 5;
   // Entirely disable AGC1.
   apm_config.gain_controller1.enabled = false;
   apm_config.gain_controller1.analog_gain_controller.enabled = false;
