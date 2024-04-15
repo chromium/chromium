@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -294,13 +295,14 @@ void DeleteSkSurface(SharedContextState* context_state,
 
 #if BUILDFLAG(ENABLE_VULKAN)
 GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
+                                  const viz::SharedImageFormat& si_format,
                                   const gfx::ColorSpace& color_space) {
   DCHECK(image);
   VkPhysicalDevice physical_device =
       image->device_queue()->GetVulkanPhysicalDevice();
   GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
-      physical_device, image->image_tiling(), image->format(), color_space,
-      image->ycbcr_info());
+      physical_device, image->image_tiling(), image->format(), si_format,
+      color_space, image->ycbcr_info());
   GrVkAlloc alloc;
   alloc.fMemory = image->device_memory();
   alloc.fOffset = 0;
@@ -351,6 +353,7 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
     VkFormat format,
+    const viz::SharedImageFormat& si_format,
     const gfx::ColorSpace& color_space,
     const std::optional<VulkanYCbCrInfo>& ycbcr_info) {
   auto valid_ycbcr_info = ycbcr_info;
@@ -418,6 +421,24 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
   gr_ycbcr_info.fChromaFilter = chroma_filter;
   gr_ycbcr_info.fForceExplicitReconstruction = false;
   gr_ycbcr_info.fFormatFeatures = format_features;
+
+  if (!gr_ycbcr_info.fExternalFormat &&
+      (si_format == viz::LegacyMultiPlaneFormat::kYV12 ||
+       (si_format.is_multi_plane() &&
+        si_format.plane_config() ==
+            viz::SharedImageFormat::PlaneConfig::kY_V_U))) {
+    switch (vk_format) {
+      case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM:
+      case VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16:
+      case VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16:
+      case VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM:
+        gr_ycbcr_info.fComponents.r = VK_COMPONENT_SWIZZLE_B;
+        gr_ycbcr_info.fComponents.b = VK_COMPONENT_SWIZZLE_R;
+        break;
+      default:
+        break;
+    }
+  }
 
   return gr_ycbcr_info;
 }

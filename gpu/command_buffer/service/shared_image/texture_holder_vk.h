@@ -15,6 +15,10 @@ namespace gfx {
 class ColorSpace;
 }  // namespace gfx
 
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
+
 namespace gpu {
 
 class VulkanImage;
@@ -22,6 +26,7 @@ class VulkanImage;
 // Holds VulkanImage + skia representations of it.
 struct TextureHolderVk {
   explicit TextureHolderVk(std::unique_ptr<VulkanImage> image,
+                           const viz::SharedImageFormat& si_format,
                            const gfx::ColorSpace& color_space);
   TextureHolderVk(TextureHolderVk&& other);
   TextureHolderVk& operator=(TextureHolderVk&& other);

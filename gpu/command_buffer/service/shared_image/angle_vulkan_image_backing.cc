@@ -314,7 +314,7 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
 
-    vk_textures_.emplace_back(std::move(vulkan_image), color_space());
+    vk_textures_.emplace_back(std::move(vulkan_image), format(), color_space());
   }
 
   if (!data.empty()) {
@@ -352,7 +352,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
     return false;
   }
 
-  vk_textures_.emplace_back(std::move(vulkan_image), color_space());
+  vk_textures_.emplace_back(std::move(vulkan_image), format(), color_space());
 
   SetCleared();
 
