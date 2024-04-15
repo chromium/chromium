@@ -353,13 +353,13 @@ QuicSessionPoolTestBase::ConstructConnectUdpRequestPacket(
     std::string path,
     bool fin) {
   spdy::Http2HeaderBlock headers;
+  headers[":scheme"] = "https";
+  headers[":path"] = path;
+  headers[":protocol"] = "connect-udp";
   headers[":method"] = "CONNECT";
   headers[":authority"] = authority;
   headers["user-agent"] = "test-ua";
   headers["capsule-protocol"] = "?1";
-  headers[":scheme"] = "https";
-  headers[":path"] = path;
-  headers[":protocol"] = "connect-udp";
   spdy::SpdyPriority priority =
       ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
   size_t spdy_headers_frame_len;

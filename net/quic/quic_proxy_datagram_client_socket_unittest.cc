@@ -79,6 +79,9 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
     std::string host = destination_endpoint_.host();
     uint16_t port = destination_endpoint_.port();
 
+    (*block)[":scheme"] = destination_endpoint_.scheme();
+    (*block)[":path"] = "/";
+    (*block)[":protocol"] = "connect-udp";
     (*block)[":method"] = "CONNECT";
     // Port is removed if 443 since that is the default port number for HTTPS.
     (*block)[":authority"] =
@@ -93,9 +96,6 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
     }
     (*block)["user-agent"] = kUserAgent;
     (*block)["capsule-protocol"] = "?1";
-    (*block)[":scheme"] = destination_endpoint_.scheme();
-    (*block)[":path"] = "/";
-    (*block)[":protocol"] = "connect-udp";
   }
 
   void AssertConnectSucceeds() override {
