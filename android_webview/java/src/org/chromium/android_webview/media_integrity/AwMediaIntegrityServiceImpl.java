@@ -33,6 +33,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 /**
@@ -145,7 +146,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                     "Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2",
                     ++sCacheHitCounter);
             final WebViewMediaIntegrityProvider integrityProvider =
-                    new WebViewMediaIntegrityProviderImpl(cachedProvider);
+                    new WebViewMediaIntegrityProviderImpl(cachedProvider, key, awBrowserContext);
             WebViewMediaIntegrityProvider.MANAGER.bind(integrityProvider, providerRequest);
             callback.call(/* error= */ null);
             return;
@@ -167,7 +168,8 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                                                 + ".TokenProviderCreatedCumulativeV2",
                                         ++sProviderCreatedCounter);
                                 final WebViewMediaIntegrityProvider integrityProvider =
-                                        new WebViewMediaIntegrityProviderImpl(provider);
+                                        new WebViewMediaIntegrityProviderImpl(
+                                                provider, key, awBrowserContext);
                                 WebViewMediaIntegrityProvider.MANAGER.bind(
                                         integrityProvider, providerRequest);
                                 callback.call(/* error= */ null);
@@ -213,10 +215,17 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     private static class WebViewMediaIntegrityProviderImpl
             implements WebViewMediaIntegrityProvider {
         @NonNull private final MediaIntegrityProvider mProvider;
+        @NonNull private final MediaIntegrityProviderKey mCacheKey;
+        @NonNull private final WeakReference<AwBrowserContext> mAwBrowserContext;
         private int mRequestCounter;
 
-        public WebViewMediaIntegrityProviderImpl(@NonNull MediaIntegrityProvider provider) {
+        public WebViewMediaIntegrityProviderImpl(
+                @NonNull MediaIntegrityProvider provider,
+                @NonNull MediaIntegrityProviderKey cacheKey,
+                @NonNull AwBrowserContext awBrowserContext) {
             mProvider = provider;
+            mCacheKey = cacheKey;
+            mAwBrowserContext = new WeakReference<AwBrowserContext>(awBrowserContext);
         }
 
         @Override
@@ -251,6 +260,16 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         public void onError(Integer error) {
                             ThreadUtils.assertOnUiThread();
                             Objects.requireNonNull(error);
+                            if (error == MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID) {
+                                // This callback could take an arbitrary amount of time. We use a
+                                // weak reference to avoid making assumptions about AwBrowserContext
+                                // lifetimes.
+                                final AwBrowserContext awBrowserContext = mAwBrowserContext.get();
+                                if (awBrowserContext != null) {
+                                    awBrowserContext.invalidateCachedMediaIntegrityProvider(
+                                            mCacheKey, mProvider);
+                                }
+                            }
                             final WebViewMediaIntegrityTokenResponse response =
                                     new WebViewMediaIntegrityTokenResponse();
                             response.setErrorCode(errorCodeToMojomErrorCode(error));

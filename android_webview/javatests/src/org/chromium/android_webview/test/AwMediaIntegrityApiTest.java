@@ -32,7 +32,6 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
@@ -532,7 +531,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     @CommandLineFlags.Add({
         "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
-    @DisabledTest(message = "crbug.com/333912408")
     public void testTokenProviderNotReusedIfInvalid() throws Exception {
 
         MockTokenProvider mockTokenProvider1 = new MockTokenProvider();

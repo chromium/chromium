@@ -256,6 +256,21 @@ public class AwBrowserContext implements BrowserContextHandle {
         mMediaIntegrityProviderCache.put(key, provider);
     }
 
+    /**
+     * Remove an invalid AWMI token provider from the provider cache.
+     *
+     * @param key The key of the cache entry to invalidate.
+     * @param provider The value of the cache entry to invalidate. The cache entry will only be
+     *     removed if the current provider for the given key matches this provider.
+     */
+    public void invalidateCachedMediaIntegrityProvider(
+            @NonNull MediaIntegrityProviderKey key, @NonNull MediaIntegrityProvider provider) {
+        final MediaIntegrityProvider current = mMediaIntegrityProviderCache.get(key);
+        if (current == provider) {
+            mMediaIntegrityProviderCache.remove(key);
+        }
+    }
+
     private void migrateGeolocationPreferences() {
         // Prefs dir will be created if it doesn't exist, so must allow writes
         // for this and so that the actual prefs can be written to the new
