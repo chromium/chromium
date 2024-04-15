@@ -265,13 +265,6 @@ class TabStripModel : public TabGroupController {
   // strip. Returns the detached tab.
   std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(int index);
 
-  // Detaches the WebContents at the specified index for reinsertion into
-  // another tab strip. Returns the detached WebContents.
-  // TODO(1476012): Migrate callers to DetachTabAtForInsertion or
-  // DetachAndDeleteWebContentsAt.
-  std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
-      int index);
-
   // Detaches the WebContents at the specified index and immediately deletes it.
   void DetachAndDeleteWebContentsAt(int index);
 

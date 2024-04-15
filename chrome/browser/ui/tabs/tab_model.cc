@@ -14,7 +14,9 @@ namespace tabs {
 
 TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
                    TabStripModel* owning_model)
-    : contents_(std::move(contents)), owning_model_(owning_model) {
+    : contents_owned_(std::move(contents)),
+      contents_(contents_owned_.get()),
+      owning_model_(owning_model) {
   // When a TabModel is constructed it must be attached to a TabStripModel. This
   // may later change if the Tab is detached.
   CHECK(owning_model);
@@ -157,13 +159,23 @@ std::unique_ptr<content::WebContents> TabModel::RemoveContents() {
     obs.WillRemoveContents(this, contents_.get());
   }
   will_remove_contents_callback_list_.Notify(this, contents_.get());
-  return std::move(contents_);
+  contents_ = nullptr;
+  return std::move(contents_owned_);
+}
+
+// static
+std::unique_ptr<content::WebContents> TabModel::DestroyAndTakeWebContents(
+    std::unique_ptr<TabModel> tab_model) {
+  std::unique_ptr<content::WebContents> contents =
+      std::move(tab_model->contents_owned_);
+  return contents;
 }
 
 void TabModel::SetContents(std::unique_ptr<content::WebContents> contents) {
   CHECK(!contents_);
   CHECK(contents);
-  contents_ = std::move(contents);
+  contents_owned_ = std::move(contents);
+  contents_ = contents_owned_.get();
   for (auto& obs : observers_) {
     obs.DidAddContents(this, contents_.get());
   }

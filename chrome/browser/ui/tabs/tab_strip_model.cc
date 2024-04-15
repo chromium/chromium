@@ -460,13 +460,6 @@ std::unique_ptr<tabs::TabModel> TabStripModel::DetachTabAtForInsertion(
   return std::move(dwc->tab);
 }
 
-std::unique_ptr<content::WebContents>
-TabStripModel::DetachWebContentsAtForInsertion(int index) {
-  auto dwc = DetachWebContentsWithReasonAt(
-      index, TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip);
-  return dwc->tab->RemoveContents();
-}
-
 void TabStripModel::DetachAndDeleteWebContentsAt(int index) {
   // Drops the returned unique pointer.
   DetachWebContentsWithReasonAt(index,

@@ -1128,9 +1128,10 @@ void MoveTabsToNewWindow(Browser* browser,
     // Adjust tab index to account for tabs already moved.
     int adjusted_index = tab_indices[i] - i;
     bool pinned = browser->tab_strip_model()->IsTabPinned(adjusted_index);
-    std::unique_ptr<WebContents> contents_move =
-        browser->tab_strip_model()->DetachWebContentsAtForInsertion(
-            adjusted_index);
+    std::unique_ptr<tabs::TabModel> tab_model =
+        browser->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
+    std::unique_ptr<content::WebContents> contents_move =
+        tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
 
     int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
     // The last tab made active takes precedence, so activate the last active
@@ -1209,9 +1210,10 @@ void MoveTabsToExistingWindow(Browser* source,
     // Adjust tab index to account for tabs already moved.
     int adjusted_index = tab_indices[i] - i;
     bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
-    std::unique_ptr<WebContents> contents_move =
-        source->tab_strip_model()->DetachWebContentsAtForInsertion(
-            adjusted_index);
+    std::unique_ptr<tabs::TabModel> tab_model =
+        source->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
+    std::unique_ptr<content::WebContents> contents_move =
+        tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
     int add_types =
         AddTabTypes::ADD_ACTIVE | (pinned ? AddTabTypes::ADD_PINNED : 0);
     target->tab_strip_model()->AddWebContents(
@@ -1285,10 +1287,18 @@ bool HasKeyboardFocusedTab(const Browser* browser) {
 void ConvertPopupToTabbedBrowser(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowAsTab"));
   TabStripModel* tab_strip = browser->tab_strip_model();
-  std::unique_ptr<content::WebContents> contents =
-      tab_strip->DetachWebContentsAtForInsertion(tab_strip->active_index());
+  std::unique_ptr<tabs::TabModel> tab_model =
+      tab_strip->DetachTabAtForInsertion(tab_strip->active_index());
+  std::unique_ptr<content::WebContents> contents_move =
+      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
   Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
-  b->tab_strip_model()->AppendWebContents(std::move(contents), true);
+
+  // This method moves a WebContents from a non-normal browser window to a
+  // normal browser window. We cannot move the Tab over directly since TabModel
+  // enforces the requirement that it cannot move between window types.
+  // https://crbug.com/334281979): Non-normal browser windows should not have a
+  // tab to begin with.
+  b->tab_strip_model()->AppendWebContents(std::move(contents_move), true);
   b->window()->Show();
 }
 
@@ -2051,10 +2061,17 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
         gfx::Rect());
   }
 
-  target_browser->tab_strip_model()->AppendWebContents(
-      source_tabstrip->DetachWebContentsAtForInsertion(
-          source_tabstrip->active_index()),
-      true);
+  std::unique_ptr<tabs::TabModel> tab_model =
+      source_tabstrip->DetachTabAtForInsertion(source_tabstrip->active_index());
+  std::unique_ptr<content::WebContents> contents_move =
+      tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
+  // This method moves a WebContents from a non-normal browser window to a
+  // normal browser window. We cannot move the Tab over directly since TabModel
+  // enforces the requirement that it cannot move between window types.
+  // https://crbug.com/334281979): Non-normal browser windows should not have a
+  // tab to begin with.
+  target_browser->tab_strip_model()->AppendWebContents(std::move(contents_move),
+                                                       true);
   auto* web_contents =
       target_browser->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);

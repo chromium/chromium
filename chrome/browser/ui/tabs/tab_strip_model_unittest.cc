@@ -563,42 +563,6 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
   }
   EXPECT_EQ("1 2 3", GetTabStripStateString(tabstrip));
 
-  // Test DetachWebContentsAtForInsertion
-  {
-    // Detach ...
-    std::unique_ptr<content::WebContents> detached_with_ownership =
-        tabstrip.DetachWebContentsAtForInsertion(2);
-    WebContents* detached = detached_with_ownership.get();
-    // ... and append again because we want this for later.
-    tabstrip.AppendWebContents(std::move(detached_with_ownership), true);
-    EXPECT_EQ(8, observer.GetStateCount());
-    State s1(detached, 2, MockTabStripModelObserver::DETACH);
-    observer.ExpectStateEquals(0, s1);
-    State s2(detached, 2, MockTabStripModelObserver::DEACTIVATE);
-    observer.ExpectStateEquals(1, s2);
-    State s3(raw_contents2, 1, MockTabStripModelObserver::ACTIVATE);
-    s3.src_contents = raw_contents3;
-    s3.change_reason = TabStripModelObserver::CHANGE_REASON_NONE;
-    observer.ExpectStateEquals(2, s3);
-    State s4(raw_contents2, 1, MockTabStripModelObserver::SELECT);
-    s4.src_index = 2;
-    observer.ExpectStateEquals(3, s4);
-    State s5(detached, 2, MockTabStripModelObserver::INSERT);
-    s5.foreground = true;
-    observer.ExpectStateEquals(4, s5);
-    State s6(raw_contents2, 1, MockTabStripModelObserver::DEACTIVATE);
-    observer.ExpectStateEquals(5, s6);
-    State s7(detached, 2, MockTabStripModelObserver::ACTIVATE);
-    s7.src_contents = raw_contents2;
-    s7.change_reason = TabStripModelObserver::CHANGE_REASON_NONE;
-    observer.ExpectStateEquals(6, s7);
-    State s8(detached, 2, MockTabStripModelObserver::SELECT);
-    s8.src_index = 1;
-    observer.ExpectStateEquals(7, s8);
-    observer.ClearStates();
-  }
-  EXPECT_EQ("1 2 3", GetTabStripStateString(tabstrip));
-
   // Test DetachAndDeleteWebContentsAt
   {
     // add a background tab to detach
@@ -3306,12 +3270,12 @@ TEST_F(TabStripModelTest, TabBlockedState) {
   EXPECT_TRUE(strip_src.IsTabBlocked(1));
 
   // Detach the tab.
-  std::unique_ptr<WebContents> moved_contents =
-      strip_src.DetachWebContentsAtForInsertion(1);
-  EXPECT_EQ(raw_contents2, moved_contents.get());
+  std::unique_ptr<tabs::TabModel> moved_tab =
+      strip_src.DetachTabAtForInsertion(1);
+  EXPECT_EQ(raw_contents2, moved_tab->contents());
 
   // Attach the tab to the destination tab strip.
-  strip_dst.AppendWebContents(std::move(moved_contents), true);
+  strip_dst.AppendTab(std::move(moved_tab), true);
   EXPECT_TRUE(strip_dst.IsTabBlocked(0));
 
   strip_dst.CloseAllTabs();

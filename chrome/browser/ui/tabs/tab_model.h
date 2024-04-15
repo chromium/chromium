@@ -70,11 +70,14 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // https://crbug.com/331022416: Do not use this method. The signature of this
   // method suggests that it's possible to replace the WebContents that
   // represents a live, foregrounded tab with a different WebContents. This is
-  // never the case. Instead use RemoveContents() and AddContents().
+  // never the case.
   std::unique_ptr<content::WebContents> ReplaceContents(
       std::unique_ptr<content::WebContents> contents);
 
-  std::unique_ptr<content::WebContents> RemoveContents();
+  // This destroys the TabModel and takes ownership of the underlying
+  // WebContents.
+  static std::unique_ptr<content::WebContents> DestroyAndTakeWebContents(
+      std::unique_ptr<TabModel> tab_model);
 
   // The current contents of the tab must be |nullptr|.
   void SetContents(std::unique_ptr<content::WebContents> contents);
@@ -113,6 +116,8 @@ class TabModel final : public SupportsHandles<const TabModel>,
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
 
  private:
+  std::unique_ptr<content::WebContents> RemoveContents();
+
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -130,7 +135,12 @@ class TabModel final : public SupportsHandles<const TabModel>,
     raw_ptr<TabModel> tab_;
   };
 
-  std::unique_ptr<content::WebContents> contents_;
+  // This must always be the first member so that it is destroyed last. This is
+  // because there are some instances where a caller may want to destroy a
+  // TabModel but keep the WebContents alive. There are other destructors such
+  // as TabFeatures that may require a valid `contents_` during destruction.
+  std::unique_ptr<content::WebContents> contents_owned_;
+  raw_ptr<content::WebContents> contents_;
 
   // A back reference to the TabStripModel that contains this TabModel. The
   // owning model can be nullptr if the tab has been detached from it's previous
