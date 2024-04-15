@@ -60,7 +60,11 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   void set_preconnected_origins(const Vector<url::Origin>& origins);
 
+  void set_unused_preloads(Vector<KURL> preloads);
+
   const Vector<KURL>& fetched_fonts() { return fetched_fonts_; }
+
+  const Vector<KURL>& unused_preloads() { return unused_preloads_; }
 
   void Reset();
 
@@ -97,6 +101,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   HashSet<KURL> lcp_influencer_scripts_;
   Vector<KURL> fetched_fonts_;
   Vector<url::Origin> preconnected_origins_;
+  Vector<KURL> unused_preloads_;
 
   // Callbacks are called when predicted LCP is painted. Never called if
   // prediction is incorrect.

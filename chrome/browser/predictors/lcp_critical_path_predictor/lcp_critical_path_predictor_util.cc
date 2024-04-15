@@ -565,12 +565,15 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_data);
   std::vector<GURL> preconnect_origins =
       PredictPreconnectableOrigins(lcpp_data);
+  std::vector<GURL> unused_preloads = PredictUnusedPreloads(lcpp_data);
 
   if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty() ||
-      !fetched_fonts.empty() || !preconnect_origins.empty()) {
+      !fetched_fonts.empty() || !preconnect_origins.empty() ||
+      !unused_preloads.empty()) {
     return blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
         std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
-        std::move(fetched_fonts), std::move(preconnect_origins));
+        std::move(fetched_fonts), std::move(preconnect_origins),
+        std::move(unused_preloads));
   }
   return std::nullopt;
 }
@@ -681,6 +684,23 @@ std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data) {
     subresource_urls.push_back(std::move(parsed_url));
   }
   return subresource_urls;
+}
+
+std::vector<GURL> PredictUnusedPreloads(const LcppData& data) {
+  std::vector<GURL> unused_preloads;
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
+    return unused_preloads;
+  }
+
+  for (const auto& [frequency, url] :
+       ConvertToFrequencyStringPair(data.lcpp_stat().unused_preload_stat())) {
+    GURL parsed_url(url);
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    unused_preloads.push_back(std::move(parsed_url));
+  }
+  return unused_preloads;
 }
 
 LcppDataInputs::LcppDataInputs() = default;

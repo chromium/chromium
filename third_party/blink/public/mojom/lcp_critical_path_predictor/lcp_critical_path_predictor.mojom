@@ -61,4 +61,7 @@ struct LCPCriticalPathPredictorNavigationTimeHint {
 
   // Preconnectable origins that affected the LCP element.
   array<url.mojom.Url> preconnect_origins;
+
+  // Unused preloaded URLs in the past loads.
+  array<url.mojom.Url> unused_preloads;
 };

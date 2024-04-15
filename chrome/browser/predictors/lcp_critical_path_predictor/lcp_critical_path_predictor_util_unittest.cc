@@ -631,6 +631,63 @@ TEST(PredictPreconnectableOrigins, FilterUrls) {
             PredictPreconnectableOrigins(lcpp_data));
 }
 
+TEST(PredictUnusedPreloads, Empty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+  EXPECT_EQ(std::vector<GURL>(), PredictUnusedPreloads({}));
+}
+
+TEST(PredictUnusedPreloads, SingleEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+  LcppData lcpp_data;
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_unused_preload_stat()
+      ->mutable_main_buckets()
+      ->insert({"https://example.com/a.jpeg", 0.9});
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictUnusedPreloads(lcpp_data));
+}
+
+TEST(PredictUnusedPreloads, SortedByFrequencyInDescendingOrder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+  LcppData lcpp_data;
+  auto* buckets = lcpp_data.mutable_lcpp_stat()
+                      ->mutable_unused_preload_stat()
+                      ->mutable_main_buckets();
+  buckets->insert({"https://example.com/c.jpeg", 0.1});
+  buckets->insert({"https://example.com/a.jpeg", 0.3});
+  buckets->insert({"https://example.com/b.jpeg", 0.2});
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/c.jpeg")}),
+            PredictUnusedPreloads(lcpp_data));
+}
+
+TEST(PredictUnusedPreloads, FilterUrls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kLCPPDeferUnusedPreload, {}}}, {});
+  LcppData lcpp_data;
+  auto* buckets = lcpp_data.mutable_lcpp_stat()
+                      ->mutable_unused_preload_stat()
+                      ->mutable_main_buckets();
+  buckets->insert({"https://example.com/a.jpeg", 0.1});
+  buckets->insert({"https://example.com/b.jpeg", 0.2});
+  // Not an HTTP/HTTPS.
+  buckets->insert({"file://example.com/c.jpeg", 0.7});
+  // Not an URL.
+  buckets->insert({"d.jpeg", 0.8});
+  EXPECT_EQ(4U, buckets->size());
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/a.jpeg")}),
+            PredictUnusedPreloads(lcpp_data));
+}
+
 TEST(LcppKeyTest, InvalidURLs) {
   const std::string invalid_urls[] = {
       // Invalid urls

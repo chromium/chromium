@@ -78,6 +78,10 @@ void LCPCriticalPathPredictor::set_preconnected_origins(
   preconnected_origins_ = std::move(origins);
 }
 
+void LCPCriticalPathPredictor::set_unused_preloads(Vector<KURL> preloads) {
+  unused_preloads_ = std::move(preloads);
+}
+
 void LCPCriticalPathPredictor::Reset() {
   lcp_element_locators_.clear();
   lcp_element_locator_strings_.clear();

@@ -37,6 +37,12 @@ std::vector<GURL> PredictPreconnectableOrigins(const LcppData& data);
 // vector.
 std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data);
 
+// Returns possible unused preload URLs from past loads for a given `data`.
+// The returned URLs are ordered by descending frequency (the most
+// frequent one comes first). If there is no data, it returns an empty
+// vector.
+std::vector<GURL> PredictUnusedPreloads(const LcppData& data);
+
 // An input to update LcppData.
 struct LcppDataInputs {
   LcppDataInputs();
