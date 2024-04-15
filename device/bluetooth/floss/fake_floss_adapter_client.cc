@@ -259,6 +259,88 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
   }
 }
 
+void FakeFlossAdapterClient::CreateBond(
+    ResponseCallback<FlossDBusClient::BtifStatus> callback,
+    FlossDeviceId device,
+    BluetoothTransport transport) {
+  if (fail_bonding_) {
+    fail_bonding_ = std::nullopt;
+
+    std::move(callback).Run(base::unexpected(
+        Error("org.chromium.Error.Failed", "Bonding failed by request")));
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.DeviceBondStateChanged(
+        device, /*status=*/0,
+        FlossAdapterClient::BondState::kBondingInProgress);
+  }
+
+  if (device.address == kJustWorksAddress ||
+      device.address == kClassicAddress) {
+    for (auto& observer : observers_) {
+      observer.DeviceBondStateChanged(device, /*status=*/0,
+                                      FlossAdapterClient::BondState::kBonded);
+    }
+    bonded_addresses_.insert(device.address);
+    SetConnected(device.address, true);
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else if (device.address == kPasskeyDisplayAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterSspRequest(device, /*cod=*/0,
+                                 BluetoothSspVariant::kPasskeyNotification,
+                                 kPasskey);
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else if (device.address == kPhoneAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterSspRequest(device, /*cod=*/0,
+                                 BluetoothSspVariant::kPasskeyConfirmation,
+                                 kPasskey);
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else if (device.address == kPasskeyRequestAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterSspRequest(device, /*cod=*/0,
+                                 BluetoothSspVariant::kPasskeyEntry, 0);
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else if (device.address == kPinCodeDisplayAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterPinDisplay(device, std::string(kPinCode));
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else if (device.address == kPinCodeRequestAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterPinRequest(device, 0, false);
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback),
+                                   FlossDBusClient::BtifStatus::kSuccess));
+  } else {
+    for (auto& observer : observers_) {
+      observer.DeviceBondStateChanged(
+          device, static_cast<uint32_t>(BtifStatus::kFail),
+          FlossAdapterClient::BondState::kNotBonded);
+    }
+
+    PostDelayedTask(base::BindOnce(
+        std::move(callback),
+        base::unexpected(Error("org.chromium.bluetooth.UnknownDevice", ""))));
+  }
+}
+
 void FakeFlossAdapterClient::CancelBondProcess(ResponseCallback<bool> callback,
                                                FlossDeviceId device) {
   for (auto& observer : observers_) {
@@ -369,6 +451,14 @@ void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
     const FlossDeviceId& device) {
   SetConnected(device.address, true);
   PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
+}
+
+void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
+    ResponseCallback<FlossDBusClient::BtifStatus> callback,
+    const FlossDeviceId& device) {
+  SetConnected(device.address, true);
+  PostDelayedTask(base::BindOnce(std::move(callback),
+                                 FlossDBusClient::BtifStatus::kSuccess));
 }
 
 void FakeFlossAdapterClient::DisconnectAllEnabledProfiles(

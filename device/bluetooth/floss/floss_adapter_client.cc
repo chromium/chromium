@@ -76,6 +76,14 @@ void FlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                           transport);
 }
 
+void FlossAdapterClient::CreateBond(
+    ResponseCallback<FlossDBusClient::BtifStatus> callback,
+    FlossDeviceId device,
+    BluetoothTransport transport) {
+  CallAdapterMethod<FlossDBusClient::BtifStatus>(
+      std::move(callback), adapter::kCreateBond, device, transport);
+}
+
 void FlossAdapterClient::CancelBondProcess(ResponseCallback<bool> callback,
                                            FlossDeviceId device) {
   CallAdapterMethod<bool>(std::move(callback), adapter::kCancelBondProcess,
@@ -151,6 +159,13 @@ void FlossAdapterClient::ConnectAllEnabledProfiles(
     const FlossDeviceId& device) {
   CallAdapterMethod<Void>(std::move(callback),
                           adapter::kConnectAllEnabledProfiles, device);
+}
+
+void FlossAdapterClient::ConnectAllEnabledProfiles(
+    ResponseCallback<FlossDBusClient::BtifStatus> callback,
+    const FlossDeviceId& device) {
+  CallAdapterMethod<FlossDBusClient::BtifStatus>(
+      std::move(callback), adapter::kConnectAllEnabledProfiles, device);
 }
 
 void FlossAdapterClient::DisconnectAllEnabledProfiles(

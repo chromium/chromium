@@ -224,6 +224,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
       base::OnceClosure callback,
       DBusResult<FlossAdapterClient::BtAddressType> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
+  void OnConnectAllEnabledProfiles(DBusResult<FlossDBusClient::BtifStatus> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
                                       ErrorCallback error_callback,
                                       DBusResult<Void> ret);
@@ -241,6 +242,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                               ErrorCallback error_callback,
                               DBusResult<Void> ret);
   void OnCreateBond(DBusResult<bool> ret);
+  void OnCreateBond(DBusResult<FlossDBusClient::BtifStatus> ret);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnExecuteWrite(base::OnceClosure callback,

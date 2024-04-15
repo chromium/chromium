@@ -289,10 +289,22 @@ void BluetoothDeviceFloss::Connect(
     ConnectAllEnabledProfiles();
   } else {
     pairing_ = std::make_unique<BluetoothPairingFloss>(pairing_delegate);
-    FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
-        base::BindOnce(&BluetoothDeviceFloss::OnCreateBond,
-                       weak_ptr_factory_.GetWeakPtr()),
-        AsFlossDeviceId(), FlossAdapterClient::BluetoothTransport::kAuto);
+    if (FlossDBusManager::Get()->GetFlossApiVersion() >=
+        base::Version("0.4.0")) {
+      FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
+          base::BindOnce(static_cast<void (BluetoothDeviceFloss::*)(
+                             DBusResult<FlossDBusClient::BtifStatus>)>(
+                             &BluetoothDeviceFloss::OnCreateBond),
+                         weak_ptr_factory_.GetWeakPtr()),
+          AsFlossDeviceId(), FlossAdapterClient::BluetoothTransport::kAuto);
+    } else {
+      FlossDBusManager::Get()->GetAdapterClient()->CreateBond(
+          base::BindOnce(
+              static_cast<void (BluetoothDeviceFloss::*)(DBusResult<bool>)>(
+                  &BluetoothDeviceFloss::OnCreateBond),
+              weak_ptr_factory_.GetWeakPtr()),
+          AsFlossDeviceId(), FlossAdapterClient::BluetoothTransport::kAuto);
+    }
   }
 }
 
@@ -303,6 +315,23 @@ void BluetoothDeviceFloss::OnCreateBond(DBusResult<bool> ret) {
   } else if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << ret.error();
     TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+  }
+}
+
+void BluetoothDeviceFloss::OnCreateBond(
+    DBusResult<FlossDBusClient::BtifStatus> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to create bond, D-Bus error: "
+                         << ret.error();
+    TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  if (*ret != FlossDBusClient::BtifStatus::kSuccess) {
+    BLUETOOTH_LOG(ERROR) << "Failed to create bond, status: "
+                         << static_cast<uint32_t>(*ret);
+    TriggerConnectCallback(FlossDBusClient::BtifStatusToConnectErrorCode(*ret));
+    return;
   }
 }
 
@@ -602,10 +631,21 @@ void BluetoothDeviceFloss::ConnectAllEnabledProfiles() {
       base::BindOnce(&BluetoothDeviceFloss::ConnectionIncomplete,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  FlossDBusManager::Get()->GetAdapterClient()->ConnectAllEnabledProfiles(
-      base::BindOnce(&BluetoothDeviceFloss::OnConnectAllEnabledProfiles,
-                     weak_ptr_factory_.GetWeakPtr()),
-      AsFlossDeviceId());
+  if (FlossDBusManager::Get()->GetFlossApiVersion() >= base::Version("0.4.0")) {
+    FlossDBusManager::Get()->GetAdapterClient()->ConnectAllEnabledProfiles(
+        base::BindOnce(static_cast<void (BluetoothDeviceFloss::*)(
+                           DBusResult<FlossDBusClient::BtifStatus>)>(
+                           &BluetoothDeviceFloss::OnConnectAllEnabledProfiles),
+                       weak_ptr_factory_.GetWeakPtr()),
+        AsFlossDeviceId());
+  } else {
+    FlossDBusManager::Get()->GetAdapterClient()->ConnectAllEnabledProfiles(
+        base::BindOnce(
+            static_cast<void (BluetoothDeviceFloss::*)(DBusResult<Void>)>(
+                &BluetoothDeviceFloss::OnConnectAllEnabledProfiles),
+            weak_ptr_factory_.GetWeakPtr()),
+        AsFlossDeviceId());
+  }
 }
 
 void BluetoothDeviceFloss::ResetPairing() {
@@ -787,6 +827,32 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
     // TODO(b/202874707): Design a proper new errors for Floss.
     UpdateConnectingState(ConnectingState::kIdle,
                           BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  // Floss does not send any notifications that profiles have successfully
+  // connected if we are already ACL connected.
+  if (is_acl_connected_) {
+    UpdateConnectingState(ConnectingState::kProfilesConnected, std::nullopt);
+  }
+}
+
+void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
+    DBusResult<FlossDBusClient::BtifStatus> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR)
+        << "Failed to connect all enabled profiles, D-Bus error: "
+        << ret.error();
+    UpdateConnectingState(ConnectingState::kIdle,
+                          BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
+  }
+
+  if (*ret != FlossDBusClient::BtifStatus::kSuccess) {
+    BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles, status: "
+                         << static_cast<uint32_t>(*ret);
+    UpdateConnectingState(ConnectingState::kIdle,
+                          FlossDBusClient::BtifStatusToConnectErrorCode(*ret));
     return;
   }
 

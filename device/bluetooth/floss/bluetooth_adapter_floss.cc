@@ -54,25 +54,6 @@ void InitWhenObjectManagerKnown(base::OnceClosure callback) {
       std::move(callback));
 }
 
-BluetoothDeviceFloss::ConnectErrorCode BtifStatusToConnectErrorCode(
-    uint32_t status) {
-  switch (static_cast<FlossAdapterClient::BtifStatus>(status)) {
-    case FlossAdapterClient::BtifStatus::kFail:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_FAILED;
-    case FlossAdapterClient::BtifStatus::kAuthFailure:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_AUTH_FAILED;
-    case FlossAdapterClient::BtifStatus::kAuthRejected:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_AUTH_REJECTED;
-    case FlossAdapterClient::BtifStatus::kDone:
-    case FlossAdapterClient::BtifStatus::kBusy:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_INPROGRESS;
-    case FlossAdapterClient::BtifStatus::kUnsupported:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE;
-    default:
-      return BluetoothDeviceFloss::ConnectErrorCode::ERROR_UNKNOWN;
-  }
-}
-
 bool DeviceNeedsToReadProperties(device::BluetoothDevice* device) {
   if (device) {
     BluetoothDeviceFloss* floss_device =
@@ -1115,7 +1096,9 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     }
     LOG(ERROR) << "Received BondStateChanged with error status = " << status
                << " for " << remote_device.address;
-    device->SetBondState(bond_state, BtifStatusToConnectErrorCode(status));
+    device->SetBondState(bond_state,
+                         FlossDBusClient::BtifStatusToConnectErrorCode(
+                             static_cast<FlossDBusClient::BtifStatus>(status)));
     if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
       // Since we're no longer bonded, update connection state so that
       // ConnectCallback can process the error correctly.

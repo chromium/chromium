@@ -188,6 +188,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   // Returns system bus pointer (owned by FlossDBusThreadManager).
   dbus::Bus* GetSystemBus() const { return bus_; }
 
+  // Gets Floss API version.
+  base::Version GetFlossApiVersion() const { return version_; }
+
   // All returned objects are owned by FlossDBusManager. Do not use these
   // pointers after FlossDBusManager has been shut down.
   FlossAdapterClient* GetAdapterClient();

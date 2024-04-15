@@ -256,6 +256,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           FlossDeviceId device,
                           BluetoothTransport transport);
 
+  // Create a bond with the given device and transport. API version >= 0.4.0,
+  // add callback status.
+  virtual void CreateBond(
+      ResponseCallback<FlossDBusClient::BtifStatus> callback,
+      FlossDeviceId device,
+      BluetoothTransport transport);
+
   // Cancel a bond process.
   virtual void CancelBondProcess(ResponseCallback<bool> callback,
                                  FlossDeviceId device);
@@ -306,6 +313,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Connect to all enabled profiles.
   virtual void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
                                          const FlossDeviceId& device);
+
+  // Connect to all enabled profiles. API version >= 0.4.0, add callback status.
+  virtual void ConnectAllEnabledProfiles(
+      ResponseCallback<FlossDBusClient::BtifStatus> callback,
+      const FlossDeviceId& device);
 
   // Disconnect all enabled profiles.
   virtual void DisconnectAllEnabledProfiles(ResponseCallback<Void> callback,

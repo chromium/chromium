@@ -569,6 +569,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Convert adapter number to logging object path.
   static dbus::ObjectPath GenerateLoggingPath(int adapter_index);
 
+  // Convert Floss error codes to BluetoothDevice defined error codes.
+  static device::BluetoothDevice::ConnectErrorCode BtifStatusToConnectErrorCode(
+      FlossDBusClient::BtifStatus status);
+
   // Generalized DBus serialization (used for generalized method call
   // invocation).
   template <typename T>

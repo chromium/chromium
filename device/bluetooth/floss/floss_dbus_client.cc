@@ -194,6 +194,27 @@ dbus::ObjectPath FlossDBusClient::GenerateLoggingPath(int adapter_index) {
       base::StringPrintf(kAdapterLoggingObjectFormat, adapter_index));
 }
 
+device::BluetoothDevice::ConnectErrorCode
+FlossDBusClient::BtifStatusToConnectErrorCode(
+    FlossDBusClient::BtifStatus status) {
+  switch (status) {
+    case BtifStatus::kFail:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED;
+    case BtifStatus::kAuthFailure:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED;
+    case BtifStatus::kAuthRejected:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED;
+    case BtifStatus::kDone:
+    case BtifStatus::kBusy:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS;
+    case BtifStatus::kUnsupported:
+      return device::BluetoothDevice::ConnectErrorCode::
+          ERROR_UNSUPPORTED_DEVICE;
+    default:
+      return device::BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN;
+  }
+}
+
 // Default error handler for dbus clients is to just print the error right now.
 // TODO(abps) - Deprecate this once error handling is implemented in the upper
 //              layers.
