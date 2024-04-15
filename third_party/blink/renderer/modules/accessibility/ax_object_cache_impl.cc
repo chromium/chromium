@@ -5424,6 +5424,12 @@ void AXObjectCacheImpl::AddDirtyObjectToSerializationQueue(
     ax::mojom::blink::Action event_from_action,
     const std::vector<ui::AXEventIntent>& event_intents) {
   CHECK(!IsFrozen());
+
+  // If not included, cannot be serialized, so there is no need to queue.
+  if (!obj->LastKnownIsIncludedInTreeValue()) {
+    return;
+  }
+
   // Add to object to a queue that will be sent to the serializer in
   // SerializeDirtyObjectsAndEvents().
   dirty_objects_.push_back(
