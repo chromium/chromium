@@ -2735,7 +2735,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       }
     }
   } else if (params.name == html_names::kAnchorAttr) {
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+    if (IsA<HTMLElement>(this) &&
+        RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
       EnsureAnchorElementObserver().Notify();
       return;
     }
