@@ -125,19 +125,26 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
         weak_ptr_factory_.GetWeakPtr(), std::move(result.value())));
   }
 
-  switch (result.error()) {
-    case Vcn3dsAuthenticationPopupErrorType::kAuthenticationFailed:
-    case Vcn3dsAuthenticationPopupErrorType::kInvalidQueryParams:
-      client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-              /*is_permanent_error=*/true));
-      break;
-    case Vcn3dsAuthenticationPopupErrorType::kAuthenticationNotCompleted:
-      break;
+  // If the authentication was known to fail inside of the pop-up (for example,
+  // a user retried too many times for the issuer or network's auth mechanism
+  // inside of the pop-up browser window), trigger the error dialog. Otherwise,
+  // it is assumed that the user manually closed the pop-up, so triggering an
+  // error dialog would be a bad user experience. If the Payments Server
+  // introduced invalid query parameters on the last redirect, this would fail
+  // to handle that correctly, but it is not feasible to distinguish that from
+  // the user closing the pop-up.
+  if (result.error() ==
+      Vcn3dsAuthenticationPopupErrorType::kAuthenticationFailed) {
+    client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+            /*is_permanent_error=*/true));
   }
 
-  // In the case of an error, we show the user an error dialog but still run the
-  // callback to let the caller know the flow has finished unsuccessfully.
+  // The callback is always run at this point, which can be either when the user
+  // closed the pop-up or an error occurred. This is so that the requester is
+  // notified of the flow's completion.
+  // TODO(crbug.com/334967738): Check whether the user closed the pop-up window
+  // directly once an API for it is built.
   std::move(vcn_3ds_context_->completion_callback)
       .Run(Vcn3dsAuthenticationResponse());
   Reset();

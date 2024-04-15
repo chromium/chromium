@@ -315,14 +315,13 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds_ConsentAlreadyGiven");
   EXPECT_TRUE(VerifyUi());
 
-  // Navigate to a page where there is an shouldProceed query param but not
-  // token query param.
+  // Navigate to a page where there is an unrecognized query param.
   GetPopupWebContents()->OpenURL(
-      content::OpenURLParams(GURL("https://site.example/?shouldProceed=true"),
-                             content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                             /*is_renderer_initiated=*/false),
+      content::OpenURLParams(
+          GURL("https://site.example/?unrecognizedQueryParam=true"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
   ClosePopup();
@@ -340,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 

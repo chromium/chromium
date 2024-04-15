@@ -78,9 +78,6 @@ class PaymentsWindowManager {
     // if the user closes the pop-up before finishing the authentication, and
     // there are no query params.
     kAuthenticationNotCompleted = 1,
-    // The query params are invalid. This should not happen, but since Chrome
-    // has no control over this it is handled gracefully.
-    kInvalidQueryParams = 2,
   };
 
   virtual ~PaymentsWindowManager() = default;
