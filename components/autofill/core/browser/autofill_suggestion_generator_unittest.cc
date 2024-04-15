@@ -3156,6 +3156,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
   EXPECT_THAT(suggestions[0], EqualLabels({{u"Address test data"}}));
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCode);
   EXPECT_EQ(suggestions[0].children.size(), 1u);
+  EXPECT_FALSE(suggestions[0].is_acceptable);
 
   const Suggestion& child = suggestions[0].children.back();
   EXPECT_EQ(child.main_text.value, u"United States");

@@ -979,6 +979,7 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   suggestion.labels = {{Suggestion::Text(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};
   suggestion.icon = Suggestion::Icon::kCode;
+  suggestion.is_acceptable = false;
   for (const AutofillProfile& test_address : test_addresses) {
     const std::u16string test_address_country =
         test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
