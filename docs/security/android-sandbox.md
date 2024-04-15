@@ -163,7 +163,7 @@ calls, some of the complexity provided by the Linux kernel can be walled off
 from a low-privilege process.
 
 The [policy applied to
-Andriod](https://source.chromium.org/chromium/chromium/src/+/main:sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h;l=25;drc=f18d3489a59d34c92a8d96ef6a7e7279198a8ec6)
+Android](https://source.chromium.org/chromium/chromium/src/+/main:sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h;l=25;drc=f18d3489a59d34c92a8d96ef6a7e7279198a8ec6)
 is based on the desktop Linux policy. But, additional system calls are permitted
 compared to desktop Linux. The major differences are to allow the JVM to
 function properly and to account for differences in Bionic (Android Libc) vs

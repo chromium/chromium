@@ -31,7 +31,7 @@ Please check here for any news and updates about the Chrome VRP.
   qualifying vulnerabilities](https://g.co/chrome/vrp/#qualifying-vulnerabilities)
   for details.
 
-* December 2023: We announced the [Chrome VRP Top Reseachers of
+* December 2023: We announced the [Chrome VRP Top Researchers of
   2023](https://crbug.com/1509898). Congratulations to all who made the list!
   Thank you to all of our researchers for your contributions in 2023 and helping
   us make Chrome Browser more secure for all users.
@@ -76,9 +76,9 @@ reports:
   immediately for triage.
 * Ensure the PoC is as minimized as possible.
   * This is useful in root cause analysis and also improves the changes of
-    reproduciton by ClusterFuzz or the Security Shepherd triaging your report.
-* Please format your PoCs to they do not require running python as root.
-  * You PoC should be constructed to reproduce locally when at all possible.
+    reproduction by ClusterFuzz or the Security Shepherd triaging your report.
+* Please format your PoCs so they do not require running python as root.
+  * Your PoC should be constructed to reproduce locally when at all possible.
 * Do *not* provide links (public or unlisted) to / as PoCs.
   * The PoC should ALWAYS be a file directly attached to the report, even if it
     cannot be reproduced in ClusterFuzz.
@@ -108,7 +108,7 @@ reports:
     * We do not need to see you loading Chrome or displaying the version page
       multiple times in a video.
   * DO feel free to include music, sound effects, or animal pics in your
-    your videos. :)
+    videos. :)
 
 ### Bug Reporting
 
@@ -129,9 +129,10 @@ reports:
   (Stable/Beta/Dev) on which you discovered and reproduced the issue you are
   reporting.
   * For an opportunity at increasing your potential reward amount to receive a
-    [Bisect Bonus](https://g.go/chrome/vrp/#bisect-bonus), please consider
-    performing a full bisection, detailing the commit the introduced the issue
-    and / or all the active release channels impacted by the bug.
+    [Bisect Bonus](https://g.co/chrome/vrp/#bisect-bonus),
+    please consider performing a full bisection, detailing the commit that
+    introduced the issue and / or all the active release channels impacted by
+    the bug.
 
 ### Suggested Fix / Patch Rewards
 
@@ -139,7 +140,7 @@ reports:
   the report as its own attachment.
 * We reward [bonuses for your patches](https://g.co/chrome/vrp/#patch-bonus)
   that end up being used as the fix.
-  * Bonuses are $500 - $2000 dpending on how substantial the patch is.
+  * Bonuses are $500 - $2000 depending on how substantial the patch is.
   * To maximize your patch rewards, please commit the patch directly to Chromium
     and include the Gerrit (Chromium code review tool) link in the report or
     report comment.
@@ -153,7 +154,7 @@ reports:
 
 #### How do I know if my bug report is possibly eligible for a VRP reward?
 
-* All valididated, [qualifying vulnerability
+* All validated, [qualifying vulnerability
   reports](https://g.co/chrome/vrp/#qualifying-vulnerabilities) are
   automatically considered for a reward once they are fixed. At which point you
   will see the reward-topanel hotlist signifier added to your bug report. This
@@ -163,8 +164,8 @@ reports:
 
 #### I want to report a bug through a broker / not directly to you.
 
-* We believe it is against the spirit of the program to privately disclosure
-  security vulnerabities to third parties for purposes other than fixing the
+* We believe it is against the spirit of the program to privately disclose
+  security vulnerabilities to third parties for purposes other than fixing the
   bug. Consequently, such reports will not qualify for a reward.
 
 #### What if someone else reported the same bug?
@@ -188,7 +189,7 @@ reports:
 
 #### Are bugs in unlaunched features / behind command line flags VRP-eligible?
 
-* Yes, we are intested in bugs in any code that has shipped to even a fraction
+* Yes, we are interested in bugs in any code that has shipped to even a fraction
   of our users.
 * *The only exception at this time are security bugs in V8 behind
   --experimental*; this flag is for early and experimental V8 development
@@ -267,7 +268,7 @@ Is there a time limit for submitting an exploit?
   older version of Chrome, and it was the first actionable report of that
   issue, your bug will be issued a CVE at the time the fix ships in a Stable
   channel update of Chrome.
-* The CVE number will be updated directly on the the report itself and listed in
+* The CVE number will be updated directly on the report itself and listed in
   the Chrome Browser release notes for that Stable channel update.
 
 ### Disclosure / Report Visibility
@@ -285,7 +286,7 @@ Is there a time limit for submitting an exploit?
 #### When will the bug I reported be publicly disclosed?
 
 * Most security bugs are automatically opened for public access 14 weeks after
-  the bug is clsoed as Fixed, meaning the fix commit is landed on Chromium main.
+  the bug is closed as Fixed, meaning the fix commit is landed on Chromium main.
 * Our automation removes the view restrictions, opening the report for public
   visibility at that time.
 
@@ -303,7 +304,7 @@ Is there a time limit for submitting an exploit?
 
 #### Can you keep my report under Security Embargo?
 
-* Security Embargo prevents isseus from being disclosed beyond the security team
+* Security Embargo prevents issues from being disclosed beyond the security team
   and engineers working to resolve the bug. Once the issue is fixed, the
   (Security Notify) community of embedders and developers of other
   Chromium-based products are reliant on the access to bug reports. Because
@@ -338,7 +339,7 @@ Is there a time limit for submitting an exploit?
   world, the opportunity to publicly discuss/blog/present/share your amazing
   work, and *the knowledge that you are helping keep Chrome secure for billions
   of people across the world*!
-* Also, many of our researches receive gifts of swag and are invited to events.
+* Also, many of our researchers receive gifts of swag and are invited to events.
 * You'll additionally have the peace of mind to know your bug findings were
   never used by shady people for nefarious purposes.
 

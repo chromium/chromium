@@ -82,7 +82,7 @@ current releases.
         project or Google partner and they organize a coordinated disclosure
         process. We'd remove the restriction hotlist if/when the embargo gets
         lifted.
-      * The reporter indicates a preference to remain anonymous an the bug
+      * The reporter indicates a preference to remain anonymous and the bug
         history would give away the reporter's identity (if they file using an
         anonymous account, this doesn't apply).
 
@@ -93,9 +93,9 @@ Program](https://www.chromium.org/Home/chromium-security/vulnerability-rewards-p
 Chromium user on behalf of an external party, use **reward_to-external** to
 ensure the report is still properly credited to the external reporter in the
 release notes. IF, however, _the reporter is an individual with an email
-address_ you should set the **Reporter** field to reflect to the email address
+address_ you should set the **Reporter** field to reflect the email address
 of the external reporter. If the reporter was an organization or entity with a
-specific email address, then do not alter the **Reporter** field and user the
+specific email address, then do not alter the **Reporter** field and use the
 **reward-to_external** hotlist. Despite its name, you should add
 this label whether or not the reporter is in scope for the vulnerability rewards
 program, because external reports are credited in the release notes irrespective.
@@ -164,7 +164,7 @@ It's important to get this right, because this label influences how rapidly
 we merge and release the fix. Ask for help if you're not sure.
 
 Some **Security_Impact-None** bugs may still be subject to VRP rewards, if
-those bugs are found in found in code that we're likely to enable in the future.
+those bugs are found in code that we're likely to enable in the future.
 
 ### OS Field
 
@@ -277,7 +277,7 @@ and replaces updates with **security-notify@chromium.org** for fixed security
 bugs. Rationale is that while fixed bugs are generally not intended to become
 public immediately, we'd like to give access to external parties depending on
 Chromium via *security-notify@chromium.org*.
-(Collabortor for WebRTC bugs is instead updated to
+(Collaborator for WebRTC bugs is instead updated to
 **security-notify@webrtc.org**).
 
 ### Update **Merge Field with Request-X** For Fixed Bugs
@@ -326,7 +326,7 @@ replaced with two: **reward-7000** and **reward-unpaid**. Later,
 **reward-unpaid** becomes **reward-inprocess** and is later still removed when
 all is done. Of course, **reward-7000** remains forever. (We use it to track
 total payout!)
-5. A Chrome Security TPM with the responsbility of doing merge review regularly
+5. A Chrome Security TPM with the responsibility of doing merge review regularly
 checks the security merge review queue based on Type=Vulnerability issues with
 **Merge fields** updated with **request-MMM* or **review-MMM** entries. They
 review this issue and fix, having had enough bake time in Canary and being safe
@@ -342,6 +342,6 @@ is updated with the appropriate CVE for that issue: **2024-####**.
 7. 14 weeks after the bug is marked **Fixed**, Blintz updates the **Visibility**
 from **Issue access level -- Limited Visibility** to **Default Visibility** and
 removes security-notify@chromium.org from Collaborators, making the issue
-publicly visible. There is one crucial exception -- Blintz will not remove
-update the Visibility or remove security@chromium.org from Collaborators if the
-issue is on the **SecurityEmbargo** hotlist.
+publicly visible. There is one crucial exception -- Blintz will not update the
+Visibility or remove security@chromium.org from Collaborators if the issue is
+on the **SecurityEmbargo** hotlist.

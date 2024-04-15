@@ -49,7 +49,7 @@ For [*every new incoming security bug*](#Every-New-Incoming-Security-Bug):
 All of the above should be completed as soon as possible during your shift,
 and at least, by the [shift-handoff](#shift-handoff).
 
-One or more of the above actions may necessary to complete the triage of an
+One or more of the above actions may be necessary to complete the triage of an
 under-triaged bug, i.e. covering any of the open red cells in the dashboard that
 were not completed from ClusterFuzz auto-triage or previous work on the bug.
 
@@ -68,7 +68,7 @@ All this is hard, so please remember to [ask for help](#Ask-for-help).
 
 ## Links to Helpful Resources
 
-Here are some of the importance references and resources you need or may need
+Here are some of the important references and resources you need or may need
 during your shepherding shift:
 
 * [Current Shepherds](https://script.google.com/a/macros/google.com/s/AKfycbz02xD4ghSzZu_tXyNRgjC95wFURATZeD_FHq0KRMHeqA-b0b9sow4NV1lhi0P2vy1j/exec)
@@ -108,7 +108,7 @@ There should be one complete, self-contained report, per root cause. To ensure
 this is the case when assigning security bugs to engineering teams, you may
 need to take some specific actions here:
 * If the report is a bug chain with several underlying causes, **open one new
-  bug per root cause** and marked the parent bug as `blocked on` each. The parent
+  bug per root cause** and mark the parent bug as `blocked on` each. The parent
   bug should be set to the severity of the full chain. Each child bug may have a
   lower severity.
   * If taking these actions for a VRP reported issue, update the Reporter field
@@ -182,7 +182,7 @@ please discuss outstanding cases with the next shepherd and don’t let bugs fal
 through the cracks. You are responsible for any bug reported or in an un-triaged
 state during your shift.
 
-The best way determine the validity of a security bug is to [*reproduce it*](#Reproduce-the-bug).
+The best way to determine the validity of a security bug is to [*reproduce it*](#Reproduce-the-bug).
 It’s helpful to remember that reporters invested time and energy in their bug
 reports:
 
@@ -263,7 +263,7 @@ otherwise, set a **Found In** milestone in the `Found In` field as follows:
 
 Check [ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for the earliest relevant milestone number
 (Extended Stable or Stable – sometimes they are the same).
-* If that branch is affected, set the `Found In` field to, to the approparite
+* If that branch is affected, set the `Found In` field to, to the appropriate
   milestone number.
 * Otherwise, move forward through milestone numbers. Set the `Found In` field
   to the oldest impacted branch you find.
@@ -524,7 +524,7 @@ VRP Panel members are also members of that chat.
 
 ### There is PII or other data in a report we do not want to publicly disclose.
 
-For cases of PII, simply delete the attachment or comment with that contains PII
+For cases of PII, simply delete the attachment or comment that contains PII
 within the issue tracker. If PII is contained in the text of the original
 description of the report, simply choose the `Edit description` option and
 remove any PII.
@@ -564,7 +564,7 @@ right side of the banner, and triage the report as you normally would.
 Sometimes you’ll need to handle a security emergency, such as a critical
 severity bug or bug known or under active exploitation in the wild. In such
 cases:
-* As soon as possible, reach out the Shepherds chat for a Chrome Security
+* As soon as possible, reach out to the Shepherds chat for a Chrome Security
   Incident Responder, so they can take on IR Commander responsibilities.
 * Sometimes features can be switched off using feature flags – for example
   [in permissions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).  Check with the engineer if that is a possibility in the case of this issue.
