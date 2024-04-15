@@ -960,9 +960,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_BETA_FORUM:
       ShowBetaForum(browser_);
       break;
-    case IDC_DISTILL_PAGE:
-      ToggleDistilledView(browser_);
-      break;
     case IDC_ROUTE_MEDIA:
       RouteMediaInvokedFromAppMenu(browser_);
       break;
@@ -1396,10 +1393,6 @@ void BrowserCommandController::InitCommandState() {
   // Safety Hub commands.
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_SAFETY_HUB, base::FeatureList::IsEnabled(features::kSafetyHub));
-
-  // Distill current page.
-  command_updater_.UpdateCommandEnabled(IDC_DISTILL_PAGE,
-                                        dom_distiller::IsDomDistillerEnabled());
 
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, normal_window);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, normal_window);

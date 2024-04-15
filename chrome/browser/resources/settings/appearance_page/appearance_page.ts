@@ -176,13 +176,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showReaderModeOption_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showReaderModeOption');
-        },
-      },
-
       isForcedTheme_: {
         type: Boolean,
         computed: 'computeIsForcedTheme_(' +
@@ -244,7 +237,6 @@ export class SettingsAppearancePageElement extends
   private themeUrl_: string;
   private systemTheme_: SystemTheme;
   private focusConfig_: Map<string, string>;
-  private showReaderModeOption_: boolean;
   private isForcedTheme_: boolean;
   private showHoverCardImagesOption_: boolean;
 

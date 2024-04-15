@@ -13,34 +13,14 @@
 
 namespace dom_distiller {
 
-BASE_FEATURE(kReaderMode, "ReaderMode", base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsDomDistillerEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableDomDistiller) ||
-         base::FeatureList::IsEnabled(kReaderMode);
-}
-
-bool OfferReaderModeInSettings() {
-  if (!base::FeatureList::IsEnabled(kReaderMode))
-    return false;
-
-  // Check if the settings parameter is set.
-  std::string parameter = base::GetFieldTrialParamValueByFeature(
-      kReaderMode, switches::kReaderModeDiscoverabilityParamName);
-  return parameter == switches::kReaderModeOfferInSettings;
-}
-
-bool ShowReaderModeOption() {
-  if (OfferReaderModeInSettings())
-    return false;
-  return IsDomDistillerEnabled();
+      switches::kEnableDomDistiller);
 }
 
 bool ShouldStartDistillabilityService() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableDistillabilityService) ||
-         base::FeatureList::IsEnabled(kReaderMode);
+      switches::kEnableDistillabilityService);
 }
 
 }  // namespace dom_distiller

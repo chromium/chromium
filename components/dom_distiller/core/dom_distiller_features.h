@@ -9,20 +9,9 @@
 
 namespace dom_distiller {
 
-BASE_DECLARE_FEATURE(kReaderMode);
-
 // Returns true when flag enable-dom-distiller is set or reader mode is enabled
 // from flags or Finch.
 bool IsDomDistillerEnabled();
-
-// Returns true when reader mode flag is enabled and the flag parameter to add
-// "offer reader mode" in chrome://settings is set.
-bool OfferReaderModeInSettings();
-
-// Returns true if a user should be shown the option to view pages in reader
-// mode, when available. This happens when:
-// OfferReaderModeInSettings is false, but IsDomDistillerEnabled is true.
-bool ShowReaderModeOption();
 
 bool ShouldStartDistillabilityService();
 

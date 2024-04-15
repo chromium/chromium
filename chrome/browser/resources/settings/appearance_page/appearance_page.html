@@ -230,14 +230,6 @@
             </template>
           </select>
         </div>
-        <template is="dom-if" if="[[showReaderModeOption_]]">
-          <settings-toggle-button
-              class="hr"
-              pref="{{prefs.dom_distiller.offer_reader_mode}}"
-              label="$i18n{readerMode}"
-              sub-label="$i18n{readerModeDescription}">
-          </settings-toggle-button>
-        </template>
 <if expr="is_macosx">
         <settings-toggle-button class="hr"
             pref="{{prefs.webkit.webprefs.tabs_to_links}}"

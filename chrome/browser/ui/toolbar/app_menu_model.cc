@@ -1131,24 +1131,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS);
       break;
-    case IDC_DISTILL_PAGE:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DistillPage",
-                                      delta);
-      }
-      LogMenuAction(MENU_ACTION_DISTILL_PAGE);
-      if (dom_distiller::url_utils::IsDistilledPage(
-              browser()
-                  ->tab_strip_model()
-                  ->GetActiveWebContents()
-                  ->GetLastCommittedURL())) {
-        dom_distiller::UMAHelper::RecordReaderModeExit(
-            dom_distiller::UMAHelper::ReaderModeEntryPoint::kMenuOption);
-      } else {
-        dom_distiller::UMAHelper::RecordReaderModeEntry(
-            dom_distiller::UMAHelper::ReaderModeEntryPoint::kMenuOption);
-      }
-      break;
     case IDC_FIND:
       if (!uma_action_recorded_)
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Find", delta);
@@ -1842,26 +1824,6 @@ void AppMenuModel::Build() {
     } else if (std::u16string open_item = GetOpenPWALabel(browser_);
                !open_item.empty()) {
       AddItem(IDC_OPEN_IN_PWA_WINDOW, open_item);
-    }
-  }
-
-  if (dom_distiller::IsDomDistillerEnabled() &&
-      browser()->tab_strip_model()->GetActiveWebContents()) {
-    // Only show the reader mode toggle when it will do something.
-    if (dom_distiller::url_utils::IsDistilledPage(
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL())) {
-      // Show the menu option if we are on a distilled page.
-      AddItemWithStringId(IDC_DISTILL_PAGE, IDS_EXIT_DISTILLED_PAGE);
-    } else if (dom_distiller::ShowReaderModeOption()) {
-      // Show the menu option if the page is distillable.
-      std::optional<dom_distiller::DistillabilityResult> distillability =
-          dom_distiller::GetLatestResult(
-              browser()->tab_strip_model()->GetActiveWebContents());
-      if (distillability && distillability.value().is_distillable)
-        AddItemWithStringId(IDC_DISTILL_PAGE, IDS_DISTILL_PAGE);
     }
   }
 

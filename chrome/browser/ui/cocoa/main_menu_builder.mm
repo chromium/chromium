@@ -322,9 +322,6 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
               Item().is_separator(),
               Item(IDS_MEDIA_ROUTER_MENU_ITEM_TITLE)
                   .command_id(IDC_ROUTE_MEDIA),
-              Item(IDS_DISTILL_PAGE)
-                  .command_id(IDC_DISTILL_PAGE)
-                  .remove_if(!dom_distiller::IsDomDistillerEnabled()),
               Item().is_separator(),
               Item(IDS_DEVELOPER_MENU_MAC)
                   .tag(IDC_DEVELOPER_MENU)

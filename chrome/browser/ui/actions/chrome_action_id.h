@@ -171,7 +171,6 @@
   E(kActionRecentTabsMenu, IDC_RECENT_TABS_MENU) \
   E(kActionRecentTabsNoDeviceTabs, IDC_RECENT_TABS_NO_DEVICE_TABS) \
   E(kActionShowSettingsResetBubble, IDC_SHOW_SETTINGS_RESET_BUBBLE) \
-  E(kActionDistillPage, IDC_DISTILL_PAGE) \
   E(kActionHelpMenu, IDC_HELP_MENU) \
   E(kActionShowSrtBubble, IDC_SHOW_SRT_BUBBLE) \
   E(kActionElevatedRecoveryDialog, IDC_ELEVATED_RECOVERY_DIALOG) \

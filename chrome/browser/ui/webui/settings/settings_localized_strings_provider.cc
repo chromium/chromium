@@ -422,8 +422,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"tabsToLinks", IDS_SETTINGS_TABS_TO_LINKS_PREF},
       {"warnBeforeQuitting", IDS_SETTINGS_WARN_BEFORE_QUITTING_PREF},
 #endif
-      {"readerMode", IDS_SETTINGS_READER_MODE},
-      {"readerModeDescription", IDS_SETTINGS_READER_MODE_DESCRIPTION},
       {"themeManagedDialogTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
       {"themeManagedDialogBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
   };
@@ -431,8 +429,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("presetZoomFactors",
                          zoom::GetPresetZoomFactorsAsJSON());
-  html_source->AddBoolean("showReaderModeOption",
-                          dom_distiller::OfferReaderModeInSettings());
   html_source->AddBoolean("showSidePanelOptions", true);
   html_source->AddBoolean(
       "showHoverCardImagesOption",

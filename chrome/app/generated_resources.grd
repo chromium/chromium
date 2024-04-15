@@ -1311,12 +1311,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
             Save page &amp;as...
           </message>
-          <message name="IDS_DISTILL_PAGE" desc="The text label of the 'Enter reader mode' menu item">
-            Enter reader mode
-          </message>
-          <message name="IDS_EXIT_DISTILLED_PAGE" desc="The text label of the 'Exit reader mode' menu item">
-            Exit reader mode
-          </message>
           <message name="IDS_MORE_TOOLS_MENU" desc="The text label of the Tools submenu for touch">
             More too&amp;ls
           </message>
@@ -1459,12 +1453,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
             Save Page &amp;As...
-          </message>
-          <message name="IDS_DISTILL_PAGE" desc="In Title Case: The text label of the 'Enter Reader Mode' menu item">
-            Enter Reader Mode
-          </message>
-          <message name="IDS_EXIT_DISTILLED_PAGE" desc="In Title Case: The text label of the 'Exit Reader Mode' menu item">
-            Exit Reader Mode
           </message>
           <message name="IDS_MORE_TOOLS_MENU" desc="In Title Case: The text label of the Tools submenu for touch">
             More Too&amp;ls

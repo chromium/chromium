@@ -217,22 +217,6 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
           !media_router::MediaRouterEnabled(browser->profile());
       break;
     }
-    case IDC_DISTILL_PAGE: {
-      // Enable the reader mode option if the page is a distilled page
-      // or if the page is distillable.
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      std::optional<dom_distiller::DistillabilityResult> distillability =
-          dom_distiller::GetLatestResult(web_contents);
-      bool distillable =
-          distillability && distillability.value().is_distillable;
-      bool is_distilled = dom_distiller::url_utils::IsDistilledPage(
-          web_contents->GetLastCommittedURL());
-      result->new_title.emplace(l10n_util::GetStringUTF16(
-          is_distilled ? IDS_EXIT_DISTILLED_PAGE : IDS_DISTILL_PAGE));
-      result->enable = distillable || is_distilled;
-      break;
-    }
     default:
       break;
   }

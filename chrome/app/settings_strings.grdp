@@ -333,12 +333,6 @@
       Show warning before quitting with ⌘Q
     </message>
   </if>
-  <message name="IDS_SETTINGS_READER_MODE" desc="Label for a setting to enable/disable offers to show articles in reader mode">
-    Reader mode for web pages
-  </message>
-  <message name="IDS_SETTINGS_READER_MODE_DESCRIPTION" desc="Description for a setting to enable/disable offers to show articles in reader mode, which is a simplified view of the original page">
-    Offer to show articles in reader mode, when supported
-  </message>
 
   <!-- Common -->
   <message name="IDS_SETTINGS_ADVANCED" desc="Name of the settings page which displays advanced preferences.">
