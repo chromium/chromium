@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.robolectric.Robolectric.buildActivity;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -37,173 +37,142 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
-@RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
+@RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveCardBottomSheetBridgeTest {
-    private static final long MOCK_POINTER = 0xb00fb00f;
-
-    private static final String HTTPS_EXAMPLE_TEST = "https://example.test";
-
+    private static final long NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE = 0xb00fb00fL;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    private AutofillSaveCardBottomSheetBridge mAutofillSaveCardBottomSheetBridge;
-
     @Mock private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
-
-    private Activity mActivity;
-    private ShadowActivity mShadowActivity;
-
     private WindowAndroid mWindow;
-
-    @Mock private Profile mProfile;
-
-    private MockTabModel mTabModel;
-
     @Mock private ManagedBottomSheetController mBottomSheetController;
-
     @Mock private ManagedLayoutManager mLayoutManager;
-
-    @Mock private AutofillSaveCardBottomSheetBridge.CoordinatorFactory mCoordinatorFactory;
-
-    private AutofillSaveCardUiInfo mUiInfo;
-
-    @Mock private AutofillSaveCardBottomSheetCoordinator mCoordinator;
+    @Mock private Profile mProfile;
+    private AutofillSaveCardBottomSheetBridge mBridge;
 
     @Before
     public void setUp() {
         mJniMocker.mock(AutofillSaveCardBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
-        mUiInfo =
-                new AutofillSaveCardUiInfo.Builder()
-                        .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
-                        .build();
-        mActivity = buildActivity(Activity.class).create().get();
-        mShadowActivity = shadowOf(mActivity);
-        mWindow = new WindowAndroid(mActivity);
-        mTabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
-        mAutofillSaveCardBottomSheetBridge =
+        MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
+        mBridge =
                 new AutofillSaveCardBottomSheetBridge(
-                        MOCK_POINTER, mWindow, mTabModel, mCoordinatorFactory);
-    }
-
-    private void setupCoordinatorFactory() {
-        when(mCoordinatorFactory.create(
-                        mActivity,
-                        mBottomSheetController,
-                        mLayoutManager,
-                        mTabModel,
-                        mUiInfo,
-                        mAutofillSaveCardBottomSheetBridge))
-                .thenReturn(mCoordinator);
+                        NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE, mWindow, tabModel);
     }
 
     @After
     public void tearDown() {
-        BottomSheetControllerFactory.detach(mBottomSheetController);
         LayoutManagerAppUtils.detach(mLayoutManager);
+        BottomSheetControllerFactory.detach(mBottomSheetController);
         mWindow.destroy();
     }
 
-    @Test
-    public void testRequestShowContent_requestsShowOnCoordinator() {
-        setupCoordinatorFactory();
-
-        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
-
-        verify(mCoordinator).requestShowContent();
+    private void requestShowContent() {
+        mBridge.requestShowContent(
+                new AutofillSaveCardUiInfo.Builder()
+                        .withCardDetail(new CardDetail(/* iconId= */ 0, "label", "subLabel"))
+                        .build());
     }
 
     @Test
-    public void testDestroy_callsCoordinatorDestroy() {
-        setupCoordinatorFactory();
-        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
+    public void testRequestShowContent() {
+        requestShowContent();
 
-        mAutofillSaveCardBottomSheetBridge.destroy();
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(AutofillSaveCardBottomSheetContent.class), /* animate= */ eq(true));
+    }
 
-        verify(mCoordinator).destroy();
+    @Test
+    public void testDestroy() {
+        requestShowContent();
+        mBridge.destroy();
+
+        verify(mBottomSheetController)
+                .hideContent(any(AutofillSaveCardBottomSheetContent.class), eq(false));
     }
 
     @Test
     public void testDestroy_whenCoordinatorHasNotBeenCreated() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
+        mBridge.destroy();
 
-        verifyNoInteractions(mCoordinator);
+        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test
-    public void testDestroyTwice_destroysCoordinatorOnce() {
-        setupCoordinatorFactory();
-        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
+    public void testDestroy_whenDestroyed() {
+        requestShowContent();
 
-        mAutofillSaveCardBottomSheetBridge.destroy();
-        mAutofillSaveCardBottomSheetBridge.destroy();
+        mBridge.destroy();
+        clearInvocations(mBottomSheetController);
 
-        verify(mCoordinator).destroy();
+        mBridge.destroy();
+        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test
-    public void testOnUiShown_callsNativeOnUiShown() {
-        mAutofillSaveCardBottomSheetBridge.onUiShown();
+    public void testOnUiShown() {
+        mBridge.onUiShown();
 
-        verify(mBridgeNatives).onUiShown(MOCK_POINTER);
+        verify(mBridgeNatives).onUiShown(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
     }
 
     @Test
-    public void testOnUiShown_doesNotCallNative_afterDestroy() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
+    public void testOnUiShown_whenDestroyed() {
+        mBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.onUiShown();
+        mBridge.onUiShown();
 
         verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testOnUiAccepted_callsNativeOnUiAccepted() {
-        mAutofillSaveCardBottomSheetBridge.onUiAccepted();
+    public void testOnUiAccepted() {
+        mBridge.onUiAccepted();
 
-        verify(mBridgeNatives).onUiAccepted(MOCK_POINTER);
+        verify(mBridgeNatives).onUiAccepted(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
     }
 
     @Test
-    public void testOnUiAccepted_doesNotCallNative_afterDestroy() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
+    public void testOnUiAccepted_whenDestroyed() {
+        mBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.onUiAccepted();
+        mBridge.onUiAccepted();
 
         verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testOnUiCanceled_callsNativeOnUiCanceled() {
-        mAutofillSaveCardBottomSheetBridge.onUiCanceled();
+    public void testOnUiCanceled() {
+        mBridge.onUiCanceled();
 
-        verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
+        verify(mBridgeNatives).onUiCanceled(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
     }
 
     @Test
-    public void testOnUiCanceled_doesNotCallNative_afterDestroy() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
+    public void testOnUiCanceled_whenDestroyed() {
+        mBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.onUiCanceled();
+        mBridge.onUiCanceled();
 
         verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testOnUiIgnored_callsNativeOnUiIgnored() {
-        mAutofillSaveCardBottomSheetBridge.onUiIgnored();
+    public void testOnUiIgnored() {
+        mBridge.onUiIgnored();
 
-        verify(mBridgeNatives).onUiIgnored(MOCK_POINTER);
+        verify(mBridgeNatives).onUiIgnored(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
     }
 
     @Test
-    public void testOnUiIgnored_doesNotCallNative_afterDestroy() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
+    public void testOnUiIgnored_whenDestroyed() {
+        mBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.onUiIgnored();
+        mBridge.onUiIgnored();
 
         verifyNoInteractions(mBridgeNatives);
     }

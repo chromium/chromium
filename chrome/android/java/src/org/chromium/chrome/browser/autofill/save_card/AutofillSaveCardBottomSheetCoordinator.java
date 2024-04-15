@@ -22,6 +22,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * locally or uploaded).
  */
 public class AutofillSaveCardBottomSheetCoordinator {
+    /** Native callbacks from the save card bottom sheet. */
+    interface NativeDelegate {
+        /** Called when the save card bottom sheet is shown to the user. */
+        void onUiShown();
+
+        /** Called when the user accepts the save card bottom sheet. */
+        void onUiAccepted();
+
+        /** Called when the user cancels the save card bottom sheet. */
+        void onUiCanceled();
+
+        /** Called when the user ignores the save card bottom sheet. */
+        void onUiIgnored();
+    }
+
     private final Context mContext;
     private final AutofillSaveCardBottomSheetBridge mBridge;
     private final AutofillSaveCardBottomSheetMediator mMediator;
