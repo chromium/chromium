@@ -18,7 +18,6 @@ import androidx.browser.customtabs.EngagementSignalsCallback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
@@ -56,9 +55,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // This value was chosen based on experiment data. 300ms covers about 98% of the scrolls while
     // trying to increase coverage further would require an unreasonably high threshold.
     @VisibleForTesting static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
-
-    private static final String TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END =
-            "CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd";
 
     private final CustomTabsConnection mConnection;
     private final TabObserverRegistrar mTabObserverRegistrar;
@@ -400,17 +396,13 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         /**
          * Updates internal state and returns whether this was a valid scroll update after a
          * scroll-end.
+         *
          * @param forceUpdate Whether apply the update regardless of the current scroll state.
          * @return Whether this was a valid update that came after a scroll end event. The
-         *         `forceUpdate` param has no effect on the return value.
+         *     `forceUpdate` param has no effect on the return value.
          */
         boolean onScrollUpdate(
                 int verticalScrollOffset, int maxVerticalScrollOffset, boolean forceUpdate) {
-            if (!mIsScrollActive && mTimeLastOnScrollEnded != null) {
-                RecordHistogram.recordTimesHistogram(
-                        TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END,
-                        timeSinceLastOnScrollEndedMillis());
-            }
             boolean validUpdateAfterScrollEnd = isValidUpdateAfterScrollEnd();
             if (!mHadFirstDownScroll && !forceUpdate) return validUpdateAfterScrollEnd;
             if (mIsScrollActive || validUpdateAfterScrollEnd || forceUpdate) {
@@ -480,12 +472,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         private boolean isValidUpdateAfterScrollEnd() {
             return !mIsScrollActive
                     && mTimeLastOnScrollEnded != null
-                    && timeSinceLastOnScrollEndedMillis() <= DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
-        }
-
-        private long timeSinceLastOnScrollEndedMillis() {
-            assert mTimeLastOnScrollEnded != null;
-            return SystemClock.elapsedRealtime() - mTimeLastOnScrollEnded;
+                    && (SystemClock.elapsedRealtime() - mTimeLastOnScrollEnded)
+                            <= DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS;
         }
 
         static void setInstanceForTesting(ScrollState instance) {

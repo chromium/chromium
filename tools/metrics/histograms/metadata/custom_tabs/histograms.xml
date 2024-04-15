@@ -737,18 +737,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd" units="ms"
-    expires_after="2024-05-26">
-  <owner>sinansahin@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Recorded when the RealtimeEngagementSignalObserver receives a
-    scroll-update signal after the scroll-end signal from the renderer. This is
-    the time it took to receive the scroll-update after the scroll-end signal in
-    milliseconds.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Visible" enum="VisibleTab" expires_after="never">
 <!-- expires-never: Used to classify UMA reports by the dashboards. -->
 
