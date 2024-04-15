@@ -114,12 +114,14 @@ def index_one_target(target_name,
     initial_compilation_db = get_compilation_db(src_path, out_path)
     print('Filtering compilation DB to only include matches '
           'from GN transitive dependencies.')
-    compilation_db = []
     for entry in initial_compilation_db:
       if entry['file'] in gn_sources_dict:
         compilation_db.append(entry)
   else:
-    compilation_db = get_compilation_db(src_path, out_path)
+    initial_compilation_db = get_compilation_db(src_path, out_path)
+    for entry in initial_compilation_db:
+      if "-DLLVMFuzzerTestOneInput" not in entry['command']:
+        compilation_db.append(entry)
 
   print("Initializing codeql.")
   codeql_db = ""
@@ -207,7 +209,7 @@ def main():
       type=str,
       help="absolute path to logfile for `trace` calls, if desired")
   parser.add_argument(
-      '--gn_target',
+      '--gn_targets',
       '-g',
       action='append',
       type=str,
@@ -237,10 +239,10 @@ def main():
   src_path = os.path.abspath(os.path.expanduser(src_path))
   args.db_path = os.path.abspath(os.path.expanduser(args.db_path))
 
-  if args.gn_target:
-    index_one_target(args.gn_target, src_path, args.db_path,
-                     args.codeql_binary_path, args.out_path, logger,
-                     args.gn_path, args.logfile)
+  if args.gn_targets:
+    for target in args.gn_targets:
+      index_one_target(target, src_path, args.db_path, args.codeql_binary_path,
+                       args.out_path, logger, args.gn_path, args.logfile)
     return
 
   # If no args.gn_target given, default to indexing everything in
