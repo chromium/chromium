@@ -203,11 +203,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
   template <ResolutionState new_state>
   bool PrepareToResolveOrReject() {
     static_assert(new_state == kResolving || new_state == kRejecting);
-    if (!GetExecutionContext()) {
-      Detach();
-      return false;
-    }
-    if (state_ != kPending) {
+    if (state_ != kPending || !GetExecutionContext()) {
       return false;
     }
     state_ = new_state;
@@ -288,9 +284,9 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
 #if DCHECK_IS_ON()
     is_promise_called_ = true;
 #endif
-    if (resolver_.IsEmpty()) {
-      return ScriptPromise<IDLResolvedType>();
-    }
+    // `resolver_` should only be empty if `Detach()` was invoked. The promise
+    // should not be accessed after 'Detach()`.
+    CHECK(!resolver_.IsEmpty());
     return ScriptPromise<IDLResolvedType>(
         script_state_,
         resolver_.Get(script_state_->GetIsolate())->GetPromise());

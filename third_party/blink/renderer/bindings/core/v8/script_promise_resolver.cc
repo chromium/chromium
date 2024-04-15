@@ -199,7 +199,6 @@ void ScriptPromiseResolverBase::ScheduleResolveOrReject() {
 void ScriptPromiseResolverBase::ResolveOrRejectDeferred() {
   DCHECK(state_ == kResolving || state_ == kRejecting);
   if (!GetExecutionContext()) {
-    Detach();
     return;
   }
 
