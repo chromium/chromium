@@ -118,10 +118,10 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
       webnn::mojom::blink::WebNNContext::CreateGraphCallback callback);
 
   // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(
-      mojo::PendingReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
-      webnn::mojom::blink::BufferInfoPtr buffer_info,
-      const base::UnguessableToken& buffer_handle);
+  void CreateWebNNBuffer(mojo::PendingAssociatedReceiver<
+                             webnn::mojom::blink::WebNNBuffer> receiver,
+                         webnn::mojom::blink::BufferInfoPtr buffer_info,
+                         const base::UnguessableToken& buffer_handle);
 
  private:
   // The callback of creating `WebNNContext` mojo interface from WebNN Service.

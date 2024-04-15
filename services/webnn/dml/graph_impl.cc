@@ -23,7 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_ref.h"
 #include "components/ml/webnn/graph_validation_utils.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
@@ -4526,10 +4526,10 @@ void GraphImpl::OnInitializationComplete(
 
   scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
   // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> blink_remote;
   // The receiver bound to GraphImpl.
   context->OnWebNNGraphImplCreated(
-      blink_remote.InitWithNewPipeAndPassReceiver(),
+      blink_remote.InitWithNewEndpointAndPassReceiver(),
       base::WrapUnique(new GraphImpl(
           std::move(adapter), std::move(command_recorder),
           std::move(persistent_resource), std::move(compiled_operator),

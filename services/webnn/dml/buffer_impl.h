@@ -16,7 +16,7 @@ class ContextImpl;
 
 class BufferImpl final : public WebNNBufferImpl {
  public:
-  BufferImpl(mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+  BufferImpl(mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
              Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
              ContextImpl* context,
              uint64_t size,

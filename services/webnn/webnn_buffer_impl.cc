@@ -10,7 +10,7 @@
 namespace webnn {
 
 WebNNBufferImpl::WebNNBufferImpl(
-    mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     WebNNContextImpl* context,
     uint64_t size,
     const base::UnguessableToken& buffer_handle)

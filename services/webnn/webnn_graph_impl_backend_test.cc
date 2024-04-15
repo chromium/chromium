@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/ml/webnn/features.mojom-features.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -69,7 +70,7 @@ void BuildAndCompute(
         mojom::CreateContextOptions::Device::kGpu) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
+  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
 
   WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
@@ -6191,7 +6192,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
+  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
   WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 

@@ -4,7 +4,7 @@
 
 #include "services/webnn/tflite/graph_impl_cros.h"
 
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/tflite/context_impl_cros.h"
@@ -45,12 +45,12 @@ void GraphImplCrOS::CreateAndBuild(
 
             // TODO(crbug.com/330806169): Pass `WebNNGraph` directly to ML
             // Service and not have to bounce through the browser process.
-            mojo::PendingRemote<mojom::WebNNGraph> graph;
-            mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+            mojo::PendingAssociatedRemote<mojom::WebNNGraph> graph;
+            mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
                 base::WrapUnique(
                     new GraphImplCrOS(std::move(compute_resource_info),
                                       std::move(pending_remote))),
-                graph.InitWithNewPipeAndPassReceiver());
+                graph.InitWithNewEndpointAndPassReceiver());
             std::move(callback).Run(
                 mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
           },

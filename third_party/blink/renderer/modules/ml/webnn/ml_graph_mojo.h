@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
@@ -70,7 +70,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
 
   // The `WebNNGraph` is compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.
-  HeapMojoRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNGraph> remote_graph_;
 };
 
 }  // namespace blink

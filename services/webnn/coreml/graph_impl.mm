@@ -22,7 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/graph_builder.h"
 #include "services/webnn/error.h"
 #include "services/webnn/webnn_switches.h"
@@ -199,14 +199,14 @@ void GraphImpl::OnCreateAndBuildSuccess(
     std::unique_ptr<CompilationContext> context) {
   CHECK(context->ml_model);
   // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNGraph> webnn_graph;
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> webnn_graph;
   // The receiver bound to GraphImpl.
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+  mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
       base::WrapUnique(new GraphImpl(
           std::move(context->compute_resource_info),
           std::move(context->input_feature_info),
           std::move(context->coreml_name_to_operand_name), context->ml_model)),
-      webnn_graph.InitWithNewPipeAndPassReceiver());
+      webnn_graph.InitWithNewEndpointAndPassReceiver());
   std::move(context->callback)
       .Run(mojom::CreateGraphResult::NewGraphRemote(std::move(webnn_graph)));
 }

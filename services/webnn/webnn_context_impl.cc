@@ -45,7 +45,7 @@ void WebNNContextImpl::CreateGraph(
 }
 
 void WebNNContextImpl::CreateBuffer(
-    mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
   // It is illegal to create the same buffer twice, a buffer is uniquely
@@ -105,7 +105,7 @@ void WebNNContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
 }
 
 void WebNNContextImpl::OnWebNNGraphImplCreated(
-    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     std::unique_ptr<WebNNGraphImpl> graph_impl) {
   graph_impls_.Add(std::move(graph_impl), std::move(receiver));
 }

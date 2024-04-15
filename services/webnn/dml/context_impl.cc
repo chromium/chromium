@@ -46,7 +46,7 @@ void ContextImpl::CreateGraphImpl(
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
-    mojo::PendingReceiver<mojom::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
   // DML requires resources to be in multiple of 4 bytes.

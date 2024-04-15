@@ -5,7 +5,7 @@
 #include "services/webnn/tflite/graph_impl.h"
 
 #include "base/ranges/algorithm.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/tflite/graph_builder.h"
@@ -137,12 +137,12 @@ void GraphImpl::CreateAndBuild(
     return;
   }
 
-  mojo::PendingRemote<mojom::WebNNGraph> graph;
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> graph;
+  mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
       base::WrapUnique(new GraphImpl(
           ComputeResourceInfo(graph_info), std::move(model_content),
           std::move(model), std::move(interpreter), std::move(profiler))),
-      graph.InitWithNewPipeAndPassReceiver());
+      graph.InitWithNewEndpointAndPassReceiver());
   std::move(callback).Run(
       mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
 }

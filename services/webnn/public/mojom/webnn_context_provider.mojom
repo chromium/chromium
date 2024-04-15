@@ -50,7 +50,7 @@ struct CreateContextOptions {
 // Represents the return value of `WebNNContext::CreateGraph()`. Let it be
 // `graph_remote` if the graph was successfully created and `error` otherwise.
 union CreateGraphResult {
-  pending_remote<WebNNGraph>? graph_remote;
+  pending_associated_remote<WebNNGraph>? graph_remote;
   Error error;
 };
 
@@ -79,7 +79,7 @@ interface WebNNContext {
   // The receiver represents the connection to the MLBuffer and the
   // buffer_handle is a generated token used as a handle to identify the buffer
   // from the renderer.
-  CreateBuffer(pending_receiver<WebNNBuffer> receiver,
+  CreateBuffer(pending_associated_receiver<WebNNBuffer> receiver,
       BufferInfo buffer_info, mojo_base.mojom.UnguessableToken buffer_handle);
 };
 

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 
 namespace blink {
 
@@ -57,7 +58,7 @@ class MODULES_EXPORT MLBufferMojo final : public MLBuffer {
 
   // The `WebNNBuffer` is a buffer that can be used by the hardware
   // accelerated OS machine learning API.
-  HeapMojoRemote<webnn::mojom::blink::WebNNBuffer> remote_buffer_;
+  HeapMojoAssociatedRemote<webnn::mojom::blink::WebNNBuffer> remote_buffer_;
 };
 
 }  // namespace blink

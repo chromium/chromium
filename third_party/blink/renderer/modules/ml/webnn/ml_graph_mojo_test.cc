@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
@@ -129,10 +130,11 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
 class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
  public:
-  FakeWebNNBuffer(WebNNContextHelper& helper,
-                  mojo::PendingReceiver<blink_mojom::WebNNBuffer> receiver,
-                  const base::UnguessableToken& buffer_handle,
-                  uint64_t size)
+  FakeWebNNBuffer(
+      WebNNContextHelper& helper,
+      mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
+      const base::UnguessableToken& buffer_handle,
+      uint64_t size)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
         handle_(buffer_handle),
@@ -167,7 +169,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   const raw_ref<WebNNContextHelper, DanglingUntriaged> helper_;
 
-  mojo::Receiver<blink_mojom::WebNNBuffer> receiver_;
+  mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
 
   const base::UnguessableToken handle_;
 
@@ -187,19 +189,20 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
                    CreateGraphCallback callback) override {
     helper_->SetGraphInfo(std::move(graph_info));
 
-    mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
+    mojo::PendingAssociatedRemote<blink_mojom::WebNNGraph> blink_remote;
     // The receiver bind to FakeWebNNGraph.
-    mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraph>(
+    mojo::MakeSelfOwnedAssociatedReceiver<blink_mojom::WebNNGraph>(
         std::make_unique<FakeWebNNGraph>(*helper_),
-        blink_remote.InitWithNewPipeAndPassReceiver());
+        blink_remote.InitWithNewEndpointAndPassReceiver());
 
     std::move(callback).Run(blink_mojom::CreateGraphResult::NewGraphRemote(
         std::move(blink_remote)));
   }
 
-  void CreateBuffer(mojo::PendingReceiver<blink_mojom::WebNNBuffer> receiver,
-                    blink_mojom::BufferInfoPtr buffer_info,
-                    const base::UnguessableToken& buffer_handle) override {
+  void CreateBuffer(
+      mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
+      blink_mojom::BufferInfoPtr buffer_info,
+      const base::UnguessableToken& buffer_handle) override {
     context_helper_.ConnectWebNNBufferImpl(
         buffer_handle,
         std::make_unique<FakeWebNNBuffer>(context_helper_, std::move(receiver),

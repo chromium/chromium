@@ -211,7 +211,7 @@ void MLContext::OnCreateWebNNContext(
 }
 
 void MLContext::CreateWebNNBuffer(
-    mojo::PendingReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
+    mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
     webnn::mojom::blink::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
   // Remote context gets automatically unbound when the execution context
