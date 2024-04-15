@@ -5,8 +5,6 @@
 #ifndef BASE_TEST_SCOPED_LOGGING_SETTINGS_H_
 #define BASE_TEST_SCOPED_LOGGING_SETTINGS_H_
 
-#include <memory>
-
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -45,7 +43,7 @@ class BASE_EXPORT ScopedLoggingSettings {
   const LogFormat log_format_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  std::unique_ptr<base::FilePath::StringType> log_file_name_;
+  base::FilePath::StringType log_file_name_;
 
   const bool enable_process_id_;
   const bool enable_thread_id_;

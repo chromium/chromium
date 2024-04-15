@@ -35,6 +35,7 @@
 #include "base/functional/callback.h"
 #include "base/immediate_crash.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/posix/eintr_wrapper.h"
@@ -551,13 +552,14 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   if (settings.log_file) {
-    DCHECK(!settings.log_file_path);
+    CHECK(settings.log_file_path.empty(), base::NotFatalUntil::M127);
     g_log_file = settings.log_file;
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 
-  DCHECK(settings.log_file_path) << "LOG_TO_FILE set but no log_file_path!";
+  CHECK(!settings.log_file_path.empty(), base::NotFatalUntil::M127)
+      << "LOG_TO_FILE set but no log_file_path!";
 
   if (!g_log_file_name)
     g_log_file_name = new PathString();
@@ -1187,8 +1189,10 @@ ScopedLoggingSettings::ScopedLoggingSettings()
       enable_tickcount_(g_log_tickcount),
       log_prefix_(g_log_prefix),
       message_handler_(g_log_message_handler) {
-  if (g_log_file_name)
-    log_file_name_ = std::make_unique<PathString>(*g_log_file_name);
+  if (g_log_file_name) {
+    log_file_name_ = *g_log_file_name;
+  }
+
   // Duplicating |g_log_file| is complex & unnecessary for this test helpers'
   // use-cases, and so long as |g_log_file_name| is set, it will be re-opened
   // automatically anyway, when required, so just close the existing one.
@@ -1201,11 +1205,10 @@ ScopedLoggingSettings::ScopedLoggingSettings()
 ScopedLoggingSettings::~ScopedLoggingSettings() {
   // Re-initialize logging via the normal path. This will clean up old file
   // name and handle state, including re-initializing the VLOG internal state.
-  CHECK(InitLogging({
-    .logging_dest = logging_destination_,
-    .log_file_path = log_file_name_ ? log_file_name_->data() : nullptr,
+  CHECK(InitLogging({.logging_dest = logging_destination_,
+                     .log_file_path = log_file_name_,
 #if BUILDFLAG(IS_CHROMEOS)
-    .log_format = log_format_
+                     .log_format = log_format_
 #endif
   })) << "~ScopedLoggingSettings() failed to restore settings.";
 

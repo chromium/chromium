@@ -176,9 +176,7 @@ void InitLogging(const base::CommandLine& command_line) {
 #endif  // BUILDFLAG(IS_WIN)
 
   if (dest == LoggingDest::kFile) {
-    settings.log_file_path = log_filename.value().c_str();
-  } else {
-    settings.log_file_path = nullptr;
+    settings.log_file_path = log_filename.value();
   }
 
   if (dest == LoggingDest::kStderr) {
