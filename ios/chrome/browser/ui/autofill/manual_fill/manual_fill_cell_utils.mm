@@ -21,6 +21,9 @@ namespace {
 // feature is disabled.
 constexpr CGFloat kCellBottomMargin = 18;
 
+// Line spacing for the cell's header title.
+constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
+
 // Horizontal spacing between views used in
 // `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
@@ -225,6 +228,61 @@ UILabel* CreateLabel() {
   label.adjustsFontForContentSizeCategory = YES;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   return label;
+}
+
+NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
+                                                        NSString* subtitle) {
+  NSMutableAttributedString* attributed_title =
+      [[NSMutableAttributedString alloc]
+          initWithString:title
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
+                NSFontAttributeName : IsKeyboardAccessoryUpgradeEnabled()
+                    ? CreateDynamicFont(UIFontTextStyleSubheadline,
+                                        UIFontWeightSemibold)
+                    : [UIFont
+                          preferredFontForTextStyle:UIFontTextStyleHeadline],
+              }];
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    NSMutableParagraphStyle* title_paragraph_style =
+        [[NSMutableParagraphStyle alloc] init];
+    title_paragraph_style.lineSpacing = kHeaderAttributedStringLineSpacing;
+    title_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
+    [attributed_title
+        addAttributes:@{NSParagraphStyleAttributeName : title_paragraph_style}
+                range:NSMakeRange(0, attributed_title.string.length)];
+  }
+
+  if (subtitle && subtitle.length) {
+    NSMutableAttributedString* attributed_subtitle = [[NSMutableAttributedString
+        alloc]
+        initWithString:[NSString stringWithFormat:@"\n%@", subtitle]
+            attributes:@{
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextSecondaryColor],
+              NSFontAttributeName : [UIFont
+                  preferredFontForTextStyle:IsKeyboardAccessoryUpgradeEnabled()
+                                                ? UIFontTextStyleCaption2
+                                                : UIFontTextStyleFootnote],
+            }];
+
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      NSMutableParagraphStyle* subtitle_paragraph_style =
+          [[NSMutableParagraphStyle alloc] init];
+      subtitle_paragraph_style.lineBreakMode = NSLineBreakByWordWrapping;
+      [attributed_subtitle
+          addAttributes:@{
+            NSParagraphStyleAttributeName : subtitle_paragraph_style
+          }
+                  range:NSMakeRange(0, attributed_subtitle.string.length)];
+    }
+
+    [attributed_title appendAttributedString:attributed_subtitle];
+  }
+
+  return attributed_title;
 }
 
 UIView* CreateGraySeparatorForContainer(UIView* container) {

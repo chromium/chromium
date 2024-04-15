@@ -520,34 +520,13 @@ using base::SysNSStringToUTF8;
 - (NSMutableAttributedString*)createCardLabelAttributedText:
     (ManualFillCreditCard*)card {
   NSString* cardName = [self createCardName:card];
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:cardName
-              attributes:@{
-                NSForegroundColorAttributeName :
-                    [UIColor colorNamed:kTextPrimaryColor],
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-              }];
+  NSString* virtualCardSubtitle =
+      card.recordType == kVirtualCard
+          ? l10n_util::GetNSString(
+                IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)
+          : nil;
 
-  if (card.recordType == kVirtualCard) {
-    NSMutableAttributedString* virtualCardAttributedString =
-        [[NSMutableAttributedString alloc]
-            initWithString:
-                [NSString
-                    stringWithFormat:
-                        @"\n%@",
-                        l10n_util::GetNSString(
-                            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)]
-                attributes:@{
-                  NSForegroundColorAttributeName :
-                      [UIColor colorNamed:kTextSecondaryColor],
-                  NSFontAttributeName :
-                      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
-                }];
-    [attributedString appendAttributedString:virtualCardAttributedString];
-  }
-  return attributedString;
+  return CreateHeaderAttributedString(cardName, virtualCardSubtitle);
 }
 
 // Creates the attributed string for virtual card instructions.

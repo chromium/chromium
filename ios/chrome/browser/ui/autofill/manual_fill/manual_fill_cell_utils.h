@@ -123,6 +123,11 @@ void AppendEqualBaselinesConstraints(
 // Creates a blank label with autoresize mask off and adjustable font size.
 UILabel* CreateLabel();
 
+// Creates an attributed string composed of a title and subtitle. Used to
+// generate the string for the manual fill cell's header label.
+NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
+                                                        NSString* subtitle);
+
 // Creates a gray horizontal line separator, with the same margin as the other
 // components here. The gray line is added to the given `container` and proper
 // constraints are enabled to keep the line at the bottom of the container and
