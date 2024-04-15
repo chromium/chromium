@@ -43,6 +43,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
@@ -934,6 +935,7 @@ void LoginShelfView::OnAddUserButtonClicked() {
                  << " skip to call ShowGaiaSignin.";
     return;
   }
+  AuthEventsRecorder::Get()->OnAddUser();
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(EmptyAccountId());
 }
 

@@ -45,6 +45,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
@@ -978,6 +979,19 @@ TEST_F(LoginShelfViewTest, DisplayOff) {
   // This should go through.
   ShutdownAndConfirm();
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
+}
+
+// Checks that the add button click appears in the auth events.
+TEST_F(LoginShelfViewTest, AddUserAuthEventRecord) {
+  EXPECT_TRUE(ShowsShelfButtons({}));
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kAddUser}));
+  Click(LoginShelfView::kAddUser);
+  AuthEventsRecorder* auth_recorder = AuthEventsRecorder::Get();
+  std::string auth_events = auth_recorder->GetAuthEventsLog();
+  EXPECT_EQ(auth_events, "auth_surface_change_Login,add_user,");
 }
 
 class OsInstallButtonTest : public LoginShelfViewTest {

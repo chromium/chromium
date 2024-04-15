@@ -158,6 +158,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
   // mounting).
   void OnUserVaultPrepared(UserVaultType user_vault_type, bool success);
 
+  // Report that the user started to add a user flow.
+  void OnAddUser();
+
   int knowledge_factor_auth_failure_count() {
     return knowledge_factor_auth_failure_count_;
   }

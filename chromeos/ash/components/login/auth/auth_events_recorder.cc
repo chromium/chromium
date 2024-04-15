@@ -481,6 +481,10 @@ void AuthEventsRecorder::OnUserVaultPrepared(UserVaultType user_vault_type,
   AddAuthEvent(GetCrashKeyStringWithStatus(crash_key_prefix, success));
 }
 
+void AuthEventsRecorder::OnAddUser() {
+  AddAuthEvent("add_user");
+}
+
 std::string AuthEventsRecorder::GetAuthEventsLog() {
   // Preallocate the space needed for all the events combined.
   const size_t events_string_length =
