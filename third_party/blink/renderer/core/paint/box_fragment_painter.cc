@@ -2599,9 +2599,9 @@ bool BoxFragmentPainter::HitTestFloatingChildItems(
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
     } else if (item->Type() == FragmentItem::kLine) {
       const PhysicalLineBoxFragment* child_line = item->LineBoxFragment();
-      DCHECK(child_line);
-      if (!child_line->HasFloatingDescendantsForPaint())
+      if (child_line && !child_line->HasFloatingDescendantsForPaint()) {
         continue;
+      }
     } else {
       continue;
     }
