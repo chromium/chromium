@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.SHARE_SHEET_VISIBILITY_HISTOGRAM;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -58,6 +60,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
@@ -69,6 +72,7 @@ import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.ShareActionVisibility;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -174,72 +178,115 @@ public class PageInfoSharingControllerUnitTest {
 
     @Test
     @DisableFeatures({ChromeFeatureList.CHROME_SHARE_PAGE_INFO})
-    public void testIsAvailable_withFeatureDisabled() {
+    public void testShouldShow_withFeatureDisabled() {
         Tab tab = Mockito.mock(Tab.class);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
     }
 
     @Test
-    public void testIsAvailable_withNullTab() {
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(null));
+    public void testShouldShow_withNullTab() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_TAB_NOT_VALID);
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(null));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withNullUrl() {
+    public void testShouldShow_withNullUrl() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_TAB_NOT_VALID);
         Tab tab = Mockito.mock(Tab.class);
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
         when(tab.getUrl()).thenReturn(null);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withNonHttpUrl() {
+    public void testShouldShow_withNonHttpUrl() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_URL_NOT_VALID);
         Tab tab = createMockTab(JUnitTestGURLs.CHROME_ABOUT);
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withNonAvailableModel() {
+    public void testShouldShow_withNonAvailableModel() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_MODEL_NOT_AVAILABLE);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         when(mModelExecutionSession.isAvailable()).thenReturn(false);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withAvailableModel() {
+    public void testShouldShow_withAvailableModel() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM, ShareActionVisibility.SHOWN);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         when(mModelExecutionSession.isAvailable()).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(eq(mProfile))).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(eq(tab))).thenReturn(true);
 
-        assertTrue(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertTrue(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withUnsupportedProfile() {
+    public void testShouldShow_withUnsupportedProfile() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_PROFILE_NOT_SUPPORTED);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
 
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(false);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_withUnsupportedLanguage() {
+    public void testShouldShow_withUnsupportedLanguage() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_TAB_NOT_SUPPORTED);
         Tab tab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
 
+        when(mModelExecutionSession.isAvailable()).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
         when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(false);
 
-        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+        assertFalse(PageInfoSharingControllerImpl.getInstance().shouldShowInShareSheet(tab));
+        histogramWatcher.assertExpected();
     }
 
     @Test
-    public void testIsAvailable_whileSharingAnotherTab() {
+    public void testShouldShow_whileSharingAnotherTab() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SHARE_SHEET_VISIBILITY_HISTOGRAM,
+                        ShareActionVisibility.NOT_SHOWN_ALREADY_RUNNING);
         when(mModelExecutionSession.isAvailable()).thenReturn(true);
         Tab firstTab = createMockTab(JUnitTestGURLs.EXAMPLE_URL);
         Tab secondTab = createMockTab(JUnitTestGURLs.GOOGLE_URL);
@@ -259,7 +306,8 @@ public class PageInfoSharingControllerUnitTest {
                     assertFalse(
                             "Page sharing process should only happen for one tab at a time",
                             PageInfoSharingControllerImpl.getInstance()
-                                    .isAvailableForTab(secondTab));
+                                    .shouldShowInShareSheet(secondTab));
+                    histogramWatcher.assertExpected();
                 });
     }
 

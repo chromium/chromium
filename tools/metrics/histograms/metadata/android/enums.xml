@@ -1265,6 +1265,16 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="QUERY_TILES"/>
 </enum>
 
+<enum name="PageSummaryShareSheetVisibility">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Not shown, model not available"/>
+  <int value="2" label="Not shown, model session already running"/>
+  <int value="3" label="Not shown, tab is not valid"/>
+  <int value="4" label="Not shown, URL is not http/https"/>
+  <int value="5" label="Not shown, profile does not support summarization"/>
+  <int value="6" label="Not shown, tab does not support summarization"/>
+</enum>
+
 <enum name="PartnerCustomizationProviderDelegate">
   <int value="0" label="None: default delegate inValid"/>
   <int value="1" label="Phenotype config"/>

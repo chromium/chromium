@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.model_execution.ModelExecutionManager;
 import org.chromium.chrome.browser.model_execution.ModelExecutionSession;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoBottomSheetCoordinator.PageInfoContents;
+import org.chromium.chrome.browser.share.page_info_sheet.PageSummaryMetrics.ShareActionVisibility;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -70,22 +71,34 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
 
     /** Implementation of {@code PageInfoSharingController} */
     @Override
-    public boolean isAvailableForTab(Tab tab) {
+    public boolean shouldShowInShareSheet(Tab tab) {
+        return shouldShowInShareSheetInternal(tab, /* recordVisibilityMetric= */ true);
+    }
+
+    private boolean shouldShowInShareSheetInternal(Tab tab, boolean recordVisibilityMetric) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) return false;
 
-        if (mSession == null || !mSession.isAvailable()) return false;
+        @ShareActionVisibility int visibility = ShareActionVisibility.SHOWN;
 
-        if (mCurrentRequestInfoSupplier != null) return false;
+        if (mSession == null || !mSession.isAvailable()) {
+            visibility = ShareActionVisibility.NOT_SHOWN_MODEL_NOT_AVAILABLE;
+        } else if (mCurrentRequestInfoSupplier != null) {
+            visibility = ShareActionVisibility.NOT_SHOWN_ALREADY_RUNNING;
+        } else if (tab == null || tab.getUrl() == null) {
+            visibility = ShareActionVisibility.NOT_SHOWN_TAB_NOT_VALID;
+        } else if (!UrlUtilities.isHttpOrHttps(tab.getUrl())) {
+            visibility = ShareActionVisibility.NOT_SHOWN_URL_NOT_VALID;
+        } else if (!PageInfoSharingBridge.doesProfileSupportPageInfo(tab.getProfile())) {
+            visibility = ShareActionVisibility.NOT_SHOWN_PROFILE_NOT_SUPPORTED;
+        } else if (!PageInfoSharingBridge.doesTabSupportPageInfo(tab)) {
+            visibility = ShareActionVisibility.NOT_SHOWN_TAB_NOT_SUPPORTED;
+        }
 
-        if (tab == null || tab.getUrl() == null) return false;
+        if (recordVisibilityMetric) {
+            PageSummaryMetrics.recordShareSheetVisibility(visibility);
+        }
 
-        if (!UrlUtilities.isHttpOrHttps(tab.getUrl())) return false;
-
-        if (!PageInfoSharingBridge.doesProfileSupportPageInfo(tab.getProfile())) return false;
-
-        if (!PageInfoSharingBridge.doesTabSupportPageInfo(tab)) return false;
-
-        return true;
+        return visibility == ShareActionVisibility.SHOWN;
     }
 
     /** Implementation of {@code PageInfoSharingController} */
@@ -96,7 +109,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
             ChromeOptionShareCallback chromeOptionShareCallback,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Tab tab) {
-        if (!isAvailableForTab(tab)) return;
+        if (!shouldShowInShareSheetInternal(tab, false)) return;
         if (sErrorMessage == null) {
             // TODO(salg): Improve the way this resource is fetched.
             sErrorMessage =

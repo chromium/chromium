@@ -311,7 +311,7 @@ public class AndroidShareSheetControllerUnitTest {
         PageInfoSharingController mockPageInfoSharingController =
                 Mockito.mock(PageInfoSharingController.class);
         PageInfoSharingControllerImpl.setInstanceForTesting(mockPageInfoSharingController);
-        doReturn(true).when(mockPageInfoSharingController).isAvailableForTab(mTab);
+        doReturn(true).when(mockPageInfoSharingController).shouldShowInShareSheet(mTab);
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
 
         AndroidShareSheetController.showShareSheet(

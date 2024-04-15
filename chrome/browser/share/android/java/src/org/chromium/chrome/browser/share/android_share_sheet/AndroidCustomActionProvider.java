@@ -274,7 +274,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                     .build();
         }
 
-        if (mPageInfoSharingController.isAvailableForTab(mTabProvider.get())) {
+        if (mPageInfoSharingController.shouldShowInShareSheet(mTabProvider.get())) {
             return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
                     .setIcon(R.drawable.spark, R.string.sharing_create_summary)
                     .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)

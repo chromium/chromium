@@ -21,13 +21,14 @@ public interface PageInfoSharingController {
     void initialize();
 
     /**
-     * Determines if the current tab can be shared at this moment.
+     * Determines if a summary option should be shown in the share sheet for the current tab. This
+     * emits metrics, so it should be called once every time the share sheet is shown.
      *
-     * @param tab A tab to share;
+     * @param tab A tab to share.
      * @return True if the current tab supports page info sharing and there's no other tab sharing
      *     sheet open.
      */
-    boolean isAvailableForTab(Tab tab);
+    boolean shouldShowInShareSheet(Tab tab);
 
     /**
      * Starts the process of sharing page info.
