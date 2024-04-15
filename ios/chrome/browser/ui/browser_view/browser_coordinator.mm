@@ -130,6 +130,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/virtual_card_enrollment_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/error_dialog/autofill_error_dialog_coordinator.h"
@@ -371,6 +372,9 @@ enum class ToolbarKind {
 
 @property(nonatomic, strong)
     PlusAddressBottomSheetCoordinator* plusAddressBottomSheetCoordinator;
+
+@property(nonatomic, strong) AutofillEditProfileBottomSheetCoordinator*
+    autofillEditProfileBottomSheetCoordinator;
 
 @property(nonatomic, strong) VirtualCardEnrollmentBottomSheetCoordinator*
     virtualCardEnrollmentBottomSheetCoordinator;
@@ -1688,7 +1692,11 @@ enum class ToolbarKind {
 }
 
 - (void)showEditAddressBottomSheet {
-  // TODO(crbug.com/148226): Implement.
+  self.autofillEditProfileBottomSheetCoordinator =
+      [[AutofillEditProfileBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.autofillEditProfileBottomSheetCoordinator start];
 }
 
 - (void)showAutofillErrorDialog:

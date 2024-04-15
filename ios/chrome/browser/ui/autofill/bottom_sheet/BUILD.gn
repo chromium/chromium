@@ -13,6 +13,8 @@ group("unit_tests") {
 
 source_set("bottom_sheet") {
   sources = [
+    "autofill_edit_profile_bottom_sheet_coordinator.h",
+    "autofill_edit_profile_bottom_sheet_coordinator.mm",
     "payments_suggestion_bottom_sheet_coordinator.h",
     "payments_suggestion_bottom_sheet_coordinator.mm",
     "payments_suggestion_bottom_sheet_exit_reason.h",
@@ -35,6 +37,9 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
+    "//ios/chrome/browser/ui/autofill/cells",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ui/base",
@@ -43,6 +48,8 @@ source_set("bottom_sheet") {
 
 source_set("bottom_sheet_ui") {
   sources = [
+    "autofill_edit_profile_bottom_sheet_table_view_controller.h",
+    "autofill_edit_profile_bottom_sheet_table_view_controller.mm",
     "payments_suggestion_bottom_sheet_consumer.h",
     "payments_suggestion_bottom_sheet_delegate.h",
     "payments_suggestion_bottom_sheet_handler.h",
@@ -54,15 +61,20 @@ source_set("bottom_sheet_ui") {
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/resources:components_scaled_resources_grit",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:table_view",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base:base",
     "//url",
   ]
@@ -71,6 +83,7 @@ source_set("bottom_sheet_ui") {
 source_set("bottom_sheet_unit_tests") {
   testonly = true
   sources = [
+    "autofill_edit_profile_bottom_sheet_table_view_controller_unittest.mm",
     "payments_suggestion_bottom_sheet_coordinator_unittest.mm",
     "payments_suggestion_bottom_sheet_mediator_unittest.mm",
   ]
@@ -83,6 +96,7 @@ source_set("bottom_sheet_unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/prefs",
     "//components/sync:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/default_browser/model:utils",
@@ -90,9 +104,12 @@ source_set("bottom_sheet_unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

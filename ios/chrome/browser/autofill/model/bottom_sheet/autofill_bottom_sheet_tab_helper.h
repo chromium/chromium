@@ -139,6 +139,10 @@ class AutofillBottomSheetTabHelper
   // This value is moved and should only be retrieved once per bottom sheet.
   autofill::VirtualCardEnrollmentCallbacks GetVirtualCardEnrollmentCallbacks();
 
+  std::unique_ptr<autofill::AutofillProfile> address_profile_for_edit() {
+    return std::move(address_profile_for_edit_);
+  }
+
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
