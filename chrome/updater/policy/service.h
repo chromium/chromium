@@ -103,6 +103,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Fetches policies from device management and updates the PolicyService
   // instance. `callback` is passed a result that is `kErrorOk` on success,
   // `kErrorDMRegistrationFailed` if DM registration fails, or any other error.
+  // While a call to FetchPolicies is outstanding (i.e. has not invoked the
+  // callback), concurrent calls to FetchPolicies will reuse the results of the
+  // outstanding request.
   void FetchPolicies(base::OnceCallback<void(int)> callback);
 
   std::string source() const;
@@ -153,12 +156,15 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,
   // the policy managers within the policy service are reloaded/reset with the
   // provided DM policy manager. The DM policy manager is preloaded separately
-  // in a blocking sequence since it needs to do I/O to load policies.
+  // in a blocking sequence since it needs to do I/O to load policies, and then
+  // PolicyManagerLoaded is called.
   void FetchPoliciesDone(
       scoped_refptr<PolicyFetcher> fetcher,
-      base::OnceCallback<void(int)> callback,
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
+
+  void PolicyManagerLoaded(int result,
+                           PolicyService::PolicyManagerVector managers);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
@@ -186,6 +192,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
       const std::string& app_id) const;
 
   std::set<std::string> GetAppsWithPolicy() const;
+
+  base::OnceCallback<void(int)> fetch_policies_callback_;
 };
 
 // Decouples the proxy configuration from `PolicyService`.

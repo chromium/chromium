@@ -155,17 +155,30 @@ PolicyService::~PolicyService() = default;
 void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (fetch_policies_callback_) {
+    // Combine with existing call.
+    fetch_policies_callback_ = base::BindOnce(
+        [](base::OnceCallback<void(int)> a, base::OnceCallback<void(int)> b,
+           int v) {
+          std::move(a).Run(v);
+          std::move(b).Run(v);
+        },
+        std::move(fetch_policies_callback_), std::move(callback));
+    return;
+  }
+
+  fetch_policies_callback_ = std::move(callback);
+
   auto fetcher = base::MakeRefCounted<PolicyFetcher>(
       external_constants_->DeviceManagementURL(),
       PolicyServiceProxyConfiguration::Get(this),
       external_constants_->IsMachineManaged());
-  fetcher->FetchPolicies(base::BindOnce(&PolicyService::FetchPoliciesDone, this,
-                                        fetcher, std::move(callback)));
+  fetcher->FetchPolicies(
+      base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }
 
 void PolicyService::FetchPoliciesDone(
     scoped_refptr<PolicyFetcher> fetcher,
-    base::OnceCallback<void(int)> callback,
     int result,
     scoped_refptr<PolicyManagerInterface> dm_policy_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -185,16 +198,17 @@ void PolicyService::FetchPoliciesDone(
           : policy_managers_.name_map.count(kSourceDMPolicyManager)
               ? policy_managers_.name_map[kSourceDMPolicyManager]
               : nullptr),
-      base::BindOnce(
-          [](scoped_refptr<PolicyService> self,
-             base::OnceCallback<void(int)> callback, int result,
-             PolicyService::PolicyManagerVector managers) {
-            self->policy_managers_ = SortManagers(std::move(managers));
-            VLOG(1) << "Policies after refresh:" << std::endl
-                    << self->GetAllPoliciesAsString();
-            std::move(callback).Run(result);
-          },
-          base::WrapRefCounted(this), std::move(callback), result));
+      base::BindOnce(&PolicyService::PolicyManagerLoaded,
+                     base::WrapRefCounted(this), result));
+}
+
+void PolicyService::PolicyManagerLoaded(
+    int result,
+    PolicyService::PolicyManagerVector managers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  policy_managers_ = SortManagers(std::move(managers));
+  VLOG(1) << "Policies after refresh:" << std::endl << GetAllPoliciesAsString();
+  std::move(fetch_policies_callback_).Run(result);
 }
 
 std::string PolicyService::source() const {
