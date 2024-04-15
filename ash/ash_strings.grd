@@ -3799,7 +3799,7 @@ No devices connected.
         Wi-Fi
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_HOSTS" desc="The label used in the tray popup to separate your tether devices.">
-        Your devices
+        Your device hotspots
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ADD_CONNECTION" desc="Title for control to add a new network connection." >
         Add connection
