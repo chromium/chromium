@@ -28,6 +28,8 @@ TEST_F(SVGResourceDocumentContentTest, GetDocumentBeforeLoadComplete) {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(kSVGUrl), options);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
   auto* entry = SVGResourceDocumentContent::Fetch(params, GetDocument());
 
   // Write part of the response. The document should not be initialized yet,

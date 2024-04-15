@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -75,7 +76,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   SVGResource& operator=(const SVGResource&) = delete;
   virtual ~SVGResource();
 
-  virtual void Load(Document&) {}
+  virtual void Load(Document&, CrossOriginAttributeValue) {}
   virtual void LoadWithoutCSP(Document&) {}
 
   Element* Target() const { return target_.Get(); }
@@ -156,7 +157,7 @@ class ExternalSVGResourceDocumentContent final
  public:
   explicit ExternalSVGResourceDocumentContent(const KURL&);
 
-  void Load(Document&) override;
+  void Load(Document&, CrossOriginAttributeValue) override;
   void LoadWithoutCSP(Document&) override;
 
   void Trace(Visitor*) const override;

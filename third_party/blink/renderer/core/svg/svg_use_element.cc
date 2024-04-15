@@ -232,6 +232,8 @@ void SVGUseElement::UpdateTargetReference() {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kUse;
   FetchParameters params(ResourceRequest(element_url_), options);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
   auto* document_content =
       SVGResourceDocumentContent::Fetch(params, *context_document);
   UpdateDocumentContent(document_content);

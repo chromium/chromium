@@ -47,14 +47,19 @@ class SVGExternalDocumentCache final
   static SVGExternalDocumentCache* From(LocalFrame&);
   explicit SVGExternalDocumentCache(LocalFrame&);
 
-  SVGResourceDocumentContent* Get(const String& url_without_fragment);
-  void Put(const String& url_without_fragment,
-           SVGResourceDocumentContent* content);
+  // The key is "URL (without fragment)" and the request mode (kSameOrigin or
+  // kCors - other modes should be filtered by AllowedRequestMode).
+  using CacheKey = std::pair<String, network::mojom::blink::RequestMode>;
+
+  static CacheKey MakeCacheKey(const FetchParameters& params);
+
+  SVGResourceDocumentContent* Get(const CacheKey& key);
+  void Put(const CacheKey& key, SVGResourceDocumentContent* content);
 
   void Trace(Visitor*) const override;
 
  private:
-  HeapHashMap<String, WeakMember<SVGResourceDocumentContent>> entries_;
+  HeapHashMap<CacheKey, WeakMember<SVGResourceDocumentContent>> entries_;
 };
 
 const char SVGExternalDocumentCache::kSupplementName[] =
@@ -73,15 +78,22 @@ SVGExternalDocumentCache* SVGExternalDocumentCache::From(LocalFrame& frame) {
 SVGExternalDocumentCache::SVGExternalDocumentCache(LocalFrame& frame)
     : Supplement<LocalFrame>(frame) {}
 
-SVGResourceDocumentContent* SVGExternalDocumentCache::Get(
-    const String& url_without_fragment) {
-  auto it = entries_.find(url_without_fragment);
+SVGExternalDocumentCache::CacheKey SVGExternalDocumentCache::MakeCacheKey(
+    const FetchParameters& params) {
+  const KURL url_without_fragment =
+      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
+  return {url_without_fragment.GetString(),
+          params.GetResourceRequest().GetMode()};
+}
+
+SVGResourceDocumentContent* SVGExternalDocumentCache::Get(const CacheKey& key) {
+  auto it = entries_.find(key);
   return it != entries_.end() ? it->value : nullptr;
 }
 
-void SVGExternalDocumentCache::Put(const String& url_without_fragment,
+void SVGExternalDocumentCache::Put(const CacheKey& key,
                                    SVGResourceDocumentContent* content) {
-  entries_.Set(url_without_fragment, content);
+  entries_.Set(key, content);
 }
 
 void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
@@ -92,6 +104,19 @@ void SVGExternalDocumentCache::Trace(Visitor* visitor) const {
 bool CanReuseContent(const SVGResourceDocumentContent& content) {
   // Don't reuse if loading failed.
   return !content.ErrorOccurred();
+}
+
+bool AllowedRequestMode(const ResourceRequest& request) {
+  // Same-origin
+  if (request.GetMode() == network::mojom::blink::RequestMode::kSameOrigin) {
+    return true;
+  }
+  // CORS with same-origin credentials mode ("CORS anonymous").
+  if (request.GetMode() == network::mojom::blink::RequestMode::kCors) {
+    return request.GetCredentialsMode() ==
+           network::mojom::CredentialsMode::kSameOrigin;
+  }
+  return false;
 }
 
 }  // namespace
@@ -228,20 +253,22 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
     FetchParameters& params,
     Document& document) {
   CHECK(!params.Url().IsNull());
+  // Callers need to set the request and credentials mode to something suitably
+  // restrictive. This limits the actual modes (simplifies caching) that we
+  // allow and avoids accidental creation of overly privileged requests.
+  CHECK(AllowedRequestMode(params.GetResourceRequest()));
 
-  params.MutableResourceRequest().SetMode(
-      network::mojom::blink::RequestMode::kSameOrigin);
   DCHECK_EQ(params.GetResourceRequest().GetRequestContext(),
             mojom::blink::RequestContextType::UNSPECIFIED);
   params.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
-  const KURL url_without_fragment =
-      MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   auto* cache =
       SVGExternalDocumentCache::From(document.GetFrame()->LocalFrameRoot());
 
-  auto* cached_content = cache->Get(url_without_fragment.GetString());
+  const SVGExternalDocumentCache::CacheKey key =
+      SVGExternalDocumentCache::MakeCacheKey(params);
+  auto* cached_content = cache->Get(key);
   if (cached_content && CanReuseContent(*cached_content)) {
     return cached_content;
   }
@@ -251,7 +278,7 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   if (!resource) {
     return nullptr;
   }
-  cache->Put(url_without_fragment, resource->GetContent());
+  cache->Put(key, resource->GetContent());
   return resource->GetContent();
 }
 

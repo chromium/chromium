@@ -297,7 +297,7 @@ static void LoadResourcesForFilter(
       continue;
     }
     if (SVGResource* resource = reference_operation->Resource()) {
-      resource->Load(document);
+      resource->Load(document, kCrossOriginAttributeNotSet);
     }
   }
 }

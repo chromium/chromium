@@ -232,7 +232,9 @@ ExternalSVGResourceDocumentContent::ExternalSVGResourceDocumentContent(
     const KURL& url)
     : url_(url) {}
 
-void ExternalSVGResourceDocumentContent::Load(Document& document) {
+void ExternalSVGResourceDocumentContent::Load(
+    Document& document,
+    CrossOriginAttributeValue cross_origin) {
   if (document_content_)
     return;
   // Loading SVG resources should not trigger script, see
@@ -243,6 +245,13 @@ void ExternalSVGResourceDocumentContent::Load(Document& document) {
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
   FetchParameters params(ResourceRequest(url_), options);
+  if (cross_origin == kCrossOriginAttributeNotSet) {
+    params.MutableResourceRequest().SetMode(
+        network::mojom::blink::RequestMode::kSameOrigin);
+  } else {
+    params.SetCrossOriginAccessControl(execution_context->GetSecurityOrigin(),
+                                       cross_origin);
+  }
   document_content_ = SVGResourceDocumentContent::Fetch(params, document);
   if (!document_content_) {
     return;
@@ -264,6 +273,8 @@ void ExternalSVGResourceDocumentContent::LoadWithoutCSP(Document& document) {
   FetchParameters params(ResourceRequest(url_), options);
   params.SetContentSecurityCheck(
       network::mojom::blink::CSPDisposition::DO_NOT_CHECK);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
   document_content_ = SVGResourceDocumentContent::Fetch(params, document);
   if (!document_content_) {
     return;
