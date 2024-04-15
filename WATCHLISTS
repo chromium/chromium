@@ -3171,7 +3171,6 @@
     'privacy_guide_desktop': ['rainhard+watch@chromium.org'],
     'privacy_sandbox': [
       'alimariam+watch-privacy-sandbox@google.com',
-      'boujane+watch-privacy-sandbox@google.com',
       'dullweber+watch-privacy-sandbox@chromium.org',
       'tommasin+watch-privacy-sandbox@chromium.org',
       'olesiamarukhno+watch-privacy-sandbox@google.com'
