@@ -52,7 +52,7 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     return VideoDecoderType::kV4L2;
 #endif
   }
-  return VideoDecoderType::kVda;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -101,12 +101,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
             /*in_video_decoder_process=*/false);
       }
       case VideoDecoderType::kVda: {
-        return VdaVideoDecoder::Create(
-            traits.task_runner, gpu_task_runner_, traits.media_log->Clone(),
-            *traits.target_color_space, gpu_preferences_, gpu_workarounds_,
-            traits.get_command_buffer_stub_cb,
-            VideoDecodeAccelerator::Config::OutputMode::kAllocate,
-            VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
+        NOTREACHED_NORETURN();
       }
       default: {
         return nullptr;
@@ -137,7 +132,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
         GetActualPlatformDecoderImplementation(gpu_preferences_);
     switch (decoder_implementation) {
       case VideoDecoderType::kVda:
-        return std::move(get_vda_configs).Run();
+        NOTREACHED_NORETURN();
       case VideoDecoderType::kOutOfProcess:
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:

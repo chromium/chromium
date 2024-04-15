@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -162,6 +163,14 @@ VdaVideoDecoder::VdaVideoDecoder(
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(vda_capabilities_.flags, 0U);
   DCHECK(media_log_);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (output_mode != VideoDecodeAccelerator::Config::OutputMode::kImport ||
+      texture_allocation_mode != VideoDecodeAccelerator::TextureAllocationMode::
+                                     kDoNotAllocateGLTextures) {
+    CHECK_IS_TEST();
+  }
+#endif
 
   gpu_weak_this_ = gpu_weak_this_factory_.GetWeakPtr();
   parent_weak_this_ = parent_weak_this_factory_.GetWeakPtr();
