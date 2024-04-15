@@ -1178,6 +1178,17 @@ void LaunchURL(
         url_state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Never skip security checks for the intent:// scheme because
+  // `ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck` does not handle
+  // intent:// URLs correctly (or any URLs that should be opened in ARC).
+  // TODO(b/331400224): Fix `LaunchUrlWithoutSecurityCheck` to handle intent://
+  // URLs correctly and stop treating them in a special way here.
+  if (url.SchemeIs("intent")) {
+    is_allowlisted = false;
+  }
+#endif
+
   // If the URL is in allowlist, we launch it without asking the user and
   // without any additional security checks. Since the URL is allowlisted,
   // we assume it can be executed.

@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -37,6 +38,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
@@ -820,6 +822,164 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+}
+
+namespace {
+class FakeExternalProtocolHandlerWorker
+    : public shell_integration::DefaultSchemeClientWorker {
+ public:
+  FakeExternalProtocolHandlerWorker(
+      const GURL& url,
+      shell_integration::DefaultWebClientState os_state,
+      const std::u16string& program_name)
+      : shell_integration::DefaultSchemeClientWorker(url),
+        os_state_(os_state),
+        program_name_(program_name) {}
+
+ private:
+  ~FakeExternalProtocolHandlerWorker() override = default;
+
+  shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
+    return os_state_;
+  }
+
+  std::u16string GetDefaultClientNameImpl() override { return program_name_; }
+
+  void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
+    std::move(on_finished_callback).Run();
+  }
+
+  shell_integration::DefaultWebClientState os_state_;
+  std::u16string program_name_;
+};
+
+class ScopedFakeExternalProtocolHandlerDelegate
+    : public ExternalProtocolHandler::Delegate {
+ public:
+  ScopedFakeExternalProtocolHandlerDelegate() {
+    ExternalProtocolHandler::SetDelegateForTesting(this);
+  }
+  ~ScopedFakeExternalProtocolHandlerDelegate() override {
+    ExternalProtocolHandler::SetDelegateForTesting(nullptr);
+  }
+  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
+      const GURL& url) override {
+    return new FakeExternalProtocolHandlerWorker(
+        url, shell_integration::UNKNOWN_DEFAULT, program_name_);
+  }
+
+  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
+                                                    Profile* profile) override {
+    return ExternalProtocolHandler::UNKNOWN;
+  }
+
+  void BlockRequest() override {
+    FAIL() << "Unexpected BlockRequest call received";
+  }
+
+  void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const std::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
+    EXPECT_EQ(program_name_, program_name);
+    external_protocol_dialog_called_ = true;
+    launched_url_with_security_check_ = url.spec();
+  }
+
+  void LaunchUrlWithoutSecurityCheck(
+      const GURL& url,
+      content::WebContents* web_contents) override {
+    launched_url_without_security_check_ = url.spec();
+    launch_url_run_loop_.Quit();
+  }
+
+  void FinishedProcessingCheck() override { launch_url_run_loop_.Quit(); }
+
+  void WaitExternalUrlLaunchCompleted() { launch_url_run_loop_.Run(); }
+
+  bool external_protocol_dialog_called() {
+    return external_protocol_dialog_called_;
+  }
+  std::string launched_url_without_security_check() {
+    return launched_url_without_security_check_;
+  }
+  std::string launched_url_with_security_check() {
+    return launched_url_with_security_check_;
+  }
+
+ private:
+  base::RunLoop launch_url_run_loop_;
+  const std::u16string program_name_ = u"custom";
+  bool launch_url_called_ = false;
+  bool external_protocol_dialog_called_ = false;
+  std::string launched_url_without_security_check_;
+  std::string launched_url_with_security_check_;
+};
+
+}  // namespace
+
+// URLs which are explicitly allowlisted by policy can bypass security checks.
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
+                       SecurityCheckExceptionForAllowlistedUrls) {
+  ProtocolHandlerRegistryFactory::GetInstance()
+      ->GetForBrowserContext(browser()->profile())
+      ->OnAcceptRegisterProtocolHandler(
+          custom_handlers::ProtocolHandler::CreateProtocolHandler(
+              "map", GURL("geo://%s")));
+
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+
+  base::Value::List allowlist;
+  allowlist.Append("geo://*");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
+                                            std::move(allowlist));
+  // The call to update the internal allowlist value is async.
+  base::RunLoop().RunUntilIdle();
+
+  const char kGeoUrl[] = "geo:48.2082,16.3738";
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGeoUrl)));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_FALSE(delegate.external_protocol_dialog_called());
+  EXPECT_EQ(delegate.launched_url_without_security_check(), kGeoUrl);
+  EXPECT_EQ(delegate.launched_url_with_security_check(), "");
+}
+
+// Regardless of the value of the UrlAllowlist policy, intent:// URLs should
+// always be deferred to the external protocol dialog (which currently defers
+// the call to ARC).
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
+                       IntentSchemeBypassSecurityExceptions) {
+  ProtocolHandlerRegistryFactory::GetInstance()
+      ->GetForBrowserContext(browser()->profile())
+      ->OnAcceptRegisterProtocolHandler(
+          custom_handlers::ProtocolHandler::CreateProtocolHandler(
+              "search", GURL("intent://%s")));
+
+  ScopedFakeExternalProtocolHandlerDelegate delegate;
+
+  base::Value::List allowlist;
+  allowlist.Append("intent://*");
+  browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
+                                            std::move(allowlist));
+  // The call to update the internal allowlist value is async.
+  base::RunLoop().RunUntilIdle();
+
+  const char kIntentUrl[] =
+      "intent://www.google.com/"
+      "#Intent;scheme=http;package=com.android.chrome;end";
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kIntentUrl)));
+  delegate.WaitExternalUrlLaunchCompleted();
+
+  EXPECT_TRUE(delegate.external_protocol_dialog_called());
+  // intent:// URLs should not skip security checks.
+  EXPECT_EQ(delegate.launched_url_without_security_check(), "");
+  EXPECT_EQ(delegate.launched_url_with_security_check(), kIntentUrl);
 }
 #endif
 
