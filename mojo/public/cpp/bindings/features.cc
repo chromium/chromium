@@ -46,7 +46,7 @@ BASE_FEATURE(kMojoPredictiveAllocation,
 // the fix, if any.
 BASE_FEATURE(kMojoFixAssociatedHandleLeak,
              "MojoFixAssociatedHandleLeak",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mojo
