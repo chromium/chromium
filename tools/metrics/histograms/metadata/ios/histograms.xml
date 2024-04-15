@@ -4414,7 +4414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.AllPasswords"
-    units="Credentials" expires_after="2024-10-06">
+    units="Credentials" expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -4425,17 +4425,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.CreditCards" units="Cards"
-    expires_after="2023-12-10">
+    expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of cards presented to the user in Manual
-    Fallback. This is logged everytime the user opens this view.
+    Fallback. This is logged everytime the user opens this view. Warning: this
+    histogram was expired from 2023-12-10 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.Passwords" units="Credentials"
-    expires_after="2024-08-11">
+    expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -4446,42 +4447,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.Profiles" units="Profiles"
-    expires_after="2024-01-28">
+    expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of profiles presented to the user in Manual
-    Fallback. This is logged everytime the user opens this view.
+    Fallback. This is logged everytime the user opens this view. Warning: this
+    histogram was expired from 2024-1-28 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenCreditCards"
-    units="Suggestions" expires_after="2023-12-10">
+    units="Suggestions" expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of autofill suggestions present when the user
-    taps on the credit card button in manual fallback.
+    taps on the credit card button in manual fallback. Warning: this histogram
+    was expired from 2023-12-10 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenPasswords"
-    units="Suggestions" expires_after="2024-01-07">
+    units="Suggestions" expires_after="2025-04-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of password suggestions present when the user
-    taps on the password button in manual fallback.
+    taps on the password button in manual fallback. Warning: this histogram was
+    expired from 2023-1-07 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
-    units="Suggestions" expires_after="2023-05-01">
+    units="Suggestions" expires_after="2024-4-15">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     [iOS Only] Tracks the number of autofill suggestions present when the user
-    taps on the profiles (address) button in manual fallback.
+    taps on the profiles (address) button in manual fallback. Warning: this
+    histogram was expired from 2023-05-01 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 
