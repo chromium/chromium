@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_TYPES_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_TYPES_H_
 
+#include "base/logging.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "components/tab_groups/tab_group_id.h"

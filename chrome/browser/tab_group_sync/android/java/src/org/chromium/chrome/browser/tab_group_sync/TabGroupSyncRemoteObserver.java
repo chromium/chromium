@@ -81,7 +81,15 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
     @Override
     public void onTabGroupUpdated(SavedTabGroup tabGroup) {
-        assert tabGroup.localId != null;
+        if (tabGroup.localId == null) {
+            // This is the case where the tab model doesn't have the group open, but the backend was
+            // already aware of the group. The group might have been closed. Ignore it.
+            // There can still be some cases where we never created a local group due to a crash.
+            // We don't have a better way to handle those than not auto-opening them.
+            // TODO(b/334379081): Handle it better.
+            return;
+        }
+
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.updateTabGroup(tabGroup);
         mEnableLocalObserverCallback.onResult(true);

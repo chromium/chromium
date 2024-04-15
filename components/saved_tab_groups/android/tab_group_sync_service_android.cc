@@ -106,6 +106,7 @@ ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
   SavedTabGroup group(std::u16string(), tab_groups::TabGroupColorId::kGrey,
                       std::vector<SavedTabGroupTab>(), std::nullopt,
                       std::nullopt, group_id);
+  tab_group_sync_service_->AddGroup(group);
   return UuidToJavaString(env, group.saved_guid());
 }
 

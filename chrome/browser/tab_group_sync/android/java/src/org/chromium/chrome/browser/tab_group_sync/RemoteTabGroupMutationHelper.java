@@ -40,7 +40,7 @@ public class RemoteTabGroupMutationHelper {
      */
     public void createRemoteTabGroup(int groupId) {
         // Create an empty group and set visuals.
-        mTabGroupSyncService.createGroup(groupId);
+        String syncId = mTabGroupSyncService.createGroup(groupId);
         updateVisualData(groupId);
 
         // Add tabs to the group.
@@ -50,8 +50,7 @@ public class RemoteTabGroupMutationHelper {
         }
 
         // Persist sync ID mapping for the tab group in shared preference.
-        SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(groupId);
-        mTabGroupModelFilter.setTabGroupSyncId(groupId, savedTabGroup.syncId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId, syncId);
     }
 
     /**

@@ -26,11 +26,12 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeObserver(Observer observer) {}
 
     @Override
-    public void createGroup(int groupId) {
+    public String createGroup(int groupId) {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_ID_1;
         savedTabGroup.localId = groupId;
         mTabGroups.add(savedTabGroup);
+        return savedTabGroup.syncId;
     }
 
     @Override

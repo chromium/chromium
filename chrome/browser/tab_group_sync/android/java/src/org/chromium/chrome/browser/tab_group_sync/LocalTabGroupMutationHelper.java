@@ -80,7 +80,7 @@ public final class LocalTabGroupMutationHelper {
         }
 
         // Update shared prefs about tab group mapping.
-        storeTabGroupIdMappingToPrefs(tabGroup, groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId, tabGroup.syncId);
     }
 
     /**
@@ -128,7 +128,6 @@ public final class LocalTabGroupMutationHelper {
         }
 
         updateTabGroupVisuals(tabGroup, tabGroup.localId);
-        storeTabGroupIdMappingToPrefs(tabGroup, tabGroup.localId);
     }
 
     private void closeLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
@@ -172,10 +171,6 @@ public final class LocalTabGroupMutationHelper {
     private void updateTabGroupVisuals(SavedTabGroup tabGroup, int rootId) {
         mTabGroupModelFilter.setTabGroupTitle(rootId, tabGroup.title);
         mTabGroupModelFilter.setTabGroupColor(rootId, tabGroup.color);
-    }
-
-    private void storeTabGroupIdMappingToPrefs(SavedTabGroup tabGroup, int rootId) {
-        // TODO(b/333724729): Persist tab group ID mapping to prefs.
     }
 
     private TabModel getTabModel() {

@@ -55,6 +55,19 @@ if (is_android) {
     ]
   }
 
+  android_library("test_support_java") {
+    testonly = true
+
+    deps = [
+      "//base:base_java",
+      "//components/saved_tab_groups:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:url_java",
+    ]
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TestTabGroupSyncService.java" ]
+  }
+
   robolectric_library("junit") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
@@ -63,10 +76,10 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
-      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TestTabGroupSyncService.java",
     ]
     deps = [
       ":java",
+      ":test_support_java",
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/browser/profiles/android:java",
@@ -92,6 +105,7 @@ if (is_android) {
 
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactoryTest.java" ]
     deps = [
+      ":test_support_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",
