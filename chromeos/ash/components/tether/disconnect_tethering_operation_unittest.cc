@@ -147,7 +147,7 @@ TEST_F(DisconnectTetheringOperationTest, TestFailure) {
 
   // Finalize the operation; no message has been sent so this represents a
   // failure case.
-  operation_->UnregisterDevice(remote_device_);
+  operation_->StopOperation();
 
   histogram_tester_.ExpectTotalCount(
       "InstantTethering.Performance.DisconnectTetheringRequestDuration", 0);

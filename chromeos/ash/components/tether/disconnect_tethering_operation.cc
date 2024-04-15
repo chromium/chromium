@@ -49,12 +49,10 @@ DisconnectTetheringOperation::DisconnectTetheringOperation(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
-    : MessageTransferOperation(
-          multidevice::RemoteDeviceRefList{device_to_connect},
-          secure_channel::ConnectionPriority::kHigh,
-          device_sync_client,
-          secure_channel_client),
-      remote_device_(device_to_connect),
+    : MessageTransferOperation(device_to_connect,
+                               secure_channel::ConnectionPriority::kHigh,
+                               device_sync_client,
+                               secure_channel_client),
       has_sent_message_(false),
       clock_(base::DefaultClock::GetInstance()) {}
 
@@ -71,16 +69,12 @@ void DisconnectTetheringOperation::RemoveObserver(Observer* observer) {
 void DisconnectTetheringOperation::NotifyObserversOperationFinished(
     bool success) {
   for (auto& observer : observer_list_) {
-    observer.OnOperationFinished(remote_device_.GetDeviceId(), success);
+    observer.OnOperationFinished(remote_device().GetDeviceId(), success);
   }
 }
 
-void DisconnectTetheringOperation::OnDeviceAuthenticated(
-    multidevice::RemoteDeviceRef remote_device) {
-  DCHECK(remote_devices().size() == 1u && remote_devices()[0] == remote_device);
-
+void DisconnectTetheringOperation::OnDeviceAuthenticated() {
   disconnect_message_sequence_number_ = SendMessageToDevice(
-      remote_device,
       std::make_unique<MessageWrapper>(DisconnectTetheringRequest()));
   disconnect_start_time_ = clock_->Now();
 }
@@ -94,8 +88,9 @@ MessageType DisconnectTetheringOperation::GetMessageTypeForConnection() {
 }
 
 void DisconnectTetheringOperation::OnMessageSent(int sequence_number) {
-  if (sequence_number != disconnect_message_sequence_number_)
+  if (sequence_number != disconnect_message_sequence_number_) {
     return;
+  }
 
   has_sent_message_ = true;
 
@@ -105,7 +100,7 @@ void DisconnectTetheringOperation::OnMessageSent(int sequence_number) {
       clock_->Now() - disconnect_start_time_);
   disconnect_start_time_ = base::Time();
 
-  UnregisterDevice(remote_device_);
+  StopOperation();
 }
 
 void DisconnectTetheringOperation::SetClockForTest(

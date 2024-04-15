@@ -72,8 +72,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   void NotifyObserversOperationFinished(bool success);
 
   // MessageTransferOperation:
-  void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) override;
+  void OnDeviceAuthenticated() override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
   void OnMessageSent(int sequence_number) override;
@@ -88,7 +87,6 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   void SetClockForTest(base::Clock* clock_for_test);
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-  multidevice::RemoteDeviceRef remote_device_;
   int disconnect_message_sequence_number_ = -1;
   bool has_sent_message_;
 

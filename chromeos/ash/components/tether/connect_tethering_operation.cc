@@ -65,12 +65,10 @@ ConnectTetheringOperation::ConnectTetheringOperation(
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     bool setup_required)
-    : MessageTransferOperation(
-          multidevice::RemoteDeviceRefList{device_to_connect},
-          secure_channel::ConnectionPriority::kHigh,
-          device_sync_client,
-          secure_channel_client),
-      remote_device_(device_to_connect),
+    : MessageTransferOperation(device_to_connect,
+                               secure_channel::ConnectionPriority::kHigh,
+                               device_sync_client,
+                               secure_channel_client),
       clock_(base::DefaultClock::GetInstance()),
       setup_required_(setup_required),
       error_code_to_return_(HostResponseErrorCode::NO_RESPONSE) {}
@@ -85,26 +83,17 @@ void ConnectTetheringOperation::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ConnectTetheringOperation::OnDeviceAuthenticated(
-    multidevice::RemoteDeviceRef remote_device) {
-  DCHECK(remote_devices().size() == 1u && remote_devices()[0] == remote_device);
+void ConnectTetheringOperation::OnDeviceAuthenticated() {
   connect_tethering_request_start_time_ = clock_->Now();
   connect_message_sequence_number_ = SendMessageToDevice(
-      remote_device,
       std::make_unique<MessageWrapper>(ConnectTetheringRequest()));
 }
 
 void ConnectTetheringOperation::OnMessageReceived(
-    std::unique_ptr<MessageWrapper> message_wrapper,
-    multidevice::RemoteDeviceRef remote_device) {
+    std::unique_ptr<MessageWrapper> message_wrapper) {
   if (message_wrapper->GetMessageType() !=
       MessageType::CONNECT_TETHERING_RESPONSE) {
     // If another type of message has been received, ignore it.
-    return;
-  }
-
-  if (!(remote_device == remote_device_)) {
-    // If the message came from another device, ignore it.
     return;
   }
 
@@ -116,7 +105,7 @@ void ConnectTetheringOperation::OnMessageReceived(
     if (response->has_ssid() && response->has_password()) {
       PA_LOG(VERBOSE)
           << "Received ConnectTetheringResponse from device with ID "
-          << remote_device.GetTruncatedDeviceIdForLogs() << " and "
+          << remote_device().GetTruncatedDeviceIdForLogs() << " and "
           << "response_code == SUCCESS. Config: {ssid: \"" << response->ssid()
           << "\", password: \"" << response->password() << "\"}";
 
@@ -127,7 +116,7 @@ void ConnectTetheringOperation::OnMessageReceived(
       password_to_return_ = response->password();
     } else {
       PA_LOG(ERROR) << "Received ConnectTetheringResponse from device with ID "
-                    << remote_device.GetTruncatedDeviceIdForLogs() << " and "
+                    << remote_device().GetTruncatedDeviceIdForLogs() << " and "
                     << "response_code == SUCCESS, but the response did not "
                     << "contain a Wi-Fi SSID and/or password.";
       error_code_to_return_ =
@@ -136,7 +125,7 @@ void ConnectTetheringOperation::OnMessageReceived(
   } else {
     PA_LOG(WARNING)
         << "Received failing ConnectTetheringResponse from device with ID "
-        << remote_device.GetTruncatedDeviceIdForLogs() << " and "
+        << remote_device().GetTruncatedDeviceIdForLogs() << " and "
         << "response_code == " << response->response_code() << ".";
     error_code_to_return_ = ConnectTetheringResponseCodeToHostResponseErrorCode(
         response->response_code());
@@ -150,8 +139,8 @@ void ConnectTetheringOperation::OnMessageReceived(
       "InstantTethering.Performance.ConnectTetheringResponseDuration",
       clock_->Now() - connect_tethering_request_start_time_);
 
-  // Now that a response has been received, the device can be unregistered.
-  UnregisterDevice(remote_device);
+  // Now that a response has been received, the operation may finish.
+  StopOperation();
 }
 
 void ConnectTetheringOperation::OnOperationFinished() {
@@ -180,7 +169,7 @@ void ConnectTetheringOperation::OnMessageSent(int sequence_number) {
 
 void ConnectTetheringOperation::NotifyConnectTetheringRequestSent() {
   for (auto& observer : observer_list_) {
-    observer.OnConnectTetheringRequestSent(remote_device_);
+    observer.OnConnectTetheringRequestSent(remote_device());
   }
 }
 
@@ -188,7 +177,7 @@ void ConnectTetheringOperation::NotifyObserversOfSuccessfulResponse(
     const std::string& ssid,
     const std::string& password) {
   for (auto& observer : observer_list_) {
-    observer.OnSuccessfulConnectTetheringResponse(remote_device_, ssid,
+    observer.OnSuccessfulConnectTetheringResponse(remote_device(), ssid,
                                                   password);
   }
 }
@@ -196,7 +185,7 @@ void ConnectTetheringOperation::NotifyObserversOfSuccessfulResponse(
 void ConnectTetheringOperation::NotifyObserversOfConnectionFailure(
     HostResponseErrorCode error_code) {
   for (auto& observer : observer_list_) {
-    observer.OnConnectTetheringFailure(remote_device_, error_code);
+    observer.OnConnectTetheringFailure(remote_device(), error_code);
   }
 }
 

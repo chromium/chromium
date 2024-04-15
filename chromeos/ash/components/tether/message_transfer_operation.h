@@ -32,10 +32,12 @@ namespace ash::tether {
 
 // Abstract base class used for operations which send and/or receive messages
 // from remote devices.
-class MessageTransferOperation {
+class MessageTransferOperation
+    : public secure_channel::ClientChannel::Observer,
+      public secure_channel::ConnectionAttempt::Delegate {
  public:
   MessageTransferOperation(
-      const multidevice::RemoteDeviceRefList& devices_to_connect,
+      const multidevice::RemoteDeviceRef& device_to_connect,
       secure_channel::ConnectionPriority connection_priority,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);
@@ -43,40 +45,31 @@ class MessageTransferOperation {
   MessageTransferOperation(const MessageTransferOperation&) = delete;
   MessageTransferOperation& operator=(const MessageTransferOperation&) = delete;
 
-  virtual ~MessageTransferOperation();
+  ~MessageTransferOperation() override;
 
   // Initializes the operation by registering device connection listeners with
   // SecureChannel.
   void Initialize();
 
  protected:
-  // Unregisters |remote_device| for the MessageType returned by
-  // GetMessageTypeForConnection().
-  void UnregisterDevice(multidevice::RemoteDeviceRef remote_device);
+  // Manually ends the operation.
+  void StopOperation();
 
-  // Sends |message_wrapper|'s message to |remote_device| and returns the
+  // Sends |message_wrapper|'s message to |remote_device_| and returns the
   // associated message's sequence number.
-  int SendMessageToDevice(multidevice::RemoteDeviceRef remote_device,
-                          std::unique_ptr<MessageWrapper> message_wrapper);
+  int SendMessageToDevice(std::unique_ptr<MessageWrapper> message_wrapper);
 
-  // Callback executed whena device is authenticated (i.e., it is in a state
+  // Callback executed when a device is authenticated (i.e., it is in a state
   // which allows messages to be sent/received). Should be overridden by derived
-  // classes which intend to send a message to |remote_device| as soon as an
+  // classes which intend to send a message to |remote_device_| as soon as an
   // authenticated channel has been established to that device.
-  virtual void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) {}
+  virtual void OnDeviceAuthenticated() {}
 
   // Callback executed when a tether protocol message is received. Should be
-  // overriden by derived classes which intend to handle messages received from
-  // |remote_device|.
+  // overridden by derived classes which intend to handle messages received from
+  // |remote_device_|.
   virtual void OnMessageReceived(
-      std::unique_ptr<MessageWrapper> message_wrapper,
-      multidevice::RemoteDeviceRef remote_device) {}
-
-  // Callback executed when any message is received on the "magic_tether"
-  // feature.
-  virtual void OnMessageReceived(const std::string& device_id,
-                                 const std::string& payload);
+      std::unique_ptr<MessageWrapper> message_wrapper) {}
 
   // Callback executed a tether protocol message is sent. |sequence_number| is
   // the value returned by SendMessageToDevice().
@@ -98,7 +91,10 @@ class MessageTransferOperation {
   // ShouldOperationUseTimeout() returns false, this method is never used.
   virtual uint32_t GetMessageTimeoutSeconds();
 
-  multidevice::RemoteDeviceRefList& remote_devices() { return remote_devices_; }
+  multidevice::RemoteDeviceRef& remote_device() { return remote_device_; }
+
+  std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
+  std::unique_ptr<secure_channel::ClientChannel> client_channel_;
 
  private:
   friend class ConnectTetheringOperationTest;
@@ -107,46 +103,15 @@ class MessageTransferOperation {
   friend class KeepAliveOperationTest;
   friend class MessageTransferOperationTest;
 
-  class ConnectionAttemptDelegate
-      : public secure_channel::ConnectionAttempt::Delegate {
-   public:
-    ConnectionAttemptDelegate(
-        MessageTransferOperation* operation,
-        multidevice::RemoteDeviceRef remote_device,
-        std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt);
-    ~ConnectionAttemptDelegate() override;
+  // secure_channel::ConnectionAttempt::Delegate:
+  void OnConnectionAttemptFailure(
+      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
+  void OnConnection(
+      std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
-    // secure_channel::ConnectionAttempt::Delegate:
-    void OnConnectionAttemptFailure(
-        secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
-    void OnConnection(
-        std::unique_ptr<secure_channel::ClientChannel> channel) override;
-
-   private:
-    raw_ptr<MessageTransferOperation> operation_;
-    multidevice::RemoteDeviceRef remote_device_;
-    std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
-  };
-
-  class ClientChannelObserver : public secure_channel::ClientChannel::Observer {
-   public:
-    ClientChannelObserver(
-        MessageTransferOperation* operation,
-        multidevice::RemoteDeviceRef remote_device,
-        std::unique_ptr<secure_channel::ClientChannel> client_channel);
-    ~ClientChannelObserver() override;
-
-    // secure_channel::ClientChannel::Observer:
-    void OnDisconnected() override;
-    void OnMessageReceived(const std::string& payload) override;
-
-    secure_channel::ClientChannel* channel() { return client_channel_.get(); }
-
-   private:
-    raw_ptr<MessageTransferOperation> operation_;
-    multidevice::RemoteDeviceRef remote_device_;
-    std::unique_ptr<secure_channel::ClientChannel> client_channel_;
-  };
+  // secure_channel::ClientChannel::Observer:
+  void OnDisconnected() override;
+  void OnMessageReceived(const std::string& payload) override;
 
   // The maximum expected time to connect to a remote device, if it can be
   // connected to. This number has been determined by examining metrics.
@@ -159,33 +124,22 @@ class MessageTransferOperation {
   // duration.
   static constexpr const uint32_t kDefaultMessageTimeoutSeconds = 10;
 
-  void OnConnectionAttemptFailure(
-      multidevice::RemoteDeviceRef remote_device,
-      secure_channel::mojom::ConnectionAttemptFailureReason reason);
-  void OnConnection(multidevice::RemoteDeviceRef remote_device,
-                    std::unique_ptr<secure_channel::ClientChannel> channel);
-  void OnDisconnected(multidevice::RemoteDeviceRef remote_device);
-
   // Start the timer while waiting for a connection to |remote_device|. See
   // |kConnectionTimeoutSeconds|.
-  void StartConnectionTimerForDevice(
-      multidevice::RemoteDeviceRef remote_device);
+  void StartConnectionTimerForDevice();
 
   // Start the timer while waiting for messages to be sent to and received by
   // |remote_device|. See |kDefaultMessageTimeoutSeconds|.
-  void StartMessageTimerForDevice(multidevice::RemoteDeviceRef remote_device);
+  void StartMessageTimerForDevice();
 
-  void StartTimerForDevice(multidevice::RemoteDeviceRef remote_device,
-                           uint32_t timeout_seconds);
-  void StopTimerForDeviceIfRunning(multidevice::RemoteDeviceRef remote_device);
-  void OnTimeout(multidevice::RemoteDeviceRef remote_device);
-  std::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
-      const std::string& device_id);
+  void StartTimerForDevice(uint32_t timeout_seconds);
+  void StopTimerForDeviceIfRunning();
+  void OnTimeout();
 
   void SetTimerFactoryForTest(
       std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
 
-  multidevice::RemoteDeviceRefList remote_devices_;
+  multidevice::RemoteDeviceRef remote_device_;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   const secure_channel::ConnectionPriority connection_priority_;
@@ -196,17 +150,10 @@ class MessageTransferOperation {
   bool shutting_down_ = false;
   MessageType message_type_for_connection_;
 
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<ConnectionAttemptDelegate>>
-      remote_device_to_connection_attempt_delegate_map_;
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<ClientChannelObserver>>
-      remote_device_to_client_channel_observer_map_;
   int next_message_sequence_number_ = 0;
 
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<base::OneShotTimer>>
-      remote_device_to_timer_map_;
+  std::unique_ptr<base::OneShotTimer> remote_device_timer_;
+
   base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_{this};
 };
 

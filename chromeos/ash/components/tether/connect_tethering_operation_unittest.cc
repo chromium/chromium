@@ -156,7 +156,7 @@ TEST_F(ConnectTetheringOperationTest, SuccessWithValidResponse) {
   response.set_password(kTestPassword);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   // Verify the response duration metric is recorded.
   histogram_tester_.ExpectTimeBucketCount(
@@ -183,7 +183,7 @@ TEST_F(ConnectTetheringOperationTest, SuccessButInvalidResponse) {
                                  ConnectTetheringResponse_ResponseCode_SUCCESS);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(ConnectTetheringOperationTest, UnknownError) {
@@ -201,7 +201,7 @@ TEST_F(ConnectTetheringOperationTest, UnknownError) {
           ConnectTetheringResponse_ResponseCode_UNKNOWN_ERROR);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(ConnectTetheringOperationTest, ProvisioningFailed) {
@@ -219,7 +219,7 @@ TEST_F(ConnectTetheringOperationTest, ProvisioningFailed) {
           ConnectTetheringResponse_ResponseCode_PROVISIONING_FAILED);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(ConnectTetheringOperationTest, InvalidWifiApConfig) {
@@ -237,7 +237,7 @@ TEST_F(ConnectTetheringOperationTest, InvalidWifiApConfig) {
           ConnectTetheringResponse_ResponseCode_INVALID_WIFI_AP_CONFIG);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(ConnectTetheringOperationTest, InvalidActiveExistingSoftApConfig) {
@@ -255,7 +255,7 @@ TEST_F(ConnectTetheringOperationTest, InvalidActiveExistingSoftApConfig) {
           ConnectTetheringResponse_ResponseCode_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(ConnectTetheringOperationTest, InvalidNewSoftApConfig) {
@@ -273,7 +273,7 @@ TEST_F(ConnectTetheringOperationTest, InvalidNewSoftApConfig) {
           ConnectTetheringResponse_ResponseCode_INVALID_NEW_SOFT_AP_CONFIG);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
 
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 // Tests that observers are notified when the connection request is sent.

@@ -164,7 +164,7 @@ TEST_F(KeepAliveOperationTest, NotifiesObserversOnResponse) {
   KeepAliveTickleResponse response;
   response.mutable_device_status()->CopyFrom(test_status);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 }
 
 TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
@@ -179,7 +179,7 @@ TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
 
   std::unique_ptr<MessageWrapper> message(
       new MessageWrapper(KeepAliveTickleResponse()));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   histogram_tester_.ExpectTimeBucketCount(
       "InstantTethering.Performance.KeepAliveTickleResponseDuration",

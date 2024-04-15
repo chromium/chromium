@@ -108,33 +108,29 @@ TetherAvailabilityOperation::TetherAvailabilityOperation(
     secure_channel::SecureChannelClient* secure_channel_client,
     TetherHostResponseRecorder* tether_host_response_recorder,
     ConnectionPreserver* connection_preserver)
-    : MessageTransferOperation(
-          multidevice::RemoteDeviceRefList{device_to_connect},
-          secure_channel::ConnectionPriority::kLow,
-          device_sync_client,
-          secure_channel_client),
+    : MessageTransferOperation(device_to_connect,
+                               secure_channel::ConnectionPriority::kLow,
+                               device_sync_client,
+                               secure_channel_client),
       tether_host_response_recorder_(tether_host_response_recorder),
       connection_preserver_(connection_preserver),
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      device_to_connect_(device_to_connect),
       on_operation_finished_(std::move(callback)) {}
 
 TetherAvailabilityOperation::~TetherAvailabilityOperation() = default;
 
-void TetherAvailabilityOperation::OnDeviceAuthenticated(
-    multidevice::RemoteDeviceRef remote_device) {
+void TetherAvailabilityOperation::OnDeviceAuthenticated() {
   CHECK(!tether_availability_request_start_time_.has_value());
   tether_availability_request_start_time_ = clock_->Now();
   PA_LOG(VERBOSE) << "Sending TetherAvailabilityRequest message to "
-                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
-  SendMessageToDevice(remote_device, std::make_unique<MessageWrapper>(
-                                         TetherAvailabilityRequest()));
+                  << remote_device().GetTruncatedDeviceIdForLogs() << ".";
+  SendMessageToDevice(
+      std::make_unique<MessageWrapper>(TetherAvailabilityRequest()));
 }
 
 void TetherAvailabilityOperation::OnMessageReceived(
-    std::unique_ptr<MessageWrapper> message_wrapper,
-    multidevice::RemoteDeviceRef remote_device) {
+    std::unique_ptr<MessageWrapper> message_wrapper) {
   if (message_wrapper->GetMessageType() !=
       MessageType::TETHER_AVAILABILITY_RESPONSE) {
     // If another type of message has been received, ignore it.
@@ -146,7 +142,7 @@ void TetherAvailabilityOperation::OnMessageReceived(
   if (AreGmsCoreNotificationsDisabled(response)) {
     PA_LOG(WARNING)
         << "Received TetherAvailabilityResponse from device with ID "
-        << remote_device.GetTruncatedDeviceIdForLogs() << " which "
+        << remote_device().GetTruncatedDeviceIdForLogs() << " which "
         << "indicates that Google Play Services notifications are "
         << "disabled. Response code: " << response->response_code();
     scanned_device_info_result_ =
@@ -156,7 +152,7 @@ void TetherAvailabilityOperation::OnMessageReceived(
     // unavailable, ignore it.
     PA_LOG(WARNING)
         << "Received TetherAvailabilityResponse from device with ID "
-        << remote_device.GetTruncatedDeviceIdForLogs() << " which "
+        << remote_device().GetTruncatedDeviceIdForLogs() << " which "
         << "indicates that tethering is not available. Response code: "
         << response->response_code();
   } else {
@@ -167,30 +163,30 @@ void TetherAvailabilityOperation::OnMessageReceived(
 
     PA_LOG(VERBOSE)
         << "Received TetherAvailabilityResponse from device with ID "
-        << remote_device.GetTruncatedDeviceIdForLogs() << " which "
+        << remote_device().GetTruncatedDeviceIdForLogs() << " which "
         << "indicates that tethering is available. setup_required = "
         << setup_required;
 
     tether_host_response_recorder_->RecordSuccessfulTetherAvailabilityResponse(
-        remote_device);
+        remote_device());
 
     // Only attempt to preserve the BLE connection to this device if the
     // response indicated that the device can serve as a host.
     connection_preserver_->HandleSuccessfulTetherAvailabilityResponse(
-        remote_device.GetDeviceId());
+        remote_device().GetDeviceId());
 
     scanned_device_info_result_ = ScannedDeviceInfo(
-        remote_device, response->device_status(), setup_required);
+        remote_device(), response->device_status(), setup_required);
   }
 
-  RecordTetherAvailabilityResponseDuration(remote_device.GetDeviceId());
+  RecordTetherAvailabilityResponseDuration(remote_device().GetDeviceId());
 
   // Unregister the device after a TetherAvailabilityResponse has been received.
   // Delay this in order to let |connection_preserver_| fully preserve the
   // connection, if necessary, before attempting to tear down the connection.
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&TetherAvailabilityOperation::UnregisterDevice,
-                                weak_ptr_factory_.GetWeakPtr(), remote_device));
+      FROM_HERE, base::BindOnce(&TetherAvailabilityOperation::StopOperation,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TetherAvailabilityOperation::OnOperationFinished() {

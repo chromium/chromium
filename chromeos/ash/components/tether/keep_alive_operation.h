@@ -70,10 +70,9 @@ class KeepAliveOperation : public MessageTransferOperation {
       secure_channel::SecureChannelClient* secure_channel_client);
 
   // MessageTransferOperation:
-  void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) override;
-  void OnMessageReceived(std::unique_ptr<MessageWrapper> message_wrapper,
-                         multidevice::RemoteDeviceRef remote_device) override;
+  void OnDeviceAuthenticated() override;
+  void OnMessageReceived(
+      std::unique_ptr<MessageWrapper> message_wrapper) override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
 
@@ -88,7 +87,6 @@ class KeepAliveOperation : public MessageTransferOperation {
 
   void SetClockForTest(base::Clock* clock_for_test);
 
-  multidevice::RemoteDeviceRef remote_device_;
   raw_ptr<base::Clock> clock_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 

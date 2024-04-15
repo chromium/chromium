@@ -41,10 +41,7 @@ class FakeDisconnectTetheringOperation : public DisconnectTetheringOperation {
     NotifyObserversOperationFinished(success);
   }
 
-  multidevice::RemoteDeviceRef GetRemoteDevice() {
-    EXPECT_EQ(1u, remote_devices().size());
-    return remote_devices()[0];
-  }
+  multidevice::RemoteDeviceRef GetRemoteDevice() { return remote_device(); }
 };
 
 class FakeDisconnectTetheringOperationFactory

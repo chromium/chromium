@@ -106,10 +106,9 @@ class ConnectTetheringOperation : public MessageTransferOperation {
       bool setup_required);
 
   // MessageTransferOperation:
-  void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) override;
-  void OnMessageReceived(std::unique_ptr<MessageWrapper> message_wrapper,
-                         multidevice::RemoteDeviceRef remote_device) override;
+  void OnDeviceAuthenticated() override;
+  void OnMessageReceived(
+      std::unique_ptr<MessageWrapper> message_wrapper) override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
   void OnMessageSent(int sequence_number) override;
@@ -150,7 +149,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   static const uint32_t kSetupNotRequiredResponseTimeoutSeconds;
   static const uint32_t kSetupRequiredResponseTimeoutSeconds;
 
-  multidevice::RemoteDeviceRef remote_device_;
   raw_ptr<base::Clock> clock_;
   int connect_message_sequence_number_ = -1;
   bool setup_required_;

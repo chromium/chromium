@@ -66,9 +66,9 @@ class TetherAvailabilityOperationTest : public testing::Test {
     ConnectAuthenticatedChannelForDevice(remote_device_);
   }
 
-  multidevice::RemoteDeviceRefList GetOperationRemoteDevices(
+  multidevice::RemoteDeviceRef GetOperationRemoteDevice(
       TetherAvailabilityOperation* operation) const {
-    return operation->remote_devices();
+    return operation->remote_device();
   }
 
   std::unique_ptr<TetherAvailabilityOperation> ConstructOperation() {
@@ -158,7 +158,7 @@ TEST_F(TetherAvailabilityOperationTest, RecordsResponseDuration) {
 
   std::unique_ptr<MessageWrapper> message(
       new MessageWrapper(TetherAvailabilityResponse()));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   histogram_tester_.ExpectTimeBucketCount(
       "InstantTethering.Performance.TetherAvailabilityResponseDuration",
@@ -183,7 +183,7 @@ TEST_F(TetherAvailabilityOperationTest, ErrorResponses) {
     TetherAvailabilityResponse response;
     response.set_response_code(response_code);
     std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-    operation_->OnMessageReceived(std::move(message), remote_device_);
+    operation_->OnMessageReceived(std::move(message));
 
     // Connection is not preserved.
     bool connection_preserved =
@@ -208,7 +208,7 @@ TEST_F(TetherAvailabilityOperationTest, NotificationsDisabled) {
   response.set_response_code(
       TetherAvailabilityResponse_ResponseCode_NOTIFICATIONS_DISABLED_LEGACY);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   test_task_runner_->RunUntilIdle();
 
@@ -234,7 +234,7 @@ TEST_F(TetherAvailabilityOperationTest,
   response.set_response_code(
       TetherAvailabilityResponse_ResponseCode_NOTIFICATIONS_DISABLED_WITH_NOTIFICATION_CHANNEL);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   test_task_runner_->RunUntilIdle();
 
@@ -264,7 +264,7 @@ TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
       TetherAvailabilityResponse_ResponseCode_TETHER_AVAILABLE);
   response.mutable_device_status()->CopyFrom(device_status);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   test_task_runner_->RunUntilIdle();
 
@@ -294,7 +294,7 @@ TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
       TetherAvailabilityResponse_ResponseCode_LAST_PROVISIONING_FAILED);
   response.mutable_device_status()->CopyFrom(device_status);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   // Connection is preserved.
   EXPECT_EQ(remote_device_.GetDeviceId(),
@@ -324,7 +324,7 @@ TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
       TetherAvailabilityResponse_ResponseCode_SETUP_NEEDED);
   response.mutable_device_status()->CopyFrom(device_status);
   std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
-  operation_->OnMessageReceived(std::move(message), remote_device_);
+  operation_->OnMessageReceived(std::move(message));
 
   test_task_runner_->RunUntilIdle();
 

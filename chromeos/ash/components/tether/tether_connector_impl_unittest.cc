@@ -93,10 +93,7 @@ class FakeConnectTetheringOperation : public ConnectTetheringOperation {
     NotifyObserversOfConnectionFailure(error_code);
   }
 
-  multidevice::RemoteDeviceRef GetRemoteDevice() {
-    EXPECT_EQ(1u, remote_devices().size());
-    return remote_devices()[0];
-  }
+  multidevice::RemoteDeviceRef GetRemoteDevice() { return remote_device(); }
 
   bool setup_required() { return setup_required_; }
 

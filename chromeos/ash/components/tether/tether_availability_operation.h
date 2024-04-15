@@ -78,10 +78,9 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
 
  protected:
   // MessageTransferOperation:
-  void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) override;
-  void OnMessageReceived(std::unique_ptr<MessageWrapper> message_wrapper,
-                         multidevice::RemoteDeviceRef remote_device) override;
+  void OnDeviceAuthenticated() override;
+  void OnMessageReceived(
+      std::unique_ptr<MessageWrapper> message_wrapper) override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
 
@@ -103,7 +102,7 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
                            TestMultipleDevices);
 
-  using MessageTransferOperation::UnregisterDevice;
+  using MessageTransferOperation::StopOperation;
 
   void SetTestDoubles(base::Clock* clock_for_test,
                       scoped_refptr<base::TaskRunner> test_task_runner);
@@ -114,7 +113,6 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
 
-  multidevice::RemoteDeviceRef device_to_connect_;
   std::optional<ScannedDeviceResult> scanned_device_info_result_;
   OnTetherAvailabilityOperationFinishedCallback on_operation_finished_;
   std::optional<base::Time> tether_availability_request_start_time_;
