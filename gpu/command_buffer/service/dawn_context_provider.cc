@@ -230,6 +230,9 @@ DawnContextProvider::~DawnContextProvider() {
     device_.SetDeviceLostCallback(nullptr, nullptr);
     device_.SetLoggingCallback(nullptr, nullptr);
   }
+  if (instance_) {
+    instance_->DisconnectDawnPlatform();
+  }
 }
 
 bool DawnContextProvider::Initialize(
