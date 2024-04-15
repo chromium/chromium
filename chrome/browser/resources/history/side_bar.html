@@ -101,7 +101,8 @@
           href="chrome://settings/clearBrowserData"
           on-click="onClearBrowsingDataClick_"
           disabled$="[[guestSession_]]"
-          tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
+          tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]"
+          title="$i18n{clearBrowsingDataLinkTooltip}">
         <iron-icon icon="cr:delete"></iron-icon>
         $i18n{clearBrowsingData}
         <div class="cr-icon icon-external"></div>
