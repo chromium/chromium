@@ -113,6 +113,6 @@ size_t GetMaxInflightPrefetches() {
 // browser startup.
 BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
              "AvoidLoadingPredictorPrefetchDuringBrowserStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
