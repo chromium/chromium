@@ -459,4 +459,15 @@
   <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
     Shopping list
   </message>
+
+  <!-- For Product Specifications -->
+  <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT" translateable="false" desc="The default text for the Product Specifications entry point button.">
+    Analyze pages?
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT" translateable="false" desc="The text for the Product Specifications entry point button with a placeholder for what the specifications are for.">
+    Analyze <ph name="SPECIFICATION">$1<ex>pages</ex></ph>?
+  </message>
+  <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
+    Dismiss suggestion
+  </message>
 </grit-part>
