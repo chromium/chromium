@@ -34,7 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // components/webauthn/core is a desktop-only dependency of
 // components/password_manager/core. gn cannot parse the preprocessor directive
 // above when checking includes, so we need nogncheck here.
@@ -68,7 +68,7 @@ struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
 using StrictMockSavedPasswordsPresenterObserver =
     ::testing::StrictMock<MockSavedPasswordsPresenterObserver>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kPasskeyCredentialId[] = "abcd";
 constexpr char kPasskeyRPID[] = "passkeys.com";
 constexpr char kPasskeyUserId[] = "1234";
@@ -109,7 +109,7 @@ class SavedPasswordsPresenterTest : public testing::Test {
   }
 
   TestPasswordStore& store() { return *store_; }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   webauthn::TestPasskeyModel& passkey_store() { return test_passkey_store_; }
 #endif
   SavedPasswordsPresenter& presenter() { return presenter_; }
@@ -131,7 +131,7 @@ class SavedPasswordsPresenterTest : public testing::Test {
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
   FakeAffiliationService affiliation_service_;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   webauthn::TestPasskeyModel test_passkey_store_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr,
@@ -834,7 +834,7 @@ TEST_F(SavedPasswordsPresenterTest,
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SavedPasswordsPresenterTest, GetSavedCredentialsWithPasskeys) {
   // Password grouping is required for passkey support.
   if (!IsGroupingEnabled()) {

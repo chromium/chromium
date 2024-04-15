@@ -15,9 +15,9 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
 
@@ -41,10 +41,10 @@ class PasskeyCredential {
   using Username = base::StrongAlias<class UsernameTag, std::string>;
   using DisplayName = base::StrongAlias<class DisplayNameTag, std::string>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   static std::vector<PasskeyCredential> FromCredentialSpecifics(
       base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   PasskeyCredential(Source source,
                     RpId rp_id,

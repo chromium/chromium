@@ -553,12 +553,12 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
 
   // Passkeys are collected synchronously.
   std::vector<PasskeyCredential> passkeys;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   if (passkey_store_) {
     passkeys = PasskeyCredential::FromCredentialSpecifics(
         passkey_store_->GetAllPasskeys());
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Notify observers after grouping is complete.
   passwords_grouper_->GroupCredentials(
