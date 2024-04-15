@@ -19,8 +19,8 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
-#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -108,11 +108,7 @@ void IOSChromePaymentsAutofillClient::ShowUnmaskPrompt(
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_ = std::make_unique<CardUnmaskPromptControllerImpl>(
       browser_state_->GetPrefs(), card, card_unmask_prompt_options, delegate);
-  unmask_controller_->ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
-                     base::Unretained(unmask_controller_.get()),
-                     base::Unretained(client_->base_view_controller()),
-                     base::Unretained(client_->GetPersonalDataManager())));
+  [client_->commands_handler() continueCardUnmaskWithCvcAuth];
 }
 
 void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(

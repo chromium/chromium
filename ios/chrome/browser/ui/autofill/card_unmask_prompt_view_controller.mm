@@ -243,7 +243,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
     return;
   }
   // Notify bridge that UI was dismissed.
-  _bridge->NavigationControllerDismissed();
+  _bridge->PerformClose();
 }
 
 #pragma mark - Actions
@@ -410,9 +410,13 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   TableViewDetailIconItem* cardInfoItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeCardInfo];
-  cardInfoItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  if ([data.cardDetails length] != 0) {
+    // If the credit card is not virtual card and its expiration date is no
+    // longer valid, then there is no detail text for the item.
+    cardInfoItem.detailText = data.cardDetails;
+    cardInfoItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  }
   cardInfoItem.text = data.cardNameAndLastFourDigits;
-  cardInfoItem.detailText = data.cardDetails;
   cardInfoItem.iconBackgroundColor = UIColor.clearColor;
   cardInfoItem.iconImage = data.icon;
   return cardInfoItem;

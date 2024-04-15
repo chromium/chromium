@@ -22,6 +22,9 @@ struct VirtualCardEnrollUiModel;
 // Continue the card unmask authentication flow with OTP auth.
 - (void)continueCardUnmaskWithOtpAuth;
 
+// Continue the card unmask flow with the CVC authentication input dialog.
+- (void)continueCardUnmaskWithCvcAuth;
+
 // Shows the password suggestion view controller.
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params;
 

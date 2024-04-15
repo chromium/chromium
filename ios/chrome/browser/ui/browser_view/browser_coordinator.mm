@@ -1661,13 +1661,37 @@ enum class ToolbarKind {
       [[CardUnmaskAuthenticationCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
+  self.cardUnmaskAuthenticationCoordinator.shouldStartWithCvcAuth = NO;
+
   [self.cardUnmaskAuthenticationCoordinator start];
 }
 
 - (void)continueCardUnmaskWithOtpAuth {
   // This assumes the card unmask authentication coordinator is already created
   // by the showCardUnmaskAuthentication function above. Otherwise do nothing.
-  [self.cardUnmaskAuthenticationCoordinator continueCardUnmaskWithOtpAuth];
+  [self.cardUnmaskAuthenticationCoordinator continueWithOtpAuth];
+}
+
+- (void)continueCardUnmaskWithCvcAuth {
+  if (self.cardUnmaskAuthenticationCoordinator) {
+    // If the coordinator exists, it means that multiple authentication options
+    // are provided and we have already presented the authentication selection
+    // dialog, and the navigation controller is already created. Upon user
+    // selection, we should show the CVC input dialog by pushing the view to the
+    // navigation stack.
+    [self.cardUnmaskAuthenticationCoordinator continueWithCvcAuth];
+  } else {
+    // If the coordinator does not exists, it means there is only one
+    // authentication option (CVC auth) provided, and the navigation controller
+    // is not yet created, so we skip the authentication selection step and
+    // start directly with the CVC input dialog.
+    self.cardUnmaskAuthenticationCoordinator =
+        [[CardUnmaskAuthenticationCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    self.cardUnmaskAuthenticationCoordinator.shouldStartWithCvcAuth = YES;
+    [self.cardUnmaskAuthenticationCoordinator start];
+  }
 }
 
 - (void)showPlusAddressesBottomSheet {

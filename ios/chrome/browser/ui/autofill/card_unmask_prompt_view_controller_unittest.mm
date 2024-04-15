@@ -84,9 +84,11 @@ class MockCardUnmaskPromptViewBridge
   explicit MockCardUnmaskPromptViewBridge(
       autofill::CardUnmaskPromptControllerImpl* controller,
       autofill::TestPersonalDataManager* personal_data_manager)
-      : CardUnmaskPromptViewBridge(controller,
-                                   [[UIViewController alloc] init],
-                                   personal_data_manager) {}
+      : CardUnmaskPromptViewBridge(
+            controller,
+            [[UINavigationController alloc] init],
+            personal_data_manager,
+            /*browser_coordinator_commands_handler=*/nil) {}
 
   MockCardUnmaskPromptViewBridge(const MockCardUnmaskPromptViewBridge&) =
       delete;

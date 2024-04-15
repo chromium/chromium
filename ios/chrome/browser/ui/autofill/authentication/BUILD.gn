@@ -62,8 +62,13 @@ source_set("card_unmask_authentication_coordinator") {
   ]
   deps = [
     ":card_unmask_authentication_selection_coordinator",
+    "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/autofill",
+    "//ios/chrome/browser/ui/autofill:bridges",
     "//ios/chrome/browser/ui/autofill/authentication:otp_input_dialog",
   ]
 }

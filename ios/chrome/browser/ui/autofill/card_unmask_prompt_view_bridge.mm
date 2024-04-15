@@ -11,6 +11,8 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 
@@ -20,11 +22,14 @@ namespace autofill {
 
 CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
     CardUnmaskPromptController* controller,
-    UIViewController* base_view_controller,
-    PersonalDataManager* personal_data_manager)
+    UINavigationController* navigation_controller,
+    PersonalDataManager* personal_data_manager,
+    id<BrowserCoordinatorCommands> browser_coordinator_commands_handler)
     : controller_(controller),
-      base_view_controller_(base_view_controller),
+      navigation_controller_(navigation_controller),
       personal_data_manager_(personal_data_manager),
+      browser_coordinator_commands_handler_(
+          browser_coordinator_commands_handler),
       weak_ptr_factory_(this) {
   CHECK(controller_);
   CHECK(personal_data_manager_);
@@ -44,18 +49,11 @@ void CardUnmaskPromptViewBridge::Show() {
   prompt_view_controller_ =
       [[CardUnmaskPromptViewController alloc] initWithBridge:this];
 
-  navigation_controller_ = [[UINavigationController alloc]
-      initWithRootViewController:prompt_view_controller_];
-  [navigation_controller_
-      setModalPresentationStyle:UIModalPresentationFormSheet];
-  [navigation_controller_
-      setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
   navigation_controller_.presentationController.delegate =
       prompt_view_controller_;
 
-  [base_view_controller_ presentViewController:navigation_controller_
-                                      animated:YES
-                                    completion:nil];
+  [navigation_controller_ pushViewController:prompt_view_controller_
+                                    animated:YES];
 }
 
 void CardUnmaskPromptViewBridge::Dismiss() {
@@ -93,26 +91,10 @@ CardUnmaskPromptController* CardUnmaskPromptViewBridge::GetController() {
 }
 
 void CardUnmaskPromptViewBridge::PerformClose() {
-  // Disconnect the vc from the bride, dismiss it and delete the bridge.
+  // Disconnect the vc from the bridge, and dismiss it.
   [prompt_view_controller_ disconnectFromBridge];
 
-  base::WeakPtr<CardUnmaskPromptViewBridge> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  [navigation_controller_
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           if (weak_this) {
-                             weak_this->NavigationControllerDismissed();
-                           }
-                         }];
-}
-
-void CardUnmaskPromptViewBridge::NavigationControllerDismissed() {
-  DeleteSelf();
-}
-
-void CardUnmaskPromptViewBridge::DeleteSelf() {
-  delete this;
+  [browser_coordinator_commands_handler_ dismissCardUnmaskAuthentication];
 }
 
 UIImage* CardUnmaskPromptViewBridge::GetCardIcon() {

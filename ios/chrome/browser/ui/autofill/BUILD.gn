@@ -80,8 +80,6 @@ source_set("bridges") {
     "card_unmask_prompt_view_controller+Testing.h",
     "card_unmask_prompt_view_controller.h",
     "card_unmask_prompt_view_controller.mm",
-    "create_card_unmask_prompt_view_bridge.h",
-    "create_card_unmask_prompt_view_bridge.mm",
   ]
   deps = [
     ":autofill_ui",
@@ -90,6 +88,7 @@ source_set("bridges") {
     "//components/strings",
     "//ios/chrome/browser/autofill/model/credit_card:credit_card",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",

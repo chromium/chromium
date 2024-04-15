@@ -72,6 +72,9 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   GetProgressDialogModel() {
     return std::move(progress_dialog_controller_);
   }
+  CardUnmaskPromptControllerImpl* GetCardUnmaskPromptModel() {
+    return unmask_controller_.get();
+  }
 
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
   GetOtpInputDialogModel() {

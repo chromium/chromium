@@ -12,8 +12,16 @@
 // passwords via text messages) or CVC (security codes).
 @interface CardUnmaskAuthenticationCoordinator : ChromeCoordinator
 
+// If YES, should start directly with the CVC authentication. Otherwise,
+// initialize an auth selection view.
+@property(nonatomic, assign) BOOL shouldStartWithCvcAuth;
+
 // Start OTP authentication.
-- (void)continueCardUnmaskWithOtpAuth;
+- (void)continueWithOtpAuth;
+
+// Push extra dialogs with correct type to the authentication coordinator's
+// navigation stack.
+- (void)continueWithCvcAuth;
 
 @end
 
