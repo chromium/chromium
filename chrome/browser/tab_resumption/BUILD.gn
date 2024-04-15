@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataSource.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/LocalTabSuggestionEntry.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTileView.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionBundle.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionEntry.java",

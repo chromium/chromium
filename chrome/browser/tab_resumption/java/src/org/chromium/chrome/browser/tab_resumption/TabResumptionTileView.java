@@ -13,10 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-import org.chromium.url.GURL;
 
 /**
  * The view for a tab suggestion tile. These tile comes in two variants: A larger one for the
@@ -67,8 +65,7 @@ public class TabResumptionTileView extends RelativeLayout {
     /** Binds the click handler with an associated URL. */
     public void bindSuggestionClickCallback(
             SuggestionClickCallbacks callbacks,
-            @Nullable GURL url,
-            @Nullable Tab tab,
+            SuggestionEntry entry,
             int tileCount,
             int tileIndex) {
         setOnClickListener(
@@ -77,10 +74,11 @@ public class TabResumptionTileView extends RelativeLayout {
                     int clickInfo =
                             TabResumptionModuleMetricsUtils.computeClickInfo(tileCount, tileIndex);
                     TabResumptionModuleMetricsUtils.recordClickInfo(clickInfo);
-                    if (tab != null) {
-                        callbacks.onSuggestionClickByTabId(tab.getId());
+                    if (entry instanceof LocalTabSuggestionEntry) {
+                        callbacks.onSuggestionClickByTabId(
+                                ((LocalTabSuggestionEntry) entry).tab.getId());
                     } else {
-                        callbacks.onSuggestionClickByUrl(url);
+                        callbacks.onSuggestionClickByUrl(entry.url);
                     }
                 });
         // Handle and return false to avoid obstructing long click handling of containing Views.

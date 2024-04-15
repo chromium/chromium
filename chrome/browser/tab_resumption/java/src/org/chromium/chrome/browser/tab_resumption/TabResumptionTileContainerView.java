@@ -82,12 +82,12 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                                 false);
                 addView(divider);
             }
-            boolean isLocalTab = entry.tab != null;
-            if (isLocalTab && isSingle) {
+            boolean isLocal = entry instanceof LocalTabSuggestionEntry;
+            if (isLocal && isSingle) {
                 allTilesTexts +=
                         loadLocalTabSingle(
                                         this,
-                                        entry,
+                                        (LocalTabSuggestionEntry) entry,
                                         bundle.referenceTimeMs,
                                         faviconProvider,
                                         thumbnailProvider,
@@ -105,7 +105,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         loadTileTexts(entry, bundle.referenceTimeMs, isSingle, tileView) + ". ";
                 loadTileUrlImage(entry, urlImageProvider, tileView);
                 tileView.bindSuggestionClickCallback(
-                        suggestionClickCallbacks, entry.url, entry.tab, entryCount, entryIndex);
+                        suggestionClickCallbacks, entry, entryCount, entryIndex);
                 addView(tileView);
             }
             ++entryIndex;
@@ -123,9 +123,9 @@ public class TabResumptionTileContainerView extends LinearLayout {
         String recencyString =
                 TabResumptionModuleUtils.getRecencyString(
                         getResources(), referenceTimeMs - entry.lastActiveTime);
-        boolean isLocal = entry.tab != null;
+        boolean isLocal = entry instanceof LocalTabSuggestionEntry;
         if (isSingle) {
-            // The local single Tab is handled by #loadLocalTabSingle().
+            // Single local tab suggestion is handled by #loadLocalTabSingle().
             assert !isLocal;
             String preInfoText =
                     res.getString(R.string.tab_resumption_module_single_pre_info, entry.sourceName);
@@ -136,32 +136,29 @@ public class TabResumptionTileContainerView extends LinearLayout {
                             TabResumptionModuleUtils.getDomainUrl(entry.url));
             tileView.setSuggestionTextsSingle(preInfoText, entry.title, postInfoText);
             return preInfoText + ", " + entry.title + ", " + postInfoText;
-        } else if (isLocal) {
-            Tab tab = entry.tab;
-            String infoText =
-                    res.getString(R.string.tab_resumption_module_multi_info_local, recencyString);
-            tileView.setSuggestionTextsMulti(tab.getTitle(), infoText);
-            return tab.getTitle() + ", " + infoText;
-        } else {
-            String infoText =
-                    res.getString(
-                            R.string.tab_resumption_module_multi_info,
-                            recencyString,
-                            entry.sourceName);
-            tileView.setSuggestionTextsMulti(entry.title, infoText);
-            return entry.title + ", " + infoText;
         }
+
+        String infoText =
+                isLocal
+                        ? res.getString(
+                                R.string.tab_resumption_module_multi_info_local, recencyString)
+                        : res.getString(
+                                R.string.tab_resumption_module_multi_info,
+                                recencyString,
+                                entry.sourceName);
+        tileView.setSuggestionTextsMulti(entry.title, infoText);
+        return entry.title + ", " + infoText;
     }
 
-    /** Loads texts and images for the local Tab. */
+    /** Loads texts and images for the single local tab suggestion. */
     private String loadLocalTabSingle(
             ViewGroup parentView,
-            SuggestionEntry entry,
+            LocalTabSuggestionEntry localTabEntry,
             long referenceTimeMs,
             TabListFaviconProvider faviconProvider,
             ThumbnailProvider thumbnailProvider,
             SuggestionClickCallbacks suggestionClickCallback) {
-        Tab tab = entry.tab;
+        Tab tab = localTabEntry.tab;
         Resources res = getContext().getResources();
         String recencyString =
                 TabResumptionModuleUtils.getRecencyString(
@@ -196,7 +193,7 @@ public class TabResumptionTileContainerView extends LinearLayout {
                 /* writeToCache= */ true,
                 /* isSelected= */ false);
         tileView.setOnClickListener(
-                view -> suggestionClickCallback.onSuggestionClickByTabId(entry.tab.getId()));
+                view -> suggestionClickCallback.onSuggestionClickByTabId(tab.getId()));
         // Handle and return false to avoid obstructing long click handling of containing Views.
         tileView.setOnLongClickListener(v -> false);
         parentView.addView(tileView);

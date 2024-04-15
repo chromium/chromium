@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 /** A single suggestion entry in the tab resumption module. */
@@ -19,25 +18,15 @@ public class SuggestionEntry implements Comparable<SuggestionEntry> {
     public final long lastActiveTime;
     public final int id;
 
-    // Non-null for a local Tab.
-    @Nullable public final Tab tab;
-
     // Cached Drawable to reduce churn from image fetching and processing with RecyclerView use.
     @Nullable private Drawable mUrlDrawable;
 
-    SuggestionEntry(
-            String sourceName,
-            GURL url,
-            String title,
-            long lastActiveTime,
-            int id,
-            @Nullable Tab tab) {
+    SuggestionEntry(String sourceName, GURL url, String title, long lastActiveTime, int id) {
         this.sourceName = sourceName;
         this.url = url;
         this.title = title;
         this.lastActiveTime = lastActiveTime;
         this.id = id;
-        this.tab = tab;
     }
 
     /** Suggestion comparator that favors recency, and uses other fields for tie-breaking. */

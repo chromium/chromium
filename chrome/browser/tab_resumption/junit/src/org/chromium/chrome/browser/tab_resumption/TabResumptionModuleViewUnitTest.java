@@ -96,8 +96,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.tab_resumption_module_layout, null);
 
-        when(mTab.getTitle()).thenReturn(TAB_TITLE);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab.getTitle()).thenReturn(TAB_TITLE);
         when(mTab.getTimestampMillis()).thenReturn(makeTimestamp(24 - 3, 0, 0));
         when(mTab.getId()).thenReturn(TAB_ID);
         int size =
@@ -160,8 +160,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
-                        /* id= */ 90,
-                        /* tab= */ null);
+                        /* id= */ 90);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -211,14 +210,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderSingleLocalView() {
-        SuggestionEntry entry1 =
-                new SuggestionEntry(
-                        /* sourceName= */ null,
-                        /* url= */ JUnitTestGURLs.URL_1,
-                        /* title= */ TAB_TITLE,
-                        /* timestamp= */ mTab.getTimestampMillis(),
-                        /* id= */ TAB_ID,
-                        mTab);
+        SuggestionEntry entry1 = new LocalTabSuggestionEntry(mTab);
         mSuggestionBundle.entries.add(entry1);
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
@@ -289,16 +281,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.BLUE_3,
                         /* title= */ "Blue website with a very long title that might not fit",
                         /* timestamp= */ makeTimestamp(24 - 1, 60 - 16, 0),
-                        /* id= */ 50,
-                        /* tab= */ null);
+                        /* id= */ 50);
         SuggestionEntry entry2 =
                 new SuggestionEntry(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
-                        /* id= */ 90,
-                        /* tab= */ null);
+                        /* id= */ 90);
         mSuggestionBundle.entries.add(entry1);
         mSuggestionBundle.entries.add(entry2);
 
@@ -366,22 +356,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testRenderDoubleWithLocalTab() {
-        SuggestionEntry entry1 =
-                new SuggestionEntry(
-                        /* sourceName= */ null,
-                        /* url= */ JUnitTestGURLs.URL_1,
-                        /* title= */ TAB_TITLE,
-                        /* timestamp= */ mTab.getTimestampMillis(),
-                        /* id= */ TAB_ID,
-                        mTab);
+        SuggestionEntry entry1 = new LocalTabSuggestionEntry(mTab);
         SuggestionEntry entry2 =
                 new SuggestionEntry(
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(24 - 3, 0, 0),
-                        /* id= */ 90,
-                        /* tab= */ null);
+                        /* id= */ 90);
         mSuggestionBundle.entries.add(entry1);
         mSuggestionBundle.entries.add(entry2);
 

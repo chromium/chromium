@@ -194,8 +194,7 @@ public class ForeignSessionTabResumptionDataSource
                                         tab.url,
                                         tab.title,
                                         tab.lastActiveTime,
-                                        tab.id,
-                                        /* tab= */ null));
+                                        tab.id));
                     }
                 }
             }

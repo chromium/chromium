@@ -160,17 +160,11 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45,
-                        /* tab= */ null);
+                        /* id= */ 45);
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
                 new SuggestionEntry(
-                        "Desktop",
-                        JUnitTestGURLs.RED_2,
-                        "",
-                        makeTimestamp(17, 0, 0),
-                        123,
-                        /* tab= */ null);
+                        "Desktop", JUnitTestGURLs.RED_2, "", makeTimestamp(17, 0, 0), 123);
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryInvalid);
@@ -203,24 +197,13 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
                         /* timestamp= */ makeTimestamp(16, 0, 0),
-                        /* id= */ 45,
-                        /* tab= */ null);
+                        /* id= */ 45);
         SuggestionEntry entryNewer =
                 new SuggestionEntry(
-                        "Phone",
-                        JUnitTestGURLs.RED_2,
-                        "Red 2",
-                        makeTimestamp(13, 0, 0),
-                        3,
-                        /* tab= */ null);
+                        "Phone", JUnitTestGURLs.RED_2, "Red 2", makeTimestamp(13, 0, 0), 3);
         SuggestionEntry entryOldest =
                 new SuggestionEntry(
-                        "Desktop",
-                        JUnitTestGURLs.BLUE_1,
-                        "Blue 1",
-                        makeTimestamp(12, 0, 0),
-                        1000,
-                        /* tab= */ null);
+                        "Desktop", JUnitTestGURLs.BLUE_1, "Blue 1", makeTimestamp(12, 0, 0), 1000);
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryNewest);
@@ -447,8 +430,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                 /* url= */ urlChoices[index],
                 /* title= */ titleChoices[index],
                 /* timestamp= */ makeTimestamp(16, 0, 0),
-                /* id= */ 45,
-                /* tab= */ null);
+                /* id= */ 45);
     }
 
     private void checkModuleState(
