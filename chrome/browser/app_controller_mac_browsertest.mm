@@ -367,7 +367,7 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
         ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
 
     int counter = 5;
-    if (!ProfilePicker::IsActive() && counter--) {
+    while (!ProfilePicker::IsActive() && counter--) {
       base::TimeDelta delay = base::Seconds(1);
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
