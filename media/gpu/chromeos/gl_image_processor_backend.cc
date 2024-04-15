@@ -169,6 +169,13 @@ std::string GLImageProcessorBackend::type() const {
 
 bool GLImageProcessorBackend::IsSupported(const PortConfig& input_config,
                                           const PortConfig& output_config) {
+  // Technically speaking GLIPBackend doesn't need Ozone but it
+  // relies on it to initialize GL.
+  if (!ui::OzonePlatform::IsInitialized()) {
+    VLOGF(2) << "The GLImageProcessorBackend needs Ozone initialized.";
+    return false;
+  }
+
   if (input_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12 ||
       output_config.fourcc.ToVideoPixelFormat() != PIXEL_FORMAT_NV12) {
     VLOGF(2) << "The GLImageProcessorBackend only supports NV12.";
