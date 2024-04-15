@@ -295,41 +295,41 @@ const LIMITS: [Limits; 8] = [
     Limits {
         repr: U8,
         min: Discriminant::zero(),
-        max: Discriminant::pos(std::u8::MAX as u64),
+        max: Discriminant::pos(u8::MAX as u64),
     },
     Limits {
         repr: I8,
-        min: Discriminant::neg(std::i8::MIN as i64),
-        max: Discriminant::pos(std::i8::MAX as u64),
+        min: Discriminant::neg(i8::MIN as i64),
+        max: Discriminant::pos(i8::MAX as u64),
     },
     Limits {
         repr: U16,
         min: Discriminant::zero(),
-        max: Discriminant::pos(std::u16::MAX as u64),
+        max: Discriminant::pos(u16::MAX as u64),
     },
     Limits {
         repr: I16,
-        min: Discriminant::neg(std::i16::MIN as i64),
-        max: Discriminant::pos(std::i16::MAX as u64),
+        min: Discriminant::neg(i16::MIN as i64),
+        max: Discriminant::pos(i16::MAX as u64),
     },
     Limits {
         repr: U32,
         min: Discriminant::zero(),
-        max: Discriminant::pos(std::u32::MAX as u64),
+        max: Discriminant::pos(u32::MAX as u64),
     },
     Limits {
         repr: I32,
-        min: Discriminant::neg(std::i32::MIN as i64),
-        max: Discriminant::pos(std::i32::MAX as u64),
+        min: Discriminant::neg(i32::MIN as i64),
+        max: Discriminant::pos(i32::MAX as u64),
     },
     Limits {
         repr: U64,
         min: Discriminant::zero(),
-        max: Discriminant::pos(std::u64::MAX),
+        max: Discriminant::pos(u64::MAX),
     },
     Limits {
         repr: I64,
-        min: Discriminant::neg(std::i64::MIN),
-        max: Discriminant::pos(std::i64::MAX as u64),
+        min: Discriminant::neg(i64::MIN),
+        max: Discriminant::pos(i64::MAX as u64),
     },
 ];

@@ -430,6 +430,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.119 -> 1.0.120"
 notes = "Version bump only."
 
+[[audits.cxxbridge-cmd]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.120 -> 1.0.121"
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
