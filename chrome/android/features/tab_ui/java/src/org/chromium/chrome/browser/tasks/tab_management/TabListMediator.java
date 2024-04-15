@@ -34,6 +34,7 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -1915,18 +1916,46 @@ class TabListMediator {
             String title = getLatestTitleForTab(pseudoTab);
             title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
             Resources res = mContext.getResources();
-            model.set(
-                    TabProperties.CONTENT_DESCRIPTION_STRING,
-                    title.isEmpty()
-                            ? res.getQuantityString(
-                                    R.plurals.accessibility_expand_tab_group,
-                                    numOfRelatedTabs,
-                                    numOfRelatedTabs)
-                            : res.getQuantityString(
-                                    R.plurals.accessibility_expand_tab_group_with_group_name,
-                                    numOfRelatedTabs,
-                                    title,
-                                    numOfRelatedTabs));
+            if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                model.set(
+                        TabProperties.CONTENT_DESCRIPTION_STRING,
+                        title.isEmpty()
+                                ? res.getQuantityString(
+                                        R.plurals.accessibility_expand_tab_group,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs)
+                                : res.getQuantityString(
+                                        R.plurals.accessibility_expand_tab_group_with_group_name,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs));
+            } else {
+                // In theory this colorId should never be INVALID, but we should aim to read
+                // something vs nothing if this ever fails.
+                final @TabGroupColorId int colorId =
+                        TabGroupColorUtils.getOrCreateTabGroupColor(
+                                pseudoTab.getRootId(),
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get());
+                final @StringRes int colorDescRes =
+                        ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                colorId);
+                String colorDesc = res.getString(colorDescRes);
+                model.set(
+                        TabProperties.CONTENT_DESCRIPTION_STRING,
+                        title.isEmpty()
+                                ? res.getQuantityString(
+                                        R.plurals.accessibility_expand_tab_group_with_color,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs,
+                                        colorDesc)
+                                : res.getQuantityString(
+                                        R.plurals
+                                                .accessibility_expand_tab_group_with_group_name_with_color,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs,
+                                        colorDesc));
+            }
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
@@ -1941,21 +1970,54 @@ class TabListMediator {
                 title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
 
                 Resources res = mContext.getResources();
-                if (title.isEmpty()) {
-                    model.set(
-                            TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                            res.getQuantityString(
-                                    R.plurals.accessibility_close_tab_group_button,
-                                    numOfRelatedTabs,
-                                    numOfRelatedTabs));
+                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                    if (title.isEmpty()) {
+                        model.set(
+                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                                res.getQuantityString(
+                                        R.plurals.accessibility_close_tab_group_button,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs));
+                    } else {
+                        model.set(
+                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                                res.getQuantityString(
+                                        R.plurals
+                                                .accessibility_close_tab_group_button_with_group_name,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs));
+                    }
                 } else {
-                    model.set(
-                            TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
-                            res.getQuantityString(
-                                    R.plurals.accessibility_close_tab_group_button_with_group_name,
-                                    numOfRelatedTabs,
-                                    title,
-                                    numOfRelatedTabs));
+                    // In theory this colorId should never be INVALID, but we should aim to read
+                    // something vs nothing if this ever fails.
+                    final @TabGroupColorId int colorId =
+                            TabGroupColorUtils.getOrCreateTabGroupColor(
+                                    pseudoTab.getRootId(),
+                                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get());
+                    final @StringRes int colorDescRes =
+                            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                                    colorId);
+                    String colorDesc = res.getString(colorDescRes);
+                    if (title.isEmpty()) {
+                        model.set(
+                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                                res.getQuantityString(
+                                        R.plurals.accessibility_close_tab_group_button_with_color,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs,
+                                        colorDesc));
+                    } else {
+                        model.set(
+                                TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                                res.getQuantityString(
+                                        R.plurals
+                                                .accessibility_close_tab_group_button_with_group_name_with_color,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs,
+                                        colorDesc));
+                    }
                 }
                 return;
             }
