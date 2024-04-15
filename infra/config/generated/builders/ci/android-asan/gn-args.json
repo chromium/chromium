@@ -11,6 +11,7 @@
     "strip_debug_info": true,
     "symbol_level": 1,
     "target_os": "android",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

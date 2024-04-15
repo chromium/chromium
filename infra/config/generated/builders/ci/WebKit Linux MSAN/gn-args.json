@@ -7,6 +7,7 @@
     "is_msan": true,
     "msan_track_origins": 2,
     "proprietary_codecs": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
