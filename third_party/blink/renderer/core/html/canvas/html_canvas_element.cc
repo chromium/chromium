@@ -291,8 +291,9 @@ void HTMLCanvasElement::ColorSchemeMayHaveChanged() {
 void HTMLCanvasElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kWidthAttr ||
-      params.name == html_names::kHeightAttr)
+      params.name == html_names::kHeightAttr) {
     Reset();
+  }
   HTMLElement::ParseAttribute(params);
 }
 
@@ -316,28 +317,30 @@ Node::InsertionNotificationRequest HTMLCanvasElement::InsertedInto(
   return HTMLElement::InsertedInto(node);
 }
 
-void HTMLCanvasElement::setHeight(unsigned value,
-                                  ExceptionState& exception_state) {
+bool HTMLCanvasElement::SizeChangesAreAllowed(ExceptionState& exception_state) {
   if (IsOffscreenCanvasRegistered()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Cannot resize canvas after call to transferControlToOffscreen().");
-    return;
+    return false;
   }
-  SetUnsignedIntegralAttribute(html_names::kHeightAttr, value,
-                               kDefaultCanvasHeight);
+  return true;
+}
+
+void HTMLCanvasElement::setHeight(unsigned value,
+                                  ExceptionState& exception_state) {
+  if (SizeChangesAreAllowed(exception_state)) {
+    SetUnsignedIntegralAttribute(html_names::kHeightAttr, value,
+                                 kDefaultCanvasHeight);
+  }
 }
 
 void HTMLCanvasElement::setWidth(unsigned value,
                                  ExceptionState& exception_state) {
-  if (IsOffscreenCanvasRegistered()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot resize canvas after call to transferControlToOffscreen().");
-    return;
+  if (SizeChangesAreAllowed(exception_state)) {
+    SetUnsignedIntegralAttribute(html_names::kWidthAttr, value,
+                                 kDefaultCanvasWidth);
   }
-  SetUnsignedIntegralAttribute(html_names::kWidthAttr, value,
-                               kDefaultCanvasWidth);
 }
 
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {

@@ -355,6 +355,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetSurfaceSize(gfx::Size);
 
+  bool SizeChangesAreAllowed(ExceptionState& exception_state);
+
   bool PaintsIntoCanvasBuffer() const;
 
   String ToDataURLInternal(const String& mime_type,
