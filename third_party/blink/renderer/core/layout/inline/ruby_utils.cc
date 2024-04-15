@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/justification_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_container.h"
@@ -134,6 +135,30 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
 
 AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   AnnotationOverhang overhang;
+  if (item.item->Type() == InlineItem::kOpenRubyColumn && item.ruby_column) {
+    DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+    const InlineItemResultRubyColumn& column = *item.ruby_column;
+    LayoutUnit half_width_of_annotation_font;
+    for (const auto& annotation_line : column.annotation_line_list) {
+      if (annotation_line.Width() == item.inline_size) {
+        half_width_of_annotation_font =
+            LayoutUnit(annotation_line.LineStyle().FontSize() / 2);
+        break;
+      }
+    }
+    if (half_width_of_annotation_font == LayoutUnit()) {
+      return overhang;
+    }
+    std::optional<LayoutUnit> inset = ComputeRubyBaseInset(
+        item.inline_size - column.base_line.Width(), column.base_line);
+    if (!inset) {
+      return overhang;
+    }
+    overhang.start = std::min(*inset, half_width_of_annotation_font);
+    overhang.end = overhang.start;
+    return overhang;
+  }
+
   if (!item.layout_result)
     return overhang;
 
@@ -236,6 +261,43 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   }
   DCHECK_EQ(text_item.Type(), InlineItem::kText);
   wtf_size_t i = items->size() - 1;
+  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    while ((*items)[i].item->Type() != InlineItem::kOpenRubyColumn ||
+           !(*items)[i].ruby_column) {
+      const auto type = (*items)[i].item->Type();
+      if (type != InlineItem::kOpenTag && type != InlineItem::kCloseTag &&
+          type != InlineItem::kCloseRubyColumn &&
+          type != InlineItem::kOpenRubyColumn &&
+          type != InlineItem::kRubyLinePlaceholder) {
+        return LayoutUnit();
+      }
+      if (i-- == 0) {
+        return LayoutUnit();
+      }
+    }
+    InlineItemResult& column_item = (*items)[i];
+    if (column_item.pending_end_overhang <= LayoutUnit()) {
+      return LayoutUnit();
+    }
+    if (column_item.ruby_column->base_line.LineStyle().FontSize() <
+        text_item.Style()->FontSize()) {
+      return LayoutUnit();
+    }
+    // Ideally we should refer to inline_size of |text_item| instead of the
+    // width of the InlineItem's ShapeResult. However it's impossible to compute
+    // inline_size of |text_item| before calling BreakText(), and BreakText()
+    // requires precise |position_| which takes |end_overhang| into account.
+    LayoutUnit end_overhang =
+        std::min(column_item.pending_end_overhang,
+                 LayoutUnit(text_item.TextShapeResult()->Width()));
+    InlineItemResult& end_item =
+        column_item.ruby_column->base_line.MutableResults()->back();
+    DCHECK_EQ(end_item.item->Type(), InlineItem::kRubyLinePlaceholder);
+    DCHECK_EQ(end_item.margins.inline_end, LayoutUnit());
+    end_item.margins.inline_end = -end_overhang;
+    column_item.pending_end_overhang = LayoutUnit();
+    return end_overhang;
+  }
   while ((*items)[i].item->Type() != InlineItem::kAtomicInline) {
     const auto type = (*items)[i].item->Type();
     if (type != InlineItem::kOpenTag && type != InlineItem::kCloseTag) {

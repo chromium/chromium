@@ -166,12 +166,18 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       line_box->AddChild(item.BidiLevel());
     } else if (item.Type() == InlineItem::kRubyLinePlaceholder) {
       DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+      // Overhang values are zero or negative.
+      LayoutUnit start_overhang = item_result.margins.inline_start;
+      LayoutUnit end_overhang = item_result.margins.inline_end;
       // Adds a LogicalLineItem with an InlineItem to check its
       // InlineItemType later.
-      line_box->AddChild(item, item_result, item_result.TextOffset(),
-                         /* block_offset */ LayoutUnit(),
-                         item_result.inline_size,
-                         /* text_height */ LayoutUnit(), item.BidiLevel());
+      line_box->AddChild(
+          item, item_result, item_result.TextOffset(),
+          /* block_offset */ LayoutUnit(),
+          item_result.inline_size + start_overhang + end_overhang,
+          /* text_height */ LayoutUnit(), item.BidiLevel());
+      (*line_box)[line_box->size() - 1].rect.offset.inline_offset =
+          start_overhang;
     } else if (item.Type() == InlineItem::kListMarker) {
       PlaceListMarker(item, &item_result);
     } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {

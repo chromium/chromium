@@ -206,18 +206,18 @@ void ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
   item_result.spacing_before += leading_expansion;
 }
 
-}  // namespace
-
-std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
-                                             JustificationTarget target,
-                                             LineInfo* line_info) {
+std::optional<LayoutUnit> ApplyJustificationInternal(
+    LayoutUnit space,
+    JustificationTarget target,
+    const LineInfo& line_info,
+    InlineItemResults* results) {
   // Empty lines should align to start.
-  if (line_info->IsEmptyLine()) {
+  if (line_info.IsEmptyLine()) {
     return std::nullopt;
   }
 
   // Justify the end of visible text, ignoring preserved trailing spaces.
-  unsigned end_offset = line_info->EndOffsetForJustify();
+  unsigned end_offset = line_info.EndOffsetForJustify();
 
   // If this line overflows, fallback to 'text-align: start'.
   if (space <= 0) {
@@ -225,7 +225,7 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   }
 
   // Can't justify an empty string.
-  if (end_offset == line_info->StartOffset()) {
+  if (end_offset == line_info.StartOffset()) {
     return std::nullopt;
   }
 
@@ -233,13 +233,13 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   // |ItemsResults[0].StartOffset()|, e.g. <b><input> <input></b> when
   // line break before space (leading space). See http://crbug.com/1240791
   const unsigned line_text_start_offset =
-      line_info->Results().front().StartOffset();
+      line_info.Results().front().StartOffset();
 
   // Construct the line text to compute spacing for.
   String line_text = BuildJustificationText(
-      line_info->ItemsData().text_content, line_info->Results(),
+      line_info.ItemsData().text_content, line_info.Results(),
       line_text_start_offset, end_offset,
-      line_info->MayHaveTextCombineOrRubyItem());
+      line_info.MayHaveTextCombineOrRubyItem());
   if (line_text.empty()) {
     return std::nullopt;
   }
@@ -247,7 +247,7 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
   // Compute the spacing to justify.
   ShapeResultSpacing<String> spacing(line_text,
                                      target == JustificationTarget::kSvgText);
-  spacing.SetExpansion(space, line_info->BaseDirection());
+  spacing.SetExpansion(space, line_info.BaseDirection());
   const bool is_ruby = target == JustificationTarget::kRubyText ||
                        target == JustificationTarget::kRubyBase;
   if (!spacing.HasExpansion()) {
@@ -266,15 +266,32 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
     // For ruby text,  inset it by no more than a full-width ruby character on
     // each side.
     if (target == JustificationTarget::kRubyText) {
-      inset =
-          std::min(LayoutUnit(2 * line_info->LineStyle().FontSize()), inset);
+      inset = std::min(LayoutUnit(2 * line_info.LineStyle().FontSize()), inset);
     }
-    spacing.SetExpansion(space - inset, line_info->BaseDirection());
+    spacing.SetExpansion(space - inset, line_info.BaseDirection());
   }
 
-  JustifyResults(line_text, line_text_start_offset, spacing,
-                 *line_info->MutableResults());
+  if (results) {
+    DCHECK_EQ(&line_info.Results(), results);
+    JustifyResults(line_text, line_text_start_offset, spacing, *results);
+  }
   return inset / 2;
+}
+
+}  // namespace
+
+std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
+                                             JustificationTarget target,
+                                             LineInfo* line_info) {
+  return ApplyJustificationInternal(space, target, *line_info,
+                                    line_info->MutableResults());
+}
+
+std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
+                                               const LineInfo& line_info) {
+  DCHECK(line_info.IsRubyBase());
+  return ApplyJustificationInternal(space, JustificationTarget::kRubyBase,
+                                    line_info, nullptr);
 }
 
 bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,

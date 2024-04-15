@@ -3058,7 +3058,24 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
 
   if (base_line_info.Width() < ruby_size) {
     may_have_ruby_overhang_ = true;
+
+    AnnotationOverhang overhang = GetOverhang(*column_result);
+    if (overhang.end > LayoutUnit()) {
+      column_result->pending_end_overhang = overhang.end;
+      maybe_have_end_overhang_ = true;
+    }
+
+    if (CanApplyStartOverhang(line_info, overhang.start)) {
+      DCHECK_EQ(column_result->margins.inline_start, LayoutUnit());
+      DCHECK_EQ((*column_result->ruby_column->base_line.MutableResults())[0]
+                    .item->Type(),
+                InlineItem::kRubyLinePlaceholder);
+      (*column_result->ruby_column->base_line.MutableResults())[0]
+          .margins.inline_start = -overhang.start;
+      position_ -= overhang.start;
+    }
   }
+  trailing_whitespace_ = WhitespaceState::kNone;
   return column_result;
 }
 

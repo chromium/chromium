@@ -27,6 +27,11 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
                                              JustificationTarget target,
                                              LineInfo* line_info);
 
+// Compute `inset` value without applying justification.
+// `line_info.IsRubyBase()` must be true.
+std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
+                                               const LineInfo& line_info);
+
 // Add spaces to the line. This works only for ruby-base and ruby-text for now.
 // Returns false if we couldn't expand the line.
 bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
