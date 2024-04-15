@@ -132,25 +132,15 @@
   </div>
   <div id="button-container">
     <cr-button id="cancel" class="cancel-button"
-        on-click="onCancelButtonClicked"
-        hidden="[[eq(state, 'completed')]]">
-      $i18n{cancel}
+        on-click="onCancelButtonClicked">
+      [[getCancelOrCloseLabel(state)]]
     </cr-button>
-    <cr-button id="close" class="cancel-button"
-        on-click="onCancelButtonClicked"
-        hidden="[[!eq(state, 'completed')]]">
-      $i18n{close}
-    </cr-button>
-    <cr-button id="install" class="action-button"
-        on-click="onInstallButtonClicked"
+    <cr-button id="installLaunch" class="action-button"
+        on-click="onInstallOrLaunchButtonClicked"
         aria-describedby="title" aria-details="prompt-message"
-        autofocus="true" hidden="[[!eq(state, 'welcome')]]">
-      $i18n{install}
-    </cr-button>
-    <cr-button id="launch" class="action-button" on-click="onOpenButtonClicked"
-        aria-describedby="title" aria-details="prompt-message"
-        autofocus="true" hidden="[[!eq(state, 'completed')]]">
-      $i18n{launch}
+        autofocus="true"
+        hidden="[[!shouldShowInstallOrLaunchButton(state)]]">
+      [[getInstallOrLaunchLabel(state)]]
     </cr-button>
   </div>
 </div>

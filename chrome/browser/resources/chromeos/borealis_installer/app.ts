@@ -11,7 +11,9 @@ import 'chrome://resources/ash/common/event_target.js';
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 import {getTemplate} from './app.html.js';
 import {PageCallbackRouter} from './borealis_installer.mojom-webui.js';
@@ -28,6 +30,7 @@ const State = {
 export interface BorealisInstallerAppElement {
   $: {
     errorDialog: BorealisInstallerErrorDialogElement,
+    installLaunch: CrButtonElement,
   };
 }
 
@@ -114,6 +117,7 @@ export class BorealisInstallerAppElement extends PolymerElement {
     switch (installResult) {
       case InstallResult.kSuccess:
         this.state = State.COMPLETED;
+        this.$.installLaunch.focus();
         break;
       case InstallResult.kCancelled:
         this.cancelAndClose();
@@ -171,6 +175,24 @@ export class BorealisInstallerAppElement extends PolymerElement {
     return this.progressLabel;
   }
 
+  protected shouldShowInstallOrLaunchButton(state: string): boolean {
+    return [State.WELCOME, State.COMPLETED].includes(state);
+  }
+
+  protected getInstallOrLaunchLabel(state: string): string {
+    if (state === State.COMPLETED) {
+        return loadTimeData.getString('launch');
+    }
+    return loadTimeData.getString('install');
+  }
+
+  protected getCancelOrCloseLabel(state: string): string {
+    if (state === State.COMPLETED) {
+      return loadTimeData.getString('close');
+    }
+    return loadTimeData.getString('cancel');
+  }
+
   protected onCancelButtonClicked(): void {
     this.cancelAndClose();
   }
@@ -193,8 +215,18 @@ export class BorealisInstallerAppElement extends PolymerElement {
     this.closePage();
   }
 
-  protected onInstallButtonClicked(): void {
-    this.startInstall();
+  protected onInstallOrLaunchButtonClicked(): void {
+    switch (this.state) {
+      case State.WELCOME:
+        // 'Install' button clicked.
+        this.startInstall();
+        break;
+      case State.COMPLETED:
+        // 'Open Steam' button clicked.
+        BrowserProxy.getInstance().handler.launch();
+        this.closePage();
+        break;
+    }
   }
 
   startInstall(): void {
@@ -202,11 +234,6 @@ export class BorealisInstallerAppElement extends PolymerElement {
     this.progressLabel = '';
     this.state = State.INSTALLING;
     BrowserProxy.getInstance().handler.install();
-  }
-
-  protected onOpenButtonClicked(): void {
-    BrowserProxy.getInstance().handler.launch();
-    this.closePage();
   }
 
   closePage(): void {
