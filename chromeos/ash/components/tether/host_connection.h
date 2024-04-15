@@ -30,22 +30,21 @@ class HostConnection {
       kHigh,
     };
 
-    using OnConnectionAttemptFinishedCallback =
+    using OnConnectionCreatedCallback =
         base::OnceCallback<void(std::unique_ptr<HostConnection>)>;
 
     virtual ~Factory() = default;
-    virtual void Create(
+    virtual void ScanForTetherHostAndCreateConnection(
         const std::string& device_id,
         ConnectionPriority connection_priority,
         raw_ptr<PayloadListener> payload_listener,
         OnDisconnectionCallback on_disconnection,
-        OnConnectionAttemptFinishedCallback on_connection_attempt_finished) = 0;
-    virtual void Create(
-        const TetherHost& tether_host,
-        ConnectionPriority connection_priority,
-        raw_ptr<PayloadListener> payload_listener,
-        OnDisconnectionCallback on_disconnection,
-        OnConnectionAttemptFinishedCallback on_connection_attempt_finished) = 0;
+        OnConnectionCreatedCallback on_connection_created) = 0;
+    virtual void Create(const TetherHost& tether_host,
+                        ConnectionPriority connection_priority,
+                        raw_ptr<PayloadListener> payload_listener,
+                        OnDisconnectionCallback on_disconnection,
+                        OnConnectionCreatedCallback on_connection_created) = 0;
   };
 
   using OnMessageSentCallback = base::OnceClosure;

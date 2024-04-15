@@ -17,6 +17,7 @@ struct TetherHost {
   explicit TetherHost(multidevice::RemoteDeviceRef remote_device_ref);
   TetherHost(const TetherHost&);
   TetherHost& operator=(const TetherHost&) = default;
+
   ~TetherHost();
 
   const std::string GetDeviceId() const;
