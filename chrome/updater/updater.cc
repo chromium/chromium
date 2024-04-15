@@ -168,8 +168,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // TODO(crbug.com/1476296) - eliminate the need to have a UI message type
   // on the main sequence by refactoring the splash screen and the rest of UI.
   const bool is_app_install_mode = command_line->HasSwitch(kInstallSwitch) ||
-                                   command_line->HasSwitch(kTagSwitch) ||
-                                   command_line->HasSwitch(kRuntimeSwitch) ||
                                    command_line->HasSwitch(kHandoffSwitch);
   const bool is_silent = command_line->HasSwitch(kSilentSwitch);
   base::SingleThreadTaskExecutor main_task_executor(
@@ -229,14 +227,20 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
   const char* commands[] = {
-      kWindowsServiceSwitch, kCrashHandlerSwitch,
-      kInstallSwitch,        kRecoverSwitch,
-      kServerSwitch,         kTagSwitch,
-      kTestSwitch,           kUninstallIfUnusedSwitch,
-      kUninstallSelfSwitch,  kUninstallSwitch,
-      kUpdateSwitch,         kWakeSwitch,
-      kWakeAllSwitch,        kHealthCheckSwitch,
-      kHandoffSwitch,        kRuntimeSwitch,
+      kWindowsServiceSwitch,
+      kCrashHandlerSwitch,
+      kInstallSwitch,
+      kRecoverSwitch,
+      kServerSwitch,
+      kTestSwitch,
+      kUninstallIfUnusedSwitch,
+      kUninstallSelfSwitch,
+      kUninstallSwitch,
+      kUpdateSwitch,
+      kWakeSwitch,
+      kWakeAllSwitch,
+      kHealthCheckSwitch,
+      kHandoffSwitch,
   };
   const char** it = base::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);

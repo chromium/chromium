@@ -211,14 +211,13 @@ ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
 
   *cmd_line_args = '\0';
 
-  // Use the tag from the --tag/--install command line argument if such argument
+  // Use the tag from the `--install` command line argument if such argument
   // exists. Otherwise, try extracting a tag embedded in the program image of
   // the meta installer.
-  if (args.GetSwitchValueASCII(kTagSwitch).empty() &&
-      args.GetSwitchValueASCII(kInstallSwitch).empty()) {
+  if (args.GetSwitchValueASCII(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      args.AppendSwitchASCII(kTagSwitch, tag.c_str());
+      args.AppendSwitchASCII(kInstallSwitch, tag.c_str());
     }
   }
 

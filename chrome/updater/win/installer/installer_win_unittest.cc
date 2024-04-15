@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char tag_switch[] = "--tag=";
+constexpr char install_switch[] = "--install=";
 constexpr char enable_logging_switch[] = "--enable-logging";
 constexpr char logging_module_switch[] = "--vmodule=";
 
@@ -91,7 +91,7 @@ TEST(BuildInstallerCommandLineArgumentsTest, EnableLoggingSwitch) {
   std::wstring command_line_str(L"UpdaterSetup.exe");
   // Add a tag switch to bypass attempting to parse a tag.
   command_line_str = base::SysUTF8ToWide(
-      base::StrCat({"UpdaterSetup.exe ", tag_switch, "fake_tag"}));
+      base::StrCat({"UpdaterSetup.exe ", install_switch, "fake_tag"}));
   updater::ProcessExitResult exit_result =
       updater::BuildInstallerCommandLineArguments(command_line_str.c_str(),
                                                   cmd_line_args.get(),
@@ -103,8 +103,9 @@ TEST(BuildInstallerCommandLineArgumentsTest, EnableLoggingSwitch) {
   // Test that no --enable-logging switch is added if one is provided.
   cmd_line_args.clear();
   // Add a tag switch to bypass attempting to parse a tag.
-  command_line_str = base::SysUTF8ToWide(base::StrCat(
-      {"UpdaterSetup.exe ", tag_switch, "fake_tag ", enable_logging_switch}));
+  command_line_str =
+      base::SysUTF8ToWide(base::StrCat({"UpdaterSetup.exe ", install_switch,
+                                        "fake_tag ", enable_logging_switch}));
   exit_result = updater::BuildInstallerCommandLineArguments(
       command_line_str.c_str(), cmd_line_args.get(), cmd_line_args.capacity());
   EXPECT_EQ(exit_result.exit_code, updater::SUCCESS_EXIT_CODE);
@@ -118,7 +119,7 @@ TEST(BuildInstallerCommandLineArgumentsTest, LoggingModuleSwitch) {
   std::wstring command_line_str(L"UpdaterSetup.exe");
   // Add a tag switch to bypass attempting to parse a tag.
   command_line_str = base::SysUTF8ToWide(
-      base::StrCat({"UpdaterSetup.exe ", tag_switch, "fake_tag"}));
+      base::StrCat({"UpdaterSetup.exe ", install_switch, "fake_tag"}));
   updater::ProcessExitResult exit_result =
       updater::BuildInstallerCommandLineArguments(command_line_str.c_str(),
                                                   cmd_line_args.get(),
@@ -131,7 +132,7 @@ TEST(BuildInstallerCommandLineArgumentsTest, LoggingModuleSwitch) {
   cmd_line_args.clear();
   // Add a tag switch to bypass attempting to parse a tag.
   command_line_str = base::SysUTF8ToWide(
-      base::StrCat({"UpdaterSetup.exe ", tag_switch, "fake_tag ",
+      base::StrCat({"UpdaterSetup.exe ", install_switch, "fake_tag ",
                     logging_module_switch, "fake_module"}));
   exit_result = updater::BuildInstallerCommandLineArguments(
       command_line_str.c_str(), cmd_line_args.get(), cmd_line_args.capacity());
@@ -148,7 +149,7 @@ TEST(BuildInstallerCommandLineArgumentsTest, CommandStringOverflow) {
   std::wstring command_line_str(L"UpdaterSetup.exe");
   std::string long_tag(updater::kInstallerMaxCommandString + 1, 'A');
   command_line_str = base::SysUTF8ToWide(
-      base::StrCat({"UpdaterSetup.exe ", tag_switch, long_tag}));
+      base::StrCat({"UpdaterSetup.exe ", install_switch, long_tag}));
   updater::ProcessExitResult exit_result =
       updater::BuildInstallerCommandLineArguments(command_line_str.c_str(),
                                                   cmd_line_args.get(),

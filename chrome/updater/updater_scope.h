@@ -44,8 +44,8 @@ UpdaterScope GetUpdaterScopeForCommandLine(
 
 // Returns the scope of the updater, which is either per-system or per-user.
 // The updater scope is determined from command line arguments of the process,
-// the presence and content of the --tag argument, and the integrity level
-// of the process, where applicable.
+// the presence and content of the tag, and the integrity level of the process,
+// where applicable.
 UpdaterScope GetUpdaterScope();
 
 bool IsSystemInstall();

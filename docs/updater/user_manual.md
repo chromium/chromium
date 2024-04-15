@@ -97,7 +97,7 @@ and registration process.
 The updater will uninstall itself automatically when it has no applications to
 manage, but it may need some help to do so in a timely manner.
 
-On Windows, when an application is uninstalled, it should delete the 
+On Windows, when an application is uninstalled, it should delete the
 `(HKCU or HKLM)\SOFTWARE\{Company}\Update\Clients\{AppID}` key and then run
 the command line in
 `(HKCU or HKLM)\SOFTWARE\{Company}\Updater` → `UninstallCmdLine`. This will
@@ -106,7 +106,7 @@ notify the updater of the uninstallation.
 On macOS, it is assumed that users uninstall software by deleting the app
 bundle. The updater will notice this on its own in a few hours. However, it
 can be notified earlier by running any
-`{Company}Updater.app/Contents/MacOS/{Company}Updater --wake-all` (with 
+`{Company}Updater.app/Contents/MacOS/{Company}Updater --wake-all` (with
 `--system` for system-scope installs).
 
 ## Additional Updater Command Lines
@@ -133,7 +133,7 @@ install.
 
 For example, here is a command line for the Updater on Windows that includes:
 ```
-UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+UpdaterSetup.exe --install="appguid=YourAppID&needsadmin=False"
 ```
 
 In this case, the updater client understands that the application installer
