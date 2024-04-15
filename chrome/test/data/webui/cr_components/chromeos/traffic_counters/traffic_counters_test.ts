@@ -7,11 +7,12 @@ import 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import type {NetworkHealthContainerElement} from 'chrome://resources/ash/common/network_health/network_health_container.js';
 import type {TrafficCountersElement} from 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
+import {assertEquals, assertTrue, assertFalse} from '../../../chromeos/chai_assert.js';
 import {FakeNetworkConfig} from '../../../chromeos/fake_network_config_mojom.js';
 
 suite('TrafficCountersTest', function() {
@@ -89,8 +90,9 @@ suite('TrafficCountersTest', function() {
   }
 
   function getContainer() {
-    const container =
-        trafficCounters.shadowRoot!.querySelector('network-health-container');
+    const container = trafficCounters.shadowRoot!
+                          .querySelector<NetworkHealthContainerElement>(
+                              'network-health-container');
     assertTrue(!!container);
     return (container);
   }
@@ -149,7 +151,7 @@ suite('TrafficCountersTest', function() {
         networkConfig);
   }
 
-  setup(function() {
+  setup(async function() {
     networkConfigRemote = new FakeNetworkConfig();
     setMojoServiceRemote(networkConfigRemote);
 
@@ -157,9 +159,7 @@ suite('TrafficCountersTest', function() {
         document.createElement('traffic-counters'));
     document.body.appendChild(trafficCounters);
     flushTasks();
-  });
 
-  test('Request and reset traffic counters', async function() {
     // Set managed properties for a connected cellular network.
     const managedProperties = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular');
@@ -183,7 +183,19 @@ suite('TrafficCountersTest', function() {
     trafficCounters.shadowRoot!
       .querySelector<HTMLElement>('#requestButton')!.click();
     await flushTasks();
+  });
 
+  test('Click and check if the network row has expanded', async function() {
+    assertFalse(getContainer()!.expanded);
+    getContainer()!.dispatchEvent(new CustomEvent('toggle-expanded', {
+      bubbles: true,
+      composed: true,
+    }));
+    await flushTasks();
+    assertTrue(getContainer()!.expanded);
+  });
+
+  test('Request and reset traffic counters', async function() {
     // Verify service name is "cellular".
     assertEquals(getLabelFor('name'), trafficCounters.i18n('OncName'));
     assertEquals(getValueFor('name'), 'cellular');

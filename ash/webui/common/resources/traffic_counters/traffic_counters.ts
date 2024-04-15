@@ -114,6 +114,11 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
        * Information about networks.
        */
       networks_: {type: Array, value: []},
+
+      /**
+       * Expanded state per network type.
+       */
+      typeExpanded_: {type: Array, value: []},
     };
   }
 
@@ -123,11 +128,6 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
 
   constructor() {
     super();
-
-    /**
-     * Expanded state per network type.
-     */
-    this.typeExpanded_ = [];
 
     /**
      * Adapter to access traffic counters functionality.
@@ -200,7 +200,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
 
   private getTypeExpanded_(type: NetworkType): boolean {
     if (this.typeExpanded_[type] === undefined) {
-      this.set('typeExpanded.' + type, false);
+      this.set('typeExpanded_.' + type, false);
       return false;
     }
     return this.typeExpanded_[type];
@@ -212,7 +212,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
    */
   private onToggleExpanded_(event: OnNetworkSelectedEvent) {
     const type = event.model.network.type;
-    this.set('typeExpanded.' + type, !this.typeExpanded_[type]);
+    this.set('typeExpanded_.' + type, !this.typeExpanded_[type]);
   }
 
   private countersToString_(counters: TrafficCounter[]): string {
