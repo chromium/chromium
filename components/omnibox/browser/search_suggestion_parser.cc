@@ -838,7 +838,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       omnibox::EntityInfo entity_info;
       omnibox::RichAnswerTemplate answer_template;
-      bool answer_template_parsed_successfully;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
           !(*suggestion_details)[index].GetDict().empty()) {
@@ -872,7 +871,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
               omnibox::answer_data_parser::ParseJsonToAnswerData(
                   *answer_json, base::UTF8ToUTF16(*answer_type),
                   &answer_template)) {
-            answer_template_parsed_successfully = true;
           }
           if (SuggestionAnswer::ParseAnswer(
                   *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
@@ -894,13 +892,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         nav_intent, relevance, relevances != nullptr,
                         should_prefetch, should_prerender, trimmed_input));
 
-      // TODO(b/327497146) Make use of RichAnswerTemplate instead of
-      // SuggestionAnswer when kOmniboxSuggestionAnswerMigration is enabled.
+      // TODO(b/327497146) Fix rendering of answers outside of Desktop Omnibox
+      // when kOmniboxSuggestionAnswerMigration is enabled.
+      // Ensure `answer_template` has an answer.
       if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-          answer_template_parsed_successfully) {
+          answer_template.answers_size() > 0) {
         results->suggest_results.back().SetRichAnswerTemplate(answer_template);
-      }
-      if (answer_parsed_successfully) {
+      } else if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);
       }
 

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
+
 #include <limits.h>
 
 #include <algorithm>
 #include <memory>
-
-#include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,10 @@ constexpr int kInherit = INT_MIN;
 // vertically center the cap height of the font instead of centering the
 // entire font.
 static constexpr int kVerticalPadding = 3;
+
+// Dictionary and translation default number of lines for the FormattedString
+// subhead.
+constexpr size_t kDefaultMaxNumLines = 3;
 
 struct TextStyle {
   OmniboxPart part;
@@ -102,6 +107,37 @@ void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
     id = selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   }
   render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
+}
+
+void ApplyTextStyleFromColorType(
+    const std::optional<omnibox::FormattedString::ColorType>& color_type,
+    OmniboxResultView* result_view,
+    gfx::RenderText* render_text,
+    const gfx::Range& range) {
+  render_text->ApplyWeight(gfx::Font::Weight::NORMAL, range);
+  render_text->ApplyBaselineStyle(gfx::BaselineStyle::kNormalBaseline, range);
+  const bool selected =
+      result_view->GetThemeState() == OmniboxPartState::SELECTED;
+  ui::ColorId id;
+  if (color_type.value() ==
+      omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE) {
+    id = selected ? kColorOmniboxResultsTextPositiveSelected
+                  : kColorOmniboxResultsTextPositive;
+  } else if (color_type.value() ==
+             omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE) {
+    id = selected ? kColorOmniboxResultsTextNegativeSelected
+                  : kColorOmniboxResultsTextNegative;
+  } else {
+    return;
+  }
+  render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
+}
+
+// Dictionary and translation answers have a max number of lines > 1.
+bool AnswerHasDefinedMaxLines(
+    omnibox::RichAnswerTemplate::AnswerType answer_type) {
+  return answer_type == omnibox::RichAnswerTemplate::DICTIONARY ||
+         answer_type == omnibox::RichAnswerTemplate::TRANSLATION;
 }
 
 }  // namespace
@@ -209,6 +245,40 @@ void OmniboxTextView::SetTextWithStyling(
   AppendExtraText(line);
 
   OnStyleChanged();
+}
+
+void OmniboxTextView::SetTextWithStyling(
+    const omnibox::FormattedString& formatted_string,
+    size_t fragment_index,
+    const omnibox::RichAnswerTemplate::AnswerType& answer_type) {
+  use_deemphasized_font_ = false;
+  cached_classifications_.reset();
+  wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
+  for (size_t i = fragment_index;
+       i < static_cast<size_t>(formatted_string.fragments_size()); i++) {
+    const std::u16string append_text =
+        u" " + base::UTF8ToUTF16(formatted_string.fragments(i).text());
+    size_t offset = render_text_ ? render_text_->text().length() : 0u;
+    gfx::Range range(offset, offset + append_text.length());
+    render_text_->AppendText(append_text);
+    ApplyTextStyleFromColorType(formatted_string.fragments(i).color(),
+                                result_view_, render_text_.get(), range);
+  }
+  OnStyleChanged();
+}
+
+void OmniboxTextView::SetMultilineText(
+    const omnibox::FormattedString& formatted_string,
+    const omnibox::RichAnswerTemplate::AnswerType& answer_type) {
+  render_text_ = CreateRenderText(u"");
+  if (formatted_string.fragments_size() > 0 &&
+      AnswerHasDefinedMaxLines(answer_type)) {
+    const size_t kMaxDisplayLines =
+        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 1 : 3;
+    render_text_->SetMultiline(true);
+    render_text_->SetMaxLines(std::min(kMaxDisplayLines, kDefaultMaxNumLines));
+  }
+  SetTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {

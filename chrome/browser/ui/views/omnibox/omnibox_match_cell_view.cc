@@ -18,12 +18,14 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -254,6 +256,11 @@ int OmniboxMatchCellView::GetTextIndent() {
 
 // static
 bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    return match.answer_template.has_value() ||
+           match.type == AutocompleteMatchType::CALCULATOR ||
+           !match.image_url.is_empty();
+  }
   return match.answer || match.type == AutocompleteMatchType::CALCULATOR ||
          !match.image_url.is_empty();
 }
@@ -323,14 +330,25 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     answer_image_view_->SetSize(gfx::Size());
   } else {
     // Determine if we have a local icon (or else it will be downloaded).
-    if (match.answer) {
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+        match.answer_template.has_value()) {
+      if (match.answer_template->answer_type() ==
+          omnibox::RichAnswerTemplate::WEATHER) {
+        // Weather icons are downloaded. We just need to set the correct size.
+        answer_image_view_->SetImageSize(
+            gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
+      } else {
+        apply_vector_icon(AutocompleteMatch::AnswerTypeToAnswerIcon(
+            match.answer_template->answer_type()));
+      }
+    } else if (match.answer) {
       if (match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
         // Weather icons are downloaded. We just need to set the correct size.
         answer_image_view_->SetImageSize(
             gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
       } else {
-        apply_vector_icon(
-            AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
+        apply_vector_icon(AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
+            match.answer->type()));
       }
     } else {
       SkColor color = GetColorProvider()->GetColor(
@@ -390,8 +408,12 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   // Weather icons are also sourced remotely and therefore fall into this flow.
   // Other answers don't.
   bool is_weather_answer =
-      match.answer &&
-      match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER;
+      omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled
+          ? (match.answer_template.has_value() &&
+             match.answer_template->answer_type() ==
+                 omnibox::RichAnswerTemplate::WEATHER)
+          : (match.answer &&
+             match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
 
   int width = image.width();
   int height = image.height();

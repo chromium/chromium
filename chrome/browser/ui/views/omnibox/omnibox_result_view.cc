@@ -32,6 +32,7 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -39,6 +40,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -347,7 +350,17 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
 
   suggestion_view_->content()->SetTextWithStyling(match_.contents,
                                                   match_.contents_class);
-  if (match_.answer) {
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      match_.answer_template.has_value()) {
+    omnibox::AnswerData answer_data = match_.answer_template->answers(0);
+    suggestion_view_->content()->SetTextWithStyling(
+        /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
+        /*answer_type=*/match_.answer_template->answer_type());
+    // The subhead text may be multiline.
+    suggestion_view_->description()->SetMultilineText(
+        /*formatted_string=*/answer_data.subhead(),
+        /*answer_type=*/match_.answer_template->answer_type());
+  } else if (match_.answer) {
     suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
     suggestion_view_->description()->SetTextWithStyling(
         match_.answer->second_line(), false);
@@ -410,8 +423,10 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText;
   bool prefers_contrast =
       GetNativeTheme() && GetNativeTheme()->UserHasContrastPreference();
-  if (match_.answer ||
-      match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled
+          ? match_.answer_template.has_value()
+          : match_.answer ||
+                match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
     suggestion_view_->content()->ApplyTextColor(default_id);
     suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {

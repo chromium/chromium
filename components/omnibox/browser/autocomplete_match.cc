@@ -481,7 +481,8 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
-const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
+    int type) {
   const bool use_chrome_refresh_icons =
       OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
@@ -511,6 +512,38 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
   }
 }
 
+// static
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
+    omnibox::RichAnswerTemplate::AnswerType type) {
+  const bool use_chrome_refresh_icons =
+      OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
+  switch (type) {
+    case omnibox::RichAnswerTemplate::DICTIONARY:
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerDictionaryChromeRefreshIcon
+                 : omnibox::kAnswerDictionaryIcon;
+    case omnibox::RichAnswerTemplate::FINANCE:
+      return use_chrome_refresh_icons ? omnibox::kAnswerFinanceChromeRefreshIcon
+                                      : omnibox::kAnswerFinanceIcon;
+    case omnibox::RichAnswerTemplate::SUNRISE_SUNSET:
+      return use_chrome_refresh_icons ? omnibox::kAnswerSunriseChromeRefreshIcon
+                                      : omnibox::kAnswerSunriseIcon;
+    case omnibox::RichAnswerTemplate::TRANSLATION:
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerTranslationChromeRefreshIcon
+                 : omnibox::kAnswerTranslationIcon;
+    case omnibox::RichAnswerTemplate::WHEN_IS:
+      return use_chrome_refresh_icons ? omnibox::kAnswerWhenIsChromeRefreshIcon
+                                      : omnibox::kAnswerWhenIsIcon;
+    case omnibox::RichAnswerTemplate::CURRENCY:
+      return use_chrome_refresh_icons
+                 ? omnibox::kAnswerCurrencyChromeRefreshIcon
+                 : omnibox::kAnswerCurrencyIcon;
+    default:
+      return omnibox::kAnswerDefaultIcon;
+  }
+}
+
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
@@ -519,8 +552,12 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   if (is_bookmark)
     return use_chrome_refresh_icons ? omnibox::kBookmarkChromeRefreshIcon
                                     : omnibox::kBookmarkIcon;
-  if (answer.has_value())
-    return AnswerTypeToAnswerIcon(answer->type());
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      answer_template.has_value()) {
+    return AnswerTypeToAnswerIcon(answer_template->answer_type());
+  } else if (answer.has_value()) {
+    return AnswerTypeToAnswerIconDeprecated(answer->type());
+  }
 
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
@@ -1194,6 +1231,11 @@ TemplateURL* AutocompleteMatch::GetTemplateURL(
 }
 
 GURL AutocompleteMatch::ImageUrl() const {
+  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+      answer_template.has_value()) {
+    CHECK_GT(answer_template->answers_size(), 0);
+    return GURL(answer_template->answers(0).image().url());
+  }
   return answer ? answer->image_url() : image_url;
 }
 

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/view.h"
@@ -58,6 +60,16 @@ class OmniboxTextView : public views::View {
                           bool deemphasize = false);
   void SetTextWithStyling(const SuggestionAnswer::ImageLine& line,
                           bool deemphasize);
+  // Sets the styling for FormattedString's FormattedStringFragments.
+  // |fragment_index| specifies where to start appending and styling text from.
+  void SetTextWithStyling(
+      const omnibox::FormattedString& formatted_string,
+      size_t fragment_index,
+      const omnibox::RichAnswerTemplate::AnswerType& answer_type);
+  // Sets |render_text_| to be multiline whenever necessary.
+  void SetMultilineText(
+      const omnibox::FormattedString& formatted_string,
+      const omnibox::RichAnswerTemplate::AnswerType& answer_type);
 
   // Adds the "additional" and "status" text from |line|, if any.
   void AppendExtraText(const SuggestionAnswer::ImageLine& line);
