@@ -205,7 +205,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       // only one is visible at a time. The one that's visible has style
       // display-true, so use that to directly select the right button
       const visiblePreviewButton =
-          currentElement.querySelector<HTMLElement>('.display-true');
+          currentElement.querySelector<HTMLElement>('#play-icon');
       assert(visiblePreviewButton, 'can\'t find preview button');
       visiblePreviewButton!.focus();
     } else {  // Voice preview button - go to voice entry

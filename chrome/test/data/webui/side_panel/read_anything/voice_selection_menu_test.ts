@@ -269,23 +269,19 @@ suite('VoiceSelectionMenuElement', () => {
       });
 
       test('it shows preview-playing button when preview plays', () => {
-        const playIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
-                                   .querySelector<HTMLElement>('#play-icon')!;
-        const pauseIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
-                                    .querySelector<HTMLElement>('#pause-icon')!;
+        const playIconVoice0 =
+            getDropdownItemForVoice(availableVoices[0]!)
+                .querySelector<HTMLButtonElement>('#play-icon')!;
         const playIconOfPreviewVoice =
             getDropdownItemForVoice(previewVoice)
-                .querySelector<HTMLElement>('#play-icon')!;
-        const pauseIconOfPreviewVoice =
-            getDropdownItemForVoice(previewVoice)
-                .querySelector<HTMLElement>('#pause-icon')!;
+                .querySelector<HTMLButtonElement>('#play-icon')!;
 
-        // The play icon should flip to pause for the voice being previewed
-        assertFalse(isPositionedOnPage(playIconOfPreviewVoice));
-        assertTrue(isPositionedOnPage(pauseIconOfPreviewVoice));
-        // The play icon should remain for the other buttons
+        // The play icon should flip to disabled for the voice being previewed
+        assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
+        assertTrue(isDisabled(playIconOfPreviewVoice));
+        // The play icon should remain enabled for the other buttons
         assertTrue(isPositionedOnPage(playIconVoice0));
-        assertFalse(isPositionedOnPage(pauseIconVoice0));
+        assertFalse(isDisabled(playIconVoice0));
       });
 
       suite('when preview finishes playing', () => {
@@ -297,24 +293,20 @@ suite('VoiceSelectionMenuElement', () => {
           flush();
         });
 
-        test('it flips the preview pause button back to play', () => {
-          const playIconVoice0 = getDropdownItemForVoice(availableVoices[0]!)
-                                     .querySelector<HTMLElement>('#play-icon')!;
-          const pauseIconVoice0 =
+        test('it flips the preview button back to enabled', () => {
+          const playIconVoice0 =
               getDropdownItemForVoice(availableVoices[0]!)
-                  .querySelector<HTMLElement>('#pause-icon')!;
+                  .querySelector<HTMLButtonElement>('#play-icon')!;
           const playIconOfPreviewVoice =
               getDropdownItemForVoice(availableVoices[1]!)
-                  .querySelector<HTMLElement>('#play-icon')!;
-          const pauseIconOfPreviewVoice =
-              getDropdownItemForVoice(availableVoices[1]!)
-                  .querySelector<HTMLElement>('#pause-icon')!;
+                  .querySelector<HTMLButtonElement>('#play-icon')!;
 
-          // All icons should be play icons because no preview is playing
+          // All icons should be enabled play icons because no preview is
+          // playing
           assertTrue(isPositionedOnPage(playIconOfPreviewVoice));
-          assertFalse(isPositionedOnPage(pauseIconOfPreviewVoice));
           assertTrue(isPositionedOnPage(playIconVoice0));
-          assertFalse(isPositionedOnPage(pauseIconVoice0));
+          assertFalse(isDisabled(playIconVoice0));
+          assertFalse(isDisabled(playIconOfPreviewVoice));
         });
       });
     });
@@ -329,4 +321,8 @@ function isPositionedOnPage(element: HTMLElement) {
   return !!element &&
       !!(element.offsetWidth || element.offsetHeight ||
          element.getClientRects().length);
+}
+
+function isDisabled(element: HTMLButtonElement) {
+  return element.disabled;
 }
