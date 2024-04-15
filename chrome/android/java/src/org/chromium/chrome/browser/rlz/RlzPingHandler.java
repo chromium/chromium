@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.rlz;
 import android.text.TextUtils;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -59,7 +60,7 @@ public class RlzPingHandler {
     @NativeMethods
     interface Natives {
         void startPing(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 String brand,
                 String language,
                 String events,

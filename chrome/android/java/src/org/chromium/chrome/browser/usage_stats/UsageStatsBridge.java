@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.usage_stats;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -194,7 +195,7 @@ public class UsageStatsBridge {
 
     @NativeMethods
     interface Natives {
-        long init(UsageStatsBridge caller, Profile profile);
+        long init(UsageStatsBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeUsageStatsBridge, UsageStatsBridge caller);
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feature_engagement;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -59,8 +60,8 @@ public final class TrackerFactory {
 
     @NativeMethods
     interface Natives {
-        Tracker getTrackerForProfile(Profile profile);
+        Tracker getTrackerForProfile(@JniType("Profile*") Profile profile);
 
-        void setTestingFactory(Profile profile, Tracker testTracker);
+        void setTestingFactory(@JniType("Profile*") Profile profile, Tracker testTracker);
     }
 }

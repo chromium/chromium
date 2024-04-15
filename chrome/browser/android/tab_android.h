@@ -65,7 +65,7 @@ class TabAndroid : public base::SupportsUserData {
 
   TabAndroid(JNIEnv* env,
              const base::android::JavaRef<jobject>& obj,
-             const base::android::JavaRef<jobject>& profile,
+             Profile* profile,
              int tab_id);
 
   TabAndroid(const TabAndroid&) = delete;

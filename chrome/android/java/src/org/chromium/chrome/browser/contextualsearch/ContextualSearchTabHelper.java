@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -406,7 +407,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchTabHelper caller, Profile profile);
+        long init(ContextualSearchTabHelper caller, @JniType("Profile*") Profile profile);
 
         void installUnhandledTapNotifierIfNeeded(
                 long nativeContextualSearchTabHelper,

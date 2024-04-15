@@ -7,12 +7,13 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 #include "chrome/browser/android/background_task_scheduler/chrome_background_task_factory.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 
 static jlong JNI_ProxyNativeTask_Init(JNIEnv* env,
                                       const JavaParamRef<jobject>& jobj,
@@ -72,26 +73,23 @@ void ProxyNativeTask::StartBackgroundTaskInReducedMode(
 void ProxyNativeTask::StartBackgroundTaskWithFullBrowser(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jobject>& jprofile) {
+    Profile* profile) {
   if (!background_task_) {
     std::move(finish_callback_).Run(false);
     return;
   }
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
   background_task_->OnStartTaskWithFullBrowser(
       task_params_, std::move(finish_callback_), profile);
 }
 
-void ProxyNativeTask::OnFullBrowserLoaded(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    const JavaParamRef<jobject>& jprofile) {
+void ProxyNativeTask::OnFullBrowserLoaded(JNIEnv* env,
+                                          const JavaParamRef<jobject>& jcaller,
+                                          Profile* profile) {
   if (!background_task_)
     return;
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
   background_task_->OnFullBrowserLoaded(profile);
 }

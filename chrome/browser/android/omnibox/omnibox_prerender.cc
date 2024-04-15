@@ -17,13 +17,14 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxPrerender_jni.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxPrerender_jni.h"
 
 using base::android::JavaParamRef;
 using predictors::AutocompleteActionPredictor;
@@ -44,8 +45,7 @@ static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
 
 void OmniboxPrerender::Clear(JNIEnv* env,
                              const JavaParamRef<jobject>& obj,
-                             const JavaParamRef<jobject>& j_profile_android) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
+                             Profile* profile) {
   DCHECK(profile);
   if (!profile)
     return;
@@ -55,11 +55,9 @@ void OmniboxPrerender::Clear(JNIEnv* env,
   action_predictor->CancelPrerender();
 }
 
-void OmniboxPrerender::InitializeForProfile(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile_android) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
+void OmniboxPrerender::InitializeForProfile(JNIEnv* env,
+                                            const JavaParamRef<jobject>& obj,
+                                            Profile* profile) {
   // Initialize the AutocompleteActionPredictor for this profile.
   // It needs to register for notifications as part of its initialization.
   AutocompleteActionPredictorFactory::GetForProfile(profile);
@@ -71,11 +69,10 @@ void OmniboxPrerender::PrerenderMaybe(
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jstring>& j_current_url,
     jlong jsource_match,
-    const JavaParamRef<jobject>& j_profile_android,
+    Profile* profile,
     const JavaParamRef<jobject>& j_tab) {
   AutocompleteResult* autocomplete_result =
       reinterpret_cast<AutocompleteResult*>(jsource_match);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
   std::u16string url_string =
       base::android::ConvertJavaStringToUTF16(env, j_url);
   std::u16string current_url_string =

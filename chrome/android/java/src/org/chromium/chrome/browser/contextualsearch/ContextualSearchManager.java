@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -2109,7 +2110,7 @@ public class ContextualSearchManager
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchManager caller, Profile profile);
+        long init(ContextualSearchManager caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeContextualSearchManager, ContextualSearchManager caller);
 

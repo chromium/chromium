@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -1162,7 +1163,7 @@ public class PersonalDataManager implements Destroyable {
 
     @NativeMethods
     interface Natives {
-        long init(PersonalDataManager caller, Profile profile);
+        long init(PersonalDataManager caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativePersonalDataManagerAndroid);
 

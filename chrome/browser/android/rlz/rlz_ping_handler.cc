@@ -11,8 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
@@ -28,6 +27,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/RlzPingHandler_jni.h"
+
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -41,8 +43,7 @@ const char kProtocolCgiVariable[] = "rep";
 namespace chrome {
 namespace android {
 
-RlzPingHandler::RlzPingHandler(const JavaRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+RlzPingHandler::RlzPingHandler(Profile* profile) {
   DCHECK(profile);
   url_loader_factory_ = profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
@@ -153,13 +154,13 @@ void RlzPingHandler::OnSimpleLoaderComplete(
 
 void JNI_RlzPingHandler_StartPing(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const base::android::JavaParamRef<jstring>& j_brand,
     const base::android::JavaParamRef<jstring>& j_language,
     const base::android::JavaParamRef<jstring>& j_events,
     const base::android::JavaParamRef<jstring>& j_id,
     const base::android::JavaParamRef<jobject>& j_callback) {
-  RlzPingHandler* handler = new RlzPingHandler(j_profile);
+  RlzPingHandler* handler = new RlzPingHandler(profile);
   handler->Ping(j_brand, j_language, j_events, j_id, j_callback);
 }
 

@@ -10,12 +10,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -80,14 +81,6 @@ void SavePageLaterCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                                        static_cast<int32_t>(value));
 }
 
-RequestCoordinator* GetRequestCoordinator(
-    const JavaParamRef<jobject>& j_profile) {
-  content::BrowserContext* context =
-      ProfileAndroid::FromProfileAndroid(j_profile);
-  return offline_pages::RequestCoordinatorFactory::GetInstance()
-      ->GetForBrowserContext(context);
-}
-
 }  // namespace
 
 ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
@@ -116,7 +109,7 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj,
     std::string& url_spec,
     std::string& namespace_str,
@@ -129,7 +122,8 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
   client_id.name_space = namespace_str;
   client_id.id = client_id_str;
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
@@ -152,11 +146,12 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
@@ -171,7 +166,7 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jlongArray>& j_request_ids_array,
     const JavaParamRef<jobject>& j_callback_obj) {
   std::vector<int64_t> request_ids;
@@ -179,7 +174,8 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
                                             &request_ids);
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.

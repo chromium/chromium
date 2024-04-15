@@ -4,15 +4,17 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/AdaptiveToolbarBridge_jni.h"
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/toolbar/jni_headers/AdaptiveToolbarBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -100,9 +102,8 @@ void RunGetClassificationResultCallback(
 
 void JNI_AdaptiveToolbarBridge_GetSessionVariantButton(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
     RunGetClassificationResultCallback(
         j_callback, segmentation_platform::ClassificationResult(

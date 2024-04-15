@@ -122,10 +122,14 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
                 long nativeProxyNativeTask, ProxyNativeTask caller, ProfileKey key);
 
         void startBackgroundTaskWithFullBrowser(
-                long nativeProxyNativeTask, ProxyNativeTask caller, Profile profile);
+                long nativeProxyNativeTask,
+                ProxyNativeTask caller,
+                @JniType("Profile*") Profile profile);
 
         void onFullBrowserLoaded(
-                long nativeProxyNativeTask, ProxyNativeTask caller, Profile profile);
+                long nativeProxyNativeTask,
+                ProxyNativeTask caller,
+                @JniType("Profile*") Profile profile);
 
         boolean stopBackgroundTask(long nativeProxyNativeTask, ProxyNativeTask caller);
 

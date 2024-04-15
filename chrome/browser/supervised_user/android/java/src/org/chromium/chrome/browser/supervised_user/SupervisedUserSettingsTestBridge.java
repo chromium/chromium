@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -49,13 +50,16 @@ class SupervisedUserSettingsTestBridge {
 
     @NativeMethods
     interface Natives {
-        void setFilteringBehavior(Profile profile, int setting);
+        void setFilteringBehavior(@JniType("Profile*") Profile profile, int setting);
 
-        void setManualFilterForHost(Profile profile, String host, boolean allowlist);
+        void setManualFilterForHost(
+                @JniType("Profile*") Profile profile, String host, boolean allowlist);
 
-        void setKidsManagementResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
+        void setKidsManagementResponseForTesting(
+                @JniType("Profile*") Profile profile, boolean siteIsAllowed); // IN-TEST
 
-        void setSafeSearchResponseForTesting(Profile profile, boolean siteIsAllowed); // IN-TEST
+        void setSafeSearchResponseForTesting(
+                @JniType("Profile*") Profile profile, boolean siteIsAllowed); // IN-TEST
 
         void setUpTestUrlLoaderFactoryHelper();
 

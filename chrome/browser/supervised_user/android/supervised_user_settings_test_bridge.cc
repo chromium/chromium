@@ -8,13 +8,11 @@
 #include "base/android/jni_string.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -27,13 +25,14 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsTestBridge_jni.h"
+
 using base::android::JavaParamRef;
 
-void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
-    jint setting) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(JNIEnv* env,
+                                                               Profile* profile,
+                                                               jint setting) {
   supervised_user::SupervisedUserSettingsService*
       supervised_user_settings_service =
           SupervisedUserSettingsServiceFactory::GetForKey(
@@ -45,10 +44,9 @@ void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
 
 void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jstring>& host,
     jboolean allowlist) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   std::string host_string(base::android::ConvertJavaStringToUTF8(env, host));
   supervised_user_test_util::SetManualFilterForHost(profile, host_string,
                                                     allowlist);
@@ -83,7 +81,7 @@ class TestUrlLoaderFactoryHelper {
 
 void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  // IN-TEST
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     jboolean is_allowed) {
   kidsmanagement::ClassifyUrlResponse response;
   auto url_classification =
@@ -102,7 +100,6 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
   test_url_loader_factory_->AddResponse(classify_url_service_url,
                                         response.SerializeAsString());
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -118,7 +115,7 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
 
 void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     jboolean is_allowed) {
   TestUrlLoaderFactoryHelper::SharedInstance()
       ->test_url_loader_factory()

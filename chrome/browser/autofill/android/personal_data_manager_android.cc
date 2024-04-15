@@ -20,14 +20,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/android/autofill_image_fetcher_impl.h"
-#include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
-#include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
-#include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -49,6 +45,11 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
 #include "url/android/gurl_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
+#include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
+#include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 
 namespace autofill {
 namespace {
@@ -858,11 +859,9 @@ static ScopedJavaLocalRef<jstring> JNI_PersonalDataManager_ToCountryCode(
                base::android::ConvertJavaStringToUTF16(env, jcountry_name)));
 }
 
-static jlong JNI_PersonalDataManager_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+static jlong JNI_PersonalDataManager_Init(JNIEnv* env,
+                                          const JavaParamRef<jobject>& obj,
+                                          Profile* profile) {
   CHECK(profile);
   PersonalDataManagerAndroid* personal_data_manager_android =
       new PersonalDataManagerAndroid(

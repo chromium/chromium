@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.profiles;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -121,6 +122,6 @@ public class ProfileManager {
     public interface Natives {
         Object getLastUsedRegularProfile();
 
-        void destroyWhenAppropriate(Profile caller);
+        void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
     }
 }

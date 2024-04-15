@@ -11,19 +11,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
 #include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "url/url_constants.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
 
 using base::android::ToJavaByteArray;
 using bookmarks::BookmarkModel;
@@ -223,10 +224,7 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
 }
 
 // static
-jlong JNI_AuxiliarySearchBridge_GetForProfile(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+jlong JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env, Profile* profile) {
   DCHECK(profile);
 
   return reinterpret_cast<intptr_t>(

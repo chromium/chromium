@@ -9,10 +9,11 @@
 
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
-#include "chrome/android/chrome_test_util_jni/PwaRestoreBottomSheetTestUtils_jni.h"
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_test_util_jni/PwaRestoreBottomSheetTestUtils_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -26,8 +27,7 @@ void OnWebApkDatabaseInitialized(JNIEnv* env, bool initialized) {
 
 void JNI_PwaRestoreBottomSheetTestUtils_WaitForWebApkDatabaseInitialization(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile_android) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
+    Profile* profile) {
   DCHECK(profile);
   if (!profile) {
     OnWebApkDatabaseInitialized(env, /* initialized= */ false);
@@ -44,8 +44,7 @@ void JNI_PwaRestoreBottomSheetTestUtils_SetAppListForRestoring(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& apps,
     const JavaParamRef<jintArray>& last_used_in_days,
-    const JavaParamRef<jobject>& j_profile_android) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
+    Profile* profile) {
   DCHECK(profile);
   if (!profile) {
     return;

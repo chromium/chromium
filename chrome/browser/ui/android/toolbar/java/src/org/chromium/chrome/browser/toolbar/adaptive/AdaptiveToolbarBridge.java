@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import android.util.Pair;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -33,6 +34,7 @@ public class AdaptiveToolbarBridge {
 
     @NativeMethods
     interface Natives {
-        void getSessionVariantButton(Profile profile, Callback<Pair<Boolean, Integer>> callback);
+        void getSessionVariantButton(
+                @JniType("Profile*") Profile profile, Callback<Pair<Boolean, Integer>> callback);
     }
 }

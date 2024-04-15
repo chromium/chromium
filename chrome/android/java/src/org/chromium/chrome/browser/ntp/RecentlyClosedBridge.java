@@ -211,7 +211,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(RecentlyClosedBridge caller, Profile profile);
+        long init(RecentlyClosedBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeRecentlyClosedTabsBridge);
 

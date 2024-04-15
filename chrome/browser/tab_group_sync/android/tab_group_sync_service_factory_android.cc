@@ -6,15 +6,13 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/tab_group_sync/jni_headers/TabGroupSyncServiceFactory_jni.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/tab_group_sync/jni_headers/TabGroupSyncServiceFactory_jni.h"
+
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_TabGroupSyncServiceFactory_GetForProfile(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+JNI_TabGroupSyncServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   CHECK(profile);
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);

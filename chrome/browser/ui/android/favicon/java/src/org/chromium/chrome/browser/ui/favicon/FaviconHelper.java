@@ -252,21 +252,21 @@ public class FaviconHelper {
 
         boolean getComposedFaviconImage(
                 long nativeFaviconHelper,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 @JniType("std::vector<GURL>") GURL[] urls,
                 int desiredSizeInDip,
                 ComposedFaviconImageCallback composedFaviconImageCallback);
 
         boolean getLocalFaviconImageForURL(
                 long nativeFaviconHelper,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
                 FaviconImageCallback faviconImageCallback);
 
         boolean getForeignFaviconImageForURL(
                 long nativeFaviconHelper,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL pageUrl,
                 int desiredSizeInDip,
                 FaviconImageCallback faviconImageCallback);

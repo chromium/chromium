@@ -4,12 +4,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/commerce/android/shopping_service_jni/ShoppingServiceFactory_jni.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/commerce/core/android/shopping_service_android.h"
 #include "components/commerce/core/shopping_service.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/commerce/android/shopping_service_jni/ShoppingServiceFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -22,8 +23,7 @@ namespace commerce {
 
 ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+    Profile* profile) {
   CHECK(profile);
 
   ShoppingService* service =

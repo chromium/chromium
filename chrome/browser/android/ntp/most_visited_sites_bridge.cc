@@ -21,7 +21,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/ntp_tiles/metrics.h"
@@ -30,7 +29,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 
-// Must appear after gurl_android.h
+// Must appear after gurl_android.h and profile.h.
 #include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
 
@@ -264,11 +263,10 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
       /*url_for_rappor=*/GURL()));
 }
 
-static jlong JNI_MostVisitedSitesBridge_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
+static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj,
+                                             Profile* profile) {
   MostVisitedSitesBridge* most_visited_sites =
-      new MostVisitedSitesBridge(ProfileAndroid::FromProfileAndroid(jprofile));
+      new MostVisitedSitesBridge(profile);
   return reinterpret_cast<intptr_t>(most_visited_sites);
 }

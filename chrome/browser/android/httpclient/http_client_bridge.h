@@ -12,6 +12,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 
+class Profile;
+
 namespace httpclient {
 
 class HttpClient;
@@ -19,8 +21,7 @@ class HttpClient;
 // Native counterpart for HttpClientBridge on java side.
 class HttpClientBridge {
  public:
-  explicit HttpClientBridge(
-      const base::android::JavaParamRef<jobject>& j_profile);
+  explicit HttpClientBridge(Profile* profile);
 
   ~HttpClientBridge();
 

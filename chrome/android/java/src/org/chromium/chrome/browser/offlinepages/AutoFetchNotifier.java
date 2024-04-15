@@ -395,6 +395,6 @@ public class AutoFetchNotifier {
 
     @NativeMethods
     interface Natives {
-        void cancelInProgress(Profile profile);
+        void cancelInProgress(@JniType("Profile*") Profile profile);
     }
 }

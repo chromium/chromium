@@ -39,7 +39,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/android/omnibox/jni_headers/AutocompleteController_jni.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -77,6 +76,9 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/omnibox/jni_headers/AutocompleteController_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
@@ -587,10 +589,9 @@ KeyedService* AutocompleteControllerAndroid::Factory::BuildServiceInstanceFor(
 
 static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
+    Profile* profile) {
   AutocompleteControllerAndroid* native_bridge =
-      AutocompleteControllerAndroid::Factory::GetForProfile(
-          ProfileAndroid::FromProfileAndroid(jprofile));
+      AutocompleteControllerAndroid::Factory::GetForProfile(profile);
   if (!native_bridge) {
     return {};
   }

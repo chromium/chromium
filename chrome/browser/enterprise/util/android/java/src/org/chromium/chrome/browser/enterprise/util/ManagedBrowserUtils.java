@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.enterprise.util;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,9 +30,9 @@ public class ManagedBrowserUtils {
 
     @NativeMethods
     public interface Natives {
-        boolean isBrowserManaged(Profile profile);
+        boolean isBrowserManaged(@JniType("Profile*") Profile profile);
 
-        String getTitle(Profile profile);
+        String getTitle(@JniType("Profile*") Profile profile);
 
         boolean isReportingEnabled();
     }

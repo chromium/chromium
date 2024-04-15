@@ -6,8 +6,6 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/share/jni_headers/PageInfoSharingBridge_jni.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -16,12 +14,14 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/share/jni_headers/PageInfoSharingBridge_jni.h"
+
 using base::android::JavaParamRef;
 
 jboolean JNI_PageInfoSharingBridge_DoesProfileSupportPageInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+    Profile* profile) {
   if (profile->IsOffTheRecord()) {
     profile = profile->GetOriginalProfile();
   }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -79,10 +80,15 @@ public class OmniboxPrerender {
     interface Natives {
         long init(OmniboxPrerender caller);
 
-        void clear(long nativeOmniboxPrerender, OmniboxPrerender caller, Profile profile);
+        void clear(
+                long nativeOmniboxPrerender,
+                OmniboxPrerender caller,
+                @JniType("Profile*") Profile profile);
 
         void initializeForProfile(
-                long nativeOmniboxPrerender, OmniboxPrerender caller, Profile profile);
+                long nativeOmniboxPrerender,
+                OmniboxPrerender caller,
+                @JniType("Profile*") Profile profile);
 
         void prerenderMaybe(
                 long nativeOmniboxPrerender,
@@ -90,7 +96,7 @@ public class OmniboxPrerender {
                 String url,
                 String currentUrl,
                 long nativeAutocompleteResult,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 Tab tab);
     }
 }

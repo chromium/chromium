@@ -256,13 +256,16 @@ public class RequestCoordinatorBridge {
 
     @NativeMethods
     public interface Natives {
-        void getRequestsInQueue(Profile profile, Callback<SavePageRequest[]> callback);
+        void getRequestsInQueue(
+                @JniType("Profile*") Profile profile, Callback<SavePageRequest[]> callback);
 
         void removeRequestsFromQueue(
-                Profile profile, long[] requestIds, RequestsRemovedCallback callback);
+                @JniType("Profile*") Profile profile,
+                long[] requestIds,
+                RequestsRemovedCallback callback);
 
         void savePageLater(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 Callback<Integer> callback,
                 @JniType("std::string") String url,
                 @JniType("std::string") String clientNamespace,

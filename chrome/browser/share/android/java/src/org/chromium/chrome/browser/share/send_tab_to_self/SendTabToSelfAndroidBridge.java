@@ -97,18 +97,21 @@ public class SendTabToSelfAndroidBridge {
     @NativeMethods
     public interface Natives {
         boolean addEntry(
-                Profile profile, String url, String title, String targetDeviceSyncCacheGuid);
+                @JniType("Profile*") Profile profile,
+                String url,
+                String title,
+                String targetDeviceSyncCacheGuid);
 
-        void deleteEntry(Profile profile, String guid);
+        void deleteEntry(@JniType("Profile*") Profile profile, String guid);
 
-        void dismissEntry(Profile profile, String guid);
+        void dismissEntry(@JniType("Profile*") Profile profile, String guid);
 
         @JniType("std::vector")
-        Object[] getAllTargetDeviceInfos(Profile profile);
+        Object[] getAllTargetDeviceInfos(@JniType("Profile*") Profile profile);
 
         void updateActiveWebContents(WebContents webContents);
 
         @Nullable
-        Integer getEntryPointDisplayReason(Profile profile, String url);
+        Integer getEntryPointDisplayReason(@JniType("Profile*") Profile profile, String url);
     }
 }

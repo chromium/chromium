@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.prefetch.settings;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,10 +44,10 @@ public class PreloadPagesSettingsBridge {
     @NativeMethods
     public interface Natives {
         @PreloadPagesState
-        int getState(Profile profile);
+        int getState(@JniType("Profile*") Profile profile);
 
-        void setState(Profile profile, @PreloadPagesState int mode);
+        void setState(@JniType("Profile*") Profile profile, @PreloadPagesState int mode);
 
-        boolean isNetworkPredictionManaged(Profile profile);
+        boolean isNetworkPredictionManaged(@JniType("Profile*") Profile profile);
     }
 }

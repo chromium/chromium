@@ -6,12 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/signin/services/android/jni_headers/WebSigninBridge_jni.h"
 #include "components/signin/public/android/jni_headers/GoogleServiceAuthError_jni.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
 using base::android::JavaParamRef;
 
@@ -86,12 +88,11 @@ void WebSigninBridge::OnSigninCompleted(const GoogleServiceAuthError& error) {
 
 static jlong JNI_WebSigninBridge_Create(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_account,
     const JavaParamRef<jobject>& j_listener) {
   DCHECK(j_listener) << "Listener should be non-null";
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountReconcilor* account_reconcilor =

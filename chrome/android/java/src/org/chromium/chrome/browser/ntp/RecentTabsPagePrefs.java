@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -105,7 +106,7 @@ class RecentTabsPagePrefs {
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void destroy(long nativeRecentTabsPagePrefs);
 

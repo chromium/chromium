@@ -117,6 +117,9 @@ public class WebApkSyncService {
 
         void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch);
 
-        void fetchRestorableApps(Profile profile, WindowAndroid windowAndroid, int arrowResourceId);
+        void fetchRestorableApps(
+                @JniType("Profile*") Profile profile,
+                WindowAndroid windowAndroid,
+                int arrowResourceId);
     }
 }

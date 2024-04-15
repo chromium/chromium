@@ -170,7 +170,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
 
     @NativeMethods
     interface Natives {
-        long init(MostVisitedSitesBridge caller, Profile profile);
+        long init(MostVisitedSitesBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeMostVisitedSitesBridge, MostVisitedSitesBridge caller);
 

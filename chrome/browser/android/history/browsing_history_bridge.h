@@ -22,7 +22,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
  public:
   explicit BrowsingHistoryBridge(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
-                                 const JavaParamRef<jobject>& j_profile);
+                                 Profile* profile);
 
   BrowsingHistoryBridge(const BrowsingHistoryBridge&) = delete;
   BrowsingHistoryBridge& operator=(const BrowsingHistoryBridge&) = delete;

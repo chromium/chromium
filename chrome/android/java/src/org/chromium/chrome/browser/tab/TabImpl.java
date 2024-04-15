@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
@@ -2111,7 +2112,7 @@ class TabImpl implements Tab {
     public interface Natives {
         TabImpl fromWebContents(WebContents webContents);
 
-        void init(TabImpl caller, Profile profile, int id);
+        void init(TabImpl caller, @JniType("Profile*") Profile profile, int id);
 
         void destroy(long nativeTabAndroid);
 

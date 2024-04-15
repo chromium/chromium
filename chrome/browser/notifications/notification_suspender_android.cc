@@ -8,15 +8,16 @@
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/android/chrome_jni_headers/NotificationSuspender_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/NotificationSuspender_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::JavaParamRef;
@@ -73,12 +74,11 @@ PlatformNotificationContext* GetContext(Profile* profile, const GURL& origin) {
 // the same size as |j_notification_ids|.
 static void JNI_NotificationSuspender_StoreNotificationResources(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobjectArray>& j_notification_ids,
     const JavaParamRef<jobjectArray>& j_origins,
     const JavaParamRef<jobjectArray>& j_resources) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
 
   std::vector<std::string> id_strings;
@@ -113,10 +113,9 @@ static void JNI_NotificationSuspender_StoreNotificationResources(
 // ReDisplays all notifications with stored resources for all |j_origins|.
 static void JNI_NotificationSuspender_ReDisplayNotifications(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobjectArray>& j_origins) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
 
   std::vector<std::string> origin_strings;

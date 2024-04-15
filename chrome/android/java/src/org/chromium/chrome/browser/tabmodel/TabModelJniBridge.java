@@ -201,7 +201,10 @@ public abstract class TabModelJniBridge implements TabModel {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(TabModelJniBridge caller, Profile profile, @ActivityType int activityType);
+        long init(
+                TabModelJniBridge caller,
+                @JniType("Profile*") Profile profile,
+                @ActivityType int activityType);
 
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);

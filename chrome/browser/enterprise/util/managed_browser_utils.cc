@@ -40,10 +40,12 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace chrome {
@@ -657,19 +659,17 @@ bool IsKnownConsumerDomain(const std::string& email_domain) {
 #if BUILDFLAG(IS_ANDROID)
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profile) {
-  return IsBrowserManaged(ProfileAndroid::FromProfileAndroid(profile));
+jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
+                                                  Profile* profile) {
+  return IsBrowserManaged(profile);
 }
 
 // static
 base::android::ScopedJavaLocalRef<jstring> JNI_ManagedBrowserUtils_GetTitle(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profile) {
+    Profile* profile) {
   return base::android::ConvertUTF16ToJavaString(
-      env, chrome::GetManagementPageSubtitle(
-               ProfileAndroid::FromProfileAndroid(profile)));
+      env, chrome::GetManagementPageSubtitle(profile));
 }
 
 // static

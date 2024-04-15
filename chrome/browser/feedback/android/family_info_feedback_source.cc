@@ -8,15 +8,16 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
-#include "chrome/browser/feedback/android/jni_headers/FamilyInfoFeedbackSource_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/feedback/android/jni_headers/FamilyInfoFeedbackSource_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -25,11 +26,9 @@ using base::android::ScopedJavaLocalRef;
 
 namespace chrome::android {
 
-void JNI_FamilyInfoFeedbackSource_Start(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+void JNI_FamilyInfoFeedbackSource_Start(JNIEnv* env,
+                                        const JavaParamRef<jobject>& obj,
+                                        Profile* profile) {
   FamilyInfoFeedbackSource* feedback_source =
       new FamilyInfoFeedbackSource(obj, profile);
   feedback_source->GetFamilyMembers();

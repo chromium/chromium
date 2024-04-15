@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -46,6 +47,6 @@ public final class TabGroupSyncServiceFactory {
 
     @NativeMethods
     interface Natives {
-        TabGroupSyncService getForProfile(Profile profile);
+        TabGroupSyncService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

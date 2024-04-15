@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
 #include "chrome/browser/offline_pages/android/evaluation/evaluation_test_scheduler.h"
@@ -37,6 +36,9 @@
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/browser_context.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
@@ -193,10 +195,8 @@ RequestCoordinator* GetRequestCoordinator(Profile* profile,
 static jlong JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const jboolean j_use_evaluation_scheduler) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForBrowserContext(profile);
 

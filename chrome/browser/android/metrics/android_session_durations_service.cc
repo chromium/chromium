@@ -7,8 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/android/metrics/jni_headers/AndroidSessionDurationsServiceState_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
 
 namespace {
 class IncognitoSessionDurationsMetricsRecorder {
@@ -193,8 +195,7 @@ void AndroidSessionDurationsService::RestoreIncognitoSession(
 base::android::ScopedJavaLocalRef<jobject>
 JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+    Profile* profile) {
   CHECK(profile->IsIncognitoProfile());
 
   AndroidSessionDurationsService* duration_service =
@@ -214,9 +215,8 @@ JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
 // static
 void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServiceState(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const base::android::JavaParamRef<jobject>& j_duration_service) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   CHECK(profile->IsIncognitoProfile());
 
   AndroidSessionDurationsService* duration_service =

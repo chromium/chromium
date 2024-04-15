@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -97,7 +98,7 @@ public class AuxiliarySearchBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long getForProfile(Profile profile);
+        long getForProfile(@JniType("Profile*") Profile profile);
 
         byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
 

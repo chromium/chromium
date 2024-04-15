@@ -10,11 +10,9 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/token.h"
-#include "chrome/android/chrome_jni_headers/RecentlyClosedBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
@@ -24,6 +22,9 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/RecentlyClosedBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -465,13 +466,11 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
   }
 }
 
-static jlong JNI_RecentlyClosedBridge_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbridge,
-    const JavaParamRef<jobject>& jprofile) {
+static jlong JNI_RecentlyClosedBridge_Init(JNIEnv* env,
+                                           const JavaParamRef<jobject>& jbridge,
+                                           Profile* profile) {
   RecentlyClosedTabsBridge* bridge = new RecentlyClosedTabsBridge(
-      ScopedJavaGlobalRef<jobject>(env, jbridge.obj()),
-      ProfileAndroid::FromProfileAndroid(jprofile));
+      ScopedJavaGlobalRef<jobject>(env, jbridge.obj()), profile);
   return reinterpret_cast<intptr_t>(bridge);
 }
 

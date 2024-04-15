@@ -28,7 +28,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
@@ -62,6 +60,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -140,10 +141,9 @@ const bookmarks::BookmarkNode* GetNodeFromReadingListIfLoaded(
 // static
 ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
+    Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile)
     return nullptr;
 

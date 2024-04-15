@@ -19,19 +19,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/DownloadItem_jni.h"
-#include "chrome/android/chrome_jni_headers/DownloadManagerService_jni.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_startup_utils.h"
 #include "chrome/browser/download/android/download_utils.h"
-#include "chrome/browser/download/android/jni_headers/DownloadInfo_jni.h"
 #include "chrome/browser/download/android/service/download_task_scheduler.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -53,6 +50,11 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/DownloadItem_jni.h"
+#include "chrome/android/chrome_jni_headers/DownloadManagerService_jni.h"
+#include "chrome/browser/download/android/jni_headers/DownloadInfo_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -198,11 +200,10 @@ void DownloadManagerService::Init(JNIEnv* env,
   }
 }
 
-void DownloadManagerService::OnProfileAdded(
-    JNIEnv* env,
-    jobject obj,
-    const JavaParamRef<jobject>& j_profile) {
-  OnProfileAdded(ProfileAndroid::FromProfileAndroid(j_profile));
+void DownloadManagerService::OnProfileAdded(JNIEnv* env,
+                                            jobject obj,
+                                            Profile* profile) {
+  OnProfileAdded(profile);
 }
 
 void DownloadManagerService::OnProfileAdded(Profile* profile) {

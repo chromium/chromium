@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.profiles;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -64,11 +65,11 @@ public class ProfileResolver implements PartitionResolver {
 
     @NativeMethods
     interface Natives {
-        String tokenizeProfile(Profile profile);
+        String tokenizeProfile(@JniType("Profile*") Profile profile);
 
         String tokenizeProfileKey(ProfileKey profileKey);
 
-        void resolveProfile(String token, Callback<Profile> callback);
+        void resolveProfile(String token, Callback<@JniType("Profile*") Profile> callback);
 
         void resolveProfileKey(String token, Callback<ProfileKey> callback);
     }

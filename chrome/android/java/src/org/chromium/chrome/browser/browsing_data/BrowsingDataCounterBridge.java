@@ -60,7 +60,11 @@ public class BrowsingDataCounterBridge {
 
     @NativeMethods
     interface Natives {
-        long init(BrowsingDataCounterBridge caller, Profile profile, int dataType, int prefType);
+        long init(
+                BrowsingDataCounterBridge caller,
+                @JniType("Profile*") Profile profile,
+                int dataType,
+                int prefType);
 
         void destroy(long nativeBrowsingDataCounterBridge, BrowsingDataCounterBridge caller);
     }

@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/android/content/jni_headers/WebContentsFactory_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/android/content/jni_headers/WebContentsFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     jboolean initially_hidden,
     jboolean initialize_renderer,
     const JavaParamRef<jthrowable>& j_creator_location) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   content::WebContents::CreateParams params(profile);
   params.initially_hidden = static_cast<bool>(initially_hidden);
   params.desired_renderer_state =

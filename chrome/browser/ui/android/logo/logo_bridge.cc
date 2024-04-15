@@ -13,9 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
-#include "chrome/browser/ui/android/logo/jni_headers/LogoBridge_jni.h"
 #include "components/search_provider_logos/logo_observer.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -25,6 +23,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/logo/jni_headers/LogoBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -112,14 +113,12 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
 
 static jlong JNI_LogoBridge_Init(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
-                                 const JavaParamRef<jobject>& j_profile) {
-  LogoBridge* logo_bridge = new LogoBridge(j_profile);
+                                 Profile* profile) {
+  LogoBridge* logo_bridge = new LogoBridge(profile);
   return reinterpret_cast<intptr_t>(logo_bridge);
 }
 
-LogoBridge::LogoBridge(const JavaRef<jobject>& j_profile)
-    : logo_service_(nullptr) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+LogoBridge::LogoBridge(Profile* profile) : logo_service_(nullptr) {
   DCHECK(profile);
 
   logo_service_ = LogoServiceFactory::GetForProfile(profile);

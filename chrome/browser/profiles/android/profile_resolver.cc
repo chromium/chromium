@@ -16,12 +16,15 @@
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/proto/profile_token.pb.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/android/jni_headers/ProfileResolver_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/profiles/android/jni_headers/ProfileResolver_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -214,8 +217,7 @@ static void JNI_ProfileResolver_ResolveProfileKey(
 
 static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+    Profile* profile) {
   return ConvertUTF8ToJavaString(env, TokenizeProfile(profile));
 }
 

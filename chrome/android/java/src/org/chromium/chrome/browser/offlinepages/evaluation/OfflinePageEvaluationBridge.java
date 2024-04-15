@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.offlinepages.evaluation;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -328,7 +329,7 @@ public class OfflinePageEvaluationBridge {
     interface Natives {
         long createBridgeForProfile(
                 OfflinePageEvaluationBridge caller,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 boolean useEvaluationScheduler);
 
         void destroy(long nativeOfflinePageEvaluationBridge, OfflinePageEvaluationBridge caller);

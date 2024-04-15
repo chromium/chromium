@@ -64,9 +64,7 @@ class DownloadManagerService
 
   // Called when the profile is added to the ProfileManager and fully
   // initialized.
-  void OnProfileAdded(JNIEnv* env,
-                      jobject obj,
-                      const JavaParamRef<jobject>& j_profile);
+  void OnProfileAdded(JNIEnv* env, jobject obj, Profile* profile);
 
   void OnProfileAdded(Profile* profile);
 

@@ -24,8 +24,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
-#include "chrome/browser/profiles/profile_android.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
 
 using base::android::JavaParamRef;
@@ -537,7 +537,7 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 #if BUILDFLAG(IS_ANDROID)
 
 void JNI_ShareRankingBridge_Rank(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jprofile,
+                                 Profile* profile,
                                  const JavaParamRef<jstring>& jtype,
                                  const JavaParamRef<jobjectArray>& javailable,
                                  jint jfold,
@@ -545,7 +545,6 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                  jboolean jpersist,
                                  const JavaParamRef<jobject>& jcallback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
 
   if (profile->IsOffTheRecord()) {
     // For incognito/guest profiles, we use the source ranking from the parent

@@ -10,15 +10,16 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/android/chrome_jni_headers/CustomTabsConnection_jni.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/customtabs/detached_resource_request.h"
 #include "chrome/browser/android/customtabs/text_fragment_lookup_state_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/common/referrer.h"
 #include "net/url_request/referrer_policy.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/CustomTabsConnection_jni.h"
 
 namespace customtabs {
 
@@ -77,17 +78,16 @@ void NotifyClientOfTextFragmentLookupCompletion(
 
 static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profile,
+    Profile* native_profile,
     const base::android::JavaParamRef<jobject>& session,
     const base::android::JavaParamRef<jstring>& package_name,
     const base::android::JavaParamRef<jstring>& url,
     const base::android::JavaParamRef<jstring>& origin,
     jint referrer_policy,
     jint motivation) {
-  DCHECK(profile && url && origin);
-
-  Profile* native_profile = ProfileAndroid::FromProfileAndroid(profile);
   DCHECK(native_profile);
+  DCHECK(url);
+  DCHECK(origin);
 
   GURL native_url(base::android::ConvertJavaStringToUTF8(env, url));
   GURL native_origin(base::android::ConvertJavaStringToUTF8(env, origin));

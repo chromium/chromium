@@ -12,8 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/recent_tabs/jni_headers/ForeignSessionHelper_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -26,6 +25,9 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/recent_tabs/jni_headers/ForeignSessionHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -144,11 +146,9 @@ void JNI_ForeignSessionHelper_CopySessionToJava(
 
 }  // namespace
 
-static jlong JNI_ForeignSessionHelper_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& profile) {
+static jlong JNI_ForeignSessionHelper_Init(JNIEnv* env, Profile* profile) {
   ForeignSessionHelper* foreign_session_helper =
-      new ForeignSessionHelper(ProfileAndroid::FromProfileAndroid(profile));
+      new ForeignSessionHelper(profile);
   return reinterpret_cast<intptr_t>(foreign_session_helper);
 }
 

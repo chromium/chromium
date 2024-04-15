@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.content;
 
 import dagger.Reusable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -63,7 +64,7 @@ public class WebContentsFactory {
     @NativeMethods
     interface Natives {
         WebContents createWebContents(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 boolean initiallyHidden,
                 boolean initializeRenderer,
                 Throwable javaCreator);

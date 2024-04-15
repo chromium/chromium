@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
-#include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
@@ -59,6 +57,9 @@
 #include "ui/android/view_android.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -138,14 +139,14 @@ void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
 
 TabAndroid::TabAndroid(JNIEnv* env,
                        const JavaRef<jobject>& obj,
-                       const JavaRef<jobject>& jprofile,
+                       Profile* profile,
                        int tab_id)
     : weak_java_tab_(env, obj),
       tab_id_(tab_id),
       session_window_id_(SessionID::InvalidValue()),
       content_layer_(cc::slim::Layer::Create()),
       synced_tab_delegate_(new browser_sync::SyncedTabDelegateAndroid(this)),
-      profile_(ProfileAndroid::FromProfileAndroid(jprofile)->GetWeakPtr()) {
+      profile_(profile->GetWeakPtr()) {
   Java_TabImpl_setNativePtr(env, obj, reinterpret_cast<intptr_t>(this));
 }
 
@@ -526,7 +527,7 @@ static jboolean JNI_TabImpl_HandleNonNavigationAboutURL(
 
 static void JNI_TabImpl_Init(JNIEnv* env,
                              const JavaParamRef<jobject>& obj,
-                             const JavaParamRef<jobject>& profile,
+                             Profile* profile,
                              jint id) {
   TRACE_EVENT0("native", "TabAndroid::Init");
   // This will automatically bind to the Java object and pass ownership there.

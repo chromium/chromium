@@ -1074,7 +1074,7 @@ class BookmarkBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        BookmarkModel nativeGetForProfile(Profile profile);
+        BookmarkModel nativeGetForProfile(@JniType("Profile*") Profile profile);
 
         boolean areAccountBookmarkFoldersActive(long nativeBookmarkBridge);
 

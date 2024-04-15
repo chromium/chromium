@@ -54,7 +54,7 @@ public class SearchResumptionModuleBridge {
 
     @NativeMethods
     interface Natives {
-        long create(SearchResumptionModuleBridge caller, Profile profile);
+        long create(SearchResumptionModuleBridge caller, @JniType("Profile*") Profile profile);
 
         void fetchSuggestions(
                 long nativeSearchResumptionModuleBridge,

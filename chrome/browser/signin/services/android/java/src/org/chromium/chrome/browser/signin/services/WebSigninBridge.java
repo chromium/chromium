@@ -8,6 +8,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -87,7 +88,8 @@ public class WebSigninBridge {
 
     @NativeMethods
     interface Natives {
-        long create(Profile profile, CoreAccountInfo account, Listener listener);
+        long create(
+                @JniType("Profile*") Profile profile, CoreAccountInfo account, Listener listener);
 
         void destroy(long webSigninBridgePtr);
     }

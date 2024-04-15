@@ -7,6 +7,8 @@
 
 #include "base/android/scoped_java_ref.h"
 
+class Profile;
+
 namespace dom_distiller {
 namespace android {
 
@@ -16,7 +18,7 @@ class DomDistillerServiceFactoryAndroid {
  public:
   static base::android::ScopedJavaLocalRef<jobject> GetForProfile(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_profile);
+      Profile* profile);
 };
 
 }  // namespace android

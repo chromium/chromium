@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -49,6 +50,6 @@ public class SyncServiceFactory {
 
     @NativeMethods
     interface Natives {
-        SyncService getForProfile(Profile profile);
+        SyncService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

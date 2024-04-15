@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/PermissionSettingsBridge_jni.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_request_manager.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/PermissionSettingsBridge_jni.h"
 
 using base::android::JavaParamRef;
 
 static jboolean JNI_PermissionSettingsBridge_ShouldShowNotificationsPromo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& jweb_contents) {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(
@@ -21,13 +23,11 @@ static jboolean JNI_PermissionSettingsBridge_ShouldShowNotificationsPromo(
   return manager->IsRequestInProgress() &&
          manager->Requests()[0]->GetContentSettingsType() ==
              ContentSettingsType::NOTIFICATIONS &&
-         QuietNotificationPermissionUiState::ShouldShowPromo(
-             ProfileAndroid::FromProfileAndroid(jprofile));
+         QuietNotificationPermissionUiState::ShouldShowPromo(profile);
 }
 
 static void JNI_PermissionSettingsBridge_DidShowNotificationsPromo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile) {
-  QuietNotificationPermissionUiState::PromoWasShown(
-      ProfileAndroid::FromProfileAndroid(jprofile));
+    Profile* profile) {
+  QuietNotificationPermissionUiState::PromoWasShown(profile);
 }

@@ -10,23 +10,21 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/profiles/profile_android.h"
-#endif
 #include "chrome/browser/profiles/profile_io_data.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
-#endif
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 static jlong
 JNI_ChromeAutocompleteSchemeClassifier_CreateAutocompleteClassifier(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+    Profile* profile) {
   DCHECK(profile);
 
   return reinterpret_cast<intptr_t>(

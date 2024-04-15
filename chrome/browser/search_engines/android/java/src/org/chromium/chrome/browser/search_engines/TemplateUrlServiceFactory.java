@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.search_engines;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -40,6 +41,6 @@ public class TemplateUrlServiceFactory {
     // org.chromium.chrome.browser.search_engines package.
     @NativeMethods
     public interface Natives {
-        TemplateUrlService getTemplateUrlService(Profile profile);
+        TemplateUrlService getTemplateUrlService(@JniType("Profile*") Profile profile);
     }
 }

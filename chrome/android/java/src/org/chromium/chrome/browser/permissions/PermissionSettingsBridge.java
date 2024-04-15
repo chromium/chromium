@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,8 +24,9 @@ public class PermissionSettingsBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean shouldShowNotificationsPromo(Profile profile, WebContents webContents);
+        boolean shouldShowNotificationsPromo(
+                @JniType("Profile*") Profile profile, WebContents webContents);
 
-        void didShowNotificationsPromo(Profile profile);
+        void didShowNotificationsPromo(@JniType("Profile*") Profile profile);
     }
 }

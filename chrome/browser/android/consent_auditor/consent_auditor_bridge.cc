@@ -10,18 +10,20 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/consent_auditor/android/jni_headers/ConsentAuditorBridge_jni.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/consent_auditor/android/jni_headers/ConsentAuditorBridge_jni.h"
 
 using base::android::JavaParamRef;
 
 static void JNI_ConsentAuditorBridge_RecordConsent(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_account_id,
     jint j_feature,
     const JavaParamRef<jintArray>& j_consent_description,
@@ -41,8 +43,6 @@ static void JNI_ConsentAuditorBridge_RecordConsent(
   for (int id : consent_description) {
     sync_consent.add_description_grd_ids(id);
   }
-  ConsentAuditorFactory::GetForProfile(
-      ProfileAndroid::FromProfileAndroid(j_profile))
-      ->RecordSyncConsent(ConvertFromJavaCoreAccountId(env, j_account_id),
-                          sync_consent);
+  ConsentAuditorFactory::GetForProfile(profile)->RecordSyncConsent(
+      ConvertFromJavaCoreAccountId(env, j_account_id), sync_consent);
 }

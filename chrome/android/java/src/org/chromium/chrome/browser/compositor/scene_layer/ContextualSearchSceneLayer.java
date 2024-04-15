@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -334,7 +335,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 boolean touchHighlightVisible,
                 float touchHighlightXOffset,
                 float toucHighlightWidth,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 int barBackgroundResourceId,
                 int separatorLineColor);
     }

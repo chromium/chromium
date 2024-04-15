@@ -33,6 +33,7 @@ import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -2082,7 +2083,7 @@ public class CustomTabsConnection {
     @NativeMethods
     interface Natives {
         void createAndStartDetachedResourceRequest(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 CustomTabsSessionToken session,
                 String packageName,
                 String url,

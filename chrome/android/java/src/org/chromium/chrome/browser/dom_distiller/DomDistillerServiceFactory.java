@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -36,6 +37,6 @@ public class DomDistillerServiceFactory {
 
     @NativeMethods
     interface Natives {
-        DomDistillerService getForProfile(Profile profile);
+        DomDistillerService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

@@ -33,29 +33,27 @@ class OmniboxPrerender {
   // keyboard or changing tabs).
   void Clear(JNIEnv* env,
              const base::android::JavaParamRef<jobject>& obj,
-             const base::android::JavaParamRef<jobject>& j_profile_android);
+             Profile* profile);
 
   // Initializes the underlying action predictor for a given profile instance.
   // This should be called as soon as possible as the predictor must register
   // for certain notifications to properly initialize before providing
   // predictions and updated its learning database.
-  void InitializeForProfile(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_profile_android);
+  void InitializeForProfile(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& obj,
+                            Profile* profile);
 
   // Potentailly invokes a pre-render or pre-connect given the url typed into
   // the omnibox and a corresponding autocomplete result. This should be
   // invoked everytime the omnibox changes (e.g. As the user types characters
   // this method should be invoked at least once per character).
-  void PrerenderMaybe(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& j_url,
-      const base::android::JavaParamRef<jstring>& j_current_url,
-      jlong jsource_match,
-      const base::android::JavaParamRef<jobject>& j_profile_android,
-      const base::android::JavaParamRef<jobject>& j_tab);
+  void PrerenderMaybe(JNIEnv* env,
+                      const base::android::JavaParamRef<jobject>& obj,
+                      const base::android::JavaParamRef<jstring>& j_url,
+                      const base::android::JavaParamRef<jstring>& j_current_url,
+                      jlong jsource_match,
+                      Profile* profile,
+                      const base::android::JavaParamRef<jobject>& j_tab);
 
  private:
 

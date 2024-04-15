@@ -6,11 +6,13 @@
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/quick_delete/jni_headers/QuickDeleteBridge_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/quick_delete/jni_headers/QuickDeleteBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -83,11 +85,9 @@ void QuickDeleteBridge::OnGetLastVisitedDomainAndUniqueDomainCountComplete(
       quickDeleteResult.domain_count);
 }
 
-static jlong JNI_QuickDeleteBridge_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile) {
-  QuickDeleteBridge* bridge =
-      new QuickDeleteBridge(ProfileAndroid::FromProfileAndroid(j_profile));
+static jlong JNI_QuickDeleteBridge_Init(JNIEnv* env,
+                                        const JavaParamRef<jobject>& obj,
+                                        Profile* profile) {
+  QuickDeleteBridge* bridge = new QuickDeleteBridge(profile);
   return reinterpret_cast<intptr_t>(bridge);
 }

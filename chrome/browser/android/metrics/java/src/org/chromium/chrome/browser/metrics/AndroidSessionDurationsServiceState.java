@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.metrics;
 import android.os.Bundle;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -84,9 +85,11 @@ public class AndroidSessionDurationsServiceState {
 
     @NativeMethods
     public interface Natives {
-        AndroidSessionDurationsServiceState getAndroidSessionDurationsServiceState(Profile profile);
+        AndroidSessionDurationsServiceState getAndroidSessionDurationsServiceState(
+                @JniType("Profile*") Profile profile);
 
         void restoreAndroidSessionDurationsServiceState(
-                Profile profile, AndroidSessionDurationsServiceState durationService);
+                @JniType("Profile*") Profile profile,
+                AndroidSessionDurationsServiceState durationService);
     }
 }

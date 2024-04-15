@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.CallbackHelper;
@@ -50,8 +51,9 @@ public class PwaRestoreBottomSheetTestUtils {
 
     @NativeMethods
     interface Natives {
-        void waitForWebApkDatabaseInitialization(Profile profile);
+        void waitForWebApkDatabaseInitialization(@JniType("Profile*") Profile profile);
 
-        void setAppListForRestoring(String[][] appList, int[] lastUsedInDays, Profile profile);
+        void setAppListForRestoring(
+                String[][] appList, int[] lastUsedInDays, @JniType("Profile*") Profile profile);
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +24,6 @@ public class SiteIsolator {
 
     @NativeMethods
     interface Natives {
-        void startIsolatingSite(Profile profile, GURL url);
+        void startIsolatingSite(@JniType("Profile*") Profile profile, GURL url);
     }
 }

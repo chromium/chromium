@@ -13,9 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -24,6 +22,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -170,12 +171,11 @@ void ConnectivityChecker::OnTimeout() {
 
 void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jstring>& j_url,
     jlong j_timeout_ms,
     const JavaParamRef<jobject>& j_callback,
     jint j_network_annotation_hash_code) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,
                                          CONNECTIVITY_CHECK_RESULT_ERROR);

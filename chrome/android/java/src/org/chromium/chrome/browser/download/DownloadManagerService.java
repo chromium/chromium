@@ -1723,7 +1723,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 ProfileKey profileKey);
 
         void onProfileAdded(
-                long nativeDownloadManagerService, DownloadManagerService caller, Profile profile);
+                long nativeDownloadManagerService,
+                DownloadManagerService caller,
+                @JniType("Profile*") Profile profile);
 
         void createInterruptedDownloadForTest(
                 long nativeDownloadManagerService,

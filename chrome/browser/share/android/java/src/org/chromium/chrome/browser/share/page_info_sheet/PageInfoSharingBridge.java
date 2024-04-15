@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.page_info_sheet;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,7 +36,7 @@ public class PageInfoSharingBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean doesProfileSupportPageInfo(Profile profile);
+        boolean doesProfileSupportPageInfo(@JniType("Profile*") Profile profile);
 
         boolean doesTabSupportPageInfo(Tab tab);
     }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,14 +39,14 @@ public class TrackingProtectionBridge {
 
     @NativeMethods
     public interface Natives {
-        void noticeRequested(Profile profile, int noticeType);
+        void noticeRequested(@JniType("Profile*") Profile profile, int noticeType);
 
-        void noticeShown(Profile profile, int noticeType);
+        void noticeShown(@JniType("Profile*") Profile profile, int noticeType);
 
-        void noticeActionTaken(Profile profile, int noticeType, int action);
+        void noticeActionTaken(@JniType("Profile*") Profile profile, int noticeType, int action);
 
-        int getRequiredNotice(Profile profile);
+        int getRequiredNotice(@JniType("Profile*") Profile profile);
 
-        boolean isOffboarded(Profile profile);
+        boolean isOffboarded(@JniType("Profile*") Profile profile);
     }
 }

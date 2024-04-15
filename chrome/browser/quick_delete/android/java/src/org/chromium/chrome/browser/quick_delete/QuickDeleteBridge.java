@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -70,7 +71,7 @@ class QuickDeleteBridge {
 
     @NativeMethods
     interface Natives {
-        long init(QuickDeleteBridge caller, Profile profile);
+        long init(QuickDeleteBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
 

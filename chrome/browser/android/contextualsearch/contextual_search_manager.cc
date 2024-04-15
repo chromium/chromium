@@ -14,10 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
@@ -27,6 +25,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -158,8 +159,7 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
 
 jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
-                                       const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+                                       Profile* profile) {
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);
   return reinterpret_cast<intptr_t>(manager);

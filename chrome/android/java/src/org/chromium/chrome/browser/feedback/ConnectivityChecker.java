@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -215,7 +216,7 @@ public final class ConnectivityChecker {
     @NativeMethods
     interface Natives {
         void checkConnectivity(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 String url,
                 long timeoutMs,
                 ConnectivityCheckerCallback callback,

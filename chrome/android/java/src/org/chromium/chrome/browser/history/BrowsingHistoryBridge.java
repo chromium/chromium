@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -184,7 +185,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
     @NativeMethods
     interface Natives {
-        long init(BrowsingHistoryBridge caller, Profile profile);
+        long init(BrowsingHistoryBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
 

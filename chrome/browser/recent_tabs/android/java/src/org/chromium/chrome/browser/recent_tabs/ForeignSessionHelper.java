@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.recent_tabs;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CollectionUtil;
@@ -300,7 +301,7 @@ public class ForeignSessionHelper {
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void destroy(long nativeForeignSessionHelper);
 

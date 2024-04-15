@@ -12,13 +12,14 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "chrome/android/chrome_jni_headers/PwaRestorePromoUtils_jni.h"
-#include "chrome/android/chrome_jni_headers/WebApkSyncService_jni.h"
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/sync/base/features.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/PwaRestorePromoUtils_jni.h"
+#include "chrome/android/chrome_jni_headers/WebApkSyncService_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -159,12 +160,9 @@ static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
 
 static void JNI_WebApkSyncService_FetchRestorableApps(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     const JavaParamRef<jobject>& jwindow_android,
     int arrow_resource_id) {
-  Profile* profile =
-      ProfileAndroid::FromProfileAndroid(jprofile)->GetWeakPtr().get();
-
   if (profile == nullptr) {
     return;
   }

@@ -22,8 +22,6 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/ui/android/favicon/jni_headers/FaviconHelper_jni.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
@@ -36,6 +34,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/android/gurl_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/ui/android/favicon/jni_headers/FaviconHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
@@ -157,12 +158,11 @@ void FaviconHelper::Destroy(JNIEnv* env) {
 
 jboolean FaviconHelper::GetComposedFaviconImage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     std::vector<GURL>& gurls,
     jint j_desired_size_in_pixel,
     const base::android::JavaParamRef<jobject>&
         j_composed_favicon_image_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
   if (!profile) {
     return false;
@@ -219,11 +219,10 @@ void ::FaviconHelper::OnJobFinished(int job_id) {
 
 jboolean FaviconHelper::GetLocalFaviconImageForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     GURL& page_url,
     jint j_desired_size_in_pixel,
     const JavaParamRef<jobject>& j_favicon_image_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
   if (!profile) {
     return false;
@@ -278,11 +277,10 @@ void FaviconHelper::GetLocalFaviconImageForURLInternal(
 
 jboolean FaviconHelper::GetForeignFaviconImageForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     GURL& page_url,
     jint j_desired_size_in_pixel,
     const base::android::JavaParamRef<jobject>& j_favicon_image_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   if (!profile) {
     return false;
   }

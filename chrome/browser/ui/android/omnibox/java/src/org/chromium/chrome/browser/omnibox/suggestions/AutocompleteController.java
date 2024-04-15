@@ -10,6 +10,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -501,6 +502,6 @@ public class AutocompleteController {
                 @Px int suggestionHeight);
 
         /** Acquire an instance of AutocompleteController associated with the supplied profile. */
-        AutocompleteController getForProfile(Profile profile);
+        AutocompleteController getForProfile(@JniType("Profile*") Profile profile);
     }
 }

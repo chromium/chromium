@@ -7,12 +7,13 @@
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 #include "chrome/browser/search_resumption/start_suggest_service_factory.h"
 #include "components/search/start_suggest_service.h"
 #include "components/search_engines/search_terms_data.h"
 #include "url/android/gurl_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -72,10 +73,9 @@ void SearchResumptionModuleBridge::OnSuggestionsReceived(
 static jlong JNI_SearchResumptionModuleBridge_Create(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
+    Profile* profile) {
   SearchResumptionModuleBridge* native_bridge =
-      new SearchResumptionModuleBridge(
-          env, obj, ProfileAndroid::FromProfileAndroid(jprofile));
+      new SearchResumptionModuleBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(native_bridge);
 }
 

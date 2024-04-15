@@ -9,11 +9,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 
 namespace offline_pages {
 
@@ -21,12 +22,9 @@ namespace offline_pages {
 // Java -> C++
 //
 
-void JNI_AutoFetchNotifier_CancelInProgress(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile) {
+void JNI_AutoFetchNotifier_CancelInProgress(JNIEnv* env, Profile* profile) {
   OfflinePageAutoFetcherService* service =
-      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
-          ProfileAndroid::FromProfileAndroid(j_profile));
+      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(profile);
   DCHECK(service);
   service->CancelAll(base::BindOnce(&AutoFetchCancellationComplete));
 }

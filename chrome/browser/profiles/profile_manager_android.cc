@@ -4,9 +4,12 @@
 
 #include "chrome/browser/profiles/profile_manager_android.h"
 
-#include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -45,10 +48,7 @@ ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
 }
 
 // static
-void JNI_ProfileManager_DestroyWhenAppropriate(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(obj);
+void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env, Profile* profile) {
   CHECK(profile) << "Attempting to destroy a null profile.";
   CHECK(profile->IsOffTheRecord())
       << "Only OTR profiles can be destroyed from Java as regular profiles are "

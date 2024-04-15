@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.commerce;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -48,12 +49,13 @@ public class PriceTrackingUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         void setPriceTrackingStateForBookmark(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 long bookmarkId,
                 boolean enabled,
                 Callback<Boolean> callback,
                 boolean bookmarkCreatedForPriceTracking);
 
-        void isBookmarkPriceTracked(Profile profile, long bookmarkId, Callback<Boolean> callback);
+        void isBookmarkPriceTracked(
+                @JniType("Profile*") Profile profile, long bookmarkId, Callback<Boolean> callback);
     }
 }

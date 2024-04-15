@@ -9,6 +9,7 @@ import android.os.Looper;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -205,6 +206,8 @@ public class ContextualPageActionController {
     @NativeMethods
     interface Natives {
         void computeContextualPageAction(
-                Profile profile, InputContext inputContext, Callback<Integer> callback);
+                @JniType("Profile*") Profile profile,
+                InputContext inputContext,
+                Callback<Integer> callback);
     }
 }

@@ -12,24 +12,25 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/android/gurl_android.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
+
 using history::BrowsingHistoryService;
 
 const int kMaxQueryCount = 150;
 
-BrowsingHistoryBridge::BrowsingHistoryBridge(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile) {
-  profile_ = ProfileAndroid::FromProfileAndroid(j_profile);
+BrowsingHistoryBridge::BrowsingHistoryBridge(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj,
+                                             Profile* profile) {
+  profile_ = profile;
 
   history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -201,11 +202,9 @@ Profile* BrowsingHistoryBridge::GetProfile() {
   return profile_;
 }
 
-static jlong JNI_BrowsingHistoryBridge_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile) {
-  BrowsingHistoryBridge* bridge =
-      new BrowsingHistoryBridge(env, obj, j_profile);
+static jlong JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
+                                            const JavaParamRef<jobject>& obj,
+                                            Profile* profile) {
+  BrowsingHistoryBridge* bridge = new BrowsingHistoryBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
 }

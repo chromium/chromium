@@ -20,6 +20,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile_android.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"
 
 using base::android::JavaParamRef;
@@ -245,17 +246,14 @@ mojom::TargetShareHistory* ShareHistory::TargetShareHistoryByName(
 
 #if BUILDFLAG(IS_ANDROID)
 void JNI_ShareHistoryBridge_AddShareEntry(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jprofile,
+                                          Profile* profile,
                                           const JavaParamRef<jstring>& name) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   auto* instance = sharing::ShareHistory::Get(profile);
   if (instance)
     instance->AddShareEntry(base::android::ConvertJavaStringToUTF8(env, name));
 }
 
-void JNI_ShareHistoryBridge_Clear(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+void JNI_ShareHistoryBridge_Clear(JNIEnv* env, Profile* profile) {
   auto* instance = sharing::ShareHistory::Get(profile);
   if (instance)
     instance->Clear();

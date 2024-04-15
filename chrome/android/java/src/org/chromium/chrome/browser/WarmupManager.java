@@ -22,6 +22,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -618,8 +619,8 @@ public class WarmupManager {
 
     @NativeMethods
     interface Natives {
-        void startPreconnectPredictorInitialization(Profile profile);
+        void startPreconnectPredictorInitialization(@JniType("Profile*") Profile profile);
 
-        void preconnectUrlAndSubresources(Profile profile, String url);
+        void preconnectUrlAndSubresources(@JniType("Profile*") Profile profile, String url);
     }
 }

@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -169,7 +170,7 @@ public class SimpleHttpClient implements Destroyable {
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void destroy(long nativeHttpClientBridge);
 

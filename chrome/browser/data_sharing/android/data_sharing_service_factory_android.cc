@@ -5,16 +5,14 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/data_sharing/jni_headers/DataSharingServiceFactory_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/data_sharing/jni_headers/DataSharingServiceFactory_jni.h"
+
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_DataSharingServiceFactory_GetForProfile(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+JNI_DataSharingServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   DCHECK(profile);
   data_sharing::DataSharingService* service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);

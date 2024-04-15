@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.logo;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -89,7 +90,7 @@ public class LogoBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(LogoBridge caller, Profile profile);
+        long init(LogoBridge caller, @JniType("Profile*") Profile profile);
 
         void getCurrentLogo(long nativeLogoBridge, LogoBridge caller, LogoObserver logoObserver);
 

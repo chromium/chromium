@@ -7,12 +7,13 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/android/chrome_jni_headers/BrowsingDataCounterBridge_jni.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/BrowsingDataCounterBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -20,7 +21,7 @@ using base::android::ScopedJavaLocalRef;
 BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint data_type,
     jint clear_browsing_data_tab)
     : jobject_(obj) {
@@ -44,7 +45,7 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     return;
   }
 
-  profile_ = ProfileAndroid::FromProfileAndroid(jprofile)->GetOriginalProfile();
+  profile_ = profile->GetOriginalProfile();
   counter_ = BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref);
 
   if (!counter_)
@@ -77,9 +78,9 @@ void BrowsingDataCounterBridge::onCounterFinished(
 static jlong JNI_BrowsingDataCounterBridge_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
+    Profile* profile,
     jint data_type,
     jint clear_browsing_data_tab) {
   return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
-      env, obj, jprofile, data_type, clear_browsing_data_tab));
+      env, obj, profile, data_type, clear_browsing_data_tab));
 }

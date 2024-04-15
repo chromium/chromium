@@ -4,8 +4,6 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/signin/services/android/jni_headers/UnifiedConsentServiceBridge_jni.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/prefs/pref_service.h"
@@ -14,13 +12,15 @@
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
 
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/signin/services/android/jni_headers/UnifiedConsentServiceBridge_jni.h"
+
 using base::android::JavaParamRef;
 
 static jboolean
 JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionEnabled(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profileAndroid) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(profileAndroid);
+    Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 }
@@ -28,8 +28,7 @@ JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionEnabled(
 static jboolean
 JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionManaged(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profileAndroid) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(profileAndroid);
+    Profile* profile) {
   return profile->GetPrefs()->IsManagedPreference(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 }
@@ -37,9 +36,8 @@ JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionManaged(
 static void
 JNI_UnifiedConsentServiceBridge_SetUrlKeyedAnonymizedDataCollectionEnabled(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profileAndroid,
+    Profile* profile,
     const jboolean enabled) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(profileAndroid);
   auto* unifiedConsentService =
       UnifiedConsentServiceFactory::GetForProfile(profile);
   DCHECK(unifiedConsentService);
@@ -48,8 +46,7 @@ JNI_UnifiedConsentServiceBridge_SetUrlKeyedAnonymizedDataCollectionEnabled(
 
 static void JNI_UnifiedConsentServiceBridge_RecordSyncSetupDataTypesHistogram(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profileAndroid) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(profileAndroid);
+    Profile* profile) {
   auto* syncService = SyncServiceFactory::GetForProfile(profile);
   unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
       syncService->GetUserSettings());

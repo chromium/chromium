@@ -15,6 +15,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -242,9 +243,12 @@ public class NotificationSuspender {
         // |notificationIds|. If a notification does not have a particular resource, pass null
         // instead. |origins| must be the same size as |notificationIds|.
         void storeNotificationResources(
-                Profile profile, String[] notificationIds, String[] origins, Bitmap[] resources);
+                @JniType("Profile*") Profile profile,
+                String[] notificationIds,
+                String[] origins,
+                Bitmap[] resources);
 
         // Displays all suspended notifications for the given |origins|.
-        void reDisplayNotifications(Profile profile, String[] origins);
+        void reDisplayNotifications(@JniType("Profile*") Profile profile, String[] origins);
     }
 }

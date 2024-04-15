@@ -9,10 +9,8 @@
 #include "base/android/jni_string.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/android/chrome_jni_headers/ContextualSearchSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/contextual_search_layer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
@@ -23,6 +21,9 @@
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/size_conversions.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/ContextualSearchSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -130,7 +131,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jboolean touch_highlight_visible,
     jfloat touch_highlight_x_offset,
     jfloat touch_highlight_width,
-    const JavaRef<jobject>& j_profile,
+    Profile* profile,
     jint rounded_bar_top_resource_id,
     jint separator_line_color) {
   // Load the thumbnail if necessary.
@@ -138,7 +139,7 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       base::android::ConvertJavaStringToUTF8(env, j_thumbnail_url);
   if (thumbnail_url != thumbnail_url_) {
     thumbnail_url_ = thumbnail_url;
-    FetchThumbnail(j_profile);
+    FetchThumbnail(profile);
   }
 
   // NOTE(pedrosimonetti): The WebContents might not exist at this time if
@@ -188,13 +189,11 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
   contextual_search_layer_->layer()->SetHideLayerAndSubtree(false);
 }
 
-void ContextualSearchSceneLayer::FetchThumbnail(
-    const JavaRef<jobject>& j_profile) {
+void ContextualSearchSceneLayer::FetchThumbnail(Profile* profile) {
   if (thumbnail_url_.empty())
     return;
 
   GURL gurl(thumbnail_url_);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   // Semantic details for this "Thumbnail" request.
   // The URLs processed access gstatic.com, which is considered a Google-owned
   // service.

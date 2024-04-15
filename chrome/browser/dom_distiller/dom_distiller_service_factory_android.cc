@@ -5,11 +5,12 @@
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory_android.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/DomDistillerServiceFactory_jni.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/dom_distiller/core/dom_distiller_service_android.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/android/chrome_jni_headers/DomDistillerServiceFactory_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -20,10 +21,9 @@ namespace android {
 
 ScopedJavaLocalRef<jobject> DomDistillerServiceFactoryAndroid::GetForProfile(
     JNIEnv* env,
-    const JavaRef<jobject>& j_profile) {
+    Profile* profile) {
   dom_distiller::DomDistillerService* service =
-      dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
-          ProfileAndroid::FromProfileAndroid(j_profile));
+      dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(profile);
   DomDistillerServiceAndroid* service_android =
       new DomDistillerServiceAndroid(service);
   return ScopedJavaLocalRef<jobject>(service_android->java_ref_);
@@ -31,8 +31,8 @@ ScopedJavaLocalRef<jobject> DomDistillerServiceFactoryAndroid::GetForProfile(
 
 ScopedJavaLocalRef<jobject> JNI_DomDistillerServiceFactory_GetForProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile) {
-  return DomDistillerServiceFactoryAndroid::GetForProfile(env, j_profile);
+    Profile* profile) {
+  return DomDistillerServiceFactoryAndroid::GetForProfile(env, profile);
 }
 
 }  // namespace android
