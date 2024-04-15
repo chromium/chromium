@@ -2495,7 +2495,7 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
     // have access to any sites that match `site_pattern`.
     developer::HostAccess host_access = developer::HostAccess::kOnClick;
 
-    // TODO(crbug.com/1472899): Add a version of CanUserSelectSiteAccess to
+    // TODO(crbug.com/40278776): Add a version of CanUserSelectSiteAccess to
     // PermissionsManager which takes in a URLPattern.
     bool can_request_all_sites =
         granted_permissions->ShouldWarnAllHosts(kIncludeApiPermissions) ||

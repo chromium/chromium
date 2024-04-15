@@ -317,7 +317,7 @@ using CrashReportPrivateCalledFromSwaTest = ash::SystemWebAppIntegrationTest;
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInWebAppWindow) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    // TODO(crbug.com/1234938): Support Crosapi (web apps running in Lacros).
+    // TODO(crbug.com/40781751): Support Crosapi (web apps running in Lacros).
     return;
   }
   WaitForTestSystemAppInstall();

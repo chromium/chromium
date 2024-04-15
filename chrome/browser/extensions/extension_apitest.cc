@@ -140,7 +140,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
     // Note: We use is_valid() here in the expectation that the provided url
     // may lack a scheme & host and thus be a relative url within the loaded
     // extension.
-    // TODO(https://crbug.com/1284691): Update callers passing relative paths
+    // TODO(crbug.com/40210201): Update callers passing relative paths
     // for page URLs to instead use extension_url.
     if (!url_to_open.is_valid())
       url_to_open = extension->GetResourceURL(run_options.page_url);

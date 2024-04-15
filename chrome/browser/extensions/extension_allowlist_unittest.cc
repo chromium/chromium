@@ -797,6 +797,6 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   EXPECT_FALSE(allowlist()->ShouldDisplayWarning(extension->id()));
 }
 
-// TODO(crbug.com/1194051): Add more ExtensionAllowlist::Observer coverage
+// TODO(crbug.com/40175473): Add more ExtensionAllowlist::Observer coverage
 
 }  // namespace extensions

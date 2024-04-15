@@ -767,7 +767,7 @@ class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
   content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1351648): disabled due to flakiness.
+// TODO(crbug.com/40857271): disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, DISABLED_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
 }

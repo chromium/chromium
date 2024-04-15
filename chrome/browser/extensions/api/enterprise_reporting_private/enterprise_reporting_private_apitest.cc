@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/1408618): Failing consistently on Mac.
-// TODO(crbug.com/1361315): Flaky on Linux.
+// TODO(crbug.com/40863616): Flaky on Linux.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_GetFileSystemInfo_Success DISABLED_GetFileSystemInfo_Success
 #else

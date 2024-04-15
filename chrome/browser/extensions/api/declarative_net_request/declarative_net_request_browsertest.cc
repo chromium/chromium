@@ -1978,8 +1978,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, UpgradeRules) {
       {"|http:*yahoo", 2, 100, "redirect", "http://other.com"},
       // Since the test server can only display http requests, redirect all
       // https requests to google.com in the end.
-      // TODO(crbug.com/985104): Add a https test server to display https pages
-      // so this redirect rule can be removed.
+      // TODO(crbug.com/41471360): Add a https test server to display https
+      // pages so this redirect rule can be removed.
       {"|https*", 3, 6, "redirect", google_url.spec()},
       {"exact.com", 4, 5, "block", std::nullopt},
   };
@@ -3998,7 +3998,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 // Test that the actions matched badge text for an extension will be reset
 // when a main-frame navigation finishes.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       // TODO(crbug.com/1331228): Re-enable this test
+                       // TODO(crbug.com/40843749): Re-enable this test
                        DISABLED_ActionsMatchedCountAsBadgeTextMainFrame) {
   auto get_url_for_host = [this](std::string hostname) {
     return embedded_test_server()->GetURL(hostname,
@@ -5356,7 +5356,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
           {});
 }
 
-// TODO(crbug.com/1334363): Re-enable this test on MAC
+// TODO(crbug.com/40846422): Re-enable this test on MAC
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TestPostNavigationMatched DISABLED_TestPostNavigationMatched
 #else
@@ -5385,7 +5385,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
           {}, true);
 }
 
-// TODO(crbug.com/1344372): Re-enable this test on MAC
+// TODO(crbug.com/40852913): Re-enable this test on MAC
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TestPostNavigationNotMatched DISABLED_TestPostNavigationNotMatched
 #else
@@ -6473,7 +6473,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
 
 // Test that GetAvailableStaticRuleCount includes the excess unused allocation
 // after an extension update.
-// TODO(crbug.com/1399879): Deflake and re-enable.
+// TODO(crbug.com/40883375): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
                        DISABLED_GetAvailableStaticRuleCountAfterPackedUpdate) {
   // This is not tested for unpacked extensions since the unpacked extension

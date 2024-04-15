@@ -192,7 +192,7 @@ AddressEntryList GenerateAddressList(
   const std::vector<autofill::AutofillProfile*>& profiles =
       personal_data.address_data_manager().GetProfilesForSettings();
   std::vector<std::u16string> labels;
-  // TODO(crbug.com/1487119): Replace by `profiles` when
+  // TODO(crbug.com/40283168): Replace by `profiles` when
   // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.
   autofill::AutofillProfile::CreateDifferentiatingLabels(
       std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(

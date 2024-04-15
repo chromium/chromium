@@ -180,7 +180,7 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
       messages.push_back(
           l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WILL_HAVE_ACCESS_TO));
   } else {
-    // TODO(crbug.com/461261): If NeedCustodianApprovalForPermissionIncrease,
+    // TODO(crbug.com/40406971): If NeedCustodianApprovalForPermissionIncrease,
     // add an extra message for supervised users.
     messages.push_back(
         l10n_util::GetStringUTF16(IDS_EXTENSION_DISABLED_ERROR_LABEL));

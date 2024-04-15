@@ -61,7 +61,7 @@ class ActivityLogApiTest : public ExtensionApiTest {
 };
 
 #if !defined(NDEBUG)
-// TODO(crbug.com/299393): This test is very long and can time out in debug
+// TODO(crbug.com/40334711): This test is very long and can time out in debug
 // builds.
 #define MAYBE_TriggerEvent DISABLED_TriggerEvent
 #else

@@ -366,8 +366,8 @@ void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
 PasswordsPrivateDelegate::CredentialsGroups
 PasswordsPrivateDelegateImpl::GetCredentialGroups() {
   std::vector<api::passwords_private::CredentialGroup> groups;
-  // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
-  // platforms.
+  // TODO(crbug.com/40067296): Migrate away from `ConsentLevel::kSync` on
+  // desktop platforms.
   bool sync_enabled =
       password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
           SyncServiceFactory::GetForProfile(profile_));
@@ -1190,7 +1190,7 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
   CHECK(web_contents);
 
   // Authentication on Windows cannot be canceled.
-  // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
+  // TODO(crbug.com/40241199): Remove Cancel and instead simply destroy
   // |device_authenticator_|.
   if (device_authenticator_) {
 #if BUILDFLAG(IS_WIN)

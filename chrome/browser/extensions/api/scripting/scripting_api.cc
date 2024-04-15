@@ -1122,8 +1122,8 @@ ScriptingUnregisterContentScriptsFunction::Run() {
 
   std::optional<api::scripting::ContentScriptFilter>& filter = params->filter;
   std::optional<std::vector<std::string>> ids = std::nullopt;
-  // TODO(crbug.com/1300657): `ids` should have an empty list when filter ids is
-  // empty, instead of a nullopt. Otherwise, we are incorrectly removing all
+  // TODO(crbug.com/40216362): `ids` should have an empty list when filter ids
+  // is empty, instead of a nullopt. Otherwise, we are incorrectly removing all
   // content scripts when ids is empty.
   if (filter && filter->ids && !filter->ids->empty()) {
     ids = std::move(filter->ids);

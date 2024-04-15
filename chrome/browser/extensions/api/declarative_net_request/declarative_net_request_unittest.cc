@@ -1609,8 +1609,8 @@ class SingleRulesetWithoutSafeRulesTest : public SingleRulesetTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1485747): This is just a sanity check that rule counts work as
-// intended when the safe rules feature flag is turned off. Remove this test
+// TODO(crbug.com/40282671): This is just a sanity check that rule counts work
+// as intended when the safe rules feature flag is turned off. Remove this test
 // once feature is enabled and the feature flag is removed.
 TEST_P(SingleRulesetWithoutSafeRulesTest, DynamicAndSessionRuleLimits) {
   // With `kDeclarativeNetRequestSafeRuleLimits` disabled, the dynamic/session

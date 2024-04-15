@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ExtensionIframe) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_iframe")) << message_;
 }
 
-// TODO(crbug.com/1488987): Very flaky on multiple platforms.
+// TODO(crbug.com/40934824): Very flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        DISABLED_ContentScriptExtensionProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ViewSource) {
 
 // crbug.com/126257 -- content scripts should not get injected into other
 // extensions.
-// TODO(crbug.com/1196340): Fix flakiness.
+// TODO(crbug.com/40759559): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        DISABLED_OtherExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
 
 // https://crbug.com/825111 -- content scripts may fetch() a blob URL from their
 // chrome-extension:// origin.
-// TODO(crbug.com/1381188): This test can't run using a service worker-based
+// TODO(crbug.com/40876652): This test can't run using a service worker-based
 // extension.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, BlobFetch) {
   ASSERT_TRUE(StartEmbeddedTestServer());

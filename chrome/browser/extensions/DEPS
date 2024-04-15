@@ -54,7 +54,7 @@ specific_include_rules = {
   ],
 
   "webstore_private_apitest.cc" : [
-    # TODO(crbug/1095814): Remove this layering violation.
+    # TODO(crbug.com/40135906): Remove this layering violation.
     "+chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h",
   ],
 

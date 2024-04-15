@@ -239,9 +239,9 @@ class CommandsApiTest : public ExtensionApiTest {
 #if BUILDFLAG(IS_MAC)
     // ExtensionKeybindingRegistryViews doesn't get registered until BrowserView
     // is activated at least once.
-    // TODO(crbug.com/839469): Registry creation should happen independent of
+    // TODO(crbug.com/41386956): Registry creation should happen independent of
     // activation. Focus manager lifetime may make this tricky to untangle.
-    // TODO(crbug.com/650859): Reassess after activation is restored in the
+    // TODO(crbug.com/40486728): Reassess after activation is restored in the
     // focus manager.
     ui_test_utils::BrowserActivationWaiter waiter(browser());
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));

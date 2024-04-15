@@ -174,7 +174,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
 
   if (gaia_id.empty() || IsPrimaryAccountOnly()) {
     // Try the primary account.
-    // TODO(https://crbug.com/932400): collapse the asynchronicity
+    // TODO(crbug.com/40614113): collapse the asynchronicity
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(

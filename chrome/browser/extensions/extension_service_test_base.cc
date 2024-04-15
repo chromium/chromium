@@ -175,7 +175,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   profile_builder.AddTestingFactories(
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
-  // TODO(crbug.com/1222596): SyncService (and thus TrustedVaultService)
+  // TODO(crbug.com/40774163): SyncService (and thus TrustedVaultService)
   // instantiation can be scoped down to a few derived fixtures.
   profile_builder.AddTestingFactory(
       TrustedVaultServiceFactory::GetInstance(),
@@ -249,8 +249,8 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
 ExtensionServiceTestBase::~ExtensionServiceTestBase() {
   // Why? Because |profile_| has to be destroyed before |at_exit_manager_|, but
   // is declared above it in the class definition since it's protected.
-  // TODO(1269752): Since we're getting rid of at_exit_manager_, perhaps
-  // we don't need this call?
+  // TODO(crbug.com/40205142): Since we're getting rid of at_exit_manager_,
+  // perhaps we don't need this call?
   profile_.reset();
 }
 

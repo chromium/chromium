@@ -537,7 +537,7 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   // Weak and reused flags should be cleaned before obtaining id. Otherwise
   // weak or reused flag will be saved to the database whenever credential is
   // modified.
-  // TODO(crbug.com/1369650): Update this once saving weak and reused issues is
+  // TODO(crbug.com/40869244): Update this once saving weak and reused issues is
   // supported.
   copy.password_issues.erase(InsecureType::kWeak);
   copy.password_issues.erase(InsecureType::kReused);

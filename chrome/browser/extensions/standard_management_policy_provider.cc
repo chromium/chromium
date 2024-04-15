@@ -48,7 +48,7 @@ bool AdminPolicyIsModifiable(const Extension* source_extension,
   // extensions even though it is a component extension, because it doesn't
   // need this capability and it can open up interesting attacks if it's
   // leveraged via bookmarklets or devtools.
-  // TODO(crbug.com/1365660): This protection should be expanded by also
+  // TODO(crbug.com/40239460): This protection should be expanded by also
   // blocking bookmarklets on the Webstore Origin through checks on the Blink
   // side.
   const bool is_webstore_hosted_app =

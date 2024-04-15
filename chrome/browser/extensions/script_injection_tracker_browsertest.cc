@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
 // also the "DocumentUserData race w/ Commit IPC" section in the
 // document here:
 // https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#heading=h.n2ppjzx4jpzt
-// TODO(crbug.com/936696): Remove the test after RenderDocument is shipped.
+// TODO(crbug.com/40615943): Remove the test after RenderDocument is shipped.
 IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
                        ProgrammaticInjectionRacingWithDidCommit) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1563,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 
 // Tests that ScriptInjectionTracker monitors extension permission changes
 // between commit and load, and updates the renderer data accordingly.
-// TODO(crbug.com/1522216): Flaky test.
+// TODO(crbug.com/41495179): Flaky test.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_UpdateHostPermissions_RaceCondition \
   DISABLED_UpdateHostPermissions_RaceCondition

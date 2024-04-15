@@ -67,13 +67,13 @@ UserScriptsAPITest::UserScriptsAPITest() {
        extensions_features::kApiUserScriptsMultipleWorlds,
        // Also enable the dev mode restriction feature to gate the API on
        // developer mode.
-       // TODO(https://crbug.com/1495451): Remove this when the feature is
+       // TODO(crbug.com/40286550): Remove this when the feature is
        // enabled by default.
        extensions_features::kRestrictDeveloperModeAPIs},
       /*disabled_features=*/{});
 }
 
-// TODO(crbug.com/1491361): Flaky on Linux debug.
+// TODO(crbug.com/40935741): Flaky on Linux debug.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_RegisterUserScripts DISABLED_RegisterUserScripts
 #else

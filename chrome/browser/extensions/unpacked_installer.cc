@@ -158,7 +158,7 @@ void UnpackedInstaller::StartInstallChecks() {
   if (!service)
     return;
 
-  // TODO(crbug.com/421128): Enable these checks all the time.  The reason
+  // TODO(crbug.com/40388034): Enable these checks all the time.  The reason
   // they are disabled for extensions loaded from the command-line is that
   // installing unpacked extensions is asynchronous, but there can be
   // dependencies between the extensions loaded by the command line.
@@ -289,8 +289,8 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
       declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
       declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
 
-  // TODO(crbug.com/761107): IndexStaticRulesetsUnsafe will read and parse JSON
-  // synchronously. Change this so that we don't need to parse JSON in the
+  // TODO(crbug.com/40538050): IndexStaticRulesetsUnsafe will read and parse
+  // JSON synchronously. Change this so that we don't need to parse JSON in the
   // browser process.
   declarative_net_request::InstallIndexHelper::Result result =
       declarative_net_request::InstallIndexHelper::IndexStaticRulesetsUnsafe(

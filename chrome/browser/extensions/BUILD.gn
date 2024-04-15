@@ -755,7 +755,7 @@ static_library("extensions") {
   defines = []
 
   allow_circular_includes_from = [
-    # TODO(crbug.com/1158905): Remove this circular dependency.
+    # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
 
     # Lots of APIs use headers from the list above.
@@ -764,7 +764,7 @@ static_library("extensions") {
     # TODO(crbug.com/1065748): Remove this circular dependency.
     "//chrome/browser/web_applications/extensions",
 
-    # TODO(crbug/925153): Remove this circular dependency.
+    # TODO(crbug.com/41437292): Remove this circular dependency.
     "//chrome/browser/safe_browsing",
   ]
 
@@ -1371,7 +1371,7 @@ static_library("extensions") {
   }
 
   if (enable_printing && (is_win || is_mac || is_linux || is_chromeos)) {
-    # TODO(crbug.com/1213762)  Replace this with more accurate dependency
+    # TODO(crbug.com/40183776)  Replace this with more accurate dependency
     # once //chrome/browser/printing build is able to be cleanly targeted.
     deps += [ "//chrome/services/printing/public/mojom" ]
   }

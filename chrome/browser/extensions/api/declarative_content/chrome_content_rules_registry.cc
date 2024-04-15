@@ -174,7 +174,7 @@ ChromeContentRulesRegistry::CreateRule(
 
   std::vector<std::unique_ptr<const ContentAction>> actions;
   for (const base::Value& value : api_rule.actions) {
-    // TODO(crbug.com/1314149): Migrate api_rule to use base::Value::Dict to
+    // TODO(crbug.com/40832669): Migrate api_rule to use base::Value::Dict to
     // avoid conversion.
     if (!value.is_dict()) {
       return nullptr;

@@ -260,9 +260,9 @@ bool ExtensionAssetsManagerChromeOS::CanShareAssets(
     return false;
   }
 
-  // TODO(crbug.com/1166539): Investigate why do we allow sharing assets in case
-  // of empty update URL and if the empty update URL is not required, update
-  // this to consider only the updates from webstore.
+  // TODO(crbug.com/40742161): Investigate why do we allow sharing assets in
+  // case of empty update URL and if the empty update URL is not required,
+  // update this to consider only the updates from webstore.
   if (!updates_from_webstore_or_empty_update_url)
     return false;
 

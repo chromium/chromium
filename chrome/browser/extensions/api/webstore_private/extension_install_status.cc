@@ -49,7 +49,7 @@ bool IsExtensionInstallBlockedByPolicy(
 
   // Extension is allowed by wildcard or update_url, checks required permissions
   // and manifest type.
-  // TODO(crbug.com/1088021): Find out the right way to handle extension policy
+  // TODO(crbug.com/40133205): Find out the right way to handle extension policy
   // priority.
   if (manifest_type != Manifest::Type::TYPE_UNKNOWN &&
       !extension_management->IsAllowedManifestType(manifest_type,

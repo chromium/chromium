@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Update) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, UpdateSvg) {
-  // TODO(crbug.com/1064671): Service Workers currently don't support loading
+  // TODO(crbug.com/40123818): Service Workers currently don't support loading
   // SVG images.
   const bool expect_failure = IsContextTypeForServiceWorker();
   ASSERT_NO_FATAL_FAILURE(

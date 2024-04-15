@@ -234,7 +234,7 @@ class BackForwardCacheDisabledDestructiveScriptTest
     // The SynchronousRemoval and MicrotaskRemoval tests seem to be especially
     // flaky when same-site back/forward cache is enabled, so disable the
     // feature.
-    // TODO(https://crbug.com/1293865): Fix the flakiness.
+    // TODO(crbug.com/40820215): Fix the flakiness.
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features{
         features::kBackForwardCache};

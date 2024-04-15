@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
 
 // Tests that tampering a resource that will be requested by the extension and
 // tampering computed_hashes.json will always disable the extension.
-// TODO(crbug.com/1278994): Flaky.
+// TODO(crbug.com/40810537): Flaky.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TamperRequestedResourceTamperComputedHashes \
   DISABLED_TamperRequestedResourceTamperComputedHashes
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the behavior of loading a default resource extension with tampering
 // an extension resource that is not requested by default and tampering
 // computed_hashes.json.
-// TODO(crbug.com/1279323): Flaky.
+// TODO(crbug.com/40810776): Flaky.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DefaultRequestExtensionTamperNotRequestedResourceTamperComputedHashes \
   DISABLED_DefaultRequestExtensionTamperNotRequestedResourceTamperComputedHashes

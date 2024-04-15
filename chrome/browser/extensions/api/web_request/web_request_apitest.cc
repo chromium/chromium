@@ -1093,9 +1093,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Tests redirects around workers. To test service workers, the HTTPS test
 // server is used.
-// TODO(crbug.com/1413434): test is flaky on linux-chromeos-rel.
-// TODO(crbug.com/1422191): test is flaky on Mac10.14.
-// TODO(crbug.com/1484203): test is flaky on linux tests.
+// TODO(crbug.com/40255652): test is flaky on linux-chromeos-rel.
+// TODO(crbug.com/40259518): test is flaky on Mac10.14.
+// TODO(crbug.com/40282182): test is flaky on linux tests.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WebRequestRedirectsWorkers DISABLED_WebRequestRedirectsWorkers
 #else
@@ -1288,9 +1288,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   RunPermissionTest("split", false, false, "redirected1", "", GetContextType());
 }
 
-// TODO(crbug.com/238179): Cure these flaky tests.
-// TODO(crbug.com/1154345): Bulk-disabled as part of mac arm64 bot greening
-// TODO(crbug.com/1222127): Further disabled due to ongoing flakiness.
+// TODO(crbug.com/41010858): Cure these flaky tests.
+// TODO(crbug.com/40734863): Bulk-disabled as part of mac arm64 bot greening
+// TODO(crbug.com/40773828): Further disabled due to ongoing flakiness.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData1) {
   // Test HTML form POST data access with the default and "url" encoding.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1938,7 +1938,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Test that the webRequest events are dispatched for the WebSocket handshake
 // requests.
-// TODO(crbug.com/1121727): Test is flaky on multiple platforms.
+// TODO(crbug.com/40715657): Test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebSocketRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
@@ -3833,7 +3833,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
 // Ensure we don't strip off initiator incorrectly in web request events when
 // both the normal and incognito contexts are active. Regression test for
 // crbug.com/934398.
-// TODO(crbug.com/1520416): enable this flaky test
+// TODO(crbug.com/41493389): enable this flaky test
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_Initiator_SpanningIncognito DISABLED_Initiator_SpanningIncognito
 #else
@@ -4391,7 +4391,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Ensure web request listeners can intercept requests for a web bundle and its
 // subresources.
-// TODO(https://crbug.com/1264982): Fix flane and re-enable test.
+// TODO(crbug.com/40801096): Fix flane and re-enable test.
 IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
                        DISABLED_RequestIntercepted) {
   const std::string uuid_in_package_script_url =
@@ -5172,7 +5172,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
             ExecuteScriptAndReturnString(extension->id(), profile(), kScript));
 }
 
-// TODO(crbug.com/1082020) When we implement variant matching of subresource
+// TODO(crbug.com/40130781) When we implement variant matching of subresource
 // web bundles, we should add test for request header modification.
 
 enum class RedirectType {

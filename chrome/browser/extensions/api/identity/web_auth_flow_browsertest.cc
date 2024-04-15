@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetURL(), new_url);
 
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
-  // TODO(https://crbug.com/1454772): Need to disable BackForwardCaching as it
+  // TODO(crbug.com/40272465): Need to disable BackForwardCaching as it
   // causes crashes since the WebContent is initially loaded in an
   // unattached mode.
   content::DisableBackForwardCacheForTesting(

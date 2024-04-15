@@ -34,7 +34,7 @@ const GURL& GetActiveUrl(Browser* browser) {
 
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
-// TODO(https://crbug.com/811471): Fix and re-enable.
+// TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        DISABLED_OpenExtensionsOptionsPage) {
   // Load an extension with an options page that opens in a tab and one that

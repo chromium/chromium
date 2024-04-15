@@ -2798,7 +2798,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           result_id)));
 }
 
-// TODO(https://crbug.com/392288): Flaky on macOS
+// TODO(crbug.com/41119270): Flaky on macOS
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadExtensionTest_Download_FileSystemURL \
         DISABLED_DownloadExtensionTest_Download_FileSystemURL

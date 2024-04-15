@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
       << message_;
 }
 
-// TODO(crbug.com/1470083): Re-enable this test
+// TODO(crbug.com/40925613): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Muted DISABLED_Muted
 #else
@@ -182,9 +182,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
 
-// TODO(crbug.com/1410558): Move to tabs_interactive_test.cc
+// TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(https://crbug.com/1412353): Re-enable once flakiness is fixed.
+// TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
       << message_;
 }
 
-// TODO(crbug.com/1177118) Re-enable test
+// TODO(crbug.com/40168659) Re-enable test
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_race"))
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
       << message_;
 }
 
-// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
 #else
@@ -541,7 +541,7 @@ class ExtensionApiTabPrerenderingTest : public ExtensionApiTabTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// TODO(crbug.com/1352966): Flaky on multiple platforms.
+// TODO(crbug.com/40235049): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
 }

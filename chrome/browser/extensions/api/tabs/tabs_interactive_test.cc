@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // This currently fails because WidgetTest::IsWindowStackedAbove() doesn't
   // work for different BrowserViews. While the functionality is currently
   // correct, this means we don't have a good regression test for it.
-  // TODO(https://crbug.com/1302159): Fix this.
+  // TODO(crbug.com/40058935): Fix this.
   // EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(
   //     BrowserView::GetBrowserViewForBrowser(browser())->frame(),
   //     BrowserView::GetBrowserViewForBrowser(new_browser)->frame()));

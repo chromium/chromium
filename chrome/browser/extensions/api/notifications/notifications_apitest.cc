@@ -176,7 +176,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
-// TODO(https://crbug.com/1182305): We should merge this class with the base
+// TODO(crbug.com/40170747): We should merge this class with the base
 // class once the issues mentioned in the bug are resolved.
 class NotificationsApiTestWithBackgroundType
     : public NotificationsApiTest,

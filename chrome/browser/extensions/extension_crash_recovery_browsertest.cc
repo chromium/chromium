@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, CrashAndUnloadAll) {
 // Regression test for issue 71629 and 763808.
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
                        ReloadTabsWithBackgroundPage) {
-  // TODO(https://crbug.com/831078): Fix the test.
+  // TODO(crbug.com/40570941): Fix the test.
   if (content::AreAllSitesIsolatedForTesting())
     return;
 

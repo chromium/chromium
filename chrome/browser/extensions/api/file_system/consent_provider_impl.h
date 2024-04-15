@@ -32,8 +32,8 @@ namespace file_system_api {
 // TestingConsentProviderDelegate.
 // This class may post callbacks given to it, but does not asynchronously call
 // itself. It is generally safe to use a temporary ConsentProviderImpl.
-// TODO(crbug.com/1351493): Make this easier to use, perhaps by replacing member
-// functions with static methods.
+// TODO(crbug.com/40234505): Make this easier to use, perhaps by replacing
+// member functions with static methods.
 class ConsentProviderImpl : public ConsentProvider {
  public:
   using ShowDialogCallback = base::OnceCallback<void(ui::DialogButton)>;

@@ -213,7 +213,7 @@ class DeclarativeNetRequestApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1383550): Re-enable this test
+// TODO(crbug.com/40877906): Re-enable this test
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiFencedFrameTest, DISABLED_Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }

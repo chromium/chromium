@@ -71,7 +71,8 @@ ChromeExtensionDownloaderFactory::CreateForProfile(
   // (ExtensionSystemSharedFactory) specifies that it depends on
   // IdentityManager. Hence, the IdentityManager instance is guaranteed to
   // outlive |downloader|.
-  // TODO(843519): Make this lifetime relationship more explicit/cleaner.
+  // TODO(crbug.com/41389279): Make this lifetime relationship more
+  // explicit/cleaner.
   downloader->SetIdentityManager(
       IdentityManagerFactory::GetForProfile(profile));
   return downloader;

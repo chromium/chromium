@@ -168,7 +168,7 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-// TODO(https://crbug.com/1210643): Test is flaky on Mac.
+// TODO(crbug.com/40182531): Test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TestUDPMulticastRecv DISABLED_TestUDPMulticastRecv
 #else

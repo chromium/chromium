@@ -78,8 +78,8 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   // indicate that a portal contents has no tab id. Unfortunately, this will
   // still be broken in subtle ways once the portal is activated (e.g. some
   // forms of zooming won't work).
-  // TODO(1042323): Present a coherent representation of a tab id for portal
-  // contents.
+  // TODO(crbug.com/40114809): Present a coherent representation of a tab id for
+  // portal contents.
   int tab_id = web_contents->GetOuterWebContents()
                    ? SessionID::InvalidValue().id()
                    : ExtensionTabUtil::GetTabId(web_contents);

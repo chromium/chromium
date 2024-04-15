@@ -290,7 +290,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 // TODO(crbug.com/1235358): Flaky on Mac 10.11
 #define MAYBE_Performance DISABLED_Performance
 #elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/1295824): Flaky on Linux ASAN
+// TODO(crbug.com/40214499): Flaky on Linux ASAN
 #define MAYBE_Performance DISABLED_Performance
 #else
 #define MAYBE_Performance Performance

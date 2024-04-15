@@ -1,6 +1,6 @@
 specific_include_rules = {
   "show_permissions_dialog_helper.cc": [
-    #TODO(https://crbug.com/873872): Remove this.
+    #TODO(crbug.com/41407829): Remove this.
     "+chrome/browser/apps/platform_apps/app_load_service.h",
   ],
   "developer_private_api_unittest.cc": [

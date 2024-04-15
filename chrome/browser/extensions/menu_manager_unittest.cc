@@ -981,7 +981,7 @@ TEST_F(MenuManagerTest, SetMenuIconLoader) {
   }
 }
 
-// TODO(https://crbug.com/1150988): This should be unified with the existing
+// TODO(crbug.com/40732755): This should be unified with the existing
 // version of this enum in ExtensionBrowserTest.
 enum class ContextType {
   // A non-persistent background page/JS based extension.

@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithMockedSourceRenderer,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1209766) Flaky on lacros
+// TODO(crbug.com/40766689) Flaky on lacros
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HitTestMultipleWindows DISABLED_HitTestMultipleWindows
 #else

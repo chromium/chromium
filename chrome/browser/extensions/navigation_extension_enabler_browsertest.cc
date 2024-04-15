@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // The SiteInstance of the disabled extension frame should be different from
   // the SiteInstance of the enabled extension subframe. It should reference the
   // invalid extension ID or the error page URL.
-  // TODO(crbug.com/1234637): remove the exceptions for Mac and Windows below
+  // TODO(crbug.com/40192071): remove the exceptions for Mac and Windows below
   // once renderer-process shutdown delay causing `extension_site_instance` to
   // be reused is addressed (see
   // RendererProcessHostImpl::ShouldDelayProcessShutdown() for details).

@@ -55,7 +55,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 
 // Extension installations are skipped here as excluding these in the overlay
 // is a bit complicated.
-// TODO(crbug.com/1023268) This is a temporary measure and should be replaced.
+// TODO(crbug.com/40658053) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::switches::IsTabletFormFactor())
@@ -353,7 +353,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     return;
   }
 
-  // TODO(crbug.com/1407498): Remove this once migration is completed.
+  // TODO(crbug.com/40887866): Remove this once migration is completed.
   std::unique_ptr<base::Value::List> default_user_types;
   if (options_ & USE_USER_TYPE_PROFILE_FILTER) {
     default_user_types = std::make_unique<base::Value::List>();

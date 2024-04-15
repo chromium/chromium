@@ -239,7 +239,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     // If a non-webstore extension has no computed hashes for content
     // verification, leave it as is for now.
     // See https://crbug.com/958794#c22 for more details.
-    // TODO(https://crbug.com/1044572): Schedule the extension for reinstall.
+    // TODO(crbug.com/40669814): Schedule the extension for reinstall.
     if (!info.is_from_webstore) {
       if (!base::Contains(would_be_reinstalled_ids_, extension_id)) {
         corrupted_extension_reinstaller->RecordPolicyReinstallReason(

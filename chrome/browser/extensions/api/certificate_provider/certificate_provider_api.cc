@@ -225,7 +225,7 @@ bool ParseClientCertificateInfo(
     return false;
   }
   if (info.certificate_chain.size() > 1) {
-    // TODO(crbug.com/1101854): Support passing certificate chains.
+    // TODO(crbug.com/40703788): Support passing certificate chains.
     *out_error_message = kCertificateProviderErrorChainTooLong;
     return false;
   }

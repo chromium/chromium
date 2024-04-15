@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
                        MAYBE_IncognitoSplitContextMenuCount) {
-  // TODO(crbug.com/939664): Not yet implemented.
+  // TODO(crbug.com/40617251): Not yet implemented.
   if (GetParam() == ContextType::kServiceWorker)
     return;
   ExtensionTestMessageListener created("created item regular");

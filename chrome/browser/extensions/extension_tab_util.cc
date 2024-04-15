@@ -799,7 +799,7 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
           return;
         }
 
-        // TODO(https://crbug.com/1350676): tab_strip and tab_index are tied to
+        // TODO(crbug.com/40234240): tab_strip and tab_index are tied to
         // a specific window, and related APIs return WINDOW_ID_NONE for
         // prerendering-into-a-new-tab tabs as a tentaive solution. So these
         // values are set to be invalid here.

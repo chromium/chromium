@@ -17,7 +17,7 @@ const char kExtensionsSitePermissionsURL[] =
 // The link to the help article for click to script, which contains info on
 // enabling extensions to request access to the current site through the
 // toolbar.
-// TODO(crbug.com/1353587): This link is likely temporary, and may need to be
+// TODO(crbug.com/40235251): This link is likely temporary, and may need to be
 // replaced later.
 const char kShowAccessRequestsInToolbarHelpURL[] =
     "https://support.google.com/chrome_webstore/answer/2664769";

@@ -714,7 +714,7 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
 
 void ComponentLoader::FinishLoadSpeechSynthesisExtension(
     const ExtensionId& extension_id) {
-  // TODO(https://crbug.com/947305): mitigation for extension not awake after
+  // TODO(crbug.com/41449926): mitigation for extension not awake after
   // load.
   extensions::ProcessManager::Get(profile_)->WakeEventPage(extension_id,
                                                            base::DoNothing());

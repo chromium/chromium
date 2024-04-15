@@ -119,7 +119,7 @@ autofill::AutofillProfile CreateNewAutofillProfile(
       !personal_data->address_data_manager().IsCountryEligibleForAccountStorage(
           country_code.value())) {
     // Note: addresses from unsupported countries can't be saved in account.
-    // TODO(crbug.com/1432505): remove temporary unsupported countries
+    // TODO(crbug.com/40263955): remove temporary unsupported countries
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
@@ -207,7 +207,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
       existing_profile ? *existing_profile
                        : CreateNewAutofillProfile(personal_data, country_code);
 
-  // TODO(crbug.com/1441904): Fields not visible for the autofill profile's
+  // TODO(crbug.com/40266693): Fields not visible for the autofill profile's
   // country must be reset.
   for (const api::autofill_private::AddressField& field : address->fields) {
     if (field.type == autofill_private::FieldType::kNameFull) {

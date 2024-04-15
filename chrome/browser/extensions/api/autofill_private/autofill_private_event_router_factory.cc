@@ -45,7 +45,8 @@ AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
 std::unique_ptr<KeyedService>
 AutofillPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(1426498): pass router's dependencies directly instead of context.
+  // TODO(crbug.com/40261321): pass router's dependencies directly instead of
+  // context.
   return std::make_unique<AutofillPrivateEventRouter>(context);
 }
 

@@ -208,8 +208,8 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
     FinishedCallback callback;
     // Prevents the destruction of the Profile* while an update check is in
     // progress.
-    // TODO(crbug.com/1191460): Find a way to pass the keepalive to UpdateClient
-    // instead of holding it here.
+    // TODO(crbug.com/40174537): Find a way to pass the keepalive to
+    // UpdateClient instead of holding it here.
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
     // The ids of extensions that have in-progress update checks.
     std::set<ExtensionId> in_progress_ids;

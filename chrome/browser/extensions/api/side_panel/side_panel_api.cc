@@ -50,7 +50,7 @@ ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
   std::optional<api::side_panel::SetOptions::Params> params =
       api::side_panel::SetOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  // TODO(crbug.com/1328645): Validate the relative extension path exists.
+  // TODO(crbug.com/40226489): Validate the relative extension path exists.
   GetService()->SetOptions(*extension(), std::move(params->options));
   return RespondNow(NoArguments());
 }

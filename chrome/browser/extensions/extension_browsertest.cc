@@ -513,7 +513,7 @@ const Extension* ExtensionBrowserTest::LoadExtension(
     return nullptr;
 
   if (options.load_as_component) {
-    // TODO(https://crbug.com/1171429): Decide if other load options
+    // TODO(crbug.com/40166157): Decide if other load options
     // can/should be supported when load_as_component is true.
     DCHECK(!options.allow_in_incognito);
     DCHECK(!options.allow_file_access);

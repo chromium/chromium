@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-// TODO(https://crbug.com/1226260): Test is flaky.
+// TODO(crbug.com/40776295): Test is flaky.
 IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
                        DISABLED_UserInstalledCorruptedResourceOnStartup) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-// TODO(crbug.com/1271946): Flaky on mac arm64.
+// TODO(crbug.com/40805905): Flaky on mac arm64.
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
 #else

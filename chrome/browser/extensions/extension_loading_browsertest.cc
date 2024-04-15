@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 // Tests whether the extension runtime stays valid when an extension reloads
 // while a devtools extension is hammering the frame with eval requests.
 // Regression test for https://crbug.com/544182
-// TODO(crbug.com/1416423): Flaky with dbg and sanitizers.
+// TODO(crbug.com/40893499): Flaky with dbg and sanitizers.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RuntimeValidWhileDevToolsOpen \
   DISABLED_RuntimeValidWhileDevToolsOpen

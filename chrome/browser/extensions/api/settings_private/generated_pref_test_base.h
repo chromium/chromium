@@ -28,7 +28,7 @@ enum class PrefSetting {
 };
 
 // Possible preference sources supported by TestingPrefService.
-// TODO(crbug.com/1063281): Extend TestingPrefService to support prefs set for
+// TODO(crbug.com/40123235): Extend TestingPrefService to support prefs set for
 //                          supervised users.
 enum class PrefSource {
   kExtension,

@@ -206,7 +206,7 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&extensions::WarningService::NotifyWarningsOnUI,
-                       // TODO(https://crbug.com/1380714): Remove
+                       // TODO(crbug.com/40061562): Remove
                        // `UnsafeDanglingUntriaged`
                        base::UnsafeDanglingUntriaged(browser_context_),
                        warnings));

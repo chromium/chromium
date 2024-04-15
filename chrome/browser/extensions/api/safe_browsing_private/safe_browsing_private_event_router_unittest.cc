@@ -487,7 +487,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   EXPECT_NE(nullptr, event);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
+  // TODO(crbug.com/40941444): To fix the tests for ChromeOS.
   EXPECT_EQ("malware.exe",
 #else
   EXPECT_EQ("/path/to/malware.exe",

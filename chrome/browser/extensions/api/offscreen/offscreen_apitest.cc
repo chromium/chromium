@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(https://crbug.com/1453966): Failing on Windows.
+// TODO(crbug.com/40272130): Failing on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TabCaptureStreams DISABLED_TabCaptureStreams
 #else

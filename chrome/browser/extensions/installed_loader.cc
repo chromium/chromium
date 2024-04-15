@@ -475,7 +475,7 @@ void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
   LoadAllExtensions(profile);
 }
 
-// TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
+// TODO(crbug.com/40739895): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
                                               bool is_user_profile) {
   ExtensionManagement* extension_management =

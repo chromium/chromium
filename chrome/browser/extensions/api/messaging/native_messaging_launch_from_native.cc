@@ -236,7 +236,7 @@ void LaunchNativeMessageHostFromNativeApp(const ExtensionId& extension_id,
       true /* is_opener */, extensions::mojom::SerializationFormat::kJson);
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
-  // TODO(crbug.com/967262): Apply policy for allow_user_level.
+  // TODO(crbug.com/41461105): Apply policy for allow_user_level.
   auto native_message_host = NativeMessageProcessHost::CreateWithLauncher(
       extension_id, host_id,
       NativeProcessLauncher::CreateDefault(

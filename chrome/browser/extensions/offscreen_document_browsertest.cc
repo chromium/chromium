@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
         ProcessMap::Get(profile())->GetMostLikelyContextType(
             extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
             &offscreen_url);
-    // TODO(https://crbug.com/1339382): The following check should be:
+    // TODO(crbug.com/40849649): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);
     // However, currently the ProcessMap can't differentiate between a
     // privileged extension context and an offscreen document, as both run in

@@ -836,9 +836,9 @@ WebstorePrivateBeginInstallWithManifest3Function::BuildResponse(
 
   // The old Webstore expects an empty string on success, so don't use
   // RESULT_SUCCESS here.
-  // TODO(crbug.com/709120): The new Webstore accepts either the empty string or
-  // RESULT_SUCCESS on success now, so once the old Webstore is turned down this
-  // can be changed over.
+  // TODO(crbug.com/40514370): The new Webstore accepts either the empty string
+  // or RESULT_SUCCESS on success now, so once the old Webstore is turned down
+  // this can be changed over.
   return ArgumentList(BeginInstallWithManifest3::Results::Create(
       api::webstore_private::Result::kEmptyString));
 }
@@ -972,7 +972,7 @@ WebstorePrivateCompleteInstallFunction::Run() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1365778): Centralize logic for disallowing
+  // TODO(crbug.com/40239506): Centralize logic for disallowing
   // installation with other installation paths.
   if (!profile->IsMainProfile()) {
     bool allowed = approval_->dummy_extension &&
@@ -1061,7 +1061,7 @@ WebstorePrivateEnableAppLauncherFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateEnableAppLauncherFunction::Run() {
-  // TODO(crbug.com/822900): Check if this API is still in use and whether we
+  // TODO(crbug.com/40567472): Check if this API is still in use and whether we
   // can remove it.
   return RespondNow(NoArguments());
 }

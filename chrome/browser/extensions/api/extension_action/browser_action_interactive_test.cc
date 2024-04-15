@@ -260,7 +260,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test
 // opens a popup in the starting window, closes the popup, creates a new window
 // and opens a popup in the new window. Both popups should succeed in opening.
-// TODO(crbug.com/1233996): Test flaking frequently on Lacros.
+// TODO(crbug.com/40781224): Test flaking frequently on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestOpenPopup DISABLED_TestOpenPopup
 #else
@@ -614,7 +614,7 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/1249851): Test crashes on Windows
+// TODO(crbug.com/40791502): Test crashes on Windows
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_LINUX) && \
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   // The window isn't considered "active" on MacOSX for odd reasons. The more
   // important test is that it *is* considered the last active browser, since
   // that's what we check when we try to open the popup.
-  // TODO(crbug.com/1115237): Now that this is an interactive test, is this
+  // TODO(crbug.com/40711219): Now that this is an interactive test, is this
   // ifdef still necessary?
 #if !BUILDFLAG(IS_MAC)
   ui_test_utils::BrowserActivationWaiter waiter(popup_browser);

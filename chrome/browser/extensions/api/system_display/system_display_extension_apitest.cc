@@ -48,7 +48,7 @@ class SystemDisplayExtensionApiTest
       std::make_unique<MockDisplayInfoProvider>();
 };
 
-// TODO(crbug.com/1231357): Revisit this after screen creation refactoring.
+// TODO(crbug.com/40779611): Revisit this after screen creation refactoring.
 #if !BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

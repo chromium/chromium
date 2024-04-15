@@ -593,7 +593,7 @@ void PermissionsUpdater::SetPermissions(
   // but are not in the active set.
   const PermissionSet& required =
       PermissionsParser::GetRequiredPermissions(extension);
-  // TODO(https://crbug.com/869403): Currently, withheld permissions should only
+  // TODO(crbug.com/41405109): Currently, withheld permissions should only
   // contain permissions withheld by the runtime host permissions feature.
   // However, there could possibly be API permissions that were removed from the
   // active set by enterprise policy. These shouldn't go in the withheld

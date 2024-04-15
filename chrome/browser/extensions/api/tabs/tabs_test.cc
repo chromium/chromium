@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
       true);
   EXPECT_TRUE(minimize_waiter.Wait());
 #elif BUILDFLAG(IS_OZONE_WAYLAND)
-  // TODO(crbug.com/1406188): Find a fix/workaround for wayland and add
+  // TODO(crbug.com/40252593): Find a fix/workaround for wayland and add
   // verification of IsMinimized() for as well.
 #endif
 #else

@@ -1334,7 +1334,7 @@ void ExtensionService::CheckManagementPolicy() {
       // OnExternalExtensionUpdateUrlFound(), but already-broken browsers (from
       // previous Chromium versions) also need to be fixed here.
       //
-      // TODO(crbug.com/1114778): This won't be needed after a few milestones.
+      // TODO(crbug.com/40144051): This won't be needed after a few milestones.
       // It should be safe to remove in M107.
       disable_reasons &= (~disable_reason::DISABLE_EXTERNAL_EXTENSION);
     }

@@ -128,7 +128,7 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     //  permissions
     //    granted for one tab shouldn't persist on that side panel across tab
     //    changes.
-    // TODO(crbug.com/1435530): Evaluate if this is the best course of action.
+    // TODO(crbug.com/40904917): Evaluate if this is the best course of action.
     SidePanelService* side_panel_service =
         SidePanelService::Get(browser_context_);
     if (side_panel_service &&

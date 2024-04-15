@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
 }
 
-// TODO(crbug.com/1352957): Flakily timing out.
+// TODO(crbug.com/40858121): Flakily timing out.
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, DISABLED_GetFrame) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
@@ -399,7 +399,7 @@ INSTANTIATE_TEST_SUITE_P(
     /* features::kExtensionsServiceWorkerOptimizedEventDispatch status */
     testing::Bool());
 
-// TODO(https://crbug.com/1250311):
+// TODO(crbug.com/40791797):
 // WebNavigationApiTestWithContextType.Download test is flaky.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Download DISABLED_Download
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ForwardBack) {
   ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
 }
 
-// TODO(crbug.com/1313923): Flaky on several platforms.
+// TODO(crbug.com/40221198): Flaky on several platforms.
 IN_PROC_BROWSER_TEST_F(WebNavigationApiBackForwardCacheTest,
                        DISABLED_ForwardBack) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -766,7 +766,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1223055): Re-enable this test.
+// TODO(crbug.com/40187463): Re-enable this test.
 #define MAYBE_Xslt DISABLED_Xslt
 #else
 #define MAYBE_Xslt Xslt

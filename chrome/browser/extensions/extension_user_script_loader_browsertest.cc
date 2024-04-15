@@ -73,7 +73,7 @@ class ExtensionUserScriptLoaderBrowserTest : public ExtensionApiTest {
 // This series of tests exercises that the migration we have in place for our
 // serializations of user scripts works properly, preserving old records. It is
 // split into three steps.
-// TODO(https://crbug.com/1494155): We can remove this test once the migration
+// TODO(crbug.com/40286091): We can remove this test once the migration
 // is fully complete.
 // Step 1: Load an extension and populate it with old-style data.
 IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,

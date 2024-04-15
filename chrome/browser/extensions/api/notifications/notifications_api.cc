@@ -327,7 +327,7 @@ bool NotificationsApiFunction::CreateNotification(
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
 
-  // TODO(crbug.com/772004): Remove the manual limitation in favor of an IDL
+  // TODO(crbug.com/41348342): Remove the manual limitation in favor of an IDL
   // annotation once supported.
   if (id.size() > kNotificationIdLengthLimit) {
     *error =

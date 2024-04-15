@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
 
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
-// TODO(crbug/1256760): Flaky on Linux.
+// TODO(crbug.com/40795982): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
   DISABLED_SessionStorageDoesNotPersistBetweenOpenings
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest, ValuesArePersisted) {
 }
 
 // Tests setting the icon dynamically from the background page.
-// TODO(crbug.com/1340330): flaky.
+// TODO(crbug.com/40230315): flaky.
 IN_PROC_BROWSER_TEST_P(MultiActionAPICanvasTest, DISABLED_DynamicSetIcon) {
   constexpr char kManifestTemplate[] =
       R"({
@@ -1434,7 +1434,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, GettersAndSetters) {
              custom_badge_color2, base::BindRepeating(get_badge_color));
   }
 
-  // TODO(crbug.com/1372176): Test using HTML colors instead of just color
+  // TODO(crbug.com/40870872): Test using HTML colors instead of just color
   // arrays, including set/getBadgeBackgroundColor.
   // setBadgeTextColor/getBadgeTextColor.
   // This API is only supported on MV3.

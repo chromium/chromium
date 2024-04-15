@@ -188,7 +188,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   ContextMenuSource source_;
 
   // The origin used to populate the context menu's content.
-  // TODO(crbug.com/1435117): Web contents may change while the menu is open,
+  // TODO(crbug.com/40265043): Web contents may change while the menu is open,
   // which may affect the context menu contents. We should dynamically update
   // the context menu, or close it when this happens.
   url::Origin origin_;

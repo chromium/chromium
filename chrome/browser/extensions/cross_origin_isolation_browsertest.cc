@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                                        image_url_without_host_permissions));
 
   // Disallowed due to COEP: require-corp.
-  // TODO(crbug.com/1246109): Should host permissions override behavior here?
+  // TODO(crbug.com/40789023): Should host permissions override behavior here?
   EXPECT_EQ("Load failed",
             test_image_load(coep_strict_background_render_frame_host,
                             image_url_with_host_permissions));

@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   }
 }
 
-// TODO(crbug.com/909570): This test is flaky everywhere.
+// TODO(crbug.com/41428657): This test is flaky everywhere.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        DISABLED_NestedURLNavigationsViaNoOpenerPopupBlocked) {
   // Create a simple extension without a background page.

@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowed) {
   ASSERT_TRUE(RunExtensionTest("autoplay")) << message_;
 }
 
-// TODO(crbug.com/1166927): AutoplayAllowedInIframe sporadically (~10%?) times
+// TODO(crbug.com/40742402): AutoplayAllowedInIframe sporadically (~10%?) times
 // out on Linux.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.

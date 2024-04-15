@@ -82,7 +82,7 @@ class ExtensionManagement : public KeyedService {
   //                     it afterwards.
   // * kForcePinned: Extension starts pinned to the toolbar, and the user
   //                 cannot unpin it.
-  // TODO(crbug.com/1071314): Add kDefaultPinned state.
+  // TODO(crbug.com/40126725): Add kDefaultPinned state.
   enum class ToolbarPinMode {
     kDefaultUnpinned = 0,
     kForcePinned,

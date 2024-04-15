@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsIncognito) {
 // Test the list of generic font families.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsGenericFamilies) {
   PrefService* prefs = browser()->profile()->GetPrefs();
-  // TODO(crbug.com/122303): Test generic font families added to CSS Fonts
+  // TODO(crbug.com/40187445): Test generic font families added to CSS Fonts
   // Module Level 4.
   prefs->SetString(prefs::kWebKitStandardFontFamily, "default_standard");
   prefs->SetString(prefs::kWebKitSansSerifFontFamily, "default_sansserif");

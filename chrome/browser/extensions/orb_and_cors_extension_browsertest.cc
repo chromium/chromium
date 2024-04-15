@@ -1278,7 +1278,7 @@ class TrustTokenExtensionBrowserTest : public OrbAndCorsExtensionBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1315215): Have trust tokens handle the existence, or not, of
+// TODO(crbug.com/40221677): Have trust tokens handle the existence, or not, of
 // PrivacySandboxSettings3.
 IN_PROC_BROWSER_TEST_F(
     TrustTokenExtensionBrowserTest,

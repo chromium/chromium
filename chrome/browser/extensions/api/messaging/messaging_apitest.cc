@@ -1651,7 +1651,7 @@ class ServiceWorkerMessagingApiTest : public MessagingApiTest {
 
 // After sending message from extension and got response back, there should be
 // no in-flight request hanging.
-// TODO(https://crbug.com/1417555): Disabled due to flakiness.
+// TODO(crbug.com/40257364): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
                        DISABLED_InflightCountAfterSendMessage) {
   constexpr char kManifest[] =

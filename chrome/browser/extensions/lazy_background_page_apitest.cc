@@ -834,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventListenerCleanup) {
 
 // Tests that an extension can fetch a file scheme URL from the lazy background
 // page, if it has file access.
-// TODO(crbug.com/1283851): Deflake test.
+// TODO(crbug.com/40813949): Deflake test.
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
                        DISABLED_FetchFileSchemeURLWithFileAccess) {
   ASSERT_TRUE(RunExtensionTest(

@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, TestReadingListWorks) {
   ASSERT_TRUE(RunExtensionTest("reading_list")) << message_;
 }
 
-// TODO(crbug.com/1482646): Re-enable this test
+// TODO(crbug.com/40931607): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TestReadingListEventsAcrossProfiles \
   DISABLED_TestReadingListEventsAcrossProfiles

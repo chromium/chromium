@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
 
 // Tests that changing the developer mode setting affects existing renderers
 // for service worker contexts (which run off the main thread in the renderer).
-// TODO(crbug.com/1505673): Test flaky on multiple platforms
+// TODO(crbug.com/40946312): Test flaky on multiple platforms
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DISABLED_SwitchingDeveloperModeAffectsExistingRenderers_ServiceWorkers) {

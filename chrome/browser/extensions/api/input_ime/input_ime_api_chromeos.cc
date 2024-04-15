@@ -665,7 +665,7 @@ class ImeObserverChromeOS
   }
 
   // Returns true if there are any listeners on the given event.
-  // TODO(https://crbug.com/835699): Merge this with |ExtensionHasListener|.
+  // TODO(crbug.com/41384866): Merge this with |ExtensionHasListener|.
   bool HasListener(const std::string& event_name) const {
     return extensions::EventRouter::Get(profile_)->HasEventListener(event_name);
   }

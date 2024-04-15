@@ -323,7 +323,7 @@ void WebstoreInstaller::Start() {
 
   tracker->OnBeginExtensionDownload(id_);
 
-  // TODO(crbug.com/305343): Query manifest of dependencies before
+  // TODO(crbug.com/41064141): Query manifest of dependencies before
   // downloading & installing those dependencies.
   DownloadNextPendingModule();
 }

@@ -2863,7 +2863,7 @@ TEST_F(ExtensionServiceTest, DefaultUnpackedFileAccess) {
 // Tests that adding a packed extension grants file access if the appropriate
 // creation flag is set. Note: This doesn't normally happen in practice but it
 // is tested here to document the behavior.
-// TODO(crbug/1432284): The werid behavior here should be cleared up and we
+// TODO(crbug.com/40263865): The werid behavior here should be cleared up and we
 // should simplify how we're storing and checking if file access has been
 // granted to an extension.
 TEST_F(ExtensionServiceTest, DefaultPackedFileAccessWithCreationFlag) {

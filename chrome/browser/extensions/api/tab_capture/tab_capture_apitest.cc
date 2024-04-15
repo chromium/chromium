@@ -54,7 +54,7 @@ class TabCaptureApiTest : public ExtensionApiTest {
     // Specify smallish window size to make testing of tab capture less CPU
     // intensive.
     command_line->AppendSwitchASCII(::switches::kWindowSize, "300,300");
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
     if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
       command_line->AppendSwitch(::switches::kUseGpuInTests);
@@ -77,7 +77,8 @@ class TabCaptureApiTest : public ExtensionApiTest {
 class TabCaptureApiPixelTest : public TabCaptureApiTest {
  public:
   void SetUp() override {
-    // TODO(crbug/754872): Update this to match WCVCD content_browsertests.
+    // TODO(crbug.com/40534864): Update this to match WCVCD
+    // content_browsertests.
     if (!IsTooIntensiveForThisPlatform())
       EnablePixelOutput();
     TabCaptureApiTest::SetUp();
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 
 // Make sure tabCapture.capture only works if the tab has been granted
 // permission via an extension icon click or the extension is allowlisted.
-// TODO(crbug.com/1306351): Flaky on all platforms
+// TODO(crbug.com/40827755): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   ExtensionTestMessageListener before_open_tab("ready1",
                                                ReplyBehavior::kWillReply);

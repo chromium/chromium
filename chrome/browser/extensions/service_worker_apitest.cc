@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
 
 // Tests that an extension can fetch a file scheme URL from the service worker,
 // if it has file access.
-// TODO(crbug.com/1499141): Flaky on mac
+// TODO(crbug.com/40939961): Flaky on mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FetchFileSchemeURLWithFileAccess \
   DISABLED_FetchFileSchemeURLWithFileAccess

@@ -132,8 +132,8 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
   // inner WebContents. The direct access is centralized in this helper function
   // for easier migration.
   //
-  // TODO(crbug/1261928): Update this implementation for MPArch, and consider
-  // relocate it to `content/public/test/browser_test_utils.h`.
+  // TODO(crbug.com/40202416): Update this implementation for MPArch, and
+  // consider relocate it to `content/public/test/browser_test_utils.h`.
   void WaitForGuestViewLoadStop(guest_view::GuestViewBase* guest_view) {
     auto* guest_contents = guest_view->web_contents();
     ASSERT_TRUE(content::WaitForLoadStop(guest_contents));

@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachDetach) {
   EXPECT_TRUE(RunExtensionTest("web_authentication_proxy/main"));
 }
 
-// TODO(crbug.com/1276042): Flaky on all platforms
+// TODO(crbug.com/40808644): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, DISABLED_AttachReload) {
   SetJsTestName("attachReload");
   // Load an extension that immediately attaches.

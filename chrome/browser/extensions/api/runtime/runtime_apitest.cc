@@ -753,7 +753,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
 // Tests retrieving the background service worker context using
 // `chrome.runtime.getContexts()`.
 
-// TODO(https://crbug.com/1429463): failed on "chromium/ci/Mac12 Tests"
+// TODO(crbug.com/40901108): failed on "chromium/ci/Mac12 Tests"
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_GetServiceWorkerContext DISABLED_GetServiceWorkerContext
 #else

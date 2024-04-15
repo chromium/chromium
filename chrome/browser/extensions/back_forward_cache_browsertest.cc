@@ -999,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
                 base::StringPrintf(kScript, iframe_frame_tree_node_id)));
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+// TODO(crbug.com/40834769): WebSQL does not work on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
 #else

@@ -143,7 +143,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
   // Permissions and the install param are handled by the unpacked installer
   // before the extension is installed.
-  // TODO(https://crbug.com/1157606): Fix CrxInstaller to enable this for
+  // TODO(crbug.com/40160904): Fix CrxInstaller to enable this for
   // packed extensions.
   if (!is_unpacked) {
     // Trying to reload a shared module (as we do when adjusting extension

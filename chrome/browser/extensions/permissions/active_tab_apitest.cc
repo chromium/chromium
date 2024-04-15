@@ -50,7 +50,7 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
   }
 };
 
-// TODO(crbug.com/1380627): Flaky on all platforms.
+// TODO(crbug.com/40876361): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

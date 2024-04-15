@@ -20,7 +20,7 @@ namespace {
 
 using TabGroupsApiTest = ExtensionApiTest;
 
-// TODO(crbug.com/1441814): Test is flaky.
+// TODO(crbug.com/40910190): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
   ASSERT_TRUE(RunExtensionTest("tab_groups")) << message_;
 }

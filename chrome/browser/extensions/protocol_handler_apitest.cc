@@ -64,7 +64,7 @@ class ProtocolHandlerChangeWaiter
 // This test verifies correct registration of protocol handlers using HTML5's
 // registerProtocolHandler in extension context and its validation with relaxed
 // security checks.
-// TODO(crbug.com/1177254): Flaky on win/mac.
+// TODO(crbug.com/40168716): Flaky on win/mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_Registration DISABLED_Registration
 #else

@@ -767,7 +767,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses4) {
   EXPECT_EQ(GURL(), effective_new_url);
 }
 
-// TODO(crbug.com/1099066): Separate this test into subtests to improve
+// TODO(crbug.com/40137306): Separate this test into subtests to improve
 // readability.
 TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   net::HttpRequestHeaders base_headers;

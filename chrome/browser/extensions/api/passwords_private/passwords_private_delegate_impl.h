@@ -111,7 +111,7 @@ class PasswordsPrivateDelegateImpl
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
   bool IsOptedInForAccountStorage() override;
-  // TODO(crbug.com/1102294): Mimic the signature in PasswordFeatureManager.
+  // TODO(crbug.com/40138722): Mimic the signature in PasswordFeatureManager.
   void SetAccountStorageOptIn(bool opt_in,
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::PasswordUiEntry> GetInsecureCredentials()

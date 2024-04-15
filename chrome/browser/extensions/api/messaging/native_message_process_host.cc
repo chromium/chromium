@@ -83,7 +83,7 @@ NativeMessageProcessHost::~NativeMessageProcessHost() {
 
   if (process_.IsValid()) {
 // Kill the host process if necessary to make sure we don't leave zombies.
-// TODO(https://crbug.com/806451): On OSX EnsureProcessTerminated() may
+// TODO(crbug.com/41367359): On OSX EnsureProcessTerminated() may
 // block, so we have to post a task on the blocking pool.
 #if BUILDFLAG(IS_MAC)
     base::ThreadPool::PostTask(

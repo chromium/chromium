@@ -357,7 +357,7 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On lacros, ensure the PreferenceEventRouter is always created to watch for
   // and notify of any pref changes, even if there are no extension listeners.
-  // TODO(crbug.com/1334829): Abstract out lacros logic from the
+  // TODO(crbug.com/40228309): Abstract out lacros logic from the
   // PreferenceEventRouter so we don't needlessly dispatch extension events.
   EnsurePreferenceEventRouterCreated();
 #endif
@@ -684,7 +684,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
 
   // Set the new Autofill prefs if the extension sets the deprecated pref in
   // order to maintain backward compatibility in the extensions preference API.
-  // TODO(crbug.com/870328): Remove this once the deprecated pref is retired.
+  // TODO(crbug.com/40587768): Remove this once the deprecated pref is retired.
   if (autofill::prefs::kAutofillEnabledDeprecated == browser_pref) {
     // |SetExtensionControlledPref| takes ownership of the base::Value pointer.
     prefs_helper->SetExtensionControlledPref(
