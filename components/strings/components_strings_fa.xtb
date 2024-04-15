@@ -698,6 +698,7 @@
 <translation id="2265192657948645752">مشاغل خرده‌فروشی</translation>
 <translation id="2265356434276802347">این خط‌مشی نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی ویژه داشته باشد.</translation>
 <translation id="2267047181501709434">درحال فعال کردن هویت…</translation>
+<translation id="2268044343513325586">فیلتر</translation>
 <translation id="2270484714375784793">شماره تلفن</translation>
 <translation id="2276057643614339130">پایه چاپ</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
@@ -3923,7 +3924,7 @@
 <translation id="8528149813106025610">لباس کودکانه</translation>
 <translation id="8530813470445476232">‏سابقه مرور، کوکی، حافظه پنهان و موارد دیگر را در تنظیمات Chrome پاک کنید.</translation>
 <translation id="853246364274116957">برادوی و تئاتر موزیکال</translation>
-<translation id="8533411848724153701">Gemini</translation>
+<translation id="8533411848724153701">Gemini Chat</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
 <translation id="8534934518812659742">‏<ph name="PERMISSION" /> را برای Chrome خاموش کرده‌اید.</translation>
 <translation id="8536234749087605613">پاکت (پنجره‌دار)</translation>

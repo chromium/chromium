@@ -1850,7 +1850,7 @@
 <translation id="2364498172489649528">通过</translation>
 <translation id="2365507699358342471">此页面可以查看复制到剪贴板的文字和图片。</translation>
 <translation id="2367972762794486313">显示应用</translation>
-<translation id="2369058545741334020">在朗读模式下打开</translation>
+<translation id="2369058545741334020">在阅读模式下打开</translation>
 <translation id="236939127352773362">当附近的设备正在分享内容时</translation>
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
 <translation id="237336063998926520">根据您的 IP 地址确定位置</translation>
@@ -3144,7 +3144,7 @@
 <translation id="3371351218553893534">此行内容过长：<ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">其他设备上</translation>
 <translation id="337286756654493126">读取您在该应用中打开的文件夹</translation>
-<translation id="3373059063088819384">在朗读模式下打开</translation>
+<translation id="3373059063088819384">在阅读模式下打开</translation>
 <translation id="3373196968211632036">儿童 Google 账号无法使用 Steam for Chromebook（Beta 版）</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3374294321938930390">已将书签“<ph name="BOOKMARK_TITLE" />”移入文件夹“<ph name="NEW_FOLDER_TITLE" />”。</translation>
@@ -4183,7 +4183,7 @@
 <translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
-<translation id="4137923333452716643">突出显示您想在朗读模式下打开的文字</translation>
+<translation id="4137923333452716643">选中您想在阅读模式下打开的文字</translation>
 <translation id="4138267921960073861">在登录屏幕上显示用户名和照片</translation>
 <translation id="4138598238327913711">语法检查目前仅支持英语</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID 设备已连接</translation>
@@ -8701,7 +8701,7 @@
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
 <translation id="7684718995427157417">要创建和测试您的应用，请启用 Android 调试桥 (ADB)。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且您会需要将设备恢复出厂设置才能停用 ADB。</translation>
-<translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“朗读模式”</translation>
+<translation id="7684913007876670600">若要显示此页面的简化视图，请打开侧边栏并从中选择“阅读模式”</translation>
 <translation id="7685049629764448582">JavaScript 使用的内存</translation>
 <translation id="7685087414635069102">必须输入 PIN 码</translation>
 <translation id="7685351732518564314">按 <ph name="DEVICE_NAME" /> 上的按钮。</translation>

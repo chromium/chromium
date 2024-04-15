@@ -24,6 +24,7 @@
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1135805404083530719">ನಿಯಂತ್ರಣಗಳ ಪ್ಯಾನೆಲ್</translation>
 <translation id="1145018782460575098">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ ವಿಂಡೋ ತೆರೆದಿದೆ. <ph name="NUM_UPDATES" /> ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿದೆ.</translation>
 <translation id="1145516343487477149">ಸಾಮಾನ್ಯ Chromebook ಪ್ರಶ್ನೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಸಹಾಯ ಒದಗಿಸುವ ಲೇಖನಗಳು ಹಾಗೂ ಉತ್ತರಗಳನ್ನು ಕಂಡುಕೊಳ್ಳಿ</translation>
 <translation id="1154390310959620237">ನೀವು ಕೇವಲ 5 ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು. ಹೊಸದನ್ನು ಸೇರಿಸಲು ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಅಳಿಸಿ.</translation>
@@ -32,6 +33,7 @@
 <translation id="1167755866710282443">ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಮೆನು ತೆರೆಯಿರಿ. ಸರಿಸಲು ಮೆನುವನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
 <translation id="1171349345463658120">ಮರಳಿನ ಆವೃತ ಪ್ರದೇಶ</translation>
 <translation id="1174073918202301297">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಲಾಗಿದೆ</translation>
+<translation id="11743817593307477">ನೀವು ಬಯಸುವ ಗೇಮ್‌ನ ಆ್ಯಕ್ಷನ್‌ಗೆ ಈ ನಿಯಂತ್ರಣವನ್ನು ಮೂವ್ ಮಾಡಲು ಬಾಣದ ಕೀಗಳನ್ನು ಬಳಸಿ. ನಿಯಂತ್ರಣವನ್ನು ಇರಿಸಲು ಎಂಟರ್ ಕೀ ಅನ್ನು ಬಳಸಿ. ರದ್ದುಗೊಳಿಸಲು ಎಸ್ಕೇಪ್ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">ಸಾಂದ್ರತೆ</translation>
@@ -101,6 +103,7 @@
 <translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
+<translation id="1539864135338521185">ಲ್ಯಾಪಿಸ್ ಲಾಜುಲಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1561927818299383735">ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಬಣ್ಣ</translation>
@@ -109,6 +112,7 @@
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
 <translation id="1572585716423026576">ವಾಲ್‌ಪೇಪರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
 <translation id="1578784163189013834">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="1593528591614229756">ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸಿದ APN ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. APN ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಯಾವುದೇ ಕಸ್ಟಮ್ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಪರ್ಕವನ್ನು ಅಡ್ಡಿಪಡಿಸಬಹುದು. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1611649489706141841">ಮುಂದೆ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
@@ -161,6 +165,7 @@
 <translation id="1801418420130173017">ಡಾರ್ಕ್‌ ಥೀಮ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
 <translation id="1808803439260407870">ಕ್ಲಾಸಿಕ್ ಆರ್ಟ್</translation>
+<translation id="1815850098929213707">ಆಯ್ಕೆಮಾಡಿರುವ ಕೀ <ph name="KEYS" /> ಆಗಿದೆ. ನಿಯಂತ್ರಣವನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1823120442877418684">ಪಾತ್ರಗಳು</translation>
 <translation id="1827738518074806965">ಆರ್ಟ್ ಗ್ಯಾಲರಿ</translation>
 <translation id="1836553715834333258">ಸಿಸ್ಟಮ್ ಬಣ್ಣ</translation>
@@ -215,6 +220,7 @@
 <translation id="2105810540595158374">ಸಾಧನವು ಗೇಮ್ ಕಂಟ್ರೋಲ್ ಆಗಿದೆ.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
+<translation id="2135668738111962377"><ph name="ACTION_NAME" /> ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2138109643290557664">ಗಾಳಿಯಲ್ಲಿ ತೇಲಿಹೋಗಿ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
@@ -227,6 +233,7 @@
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2180197493692062006">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಆ್ಯಪ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2189104374785738357">APN ವಿವರಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="2195732836444333448">ಇದೀಗ ಸಾಮರ್ಥ್ಯದಲ್ಲಿದೆ. ಶೀಘ್ರದಲ್ಲೇ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="2201758491318984023">ಬೈಸಿಕಲ್</translation>
 <translation id="2203222757805818543">ಪ್ರಸ್ತುತ ವೇಳಾಪಟ್ಟಿಯನ್ನು <ph name="SUNRISE" /> - <ph name="SUNSET" /> ಗೆ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸ್ಥಳದ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">ಬಿಸಿನೀರಿನ ಬುಗ್ಗೆ</translation>
@@ -287,6 +294,7 @@
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
 <translation id="2521835766824839541">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="2526590354069164005">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
+<translation id="2529641961800709867">ಬಟನ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="253029298928638905">ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2531772459602846206">ಹೈಡ್ರೇಂಜ</translation>
 <translation id="2533048460510040082">ಸೂಚಿಸಲಾದ ಸಹಾಯ ಕಂಟೆಂಟ್</translation>
@@ -297,6 +305,7 @@
 <translation id="2584547424703650812">ಗ್ಲೋಸ್ಕೇಪ್ಸ್</translation>
 <translation id="2584559707064218956">ಸೆಟಪ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2586146417912237930">ನೀಲಿ ಮತ್ತು ಇಂಡಿಗೊ</translation>
+<translation id="2589921777872778654">ಮೆನುವನ್ನು ಎಡಿಟ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
 <translation id="2597774443162333062">ಡೀಬಗ್ ಮಾಡಲು ಫೈಲ್‌ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="2617397783536231890">ಹತ್ತಿ</translation>
@@ -428,6 +437,7 @@
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್ ಡೇಟಾ<ph name="END_LINK1" /> ಕಳುಹಿಸಿ</translation>
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
+<translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3533790840489634638">ಈಜುಕೊಳ</translation>
 <translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
@@ -530,6 +540,7 @@
 <translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="4130750466177569591">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
+<translation id="4143226836069425823">ಬದಲಿಸಲು ಮತ್ತೊಂದು ಕೀಬೋರ್ಡ್ ಕೀಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -624,6 +635,7 @@
 <translation id="4665014895760275686">ತಯಾರಕರು</translation>
 <translation id="467510802200863975">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="467715984478005772">ಫೈರ್‌ವಾಲ್ ಇದೆ ಎಂಬ ಅನುಮಾನವಿದೆ</translation>
+<translation id="4683762547447150570">ಕೀ ನಿಯೋಜನೆಯ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4691278870498629773">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಟ್ರೇ ಇಲ್ಲ</translation>
 <translation id="469379815867856270">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="4697260493945012995">ನಿಮ್ಮ ಕಂಟ್ರೋಲ್‌ ಪ್ರಕಾರವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -705,6 +717,7 @@
 <translation id="5130848777448318809">ಪೋನಿಗಳು</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
+<translation id="5144311987923128508">ದೃಢೀಕರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5144887194300568405">ಅನುವಾದ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5145081769226915336">ಡಾರ್ಕ್ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5154917547274118687">ಸ್ಮರಣೆ</translation>
@@ -824,6 +837,7 @@
 <translation id="5860491529813859533">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5876385649737594562">ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಆನ್ ಮಾಡಿ</translation>
 <translation id="588258955323874662">ಪೂರ್ಣಪರದೆ</translation>
+<translation id="5893975327266416093">ನಿಯೋಜಿಸಲು ಕೀಬೋರ್ಡ್ ಕೀ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5903200662178656908">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್‌ನ ಕಾಂಬೋ ಆಗಿದೆ.</translation>
@@ -896,6 +910,7 @@
 <translation id="6243280677745499710">ಪ್ರಸ್ತುತವಾಗಿ ಹೊಂದಿಸಿರುವುದು</translation>
 <translation id="6250316632541035980">ಬೇಕನ್ ಮತ್ತು ಮೊಟ್ಟೆಗಳು</translation>
 <translation id="6255213378196499011">ಬರೆಯಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿ ಎಂಬುದರ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="6265268291107409527">ಆಯ್ಕೆಮಾಡಿರುವ ಕೀ <ph name="KEYS" /> ಆಗಿದೆ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ರೈಟ್ ಗುರುತು</translation>
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -957,6 +972,7 @@
 <translation id="6535178685492749208">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಂತರ ಕಳುಹಿಸಲಾಗುವುದು.</translation>
 <translation id="6543412779435705598">ಟ್ಯಾಕೋಸ್</translation>
 <translation id="6551839203326557324">ಸೇಬುಗಳು</translation>
+<translation id="65526652485742171">ದೃಢೀಕರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6557784757915238407">APN <ph name="ATTACH" /> ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="65587193855025101">ಫ್ಲಾಟ್‌ಬೆಡ್</translation>
 <translation id="6560196641871357166">ವೈಬ್ರೆಂಟ್</translation>
@@ -1031,6 +1047,16 @@
 <translation id="6975981640379148271">ಕೊವಾಲಾಗಳು</translation>
 <translation id="6977381486153291903">ಫರ್ಮ್‌ವೇರ್ ಮರುಪರಿಶೀಲನೆ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
+<translation id="698242338298293034">ನಿಮ್ಮ AI ಚಿತ್ರಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು, ಥೀಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಅಂಡರ್‌ಲೈನ್ ಮಾಡಲಾದ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಇನ್ನಷ್ಟು ಅನನ್ಯ ಹಾಗೂ ವೈವಿಧ್ಯಮಯ AI ಚಿತ್ರಗಳ ಆಯ್ಕೆಗಳನ್ನು ಪಡೆಯಲು "ನನಗೆ ಸ್ಫೂರ್ತಿ ನೀಡಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ನೀವು AI ಮೂಲಕ ರಚಿಸಿದಾಗ, ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲು ಹಾಗೂ ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಅದು <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಗೌಪ್ಯತೆ ನೀತಿಗೆ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ, ಅಭಿವೃದ್ಧಿಯ ಆರಂಭಿಕ ಹಂತದಲ್ಲಿದೆ ಹಾಗೂ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="6982462588253070448">ಮರಳಿನ ದಿಬ್ಬಗಳು</translation>
 <translation id="7005833343836210400">ಸಾಧನ ಆಫ್‌ಲೈನ್ ಆಗಿದೆ</translation>
 <translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತದೆ.</translation>
@@ -1051,6 +1077,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ಗಾಗಿ ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆಗಿ ಇರುವ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="7108668606237948702">ನಮೂದಿಸಿ</translation>
+<translation id="7118522231018231199">ನಿಮ್ಮ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಅಥವಾ ನಿರ್ವಾಹಕರು ಒದಗಿಸಿದ APN ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. APN ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವುದರಿಂದ ಯಾವುದೇ ಕಸ್ಟಮ್ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ. ಅಮಾನ್ಯವಾದ APN ಗಳು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಪರ್ಕವನ್ನು ಅಡ್ಡಿಪಡಿಸಬಹುದು.</translation>
 <translation id="7119389851461848805">ಪವರ್‌</translation>
 <translation id="7129287270910503851">ಈ ದಿನದಂದು ನಿಮ್ಮ ಡೇಟಾ ಬಳಕೆಯನ್ನು ಪ್ರತಿ ತಿಂಗಳು ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="7130438335435247835">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರು (APN)</translation>
@@ -1173,6 +1200,7 @@
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="779591286616261875">ಹೊಸ ವರದಿಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="7799817062559422778">ಬೆಳಕಿನ ಮೋಡ್</translation>
+<translation id="7802764839223122985">ಕೀ ಕಾಣೆಯಾಗಿದೆ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7813073042185856802">ಪರ್ವತ</translation>
@@ -1219,6 +1247,7 @@
 <translation id="8062968459344882447"><ph name="CHARACTERS_BACKGROUND" /> ಹಿನ್ನೆಲೆಯ ಮೇಲೆ<ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /></translation>
 <translation id="8067126283828232460">APN ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="8067208048261192356">ಕಂದು</translation>
+<translation id="8067224607978179455"><ph name="ACTION_NAME" /> ಅನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8076492880354921740">ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="8079860070590459552">ಹೂದೋಟ</translation>
@@ -1244,6 +1273,7 @@
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8227119283605456246">ಫೈಲ್‌‎ ಲಗತ್ತಿಸಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="8238771987802558562">APN ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
 <translation id="8250926778281121244">ರಸ್ಟ್</translation>
 <translation id="8257572018929862473">ತ್ವರಿತ ಉತ್ತರಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -1366,6 +1396,7 @@
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8930521118335213258">ಪೀಯರ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>
+<translation id="8933650076320258356"><ph name="DIRECTION" /> ಗಾಗಿ <ph name="KEYS" /> ಕೀ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">ಕ್ಲೈಂಟ್ IP ವಿಳಾಸ</translation>
 <translation id="8944651180182756621">ಲಾಂಚರ್ ಬಣ್ಣ</translation>
 <translation id="8945308580158685341">ಜೇನು ನೋಣಗಳು</translation>
@@ -1416,18 +1447,22 @@
 <translation id="9149391708638971077">ಮೆಮೊರಿ ಪರೀಕ್ಷೆ ರನ್ ಮಾಡಿ</translation>
 <translation id="9159524746324788320">ಹ್ಯಾಂಬರ್ಗರ್‌ಗಳು</translation>
 <translation id="9161276708550942948">space</translation>
+<translation id="9169345239923038539">ನೀವು ಇನ್ನೂ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ. ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಕಸ್ಟಮ್ APN ಅನ್ನು ಶಿಫಾರಸು ಮಾಡಿದರೆ, <ph name="BEGIN_LINK" />APN ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ.<ph name="END_LINK" /></translation>
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="9174334653006917325">UI ಬಣ್ಣ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
 <translation id="9188992814426075118">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಾಣಿಕೆಯಾಗಬಹುದು</translation>
 <translation id="9189000703457422362">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಯಾದ APN ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="9193744392140377127">APN*</translation>
+<translation id="9195918315673527512">ಆಯ್ಕೆಮಾಡಿರುವ ಜಾಯ್‌ಸ್ಟಿಕ್ ಕೀಗಳು <ph name="KEYS" />. ನಿಯಂತ್ರಣವನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಬಟನ್ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="9204237731135241582">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಗೇಟ್‌ವೇ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="921080052717160800">ಚಿತ್ರವನ್ನು ಕ್ಯಾಮರಾ ಹಿನ್ನೆಲೆಯಾಗಿ ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="9211490828691860325">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳು</translation>
+<translation id="9218016617214286986">ತಿಳಿದಿರುವ APN ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="932327136139879170">ಹೋಮ್</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
+<translation id="950520315903467048"><ph name="DIRECTION" /> ಗಾಗಿ ಕೀ ಕಾಣೆಯಾಗಿದೆ. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="95718197892796296">ಜೇಡಿ ಮಣ್ಣು</translation>
 <translation id="960719561871045870">ಆಪರೇಟರ್ ಕೋಡ್</translation>

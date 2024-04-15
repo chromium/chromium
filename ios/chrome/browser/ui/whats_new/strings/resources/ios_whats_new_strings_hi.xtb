@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1533488253335887280">होम स्क्रीन से अपने पासवर्ड आसान और सुरक्षित तरीके से ऐक्सेस करें.</translation>
+<translation id="1590550141045148182">अपने हिसाब से टैब खोलें या बंद करें.</translation>
+<translation id="2036020471903443693">स्क्रीन के सबसे नीचे आपको टैब पिन किया हुआ दिखेगा.</translation>
+<translation id="2984477737332162971">'खुले हुए टैब' पर जाएं.</translation>
+<translation id="3595188309555410362">अगर आपके पास ऐसे टैब हैं जिन्हें कुछ समय से इस्तेमाल नहीं किया गया है, तो वे अब इनऐक्टिव टैब वाले सेक्शन में मूव हो जाएंगे.</translation>
+<translation id="3941788408634637840">'इनऐक्टिव टैब' पर टैप करें (अगर उपलब्ध हो).</translation>
+<translation id="3942215673032261195">अपनी पसंदीदा साइटों को पिन किया जा सकता है, ताकि बाद में उन्हें आसानी से ऐक्सेस किया जा सके.</translation>
+<translation id="4196935312151003338">मेन्यू से “पिन किया गया टैब” को चुनें.</translation>
+<translation id="4497631794981705027">होम स्क्रीन को दबाकर रखें.</translation>
+<translation id="463279609093232564">स्क्रीन के सबसे ऊपर बाईं ओर, + पर टैप करें.</translation>
+<translation id="5604467549230434026">Search विजेट बॉक्स में, 'Chrome' लिखें.</translation>
+<translation id="5639067007765618198">Google Password Manager का विजेट</translation>
 <translation id="5922999516621365983">टैब पिन करने के लिए, उसे खींचें और यहां छोड़ें.</translation>
 <translation id="5979837087407522202">पासवर्ड खोजें</translation>
+<translation id="6109989197058801417">जिस टैब को पिन करना है उसे दबाकर रखें.</translation>
+<translation id="639614003069108254">Password Manager चुनें. इसके बाद, 'विजेट जोड़ें' पर टैप करें.</translation>
+<translation id="6905308710260460250">पिन किए गए टैब</translation>
+<translation id="720206380500582061">सेटिंग &gt; टैब में जाकर, इनऐक्टिव टैब की सेटिंग मैनेज करें.</translation>
 <translation id="8077675488769462025">इस्तेमाल नहीं किए जा रहे टैब</translation>
+<translation id="8602952180069641300">स्क्रोल करके टैब के सबसे ऊपर जाएं.</translation>
+<translation id="979990360845983227">इनका इस्तेमाल 14 या उससे ज़्यादा दिनों से नहीं किया गया है</translation>
 </translationbundle>

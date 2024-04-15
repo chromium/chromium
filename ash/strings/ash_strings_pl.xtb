@@ -160,6 +160,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1569384531973824928">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
 <translation id="1571697193564730395">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
+<translation id="1582946770779745370">Dostępny jest panel gier. Aby otworzyć, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, a potem w dowolnym momencie <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
 <translation id="158838227375272121">Witryna Google Classroom</translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
@@ -1981,6 +1982,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8717459106217102612">Zaznacz poprzednie słowo lub znak</translation>
 <translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Zrzut całego ekranu</translation>
+<translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8725214031272624704">Pokaż listę dostępnych metod wprowadzania</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731487213223706745">Zakończenie o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
