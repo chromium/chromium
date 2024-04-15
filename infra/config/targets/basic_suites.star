@@ -1707,20 +1707,16 @@ targets.legacy_basic_suite(
     },
 )
 
-# Unit tests of cronet dependencies in:
+# Compilable unit tests of cronet dependencies in:
 # //components/cronet/android/dependencies.txt
+# TODO(b/333888734): Add component_unittests or a subset of it.
+# TODO(b/333887705): Make base_unittests compilable and add it.
+# TODO(b/333888747): Make url_unittests compilable and add it.
 targets.legacy_basic_suite(
     name = "cronet_clang_coverage_additional_gtests",
     tests = {
         "absl_hardening_tests": targets.legacy_test_config(),
-        "base_unittests": targets.legacy_test_config(),
-        "components_unittests": targets.legacy_test_config(
-            android_swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
         "crypto_unittests": targets.legacy_test_config(),
-        "url_unittests": targets.legacy_test_config(),
         "zlib_unittests": targets.legacy_test_config(),
     },
 )

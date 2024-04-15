@@ -1775,14 +1775,7 @@
 
     'cronet_clang_coverage_additional_gtests': {
       'absl_hardening_tests': {},
-      'base_unittests': {},
-      'components_unittests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
       'crypto_unittests': {},
-      'url_unittests': {},
       'zlib_unittests': {},
     },
 
