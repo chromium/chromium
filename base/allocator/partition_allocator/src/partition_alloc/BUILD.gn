@@ -143,7 +143,7 @@ component("raw_ptr") {
 # "encoded next" freelist entry.
 #
 # Only usable when pointers are 64-bit.
-use_freelist_pool_offsets = has_64_bit_pointers && false
+use_freelist_pool_offsets = has_64_bit_pointers
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
