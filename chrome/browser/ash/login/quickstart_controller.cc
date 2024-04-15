@@ -485,6 +485,9 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
   current_screen_ = current_screen;
   previous_screen_ = previous_screen;
 
+  QS_LOG(INFO) << "Current screen changed from " << previous_screen << " to "
+               << current_screen;
+
   if (current_screen_ == QuickStartScreenHandler::kScreenId) {
     // Just switched into the quick start screen. The ScreenOpened metrics on
     // the Quick Start screen are recorded from OnStatusChanged().

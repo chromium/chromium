@@ -286,6 +286,7 @@ class QuickStartMetrics {
       std::optional<MessageReceivedErrorCode> error_code);
 
  private:
+  ScreenName last_screen_opened_ = ScreenName::kNone;
   // Timer to keep track of Fast Pair advertising duration. Should be
   // constructed when advertising starts and destroyed when advertising
   // finishes.
@@ -318,6 +319,10 @@ class QuickStartMetrics {
   // received.
   std::unique_ptr<base::ElapsedTimer> gaia_authentication_timer_;
 };
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartMetrics::ScreenName& metrics_screen_name);
 
 }  // namespace ash::quick_start
 

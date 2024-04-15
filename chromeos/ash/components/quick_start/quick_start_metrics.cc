@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/quick_start/logging.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace ash::quick_start {
@@ -265,11 +266,22 @@ void QuickStartMetrics::RecordChallengeBytesRequestEnded(
 void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
   base::UmaHistogramEnumeration(kScreenOpened, screen);
   screen_opened_view_duration_timer_ = std::make_unique<base::ElapsedTimer>();
+  last_screen_opened_ = screen;
 }
 
 void QuickStartMetrics::RecordScreenClosed(ScreenName screen) {
   // TODO(b/298042953): Add ScreenClosedReason
   if (screen_opened_view_duration_timer_ == nullptr) {
+    QS_LOG(ERROR) << "RecordScreenClosed called but now "
+                     "screen_opened_view_duration_timer_ set. screen: "
+                  << screen;
+    return;
+  }
+
+  if (screen != last_screen_opened_) {
+    QS_LOG(ERROR) << "RecordScreenClosed called but screen does not match "
+                     "last_screen_opened_. last_screen_opened_: "
+                  << last_screen_opened_ << " closed screen: " << screen;
     return;
   }
 
@@ -446,6 +458,79 @@ void QuickStartMetrics::RecordMessageReceived(
                                 desired_message_type);
 
   message_elapsed_timer_.reset();
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartMetrics::ScreenName& metrics_screen_name) {
+  switch (metrics_screen_name) {
+    case QuickStartMetrics::ScreenName::kOther:
+      stream << "[other]";
+      break;
+    case QuickStartMetrics::ScreenName::kNone:
+      stream << "[none]";
+      break;
+    case QuickStartMetrics::ScreenName::kWelcomeScreen:
+      stream << "[welcome screen]";
+      break;
+    case QuickStartMetrics::ScreenName::kNetworkScreen:
+      stream << "[network screen]";
+      break;
+    case QuickStartMetrics::ScreenName::kGaiaScreen:
+      stream << "[gaia screen]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone:
+      stream << "[QS setup with Android phone]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSConnectingToWifi:
+      stream << "[QS connecting to wifi]";
+      break;
+    case QuickStartMetrics::ScreenName::
+        kCheckingForUpdateAndDeterminingDeviceConfiguration:
+      stream << "[checking for update and determining device configuration]";
+      break;
+    case QuickStartMetrics::ScreenName::kChooseChromebookSetup:
+      stream << "[choose Chromebook setup]";
+      break;
+    case QuickStartMetrics::ScreenName::kConsumerUpdate:
+      stream << "[consumer update]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
+      stream << "[QS resuming connection after update]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
+      stream << "[QS getting Google account info]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSComplete:
+      stream << "[QS complete]";
+      break;
+    case QuickStartMetrics::ScreenName::kSetupDevicePIN:
+      stream << "[setup device PIN]";
+      break;
+    case QuickStartMetrics::ScreenName::kAddChild:
+      stream << "[add child]";
+      break;
+    case QuickStartMetrics::ScreenName::kReviewPrivacyAndTerms:
+      stream << "[review privacy and terms]";
+      break;
+    case QuickStartMetrics::ScreenName::kUnifiedSetup:
+      stream << "[unified setup]";
+      break;
+    case QuickStartMetrics::ScreenName::kGaiaInfoScreen:
+      stream << "[gaia info screen]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived:
+      stream << "[QS wifi credentials received]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSSelectGoogleAccount:
+      stream << "[QS select Google account]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSCreatingAccount:
+      stream << "[QS creating account]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start
