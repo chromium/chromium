@@ -844,10 +844,20 @@ BASE_FEATURE(kServiceWorkerStaticRouter,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Run video capture service in the Browser process as opposed to a dedicated
-// utility process
+// utility process.
+// On ChromeOS the service had to run in the browser process, because parts of
+// the code depend on global objects that are only available in the Browser
+// process. See https://crbug.com/891961. However, since the dependencies are
+// removed now(b/315966244), the service run in the browser process by default,
+// but an user is able to run it in an utility process by changing the flag.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Update scheduler settings using resourced on ChromeOS.
 BASE_FEATURE(kSchedQoSOnResourcedForChrome,
@@ -1260,10 +1270,7 @@ enum class VideoCaptureServiceConfiguration {
 };
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-// On ChromeOS the service must run in the browser process, because parts of the
-// code depend on global objects that are only available in the Browser process.
-// See https://crbug.com/891961.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
   return base::FeatureList::IsEnabled(

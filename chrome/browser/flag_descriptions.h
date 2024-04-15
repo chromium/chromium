@@ -4082,6 +4082,9 @@ extern const char kReleaseNotesNotificationAlwaysEligibleDescription[];
 extern const char kRenderArcNotificationsByChromeName[];
 extern const char kRenderArcNotificationsByChromeDescription[];
 
+extern const char kRunVideoCaptureServiceInBrowserProcessName[];
+extern const char kRunVideoCaptureServiceInBrowserProcessDescription[];
+
 extern const char kArcWindowPredictorName[];
 extern const char kArcWindowPredictorDescription[];
 

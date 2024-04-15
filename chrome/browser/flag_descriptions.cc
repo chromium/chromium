@@ -3741,6 +3741,13 @@ const char kEnablePasswordSharingName[] = "Enables password sharing";
 const char kEnablePasswordSharingDescription[] =
     "Enables sharing of password between members of the same family.";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+const char kRunVideoCaptureServiceInBrowserProcessName[] =
+    "Run video capture service in browser";
+const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
+    "Run the video capture service in the browser process.";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)
@@ -5212,11 +5219,6 @@ const char kRawAudioCaptureDescription[] =
     "audio stream is a 'raw' stream that bypasses all signal processing except "
     "for endpoint specific, always-on processing in the Audio Processing Object"
     " (APO), driver, and hardware.";
-
-const char kRunVideoCaptureServiceInBrowserProcessName[] =
-    "Run video capture service in browser";
-const char kRunVideoCaptureServiceInBrowserProcessDescription[] =
-    "Run the video capture service in the browser process.";
 
 const char kUseAngleDescriptionWindows[] =
     "Choose the graphics backend for ANGLE. D3D11 is used on most Windows "
