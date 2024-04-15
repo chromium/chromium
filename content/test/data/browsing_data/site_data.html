@@ -6,9 +6,9 @@
     return location.protocol === 'https:';
   }
 
-  function setCookie() {
+  function setCookie(data = 'foo=bar') {
     const samesite_none_secure = '; SameSite=None; Secure';
-    document.cookie = 'foo=bar; Max-Age=1000' + (isHttps_() ? samesite_none_secure : '');
+    document.cookie = `${data}; Max-Age=1000` + (isHttps_() ? samesite_none_secure : '');
     return true;
   }
   function setCookieAsync() {
