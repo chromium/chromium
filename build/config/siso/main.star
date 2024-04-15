@@ -253,6 +253,18 @@ def __use_large_b289968566(ctx, step_config):
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
 
+        # Fallback happens with the following args.gn
+        # (win-build-perf-developer)
+        # is_component_build = true
+        # is_debug = true
+        # symbol_level = 2
+        # use_siso = true
+        exit137_list.extend([
+            "./obj/content/browser/browser/storage_partition_impl.obj",
+            "./obj/third_party/blink/renderer/core/core/local_frame_view.obj",
+            "./obj/third_party/blink/renderer/core/core_hot/document.obj",
+        ])
+
     new_rules = []
     for rule in step_config["rules"]:
         if not rule["name"].endswith("/cxx"):
