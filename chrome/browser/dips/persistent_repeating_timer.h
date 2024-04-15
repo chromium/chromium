@@ -14,8 +14,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-class PrefService;
-
 // We copied this class from
 // //components/signin/public/base/persistent_repeating_timer.h in order to
 // modify it for moving to //content. To ensure the copies don't get mixed up,
@@ -35,13 +33,6 @@ class PersistentRepeatingTimer {
     virtual void GetLastFired(TimeCallback callback) const = 0;
     virtual void SetLastFired(base::Time time) = 0;
   };
-
-  // TODO: crbug.com/328209292 - Remove this constructor.
-  // The timer is not started at creation.
-  PersistentRepeatingTimer(PrefService* prefs,
-                           const char* timer_last_update_pref_name,
-                           base::TimeDelta delay,
-                           base::RepeatingClosure task);
 
   // The timer is not started at creation.
   PersistentRepeatingTimer(std::unique_ptr<Storage> timer_storage,

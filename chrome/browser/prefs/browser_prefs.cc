@@ -1034,6 +1034,9 @@ constexpr char kPreferencesMigratedToBasic[] =
 inline constexpr char kOmniboxInstantKeywordUsed[] =
     "omnibox.instant_keyword_used";
 
+// Deprecated 04/2024.
+inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1470,6 +1473,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2024.
   registry->RegisterBooleanPref(kOmniboxInstantKeywordUsed, false);
+
+  // Deprecated 04/2024.
+  registry->RegisterTimePref(kDIPSTimerLastUpdate, base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2169,8 +2175,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 false);
 #endif
 
-  registry->RegisterTimePref(prefs::kDIPSTimerLastUpdate, base::Time());
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   registry->RegisterBooleanPref(prefs::kAccessibilityPdfOcrAlwaysActive, true);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2774,6 +2778,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2024.
   profile_prefs->ClearPref(kOmniboxInstantKeywordUsed);
+
+  // Added 04/2024.
+  profile_prefs->ClearPref(kDIPSTimerLastUpdate);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

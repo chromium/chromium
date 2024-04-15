@@ -3962,10 +3962,6 @@ inline constexpr char
     kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
         "access_control_allow_methods_in_cors_preflight_spec_conformant";
 
-// A time preference keeping track of the last time the DIPS service performed
-// DIPS-related repeated actions (logging metrics, clearing state, etc).
-inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A dictionary that keeps client_ids assigned by Authorization Servers indexed
 // by URLs of these servers. It does not contain empty strings.

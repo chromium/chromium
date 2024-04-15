@@ -2121,3 +2121,11 @@ TEST_F(DIPSDatabaseConfigTest, MarkAsPrepopulated) {
   ASSERT_TRUE(db_->MarkAsPrepopulated());
   ASSERT_TRUE(db_->IsPrepopulated());
 }
+
+TEST_F(DIPSDatabaseConfigTest, TimerLastFired) {
+  const base::Time time = Time::FromSecondsSinceUnixEpoch(1);
+
+  ASSERT_EQ(db_->GetTimerLastFired(), std::nullopt);
+  ASSERT_TRUE(db_->SetTimerLastFired(time));
+  ASSERT_EQ(db_->GetTimerLastFired(), time);
+}

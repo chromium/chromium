@@ -236,6 +236,9 @@ class DIPSDatabase {
   size_t GetMaxEntries() const { return max_entries_; }
   size_t GetPurgeEntries() const { return purge_entries_; }
 
+  std::optional<base::Time> GetTimerLastFired();
+  bool SetTimerLastFired(base::Time time);
+
   // Testing functions --------------------------------------------------
   void SetMaxEntriesForTesting(size_t entries) { max_entries_ = entries; }
   void SetPurgeEntriesForTesting(size_t entries) { purge_entries_ = entries; }

@@ -102,6 +102,9 @@ class DIPSStorage {
   // std::nullopt if there has been no user interaction on `url`.
   std::optional<base::Time> LastInteractionTime(const GURL& url);
 
+  std::optional<base::Time> GetTimerLastFired();
+  bool SetTimerLastFired(base::Time time);
+
   // Utility Methods -----------------------------------------------------------
 
   static void DeleteDatabaseFiles(base::FilePath path,

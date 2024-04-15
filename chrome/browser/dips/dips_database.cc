@@ -40,6 +40,7 @@ BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kPrepopulatedKey[] = "prepopulated";
+constexpr char kTimerLastFiredKey[] = "timer_last_fired";
 
 std::optional<base::Time> ColumnOptionalTime(sql::Statement* statement,
                                              int column_index) {
@@ -1815,4 +1816,18 @@ std::optional<int64_t> DIPSDatabase::GetConfigValue(std::string_view key) {
   }
 
   return statement.ColumnInt64(0);
+}
+
+std::optional<base::Time> DIPSDatabase::GetTimerLastFired() {
+  std::optional<int64_t> raw_value = GetConfigValue(kTimerLastFiredKey);
+  if (!raw_value.has_value()) {
+    return std::nullopt;
+  }
+
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(*raw_value));
+}
+
+bool DIPSDatabase::SetTimerLastFired(base::Time time) {
+  return SetConfigValue(kTimerLastFiredKey,
+                        time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }

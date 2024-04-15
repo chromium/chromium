@@ -20,12 +20,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
-class Profile;
-
 namespace content {
 class BrowserContext;
 class DipsDelegate;
-}
+}  // namespace content
 
 namespace content_settings {
 class CookieSettings;
@@ -134,7 +132,7 @@ class DIPSService : public KeyedService {
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
   explicit DIPSService(content::BrowserContext* context);
-  std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer(Profile* profile);
+  std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
   void Shutdown() override;
   bool IsShuttingDown() const { return !cookie_settings_; }
 

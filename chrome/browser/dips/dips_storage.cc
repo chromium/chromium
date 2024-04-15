@@ -346,3 +346,13 @@ void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
     std::move(args.on_complete).Run();
   }
 }
+
+std::optional<base::Time> DIPSStorage::GetTimerLastFired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetTimerLastFired();
+}
+
+bool DIPSStorage::SetTimerLastFired(base::Time time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->SetTimerLastFired(time);
+}

@@ -936,6 +936,19 @@ TEST_F(DIPSStorageTest, DidSiteHaveInteractionSince) {
       url1, base::Time::FromSecondsSinceUnixEpoch(4)));
 }
 
+TEST_F(DIPSStorageTest, GetTimerLastFired_InitiallyReturnsEmpty) {
+  ASSERT_EQ(storage_.GetTimerLastFired(), std::nullopt);
+}
+
+TEST_F(DIPSStorageTest, GetTimerLastFired_ReturnsLastSetValue) {
+  const base::Time time1 = base::Time::FromTimeT(1);
+  const base::Time time2 = base::Time::FromTimeT(2);
+
+  ASSERT_TRUE(storage_.SetTimerLastFired(time1));
+  ASSERT_TRUE(storage_.SetTimerLastFired(time2));
+  ASSERT_THAT(storage_.GetTimerLastFired(), testing::Optional(time2));
+}
+
 class DIPSStoragePrepopulateTest : public testing::Test {
  public:
   DIPSStoragePrepopulateTest()

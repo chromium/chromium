@@ -4,16 +4,19 @@
 
 #include "chrome/browser/dips/dips_service.h"
 
+#include <memory>
 #include <optional>
 #include <set>
 #include <string_view>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -33,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
-#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -228,13 +230,39 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
   base::OnceClosure callback_;
 };
 
+class DipsTimerStorage : public dips::PersistentRepeatingTimer::Storage {
+ public:
+  explicit DipsTimerStorage(base::SequenceBound<DIPSStorage>* dips_storage);
+  ~DipsTimerStorage() override;
+
+  // Reads the timestamp from the DIPS DB.
+  void GetLastFired(TimeCallback callback) const override {
+    dips_storage_->AsyncCall(&DIPSStorage::GetTimerLastFired)
+        .Then(std::move(callback));
+  }
+  // Write the timestamp to the DIPS DB.
+  void SetLastFired(base::Time time) override {
+    dips_storage_
+        ->AsyncCall(base::IgnoreResult(&DIPSStorage::SetTimerLastFired))
+        .WithArgs(time);
+  }
+
+ private:
+  raw_ref<base::SequenceBound<DIPSStorage>> dips_storage_;
+};
+
+DipsTimerStorage::DipsTimerStorage(
+    base::SequenceBound<DIPSStorage>* dips_storage)
+    : dips_storage_(CHECK_DEREF(dips_storage)) {}
+
+DipsTimerStorage::~DipsTimerStorage() = default;
+
 }  // namespace
 
 DIPSService::DIPSService(content::BrowserContext* context)
     : browser_context_(context),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
-      repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))),
       dips_delegate_(ChromeDipsDelegate::Create()) {
   DCHECK(base::FeatureList::IsEnabled(features::kDIPS));
   std::optional<base::FilePath> path_to_use;
@@ -268,9 +296,9 @@ DIPSService::DIPSService(content::BrowserContext* context)
         .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,
                              weak_factory_.GetWeakPtr()));
   }
-  if (repeating_timer_) {
-    repeating_timer_->Start();
-  }
+
+  repeating_timer_ = CreateTimer();
+  repeating_timer_->Start();
 
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(context))) {
@@ -278,13 +306,12 @@ DIPSService::DIPSService(content::BrowserContext* context)
   }
 }
 
-std::unique_ptr<dips::PersistentRepeatingTimer> DIPSService::CreateTimer(
-    Profile* profile) {
-  DCHECK(profile);
+std::unique_ptr<dips::PersistentRepeatingTimer> DIPSService::CreateTimer() {
+  CHECK(!storage_.is_null());
   // base::Unretained(this) is safe here since the timer that is created has the
   // same lifetime as this service.
   return std::make_unique<dips::PersistentRepeatingTimer>(
-      profile->GetPrefs(), prefs::kDIPSTimerLastUpdate,
+      std::make_unique<DipsTimerStorage>(&storage_),
       features::kDIPSTimerDelay.Get(),
       base::BindRepeating(&DIPSService::OnTimerFired, base::Unretained(this)));
 }
