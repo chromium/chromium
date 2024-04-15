@@ -144,6 +144,10 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
                             TabShareType capture_type,
                             bool favicons_used_for_switch_to_tab_button);
 
+  const TabSharingInfoBarDelegateButton& GetButton(
+      TabSharingInfoBarButton button) const;
+  TabSharingInfoBarDelegateButton& GetButton(TabSharingInfoBarButton button);
+
   const std::u16string shared_tab_name_;
   const TabRole role_;
 

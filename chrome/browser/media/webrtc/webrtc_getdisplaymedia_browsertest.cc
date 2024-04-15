@@ -224,7 +224,7 @@ TabSharingInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
 }
 
 bool HasCscIndicator(content::WebContents* web_contents) {
-  return GetDelegate(web_contents)->GetButtonEnabled(kCscIndicator);
+  return GetDelegate(web_contents)->GetButtons() & kCscIndicator;
 }
 
 bool HasShareThisTabInsteadButton(content::WebContents* web_contents) {
