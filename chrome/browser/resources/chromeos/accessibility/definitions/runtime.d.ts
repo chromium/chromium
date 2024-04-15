@@ -160,7 +160,8 @@ declare global {
       export function sendMessage(
           extensionId: string|undefined, message: any, options?: {
             includeTlsChannelId?: boolean,
-          }): Promise<any>;
+          },
+          callback?: Function): Promise<any>;
 
       export function sendNativeMessage(
           application: string, message: {[key: string]: any}): Promise<any>;
@@ -199,7 +200,8 @@ declare global {
       export const onConnectNative: ChromeEvent<(port: Port) => void>;
 
       export const onMessage: ChromeEvent<
-          (message: any|undefined, sender: MessageSender) => boolean>;
+          (message: any|undefined, sender: MessageSender,
+           sendResponse: (value: any) => void) => boolean>;
 
       export const onMessageExternal: ChromeEvent<
           (message: any|undefined, sender: MessageSender) => boolean>;
