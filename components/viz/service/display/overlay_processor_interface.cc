@@ -127,8 +127,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   if (overlay_manager) {
     overlay_candidates =
         overlay_manager->CreateOverlayCandidates(surface_handle);
-    if (features::ShouldUseRealBuffersForPageFlipTest() &&
-        overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
+    if (overlay_manager->allow_sync_and_real_buffer_page_flip_testing()) {
       sii = shared_image_interface;
       CHECK(shared_image_interface);
     }

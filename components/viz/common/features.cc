@@ -92,12 +92,6 @@ BASE_FEATURE(kVizFrameSubmissionForWebView,
              "VizFrameSubmissionForWebView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether we should use the real buffers corresponding to overlay candidates in
-// order to do a pageflip test rather than allocating test buffers.
-BASE_FEATURE(kUseRealBuffersForPageFlipTest,
-             "UseRealBuffersForPageFlipTest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables SkiaOutputDeviceBufferQueue instead of Vulkan swapchain on Fuchsia.
 BASE_FEATURE(kUseSkiaOutputDeviceBufferQueue,
@@ -395,10 +389,6 @@ bool IsDynamicColorGamutEnabled() {
 
 bool IsUsingVizFrameSubmissionForWebView() {
   return base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView);
-}
-
-bool ShouldUseRealBuffersForPageFlipTest() {
-  return base::FeatureList::IsEnabled(kUseRealBuffersForPageFlipTest);
 }
 
 bool ShouldWebRtcLogCapturePipeline() {
