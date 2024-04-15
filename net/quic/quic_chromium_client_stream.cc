@@ -318,9 +318,10 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   // unexpected condition (encryption not established or message too large),
   // reset the stream and close the connection.
   else {
+    // These two errors should not be possible here.
     DCHECK(message_status !=
-               quic::MessageStatus::MESSAGE_STATUS_ENCRYPTION_NOT_ESTABLISHED ||
-           message_status != quic::MessageStatus::MESSAGE_STATUS_TOO_LARGE);
+           quic::MessageStatus::MESSAGE_STATUS_ENCRYPTION_NOT_ESTABLISHED);
+    DCHECK(message_status != quic::MessageStatus::MESSAGE_STATUS_TOO_LARGE);
     DLOG(ERROR) << "Failed to send Http3 Datagram on " << stream_->id();
     stream_->Reset(quic::QUIC_STREAM_CANCELLED);
     return ERR_CONNECTION_CLOSED;
