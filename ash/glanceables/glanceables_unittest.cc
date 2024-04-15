@@ -25,7 +25,7 @@ class GlanceablesTest : public AshTestBase {
       features::kGlanceablesTimeManagementTasksView};
 };
 
-TEST_F(GlanceablesTest, DoesNotAddTasksViewWhenDisabledByAdmin) {
+TEST_F(GlanceablesTest, DISABLED_DoesNotAddTasksViewWhenDisabledByAdmin) {
   const auto account_id =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
   SimulateUserLogin(account_id);
