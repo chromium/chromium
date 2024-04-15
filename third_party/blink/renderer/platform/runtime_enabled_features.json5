@@ -295,14 +295,6 @@
       base_feature: "none",
     },
     {
-      name: "AllowSyntheticTimingForCanvasCapture",
-      base_feature: "none",
-      status: {
-        "Mac": "stable",
-        "default": ""
-},
-    },
-    {
       name: "AllowURNsInIframes",
       base_feature: "none",
     },
