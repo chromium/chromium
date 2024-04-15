@@ -38,6 +38,7 @@ def __use_large_b289968566(ctx, step_config):
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./lacros_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
+        "./lacros_clang_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         "./lacros_clang_x64/obj/third_party/blink/public/mojom/mojom_platform/speech_recognition_grammar.mojom.o",
         "./obj/chrome/browser/ash/ash/autotest_private_api.o",
         "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
@@ -211,6 +212,39 @@ def __use_large_b289968566(ctx, step_config):
         # symbol_level = 2
         # use_siso = true
         "./obj/content/browser/browser/render_process_host_impl.o",
+        "./obj/net/http/transport_security_state_generated_files/transport_security_state.o",
+        # Fallback happens with the following args.gn
+        # (try/mac-rel)
+        # coverage_instrumentation_input_file = "//.code-coverage/files_to_instrument.txt"
+        # dcheck_always_on = true
+        # enable_backup_ref_ptr_feature_flag = true
+        # enable_dangling_raw_ptr_checks = true
+        # enable_dangling_raw_ptr_feature_flag = true
+        # ffmpeg_branding = "Chrome"
+        # is_component_build = false
+        # is_debug = false
+        # proprietary_codecs = true
+        # symbol_level = 0
+        # target_cpu = "x64"
+        # use_clang_coverage = true
+        # use_remoteexec = false
+        # use_siso = true
+        "./arm64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
+        "./arm64_v8_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
+        # Fallback happens with the following args.gn
+        # (try/ios-simulator)
+        # coverage_instrumentation_input_file = "//.code-coverage/files_to_instrument.txt"
+        # enable_run_ios_unittests_with_xctest = true
+        # is_component_build = false
+        # is_debug = true
+        # symbol_level = 1
+        # target_cpu = "x64"
+        # target_environment = "simulator"
+        # target_os = "ios"
+        # use_clang_coverage = true
+        # use_remoteexec = false
+        # use_siso = true
+        "./clang_arm64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
