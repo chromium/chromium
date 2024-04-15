@@ -13,11 +13,13 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
 
@@ -25,6 +27,23 @@ namespace {
 
 constexpr std::string_view kHistogramPrefix =
     "Autofill.Deduplication.ExistingProfiles.";
+
+void LogTypeOfQuasiDuplicateTokenMetric(
+    int duplication_rank,
+    std::vector<FieldTypeSet> min_incompatible_sets) {
+  if (duplication_rank < 1 || duplication_rank > 5) {
+    return;
+  }
+  const std::string metric_name =
+      base::StrCat({kHistogramPrefix, "TypeOfQuasiDuplicateToken.",
+                    base::NumberToString(duplication_rank)});
+  for (const FieldTypeSet& types : min_incompatible_sets) {
+    for (FieldType type : types) {
+      base::UmaHistogramEnumeration(
+          metric_name, ConvertSettingsVisibleFieldTypeForMetrics(type));
+    }
+  }
+}
 
 void LogDeduplicationStartupMetricsForProfile(
     const AutofillProfile& profile,
@@ -37,6 +56,7 @@ void LogDeduplicationStartupMetricsForProfile(
   base::UmaHistogramCounts100(
       base::StrCat({kHistogramPrefix, "RankOfStoredQuasiDuplicateProfiles"}),
       duplication_rank);
+  LogTypeOfQuasiDuplicateTokenMetric(duplication_rank, min_incompatible_sets);
   // TODO(b/325452461): Implement more metrics.
 }
 

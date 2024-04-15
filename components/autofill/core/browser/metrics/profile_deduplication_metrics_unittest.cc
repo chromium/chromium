@@ -9,6 +9,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -53,6 +55,28 @@ TEST_F(ProfileDeduplicationMetricsTest,
       "Autofill.Deduplication.ExistingProfiles."
       "RankOfStoredQuasiDuplicateProfiles",
       0);
+}
+
+TEST_F(ProfileDeduplicationMetricsTest, TypeOfQuasiDuplicateToken) {
+  // `a` differs from `b` and `c` only in a single type.
+  AutofillProfile a = test::GetFullProfile();
+  AutofillProfile b = test::GetFullProfile();
+  b.SetRawInfo(COMPANY_NAME, u"different company");
+  AutofillProfile c = test::GetFullProfile();
+  c.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
+  base::HistogramTester histogram_tester;
+  LogDeduplicationStartupMetrics({&a, &b, &c}, kLocale);
+  RunUntilIdle();
+  // Expect two samples for `kCompany` and `kEmailAddress`, since:
+  // - `kCompany` and `kEmailAddress` are each emitted once by `a`.
+  // - `kCompany` is emitted once by `b`.
+  // - `kEmailAddress` is emitted once by `c`.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.Deduplication.ExistingProfiles."
+                                     "TypeOfQuasiDuplicateToken.1"),
+      base::BucketsAre(
+          base::Bucket(SettingsVisibleFieldTypeForMetrics::kCompany, 2),
+          base::Bucket(SettingsVisibleFieldTypeForMetrics::kEmailAddress, 2)));
 }
 
 }  // namespace

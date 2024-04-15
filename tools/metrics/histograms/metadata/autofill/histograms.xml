@@ -1773,6 +1773,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.Deduplication.ExistingProfiles.TypeOfQuasiDuplicateToken.{DuplicationRank}"
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-09-01">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For every profile, records the types of the minimum set of fields in which
+    the profile differs from some other profile of the same country. That is,
+    the set of types that prevent us from deduplicating the profile. Emitted on
+    browser startup, for every user with at least 2 profiles. Profiles of
+    different countries are not considered, since they can never be merged due
+    to the data model differences. The metric is split by the size of this set
+    (duplication rank).
+  </summary>
+  <token key="DuplicationRank">
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.DeveloperEngagement"
     enum="AutofillDeveloperEngagement" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
