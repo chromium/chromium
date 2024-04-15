@@ -7,6 +7,7 @@
     "optimize_webui": false,
     "symbol_level": 0,
     "use_javascript_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
