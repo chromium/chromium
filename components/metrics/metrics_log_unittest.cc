@@ -210,6 +210,17 @@ TEST_F(MetricsLogTest, RecordId) {
   EXPECT_EQ(503, log3.uma_proto()->record_id());
 }
 
+TEST_F(MetricsLogTest, SessionHash) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+
+  // Verify that created logs are tagged with the same session hash.
+  EXPECT_TRUE(log1.uma_proto()->system_profile().has_session_hash());
+  EXPECT_TRUE(log2.uma_proto()->system_profile().has_session_hash());
+  EXPECT_EQ(log1.uma_proto()->system_profile().session_hash(),
+            log2.uma_proto()->system_profile().session_hash());
+}
+
 TEST_F(MetricsLogTest, LogType) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   EXPECT_EQ(MetricsLog::ONGOING_LOG, log1.log_type());
@@ -268,6 +279,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // Hashes of "mock-flag-1" and "mock-flag-2" from SetUpCommandLine.
   system_profile->add_command_line_key_hash(2578836236);
   system_profile->add_command_line_key_hash(2867288449);
+  // The session hash.
+  system_profile->set_session_hash(
+      log.uma_proto()->system_profile().session_hash());
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
   system_profile->set_is_instrumented_build(true);

@@ -47,11 +47,13 @@ void WriteSystemProfileToAllocator(
     base::PersistentHistogramAllocator* allocator) {
   metrics::SystemProfileProto profile_proto;
   // Add a field trial to verify that FileMetricsProvider will produce an
-  // independent log with the written system profile.
+  // independent log with the written system profile. Similarly for the session
+  // hash.
   metrics::SystemProfileProto::FieldTrial* trial =
       profile_proto.add_field_trial();
   trial->set_name_id(123);
   trial->set_group_id(456);
+  profile_proto.set_session_hash(789);
   metrics::PersistentSystemProfile persistent_profile;
   persistent_profile.RegisterPersistentAllocator(allocator->memory_allocator());
   persistent_profile.SetSystemProfile(profile_proto, /*complete=*/true);
@@ -985,6 +987,7 @@ TEST_P(FileMetricsProviderTest, AccessEmbeddedProfileMetricsWithProfile) {
     ASSERT_EQ(1, uma_proto.system_profile().field_trial_size());
     EXPECT_EQ(123U, uma_proto.system_profile().field_trial(0).name_id());
     EXPECT_EQ(456U, uma_proto.system_profile().field_trial(0).group_id());
+    EXPECT_EQ(789U, uma_proto.system_profile().session_hash());
     EXPECT_FALSE(HasIndependentMetrics());
     EXPECT_FALSE(ProvideIndependentMetrics(&uma_proto, &snapshot_manager));
   }

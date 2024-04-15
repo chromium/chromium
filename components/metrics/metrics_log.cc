@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <vector>
 
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -39,6 +40,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "crypto/random.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -200,6 +202,14 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
   return metrics::SystemProfileProto::OS::OTHER;
 }
 #endif  // BUILDFLAG(IS_LINUX)
+
+// Gets the hash of this session. A random hash is generated the first time this
+// is called (which is cached and returned for the remainder of the session).
+uint64_t GetSessionHash() {
+  static const std::vector<uint8_t> session_hash =
+      crypto::RandBytesAsVector(/*length=*/8);
+  return *reinterpret_cast<const uint64_t*>(session_hash.data());
+}
 
 }  // namespace
 
@@ -374,6 +384,8 @@ void MetricsLog::RecordCoreSystemProfile(
   // Set if a build is instrumented (e.g. built with ASAN, or with DCHECKs).
   system_profile->set_is_instrumented_build(true);
 #endif
+
+  system_profile->set_session_hash(GetSessionHash());
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
