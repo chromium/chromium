@@ -134,6 +134,11 @@ class Config {
     return *this;
   }
 
+  Config& WithGestureRepeatDelayMs(int delay) {
+    gesture_repeat_delay_ms_ = delay;
+    return *this;
+  }
+
   const gfx::PointF& forehead_location() const { return forehead_location_; }
   const gfx::Point& cursor_location() const { return cursor_location_; }
   int buffer_size() const { return buffer_size_; }
@@ -149,6 +154,9 @@ class Config {
   const std::optional<CursorSpeeds>& cursor_speeds() const {
     return cursor_speeds_;
   }
+  std::optional<int> gesture_repeat_delay_ms() const {
+    return gesture_repeat_delay_ms_;
+  }
 
  private:
   // Required properties.
@@ -161,6 +169,7 @@ class Config {
   std::optional<base::flat_map<FaceGazeGesture, MacroName>> gestures_to_macros_;
   std::optional<base::flat_map<FaceGazeGesture, int>> gesture_confidences_;
   std::optional<CursorSpeeds> cursor_speeds_;
+  std::optional<int> gesture_repeat_delay_ms_;
 };
 
 }  // namespace
@@ -210,6 +219,9 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
     if (config.gesture_confidences().has_value()) {
       utils_->SetGestureConfidences(config.gesture_confidences().value());
     }
+    if (config.gesture_repeat_delay_ms().has_value()) {
+      utils_->SetGestureRepeatDelayMs(config.gesture_repeat_delay_ms().value());
+    }
 
     // Set required configuration properties.
     utils_->SetBufferSize(config.buffer_size());
@@ -241,6 +253,18 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
   void AssertCursorAt(const gfx::Point& location) {
     utils_->WaitForCursorPosition(location);
     ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
+  }
+
+  void AssertLatestMouseEvent(size_t num_events,
+                              ui::EventType type,
+                              const gfx::Point& root_location) {
+    std::vector<ui::MouseEvent> mouse_events = event_handler().mouse_events();
+    ASSERT_GT(mouse_events.size(), 0u);
+    ASSERT_EQ(num_events, mouse_events.size());
+    ASSERT_EQ(type, mouse_events[0].type());
+    ASSERT_EQ(root_location, mouse_events[0].root_location());
+    // All FaceGaze mouse events should be synthesized.
+    ASSERT_TRUE(mouse_events[0].IsSynthesized());
   }
 
   MockEventHandler& event_handler() { return event_handler_; }
@@ -375,6 +399,64 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
   ASSERT_EQ(2u, event_handler().key_events().size());
   ASSERT_EQ(ui::KeyboardCode::VKEY_SPACE, key_events[1].key_code());
   ASSERT_EQ(ui::EventType::ET_KEY_RELEASED, key_events[1].type());
+}
+
+// The BrowsDown gesture is special because it is the combination of two
+// separate facial gestures (BROW_DOWN_LEFT and BROW_DOWN_RIGHT). This test
+// ensures that the associated action is performed if either of the gestures is
+// detected.
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
+  ConfigureFaceGaze(
+      Config()
+          .AsDefault()
+          .WithCursorLocation(gfx::Point(0, 0))
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::BROWS_DOWN, MacroName::RESET_CURSOR}})
+          .WithGestureConfidences({{FaceGazeGesture::BROWS_DOWN, 40}})
+          .WithGestureRepeatDelayMs(0));
+
+  // If neither gesture is detected, then don't perform the associated action.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult()
+          .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 30)
+          .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 30));
+  ASSERT_EQ(0u, event_handler().mouse_events().size());
+
+  // If BROW_DOWN_LEFT is recognized, then perform the action.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult()
+          .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
+          .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 30));
+  AssertCursorAt(gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
+
+  // Reset the mouse cursor away from the center.
+  MoveMouseTo(gfx::Point(0, 0));
+  AssertCursorAt(gfx::Point(0, 0));
+
+  // If BROW_DOWN_RIGHT is recognized, then perform the action.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult()
+          .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 30)
+          .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
+  AssertCursorAt(gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
+
+  // Reset the mouse cursor away from the center.
+  MoveMouseTo(gfx::Point(0, 0));
+  AssertCursorAt(gfx::Point(0, 0));
+
+  // If both of the gestures are recognized, then perform the action.
+  event_handler().ClearEvents();
+  utils()->ProcessFaceLandmarkerResult(
+      MockFaceLandmarkerResult()
+          .WithGesture(MediapipeGesture::BROW_DOWN_LEFT, 50)
+          .WithGesture(MediapipeGesture::BROW_DOWN_RIGHT, 50));
+  AssertCursorAt(gfx::Point(600, 400));
+  AssertLatestMouseEvent(1, ui::ET_MOUSE_MOVED, gfx::Point(600, 400));
 }
 
 }  // namespace ash

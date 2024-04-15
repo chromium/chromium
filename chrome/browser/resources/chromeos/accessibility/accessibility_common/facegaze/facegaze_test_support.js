@@ -33,10 +33,28 @@ class FaceGazeTestSupport {
     return this.getFaceGaze_().mouseController_;
   }
 
+  /**
+   * @return {!GestureHandler}
+   * @private
+   */
+  getGestureHandler_() {
+    return this.getFaceGaze_().gestureHandler_;
+  }
+
   /** Cancels the MouseController interval to increase stability in tests. */
   cancelMouseControllerInterval() {
     clearInterval(this.getMouseController_().mouseInterval_);
     this.getMouseController_().mouseInterval_ = -1;
+    this.notifyCcTests_();
+  }
+
+  /**
+   * Sets the repeat delay on GestureHandler. This can be used to allow tests to
+   * trigger the same macro multiple times in a row without waiting.
+   * @param {number} delay
+   */
+  setGestureRepeatDelayMs(delay) {
+    this.getGestureHandler_().repeatDelayMs_ = delay;
     this.notifyCcTests_();
   }
 

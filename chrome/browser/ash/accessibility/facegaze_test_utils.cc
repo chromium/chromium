@@ -284,6 +284,12 @@ void FaceGazeTestUtils::SetGestureConfidences(
   GetPrefs()->CommitPendingWrite();
 }
 
+void FaceGazeTestUtils::SetGestureRepeatDelayMs(int delay) {
+  std::string script = base::StringPrintf(
+      "faceGazeTestSupport.setGestureRepeatDelayMs(%d);", delay);
+  ExecuteAccessibilityCommonScript(script);
+}
+
 void FaceGazeTestUtils::ProcessFaceLandmarkerResult(
     const MockFaceLandmarkerResult& result) {
   std::string forehead_location_json =

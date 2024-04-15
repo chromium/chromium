@@ -175,6 +175,8 @@ class FaceGazeTestUtils {
   // Sets the gesture confidences mapping pref.
   void SetGestureConfidences(
       const base::flat_map<FaceGazeGesture, int>& gesture_confidences);
+  // Sets the gesture repeat delay threshold.
+  void SetGestureRepeatDelayMs(int delay);
   // Forces FaceGaze to process `result`, since tests don't have access to real
   // camera data.
   void ProcessFaceLandmarkerResult(const MockFaceLandmarkerResult& result);
