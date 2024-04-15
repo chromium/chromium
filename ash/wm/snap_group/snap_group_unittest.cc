@@ -284,25 +284,30 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   }
 }
 
-// Returns true if the union bounds of `w1`, `w2` and the divider with no
-// overlap are equal to the bounds of the work area and false otherwise.
-bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
+// Verifies that the union bounds of `w1`, `w2` and the divider are equal to
+// the bounds of the work area with no overlap.
+void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
                                       aura::Window* w2,
                                       SplitViewDivider* divider) {
   gfx::Rect union_bounds;
   const gfx::Rect w1_bounds(w1->GetBoundsInScreen());
   const gfx::Rect w2_bounds(w2->GetBoundsInScreen());
-  union_bounds.Union(w1_bounds);
-  union_bounds.Union(w2_bounds);
   const auto divider_bounds =
       divider->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  EXPECT_FALSE(w1_bounds.IsEmpty());
+  EXPECT_FALSE(w2_bounds.IsEmpty());
+  EXPECT_FALSE(divider_bounds.IsEmpty());
+
+  union_bounds.Union(w1_bounds);
+  union_bounds.Union(w2_bounds);
   EXPECT_FALSE(w1_bounds.Contains(divider_bounds));
   EXPECT_FALSE(w2_bounds.Contains(divider_bounds));
   EXPECT_FALSE(w1_bounds.Intersects(divider_bounds));
   EXPECT_FALSE(w2_bounds.Intersects(divider_bounds));
   union_bounds.Union(divider_bounds);
-  return union_bounds ==
-         display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area();
+  EXPECT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
+      union_bounds);
 }
 
 void VerifyStackingOrder(
@@ -1396,8 +1401,7 @@ TEST_F(FasterSplitScreenTest, ClamshellTabletTransitionTwoSnappedWindows) {
   EXPECT_EQ(2u, observed_windows.size());
   // TODO(b/312229933): Determine whether the order of `observed_windows_`
   // matters.
-  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                               split_view_divider()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), split_view_divider());
 
   TabletModeControllerTestApi().LeaveTabletMode();
 }
@@ -2039,8 +2043,7 @@ class SnapGroupTest : public FasterSplitScreenTest {
 
     gfx::Rect divider_bounds(snap_group_divider_bounds_in_screen());
     EXPECT_EQ(work_area.CenterPoint().x(), divider_bounds.CenterPoint().x());
-    EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1, window2,
-                                                 snap_group_divider()));
+    UnionBoundsEqualToWorkAreaBounds(window1, window2, snap_group_divider());
 
     if (horizontal) {
       primary_bounds.set_width(primary_bounds.width() -
@@ -2588,8 +2591,7 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerBoundsTest) {
     ASSERT_EQ(IsLayoutHorizontal(w1.get()), is_horizontal);
 
     SnapTwoTestWindows(w1.get(), w2.get(), is_horizontal);
-    EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                                 snap_group_divider()));
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
     MaximizeToClearTheSession(w1.get());
     MaximizeToClearTheSession(w2.get());
@@ -2900,8 +2902,7 @@ TEST_F(SnapGroupOverviewTest, OverviewEnterExitBasic) {
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
   EXPECT_TRUE(snap_group_divider()->divider_widget());
-  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
-                                               snap_group_divider()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 
 // Tests that partial overview is shown on the other side of the screen on one
@@ -4377,8 +4378,8 @@ TEST_F(SnapGroupTabletConversionTest,
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
   SnapTwoTestWindows(window1.get(), window2.get(), /*horizontal=*/true);
   EXPECT_TRUE(snap_group_divider()->divider_widget());
-  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
-                                               snap_group_divider()));
+  UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                   snap_group_divider());
 
   SwitchToTabletMode();
   EXPECT_FALSE(snap_group_divider());
@@ -4390,8 +4391,8 @@ TEST_F(SnapGroupTabletConversionTest,
 
   EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
   EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
-  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
-                                               split_view_divider()));
+  UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                   split_view_divider());
   EXPECT_NEAR(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window1.get())->snap_ratio(), 0.05);
   EXPECT_NEAR(chromeos::kDefaultSnapRatio,
@@ -4404,8 +4405,8 @@ TEST_F(SnapGroupTabletConversionTest,
               *WindowState::Get(window1.get())->snap_ratio(), 0.05);
   EXPECT_NEAR(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window2.get())->snap_ratio(), 0.05);
-  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
-                                               snap_group_divider()));
+  UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),
+                                   snap_group_divider());
   EXPECT_TRUE(snap_group_divider()->divider_widget());
 }
 
@@ -4861,10 +4862,71 @@ TEST_F(SnapGroupDisplayMetricsTest, DockedMagnifier) {
   docked_mangnifier_controller->SetEnabled(/*enabled=*/true);
 }
 
+// Tests verifying virtual keyboard activation/deactivation which triggers work
+// area change works properly with Snap Group.
+TEST_F(SnapGroupDisplayMetricsTest, VirtualKeyboard) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  SetVirtualKeyboardEnabled(/*enabled=*/true);
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(true);
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  keyboard_controller->HideKeyboardByUser();
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests verifying ChromeVox activation/deactivation which triggers work area
+// change works properly with Snap Group.
+TEST_F(SnapGroupDisplayMetricsTest, ChromeVox) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  auto* a11y_controller = Shell::Get()->accessibility_controller();
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(a11y_controller->spoken_feedback().enabled());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+
+  EXPECT_FALSE(a11y_controller->spoken_feedback().enabled());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupMultiDisplayTest:
 
 using SnapGroupMultiDisplayTest = SnapGroupTest;
+
+// Tests that snapping two windows on an external display now works as expected,
+// with both windows and the divider fully visible on the external display. This
+// addresses the previous issue where the snapped window would be off-screen.
+TEST_F(SnapGroupMultiDisplayTest, SnapGroupCreationOnExternalDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  // Create Snap Group on display #2.
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(900, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(1000, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  // Verify that both windows and divider are visible on display #2.
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(displays[1].id(),
+            screen
+                ->GetDisplayNearestWindow(
+                    snap_group_divider()->divider_widget()->GetNativeWindow())
+                .id());
+}
 
 // Tests that removing a display during split view overview session doesn't
 // crash.
@@ -4975,8 +5037,8 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
       mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
   EXPECT_EQ(mru_window, w2.get());
   VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider_window});
-  EXPECT_TRUE(
-      UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider));
+
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
 }
 
 // Tests that moving an `OverviewGroupItem` between displays correctly
