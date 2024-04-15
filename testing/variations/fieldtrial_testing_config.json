@@ -9944,7 +9944,7 @@
             ]
         }
     ],
-    "IOSTabGroupInGrid": [
+    "IOSTabGroupInGridiPad": [
         {
             "platforms": [
                 "ios"
@@ -9953,7 +9953,21 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "TabGroupsIPad",
+                        "TabGroupsIPad"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSTabGroupInGridiPhone": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
                         "TabGroupsInGrid"
                     ]
                 }

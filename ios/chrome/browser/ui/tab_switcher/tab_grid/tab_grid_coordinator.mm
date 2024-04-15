@@ -1431,7 +1431,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)addTabToGroup:(const TabGroup*)group incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  CHECK(IsTabGroupInGridEnabled());
   if (incognito) {
     [self.incognitoTabsMediator addTabToGroup:group];
     return;

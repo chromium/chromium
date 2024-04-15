@@ -396,8 +396,7 @@ BASE_FEATURE(kTabGroupsIPad,
 
 bool IsTabGroupInGridEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return base::FeatureList::IsEnabled(kTabGroupsInGrid) &&
-           base::FeatureList::IsEnabled(kTabGroupsIPad);
+    return base::FeatureList::IsEnabled(kTabGroupsIPad);
   }
   return base::FeatureList::IsEnabled(kTabGroupsInGrid);
 }
