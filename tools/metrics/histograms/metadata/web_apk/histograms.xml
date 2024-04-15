@@ -114,18 +114,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Install.InstallRetryResult" enum="WebApkInstallResult"
-    expires_after="2024-04-28">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When a user retry installing the WebAPK through the install failure
-    notification, record whether installation was successful. If not record the
-    reason that the install failed.
-  </summary>
-</histogram>
-
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
     expires_after="2024-09-22">
   <owner>finnur@chromium.org</owner>
