@@ -53,7 +53,6 @@ class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
 class WaylandZAuraShell;
-class WaylandZAuraOutputManager;
 class WaylandZAuraOutputManagerV2;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
@@ -199,10 +198,6 @@ class WaylandConnection {
 
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
-  }
-
-  WaylandZAuraOutputManager* zaura_output_manager() const {
-    return zaura_output_manager_.get();
   }
 
   WaylandZAuraOutputManagerV2* zaura_output_manager_v2() const {
@@ -383,7 +378,6 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandZAuraOutputManager;
   friend class WaylandZAuraOutputManagerV2;
   friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
@@ -489,7 +483,6 @@ class WaylandConnection {
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
-  std::unique_ptr<WaylandZAuraOutputManager> zaura_output_manager_;
   std::unique_ptr<WaylandZAuraOutputManagerV2> zaura_output_manager_v2_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;

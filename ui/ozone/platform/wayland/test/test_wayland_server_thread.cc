@@ -242,9 +242,6 @@ TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
 void TestWaylandServerThread::OnTestOutputFlush(
     TestOutput* test_output,
     const TestOutputMetrics& metrics) {
-  if (zaura_output_manager_.resource()) {
-    zaura_output_manager_.SendOutputMetrics(test_output, metrics);
-  }
   if (zaura_output_manager_v2_.resource()) {
     zaura_output_manager_v2_.SendOutputMetrics(test_output, metrics);
   }

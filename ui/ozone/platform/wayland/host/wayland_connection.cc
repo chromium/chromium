@@ -53,7 +53,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager_v2.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
@@ -150,8 +149,6 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
                               &SurfaceAugmenter::Instantiate);
-  RegisterGlobalObjectFactory(WaylandZAuraOutputManager::kInterfaceName,
-                              &WaylandZAuraOutputManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraOutputManagerV2::kInterfaceName,
                               &WaylandZAuraOutputManagerV2::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
@@ -525,8 +522,8 @@ void WaylandConnection::DumpState(std::ostream& out) const {
     out << std::endl;
   }
 
-  if (zaura_output_manager_) {
-    zaura_output_manager_->DumpState(out);
+  if (zaura_output_manager_v2_) {
+    zaura_output_manager_v2_->DumpState(out);
     out << std::endl;
   }
 }
@@ -553,10 +550,7 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
 }
 
 bool WaylandConnection::IsUsingZAuraOutputManager() const {
-  // TODO(crbug.com/324111902): Remove zaura_output_manager after
-  // zaura_output_manager_v2 has landed and existed for sufficient version
-  // skew.
-  return zaura_output_manager_ || zaura_output_manager_v2_;
+  return !!zaura_output_manager_v2_;
 }
 
 // static

@@ -12,7 +12,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager_v2.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
@@ -56,10 +55,6 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
     if (connection_->xdg_output_manager_v1()) {
       wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
     }
-    if (connection_->zaura_shell()) {
-      wayland_output->InitializeZAuraOutput(
-          connection_->zaura_shell()->wl_object());
-    }
   }
 
   // TODO(tluk): Update zaura_output_manager to support the capabilities of
@@ -91,11 +86,6 @@ void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
     wayland_screen_->OnOutputRemoved(output_id);
   DCHECK(output_list_.find(output_id) != output_list_.end());
 
-  if (auto* output_manager = connection_->zaura_output_manager()) {
-    output_manager->RemoveOutputMetrics(output_id);
-    DCHECK(!output_manager->GetOutputMetrics(output_id));
-  }
-
   output_list_.erase(output_id);
 }
 
@@ -103,14 +93,6 @@ void WaylandOutputManager::InitializeAllXdgOutputs() {
   DCHECK(connection_->xdg_output_manager_v1());
   for (const auto& output : output_list_)
     output.second->InitializeXdgOutput(connection_->xdg_output_manager_v1());
-}
-
-void WaylandOutputManager::InitializeAllZAuraOutputs() {
-  DCHECK(connection_->zaura_shell());
-  for (const auto& output : output_list_) {
-    output.second->InitializeZAuraOutput(
-        connection_->zaura_shell()->wl_object());
-  }
 }
 
 void WaylandOutputManager::InitializeAllColorManagementOutputs() {

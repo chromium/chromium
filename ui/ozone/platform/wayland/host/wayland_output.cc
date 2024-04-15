@@ -15,7 +15,6 @@
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
@@ -131,13 +130,6 @@ void WaylandOutput::InitializeXdgOutput(
       zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output_.get()));
 }
 
-void WaylandOutput::InitializeZAuraOutput(zaura_shell* aura_shell) {
-  // TODO(oshima): remove zaura_output_.
-  DCHECK(!aura_output_);
-  aura_output_ = std::make_unique<WaylandZAuraOutput>(
-      zaura_shell_get_aura_output(aura_shell, output_.get()));
-}
-
 void WaylandOutput::InitializeColorManagementOutput(
     WaylandZcrColorManager* zcr_color_manager) {
   DCHECK(!color_management_output_);
@@ -189,16 +181,7 @@ bool WaylandOutput::IsReady() const {
     return metrics_.output_id == output_id_;
   }
 
-  // The aura output requires both the logical size and the display ID
-  // to become ready. If a client that uses xdg_output but not aura_output
-  // needs different condition for readiness, this needs to be updated.
-  return is_ready_ &&
-         (!aura_output_ ||
-          (xdg_output_ && xdg_output_->IsReady() && aura_output_->IsReady()));
-}
-
-zaura_output* WaylandOutput::get_zaura_output() {
-  return aura_output_ ? aura_output_->wl_object() : nullptr;
+  return is_ready_;
 }
 
 void WaylandOutput::SetScaleFactorForTesting(float scale_factor) {
@@ -219,7 +202,6 @@ void WaylandOutput::DumpState(std::ostream& out) const {
 }
 
 void WaylandOutput::UpdateMetrics() {
-  CHECK(!aura_output_);
   metrics_.output_id = output_id_;
   // For the non-aura case we map the global output "name" to the display_id.
   metrics_.display_id = output_id_;
@@ -283,8 +265,6 @@ void WaylandOutput::OnDone(void* data, wl_output* output) {
   if (!self || self->connection_->IsUsingZAuraOutputManager()) {
     return;
   }
-
-  CHECK(!self->aura_output_);
 
   self->is_ready_ = true;
 

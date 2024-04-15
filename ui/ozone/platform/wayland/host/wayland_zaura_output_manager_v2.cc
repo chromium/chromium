@@ -6,8 +6,12 @@
 
 #include <components/exo/wayland/protocol/aura-output-management-client-protocol.h>
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "ui/base/wayland/wayland_display_util.h"
 #include "ui/display/screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -76,6 +80,36 @@ WaylandZAuraOutputManagerV2::~WaylandZAuraOutputManagerV2() = default;
 void WaylandZAuraOutputManagerV2::ScheduleRemoveWaylandOutput(
     WaylandOutput::Id output_id) {
   pending_removed_outputs_.push_back(output_id);
+}
+
+void WaylandZAuraOutputManagerV2::DumpState(std::ostream& out) const {
+  out << "AuraOutputManagerv2:" << std::endl;
+  int i = 0;
+  for (const auto& pair : pending_output_metrics_map_) {
+    out << "  pending output metrics[" << i++ << "]:";
+    pair.second.DumpState(out);
+    out << std::endl;
+  }
+  i = 0;
+  for (const auto& pair : output_metrics_map_) {
+    out << "  output metrics[" << i++ << "]:";
+    pair.second.DumpState(out);
+    out << std::endl;
+  }
+
+  std::vector<std::string> values;
+  std::transform(pending_outputs_.begin(), pending_outputs_.end(),
+                 values.begin(),
+                 static_cast<std::string (*)(int)>(base::NumberToString));
+  out << "  pending_changed outputs: [" << base::JoinString(values, ",") << "]"
+      << std::endl;
+
+  values.clear();
+  std::transform(pending_removed_outputs_.begin(),
+                 pending_removed_outputs_.end(), values.begin(),
+                 static_cast<std::string (*)(int)>(base::NumberToString));
+  out << "  pending_removed outputs: [" << base::JoinString(values, ",") << "]"
+      << std::endl;
 }
 
 WaylandOutput* WaylandZAuraOutputManagerV2::GetWaylandOutput(
