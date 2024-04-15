@@ -89,4 +89,9 @@ void AutofillRendererTest::SimulateElementFocusAndWait(
   task_environment_.RunUntilIdle();
 }
 
+void AutofillRendererTest::SimulateScrollingAndWait() {
+  ExecuteJavaScriptForTests("window.scrollTo(0, 1000);");
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace autofill::test

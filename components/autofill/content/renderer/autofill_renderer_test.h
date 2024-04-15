@@ -125,10 +125,14 @@ class AutofillRendererTest : public content::RenderViewTest {
   // is idle to ensure that the `AutofillDriver` is notified via mojo.
   bool SimulateElementClickAndWait(const std::string& element_id);
 
-  // Simulate focusing an element without clicking it. Waits until the
+  // Simulates focusing an element without clicking it. Waits until the
   // `TaskEnvironment` is idle to ensure that the `AutofillDriver` is notified
   // via mojo.
   void SimulateElementFocusAndWait(std::string_view element_id);
+
+  // Simulates scrolling. Waits until the `TaskEnvironment` is idle to ensure
+  // that the `AutofillDriver` is notified via mojo.
+  void SimulateScrollingAndWait();
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
   // of AutofillAgent::ProcessForms() are throttled. This function blocks until

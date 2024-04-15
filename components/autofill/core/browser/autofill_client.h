@@ -824,6 +824,9 @@ class AutofillClient {
   virtual void ShowAutofillFieldIphForManualFallbackFeature(
       const FormFieldData& field);
 
+  // Hides the IPH for the manual fallback feature.
+  virtual void HideAutofillFieldIphForManualFallbackFeature();
+
   // Notifies the IPH code that the manual fallback feature was used.
   virtual void NotifyAutofillManualFallbackUsed();
 

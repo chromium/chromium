@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -682,11 +683,18 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
 
   test_autofill_client.ShowAutofillPopup(
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
+  test_autofill_client.ShowAutofillFieldIphForManualFallbackFeature(
+      autofill::FormFieldData());
+
+  ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
+  ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());
+
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
   EXPECT_EQ(
       test_autofill_client.popup_hiding_reason(),
       autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
+  EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {

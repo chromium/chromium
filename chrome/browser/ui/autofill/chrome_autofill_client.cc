@@ -925,9 +925,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
   // Therefore, the IPH is hidden before showing the Autofill Popup.
-  if (autofill_field_promo_controller_manual_fallback_) {
-    autofill_field_promo_controller_manual_fallback_->Hide();
-  }
+  HideAutofillFieldIphForManualFallbackFeature();
 
   // IPH hiding is asynchronous. Posting showing the Autofill Popup
   // guarantees the IPH will be hidden by the time the Autofill Popup will
@@ -1180,6 +1178,12 @@ void ChromeAutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
   }
   autofill_field_promo_controller_manual_fallback_->Show(field.bounds);
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ChromeAutofillClient::HideAutofillFieldIphForManualFallbackFeature() {
+  if (autofill_field_promo_controller_manual_fallback_) {
+    autofill_field_promo_controller_manual_fallback_->Hide();
+  }
 }
 
 void ChromeAutofillClient::NotifyAutofillManualFallbackUsed() {

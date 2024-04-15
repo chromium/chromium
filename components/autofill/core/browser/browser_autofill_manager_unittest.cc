@@ -449,6 +449,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillFieldIphForManualFallbackFeature,
               (const FormFieldData& field),
               (override));
+  MOCK_METHOD(void,
+              HideAutofillFieldIphForManualFallbackFeature,
+              (),
+              (override));
   MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
 };
 
@@ -6749,6 +6753,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
 TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kRendererEvent));
+  EXPECT_CALL(autofill_client_, HideAutofillFieldIphForManualFallbackFeature);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
   EXPECT_CALL(fast_checkout_delegate(),
               HideFastCheckout(/*allow_further_runs=*/false));

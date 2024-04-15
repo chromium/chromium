@@ -451,6 +451,17 @@ class TestAutofillClientTemplate : public T {
 
   PopupHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
+  void ShowAutofillFieldIphForManualFallbackFeature(
+      const FormFieldData& field) override {
+    is_showing_manual_fallback_iph_ = true;
+  }
+
+  void HideAutofillFieldIphForManualFallbackFeature() override {
+    is_showing_manual_fallback_iph_ = false;
+  }
+
+  bool IsShowingManualFallbackIph() { return is_showing_manual_fallback_iph_; }
+
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() override { return true; }
@@ -788,6 +799,8 @@ class TestAutofillClientTemplate : public T {
   bool is_showing_popup_ = false;
 
   PopupHidingReason popup_hidden_reason_;
+
+  bool is_showing_manual_fallback_iph_ = false;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =

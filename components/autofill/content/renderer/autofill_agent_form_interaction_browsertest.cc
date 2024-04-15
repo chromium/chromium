@@ -402,6 +402,22 @@ TEST_F(AutofillAgentContentEditableInteractionTest,
   ChangeFocusToNull(GetMainFrame()->GetDocument());
 }
 
+// Scrolling doesn't hide the popup on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that scrolling triggers a call to `AutofillDriver::HidePopup()`.
+TEST_F(AutofillAgentContentEditableInteractionTest,
+       ScrollingHidesAutofillPopup) {
+  EXPECT_CALL(autofill_driver(), HidePopup);
+  // "height" is needed so that the page is long enough to be able to scroll.
+  LoadHTML(
+      "<body><textarea style=\"height:10000px\" id=ce "
+      "contenteditable></textarea></body>");
+  SimulateElementClickAndWait("ce");
+  SimulateElementFocusAndWait("ce");
+  SimulateScrollingAndWait();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that clicking on a contenteditable form is ignored.
 TEST_F(AutofillAgentContentEditableInteractionTest,
        ClickOnContentEditableFormIsIgnored) {
