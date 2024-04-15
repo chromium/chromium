@@ -119,7 +119,6 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_ar.xtb" lang="ar" />
     <file path="strings/search_engine_descriptions_strings_as.xtb" lang="as" />
     <file path="strings/search_engine_descriptions_strings_az.xtb" lang="az" />
-    <file path="strings/search_engine_descriptions_strings_be.xtb" lang="be" />
     <file path="strings/search_engine_descriptions_strings_bg.xtb" lang="bg" />
     <file path="strings/search_engine_descriptions_strings_bn.xtb" lang="bn" />
     <file path="strings/search_engine_descriptions_strings_bs.xtb" lang="bs" />
@@ -133,39 +132,28 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_eu.xtb" lang="eu" />
     <file path="strings/search_engine_descriptions_strings_fa.xtb" lang="fa" />
     <file path="strings/search_engine_descriptions_strings_fi.xtb" lang="fi" />
-    <file path="strings/search_engine_descriptions_strings_fil.xtb" lang="fil" />
     <file path="strings/search_engine_descriptions_strings_fr.xtb" lang="fr" />
-    <file path="strings/search_engine_descriptions_strings_fr-CA.xtb" lang="fr-CA" />
     <file path="strings/search_engine_descriptions_strings_gl.xtb" lang="gl" />
     <file path="strings/search_engine_descriptions_strings_gu.xtb" lang="gu" />
     <file path="strings/search_engine_descriptions_strings_he.xtb" lang="he" />
-    <file path="strings/search_engine_descriptions_strings_hi.xtb" lang="hi" />
     <file path="strings/search_engine_descriptions_strings_hr.xtb" lang="hr" />
     <file path="strings/search_engine_descriptions_strings_hu.xtb" lang="hu" />
     <file path="strings/search_engine_descriptions_strings_hy.xtb" lang="hy" />
-    <file path="strings/search_engine_descriptions_strings_id.xtb" lang="id" />
     <file path="strings/search_engine_descriptions_strings_is.xtb" lang="is" />
     <file path="strings/search_engine_descriptions_strings_it.xtb" lang="it" />
     <file path="strings/search_engine_descriptions_strings_ja.xtb" lang="ja" />
     <file path="strings/search_engine_descriptions_strings_ka.xtb" lang="ka" />
     <file path="strings/search_engine_descriptions_strings_kk.xtb" lang="kk" />
-    <file path="strings/search_engine_descriptions_strings_kn.xtb" lang="kn" />
     <file path="strings/search_engine_descriptions_strings_ko.xtb" lang="ko" />
-    <file path="strings/search_engine_descriptions_strings_ky.xtb" lang="ky" />
     <file path="strings/search_engine_descriptions_strings_lt.xtb" lang="lt" />
     <file path="strings/search_engine_descriptions_strings_lv.xtb" lang="lv" />
     <file path="strings/search_engine_descriptions_strings_mk.xtb" lang="mk" />
-    <file path="strings/search_engine_descriptions_strings_ml.xtb" lang="ml" />
     <file path="strings/search_engine_descriptions_strings_mn.xtb" lang="mn" />
     <file path="strings/search_engine_descriptions_strings_mr.xtb" lang="mr" />
-    <file path="strings/search_engine_descriptions_strings_ms.xtb" lang="ms" />
     <file path="strings/search_engine_descriptions_strings_my.xtb" lang="my" />
     <file path="strings/search_engine_descriptions_strings_nb.xtb" lang="nb" />
-    <file path="strings/search_engine_descriptions_strings_ne.xtb" lang="ne" />
     <file path="strings/search_engine_descriptions_strings_nl.xtb" lang="nl" />
     <file path="strings/search_engine_descriptions_strings_no.xtb" lang="no" />
-    <file path="strings/search_engine_descriptions_strings_or.xtb" lang="or" />
-    <file path="strings/search_engine_descriptions_strings_pa.xtb" lang="pa" />
     <file path="strings/search_engine_descriptions_strings_pl.xtb" lang="pl" />
     <file path="strings/search_engine_descriptions_strings_pt-PT.xtb" lang="pt-PT" />
     <file path="strings/search_engine_descriptions_strings_ro.xtb" lang="ro" />
@@ -176,13 +164,10 @@ process but are generated using a script that pulls them from outside the repo.-
     <file path="strings/search_engine_descriptions_strings_sq.xtb" lang="sq" />
     <file path="strings/search_engine_descriptions_strings_sr.xtb" lang="sr" />
     <file path="strings/search_engine_descriptions_strings_sv.xtb" lang="sv" />
-    <file path="strings/search_engine_descriptions_strings_sw.xtb" lang="sw" />
-    <file path="strings/search_engine_descriptions_strings_ta.xtb" lang="ta" />
     <file path="strings/search_engine_descriptions_strings_te.xtb" lang="te" />
     <file path="strings/search_engine_descriptions_strings_th.xtb" lang="th" />
     <file path="strings/search_engine_descriptions_strings_tr.xtb" lang="tr" />
     <file path="strings/search_engine_descriptions_strings_uk.xtb" lang="uk" />
-    <file path="strings/search_engine_descriptions_strings_ur.xtb" lang="ur" />
     <file path="strings/search_engine_descriptions_strings_uz.xtb" lang="uz" />
     <file path="strings/search_engine_descriptions_strings_vi.xtb" lang="vi" />
     <file path="strings/search_engine_descriptions_strings_zh-CN.xtb" lang="zh-CN" />
