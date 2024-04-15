@@ -41,14 +41,21 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   struct PoolInfo {
     pool_handle handle;
     uintptr_t base;
+    uintptr_t base_mask;
     uintptr_t offset;
   };
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  PA_ALWAYS_INLINE static uintptr_t BRPPoolBaseMask() {
+    return setup_.brp_pool_base_mask_;
+  }
   PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
   }
 #else
+  PA_ALWAYS_INLINE static constexpr uintptr_t BRPPoolBaseMask() {
+    return kBRPPoolBaseMask;
+  }
   PA_ALWAYS_INLINE static constexpr uintptr_t RegularPoolBaseMask() {
     return kRegularPoolBaseMask;
   }
@@ -61,28 +68,36 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
     pool_handle pool = kNullPoolHandle;
     uintptr_t base = 0;
+    uintptr_t base_mask = 0;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (IsInBRPPool(address)) {
       pool = kBRPPoolHandle;
       base = setup_.brp_pool_base_address_;
+      base_mask = BRPPoolBaseMask();
     } else
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       if (IsInRegularPool(address)) {
         pool = kRegularPoolHandle;
         base = setup_.regular_pool_base_address_;
+        base_mask = RegularPoolBaseMask();
       } else if (IsInConfigurablePool(address)) {
         PA_DCHECK(IsConfigurablePoolInitialized());
         pool = kConfigurablePoolHandle;
         base = setup_.configurable_pool_base_address_;
+        base_mask = setup_.configurable_pool_base_mask_;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
       } else if (IsInThreadIsolatedPool(address)) {
         pool = kThreadIsolatedPoolHandle;
         base = setup_.thread_isolated_pool_base_address_;
+        base_mask = kThreadIsolatedPoolBaseMask;
 #endif
       } else {
         PA_NOTREACHED();
       }
-    return PoolInfo{.handle = pool, .base = base, .offset = address - base};
+    return PoolInfo{.handle = pool,
+                    .base = base,
+                    .base_mask = base_mask,
+                    .offset = address - base};
   }
   PA_ALWAYS_INLINE static constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;

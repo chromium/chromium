@@ -11,6 +11,7 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/tagging.h"
 
 namespace partition_alloc::internal {
 
@@ -18,15 +19,35 @@ namespace partition_alloc::internal {
 // rather than naked pointers. This is intended to prevent usage of
 // freelist pointers to easily jump around to freed slots.
 class PoolOffsetFreelistEntry {
- private:
-  constexpr explicit PoolOffsetFreelistEntry(std::nullptr_t) {}
+  using PoolInfo = PartitionAddressSpace::PoolInfo;
 
+  constexpr static uintptr_t kNullptrOffset = 0;
+
+  constexpr explicit PoolOffsetFreelistEntry(std::nullptr_t)
+      : next_(kNullptrOffset)
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(~next_)
+#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+  {
+  }
   explicit PoolOffsetFreelistEntry(PoolOffsetFreelistEntry* next)
-      : next_(PoolOffset(reinterpret_cast<uintptr_t>(next))) {}
-
+      : next_(EncodeToOffset(next))
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(~next_)
+#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+  {
+  }
   // For testing only.
   PoolOffsetFreelistEntry(void* next, bool make_shadow_match)
-      : next_(PoolOffset(reinterpret_cast<uintptr_t>(next))) {}
+      : next_(EncodeToOffset(next))
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        ,
+        shadow_(make_shadow_match ? ~next_ : 12345)
+#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+  {
+  }
 
  public:
   ~PoolOffsetFreelistEntry() = delete;
@@ -87,37 +108,86 @@ class PoolOffsetFreelistEntry {
   }
 
   PA_ALWAYS_INLINE void SetNext(PoolOffsetFreelistEntry* entry) {
-    next_ = PoolOffset(reinterpret_cast<uintptr_t>(entry));
+    // SetNext() is either called on the freelist head, when provisioning new
+    // slots, or when GetNext() has been called before, no need to pass the
+    // size.
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+    // Regular freelists always point to an entry within the same super page.
+    //
+    // This is most likely a PartitionAlloc bug if this triggers.
+    if (PA_UNLIKELY(entry &&
+                    (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
+                        (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
+      FreelistCorruptionDetected(0);
+    }
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+
+    next_ = EncodeToOffset(entry);
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+    shadow_ = ~next_;
+#endif
   }
 
+  // Zeroes out |this| before returning the slot. The pointer to this memory
+  // will be returned to the user (caller of Alloc()), thus can't have internal
+  // data.
   PA_ALWAYS_INLINE uintptr_t ClearForAllocation() {
     next_ = uintptr_t{0};
+    shadow_ = uintptr_t{0};
     return SlotStartPtr2Addr(this);
   }
 
   PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
-    return !next_;
+    return next_ == kNullptrOffset;
   }
 
  private:
-  // Determines the containing pool of `addr` and returns `addr`
-  // represented as an offset into that pool.
-  PA_ALWAYS_INLINE static uintptr_t PoolOffset(uintptr_t addr) {
-    return addr ? PartitionAddressSpace::GetPoolInfo(addr).offset : addr;
+  // Determines the containing pool of `ptr` and returns `ptr`
+  // represented as a tagged offset into that pool. `ptr` can be `nullptr`.
+  PA_ALWAYS_INLINE static uintptr_t EncodeToOffset(void* ptr) {
+    if (!ptr) {
+      return kNullptrOffset;
+    }
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    PoolInfo pool_info = PartitionAddressSpace::GetPoolInfo(addr);
+    // Save a MTE tag as well as an offset.
+    uintptr_t tagged_offset = addr & (kPtrTagMask | ~pool_info.base_mask);
+    PA_DCHECK(tagged_offset == (pool_info.offset | (addr & kPtrTagMask)));
+    return tagged_offset;
+  }
+
+  // Given `pool_info`, decodes a `tagged_offset` into a tagged pointer.
+  // `tagged_offset` cannot be `kNullptrOffset`, please call
+  // `IsEncodedNextPtrZero()` before.
+  PA_ALWAYS_INLINE static PoolOffsetFreelistEntry* DecodeFromOffset(
+      uintptr_t tagged_offset,
+      PoolInfo& pool_info) {
+    PA_DCHECK(tagged_offset != kNullptrOffset);
+    // We assume `tagged_offset` contains a proper MTE tag.
+    return reinterpret_cast<PoolOffsetFreelistEntry*>(pool_info.base |
+                                                      tagged_offset);
   }
 
   template <bool crash_on_corruption, bool for_thread_cache>
   PA_ALWAYS_INLINE PoolOffsetFreelistEntry* GetNextInternal(
       size_t slot_size) const {
+    // GetNext() can be called on discarded memory, in which case
+    // |encoded_next_| is 0, and none of the checks apply. Don't prefetch
+    // nullptr either.
     if (IsEncodedNextPtrZero()) {
       return nullptr;
     }
 
-    auto* ret = reinterpret_cast<PoolOffsetFreelistEntry*>(
-        GetPoolInfo(reinterpret_cast<uintptr_t>(this)).base + next_);
-    if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(this, ret))) {
+    PoolInfo pool_info = GetPoolInfo(reinterpret_cast<uintptr_t>(this));
+    // We assume `(next_ & pool_info.base_mask) == 0` here.
+    // This assumption is checked in `IsWellFormed()` later.
+    auto* ret = DecodeFromOffset(next_, pool_info);
+    if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(pool_info, this, ret))) {
       if constexpr (crash_on_corruption) {
         PA_DEBUG_DATA_ON_STACK("first", static_cast<size_t>(next_));
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
+#endif
         FreelistCorruptionDetected(slot_size);
       }
       return nullptr;
@@ -126,29 +196,57 @@ class PoolOffsetFreelistEntry {
     return ret;
   }
 
-  // TODO(crbug.com/1461983): Add support for freelist shadow entries
-  // (and freeslot bitmaps).
   template <bool for_thread_cache>
   PA_ALWAYS_INLINE static bool IsWellFormed(
+      const PoolInfo& pool_info,
       const PoolOffsetFreelistEntry* here,
       const PoolOffsetFreelistEntry* next) {
+    // Don't allow the freelist to be blindly followed to any location.
+    // Checks following constraints:
+    // - `shadow_` must match an inversion of `next_` (if present).
+    // - next must not have bits in the pool base mask except a MTE tag.
+    // - here and next must belong to the same superpage, unless this is in the
+    //   thread cache (they even always belong to the same slot span).
+    // - next cannot point inside the metadata area.
+
+    // TODO(crbug.com/1461983): Add support for freeslot bitmaps.
+    static_assert(!BUILDFLAG(USE_FREESLOT_BITMAP),
+                  "USE_FREESLOT_BITMAP not supported");
+
     const uintptr_t here_address = SlotStartPtr2Addr(here);
     const uintptr_t next_address = SlotStartPtr2Addr(next);
 
+    const bool no_bit_in_pool_base_mask = !(here->next_ & pool_info.base_mask);
+
     const bool not_in_metadata =
         (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
+
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+    bool shadow_ptr_ok = (~here->next_) == here->shadow_;
+#else
+    constexpr bool shadow_ptr_ok = true;
+#endif
+
     if constexpr (for_thread_cache) {
-      return not_in_metadata;
+      return no_bit_in_pool_base_mask & shadow_ptr_ok & not_in_metadata;
     }
+
     const bool same_super_page = (here_address & kSuperPageBaseMask) ==
                                  (next_address & kSuperPageBaseMask);
-    return same_super_page && not_in_metadata;
+    return no_bit_in_pool_base_mask & shadow_ptr_ok & same_super_page &
+           not_in_metadata;
   }
 
   // Expresses the next entry in the freelist as an offset in the
-  // same pool as `this`, except when 0, which (as an invalid pool
-  // offset) serves as a sentinel value.
+  // same pool as `this`, except when `kNullptrOffset`, which (as an invalid
+  // pool offset) serves as a sentinel value.
   uintptr_t next_ = uintptr_t{0};
+  // This is intended to detect unintentional corruptions of the freelist.
+  // These can happen due to a Use-after-Free, or overflow of the previous
+  // allocation in the slot span.
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+  uintptr_t shadow_;
+#endif
 };
 
 }  // namespace partition_alloc::internal
