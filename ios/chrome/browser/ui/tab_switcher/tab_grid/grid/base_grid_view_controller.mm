@@ -816,11 +816,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     case GridItemType::Tab:
       [self.dragDropHandler
           dragWillBeginForItem:_draggedItemIdentifier.tabSwitcherItem];
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent,
                                     DragDropItem::kDragBegin);
       break;
     case GridItemType::Group:
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroups,
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent,
                                     DragDropItem::kDragBegin);
       break;
     case GridItemType::SuggestedActions:
@@ -848,10 +848,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   switch (_draggedItemIdentifier.type) {
     case GridItemType::Tab:
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs, dragEvent);
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
       break;
     case GridItemType::Group:
-      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroups, dragEvent);
+      base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent, dragEvent);
       break;
     case GridItemType::SuggestedActions:
       NOTREACHED();

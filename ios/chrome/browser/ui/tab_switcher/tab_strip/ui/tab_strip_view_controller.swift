@@ -901,7 +901,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
   ) {
     dragEndAtNewIndex = false
     HistogramUtils.recordHistogram(
-      kUmaTabStripViewDragDropTabs, withSample: DragDropTabs.dragBegin.rawValue,
+      kUmaTabStripViewDragDropTabsEvent, withSample: DragDropTabs.dragBegin.rawValue,
       maxValue: DragDropTabs.maxValue.rawValue)
     dragDropHandler?.dragWillBegin(for: draggedItem)
   }
@@ -922,7 +922,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     }
 
     HistogramUtils.recordHistogram(
-      kUmaTabStripViewDragDropTabs, withSample: dragEvent.rawValue,
+      kUmaTabStripViewDragDropTabsEvent, withSample: dragEvent.rawValue,
       maxValue: DragDropTabs.maxValue.rawValue)
 
     dragDropHandler?.dragSessionDidEnd()

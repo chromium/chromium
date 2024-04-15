@@ -497,7 +497,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.dragDropHandler dragWillBeginForItem:_draggedItem];
   _dragEndAtNewIndex = NO;
   _localDragActionInProgress = YES;
-  base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
+  base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabsEvent,
                                 DragDropItem::kDragBegin);
   [self.delegate pinnedViewControllerDragSessionWillBegin:self];
   [self dragSessionEnabled:YES];
@@ -514,7 +514,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (_dropAnimationInProgress && !_dragEndAtNewIndex) {
     dragEvent = DragDropItem::kDragEndInOtherCollection;
   }
-  base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs, dragEvent);
+  base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabsEvent, dragEvent);
 
   [self.dragDropHandler dragSessionDidEnd];
   [self.delegate pinnedViewControllerDragSessionDidEnd:self];

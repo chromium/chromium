@@ -9,12 +9,12 @@
 
 // LINT.IfChange
 
-// Key of UMA DragDrop histograms.
-extern NSString* const kUmaTabStripViewDragDropTabs;
-extern NSString* const kUmaTabStripViewDragDropGroups;
-extern const char kUmaGridViewDragDropTabs[];
-extern const char kUmaGridViewDragDropGroups[];
-extern const char kUmaPinnedViewDragDropTabs[];
+// Key of UMA DragDropEvent histograms.
+extern NSString* const kUmaTabStripViewDragDropTabsEvent;
+extern NSString* const kUmaTabStripViewDragDropGroupsEvent;
+extern const char kUmaGridViewDragDropTabsEvent[];
+extern const char kUmaGridViewDragDropGroupsEvent[];
+extern const char kUmaPinnedViewDragDropTabsEvent[];
 
 // Key of UMA DragOrigin histograms.
 extern const char kUmaTabStripViewDragOrigin[];
