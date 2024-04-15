@@ -9,7 +9,9 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -31,7 +33,7 @@ namespace {
 const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 
 // Short timeout to wait for asynchronously fetching already available system
-// capabilities .
+// capabilities.
 constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
     base::Milliseconds(20);
 
@@ -48,6 +50,9 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   CapabilityFetchCompletionCallback _completionCallback;
+  std::unique_ptr<base::ElapsedTimer> _fetchLatencyTimer;
+  // Whether capabilities fetch latency metrics should be recorded.
+  BOOL _shouldRecordLatencyMetrics;
   // Check that `onRestrictionCapabilityReceived` is called from the correct
   // sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
@@ -79,6 +84,7 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   // Existing non-null callback should not be replaced.
   CHECK(_completionCallback.is_null());
   _completionCallback = std::move(callback);
+  _shouldRecordLatencyMetrics = YES;
   [self fetchRestrictionCapabilityWithTimeout:
             base::Milliseconds(
                 switches::kMinorModeRestrictionsFetchDeadlineMs.Get())];
@@ -89,6 +95,9 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   // Existing non-null callback should not be replaced.
   CHECK(_completionCallback.is_null());
   _completionCallback = std::move(callback);
+  _shouldRecordLatencyMetrics = NO;
+  // System capabilities cannot be fetched synchronously. A short, non-zero
+  // timeout is used to terminate async system capabilities fetch.
   [self fetchRestrictionCapabilityWithTimeout:
             kFetchImmediatelyAvailableCapabilityDeadline];
 }
@@ -119,27 +128,21 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
           accountInfo.capabilities
               .can_show_history_sync_opt_ins_without_minor_mode_restrictions()];
 
-  if (!_completionCallback.is_null()) {
-    __weak __typeof(self) weakSelf = self;
+  if (_completionCallback.is_null()) {
+    // The AccountInfo capability was immediately available and the callback was
+    // executed.
+    [self recordImmediateAvailabilityMetrics];
+  } else {
+    // The AccountInfo capability was not yet available.
+    [self startLatencyTimer];
 
+    // Start fetching system capabilities.
     if (base::FeatureList::IsEnabled(
             switches::kUseSystemCapabilitiesForMinorModeRestrictions)) {
-      // AccountInfo::capabilities is not immediately avaiable.
-      // Start fetching system capabilities.
-      id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
-      CHECK(identity);
-      GetApplicationContext()
-          ->GetSystemIdentityManager()
-          ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-              identity,
-              base::BindOnce(^(SystemIdentityCapabilityResult result) {
-                [weakSelf onRestrictionCapabilityReceived:
-                              signin::TriboolFromCapabilityResult(result)];
-              }));
+      [self fetchSystemCapabilities];
     }
-
     // Set timeout with fallback capability value.
+    __weak __typeof(self) weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(^{
           [weakSelf onRestrictionCapabilityReceived:
@@ -149,11 +152,51 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   }
 }
 
+- (void)fetchSystemCapabilities {
+  __weak __typeof(self) weakSelf = self;
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  CHECK(identity);
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
+          identity, base::BindOnce(^(SystemIdentityCapabilityResult result) {
+            [weakSelf onRestrictionCapabilityReceived:
+                          signin::TriboolFromCapabilityResult(result)];
+          }));
+}
+
+- (void)recordImmediateAvailabilityMetrics {
+  if (_shouldRecordLatencyMetrics) {
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              true);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            base::Seconds(0));
+  }
+}
+
+- (void)startLatencyTimer {
+  if (_shouldRecordLatencyMetrics) {
+    // Start the latency timer.
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              false);
+    _fetchLatencyTimer = std::make_unique<base::ElapsedTimer>();
+  }
+}
+
 - (void)onRestrictionCapabilityReceived:(Tribool)capability {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (capability != Tribool::kUnknown && !_completionCallback.is_null()) {
     // Stop listening to AccountInfo updates.
     _identityManagerObserver.reset();
+    // Record latency metrics
+    if (_fetchLatencyTimer) {
+      base::TimeDelta elapsed = _fetchLatencyTimer->Elapsed();
+      base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                              elapsed);
+      base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency",
+                              elapsed);
+    }
     // Convert capability to boolean value.
     std::move(_completionCallback).Run(capability == Tribool::kTrue);
   }

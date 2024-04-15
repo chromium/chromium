@@ -972,11 +972,10 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that latency metrics are recorded for when the system capability is
-  // immediately available.
+  // Verify that latency metrics are recorded.
   GREYAssertNil([MetricsAppInterface
                     expectUniqueSampleWithCount:1
-                                      forBucket:true
+                                      forBucket:false
                                    forHistogram:@"Signin.AccountCapabilities."
                                                 @"ImmediatelyAvailable"],
                 @"Incorrect immediate availability histogram");
@@ -987,16 +986,9 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       @"Failed to record user visibile latency histogram");
   GREYAssertNil(
       [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"Signin.AccountCapabilities.UserVisibleLatency"],
-      @"User visibile latency should be zero.");
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
+          expectTotalCount:1
               forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
-      @"Fetch latency should not be recorded on immediate availability.");
+      @"Failed to record fetch latency histogram.");
   // Verify that History Sync buttons metrics are recorded.
   GREYAssertNil(
       [MetricsAppInterface
