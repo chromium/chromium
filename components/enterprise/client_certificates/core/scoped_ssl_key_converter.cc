@@ -6,8 +6,8 @@
 
 #include "base/notreached.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
+#include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
-#include "net/ssl/test_ssl_private_key.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -57,20 +57,7 @@ class StubSSLKeyConverter : public SSLKeyConverter {
 
   scoped_refptr<net::SSLPrivateKey> ConvertECKey(
       const crypto::ECPrivateKey& key) override {
-    // ExportPrivateKey returns a PKCS #8 PrivateKeyInfo block.
-    std::vector<uint8_t> wrapped;
-    if (!key.ExportPrivateKey(&wrapped)) {
-      return nullptr;
-    }
-
-    CBS cbs;
-    CBS_init(&cbs, wrapped.data(), wrapped.size());
-    bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_private_key(&cbs));
-    if (!pkey || CBS_len(&cbs) != 0 || EVP_PKEY_id(pkey.get()) != EVP_PKEY_EC) {
-      return nullptr;
-    }
-
-    return net::WrapOpenSSLPrivateKey(std::move(pkey));
+    return net::WrapOpenSSLPrivateKey(bssl::UpRef(key.key()));
   }
 
  private:

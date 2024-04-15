@@ -6,7 +6,9 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "net/ssl/ssl_platform_key_win.h"
@@ -58,8 +60,7 @@ SSLKeyConverterImpl::ConvertUnexportableKeySlowly(
 
 scoped_refptr<net::SSLPrivateKey> SSLKeyConverterImpl::ConvertECKey(
     const crypto::ECPrivateKey& key) {
-  // TODO(b/330750994): Implement conversion logic for ECPrivateKey.
-  return nullptr;
+  return net::WrapOpenSSLPrivateKey(bssl::UpRef(key.key()));
 }
 
 namespace internal {

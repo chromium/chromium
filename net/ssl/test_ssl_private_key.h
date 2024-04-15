@@ -6,7 +6,6 @@
 #define NET_SSL_TEST_SSL_PRIVATE_KEY_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace crypto {
 class RSAPrivateKey;
@@ -18,8 +17,6 @@ class SSLPrivateKey;
 
 // Returns a new SSLPrivateKey which uses |key| for signing operations or
 // nullptr on error.
-scoped_refptr<SSLPrivateKey> WrapOpenSSLPrivateKey(
-    bssl::UniquePtr<EVP_PKEY> key);
 scoped_refptr<SSLPrivateKey> WrapRSAPrivateKey(
     crypto::RSAPrivateKey* rsa_private_key);
 scoped_refptr<SSLPrivateKey> CreateFailSigningSSLPrivateKey();
