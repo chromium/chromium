@@ -210,11 +210,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CounterfactualModules) {
           "runMochaSuite('NewTabPageAppTest CounterfactualModules')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CustomizeDialog) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest CustomizeDialog')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, CustomizeChromeSidePanel) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest CustomizeChromeSidePanel')");

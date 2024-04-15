@@ -529,15 +529,6 @@
     </ntp-voice-search-overlay>
   </template>
 </dom-if>
-<template id="customizeDialogIf" is="dom-if" if="[[showCustomizeDialog_]]"
-    restamp>
-  <ntp-customize-dialog
-      on-close="onCustomizeDialogClose_"
-      theme="[[theme_]]"
-      background-selection="{{backgroundSelection_}}"
-      selected-page="[[selectedCustomizeDialogPage_]]">
-  </ntp-customize-dialog>
-</template>
 <svg>
   <defs>
     <clipPath id="oneGoogleBarClipPath">

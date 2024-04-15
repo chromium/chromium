@@ -171,12 +171,6 @@ export class AppElement extends AppElementBase {
         reflectToAttribute: true,
       },
 
-      showCustomizeDialog_: {
-        type: Boolean,
-        computed:
-            'computeShowCustomizeDialog_(customizeChromeEnabled_, showCustomize_)',
-      },
-
       selectedCustomizeDialogPage_: {
         type: String,
         value: () =>
@@ -359,7 +353,6 @@ export class AppElement extends AppElementBase {
   private showCustomize_: boolean;
   private showCustomizeChromeText_: boolean;
   private showWallpaperSearch_: boolean;
-  private showCustomizeDialog_: boolean;
   private selectedCustomizeDialogPage_: string|null;
   private showVoiceSearchOverlay_: boolean;
   private showBackgroundImage_: boolean;
@@ -556,10 +549,6 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private computeShowCustomizeDialog_(): boolean {
-    return !this.customizeChromeEnabled_ && this.showCustomize_;
-  }
-
   private computeShowCustomizeChromeText_(): boolean {
     if (this.wallpaperSearchButtonEnabled_) {
       return false;
@@ -616,7 +605,7 @@ export class AppElement extends AppElementBase {
   }
 
   private onCustomizeClick_() {
-    // Let customize dialog or side panel decide what page or section to show.
+    // Let side panel decide what page or section to show.
     this.selectedCustomizeDialogPage_ = null;
     if (this.customizeChromeEnabled_) {
       this.setCustomizeChromeSidePanelVisible_(!this.showCustomize_);
@@ -625,9 +614,6 @@ export class AppElement extends AppElementBase {
         recordCustomizeChromeOpen(
             NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
       }
-    } else {
-      this.showCustomize_ = true;
-      recordCustomizeChromeOpen(NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON);
     }
   }
 
@@ -649,12 +635,6 @@ export class AppElement extends AppElementBase {
       recordCustomizeChromeOpen(
           NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON);
     }
-  }
-
-  private onCustomizeDialogClose_() {
-    this.showCustomize_ = false;
-    // Let customize dialog decide what page to show on next open.
-    this.selectedCustomizeDialogPage_ = null;
   }
 
   private onVoiceSearchOverlayClose_() {
