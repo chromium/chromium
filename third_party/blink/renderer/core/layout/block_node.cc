@@ -1148,25 +1148,17 @@ void BlockNode::CopyFragmentDataToLayoutBox(
   if (UNLIKELY(!is_last_fragment))
     return;
 
-  bool needs_full_invalidation = false;
-  if (LayoutBlock* block = DynamicTo<LayoutBlock>(box_.Get())) {
-    if (UNLIKELY(flow_thread && Style().HasColumnRule())) {
-      // Issue full invalidation, in case the number of column rules have
-      // changed.
-      needs_full_invalidation = true;
-    }
-
-    block->SetNeedsOverflowRecalc(
-        LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
-  }
-
+  box_->SetNeedsOverflowRecalc(
+      LayoutObject::OverflowRecalcType::kOnlyVisualOverflowRecalc);
   box_->SetScrollableOverflowFromLayoutResults();
   box_->UpdateAfterLayout();
 
-  if (needs_full_invalidation)
+  if (UNLIKELY(flow_thread && Style().HasColumnRule())) {
+    // Issue full invalidation, in case the number of column rules have changed.
     box_->ClearNeedsLayoutWithFullPaintInvalidation();
-  else
+  } else {
     box_->ClearNeedsLayout();
+  }
 
   // We should notify the display lock that we've done layout on self, and if
   // it's not blocked, on children.
