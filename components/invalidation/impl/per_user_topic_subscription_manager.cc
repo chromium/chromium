@@ -381,7 +381,6 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
                          SubscriptionFinished,
                      base::Unretained(it->second.get())),
       url_loader_factory_);
-  NotifySubscriptionRequestStarted(topic, it->second->type);
 }
 
 void PerUserTopicSubscriptionManager::ActOnSuccessfulSubscription(
@@ -602,14 +601,6 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionChannelStateChange(
   last_issued_state_ = state;
   for (auto& observer : observers_) {
     observer.OnSubscriptionChannelStateChanged(state);
-  }
-}
-
-void PerUserTopicSubscriptionManager::NotifySubscriptionRequestStarted(
-    Topic topic,
-    RequestType request_type) {
-  for (auto& observer : observers_) {
-    observer.OnSubscriptionRequestStarted(topic, request_type);
   }
 }
 

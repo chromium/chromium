@@ -231,10 +231,6 @@ void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
   EmitStateChange();
 }
 
-void FCMInvalidationListener::OnSubscriptionRequestStarted(
-    Topic topic,
-    PerUserTopicSubscriptionManager::RequestType request_type) {}
-
 void FCMInvalidationListener::OnSubscriptionRequestFinished(
     Topic topic,
     PerUserTopicSubscriptionManager::RequestType request_type,

@@ -44,8 +44,6 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
    public:
     virtual void OnSubscriptionChannelStateChanged(
         SubscriptionChannelState state) = 0;
-    virtual void OnSubscriptionRequestStarted(Topic topic,
-                                              RequestType request_type) = 0;
     virtual void OnSubscriptionRequestFinished(Topic topic,
                                                RequestType request_type,
                                                Status code) = 0;
@@ -108,11 +106,14 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
     return pending_subscriptions_.empty();
   }
 
+  size_t GetPendingSubscriptionsCountForTest() const {
+    return pending_subscriptions_.size();
+  }
+
  protected:
   // These are protected so that the mock can access them.
   void NotifySubscriptionChannelStateChange(
       SubscriptionChannelState invalidator_state);
-  void NotifySubscriptionRequestStarted(Topic topic, RequestType request_type);
   void NotifySubscriptionRequestFinished(Topic topic,
                                          RequestType request_type,
                                          Status code);
