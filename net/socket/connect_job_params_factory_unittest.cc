@@ -74,16 +74,16 @@ std::ostream& operator<<(std::ostream& os, const TestParams& test_params) {
 
 // Get a string describing the params variant.
 const char* ParamsName(ConnectJobParams& params) {
-  if (absl::holds_alternative<scoped_refptr<HttpProxySocketParams>>(params)) {
+  if (params.is_http_proxy()) {
     return "HttpProxySocketParams";
   }
-  if (absl::holds_alternative<scoped_refptr<SOCKSSocketParams>>(params)) {
+  if (params.is_socks()) {
     return "SOCKSSocketParams";
   }
-  if (absl::holds_alternative<scoped_refptr<SSLSocketParams>>(params)) {
+  if (params.is_ssl()) {
     return "SSLSocketParams";
   }
-  if (absl::holds_alternative<scoped_refptr<TransportSocketParams>>(params)) {
+  if (params.is_transport()) {
     return "TransportSocketParams";
   }
   return "Unknown";
@@ -91,10 +91,9 @@ const char* ParamsName(ConnectJobParams& params) {
 
 scoped_refptr<HttpProxySocketParams> ExpectHttpProxySocketParams(
     ConnectJobParams params) {
-  EXPECT_TRUE(
-      absl::holds_alternative<scoped_refptr<HttpProxySocketParams>>(params))
+  EXPECT_TRUE(params.is_http_proxy())
       << "Expected HttpProxySocketParams, got " << ParamsName(params);
-  return absl::get<scoped_refptr<HttpProxySocketParams>>(params);
+  return params.take_http_proxy();
 }
 
 void VerifyHttpProxySocketParams(
@@ -129,9 +128,9 @@ void VerifyHttpProxySocketParams(
 
 scoped_refptr<SOCKSSocketParams> ExpectSOCKSSocketParams(
     ConnectJobParams params) {
-  EXPECT_TRUE(absl::holds_alternative<scoped_refptr<SOCKSSocketParams>>(params))
+  EXPECT_TRUE(params.is_socks())
       << "Expected SOCKSSocketParams, got " << ParamsName(params);
-  return absl::get<scoped_refptr<SOCKSSocketParams>>(params);
+  return params.take_socks();
 }
 
 // Verify the properties of SOCKSSocketParams.
@@ -150,10 +149,9 @@ void VerifySOCKSSocketParams(
 // Assert that the params are TransportSocketParams and return them.
 scoped_refptr<TransportSocketParams> ExpectTransportSocketParams(
     ConnectJobParams params) {
-  EXPECT_TRUE(
-      absl::holds_alternative<scoped_refptr<TransportSocketParams>>(params))
+  EXPECT_TRUE(params.is_transport())
       << "Expected TransportSocketParams, got " << ParamsName(params);
-  return absl::get<scoped_refptr<TransportSocketParams>>(params);
+  return params.take_transport();
 }
 
 // Verify the properties of TransportSocketParams.
@@ -173,9 +171,9 @@ void VerifyTransportSocketParams(
 
 // Assert that the params are SSLSocketParams and return them.
 scoped_refptr<SSLSocketParams> ExpectSSLSocketParams(ConnectJobParams params) {
-  EXPECT_TRUE(absl::holds_alternative<scoped_refptr<SSLSocketParams>>(params))
+  EXPECT_TRUE(params.is_ssl())
       << "Expected SSLSocketParams, got " << ParamsName(params);
-  return absl::get<scoped_refptr<SSLSocketParams>>(params);
+  return params.take_ssl();
 }
 
 // Verify the properties of SSLSocketParams.

@@ -837,6 +837,8 @@ component("net") {
     "socket/connect_job.h",
     "socket/connect_job_factory.cc",
     "socket/connect_job_factory.h",
+    "socket/connect_job_params.cc",
+    "socket/connect_job_params.h",
     "socket/connect_job_params_factory.cc",
     "socket/connect_job_params_factory.h",
     "socket/connection_attempts.h",

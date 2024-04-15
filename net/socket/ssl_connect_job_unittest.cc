@@ -137,7 +137,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   scoped_refptr<SOCKSSocketParams> CreateSOCKSSocketParams(
       SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<SOCKSSocketParams>(
-        CreateProxyTransportSocketParams(secure_dns_policy),
+        ConnectJobParams(CreateProxyTransportSocketParams(secure_dns_policy)),
         kSocksProxyServer.scheme() == ProxyServer::SCHEME_SOCKS5,
         kSocksProxyServer.host_port_pair(), NetworkAnonymizationKey(),
         TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -146,9 +146,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   scoped_refptr<HttpProxySocketParams> CreateHttpProxySocketParams(
       SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<HttpProxySocketParams>(
-        CreateProxyTransportSocketParams(secure_dns_policy),
-        /*ssl_params=*/nullptr, /*quic_ssl_config=*/std::nullopt, kHostHttp,
-        kHttpProxyChain,
+        ConnectJobParams(CreateProxyTransportSocketParams(secure_dns_policy)),
+        kHostHttp, kHttpProxyChain,
         /*proxy_server_index=*/0,
         /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS,
         NetworkAnonymizationKey(), secure_dns_policy);
@@ -170,16 +169,15 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
       SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<SSLSocketParams>(
         proxy_chain == ProxyChain::Direct()
-            ? CreateDirectTransportSocketParams(secure_dns_policy)
-            : nullptr,
-        proxy_chain.is_single_proxy() &&
+            ? ConnectJobParams(
+                  CreateDirectTransportSocketParams(secure_dns_policy))
+        : proxy_chain.is_single_proxy() &&
                 proxy_chain.First().scheme() == ProxyServer::SCHEME_SOCKS5
-            ? CreateSOCKSSocketParams(secure_dns_policy)
-            : nullptr,
-        proxy_chain.is_single_proxy() &&
+            ? ConnectJobParams(CreateSOCKSSocketParams(secure_dns_policy))
+        : proxy_chain.is_single_proxy() &&
                 proxy_chain.First().scheme() == ProxyServer::SCHEME_HTTP
-            ? CreateHttpProxySocketParams(secure_dns_policy)
-            : nullptr,
+            ? ConnectJobParams(CreateHttpProxySocketParams(secure_dns_policy))
+            : ConnectJobParams(),
         HostPortPair::FromSchemeHostPort(kHostHttps), SSLConfig(),
         NetworkAnonymizationKey());
   }
@@ -442,8 +440,9 @@ TEST_F(SSLConnectJobTest, RequestPriority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       SCOPED_TRACE(new_priority);
-      if (initial_priority == new_priority)
+      if (initial_priority == new_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       std::unique_ptr<ConnectJob> ssl_connect_job =
           CreateConnectJob(&test_delegate, ProxyChain::Direct(),
@@ -724,8 +723,9 @@ TEST_F(SSLConnectJobTest, SOCKSRequestPriority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       SCOPED_TRACE(new_priority);
-      if (initial_priority == new_priority)
+      if (initial_priority == new_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       std::unique_ptr<ConnectJob> ssl_connect_job = CreateConnectJob(
           &test_delegate, PacResultElementToProxyChain("SOCKS5 foo:333"),
@@ -872,8 +872,9 @@ TEST_F(SSLConnectJobTest, HttpProxyRequestPriority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       SCOPED_TRACE(new_priority);
-      if (initial_priority == new_priority)
+      if (initial_priority == new_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       std::unique_ptr<ConnectJob> ssl_connect_job = CreateConnectJob(
           &test_delegate, PacResultElementToProxyChain("PROXY foo:444"),

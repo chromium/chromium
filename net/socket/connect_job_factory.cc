@@ -131,36 +131,29 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
       disable_cert_network_fetches, common_connect_job_params,
       proxy_dns_network_anonymization_key_);
 
-  if (holds_alternative<scoped_refptr<SSLSocketParams>>(connect_job_params)) {
+  if (connect_job_params.is_ssl()) {
     return ssl_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
-        get<scoped_refptr<SSLSocketParams>>(std::move(connect_job_params)),
-        delegate, /*net_log=*/nullptr);
+        connect_job_params.take_ssl(), delegate, /*net_log=*/nullptr);
   }
 
-  if (holds_alternative<scoped_refptr<TransportSocketParams>>(
-          connect_job_params)) {
+  if (connect_job_params.is_transport()) {
     return transport_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
-        get<scoped_refptr<TransportSocketParams>>(
-            std::move(connect_job_params)),
-        delegate, /*net_log=*/nullptr);
+        connect_job_params.take_transport(), delegate, /*net_log=*/nullptr);
   }
 
-  if (holds_alternative<scoped_refptr<HttpProxySocketParams>>(
-          connect_job_params)) {
+  if (connect_job_params.is_http_proxy()) {
     return http_proxy_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
-        get<scoped_refptr<HttpProxySocketParams>>(connect_job_params), delegate,
+        connect_job_params.take_http_proxy(), delegate,
         /*net_log=*/nullptr);
   }
 
-  CHECK(
-      holds_alternative<scoped_refptr<SOCKSSocketParams>>(connect_job_params));
+  CHECK(connect_job_params.is_socks());
   return socks_connect_job_factory_->Create(
       request_priority, socket_tag, common_connect_job_params,
-      get<scoped_refptr<SOCKSSocketParams>>(std::move(connect_job_params)),
-      delegate, /*net_log=*/nullptr);
+      connect_job_params.take_socks(), delegate, /*net_log=*/nullptr);
 }
 
 }  // namespace net

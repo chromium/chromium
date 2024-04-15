@@ -17,6 +17,7 @@
 #include "net/http/http_proxy_connect_job.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_factory.h"
+#include "net/socket/connect_job_params.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
@@ -28,12 +29,6 @@ class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
 class ProxyChain;
 struct SSLConfig;
-
-// Abstraction over the param types for various connect jobs.
-using ConnectJobParams = absl::variant<scoped_refptr<HttpProxySocketParams>,
-                                       scoped_refptr<SOCKSSocketParams>,
-                                       scoped_refptr<TransportSocketParams>,
-                                       scoped_refptr<SSLSocketParams>>;
 
 NET_EXPORT_PRIVATE ConnectJobParams ConstructConnectJobParams(
     const ConnectJobFactory::Endpoint& endpoint,

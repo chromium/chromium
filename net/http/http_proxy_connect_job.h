@@ -22,6 +22,7 @@
 #include "net/http/http_auth.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/connect_job_params.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -48,10 +49,22 @@ class QuicSessionRequest;
 class NET_EXPORT_PRIVATE HttpProxySocketParams
     : public base::RefCounted<HttpProxySocketParams> {
  public:
+  // Construct an `HttpProxyConnectJob` over a transport or SSL connection
+  // defined by the `ConnectJobParams`.
   HttpProxySocketParams(
-      scoped_refptr<TransportSocketParams> transport_params,
-      scoped_refptr<SSLSocketParams> ssl_params,
-      std::optional<SSLConfig> quic_ssl_config,
+      ConnectJobParams nested_params,
+      const HostPortPair& endpoint,
+      const ProxyChain& proxy_chain,
+      size_t proxy_chain_index,
+      bool tunnel,
+      const NetworkTrafficAnnotationTag traffic_annotation,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      SecureDnsPolicy secure_dns_policy);
+
+  // Construct an `HttpProxyConnectJob` over a QUIC connection using the given
+  // SSL config.
+  HttpProxySocketParams(
+      SSLConfig quic_ssl_config,
       const HostPortPair& endpoint,
       const ProxyChain& proxy_chain,
       size_t proxy_chain_index,
@@ -63,15 +76,29 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   HttpProxySocketParams(const HttpProxySocketParams&) = delete;
   HttpProxySocketParams& operator=(const HttpProxySocketParams&) = delete;
 
+  bool is_over_transport() const {
+    return nested_params_ && nested_params_->is_transport();
+  }
+  bool is_over_ssl() const {
+    return nested_params_ && nested_params_->is_ssl();
+  }
+  bool is_over_quic() const { return quic_ssl_config_.has_value(); }
+
+  // Get the nested transport params, or fail if not `is_over_transport()`.
   const scoped_refptr<TransportSocketParams>& transport_params() const {
-    return transport_params_;
+    return nested_params_->transport();
   }
+
+  // Get the nested SSL params, or fail if not `is_over_ssl()`.
   const scoped_refptr<SSLSocketParams>& ssl_params() const {
-    return ssl_params_;
+    return nested_params_->ssl();
   }
+
+  // Get the QUIC ssl config, or fail if not `is_over_quic()`.
   const std::optional<SSLConfig>& quic_ssl_config() const {
     return quic_ssl_config_;
   }
+
   const HostPortPair& endpoint() const { return endpoint_; }
   const ProxyChain& proxy_chain() const { return proxy_chain_; }
   const ProxyServer& proxy_server() const {
@@ -89,10 +116,19 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
 
  private:
   friend class base::RefCounted<HttpProxySocketParams>;
+  HttpProxySocketParams(
+      std::optional<ConnectJobParams> nested_params,
+      std::optional<SSLConfig> quic_ssl_config,
+      const HostPortPair& endpoint,
+      const ProxyChain& proxy_chain,
+      size_t proxy_chain_index,
+      bool tunnel,
+      const NetworkTrafficAnnotationTag traffic_annotation,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      SecureDnsPolicy secure_dns_policy);
   ~HttpProxySocketParams();
 
-  const scoped_refptr<TransportSocketParams> transport_params_;
-  const scoped_refptr<SSLSocketParams> ssl_params_;
+  const std::optional<ConnectJobParams> nested_params_;
   const std::optional<SSLConfig> quic_ssl_config_;
   const HostPortPair endpoint_;
   const ProxyChain proxy_chain_;

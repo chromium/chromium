@@ -77,10 +77,10 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
       SOCKSVersion socks_version,
       SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
     return base::MakeRefCounted<SOCKSSocketParams>(
-        base::MakeRefCounted<TransportSocketParams>(
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kProxyHostName, kProxyPort), NetworkAnonymizationKey(),
             secure_dns_policy, OnHostResolutionCallback(),
-            /*supported_alpns=*/base::flat_set<std::string>()),
+            /*supported_alpns=*/base::flat_set<std::string>())),
         socks_version == SOCKSVersion::V5,
         socks_version == SOCKSVersion::V4
             ? HostPortPair(kSOCKS4TestHost, kSOCKS4TestPort)
@@ -126,11 +126,11 @@ TEST_F(SOCKSConnectJobTest, HostResolutionFailureSOCKS4Endpoint) {
 
     scoped_refptr<SOCKSSocketParams> socket_params =
         base::MakeRefCounted<SOCKSSocketParams>(
-            base::MakeRefCounted<TransportSocketParams>(
+            ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
                 HostPortPair(kProxyHostName, kProxyPort),
                 NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                 OnHostResolutionCallback(),
-                /*supported_alpns=*/base::flat_set<std::string>()),
+                /*supported_alpns=*/base::flat_set<std::string>())),
             false /* socks_v5 */, HostPortPair(hostname, kSOCKS4TestPort),
             NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
 

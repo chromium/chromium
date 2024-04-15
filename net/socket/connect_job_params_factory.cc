@@ -18,6 +18,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
+#include "net/socket/connect_job_params.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socks_connect_job.h"
@@ -140,53 +141,13 @@ bool UsingSsl(const ConnectJobFactory::Endpoint& endpoint) {
   return absl::get<ConnectJobFactory::SchemelessEndpoint>(endpoint).using_ssl;
 }
 
-scoped_refptr<HttpProxySocketParams> MaybeHttpProxySocketParams(
-    const ConnectJobParams& params) {
-  if (auto p = get_if<scoped_refptr<HttpProxySocketParams>>(&params)) {
-    return *p;
-  }
-  return nullptr;
-}
-
-scoped_refptr<SOCKSSocketParams> MaybeSOCKSSocketParams(
-    const ConnectJobParams& params) {
-  if (auto p = get_if<scoped_refptr<SOCKSSocketParams>>(&params)) {
-    return *p;
-  }
-  return nullptr;
-}
-
-scoped_refptr<TransportSocketParams> MaybeTransportSocketParams(
-    const ConnectJobParams& params) {
-  if (auto p = get_if<scoped_refptr<TransportSocketParams>>(&params)) {
-    return *p;
-  }
-  return nullptr;
-}
-
-scoped_refptr<SSLSocketParams> MaybeSSLSocketParams(
-    const ConnectJobParams& params) {
-  if (auto p = get_if<scoped_refptr<SSLSocketParams>>(&params)) {
-    return *p;
-  }
-  return nullptr;
-}
-
 ConnectJobParams MakeSSLSocketParams(
     ConnectJobParams params,
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
     const NetworkAnonymizationKey& network_anonymization_key) {
-  scoped_refptr<TransportSocketParams> transport_socket_params =
-      MaybeTransportSocketParams(params);
-  scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
-      MaybeHttpProxySocketParams(params);
-  scoped_refptr<SOCKSSocketParams> socks_socket_params =
-      MaybeSOCKSSocketParams(params);
   return ConnectJobParams(base::MakeRefCounted<SSLSocketParams>(
-      std::move(transport_socket_params), std::move(socks_socket_params),
-      std::move(http_proxy_socket_params), host_and_port, ssl_config,
-      network_anonymization_key));
+      std::move(params), host_and_port, ssl_config, network_anonymization_key));
 }
 
 // Recursively generate the params for a proxy at `host_port_pair` and the given
@@ -240,7 +201,6 @@ ConnectJobParams CreateProxyParams(
       CHECK(proxy_chain.GetProxyServer(i).is_quic());
     }
     return ConnectJobParams(base::MakeRefCounted<HttpProxySocketParams>(
-        /*transport_params=*/nullptr, /*ssl_params=*/nullptr,
         std::move(proxy_server_ssl_config), host_port_pair, proxy_chain,
         proxy_chain_index, should_tunnel, *proxy_annotation_tag,
         network_anonymization_key, secure_dns_policy));
@@ -274,27 +234,18 @@ ConnectJobParams CreateProxyParams(
   // Further wrap the underlying connection params, or the SSL params wrapping
   // them, with the proxy params.
   if (proxy_server.is_http_like()) {
-    scoped_refptr<TransportSocketParams> transport_socket_params =
-        MaybeTransportSocketParams(params);
-    scoped_refptr<SSLSocketParams> ssl_socket_params =
-        MaybeSSLSocketParams(params);
     CHECK(!proxy_server.is_quic());
     params = ConnectJobParams(base::MakeRefCounted<HttpProxySocketParams>(
-        std::move(transport_socket_params), std::move(ssl_socket_params),
-        /*quic_ssl_config=*/std::nullopt, host_port_pair, proxy_chain,
-        proxy_chain_index, should_tunnel, *proxy_annotation_tag,
-        network_anonymization_key, secure_dns_policy));
+        std::move(params), host_port_pair, proxy_chain, proxy_chain_index,
+        should_tunnel, *proxy_annotation_tag, network_anonymization_key,
+        secure_dns_policy));
   } else {
     DCHECK(proxy_server.is_socks());
     DCHECK_EQ(1u, proxy_chain.length());
-    scoped_refptr<TransportSocketParams> transport_socket_params =
-        MaybeTransportSocketParams(params);
-    DCHECK(transport_socket_params);
     // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
     // when available)?
     params = ConnectJobParams(base::MakeRefCounted<SOCKSSocketParams>(
-        std::move(transport_socket_params),
-        proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
+        std::move(params), proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
         ToHostPortPair(endpoint), network_anonymization_key,
         *proxy_annotation_tag));
   }

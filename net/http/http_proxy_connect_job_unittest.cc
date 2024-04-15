@@ -208,11 +208,11 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
       return nullptr;
     }
     return base::MakeRefCounted<SSLSocketParams>(
-        base::MakeRefCounted<TransportSocketParams>(
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
             kHttpsProxyServer.host_port_pair(), NetworkAnonymizationKey(),
             secure_dns_policy, OnHostResolutionCallback(),
-            /*supported_alpns=*/base::flat_set<std::string>()),
-        nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
+            /*supported_alpns=*/base::flat_set<std::string>())),
+        HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
         NetworkAnonymizationKey());
   }
 
@@ -221,11 +221,14 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
   scoped_refptr<HttpProxySocketParams> CreateParams(
       bool tunnel,
       SecureDnsPolicy secure_dns_policy) {
+    ConnectJobParams params;
+    if (GetParam() == HTTP) {
+      params = ConnectJobParams(CreateHttpProxyParams(secure_dns_policy));
+    } else {
+      params = ConnectJobParams(CreateHttpsProxyParams(secure_dns_policy));
+    }
     return base::MakeRefCounted<HttpProxySocketParams>(
-        CreateHttpProxyParams(secure_dns_policy),
-        CreateHttpsProxyParams(secure_dns_policy),
-        /*quic_ssl_config=*/std::nullopt,
-        HostPortPair(kEndpointHost, tunnel ? 443 : 80),
+        std::move(params), HostPortPair(kEndpointHost, tunnel ? 443 : 80),
         GetParam() == HTTP ? kHttpProxyChain : kHttpsProxyChain,
         /*proxy_chain_index=*/0, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
         NetworkAnonymizationKey(), secure_dns_policy);
@@ -240,9 +243,6 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
       size_t proxy_chain_index) const {
     DCHECK_NE(GetParam(), HTTP);
 
-    scoped_refptr<TransportSocketParams> transport_params;
-    scoped_refptr<HttpProxySocketParams> http_proxy_params;
-
     const ProxyServer& proxy_server =
         proxy_chain.GetProxyServer(proxy_chain_index);
 
@@ -254,22 +254,21 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
       // previous hop that will establish this.
       size_t previous_hop_proxy_chain_index = proxy_chain_index - 1;
 
-      transport_params = nullptr;
-      http_proxy_params =
-          CreateNestedParams(tunnel, secure_dns_policy, proxy_chain,
-                             previous_hop_proxy_chain_index);
-    } else {
-      // If we are creating the SSLSocketParams for the first hop, establish a
-      // direct encrypted connection to it.
-      transport_params = base::MakeRefCounted<TransportSocketParams>(
-          proxy_server.host_port_pair(), NetworkAnonymizationKey(),
-          secure_dns_policy, OnHostResolutionCallback(),
-          /*supported_alpns=*/base::flat_set<std::string>());
-      http_proxy_params = nullptr;
+      return base::MakeRefCounted<SSLSocketParams>(
+          ConnectJobParams(CreateNestedParams(tunnel, secure_dns_policy,
+                                              proxy_chain,
+                                              previous_hop_proxy_chain_index)),
+          proxy_server.host_port_pair(), SSLConfig(),
+          NetworkAnonymizationKey());
     }
+
+    // If we are creating the SSLSocketParams for the first hop, establish a
+    // direct encrypted connection to it.
     return base::MakeRefCounted<SSLSocketParams>(
-        std::move(transport_params),
-        /*socks_proxy_params=*/nullptr, std::move(http_proxy_params),
+        ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
+            proxy_server.host_port_pair(), NetworkAnonymizationKey(),
+            secure_dns_policy, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>())),
         proxy_server.host_port_pair(), SSLConfig(), NetworkAnonymizationKey());
   }
 
@@ -300,10 +299,9 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
       connect_host_port_pair = HostPortPair(kEndpointHost, tunnel ? 443 : 80);
     }
     return base::MakeRefCounted<HttpProxySocketParams>(
-        nullptr, std::move(ssl_params), /*quic_ssl_config=*/std::nullopt,
-        connect_host_port_pair, proxy_chain, proxy_chain_index, tunnel,
-        TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
-        secure_dns_policy);
+        ConnectJobParams(std::move(ssl_params)), connect_host_port_pair,
+        proxy_chain, proxy_chain_index, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
+        NetworkAnonymizationKey(), secure_dns_policy);
   }
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForHttpRequest(
@@ -943,8 +941,9 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
     EXPECT_EQ(1, test_delegate.num_auth_challenges());
 
     // Close the H2 session to prevent reuse.
-    if (GetParam() == SPDY)
+    if (GetParam() == SPDY) {
       session_->CloseAllConnections(ERR_FAILED, "Very good reason");
+    }
     // Also need to clear the auth cache before re-running the test.
     session_->http_auth_cache()->ClearAllEntries();
   }
@@ -1085,8 +1084,9 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     EXPECT_EQ(2, test_delegate.num_auth_challenges());
 
     // Close the H2 session to prevent reuse.
-    if (GetParam() == SPDY)
+    if (GetParam() == SPDY) {
       session_->CloseAllConnections(ERR_FAILED, "Very good reason");
+    }
     // Also need to clear the auth cache before re-running the test.
     session_->http_auth_cache()->ClearAllEntries();
   }
@@ -1154,8 +1154,9 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
         connect_job.get(), OK, io_mode == SYNCHRONOUS && GetParam() != SPDY);
 
     // Close the H2 session to prevent reuse.
-    if (GetParam() == SPDY)
+    if (GetParam() == SPDY) {
       session_->CloseAllConnections(ERR_FAILED, "Very good reason");
+    }
   }
 }
 
@@ -1185,8 +1186,9 @@ TEST_P(HttpProxyConnectJobTest, RequestPriority) {
     for (int new_priority = MINIMUM_PRIORITY; new_priority <= MAXIMUM_PRIORITY;
          ++new_priority) {
       SCOPED_TRACE(new_priority);
-      if (initial_priority == new_priority)
+      if (initial_priority == new_priority) {
         continue;
+      }
       TestConnectJobDelegate test_delegate;
       std::unique_ptr<ConnectJob> connect_job = CreateConnectJobForHttpRequest(
           &test_delegate, static_cast<RequestPriority>(initial_priority));
@@ -1221,8 +1223,9 @@ TEST_P(HttpProxyConnectJobTest, SecureDnsPolicy) {
 }
 
 TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
-  if (GetParam() != SPDY)
+  if (GetParam() != SPDY) {
     return;
+  }
 
   SSLSocketDataProvider ssl_data(ASYNC, OK);
   InitializeSpdySsl(&ssl_data);
@@ -1270,8 +1273,9 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
 // Make sure that HttpProxyConnectJob does not pass on its priority to its
 // SPDY session's socket request on Init, or on SetPriority.
 TEST_P(HttpProxyConnectJobTest, SetSpdySessionSocketRequestPriority) {
-  if (GetParam() != SPDY)
+  if (GetParam() != SPDY) {
     return;
+  }
   session_deps_.host_resolver->set_synchronous_mode(true);
 
   // The SPDY CONNECT request should have a priority of kH2QuicTunnelPriority,
@@ -1307,8 +1311,9 @@ TEST_P(HttpProxyConnectJobTest, SetSpdySessionSocketRequestPriority) {
 TEST_P(HttpProxyConnectJobTest, TCPError) {
   // SPDY and HTTPS are identical, as they only differ once a connection is
   // established.
-  if (GetParam() == SPDY)
+  if (GetParam() == SPDY) {
     return;
+  }
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
     session_deps_.host_resolver->set_synchronous_mode(io_mode == SYNCHRONOUS);
@@ -1333,8 +1338,9 @@ TEST_P(HttpProxyConnectJobTest, TCPError) {
 }
 
 TEST_P(HttpProxyConnectJobTest, SSLError) {
-  if (GetParam() == HTTP)
+  if (GetParam() == HTTP) {
     return;
+  }
 
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
@@ -1493,8 +1499,9 @@ TEST_P(HttpProxyConnectJobTest, TunnelSetupError) {
 }
 
 TEST_P(HttpProxyConnectJobTest, SslClientAuth) {
-  if (GetParam() == HTTP)
+  if (GetParam() == HTTP) {
     return;
+  }
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
     session_deps_.host_resolver->set_synchronous_mode(io_mode == SYNCHRONOUS);
@@ -1505,8 +1512,9 @@ TEST_P(HttpProxyConnectJobTest, SslClientAuth) {
                                     base::span<const MockWrite>());
     session_deps_.socket_factory->AddSocketDataProvider(&socket_data);
     SSLSocketDataProvider ssl_data(io_mode, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
-    if (GetParam() == SPDY)
+    if (GetParam() == SPDY) {
       InitializeSpdySsl(&ssl_data);
+    }
     session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
     // Redirects in the HTTPS case return errors, but also return sockets.
@@ -1776,8 +1784,9 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
 // once credentials are received.
 TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallengeNewConnection) {
   // Proxy-Connection: Close doesn't make sense with H2.
-  if (GetParam() == SPDY)
+  if (GetParam() == SPDY) {
     return;
+  }
 
   enum class TimeoutPhase {
     CONNECT,
@@ -2168,7 +2177,6 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
   SSLConfig quic_ssl_config;
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
       base::MakeRefCounted<HttpProxySocketParams>(
-          /*transport_params=*/nullptr, /*(ssl_socket_params=*/nullptr,
           quic_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
           /*proxy_chain_index=*/0, /*tunnel=*/true,
           TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
@@ -2208,7 +2216,6 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
   SSLConfig quic_ssl_config;
   scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
       base::MakeRefCounted<HttpProxySocketParams>(
-          /*transport_params=*/nullptr, /*ssl_socket_params=*/nullptr,
           quic_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
           /*proxy_chain_index=*/1, /*tunnel=*/true,
           TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),

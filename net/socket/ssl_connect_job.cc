@@ -33,6 +33,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -46,58 +47,27 @@ constexpr base::TimeDelta kSSLHandshakeTimeout(base::Seconds(30));
 }  // namespace
 
 SSLSocketParams::SSLSocketParams(
-    scoped_refptr<TransportSocketParams> direct_params,
-    scoped_refptr<SOCKSSocketParams> socks_proxy_params,
-    scoped_refptr<HttpProxySocketParams> http_proxy_params,
+    ConnectJobParams nested_params,
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
     NetworkAnonymizationKey network_anonymization_key)
-    : direct_params_(std::move(direct_params)),
-      socks_proxy_params_(std::move(socks_proxy_params)),
-      http_proxy_params_(std::move(http_proxy_params)),
+    : nested_params_(nested_params),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
       network_anonymization_key_(network_anonymization_key) {
-  // Only one set of lower level ConnectJob params should be non-NULL.
-  DCHECK((direct_params_ && !socks_proxy_params_ && !http_proxy_params_) ||
-         (!direct_params_ && socks_proxy_params_ && !http_proxy_params_) ||
-         (!direct_params_ && !socks_proxy_params_ && http_proxy_params_));
+  CHECK(!nested_params_.is_ssl());
 }
 
 SSLSocketParams::~SSLSocketParams() = default;
 
 SSLSocketParams::ConnectionType SSLSocketParams::GetConnectionType() const {
-  if (direct_params_.get()) {
-    DCHECK(!socks_proxy_params_.get());
-    DCHECK(!http_proxy_params_.get());
-    return DIRECT;
-  }
-
-  if (socks_proxy_params_.get()) {
-    DCHECK(!http_proxy_params_.get());
+  if (nested_params_.is_socks()) {
     return SOCKS_PROXY;
   }
-
-  DCHECK(http_proxy_params_.get());
-  return HTTP_PROXY;
-}
-
-const scoped_refptr<TransportSocketParams>&
-SSLSocketParams::GetDirectConnectionParams() const {
-  DCHECK_EQ(GetConnectionType(), DIRECT);
-  return direct_params_;
-}
-
-const scoped_refptr<SOCKSSocketParams>&
-SSLSocketParams::GetSocksProxyConnectionParams() const {
-  DCHECK_EQ(GetConnectionType(), SOCKS_PROXY);
-  return socks_proxy_params_;
-}
-
-const scoped_refptr<HttpProxySocketParams>&
-SSLSocketParams::GetHttpProxyConnectionParams() const {
-  DCHECK_EQ(GetConnectionType(), HTTP_PROXY);
-  return http_proxy_params_;
+  if (nested_params_.is_http_proxy()) {
+    return HTTP_PROXY;
+  }
+  return DIRECT;
 }
 
 std::unique_ptr<SSLConnectJob> SSLConnectJob::Factory::Create(
@@ -149,8 +119,9 @@ LoadState SSLConnectJob::GetLoadState() const {
     case STATE_SOCKS_CONNECT_COMPLETE:
       return nested_connect_job_->GetLoadState();
     case STATE_TUNNEL_CONNECT_COMPLETE:
-      if (nested_socket_)
+      if (nested_socket_) {
         return LOAD_STATE_ESTABLISHING_PROXY_TUNNEL;
+      }
       return nested_connect_job_->GetLoadState();
     case STATE_SSL_CONNECT:
     case STATE_SSL_CONNECT_COMPLETE:
@@ -163,8 +134,9 @@ LoadState SSLConnectJob::GetLoadState() const {
 
 bool SSLConnectJob::HasEstablishedConnection() const {
   // If waiting on a nested ConnectJob, defer to that ConnectJob's state.
-  if (nested_connect_job_)
+  if (nested_connect_job_) {
     return nested_connect_job_->HasEstablishedConnection();
+  }
   // Otherwise, return true if a socket has been created.
   return nested_socket_ || ssl_socket_;
 }
@@ -213,8 +185,9 @@ base::TimeDelta SSLConnectJob::HandshakeTimeoutForTesting() {
 
 void SSLConnectJob::OnIOComplete(int result) {
   int rv = DoLoop(result);
-  if (rv != ERR_IO_PENDING)
+  if (rv != ERR_IO_PENDING) {
     NotifyDelegateOfCompletion(rv);  // Deletes |this|.
+  }
 }
 
 int SSLConnectJob::DoLoop(int result) {
@@ -574,8 +547,9 @@ void SSLConnectJob::ResetStateForRestart() {
 }
 
 void SSLConnectJob::ChangePriorityInternal(RequestPriority priority) {
-  if (nested_connect_job_)
+  if (nested_connect_job_) {
     nested_connect_job_->ChangePriority(priority);
+  }
 }
 
 }  // namespace net
