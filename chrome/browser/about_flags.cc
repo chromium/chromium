@@ -3855,13 +3855,27 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshTesting[] = {
     {"max_prompt_count", "3"},
     {"reprompt_duration", "5m"},
     {"reprompt_duration_multiplier", "2"}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAppMenu[] = {
+    {"show_info_bar", "true"},      {"show_app_menu_chip", "true"},
+    {"show_app_menu_item", "true"}, {"max_prompt_count", "-1"},
+    {"reprompt_duration", "7d"},    {"reprompt_duration_multiplier", "1"}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAppMenuItem[] = {
+    {"show_info_bar", "true"},      {"show_app_menu_chip", "false"},
+    {"show_app_menu_item", "true"}, {"max_prompt_count", "3"},
+    {"reprompt_duration", "7d"},    {"reprompt_duration_multiplier", "1"}};
 const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
     {{"- Aggressive (1 week reprompt with no backoff)",
       kDefaultBrowserPromptRefreshAggressive,
       std::size(kDefaultBrowserPromptRefreshAggressive), nullptr},
      {"- For Testing (5 minute reprompt with 2x backoff, max 3 times)",
       kDefaultBrowserPromptRefreshTesting,
-      std::size(kDefaultBrowserPromptRefreshTesting), nullptr}};
+      std::size(kDefaultBrowserPromptRefreshTesting), nullptr},
+     {"- App Menu Chip (1 week reprompt with no backoff)",
+      kDefaultBrowserPromptRefreshAppMenu,
+      std::size(kDefaultBrowserPromptRefreshAppMenu), nullptr},
+     {"- App Menu Item (1 week reprompt with no backoff)",
+      kDefaultBrowserPromptRefreshAppMenuItem,
+      std::size(kDefaultBrowserPromptRefreshAppMenuItem), nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
