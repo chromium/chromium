@@ -303,9 +303,8 @@ void LockStateController::RemoveObserver(LockStateObserver* observer) {
 }
 
 void LockStateController::StartLockAnimation() {
-  if (animating_lock_) {
+  if (animating_lock_)
     return;
-  }
 
   animating_lock_ = true;
   StoreUnlockedProperties();
@@ -313,6 +312,26 @@ void LockStateController::StartLockAnimation() {
   PreLockAnimation(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, true);
   DispatchCancelMode();
   OnLockStateEvent(LockStateObserver::EVENT_PRELOCK_ANIMATION_STARTED);
+}
+
+void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
+  shutdown_reason_ = reason;
+
+  HideAndMaybeLockCursor(/*lock=*/false);
+  ShutdownOnPine(/*with_pre_animation=*/true);
+}
+
+void LockStateController::RequestRestart(
+    power_manager::RequestRestartReason reason,
+    const std::string& description) {
+  if (features::IsForestFeatureEnabled()) {
+    restart_reason_ = reason;
+    restart_description_ = description;
+    HideAndMaybeLockCursor(/*lock=*/false);
+    TakePineImageAndShutdown(/*with_pre_animation=*/false);
+  } else {
+    chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
+  }
 }
 
 void LockStateController::LockWithoutAnimation() {
@@ -351,6 +370,10 @@ bool LockStateController::LockRequested() {
   return lock_fail_timer_.IsRunning();
 }
 
+bool LockStateController::ShutdownRequested() {
+  return shutting_down_;
+}
+
 void LockStateController::CancelLockAnimation() {
   VLOG(1) << "CancelLockAnimation";
   animating_lock_ = false;
@@ -379,6 +402,38 @@ void LockStateController::CancelLockAnimation() {
 void LockStateController::CancelUnlockAnimation() {
   VLOG(1) << "CancelUnlockAnimation";
   pb_pressed_during_unlock_ = true;
+}
+
+bool LockStateController::CanCancelShutdownAnimation() {
+  return pre_shutdown_timer_.IsRunning();
+}
+
+void LockStateController::CancelShutdownAnimation() {
+  if (!CanCancelShutdownAnimation())
+    return;
+
+  animator_->StartAnimation(
+      SessionStateAnimator::ROOT_CONTAINER,
+      SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
+      SessionStateAnimator::ANIMATION_SPEED_REVERT_SHUTDOWN);
+  pre_shutdown_timer_.Stop();
+}
+
+void LockStateController::RequestShutdown(ShutdownReason reason) {
+  if (shutting_down_)
+    return;
+
+  shutting_down_ = true;
+  shutdown_reason_ = reason;
+
+  if (reason == ShutdownReason::LOGIN_SHUT_DOWN_BUTTON) {
+    base::Time now_timestamp = base::DefaultClock::GetInstance()->Now();
+    local_state_->SetTime(prefs::kLoginShutdownTimestampPrefName,
+                          now_timestamp);
+  }
+
+  HideAndMaybeLockCursor(/*lock=*/true);
+  ShutdownOnPine(/*with_pre_animation=*/false);
 }
 
 void LockStateController::OnUnlockAnimationBeforeLockUIDestroyedFinished() {
@@ -414,64 +469,6 @@ void LockStateController::SetLockScreenDisplayedCallback(
     std::move(callback).Run();
   else
     lock_screen_displayed_callback_ = std::move(callback);
-}
-
-void LockStateController::RequestShutdown(ShutdownReason reason) {
-  if (shutting_down_) {
-    return;
-  }
-
-  shutting_down_ = true;
-  shutdown_reason_ = reason;
-
-  if (reason == ShutdownReason::LOGIN_SHUT_DOWN_BUTTON) {
-    base::Time now_timestamp = base::DefaultClock::GetInstance()->Now();
-    local_state_->SetTime(prefs::kLoginShutdownTimestampPrefName,
-                          now_timestamp);
-  }
-
-  HideAndMaybeLockCursor(/*lock=*/true);
-  ShutdownOnPine(/*with_pre_animation=*/false);
-}
-
-void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
-  shutdown_reason_ = reason;
-
-  HideAndMaybeLockCursor(/*lock=*/false);
-  ShutdownOnPine(/*with_pre_animation=*/true);
-}
-
-bool LockStateController::ShutdownRequested() {
-  return shutting_down_;
-}
-
-bool LockStateController::CanCancelShutdownAnimation() {
-  return pre_shutdown_timer_.IsRunning();
-}
-
-void LockStateController::CancelShutdownAnimation() {
-  if (!CanCancelShutdownAnimation()) {
-    return;
-  }
-
-  animator_->StartAnimation(
-      SessionStateAnimator::ROOT_CONTAINER,
-      SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
-      SessionStateAnimator::ANIMATION_SPEED_REVERT_SHUTDOWN);
-  pre_shutdown_timer_.Stop();
-}
-
-void LockStateController::RequestRestart(
-    power_manager::RequestRestartReason reason,
-    const std::string& description) {
-  if (features::IsForestFeatureEnabled()) {
-    restart_reason_ = reason;
-    restart_description_ = description;
-    HideAndMaybeLockCursor(/*lock=*/false);
-    TakePineImageAndShutdown(/*with_pre_animation=*/false);
-  } else {
-    chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
-  }
 }
 
 void LockStateController::OnHostCloseRequested(aura::WindowTreeHost* host) {
@@ -539,6 +536,51 @@ void LockStateController::OnLockFailTimeout() {
   LOG(ERROR) << "Screen lock took too long; Signing out";
   base::debug::DumpWithoutCrashing();
   Shell::Get()->session_controller()->RequestSignOut();
+}
+
+void LockStateController::StartPreShutdownAnimationTimer() {
+  pre_shutdown_timer_.Stop();
+  pre_shutdown_timer_.Start(
+      FROM_HERE,
+      animator_->GetDuration(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN),
+      this, &LockStateController::OnPreShutdownAnimationTimeout);
+}
+
+void LockStateController::OnPreShutdownAnimationTimeout() {
+  VLOG(1) << "OnPreShutdownAnimationTimeout";
+  shutting_down_ = true;
+
+  HideAndMaybeLockCursor(/*lock=*/false);
+  StartRealShutdownTimer(false);
+}
+
+void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
+  base::TimeDelta duration = kShutdownRequestDelay;
+  if (with_animation_time) {
+    duration +=
+        animator_->GetDuration(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
+  }
+  // Play and get shutdown sound duration from chrome in |sound_duration|. And
+  // start real shutdown after a delay of |duration|.
+  base::TimeDelta sound_duration =
+      std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
+               base::Milliseconds(kMaxShutdownSoundDurationMs));
+  duration = std::max(duration, sound_duration);
+  real_shutdown_timer_.Start(FROM_HERE, duration, this,
+                             &LockStateController::OnRealPowerTimeout);
+}
+
+void LockStateController::OnRealPowerTimeout() {
+  VLOG(1) << "OnRealPowerTimeout";
+  DCHECK(shutting_down_);
+  DCHECK(shutdown_reason_ || restart_reason_);
+  // Shut down or reboot based on device policy.
+  if (restart_reason_) {
+    chromeos::PowerManagerClient::Get()->RequestRestart(*restart_reason_,
+                                                        restart_description_);
+  } else {
+    shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
+  }
 }
 
 void LockStateController::PreLockAnimation(
@@ -765,51 +807,6 @@ void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
 
   for (auto& observer : observers_)
     observer.OnLockStateEvent(event);
-}
-
-void LockStateController::StartPreShutdownAnimationTimer() {
-  pre_shutdown_timer_.Stop();
-  pre_shutdown_timer_.Start(
-      FROM_HERE,
-      animator_->GetDuration(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN),
-      this, &LockStateController::OnPreShutdownAnimationTimeout);
-}
-
-void LockStateController::OnPreShutdownAnimationTimeout() {
-  VLOG(1) << "OnPreShutdownAnimationTimeout";
-  shutting_down_ = true;
-
-  HideAndMaybeLockCursor(/*lock=*/false);
-  StartRealShutdownTimer(false);
-}
-
-void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
-  base::TimeDelta duration = kShutdownRequestDelay;
-  if (with_animation_time) {
-    duration +=
-        animator_->GetDuration(SessionStateAnimator::ANIMATION_SPEED_SHUTDOWN);
-  }
-  // Play and get shutdown sound duration from chrome in |sound_duration|. And
-  // start real shutdown after a delay of |duration|.
-  base::TimeDelta sound_duration =
-      std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
-               base::Milliseconds(kMaxShutdownSoundDurationMs));
-  duration = std::max(duration, sound_duration);
-  real_shutdown_timer_.Start(FROM_HERE, duration, this,
-                             &LockStateController::OnRealPowerTimeout);
-}
-
-void LockStateController::OnRealPowerTimeout() {
-  VLOG(1) << "OnRealPowerTimeout";
-  DCHECK(shutting_down_);
-  DCHECK(shutdown_reason_ || restart_reason_);
-  // Shut down or reboot based on device policy.
-  if (restart_reason_) {
-    chromeos::PowerManagerClient::Get()->RequestRestart(*restart_reason_,
-                                                        restart_description_);
-  } else {
-    shutdown_controller_->ShutDownOrReboot(*shutdown_reason_);
-  }
 }
 
 void LockStateController::ShutdownOnPine(bool with_pre_animation) {
