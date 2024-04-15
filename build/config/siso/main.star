@@ -206,6 +206,7 @@ def __use_large_b289968566(ctx, step_config):
         # use_siso = true
         "./obj/content/test/content_browsertests__library/interest_group_browsertest.o",
         "./obj/content/test/content_browsertests__library/prerender_browsertest.o",
+        "./robolectric_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         # Fallback happens with the following args.gn
         # (linux-build-perf-developer, win-build-perf-developer)
         # is_component_build = true
