@@ -36,10 +36,10 @@
 
 use std::env;
 use std::ffi::OsString;
+use std::iter;
 use std::path::Path;
 use std::process::{self, Command, Stdio};
 use std::str;
-use std::u32;
 
 fn main() {
     let rustc = rustc_minor_version().unwrap_or(u32::MAX);
@@ -61,6 +61,11 @@ fn main() {
 
     if rustc < 66 {
         println!("cargo:rustc-cfg=no_source_text");
+    }
+
+    if rustc < 79 {
+        println!("cargo:rustc-cfg=no_literal_byte_character");
+        println!("cargo:rustc-cfg=no_literal_c_string");
     }
 
     if !cfg!(feature = "proc-macro") {
@@ -138,15 +143,15 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
     let out_dir = cargo_env_var("OUT_DIR");
     let probefile = Path::new("build").join("probe.rs");
 
-    // Make sure to pick up Cargo rustc configuration.
-    let mut cmd = if let Some(wrapper) = env::var_os("RUSTC_WRAPPER") {
-        let mut cmd = Command::new(wrapper);
-        // The wrapper's first argument is supposed to be the path to rustc.
-        cmd.arg(rustc);
-        cmd
-    } else {
-        Command::new(rustc)
-    };
+    let rustc_wrapper = env::var_os("RUSTC_WRAPPER").filter(|wrapper| !wrapper.is_empty());
+    let rustc_workspace_wrapper =
+        env::var_os("RUSTC_WORKSPACE_WRAPPER").filter(|wrapper| !wrapper.is_empty());
+    let mut rustc = rustc_wrapper
+        .into_iter()
+        .chain(rustc_workspace_wrapper)
+        .chain(iter::once(rustc));
+    let mut cmd = Command::new(rustc.next().unwrap());
+    cmd.args(rustc);
 
     if !rustc_bootstrap {
         cmd.env_remove("RUSTC_BOOTSTRAP");

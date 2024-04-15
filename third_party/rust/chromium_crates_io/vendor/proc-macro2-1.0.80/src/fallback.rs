@@ -15,7 +15,8 @@ use core::mem::ManuallyDrop;
 use core::ops::Range;
 use core::ops::RangeBounds;
 use core::ptr;
-use core::str::FromStr;
+use core::str::{self, FromStr};
+use std::ffi::CStr;
 #[cfg(procmacro2_semver_exempt)]
 use std::path::PathBuf;
 
@@ -926,7 +927,7 @@ impl Debug for Ident {
 
 #[derive(Clone)]
 pub(crate) struct Literal {
-    repr: String,
+    pub(crate) repr: String,
     span: Span,
 }
 
@@ -1007,71 +1008,98 @@ impl Literal {
         Literal::_new(s)
     }
 
-    pub fn string(t: &str) -> Literal {
-        let mut repr = String::with_capacity(t.len() + 2);
+    pub fn string(string: &str) -> Literal {
+        let mut repr = String::with_capacity(string.len() + 2);
         repr.push('"');
-        let mut chars = t.chars();
-        while let Some(ch) = chars.next() {
-            if ch == '\0' {
-                repr.push_str(
-                    if chars
-                        .as_str()
-                        .starts_with(|next| '0' <= next && next <= '7')
-                    {
-                        // circumvent clippy::octal_escapes lint
-                        "\\x00"
-                    } else {
-                        "\\0"
-                    },
-                );
-            } else if ch == '\'' {
-                // escape_debug turns this into "\'" which is unnecessary.
-                repr.push(ch);
-            } else {
-                repr.extend(ch.escape_debug());
-            }
-        }
+        escape_utf8(string, &mut repr);
         repr.push('"');
         Literal::_new(repr)
     }
 
-    pub fn character(t: char) -> Literal {
+    pub fn character(ch: char) -> Literal {
         let mut repr = String::new();
         repr.push('\'');
-        if t == '"' {
+        if ch == '"' {
             // escape_debug turns this into '\"' which is unnecessary.
-            repr.push(t);
+            repr.push(ch);
         } else {
-            repr.extend(t.escape_debug());
+            repr.extend(ch.escape_debug());
+        }
+        repr.push('\'');
+        Literal::_new(repr)
+    }
+
+    pub fn byte_character(byte: u8) -> Literal {
+        let mut repr = "b'".to_string();
+        #[allow(clippy::match_overlapping_arm)]
+        match byte {
+            b'\0' => repr.push_str(r"\0"),
+            b'\t' => repr.push_str(r"\t"),
+            b'\n' => repr.push_str(r"\n"),
+            b'\r' => repr.push_str(r"\r"),
+            b'\'' => repr.push_str(r"\'"),
+            b'\\' => repr.push_str(r"\\"),
+            b'\x20'..=b'\x7E' => repr.push(byte as char),
+            _ => {
+                let _ = write!(repr, r"\x{:02X}", byte);
+            }
         }
         repr.push('\'');
         Literal::_new(repr)
     }
 
     pub fn byte_string(bytes: &[u8]) -> Literal {
-        let mut escaped = "b\"".to_string();
+        let mut repr = "b\"".to_string();
         let mut bytes = bytes.iter();
         while let Some(&b) = bytes.next() {
             #[allow(clippy::match_overlapping_arm)]
             match b {
-                b'\0' => escaped.push_str(match bytes.as_slice().first() {
+                b'\0' => repr.push_str(match bytes.as_slice().first() {
                     // circumvent clippy::octal_escapes lint
                     Some(b'0'..=b'7') => r"\x00",
                     _ => r"\0",
                 }),
-                b'\t' => escaped.push_str(r"\t"),
-                b'\n' => escaped.push_str(r"\n"),
-                b'\r' => escaped.push_str(r"\r"),
-                b'"' => escaped.push_str("\\\""),
-                b'\\' => escaped.push_str("\\\\"),
-                b'\x20'..=b'\x7E' => escaped.push(b as char),
+                b'\t' => repr.push_str(r"\t"),
+                b'\n' => repr.push_str(r"\n"),
+                b'\r' => repr.push_str(r"\r"),
+                b'"' => repr.push_str("\\\""),
+                b'\\' => repr.push_str(r"\\"),
+                b'\x20'..=b'\x7E' => repr.push(b as char),
                 _ => {
-                    let _ = write!(escaped, "\\x{:02X}", b);
+                    let _ = write!(repr, r"\x{:02X}", b);
                 }
             }
         }
-        escaped.push('"');
-        Literal::_new(escaped)
+        repr.push('"');
+        Literal::_new(repr)
+    }
+
+    pub fn c_string(string: &CStr) -> Literal {
+        let mut repr = "c\"".to_string();
+        let mut bytes = string.to_bytes();
+        while !bytes.is_empty() {
+            let (valid, invalid) = match str::from_utf8(bytes) {
+                Ok(all_valid) => {
+                    bytes = b"";
+                    (all_valid, bytes)
+                }
+                Err(utf8_error) => {
+                    let (valid, rest) = bytes.split_at(utf8_error.valid_up_to());
+                    let valid = str::from_utf8(valid).unwrap();
+                    let invalid = utf8_error
+                        .error_len()
+                        .map_or(rest, |error_len| &rest[..error_len]);
+                    bytes = &bytes[valid.len() + invalid.len()..];
+                    (valid, invalid)
+                }
+            };
+            escape_utf8(valid, &mut repr);
+            for &byte in invalid {
+                let _ = write!(repr, r"\x{:02X}", byte);
+            }
+        }
+        repr.push('"');
+        Literal::_new(repr)
     }
 
     pub fn span(&self) -> Span {
@@ -1170,5 +1198,29 @@ impl Debug for Literal {
         debug.field("lit", &format_args!("{}", self.repr));
         debug_span_field_if_nontrivial(&mut debug, self.span);
         debug.finish()
+    }
+}
+
+fn escape_utf8(string: &str, repr: &mut String) {
+    let mut chars = string.chars();
+    while let Some(ch) = chars.next() {
+        if ch == '\0' {
+            repr.push_str(
+                if chars
+                    .as_str()
+                    .starts_with(|next| '0' <= next && next <= '7')
+                {
+                    // circumvent clippy::octal_escapes lint
+                    r"\x00"
+                } else {
+                    r"\0"
+                },
+            );
+        } else if ch == '\'' {
+            // escape_debug turns this into "\'" which is unnecessary.
+            repr.push(ch);
+        } else {
+            repr.extend(ch.escape_debug());
+        }
     }
 }

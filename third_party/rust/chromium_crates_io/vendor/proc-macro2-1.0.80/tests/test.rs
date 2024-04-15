@@ -1,11 +1,14 @@
 #![allow(
     clippy::assertions_on_result_states,
     clippy::items_after_statements,
+    clippy::needless_pass_by_value,
+    clippy::needless_raw_string_hashes,
     clippy::non_ascii_literal,
     clippy::octal_escapes
 )]
 
 use proc_macro2::{Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
+use std::ffi::CStr;
 use std::iter;
 use std::str::{self, FromStr};
 
@@ -96,12 +99,22 @@ fn lifetime_invalid() {
 
 #[test]
 fn literal_string() {
-    assert_eq!(Literal::string("foo").to_string(), "\"foo\"");
-    assert_eq!(Literal::string("\"").to_string(), "\"\\\"\"");
-    assert_eq!(Literal::string("didn't").to_string(), "\"didn't\"");
-    assert_eq!(
-        Literal::string("a\00b\07c\08d\0e\0").to_string(),
-        "\"a\\x000b\\x007c\\08d\\0e\\0\"",
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected.trim());
+    }
+
+    assert(Literal::string(""), r#"  ""  "#);
+    assert(Literal::string("aA"), r#"  "aA"  "#);
+    assert(Literal::string("\t"), r#"  "\t"  "#);
+    assert(Literal::string("❤"), r#"  "❤"  "#);
+    assert(Literal::string("'"), r#"  "'"  "#);
+    assert(Literal::string("\""), r#"  "\""  "#);
+    assert(Literal::string("\0"), r#"  "\0"  "#);
+    assert(Literal::string("\u{1}"), r#"  "\u{1}"  "#);
+    assert(
+        Literal::string("a\00b\07c\08d\0e\0"),
+        r#"  "a\x000b\x007c\08d\0e\0"  "#,
     );
 
     "\"\\\r\n    x\"".parse::<TokenStream>().unwrap();
@@ -133,15 +146,42 @@ fn literal_raw_string() {
 }
 
 #[test]
+fn literal_byte_character() {
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected.trim());
+    }
+
+    assert(Literal::byte_character(b'a'), r#"  b'a'  "#);
+    assert(Literal::byte_character(b'\0'), r#"  b'\0'  "#);
+    assert(Literal::byte_character(b'\t'), r#"  b'\t'  "#);
+    assert(Literal::byte_character(b'\n'), r#"  b'\n'  "#);
+    assert(Literal::byte_character(b'\r'), r#"  b'\r'  "#);
+    assert(Literal::byte_character(b'\''), r#"  b'\''  "#);
+    assert(Literal::byte_character(b'\\'), r#"  b'\\'  "#);
+    assert(Literal::byte_character(b'\x1f'), r#"  b'\x1F'  "#);
+    assert(Literal::byte_character(b'"'), r#"  b'"'  "#);
+}
+
+#[test]
 fn literal_byte_string() {
-    assert_eq!(Literal::byte_string(b"").to_string(), "b\"\"");
-    assert_eq!(
-        Literal::byte_string(b"\0\t\n\r\"\\2\x10").to_string(),
-        "b\"\\0\\t\\n\\r\\\"\\\\2\\x10\"",
-    );
-    assert_eq!(
-        Literal::byte_string(b"a\00b\07c\08d\0e\0").to_string(),
-        "b\"a\\x000b\\x007c\\08d\\0e\\0\"",
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected.trim());
+    }
+
+    assert(Literal::byte_string(b""), r#"  b""  "#);
+    assert(Literal::byte_string(b"\0"), r#"  b"\0"  "#);
+    assert(Literal::byte_string(b"\t"), r#"  b"\t"  "#);
+    assert(Literal::byte_string(b"\n"), r#"  b"\n"  "#);
+    assert(Literal::byte_string(b"\r"), r#"  b"\r"  "#);
+    assert(Literal::byte_string(b"\""), r#"  b"\""  "#);
+    assert(Literal::byte_string(b"\\"), r#"  b"\\"  "#);
+    assert(Literal::byte_string(b"\x1f"), r#"  b"\x1F"  "#);
+    assert(Literal::byte_string(b"'"), r#"  b"'"  "#);
+    assert(
+        Literal::byte_string(b"a\00b\07c\08d\0e\0"),
+        r#"  b"a\x000b\x007c\08d\0e\0"  "#,
     );
 
     "b\"\\\r\n    x\"".parse::<TokenStream>().unwrap();
@@ -152,6 +192,41 @@ fn literal_byte_string() {
 
 #[test]
 fn literal_c_string() {
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected.trim());
+    }
+
+    assert(Literal::c_string(<&CStr>::default()), r#"  c""  "#);
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"aA\0").unwrap()),
+        r#"  c"aA"  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"aA\0").unwrap()),
+        r#"  c"aA"  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"\t\0").unwrap()),
+        r#"  c"\t"  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"\xE2\x9D\xA4\0").unwrap()),
+        r#"  c"❤"  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"'\0").unwrap()),
+        r#"  c"'"  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"\"\0").unwrap()),
+        r#"  c"\""  "#,
+    );
+    assert(
+        Literal::c_string(CStr::from_bytes_with_nul(b"\x7F\xFF\xFE\xCC\xB3\0").unwrap()),
+        r#"  c"\u{7f}\xFF\xFE\u{333}"  "#,
+    );
+
     let strings = r###"
         c"hello\x80我叫\u{1F980}"  // from the RFC
         cr"\"
@@ -188,49 +263,80 @@ fn literal_c_string() {
 
 #[test]
 fn literal_character() {
-    assert_eq!(Literal::character('x').to_string(), "'x'");
-    assert_eq!(Literal::character('\'').to_string(), "'\\''");
-    assert_eq!(Literal::character('"').to_string(), "'\"'");
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected.trim());
+    }
+
+    assert(Literal::character('a'), r#"  'a'  "#);
+    assert(Literal::character('\t'), r#"  '\t'  "#);
+    assert(Literal::character('❤'), r#"  '❤'  "#);
+    assert(Literal::character('\''), r#"  '\''  "#);
+    assert(Literal::character('"'), r#"  '"'  "#);
+    assert(Literal::character('\0'), r#"  '\0'  "#);
+    assert(Literal::character('\u{1}'), r#"  '\u{1}'  "#);
 }
 
 #[test]
 fn literal_integer() {
-    assert_eq!(Literal::u8_suffixed(10).to_string(), "10u8");
-    assert_eq!(Literal::u16_suffixed(10).to_string(), "10u16");
-    assert_eq!(Literal::u32_suffixed(10).to_string(), "10u32");
-    assert_eq!(Literal::u64_suffixed(10).to_string(), "10u64");
-    assert_eq!(Literal::u128_suffixed(10).to_string(), "10u128");
-    assert_eq!(Literal::usize_suffixed(10).to_string(), "10usize");
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected);
+    }
 
-    assert_eq!(Literal::i8_suffixed(10).to_string(), "10i8");
-    assert_eq!(Literal::i16_suffixed(10).to_string(), "10i16");
-    assert_eq!(Literal::i32_suffixed(10).to_string(), "10i32");
-    assert_eq!(Literal::i64_suffixed(10).to_string(), "10i64");
-    assert_eq!(Literal::i128_suffixed(10).to_string(), "10i128");
-    assert_eq!(Literal::isize_suffixed(10).to_string(), "10isize");
+    assert(Literal::u8_suffixed(10), "10u8");
+    assert(Literal::u16_suffixed(10), "10u16");
+    assert(Literal::u32_suffixed(10), "10u32");
+    assert(Literal::u64_suffixed(10), "10u64");
+    assert(Literal::u128_suffixed(10), "10u128");
+    assert(Literal::usize_suffixed(10), "10usize");
 
-    assert_eq!(Literal::u8_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::u16_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::u32_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::u64_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::u128_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::usize_unsuffixed(10).to_string(), "10");
+    assert(Literal::i8_suffixed(10), "10i8");
+    assert(Literal::i16_suffixed(10), "10i16");
+    assert(Literal::i32_suffixed(10), "10i32");
+    assert(Literal::i64_suffixed(10), "10i64");
+    assert(Literal::i128_suffixed(10), "10i128");
+    assert(Literal::isize_suffixed(10), "10isize");
 
-    assert_eq!(Literal::i8_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::i16_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::i32_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::i64_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::i128_unsuffixed(10).to_string(), "10");
-    assert_eq!(Literal::isize_unsuffixed(10).to_string(), "10");
+    assert(Literal::u8_unsuffixed(10), "10");
+    assert(Literal::u16_unsuffixed(10), "10");
+    assert(Literal::u32_unsuffixed(10), "10");
+    assert(Literal::u64_unsuffixed(10), "10");
+    assert(Literal::u128_unsuffixed(10), "10");
+    assert(Literal::usize_unsuffixed(10), "10");
+
+    assert(Literal::i8_unsuffixed(10), "10");
+    assert(Literal::i16_unsuffixed(10), "10");
+    assert(Literal::i32_unsuffixed(10), "10");
+    assert(Literal::i64_unsuffixed(10), "10");
+    assert(Literal::i128_unsuffixed(10), "10");
+    assert(Literal::isize_unsuffixed(10), "10");
+
+    assert(Literal::i32_suffixed(-10), "-10i32");
+    assert(Literal::i32_unsuffixed(-10), "-10");
 }
 
 #[test]
 fn literal_float() {
-    assert_eq!(Literal::f32_suffixed(10.0).to_string(), "10f32");
-    assert_eq!(Literal::f64_suffixed(10.0).to_string(), "10f64");
+    #[track_caller]
+    fn assert(literal: Literal, expected: &str) {
+        assert_eq!(literal.to_string(), expected);
+    }
 
-    assert_eq!(Literal::f32_unsuffixed(10.0).to_string(), "10.0");
-    assert_eq!(Literal::f64_unsuffixed(10.0).to_string(), "10.0");
+    assert(Literal::f32_suffixed(10.0), "10f32");
+    assert(Literal::f32_suffixed(-10.0), "-10f32");
+    assert(Literal::f64_suffixed(10.0), "10f64");
+    assert(Literal::f64_suffixed(-10.0), "-10f64");
+
+    assert(Literal::f32_unsuffixed(10.0), "10.0");
+    assert(Literal::f32_unsuffixed(-10.0), "-10.0");
+    assert(Literal::f64_unsuffixed(10.0), "10.0");
+    assert(Literal::f64_unsuffixed(-10.0), "-10.0");
+
+    assert(
+        Literal::f64_unsuffixed(1e100),
+        "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0",
+    );
 }
 
 #[test]
@@ -248,9 +354,13 @@ fn literal_suffix() {
     assert_eq!(token_count("1._m"), 3);
     assert_eq!(token_count("\"\"s"), 1);
     assert_eq!(token_count("r\"\"r"), 1);
+    assert_eq!(token_count("r#\"\"#r"), 1);
     assert_eq!(token_count("b\"\"b"), 1);
     assert_eq!(token_count("br\"\"br"), 1);
-    assert_eq!(token_count("r#\"\"#r"), 1);
+    assert_eq!(token_count("br#\"\"#br"), 1);
+    assert_eq!(token_count("c\"\"c"), 1);
+    assert_eq!(token_count("cr\"\"cr"), 1);
+    assert_eq!(token_count("cr#\"\"#cr"), 1);
     assert_eq!(token_count("'c'c"), 1);
     assert_eq!(token_count("b'b'b"), 1);
     assert_eq!(token_count("0E"), 1);
@@ -378,7 +488,7 @@ fn roundtrip() {
     roundtrip("'a");
     roundtrip("'_");
     roundtrip("'static");
-    roundtrip("'\\u{10__FFFF}'");
+    roundtrip(r"'\u{10__FFFF}'");
     roundtrip("\"\\u{10_F0FF__}foo\\u{1_0_0_0__}\"");
 }
 
@@ -401,6 +511,7 @@ fn fail() {
     fail("\"\\\r  \""); // backslash carriage return
     fail("'aa'aa");
     fail("br##\"\"#");
+    fail("cr##\"\"#");
     fail("\"\\\n\u{85}\r\"");
 }
 
