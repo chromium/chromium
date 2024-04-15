@@ -634,6 +634,7 @@ test("components_unittests") {
       "//components/permissions/android:java",
       "//components/policy/android:native_test_support_java",
       "//components/policy/android:policy_java",
+      "//components/saved_tab_groups:native_java_unittests_java",
       "//components/search_engines/android:java",
       "//components/search_engines/android:test_utils_java",
       "//components/signin/core/browser",

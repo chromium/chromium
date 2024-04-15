@@ -94,6 +94,28 @@ if (is_android) {
     visibility = [ ":*" ]
     sources = [ "tab_group_sync_service.h" ]
   }
+
+  android_library("native_java_unittests_java") {
+    testonly = true
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":native_j_unittests_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+  }
+
+  generate_jni("native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -117,4 +139,12 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [ "android/tab_group_sync_service_android_unittest.cc" ]
+    deps += [
+      ":native_j_unittests_jni_headers",
+      ":native_java_unittests_java",
+    ]
+  }
 }

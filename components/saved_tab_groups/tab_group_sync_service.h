@@ -59,7 +59,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     virtual void OnTabGroupUpdated(const SavedTabGroup& group,
                                    TriggerSource source) = 0;
 
-    // Tab group corresponding to the |local_id| was removed.
+    // The local tab group corresponding to the |local_id| was removed.
     virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id) = 0;
 
     // Tab group corresponding to the |sync_id| was removed. Only used by the
