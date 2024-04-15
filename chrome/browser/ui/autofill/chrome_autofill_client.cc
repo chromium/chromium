@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
@@ -920,40 +921,21 @@ void ChromeAutofillClient::HideTouchToFillCreditCard() {
 }
 
 void ChromeAutofillClient::ShowAutofillPopup(
-    const autofill::AutofillClient::PopupOpenArgs& open_args,
+    const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
-  // Convert element_bounds to be in screen space.
-  const gfx::Rect client_area = web_contents()->GetContainerBounds();
-  const gfx::RectF element_bounds_in_screen_space =
-      open_args.element_bounds + client_area.OffsetFromOrigin();
-
-  // Deletes or reuses the old `popup_controller_`.
-  popup_controller_ = AutofillPopupController::GetOrCreate(
-      popup_controller_, delegate, web_contents(),
-      PopupControllerCommon(element_bounds_in_screen_space,
-                            open_args.text_direction,
-                            web_contents()->GetNativeView()),
-      open_args.form_control_ax_id);
-
-  popup_controller_->Show(
-      open_args.suggestions, open_args.trigger_source,
-      ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
-
-  // The autofill popup is allowed to overlap with the IPH under the condition
-  // that the IPH is hidden immediately AFTER the autofill popup is shown. For
-  // more information, check
-  // `popup_view_utils.cc::BoundsOverlapWithAnyWidget()`.
+  // The Autofill Popup cannot open if it overlaps with another popup.
+  // Therefore, the IPH is hidden before showing the Autofill Popup.
   if (autofill_field_promo_controller_manual_fallback_) {
     autofill_field_promo_controller_manual_fallback_->Hide();
   }
 
-  // When testing, try to keep popup open when the reason to hide is one of:
-  // - An external browser frame resize that is extraneous to our testing goals.
-  // - Too many fields get focus one after another (for example, multiple
-  // password fields being autofilled by default on Desktop).
-  if (keep_popup_open_for_testing_ && popup_controller_.get()) {
-    popup_controller_->KeepPopupOpenForTesting();
-  }
+  // IPH hiding is asynchronous. Posting showing the Autofill Popup
+  // guarantees the IPH will be hidden by the time the Autofill Popup will
+  // attempt to open. This works because the tasks of hiding the IPH and showing
+  // the Autofill Popup are posted on the same thread (UI thread).
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ChromeAutofillClient::ShowAutofillPopupImpl,
+                                GetWeakPtr(), open_args, delegate));
 }
 
 void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
@@ -1258,6 +1240,39 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   return base::UTF8ToUTF16(primary_account_info.full_name);
+}
+
+void ChromeAutofillClient::ShowAutofillPopupImpl(
+    const PopupOpenArgs& open_args,
+    base::WeakPtr<AutofillPopupDelegate> delegate) {
+  // Convert element_bounds to be in screen space.
+  const gfx::Rect client_area = web_contents()->GetContainerBounds();
+  const gfx::RectF element_bounds_in_screen_space =
+      open_args.element_bounds + client_area.OffsetFromOrigin();
+
+  // Deletes or reuses the old `popup_controller_`.
+  popup_controller_ = AutofillPopupControllerImpl::GetOrCreate(
+      popup_controller_, delegate, web_contents(),
+      PopupControllerCommon(element_bounds_in_screen_space,
+                            open_args.text_direction,
+                            web_contents()->GetNativeView()),
+      open_args.form_control_ax_id);
+
+  popup_controller_->Show(
+      open_args.suggestions, open_args.trigger_source,
+      ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
+
+  // When testing, try to keep popup open when the reason to hide is one of:
+  // - An external browser frame resize that is extraneous to our testing goals.
+  // - Too many fields get focus one after another (for example, multiple
+  // password fields being autofilled by default on Desktop).
+  if (keep_popup_open_for_testing_ && popup_controller_.get()) {
+    popup_controller_->KeepPopupOpenForTesting();
+  }
+}
+
+base::WeakPtr<ChromeAutofillClient> ChromeAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 #if BUILDFLAG(IS_ANDROID)

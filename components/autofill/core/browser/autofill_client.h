@@ -709,6 +709,7 @@ class AutofillClient {
   // Shows an Autofill popup with the given |values|, |labels|, |icons|, and
   // |identifiers| for the element at |element_bounds|. |delegate| will be
   // notified of popup events.
+  // The popup is shown asynchronously on Desktop and Android.
   virtual void ShowAutofillPopup(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) = 0;

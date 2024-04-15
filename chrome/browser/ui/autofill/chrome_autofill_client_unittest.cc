@@ -344,6 +344,10 @@ TEST_F(ChromeAutofillClientTest,
   EXPECT_CALL(*autofill_field_promo_controller_manual_fallback(), Hide);
   client()->ShowAutofillPopup(AutofillClient::PopupOpenArgs(),
                               delegate->GetWeakPtr());
+
+  // Showing the Autofill Popup is an asynchronous task.
+  task_environment()->RunUntilIdle();
+
   testing::Mock::VerifyAndClearExpectations(
       autofill_field_promo_controller_manual_fallback());
 }

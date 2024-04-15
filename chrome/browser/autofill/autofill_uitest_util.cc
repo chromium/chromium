@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments_data_manager_test_api.h"
@@ -20,6 +21,8 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,12 +72,26 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
 }
 
 void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
+                               Profile* profile,
                                gfx::RectF element_bounds) {
   FormData form;
   form.url = GURL("https://foo.com/bar");
-  form.fields.emplace_back();
+  form.fields = {test::CreateTestFormField(
+      "Full name", "name", "", FormControlType::kInputText, "name")};
   form.fields.front().is_focusable = true;
   form.fields.front().should_autocomplete = true;
+
+  // Not adding a profile would result in `AskForValuesToFill()` not finding any
+  // suggestions and hiding the Autofill Popup.
+  // Note: The popup is only shown later in this function. But, without an
+  // Autofill Profile, a sequence of nested asynchronous tasks posted on both
+  // database and UI threads would result (sometimes) in `AskForValuesToFill()`
+  // triggering the hiding of the Autofill Popup when
+  // `base::RunLoop().RunUntilIdle()` is called at the end of this function.
+  AutofillProfile autofill_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
+  autofill_profile.SetRawInfo(NAME_FULL, u"John Doe");
+  AddTestProfile(profile, autofill_profile);
 
   TestAutofillManagerWaiter waiter(driver.GetAutofillManager(),
                                    {AutofillManagerEvent::kAskForValuesToFill});
@@ -90,10 +107,13 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
              .begin()
              ->second->ToFormData();
 
-  std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
+  std::vector<Suggestion> suggestions = {Suggestion(u"John Doe")};
   test_api(static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
       .external_delegate()
       ->OnSuggestionsReturned(form.fields.front().global_id(), suggestions);
+
+  // Showing the Autofill Popup is an asynchronous task.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace autofill

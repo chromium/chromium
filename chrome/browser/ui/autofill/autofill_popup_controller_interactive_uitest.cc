@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -91,6 +92,8 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
         autofill_driver().GetAutofillManager());
   }
 
+  Profile* profile() { return browser()->profile(); }
+
   TestAutofillExternalDelegate& autofill_external_delegate() {
     return static_cast<TestAutofillExternalDelegate&>(
         *test_api(autofill_manager()).external_delegate());
@@ -103,7 +106,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowMove) {
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -117,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowResize) {
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -140,8 +143,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   // Position the popup in the lower right corner so that there is not enough
   // space to display it.
   GenerateTestAutofillPopup(
-      autofill_driver(), /*element_bounds=*/gfx::RectF(
-          window_bounds.x() - kSize, window_bounds.y() - kSize, kSize, kSize));
+      autofill_driver(), profile(), /*element_bounds=*/
+      gfx::RectF(window_bounds.x() - kSize, window_bounds.y() - kSize, kSize,
+                 kSize));
   EXPECT_TRUE(autofill_external_delegate().popup_hidden());
 }
 
@@ -149,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 // crash (crbug.com/1267047).
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowEnterFullscreen) {
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -170,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   content::WebContentsDelegate* wcd = browser();
   wcd->EnterFullscreenModeForTab(main_rfh(), {});
 
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   EXPECT_FALSE(autofill_external_delegate().popup_hidden());
 
@@ -187,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 // before the popup is hidden.
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        DeleteDelegateBeforePopupHidden) {
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
@@ -200,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // crbug.com/965025
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
-  GenerateTestAutofillPopup(autofill_driver());
+  GenerateTestAutofillPopup(autofill_driver(), profile());
 
   auto* client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());

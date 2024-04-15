@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -328,6 +329,22 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
   NavigateToFile("/password/password_form.html");
 
+  autofill::ChromeAutofillClient* autofill_client =
+      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
+  // The test page contains multiple password forms. All of them will be
+  // autofilled again every time the logins from the password store are changed.
+  // Updating every field takes time and triggers every time hiding the Autofill
+  // Popup with the reason `PopupHidingReason::kEndEditing` (because each field
+  // gains focus while it is autofilled). Therefore, we use
+  // `ChromeAutofillClient::KeepPopupOpenForTesting()` to keep the autofill
+  // popup open (and prevent the controller from being deleted).
+  // Note that `ChromeAutofillClient::KeepPopupOpenForTesting()` only ignores a
+  // specific very small set of hiding reasons, so the popup can still be hidden
+  // by almost all of the reasons (such as `PopupHidingReason::kStaleData`,
+  // which occurs only once when the test removes logins from the password
+  // store).
+  autofill_client->KeepPopupOpenForTesting();
+
   ContentPasswordManagerDriverFactory* factory =
       ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
   autofill::mojom::PasswordManagerDriver* driver =
@@ -346,11 +363,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
       0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
-  autofill::AutofillPopupController* controller =
-      autofill_client->popup_controller_for_testing().get();
-  ASSERT_TRUE(controller);
+  autofill::AutofillPopupController* controller = nullptr;
+  // Showing the Autofill Popup is an asynchronous task.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller = autofill_client->popup_controller_for_testing().get();
+  })) << "Creating `AutofillPopupController` timed out.";
   // Two credentials, a separator line and "Manage passwords" should be
   // displayed.
   EXPECT_EQ(4, controller->GetLineCount());
@@ -372,8 +389,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
       0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  controller = autofill_client->popup_controller_for_testing().get();
-  ASSERT_TRUE(controller);
+  // Showing the Autofill Popup is an asynchronous task.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller = autofill_client->popup_controller_for_testing().get();
+  })) << "Creating `AutofillPopupController` timed out.";
   EXPECT_EQ(3, controller->GetLineCount());
   EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
   EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
@@ -393,6 +412,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
       0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
+  // Showing the Autofill Popup is an asynchronous task.
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(autofill_client->popup_controller_for_testing());
 
   WaitForElementValue("username_field", "");

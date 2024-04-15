@@ -33,6 +33,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 // process events such as `AutofillDriver::PopupHidden()` triggered by the
 // popup.
 void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
+                               Profile* profile,
                                gfx::RectF element_bounds = gfx::RectF(100.0f,
                                                                       100.0f));
 

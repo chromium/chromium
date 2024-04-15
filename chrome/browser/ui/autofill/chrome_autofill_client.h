@@ -284,6 +284,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   Profile* GetProfile() const;
   std::u16string GetAccountHolderName();
   bool SupportsConsentlessExecution(const url::Origin& origin);
+  void ShowAutofillPopupImpl(const PopupOpenArgs& open_args,
+                             base::WeakPtr<AutofillPopupDelegate> delegate);
+  base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
+
 #if BUILDFLAG(IS_ANDROID)
   AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge();
@@ -331,6 +335,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_field_promo_controller_manual_fallback_;
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
+  base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
