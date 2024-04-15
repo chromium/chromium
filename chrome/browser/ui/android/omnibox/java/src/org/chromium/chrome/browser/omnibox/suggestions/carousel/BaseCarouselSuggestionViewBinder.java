@@ -42,9 +42,6 @@ public interface BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
             view.setContentDescription(
                     model.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
-        } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
-            view.setHorizontalFadingEdgeEnabled(
-                    model.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
         } else if (key == BaseCarouselSuggestionViewProperties.TOP_PADDING
                 || key == BaseCarouselSuggestionViewProperties.BOTTOM_PADDING) {
             int top = model.get(BaseCarouselSuggestionViewProperties.TOP_PADDING);

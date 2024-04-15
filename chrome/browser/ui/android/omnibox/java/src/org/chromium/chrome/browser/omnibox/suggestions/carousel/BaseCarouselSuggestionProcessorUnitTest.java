@@ -19,9 +19,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -76,31 +73,6 @@ public class BaseCarouselSuggestionProcessorUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mProcessor = new BaseCarouselSuggestionProcessorTestClass(mContext);
         mModel = mProcessor.createModel();
-    }
-
-    @Test
-    public void testPopulateModelTest_notTablet() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
-    }
-
-    @Test
-    @Config(qualifiers = "w600dp-h820dp")
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testPopulateModelTest_isTabletWithoutRevamp() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertTrue(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
-    }
-
-    @Test
-    @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testPopulateModelTest_isTabletWithRevamp() {
-        mProcessor.onNativeInitialized();
-        mProcessor.populateModel(null, mModel, 0);
-        Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
     }
 
     @Test

@@ -197,15 +197,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     @Test
-    public void mView_setHorizontalFadingEdgeEnabled() {
-        mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, true);
-        Assert.assertTrue(mView.isHorizontalFadingEdgeEnabled());
-
-        mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, false);
-        Assert.assertFalse(mView.isHorizontalFadingEdgeEnabled());
-    }
-
-    @Test
     public void itemDecoration_setItemWidth() {
         // View was initially created with no decorations.
         Assert.assertEquals(0, mView.getItemDecorationCount());

@@ -12,7 +12,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
@@ -22,9 +21,6 @@ public @interface BaseCarouselSuggestionViewProperties {
     /** Action Icons description. */
     public static final WritableObjectPropertyKey<List<ListItem>> TILES =
             new WritableObjectPropertyKey<>();
-
-    /** Controls whether the carousel should have horizontal fade effect. */
-    static final WritableBooleanPropertyKey HORIZONTAL_FADE = new WritableBooleanPropertyKey();
 
     /** Specifies the width of a carousel element. */
     static final ReadableObjectPropertyKey<SpacingRecyclerViewItemDecoration> ITEM_DECORATION =
@@ -48,7 +44,6 @@ public @interface BaseCarouselSuggestionViewProperties {
                 BOTTOM_PADDING,
                 APPLY_BACKGROUND,
                 TILES,
-                HORIZONTAL_FADE,
                 ITEM_DECORATION,
                 CONTENT_DESCRIPTION
             };
