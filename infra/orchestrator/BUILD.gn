@@ -49,7 +49,10 @@ group("orchestrator_all") {
   }
 
   if (is_skylab) {
-    data += [ "//third_party/chromite/" ]
+    data += [
+      "//third_party/chromite/",
+      "//chromeos/CHROMEOS_LKGM",
+    ]
   }
 
   write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
