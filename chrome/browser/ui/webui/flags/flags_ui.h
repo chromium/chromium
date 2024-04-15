@@ -9,11 +9,23 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;
 }
+
+class FlagsUIConfig : public content::WebUIConfig {
+ public:
+  FlagsUIConfig();
+  ~FlagsUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 namespace content {
 class WebUIDataSource;

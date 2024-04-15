@@ -437,8 +437,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIFlagsHost &&
       FlagsDeprecatedUI::IsDeprecatedUrl(url))
     return &NewWebUI<FlagsDeprecatedUI>;
-  if (url.host_piece() == chrome::kChromeUIFlagsHost)
-    return &NewWebUI<FlagsUI>;
   if (url.host_piece() == chrome::kChromeUIGCMInternalsHost)
     return &NewWebUI<GCMInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIInternalsHost)

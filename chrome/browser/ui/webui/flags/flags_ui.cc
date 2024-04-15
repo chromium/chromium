@@ -217,6 +217,17 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
   return handler;
 }
 
+FlagsUIConfig::FlagsUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIFlagsHost) {}
+
+FlagsUIConfig::~FlagsUIConfig() = default;
+
+std::unique_ptr<content::WebUIController> FlagsUIConfig::CreateWebUIController(
+    content::WebUI* web_ui,
+    const GURL& url) {
+  return std::make_unique<FlagsUI>(web_ui);
+}
+
 FlagsUI::FlagsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), weak_factory_(this) {
   Profile* profile = Profile::FromWebUI(web_ui);
