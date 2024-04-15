@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -536,10 +538,12 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
       CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
-    auto* list_view = container->AddChildView(
-        std::make_unique<views::BulletedLabelListView>());
-    for (const auto& id : bullet_string_ids)
-      list_view->AddLabel(l10n_util::GetStringUTF16(id));
+    std::vector<std::u16string> texts;
+    std::ranges::transform(bullet_string_ids, std::back_inserter(texts),
+                           l10n_util::GetStringUTF16);
+    auto* list_view =
+        container->AddChildView(std::make_unique<views::BulletedLabelListView>(
+            std::move(texts), views::style::TextStyle::STYLE_PRIMARY));
     list_view->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(2, 1));
   }
 

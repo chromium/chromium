@@ -57,13 +57,9 @@ END_METADATA
 
 }  // namespace
 
-BulletedLabelListView::BulletedLabelListView()
-    : BulletedLabelListView(std::vector<std::u16string>()) {}
-
 BulletedLabelListView::BulletedLabelListView(
     const std::vector<std::u16string>& texts,
-    style::TextStyle label_text_style)
-    : label_text_style_(label_text_style) {
+    style::TextStyle label_text_style) {
   const int width = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   SetLayoutManager(std::make_unique<views::TableLayout>())
@@ -75,23 +71,21 @@ BulletedLabelListView::BulletedLabelListView(
                  views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
-  for (const auto& text : texts)
-    AddLabel(text);
+  views::TableLayout* layout =
+      static_cast<views::TableLayout*>(GetLayoutManager());
+  layout->AddRows(texts.size(), views::TableLayout::kFixedSize);
+
+  // Add a label for each of the strings in |texts|.
+  for (const auto& text : texts) {
+    AddChildView(std::make_unique<BulletView>());
+    auto* label = AddChildView(std::make_unique<views::Label>(text));
+    label->SetMultiLine(true);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetTextStyle(label_text_style);
+  }
 }
 
 BulletedLabelListView::~BulletedLabelListView() = default;
-
-void BulletedLabelListView::AddLabel(const std::u16string& text) {
-  views::TableLayout* layout =
-      static_cast<views::TableLayout*>(GetLayoutManager());
-  layout->AddRows(1, views::TableLayout::kFixedSize);
-
-  AddChildView(std::make_unique<BulletView>());
-  auto* label = AddChildView(std::make_unique<views::Label>(text));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetTextStyle(label_text_style_);
-}
 
 BEGIN_METADATA(BulletedLabelListView)
 END_METADATA

@@ -13,22 +13,18 @@
 
 namespace views {
 
+// This class provides a convenient way to build a view for a bulleted list
+// comprised of labels. The labels and the text style they should use are
+// expected to be provided on construction.
 class VIEWS_EXPORT BulletedLabelListView : public View {
   METADATA_HEADER(BulletedLabelListView, View)
 
  public:
-  BulletedLabelListView();
-  explicit BulletedLabelListView(
-      const std::vector<std::u16string>& texts,
-      style::TextStyle label_text_style = style::TextStyle::STYLE_PRIMARY);
+  BulletedLabelListView(const std::vector<std::u16string>& texts,
+                        style::TextStyle label_text_style);
   BulletedLabelListView(const BulletedLabelListView&) = delete;
   BulletedLabelListView& operator=(const BulletedLabelListView&) = delete;
   ~BulletedLabelListView() override;
-
-  void AddLabel(const std::u16string& text);
-
- private:
-  style::TextStyle label_text_style_;
 };
 
 }  // namespace views

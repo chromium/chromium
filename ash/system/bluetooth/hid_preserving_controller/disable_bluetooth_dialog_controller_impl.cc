@@ -23,7 +23,12 @@
 namespace ash {
 
 namespace {
+
 constexpr char kUnknownDeviceTypeName[] = "ChromeOS device";
+
+// The dialog that is shown should have a maximum of three devices listed.
+constexpr size_t kMaxDeviceListLength = 3;
+
 }  // namespace
 
 DisableBluetoothDialogControllerImpl::DisableBluetoothDialogControllerImpl() {
@@ -82,16 +87,16 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
                         weak_ptr_factory_.GetWeakPtr()))
                     .Build();
 
-  std::vector<std::u16string> labels;
-  int count = std::min((int)devices.size(), 3);
-  for (int i = 0; i < count; i++) {
-    labels.push_back(base::UTF8ToUTF16(devices[i]));
+  std::vector<std::u16string> texts;
+  const size_t count = std::min(devices.size(), kMaxDeviceListLength);
+  for (size_t i = 0; i < count; i++) {
+    texts.push_back(base::UTF8ToUTF16(devices[i]));
   }
 
-  // Create the BulletedLabelListView with the generated labels.
+  // Create the BulletedLabelListView with the generated texts.
   std::unique_ptr<views::BulletedLabelListView> list_view =
       std::make_unique<views::BulletedLabelListView>(
-          labels, views::style::TextStyle::STYLE_SECONDARY);
+          std::move(texts), views::style::TextStyle::STYLE_SECONDARY);
 
   dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
   dialog->SetShowCloseButton(false);
