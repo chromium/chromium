@@ -396,8 +396,6 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::MultiPlanarFormatP010,
       wgpu::FeatureName::MultiPlanarFormatNv12a,
       wgpu::FeatureName::MultiPlanarRenderTargets,
-      // TODO(331771944): remove it when skia uses the new feature name.
-      wgpu::FeatureName::Norm16TextureFormats,
       wgpu::FeatureName::Unorm16TextureFormats,
 
       // The following features are always supported by the the Metal backend on
