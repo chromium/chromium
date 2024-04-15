@@ -211,6 +211,7 @@ def __use_large_b289968566(ctx, step_config):
         # is_debug = true
         # symbol_level = 2
         # use_siso = true
+        "./clang_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         "./obj/content/browser/browser/render_process_host_impl.o",
         "./obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         # Fallback happens with the following args.gn
@@ -231,6 +232,7 @@ def __use_large_b289968566(ctx, step_config):
         # use_siso = true
         "./arm64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         "./arm64_v8_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
+        "./clang_arm64_v8_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         # Fallback happens with the following args.gn
         # (try/ios-simulator)
         # coverage_instrumentation_input_file = "//.code-coverage/files_to_instrument.txt"
