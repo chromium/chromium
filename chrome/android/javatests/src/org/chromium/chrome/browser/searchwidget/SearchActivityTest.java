@@ -45,10 +45,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -479,9 +481,11 @@ public class SearchActivityTest {
                         any());
     }
 
+    // If SEARCH_ENGINE_PROMO_DIALOG_REWRITE is enabled the dialog is not dismissable by the user.
     @Test
     @SmallTest
-    public void testRealPromoDialogDismissWithoutSelection() throws Exception {
+    @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_PROMO_DIALOG_REWRITE)
+    public void testRealPromoDialogDismissWithoutSelectionLegacy() throws Exception {
         // Start the Activity.  It should pause when the promo dialog appears.
         mTestDelegate.shouldShowRealSearchDialog = true;
         SearchActivity activity = startSearchActivity();
