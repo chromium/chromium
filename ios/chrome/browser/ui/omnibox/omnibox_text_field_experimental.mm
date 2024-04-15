@@ -894,18 +894,28 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
   if (updateText) {
     self.attributedText = fieldText;
-    UITextPosition* endOfUserText =
-        [self positionFromPosition:self.endOfDocument
-                            offset:-autocompleteLength];
-    // Move the cursor to the beginning of the field before setting the position
-    // to the end of the user input so if the text is very wide, the user sees
-    // the beginning of the text instead of the end.
-    self.selectedTextRange =
-        [self textRangeFromPosition:self.beginningOfDocument
-                         toPosition:self.beginningOfDocument];
-    // Preserve the cursor position at the end of the user input.
-    self.selectedTextRange = [self textRangeFromPosition:endOfUserText
-                                              toPosition:endOfUserText];
+
+    // TODO(crbug.com/330964534): Remove DUMP_WILL_BE_CHECK after investigating
+    // crash.
+    if (!self.endOfDocument || !self.beginningOfDocument) {
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "autocomplete length: " << autocompleteLength
+          << " text length: " << text.length << " has text position: "
+          << (self.beginningOfDocument || self.endOfDocument);
+    } else {
+      UITextPosition* endOfUserText =
+          [self positionFromPosition:self.endOfDocument
+                              offset:-autocompleteLength];
+      // Move the cursor to the beginning of the field before setting the
+      // position to the end of the user input so if the text is very wide, the
+      // user sees the beginning of the text instead of the end.
+      self.selectedTextRange =
+          [self textRangeFromPosition:self.beginningOfDocument
+                           toPosition:self.beginningOfDocument];
+      // Preserve the cursor position at the end of the user input.
+      self.selectedTextRange = [self textRangeFromPosition:endOfUserText
+                                                toPosition:endOfUserText];
+    }
   }
 
   // iOS changes the font to .LastResort when some unexpected unicode strings
