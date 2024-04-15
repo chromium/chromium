@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -47,13 +48,10 @@ class MicCoordinatorTest : public TestWithBrowserView {
         on_input_stream_id_future_.GetRepeatingCallback());
     fake_audio_service_.SetBindStreamFactoryCallback(
         on_bind_stream_factory_future_.GetRepeatingCallback());
-
-    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-        replied_with_device_descriptions_future_.GetCallback());
+    histogram_tester_.emplace();
 
     parent_view_.emplace();
     InitializeCoordinator({});
-    ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
   }
 
   void TearDown() override {
@@ -62,6 +60,10 @@ class MicCoordinatorTest : public TestWithBrowserView {
   }
 
   void InitializeCoordinator(std::vector<std::string> eligible_mic_ids) {
+    base::test::TestFuture<void> replied_with_device_descriptions_future;
+    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
+        replied_with_device_descriptions_future.GetCallback());
+
     CHECK(profile()->GetPrefs());
     coordinator_.emplace(
         *parent_view_,
@@ -69,6 +71,8 @@ class MicCoordinatorTest : public TestWithBrowserView {
         /*allow_device_selection=*/true,
         media_preview_metrics::Context(
             media_preview_metrics::UiLocation::kPermissionPrompt));
+
+    ASSERT_TRUE(replied_with_device_descriptions_future.WaitAndClear());
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {
@@ -100,19 +104,20 @@ class MicCoordinatorTest : public TestWithBrowserView {
   }
 
   bool AddFakeInputDevice(const media::AudioDeviceDescription& descriptor) {
-    replied_with_device_descriptions_future_.Clear();
-    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-        replied_with_device_descriptions_future_.GetCallback());
-    fake_audio_service_.AddFakeInputDevice(descriptor);
-    return replied_with_device_descriptions_future_.WaitAndClear();
+    return fake_audio_service_.AddFakeInputDeviceBlocking(descriptor);
   }
 
   bool RemoveFakeInputDevice(const std::string& device_id) {
-    replied_with_device_descriptions_future_.Clear();
-    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-        replied_with_device_descriptions_future_.GetCallback());
-    fake_audio_service_.RemoveFakeInputDevice(device_id);
-    return replied_with_device_descriptions_future_.WaitAndClear();
+    return fake_audio_service_.RemoveFakeInputDeviceBlocking(device_id);
+  }
+
+  void ExpectHistogramTotalDevices(size_t expected_bucket_min_value) {
+    const std::string histogram_name =
+        "MediaPreviews.UI.DeviceSelection.Permissions.Mic.NumDevices";
+    histogram_tester_->ExpectUniqueSample(histogram_name,
+                                          expected_bucket_min_value,
+                                          /*expected_bucket_count=*/1);
+    histogram_tester_.emplace();
   }
 
   base::SystemMonitor monitor_;
@@ -122,8 +127,8 @@ class MicCoordinatorTest : public TestWithBrowserView {
 
   base::test::TestFuture<const std::string&> on_input_stream_id_future_;
   base::test::TestFuture<void> on_bind_stream_factory_future_;
-  base::test::TestFuture<void> replied_with_device_descriptions_future_;
 
+  std::optional<base::HistogramTester> histogram_tester_;
   std::optional<views::View> parent_view_;
   std::optional<MicCoordinator> coordinator_;
 };
@@ -164,10 +169,16 @@ TEST_F(MicCoordinatorTest, RelevantAudioInputDeviceInfoExtraction) {
   // Remove first mic.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
   VerifyEmptyCombobox();
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/0);
 }
 
 TEST_F(MicCoordinatorTest,
        RelevantAudioInputDeviceInfoExtraction_ConstrainedToEligibleDevices) {
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/0);
+
   InitializeCoordinator({kDeviceId2});
   VerifyEmptyCombobox();
 
@@ -191,6 +202,9 @@ TEST_F(MicCoordinatorTest,
   // Remove second mic.
   ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId2));
   VerifyEmptyCombobox();
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/0);
 }
 
 TEST_F(MicCoordinatorTest, ConnectToDifferentDevice) {
@@ -209,6 +223,9 @@ TEST_F(MicCoordinatorTest, ConnectToDifferentDevice) {
   coordinator_->OnAudioSourceChanged(/*selected_index=*/1);
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
 }
 
 TEST_F(MicCoordinatorTest, TryConnectToSameDevice) {
@@ -233,6 +250,9 @@ TEST_F(MicCoordinatorTest, TryConnectToSameDevice) {
   ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/1);
 }
 
 TEST_F(MicCoordinatorTest, DefaultMicHandling) {
@@ -262,6 +282,9 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   // The system default device should have the secondary text.
   EXPECT_THAT(GetComboboxSecondaryTexts(),
               ElementsAre(std::string{}, kDefaultDeviceName));
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
 }
 
 TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
@@ -296,4 +319,7 @@ TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
   media_prefs::PreferenceRankAudioDeviceInfos(*profile()->GetPrefs(),
                                               device_infos);
   EXPECT_THAT(device_infos, ElementsAre(kDevice2, kDevice1));
+
+  coordinator_.reset();
+  ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
 }
