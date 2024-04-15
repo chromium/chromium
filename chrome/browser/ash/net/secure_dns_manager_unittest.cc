@@ -423,5 +423,64 @@ TEST_F(SecureDnsManagerTest, DefaultTemplateUrisForwardedToShill) {
   EXPECT_FALSE(providers.empty());
 }
 
+class MockPropertyChangeObserver : public ash::ShillPropertyChangedObserver {
+ public:
+  MockPropertyChangeObserver() = default;
+  ~MockPropertyChangeObserver() override = default;
+  MOCK_METHOD(void,
+              OnPropertyChanged,
+              (const std::string& name, const base::Value& value),
+              (override));
+};
+
+TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
+  constexpr char kTemplateUri1[] = "https://dns.google1.com";
+  constexpr char kTemplateUri2[] = "https://dns.google2.com";
+  constexpr char kEffectiveTemplateUri[] = "https://dns.google2.com";
+
+  // The call to update the property kDNSProxyDOHProvidersProperty should be
+  // invoked just once because the mock TemplateUriResolver always returns the
+  // same DoH providers.
+  testing::StrictMock<MockPropertyChangeObserver> observer;
+  EXPECT_CALL(observer, OnPropertyChanged(shill::kDNSProxyDOHProvidersProperty,
+                                          testing::_))
+      .Times(1);
+
+  ash::ShillManagerClient* shill_manager_client =
+      ash::ShillManagerClient::Get();
+  shill_manager_client->AddPropertyChangedObserver(&observer);
+
+  int actual_uri_template_update_count = 0;
+
+  std::unique_ptr<MockDoHTemplatesUriResolver> template_uri_resolver =
+      std::make_unique<MockDoHTemplatesUriResolver>();
+
+  ON_CALL(*template_uri_resolver, Update(_))
+      .WillByDefault(testing::Invoke([&actual_uri_template_update_count]() {
+        actual_uri_template_update_count++;
+      }));
+  EXPECT_CALL(*template_uri_resolver, GetDohWithIdentifiersActive())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*template_uri_resolver, GetEffectiveTemplates())
+      .WillRepeatedly(testing::Return(kEffectiveTemplateUri));
+
+  auto secure_dns_manager = std::make_unique<SecureDnsManager>(pref_service());
+  secure_dns_manager->SetDoHTemplatesUriResolverForTesting(
+      std::move(template_uri_resolver));
+
+  EXPECT_EQ(actual_uri_template_update_count, 0);
+
+  pref_service()->Set(prefs::kDnsOverHttpsMode,
+                      base::Value(SecureDnsConfig::kModeAutomatic));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value(kTemplateUri1));
+  pref_service()->Set(prefs::kDnsOverHttpsTemplatesWithIdentifiers,
+                      base::Value(kTemplateUri2));
+  // Verify that every pref update above will trigger an update request for the
+  // DoH providers.
+  EXPECT_EQ(actual_uri_template_update_count, 3);
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace ash

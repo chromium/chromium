@@ -62,6 +62,10 @@ SecureDnsManager::SecureDnsManager(PrefService* pref_service)
 }
 
 SecureDnsManager::~SecureDnsManager() {
+  // `pref_service_` outlives the SecureDnsManager instance. The value of
+  // `prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
+  // current instance of SecureDnsManager.
+  pref_service_->ClearPref(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
   registrar_.RemoveAll();
 }
 
@@ -184,6 +188,9 @@ void SecureDnsManager::UpdateTemplateUri() {
 
   // Set the DoH URI template pref which is synced with Lacros and the
   // NetworkService.
+  // TODO(acostinas, b/331903009): Storing the effective DoH providers in a
+  // local_state pref on Chrome OS has downsides. Replace this pref with an
+  // in-memory mechanism to sync effective DoH prefs.
   pref_service_->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
                            effective_uri_templates);
 
