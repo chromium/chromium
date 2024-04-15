@@ -77,6 +77,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -137,6 +138,12 @@ gfx::Rect snap_group_divider_bounds_in_screen() {
 
 const gfx::Rect work_area_bounds() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+}
+
+const gfx::Rect GetWorkAreaBoundsForWindow(aura::Window* window) {
+  return display::Screen::GetScreen()
+      ->GetDisplayNearestWindow(window)
+      .work_area();
 }
 
 void SwitchToTabletMode() {
@@ -1999,7 +2006,7 @@ class SnapGroupTest : public FasterSplitScreenTest {
 
     // Snapping the first window makes it fill half the screen, either
     // vertically or horizontally (based on orientation).
-    gfx::Rect work_area(work_area_bounds());
+    gfx::Rect work_area(GetWorkAreaBoundsForWindow(window1));
     gfx::Rect primary_bounds, secondary_bounds;
     if (horizontal) {
       work_area.SplitVertically(primary_bounds, secondary_bounds);
@@ -2680,46 +2687,6 @@ TEST_F(SnapGroupTest, SnapGroupDividerBoundsWithShelfAlignmentChange) {
     EXPECT_EQ(divider_bounds.right(), w2->GetBoundsInScreen().x());
     UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
   }
-}
-
-// Tests to verify that when a window is dragged out of a snap group and onto
-// another display, it snaps correctly with accurate bounds on the destination
-// display. See regression at http://b/331663949.
-TEST_F(SnapGroupTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
-  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
-  display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  const auto& displays = display_manager->active_display_list();
-  ASSERT_EQ(3U, displays.size());
-
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
-
-  const gfx::PointF point_in_display2(802, 0);
-  EXPECT_FALSE(
-      displays[0].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
-  EXPECT_TRUE(
-      displays[1].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
-
-  auto* event_generator = GetEventGenerator();
-  gfx::Point drag_point(w2->GetBoundsInScreen().top_center());
-  drag_point.Offset(0, 10);
-  event_generator->set_current_screen_location(drag_point);
-  event_generator->DragMouseTo(gfx::ToRoundedPoint(point_in_display2));
-
-  ASSERT_FALSE(
-      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
-
-  display::Screen* screen = display::Screen::GetScreen();
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
-  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
-            WindowState::Get(w2.get())->GetStateType());
-
-  gfx::Rect display1_left_half, display1_right_half;
-  displays[1].work_area().SplitVertically(display1_left_half,
-                                          display1_right_half);
-
-  EXPECT_EQ(display1_left_half, w2->GetBoundsInScreen());
 }
 
 TEST_F(SnapGroupTest, OverviewEnterExitBasic) {
@@ -4941,6 +4908,44 @@ TEST_F(SnapGroupMultiDisplayTest, RemoveDisplay) {
   base::RunLoop().RunUntilIdle();
 }
 
+// Tests to verify that when a window is dragged out of a snap group and onto
+// another display, it snaps correctly with accurate bounds on the destination
+// display. See regression at http://b/331663949.
+TEST_F(SnapGroupMultiDisplayTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(3U, displays.size());
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  const gfx::Point point_in_display2(802, 0);
+  ASSERT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  ASSERT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point drag_point(w2->GetBoundsInScreen().top_center() +
+                              gfx::Vector2d(0, 10));
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(point_in_display2);
+
+  ASSERT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+
+  gfx::Rect display1_left_half, display1_right_half;
+  displays[1].work_area().SplitVertically(display1_left_half,
+                                          display1_right_half);
+
+  EXPECT_EQ(display1_left_half, w2->GetBoundsInScreen());
+}
+
 // Test that Search+Alt+M moves the snap group between displays.
 TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
   UpdateDisplay("800x600,1000x600");
@@ -4984,6 +4989,118 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
   VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider_window});
   EXPECT_TRUE(
       UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider));
+}
+
+// Tests that moving an `OverviewGroupItem` between displays correctly
+// relocates the group item and its windows without crashing, while maintaining
+// divider widget invisibility during the overview session.
+TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(3U, displays.size());
+
+  const gfx::Point point_in_display2(900, 100);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
+  EXPECT_FALSE(displays[2].bounds().Contains(point_in_display2));
+
+  const gfx::Point point_in_display3(1700, 200);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display3));
+  EXPECT_FALSE(displays[1].bounds().Contains(point_in_display3));
+  EXPECT_TRUE(displays[2].bounds().Contains(point_in_display3));
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* divider = snap_group_divider();
+  ASSERT_TRUE(divider);
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  ASSERT_TRUE(divider_widget->IsVisible());
+
+  struct {
+    gfx::Point drop_location;
+    int display_index;
+  } kTestCases[]{
+      {point_in_display2, 1}, {point_in_display3, 2}, {gfx::Point(0, 0), 0}};
+
+  OverviewController* overview_controller = OverviewController::Get();
+  auto* event_generator = GetEventGenerator();
+  for (const auto test_case : kTestCases) {
+    SCOPED_TRACE("\nDrop location: " + test_case.drop_location.ToString() +
+                 ";\n" + "Destination display index: " +
+                 base::NumberToString(test_case.display_index) + ".");
+    overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+    EXPECT_FALSE(divider_widget->IsVisible());
+
+    auto* overview_group_item = GetOverviewItemForWindow(w1.get());
+    DragGroupItemToPoint(overview_group_item, test_case.drop_location,
+                         event_generator,
+                         /*by_touch_gestures=*/false, /*drop=*/true);
+    EXPECT_FALSE(divider_widget->IsVisible());
+
+    display::Screen* screen = display::Screen::GetScreen();
+    EXPECT_EQ(displays[test_case.display_index].id(),
+              screen->GetDisplayNearestWindow(w1.get()).id());
+    EXPECT_EQ(displays[test_case.display_index].id(),
+              screen->GetDisplayNearestWindow(w2.get()).id());
+
+    SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+    event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
+
+    EXPECT_TRUE(divider_widget->IsVisible());
+  }
+}
+
+// Tests that when moving snap group to another display with snap group, the
+// windows will be moved to the destination display properly.
+TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupToAnotherDisplayWithSnapGroup) {
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  const gfx::Point point_in_display1(100, 10);
+  EXPECT_TRUE(displays[0].bounds().Contains(point_in_display1));
+  EXPECT_FALSE(displays[1].bounds().Contains(point_in_display1));
+
+  const gfx::Point point_in_display2(1000, 100);
+  EXPECT_FALSE(displays[0].bounds().Contains(point_in_display2));
+  EXPECT_TRUE(displays[1].bounds().Contains(point_in_display2));
+
+  // Create Snap Group #1 on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+
+  // Create Snap Group #2 on display #2.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(900, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w4(
+      CreateAppWindow(gfx::Rect(1000, 50, 100, 200)));
+  SnapTwoTestWindows(w3.get(), w4.get(), /*horizontal=*/true);
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kOverviewButton);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Move Snap Group #2 to display #1 and move Snap Group #1 to display #2.
+  auto* event_generator = GetEventGenerator();
+  DragGroupItemToPoint(GetOverviewItemForWindow(w3.get()), point_in_display1,
+                       event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/true);
+  DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), point_in_display2,
+                       event_generator,
+                       /*by_touch_gestures=*/false, /*drop=*/true);
+
+  // Verify that the windows are moved to the destination display properly.
+  display::Screen* screen = display::Screen::GetScreen();
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w3.get()).id());
+  EXPECT_EQ(displays[0].id(), screen->GetDisplayNearestWindow(w4.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
+  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
 }
 
 // -----------------------------------------------------------------------------

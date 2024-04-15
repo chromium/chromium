@@ -145,19 +145,27 @@ void SnapGroup::OnWindowAddedToRootWindow(aura::Window* window) {
   if (is_moving_display_) {
     return;
   }
+
   base::AutoReset<bool> lock(&is_moving_display_, true);
-  // Hide the divider, then move the other window to the same display as the
-  // moved `window`.
-  const bool old_visibility = snap_group_divider_.divider_widget()->IsVisible();
-  snap_group_divider_.SetVisible(false);
+
+  const bool cached_divider_visibility =
+      snap_group_divider_.divider_widget()->IsVisible();
+
+  if (cached_divider_visibility) {
+    // Hide the divider, then move the other window to the same display as the
+    // moved `window`.
+    snap_group_divider_.SetVisible(false);
+  }
+
   window_util::MoveWindowToDisplay(
       window == window1_ ? window2_ : window1_,
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(window->GetRootWindow())
           .id());
-  // Re-show the divider if needed after both windows are moved to the target
+
+  // Restore the divider visibility after both windows are moved to the target
   // display.
-  snap_group_divider_.SetVisible(old_visibility);
+  snap_group_divider_.SetVisible(cached_divider_visibility);
   ApplyPrimarySnapRatio(WindowState::Get(window1_)->snap_ratio().value_or(
       chromeos::kDefaultSnapRatio));
 }
