@@ -47,6 +47,8 @@
 @interface ManualFillAddressCell ()
 
 // The label with the line1 -- line2.
+// TODO(crbug.com/326398845): Remove property once the Keyboard Accessory
+// Upgrade feature has launched both on iPhone and iPad.
 @property(nonatomic, strong) UILabel* addressLabel;
 
 // The dynamic constraints for all the lines (i.e. not set in createView).
@@ -133,52 +135,54 @@
   // leading anchor.
   std::vector<ManualFillCellView> verticalLeadViews;
 
-  NSString* blackText = nil;
-  NSString* grayText = nil;
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    NSString* blackText = nil;
+    NSString* grayText = nil;
 
-  // Top label is the address summary and fallbacks on city and email.
-  if (address.line1.length) {
-    blackText = address.line1;
-    grayText = address.line2.length ? address.line2 : nil;
-  } else if (address.line2.length) {
-    blackText = address.line2;
-  } else if (address.city.length) {
-    blackText = address.city;
-  } else if (address.emailAddress.length) {
-    blackText = address.emailAddress;
-  }
-
-  NSMutableAttributedString* attributedString = nil;
-  if (blackText.length) {
-    attributedString = [[NSMutableAttributedString alloc]
-        initWithString:blackText
-            attributes:@{
-              NSForegroundColorAttributeName :
-                  [UIColor colorNamed:kTextPrimaryColor],
-              NSFontAttributeName :
-                  [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-            }];
-    if (grayText.length) {
-      NSString* formattedGrayText =
-          [NSString stringWithFormat:@" –– %@", grayText];
-      NSDictionary* attributes = @{
-        NSForegroundColorAttributeName :
-            [UIColor colorNamed:kTextSecondaryColor],
-        NSFontAttributeName :
-            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-      };
-      NSAttributedString* grayAttributedString =
-          [[NSAttributedString alloc] initWithString:formattedGrayText
-                                          attributes:attributes];
-      [attributedString appendAttributedString:grayAttributedString];
+    // Top label is the address summary and fallbacks on city and email.
+    if (address.line1.length) {
+      blackText = address.line1;
+      grayText = address.line2.length ? address.line2 : nil;
+    } else if (address.line2.length) {
+      blackText = address.line2;
+    } else if (address.city.length) {
+      blackText = address.city;
+    } else if (address.emailAddress.length) {
+      blackText = address.emailAddress;
     }
-  }
 
-  if (attributedString) {
-    self.addressLabel.attributedText = attributedString;
-    AddViewToVerticalLeadViews(self.addressLabel,
-                               ManualFillCellView::ElementType::kOther,
-                               verticalLeadViews);
+    NSMutableAttributedString* attributedString = nil;
+    if (blackText.length) {
+      attributedString = [[NSMutableAttributedString alloc]
+          initWithString:blackText
+              attributes:@{
+                NSForegroundColorAttributeName :
+                    [UIColor colorNamed:kTextPrimaryColor],
+                NSFontAttributeName :
+                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+              }];
+      if (grayText.length) {
+        NSString* formattedGrayText =
+            [NSString stringWithFormat:@" –– %@", grayText];
+        NSDictionary* attributes = @{
+          NSForegroundColorAttributeName :
+              [UIColor colorNamed:kTextSecondaryColor],
+          NSFontAttributeName :
+              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+        };
+        NSAttributedString* grayAttributedString =
+            [[NSAttributedString alloc] initWithString:formattedGrayText
+                                            attributes:attributes];
+        [attributedString appendAttributedString:grayAttributedString];
+      }
+    }
+
+    if (attributedString) {
+      self.addressLabel.attributedText = attributedString;
+      AddViewToVerticalLeadViews(self.addressLabel,
+                                 ManualFillCellView::ElementType::kOther,
+                                 verticalLeadViews);
+    }
   }
 
   self.dynamicConstraints = [[NSMutableArray alloc] init];
@@ -391,15 +395,19 @@
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  CreateGraySeparatorForContainer(self.contentView);
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    CreateGraySeparatorForContainer(self.contentView);
+  }
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.addressLabel = CreateLabel();
-  [self.contentView addSubview:self.addressLabel];
-  AppendHorizontalConstraintsForViews(staticConstraints, @[ self.addressLabel ],
-                                      self.layoutGuide);
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    self.addressLabel = CreateLabel();
+    [self.contentView addSubview:self.addressLabel];
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.addressLabel ], self.layoutGuide);
+  }
 
   self.firstNameButton =
       CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
