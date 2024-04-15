@@ -225,13 +225,14 @@ bool HasCscIndicator(content::WebContents* web_contents) {
   return GetDelegate(web_contents)->GetButtonEnabled(kCscIndicator);
 }
 
-bool HasSecondaryButton(content::WebContents* web_contents) {
+bool HasShareThisTabInsteadButton(content::WebContents* web_contents) {
   return GetDelegate(web_contents)->GetButtons() &
          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead;
 }
 
-std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
-  DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
+std::u16string GetShareThisTabInsteadButtonLabel(
+    content::WebContents* web_contents) {
+  DCHECK(HasShareThisTabInsteadButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
       ->GetButtonLabel(
           TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
@@ -1194,26 +1195,27 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   if (!ShouldShowShareThisTabInsteadButton()) {
-    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    EXPECT_FALSE(HasShareThisTabInsteadButton(other_tab));
     return;
   }
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button
+  // Click the share-this-tab-instead secondary button.
   GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
@@ -1224,15 +1226,16 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(captured_tab->IsBeingCaptured());
   EXPECT_TRUE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab), kShareThisTabInsteadMessage);
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab),
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(captured_tab),
+            kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
                 url_formatter::FormatOriginForSecurityDisplay(
                     other_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
                     url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
@@ -1256,7 +1259,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                      /*expect_success=*/true,
                      /*is_tab_capture=*/true);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button
+  // Click the share-this-tab-instead secondary button.
   GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
@@ -1287,24 +1290,25 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               capturing_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
   if (!ShouldShowShareThisTabInsteadButton()) {
-    EXPECT_FALSE(HasSecondaryButton(other_tab));
+    EXPECT_FALSE(HasShareThisTabInsteadButton(other_tab));
     return;
   }
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
 
   browser()->tab_strip_model()->ActivateTabAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
@@ -1315,8 +1319,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
                                                false);
 
-  // Click the secondary button, i.e., the "Share this tab instead" button. This
-  // is rejected since screen capture is not allowed by the above policy.
+  // Click the share-this-tab-instead secondary button. This is rejected since
+  // screen capture is not allowed by the above policy.
   GetDelegate(other_tab)->ShareThisTabInstead();
 
   // When "Share this tab instead" fails for other_tab, the focus goes back to
@@ -1329,15 +1333,16 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_FALSE(other_tab->IsBeingCaptured());
   EXPECT_FALSE(capturing_tab->IsBeingCaptured());
   EXPECT_EQ(
-      GetSecondaryButtonLabel(captured_tab),
+      GetShareThisTabInsteadButtonLabel(captured_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
               captured_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
-  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(other_tab),
+            kShareThisTabInsteadMessage);
   EXPECT_EQ(
-      GetSecondaryButtonLabel(capturing_tab),
+      GetShareThisTabInsteadButtonLabel(capturing_tab),
       l10n_util::GetStringFUTF16(
           IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
           url_formatter::FormatOriginForSecurityDisplay(
@@ -1765,7 +1770,7 @@ class CaptureSessionDetails {
     EXPECT_EQ(capturing_tab_->IsBeingCaptured(),
               captured == CapturedTab::kCapturingTab);
 
-    EXPECT_EQ(GetSecondaryButtonLabel(GetNonCapturedTab()),
+    EXPECT_EQ(GetShareThisTabInsteadButtonLabel(GetNonCapturedTab()),
               kShareThisTabInsteadMessage);
   }
 
