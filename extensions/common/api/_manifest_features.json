@@ -464,7 +464,8 @@
   ],
   "trial_tokens": {
     "channel": "canary",
-    "extension_types": ["extension"]
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
   },
   "update_url": {
     "channel": "stable",
