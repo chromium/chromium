@@ -163,7 +163,7 @@ SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
             shared_dictionary::kContentDictionaryHeaderName,
             &content_dictionary) ||
         dictionary_hash_base64_ != content_dictionary) {
-      return base::unexpected(net::ERR_DICTIONARY_LOAD_FAILED);
+      return base::unexpected(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
     }
   }
 

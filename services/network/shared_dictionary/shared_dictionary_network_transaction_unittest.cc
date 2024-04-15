@@ -787,8 +787,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoContentDictionary) {
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
                                 net::NetLogWithSource()),
               net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(),
-              net::test::IsError(net::ERR_DICTIONARY_LOAD_FAILED));
+  EXPECT_THAT(
+      start_callback.WaitForResult(),
+      net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionary) {
@@ -816,8 +817,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionary) {
   ASSERT_THAT(transaction.Start(&request, start_callback.callback(),
                                 net::NetLogWithSource()),
               net::test::IsError(net::ERR_IO_PENDING));
-  EXPECT_THAT(start_callback.WaitForResult(),
-              net::test::IsError(net::ERR_DICTIONARY_LOAD_FAILED));
+  EXPECT_THAT(
+      start_callback.WaitForResult(),
+      net::test::IsError(net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {

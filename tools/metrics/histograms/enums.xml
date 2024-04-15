@@ -3120,6 +3120,7 @@ Called by update_net_error_codes.py.-->
   <int value="-402" label="CACHE_WRITE_FAILURE"/>
   <int value="-401" label="CACHE_READ_FAILURE"/>
   <int value="-400" label="CACHE_MISS"/>
+  <int value="-388" label="UNEXPECTED_CONTENT_DICTIONARY_HEADER"/>
   <int value="-387" label="DICTIONARY_LOAD_FAILED"/>
   <int value="-386" label="ZSTD_WINDOW_SIZE_TOO_BIG"/>
   <int value="-385" label="BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS"/>
@@ -27613,6 +27614,7 @@ Called by update_net_error_codes.py.-->
   <int value="385" label="BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS"/>
   <int value="386" label="ZSTD_WINDOW_SIZE_TOO_BIG"/>
   <int value="387" label="DICTIONARY_LOAD_FAILED"/>
+  <int value="388" label="UNEXPECTED_CONTENT_DICTIONARY_HEADER"/>
   <int value="400" label="CACHE_MISS"/>
   <int value="401" label="CACHE_READ_FAILURE"/>
   <int value="402" label="CACHE_WRITE_FAILURE"/>
