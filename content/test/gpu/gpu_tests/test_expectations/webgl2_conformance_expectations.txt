@@ -557,7 +557,6 @@ crbug.com/328100306 [ amd-0x67ef angle-metal graphite-enabled sonoma ] conforman
 
 ## SkiaGraphite on Metal AMD ##
 
-crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
 
 ## Metal Intel ##
 
