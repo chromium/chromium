@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -165,17 +166,18 @@ testing::AssertionResult EnsurePDFHasLoaded(
                                          post_message_target.c_str()))
           .ExtractBool();
 
-  if (load_success) {
-    if (wait_for_hit_test_data) {
-      frame.render_frame_host()->ForEachRenderFrameHost(
-          [](content::RenderFrameHost* render_frame_host) {
-            return content::WaitForHitTestData(render_frame_host);
-          });
-    }
-    return testing::AssertionSuccess();
+  if (!load_success) {
+    return testing::AssertionFailure() << "Load failed.";
   }
 
-  return (testing::AssertionFailure() << "Load failed.");
+  if (wait_for_hit_test_data) {
+    frame.render_frame_host()->ForEachRenderFrameHost(
+        [](content::RenderFrameHost* render_frame_host) {
+          return content::WaitForHitTestData(render_frame_host);
+        });
+  }
+
+  return testing::AssertionSuccess();
 }
 
 gfx::Point ConvertPageCoordToScreenCoord(
@@ -185,29 +187,24 @@ gfx::Point ConvertPageCoordToScreenCoord(
     ADD_FAILURE() << "The guest main frame needs to be non-null";
     return point;
   }
-  if (!content::ExecJs(
-          guest_main_frame,
-          "var visiblePage = viewer.viewport.getMostVisiblePage();"
-          "var visiblePageDimensions ="
-          "    viewer.viewport.getPageScreenRect(visiblePage);"
-          "var viewportPosition = viewer.viewport.position;"
-          "var offsetParent = viewer.shadowRoot.querySelector('#container');"
-          "var scrollParent = viewer.shadowRoot.querySelector('#main');"
-          "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +"
-          "    scrollParent.offsetLeft + offsetParent.offsetLeft;"
-          "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +"
-          "    scrollParent.offsetTop + offsetParent.offsetTop;"
-          "var linkScreenPositionX ="
-          "    Math.floor(" +
-              base::NumberToString(point.x()) +
-              " * viewer.viewport.internalZoom_" +
-              " + screenOffsetX);"
-              "var linkScreenPositionY ="
-              "    Math.floor(" +
-              base::NumberToString(point.y()) +
-              " * viewer.viewport.internalZoom_" +
-              " +"
-              "    screenOffsetY);")) {
+
+  static constexpr char kScript[] = R"(
+    var visiblePage = viewer.viewport.getMostVisiblePage();
+    var visiblePageDimensions = viewer.viewport.getPageScreenRect(visiblePage);
+    var viewportPosition = viewer.viewport.position;
+    var offsetParent = viewer.shadowRoot.querySelector('#container');
+    var scrollParent = viewer.shadowRoot.querySelector('#main');
+    var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +
+        scrollParent.offsetLeft + offsetParent.offsetLeft;
+    var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +
+        scrollParent.offsetTop + offsetParent.offsetTop;
+    var linkScreenPositionX = Math.floor(%d * viewer.viewport.internalZoom_ +
+        screenOffsetX);
+    var linkScreenPositionY = Math.floor(%d * viewer.viewport.internalZoom_ +
+        screenOffsetY);
+  )";
+  if (!content::ExecJs(guest_main_frame,
+                       base::StringPrintf(kScript, point.x(), point.y()))) {
     ADD_FAILURE() << "Error executing script";
     return point;
   }
