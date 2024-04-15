@@ -887,6 +887,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamEffects.Output"/>
   <affected-histogram name="Cras.StreamFlags.Input"/>
   <affected-histogram name="Cras.StreamFlags.Output"/>
+  <affected-histogram name="Cras.StreamOverrunCount"/>
+  <affected-histogram name="Cras.StreamOverrunFrames"/>
   <affected-histogram name="Cras.StreamRuntime.Input"/>
   <affected-histogram name="Cras.StreamRuntime.Output"/>
   <affected-histogram name="Cras.StreamSamplingFormat.Input"/>
@@ -923,6 +925,18 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
+  <affected-histogram name="Cras.StreamOverrunCount.ARC"/>
+  <affected-histogram name="Cras.StreamOverrunCount.ARCVM"/>
+  <affected-histogram name="Cras.StreamOverrunCount.BOREALIS"/>
+  <affected-histogram name="Cras.StreamOverrunCount.Chrome"/>
+  <affected-histogram name="Cras.StreamOverrunCount.CrOSVM"/>
+  <affected-histogram name="Cras.StreamOverrunCount.LaCrOS"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.ARC"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.ARCVM"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.BOREALIS"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.Chrome"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.CrOSVM"/>
+  <affected-histogram name="Cras.StreamOverrunFrames.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARCVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.BOREALIS"/>

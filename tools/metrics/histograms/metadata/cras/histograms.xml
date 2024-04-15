@@ -974,6 +974,36 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.StreamOverrunCount" units="count"
+    expires_after="2025-04-15">
+<!-- Name completed by histogram_suffixes
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of overruns happened on a stream. This value is recorded per
+    stream when it gets removed and used to investigate the audio glitch/skip
+    problem on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="Cras.StreamOverrunFrames" units="frames"
+    expires_after="2025-04-15">
+<!-- Name completed by histogram_suffixes
+     name="Cras.ClientType" and
+     name="Cras.StreamType" -->
+
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The number of overrun frames on a stream. This value is recorded per stream
+    when it gets removed and used to investigate the audio glitch/skip problem
+    on ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="Cras.StreamRuntime" units="seconds" expires_after="2024-09-01">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
