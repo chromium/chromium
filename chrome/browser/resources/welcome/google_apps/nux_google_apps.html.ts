@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {NuxGoogleAppsElement} from './nux_google_apps.js';
+
+export function getHtml(this: NuxGoogleAppsElement) {
+  return html`<!--_html_template_start_-->
 <div class="apps-ask">
   <div class="chrome-logo" aria-hidden="true"></div>
   <h1 tabindex="-1">${this.subtitle}</h1>
@@ -31,3 +40,5 @@
     </div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

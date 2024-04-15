@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {LandingViewElement} from './landing_view.js';
+
+export function getHtml(this: LandingViewElement) {
+  return html`<!--_html_template_start_-->
 <div id="container">
   <onboarding-background id="background" class="fade-in">
   </onboarding-background>
@@ -15,3 +24,5 @@
     </button>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

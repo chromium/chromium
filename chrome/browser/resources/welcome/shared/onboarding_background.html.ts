@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {OnboardingBackgroundElement} from './onboarding_background.js';
+
+export function getHtml(this: OnboardingBackgroundElement) {
+  return html`<!--_html_template_start_-->
 <div id="container">
   <div id="canvas">
     <div class="shape" id="logo" @click="${this.onLogoClick_}"></div>
@@ -82,3 +91,5 @@
     @click="${this.onPlayPauseClick_}"
     aria-label="${this.getPlayPauseLabel_()}">
 </cr-icon-button>
+<!--_html_template_end_-->`;
+}
