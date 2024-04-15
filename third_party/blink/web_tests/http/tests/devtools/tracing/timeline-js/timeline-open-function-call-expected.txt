@@ -1,4 +1,0 @@
-Checks the FunctionCall with no closing event processed properly.
-
-FunctionCall 101
-
