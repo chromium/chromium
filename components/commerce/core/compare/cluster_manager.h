@@ -14,6 +14,7 @@
 
 namespace commerce {
 struct CandidateProduct;
+struct ProductGroup;
 
 // Class for clustering product information.
 class ClusterManager {
@@ -38,23 +39,44 @@ class ClusterManager {
   void DidNavigatePrimaryMainFrame(const GURL& url);
   // A notification that the user navigated away from `from_url`.
   void DidNavigateAway(const GURL& from_url);
-
  private:
   friend class ClusterManagerTest;
 
-  // Adds a candidate product to cluster.
+  // Adds a product group to the `product_group_map_`.
+  void AddProductGroup(std::unique_ptr<ProductGroup> product_group);
+
+  // Removes a product group from `product_group_map_`.
+  void RemoveProductGroup(const std::string& group_id);
+
+  // Called when information about a product is retrieved.
+  void OnProductInfoRetrieved(
+      const GURL& url,
+      const std::optional<const ProductInfo>& product_info);
+
+  // Adds a candidate product to `candidate_product_map_`.
   void AddCandidateProduct(
+      const GURL& url,
+      const std::optional<const ProductInfo>& product_info);
+
+  // Adds a new product to `product_group_map_` if necessary.
+  void AddProductToProductGroupssIfNecessary(
       const GURL& url,
       const std::optional<const ProductInfo>& product_info);
 
   // Removes a candidate product URL if it is not open in any tabs.
   void RemoveCandidateProductURLIfNotOpen(const GURL& url);
 
+  // Removes a product to `product_group_map_` if necessary.
+  void RemoveProductFromProductGroupsIfNecessary(const GURL& url);
+
   // Callback to get product info.
   GetProductInfoCallback get_product_info_cb_;
 
   // Callback to get currently opened urls.
   GetOpenUrlInfosCallback get_open_url_infos_cb_;
+
+  // A map storing info of existing product groups, keyed by product group ID.
+  std::map<std::string, std::unique_ptr<ProductGroup>> product_group_map_;
 
   // A map storing info of candidate products, keyed by product page URL.
   std::map<GURL, std::unique_ptr<CandidateProduct>> candidate_product_map_;

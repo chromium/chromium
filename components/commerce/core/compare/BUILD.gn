@@ -8,6 +8,8 @@ source_set("compare") {
     "candidate_product.h",
     "cluster_manager.cc",
     "cluster_manager.h",
+    "product_group.cc",
+    "product_group.h",
     "product_specifications_server_proxy.cc",
     "product_specifications_server_proxy.h",
   ]
