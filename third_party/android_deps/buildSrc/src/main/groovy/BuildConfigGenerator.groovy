@@ -359,6 +359,7 @@ class BuildConfigGenerator extends DefaultTask {
         HttpURLConnection connection
         for (int i = 0; i < 10; ++i) {
             connection = urlObj.openConnection()
+            connection.setRequestProperty("Accept", "text/plain");
             switch (connection.responseCode) {
                 case HttpURLConnection.HTTP_MOVED_PERM:
                 case HttpURLConnection.HTTP_MOVED_TEMP:
