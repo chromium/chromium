@@ -159,6 +159,15 @@
   <message name="IDS_ENABLE_DESKTOP_SITE_WINDOW_SETTING_TITLE" desc="Title for the preference to enable window setting for request desktop site">
     When the window is narrow, request mobile view
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_QUIET" desc="Label for the quiet version of the permission prompt.">
+    Collapse all requests
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_CPSS" desc="Label for the CPSS version of the permission prompt. Chrome decides to show either the loud or quiet version.">
+    Collapse unwanted requests (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PERMISSION_LOUD" desc="Label for the loud version of the permission prompt.">
+    Expand all requests
+  </message>
 
   <!-- Site settings: general category strings -->
 

@@ -266,6 +266,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(https://crbug.com/324827395): Remove after the intermediate state for OneTapUnsubscribe is implemented. -->
     <ignore regexp="The resource `R.string.notification_unsubscribing_label` appears to be unused"/>
 
+    <!-- TODO(crbug.com/334954448): Remove the following 3 lines after the CPSS settings for Android is implemented. -->
+    <ignore regexp="The resource `R.string.website_settings_category_permission_quiet` appears to be unused"/>
+    <ignore regexp="The resource `R.string.website_settings_category_permission_cpss` appears to be unused"/>
+    <ignore regexp="The resource `R.string.website_settings_category_permission_loud` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

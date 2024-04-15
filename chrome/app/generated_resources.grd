@@ -13414,6 +13414,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE" desc="Title of an infobar that informs the user that notifications are blocked. [CHAR_LIMIT=32]">
           Notifications blocked
         </message>
+        <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE" desc="Title of the notification that informs the user that location is blocked. [CHAR_LIMIT=32]">
+          Location blocked
+        </message>
         <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_ABUSIVE_MESSAGE" desc="Description for the expanded infobar that informs the user that notifications are automatically blocked because the site is known to employ dark patterns to trick users into accepting the permission.">
           This site may be trying to trick you into allowing intrusive notifications.
         </message>
