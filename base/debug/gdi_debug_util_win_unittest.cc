@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/gdi_debug_util_win.h"
+
 #include <windows.h>
 
-#include "base/debug/gdi_debug_util_win.h"
 #include "base/win/scoped_hdc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

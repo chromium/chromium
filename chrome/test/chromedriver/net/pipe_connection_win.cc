@@ -4,9 +4,10 @@
 
 #include "chrome/test/chromedriver/net/pipe_connection_win.h"
 
+#include <windows.h>
+
 #include <io.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <list>
 #include <memory>

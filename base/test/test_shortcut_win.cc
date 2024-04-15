@@ -4,11 +4,12 @@
 
 #include "base/test/test_shortcut_win.h"
 
+#include <objbase.h>
+
 #include <windows.h>
 
-#include <objbase.h>
-#include <shlobj.h>
 #include <propkey.h>
+#include <shlobj.h>
 #include <wrl/client.h>
 
 #include <string>

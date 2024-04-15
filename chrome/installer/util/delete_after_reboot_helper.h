@@ -8,12 +8,12 @@
 #ifndef CHROME_INSTALLER_UTIL_DELETE_AFTER_REBOOT_HELPER_H_
 #define CHROME_INSTALLER_UTIL_DELETE_AFTER_REBOOT_HELPER_H_
 
-#include <string>
-#include <vector>
-
 #include <windows.h>
 
 #include <stddef.h>
+
+#include <string>
+#include <vector>
 
 namespace base {
 class FilePath;

@@ -4,6 +4,8 @@
 
 #include "base/process/process.h"
 
+#include <windows.h>
+
 #include "base/clang_profiling_buildflags.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -11,8 +13,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/win/windows_version.h"
-
-#include <windows.h>
 
 #if BUILDFLAG(CLANG_PROFILING)
 #include "base/test/clang_profiling.h"

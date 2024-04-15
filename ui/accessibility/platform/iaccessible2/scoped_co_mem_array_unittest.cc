@@ -4,9 +4,9 @@
 
 #include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
 
-#include <vector>
-
 #include <objbase.h>
+
+#include <vector>
 
 #include "base/win/windows_types.h"
 #include "testing/gtest/include/gtest/gtest.h"

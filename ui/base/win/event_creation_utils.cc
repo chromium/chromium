@@ -5,6 +5,7 @@
 #include "ui/base/win/event_creation_utils.h"
 
 #include <windows.h>
+
 #include <winuser.h>
 
 #include <algorithm>

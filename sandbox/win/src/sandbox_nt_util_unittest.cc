@@ -4,8 +4,9 @@
 
 #include "sandbox/win/src/sandbox_nt_util.h"
 
-#include <ntstatus.h>
 #include <windows.h>
+
+#include <ntstatus.h>
 #include <winternl.h>
 
 #include <memory>

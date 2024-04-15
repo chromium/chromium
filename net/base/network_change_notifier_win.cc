@@ -4,8 +4,9 @@
 
 #include "net/base/network_change_notifier_win.h"
 
-#include <iphlpapi.h>
 #include <winsock2.h>
+
+#include <iphlpapi.h>
 
 #include <utility>
 

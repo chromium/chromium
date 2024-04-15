@@ -4,8 +4,9 @@
 
 #include "chrome/chrome_elf/crash/crash_helper.h"
 
-#include <assert.h>
 #include <windows.h>
+
+#include <assert.h>
 
 #include <algorithm>
 #include <string>

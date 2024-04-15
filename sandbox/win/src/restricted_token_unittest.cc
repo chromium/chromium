@@ -8,10 +8,10 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/ranges/algorithm.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"

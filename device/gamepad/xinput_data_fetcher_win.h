@@ -13,10 +13,11 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Unknwn.h>
+#include <windows.h>
+
 #include <WinDef.h>
 #include <XInput.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"

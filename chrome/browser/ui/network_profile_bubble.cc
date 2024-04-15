@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/network_profile_bubble.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 #include <wtsapi32.h>
 
 #include "base/check_op.h"

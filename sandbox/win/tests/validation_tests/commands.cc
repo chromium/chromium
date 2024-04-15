@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Aclapi.h>
-#include <windows.h>
-#include <stddef.h>
-#include <string>
-
 #include "sandbox/win/tests/validation_tests/commands.h"
+
+#include <windows.h>
+
+#include <Aclapi.h>
+#include <stddef.h>
+
+#include <string>
 
 #include "sandbox/win/tests/common/controller.h"
 

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
+#include <windows.h>
 
 #include <ntstatus.h>
-#include <windows.h>
 #include <winioctl.h>
 #include <winternl.h>
+
+#include <algorithm>
 
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"

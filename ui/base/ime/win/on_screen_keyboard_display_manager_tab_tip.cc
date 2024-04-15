@@ -4,11 +4,11 @@
 
 #include "ui/base/ime/win/on_screen_keyboard_display_manager_tab_tip.h"
 
+#include <shobjidl.h>
 #include <windows.h>
 
 #include <shellapi.h>
 #include <shlobj.h>
-#include <shobjidl.h>  // Must be before propkey.
 
 #include "base/functional/bind.h"
 #include "base/location.h"

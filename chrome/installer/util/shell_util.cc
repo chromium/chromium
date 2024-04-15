@@ -10,9 +10,11 @@
 #include "chrome/installer/util/shell_util.h"
 
 #include <objbase.h>
+
+#include <shobjidl.h>
+
 #include <shellapi.h>
 #include <shlobj.h>
-#include <shobjidl.h>
 #include <wrl/client.h>
 
 #include <algorithm>

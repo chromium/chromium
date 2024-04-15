@@ -7,14 +7,14 @@
 
 #include "rlz/win/lib/registry_util.h"
 
+#include <windows.h>
+
 #include "base/process/process_info.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "rlz/lib/assert.h"
 #include "rlz/win/lib/process_info.h"
-
-#include <windows.h>
 
 namespace rlz_lib {
 

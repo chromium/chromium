@@ -4,10 +4,11 @@
 
 #include "media/audio/win/audio_low_latency_output_win.h"
 
+#include <objbase.h>
+
 #include <Functiondiscoverykeys_devpkey.h>
 #include <audiopolicy.h>
 #include <inttypes.h>
-#include <objbase.h>
 
 #include <climits>
 #include <memory>

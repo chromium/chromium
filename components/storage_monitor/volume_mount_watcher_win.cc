@@ -5,12 +5,12 @@
 #include "components/storage_monitor/volume_mount_watcher_win.h"
 
 #include <windows.h>
-#include <stddef.h>
-#include <stdint.h>
 
 #include <dbt.h>
 #include <fileapi.h>
 #include <shlobj.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <winioctl.h>
 
 #include <algorithm>

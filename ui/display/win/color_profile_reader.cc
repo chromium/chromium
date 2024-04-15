@@ -4,8 +4,9 @@
 
 #include "ui/display/win/color_profile_reader.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"

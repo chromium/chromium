@@ -4,10 +4,11 @@
 
 #include "tools/win/chromeexts/commands/gwp_asan_command.h"
 
+#include <windows.h>
+
 #include <dbgeng.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <fstream>
 #include <istream>

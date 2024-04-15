@@ -4,13 +4,14 @@
 
 #include "chrome/updater/util/win_util.h"
 
+#include <windows.h>
+
 #include <aclapi.h>
 #include <combaseapi.h>
 #include <objidl.h>
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
-#include <windows.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 #include <wtsapi32.h>

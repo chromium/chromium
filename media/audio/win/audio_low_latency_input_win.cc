@@ -5,6 +5,7 @@
 #include "media/audio/win/audio_low_latency_input_win.h"
 
 #include <objbase.h>
+
 #include <propkey.h>
 #include <windows.devices.enumeration.h>
 #include <windows.media.devices.h>

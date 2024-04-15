@@ -4,11 +4,11 @@
 
 #include "media/audio/win/audio_manager_win.h"
 
-#include <windows.h>
-
-#include <objbase.h>  // This has to be before initguid.h
+#include <objbase.h>
 
 #include <initguid.h>
+#include <windows.h>
+
 #include <mmsystem.h>
 #include <setupapi.h>
 #include <stddef.h>

@@ -4,8 +4,6 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 
-#include <uiautomation.h>
-
 #include <map>
 #include <string>
 
@@ -19,6 +17,8 @@
 #include "base/win/scoped_bstr.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
+
+#include <uiautomation.h>
 
 namespace ui {
 namespace {

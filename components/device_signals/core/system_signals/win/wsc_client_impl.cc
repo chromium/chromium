@@ -4,8 +4,9 @@
 
 #include "components/device_signals/core/system_signals/win/wsc_client_impl.h"
 
-#include <iwscapi.h>
 #include <windows.h>
+
+#include <iwscapi.h>
 #include <wrl/client.h>
 #include <wscapi.h>
 

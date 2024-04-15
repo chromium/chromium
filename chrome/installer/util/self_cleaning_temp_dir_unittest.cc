@@ -5,6 +5,7 @@
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 
 #include <windows.h>
+
 #include <stdint.h>
 #include <wincrypt.h>
 

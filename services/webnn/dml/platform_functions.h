@@ -5,10 +5,11 @@
 #ifndef SERVICES_WEBNN_DML_PLATFORM_FUNCTIONS_H_
 #define SERVICES_WEBNN_DML_PLATFORM_FUNCTIONS_H_
 
+#include <windows.h>
+
 #include <DirectML.h>
 #include <d3d12.h>
 #include <dxcore.h>
-#include <windows.h>
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"

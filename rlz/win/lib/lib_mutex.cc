@@ -5,6 +5,7 @@
 #include "rlz/win/lib/lib_mutex.h"
 
 #include <windows.h>
+
 #include "base/win/windows_version.h"
 
 namespace {

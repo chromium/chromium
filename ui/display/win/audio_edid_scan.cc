@@ -5,6 +5,7 @@
 #include "ui/display/win/audio_edid_scan.h"
 
 #include <objbase.h>
+
 #include <oleauto.h>
 #include <string.h>
 

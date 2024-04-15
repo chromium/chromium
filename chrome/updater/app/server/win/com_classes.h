@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_APP_SERVER_WIN_COM_CLASSES_H_
 
 #include <windows.h>
+
 #include <wrl/implements.h>
 
 #include <string>

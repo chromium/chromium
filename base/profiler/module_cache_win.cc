@@ -5,6 +5,7 @@
 #include "base/profiler/module_cache.h"
 
 #include <objbase.h>
+
 #include <psapi.h>
 
 #include <string>

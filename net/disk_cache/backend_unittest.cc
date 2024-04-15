@@ -73,9 +73,9 @@ using testing::Eq;
 using testing::Field;
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-
 #include <windows.h>
+
+#include "base/win/scoped_handle.h"
 #endif
 
 // TODO(crbug.com/949811): Fix memory leaks in tests and re-enable on LSAN.

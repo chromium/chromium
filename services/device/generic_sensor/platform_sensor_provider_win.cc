@@ -4,8 +4,9 @@
 
 #include "services/device/generic_sensor/platform_sensor_provider_win.h"
 
-#include <comdef.h>
 #include <objbase.h>
+
+#include <comdef.h>
 
 #include <iomanip>
 

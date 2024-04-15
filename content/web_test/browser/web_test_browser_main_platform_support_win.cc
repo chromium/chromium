@@ -4,8 +4,9 @@
 
 #include "content/web_test/browser/web_test_browser_main_platform_support.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <iostream>
 #include <list>

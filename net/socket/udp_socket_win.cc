@@ -4,8 +4,9 @@
 
 #include "net/socket/udp_socket_win.h"
 
-#include <mstcpip.h>
 #include <winsock2.h>
+
+#include <mstcpip.h>
 
 #include <memory>
 

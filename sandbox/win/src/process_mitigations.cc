@@ -4,8 +4,9 @@
 
 #include "sandbox/win/src/process_mitigations.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 #include <wow64apiset.h>
 
 #include <algorithm>

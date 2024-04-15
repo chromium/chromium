@@ -4,8 +4,9 @@
 
 #include "remoting/host/file_transfer/directory_helpers.h"
 
-#include <shlobj.h>
 #include <windows.h>
+
+#include <shlobj.h>
 
 #include "base/check_is_test.h"
 #include "base/logging.h"

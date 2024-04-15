@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
+
 #include <ws2bth.h>
 
 #include "base/test/gtest_util.h"   // For EXPECT_DCHECK_DEATH

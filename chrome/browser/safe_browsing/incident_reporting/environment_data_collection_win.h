@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_INCIDENT_REPORTING_ENVIRONMENT_DATA_COLLECTION_WIN_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 
 namespace google {

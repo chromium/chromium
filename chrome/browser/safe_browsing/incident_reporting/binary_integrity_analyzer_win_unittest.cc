@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer_win.h"
 
+#include <windows.h>
+
 #include <memory>
 #include <utility>
 
@@ -19,8 +21,6 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 using ::testing::_;
 using ::testing::StrictMock;

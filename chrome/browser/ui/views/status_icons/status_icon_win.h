@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_WIN_H_
 
 #include <windows.h>
+
 #include <shellapi.h>
 
 #include <memory>

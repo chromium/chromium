@@ -23,10 +23,11 @@
  * logging like TraceLoggingProvider.h.
  */
 
-#include <stdint.h>
 #include <windows.h>
-// Evntprov.h must come after windows.h.
+
 #include <evntprov.h>
+#include <stdint.h>
+
 #include <cstdint>
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.

@@ -9,8 +9,9 @@
 #include <memory>
 #include <string>
 
-#define SECURITY_WIN32  // Needs to be defined before including security.h
 #include <windows.h>
+
+#define SECURITY_WIN32
 #include <security.h>
 
 #include "base/functional/bind.h"

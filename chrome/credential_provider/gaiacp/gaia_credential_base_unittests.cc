@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
+
 #include <windows.h>
 
 #include <sddl.h>  // For ConvertSidToStringSid()
@@ -28,7 +30,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "chrome/credential_provider/gaiacp/gaia_credential_base.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <memory>
 #include <optional>

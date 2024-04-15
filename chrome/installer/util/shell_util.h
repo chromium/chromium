@@ -9,9 +9,10 @@
 #ifndef CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 #define CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <map>
 #include <memory>

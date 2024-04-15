@@ -45,9 +45,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-
 #include <windows.h>
+
+#include "base/win/windows_version.h"
 #endif
 
 namespace service_manager {

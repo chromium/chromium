@@ -9,8 +9,9 @@
 
 #include "remoting/base/breakpad.h"
 
-#include <crtdbg.h>
 #include <windows.h>
+
+#include <crtdbg.h>
 
 #include <memory>
 #include <string>

@@ -183,7 +183,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <objbase.h>
+
 #include <windows.h>
+
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "content/renderer/media/win/overlay_state_service_provider.h"
 #include "media/base/win/mf_feature_checks.h"

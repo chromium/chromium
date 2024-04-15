@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 #include "base/debug/gdi_debug_util_win.h"
 
+#include <windows.h>
+
 #include <TlHelp32.h>
 #include <psapi.h>
 #include <stddef.h>
-#include <windows.h>
 #include <winternl.h>
 
 #include <algorithm>

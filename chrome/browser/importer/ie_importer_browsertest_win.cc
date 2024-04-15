@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The order of these includes is important.
+#include <objbase.h>
+
 #include <unknwn.h>
 #include <windows.h>
 
 #include <intshcut.h>
-#include <objbase.h>
 #include <shlguid.h>
 #include <shlobj.h>
 #include <stddef.h>

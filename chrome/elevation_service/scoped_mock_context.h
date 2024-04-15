@@ -6,6 +6,7 @@
 #define CHROME_ELEVATION_SERVICE_SCOPED_MOCK_CONTEXT_H_
 
 #include <unknwn.h>
+
 #include <wrl/client.h>
 
 #include "base/memory/raw_ptr_exclusion.h"

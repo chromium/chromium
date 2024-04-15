@@ -4,9 +4,10 @@
 
 #include "chrome/updater/win/setup/setup_util.h"
 
+#include <windows.h>
+
 #include <regstr.h>
 #include <shlobj.h>
-#include <windows.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

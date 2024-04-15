@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <windows.h>
+
 #include <Sddl.h>  // For ConvertSidToStringSidW.
 
 #include <memory>

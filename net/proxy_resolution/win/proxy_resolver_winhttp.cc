@@ -5,6 +5,7 @@
 #include "net/proxy_resolution/win/proxy_resolver_winhttp.h"
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <memory>

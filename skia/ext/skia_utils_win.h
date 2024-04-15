@@ -5,17 +5,17 @@
 #ifndef SKIA_EXT_SKIA_UTILS_WIN_H_
 #define SKIA_EXT_SKIA_UTILS_WIN_H_
 
+#include <windows.h>
+
 #include <vector>
 
 #include "base/win/scoped_gdi_object.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-
-#include "build/build_config.h"
-#include <windows.h>
 
 struct SkIRect;
 struct SkPoint;

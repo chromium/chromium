@@ -4,8 +4,9 @@
 
 // This is a simple Native Message Host application. It echoes any messages
 // it receives.
-#include <string.h>
 #include <windows.h>
+
+#include <string.h>
 
 #include "base/files/file.h"
 

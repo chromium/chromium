@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DISCOVERY_NETWORK_LIST_WIN_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DISCOVERY_NETWORK_LIST_WIN_H_
 
-#include <roapi.h>
-#include <windows.networking.connectivity.h>
 #include <ws2tcpip.h>
 
-// iphlpapi.h must be included after ws2tcpip.h to use MIB_IF_TABLE2.
 #include <iphlpapi.h>  // NOLINT
+#include <roapi.h>
+#include <windows.networking.connectivity.h>
 
 #include <map>
 #include <memory>

@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_CRASH_CORE_APP_FALLBACK_CRASH_HANDLER_LAUNCHER_WIN_H_
 #define COMPONENTS_CRASH_CORE_APP_FALLBACK_CRASH_HANDLER_LAUNCHER_WIN_H_
 
+#include <windows.h>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/startup_information.h"
-
-#include <windows.h>
 
 namespace crash_reporter {
 

@@ -5,11 +5,11 @@
 #ifndef TOOLS_WIN_IDLEWAKEUPS_SYSTEM_INFORMATION_SAMPLER_H_
 #define TOOLS_WIN_IDLEWAKEUPS_SYSTEM_INFORMATION_SAMPLER_H_
 
+#include <windows.h>
+
 #include <map>
 #include <memory>
 #include <vector>
-
-#include <windows.h>
 
 // SYSTEM_PROCESS_INFORMATION and SYSTEM_THREAD_INFORMATION structures
 // use HANDLE for the thread / process IDs.

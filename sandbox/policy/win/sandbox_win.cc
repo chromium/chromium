@@ -4,18 +4,19 @@
 
 #include "sandbox/policy/win/sandbox_win.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 #include <winternl.h>
 
 #include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"

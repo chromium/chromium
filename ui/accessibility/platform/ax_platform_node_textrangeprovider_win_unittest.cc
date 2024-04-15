@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
-
-#include <UIAutomationClient.h>
-#include <UIAutomationCoreApi.h>
+#include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 
 #include <memory>
 #include <utility>
@@ -16,8 +13,11 @@
 #include "base/win/scoped_variant.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
-#include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
+#include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
+
+#include <UIAutomationClient.h>
+#include <UIAutomationCoreApi.h>
 
 using Microsoft::WRL::ComPtr;
 

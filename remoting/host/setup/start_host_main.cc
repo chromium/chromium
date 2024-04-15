@@ -44,9 +44,9 @@
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/process/process_info.h"
-
 #include <windows.h>
+
+#include "base/process/process_info.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {

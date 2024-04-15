@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 
 #include <objbase.h>
+
 #include <cmath>
 
 #include "base/logging.h"

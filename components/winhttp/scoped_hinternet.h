@@ -6,6 +6,7 @@
 #define COMPONENTS_WINHTTP_SCOPED_HINTERNET_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <string_view>

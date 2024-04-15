@@ -75,9 +75,9 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+#include <initguid.h>
 #include <windows.h>
 
-#include <initguid.h>
 #include "base/logging_win.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"

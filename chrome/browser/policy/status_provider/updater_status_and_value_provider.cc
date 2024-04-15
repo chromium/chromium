@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <DSRole.h>
+
 #include <algorithm>
 #include <utility>
 

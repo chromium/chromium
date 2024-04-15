@@ -13,6 +13,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <utility>
 
 #include "components/viz/common/display/use_layered_window.h"

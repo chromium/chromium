@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/os_crypt/sync/os_crypt.h"
+
 #include <windows.h>
 
 #include "base/base64.h"
@@ -15,7 +17,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wincrypt_shim.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"

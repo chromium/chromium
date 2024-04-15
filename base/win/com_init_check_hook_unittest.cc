@@ -5,6 +5,7 @@
 #include "base/win/com_init_check_hook.h"
 
 #include <objbase.h>
+
 #include <shlobj.h>
 #include <wrl/client.h>
 

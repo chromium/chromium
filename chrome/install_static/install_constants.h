@@ -9,8 +9,9 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 #define CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include "chrome/install_static/buildflags.h"
 

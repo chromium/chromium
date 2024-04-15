@@ -4,6 +4,10 @@
 
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 
+#include <winsock2.h>
+
+#include <iphlpapi.h>
+
 #include <memory>
 #include <vector>
 
@@ -19,9 +23,6 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/proxy_resolution/win/dhcp_pac_file_adapter_fetcher_win.h"
-
-#include <winsock2.h>
-#include <iphlpapi.h>
 
 namespace net {
 

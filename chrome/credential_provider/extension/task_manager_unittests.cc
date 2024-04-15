@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include "chrome/credential_provider/extension/task_manager.h"
+
+#include <windows.h>
 
 #include <atlcomcli.h>
-#include <windows.h>
+
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +18,6 @@
 #include "base/uuid.h"
 #include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/extension/task.h"
-#include "chrome/credential_provider/extension/task_manager.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"

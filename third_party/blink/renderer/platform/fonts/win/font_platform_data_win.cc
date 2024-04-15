@@ -29,10 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+
 #include <windows.h>
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"

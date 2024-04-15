@@ -4,13 +4,13 @@
 
 #include "chrome/browser/policy/browser_dm_token_storage_win.h"
 
-// Must be first.
+#include <objbase.h>
+
+#include <unknwn.h>
 #include <windows.h>
 
 #include <comutil.h>
-#include <objbase.h>
 #include <oleauto.h>
-#include <unknwn.h>
 #include <winerror.h>
 #include <wrl/client.h>
 

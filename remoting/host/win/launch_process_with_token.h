@@ -6,6 +6,7 @@
 #define REMOTING_HOST_WIN_LAUNCH_PROCESS_WITH_TOKEN_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include "base/command_line.h"

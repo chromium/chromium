@@ -10,9 +10,10 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <intrin.h>
 #include <stddef.h>
-#include <windows.h>
 #include <winnt.h>
 #elif defined(__GLIBC__)
 extern "C" void* __libc_stack_end;  // NOLINT

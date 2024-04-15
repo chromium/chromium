@@ -4,9 +4,10 @@
 
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 
+#include <windows.h>
+
 #include <oleauto.h>
 #include <shellapi.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include <optional>

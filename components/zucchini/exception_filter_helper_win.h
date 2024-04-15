@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_ZUCCHINI_EXCEPTION_FILTER_HELPER_WIN_H_
 #define COMPONENTS_ZUCCHINI_EXCEPTION_FILTER_HELPER_WIN_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <map>
 

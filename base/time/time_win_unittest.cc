@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
+
 #include <windows.h>
 
 #include <mmsystem.h>
@@ -16,7 +18,6 @@
 
 #include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"

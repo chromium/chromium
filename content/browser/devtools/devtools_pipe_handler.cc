@@ -7,9 +7,10 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <io.h>
 #include <stdlib.h>
-#include <windows.h>
 #else
 #include <sys/socket.h>
 #endif

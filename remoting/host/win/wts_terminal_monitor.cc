@@ -5,6 +5,7 @@
 #include "remoting/host/win/wts_terminal_monitor.h"
 
 #include <windows.h>
+
 #include <wtsapi32.h>
 
 #include "base/logging.h"

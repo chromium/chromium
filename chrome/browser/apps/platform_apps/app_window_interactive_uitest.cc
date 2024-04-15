@@ -22,6 +22,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"

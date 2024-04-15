@@ -4,10 +4,11 @@
 
 #include "ui/views/win/hwnd_message_handler.h"
 
+#include <tchar.h>
+
 #include <dwmapi.h>
 #include <oleacc.h>
 #include <shellapi.h>
-#include <tchar.h>
 #include <wrl/client.h>
 
 #include <utility>

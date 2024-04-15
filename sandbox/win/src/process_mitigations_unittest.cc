@@ -4,10 +4,11 @@
 
 #include "sandbox/win/src/process_mitigations.h"
 
+#include <windows.h>
+
 #include <excpt.h>
 #include <ktmw32.h>
 #include <ntstatus.h>
-#include <windows.h>
 
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"

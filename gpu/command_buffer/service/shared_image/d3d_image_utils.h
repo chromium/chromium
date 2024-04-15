@@ -5,8 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_UTILS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_UTILS_H_
 
-#include <d3d11.h>
 #include <windows.h>
+
+#include <d3d11.h>
 #include <wrl/client.h>
 
 #include "base/containers/span.h"

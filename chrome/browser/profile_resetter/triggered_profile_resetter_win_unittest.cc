@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 
+#include <windows.h>
+
 #include <stdint.h>
 
 #include <memory>
@@ -20,8 +22,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 using base::win::RegKey;
 

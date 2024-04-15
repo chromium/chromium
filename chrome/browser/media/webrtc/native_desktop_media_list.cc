@@ -46,6 +46,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/strings/string_util_win.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif

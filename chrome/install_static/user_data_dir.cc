@@ -4,8 +4,9 @@
 
 #include "chrome/install_static/user_data_dir.h"
 
-#include <assert.h>
 #include <windows.h>
+
+#include <assert.h>
 
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"

@@ -72,8 +72,9 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <dwmapi.h>
 #include <windows.h>
+
+#include <dwmapi.h>
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

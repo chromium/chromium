@@ -5,8 +5,10 @@
 #include "chrome/elevation_service/scoped_mock_context.h"
 
 #include <objbase.h>
-#include <objidl.h>
+
 #include <unknwn.h>
+
+#include <objidl.h>
 #include <wrl/implements.h>
 
 #include "base/win/com_init_util.h"

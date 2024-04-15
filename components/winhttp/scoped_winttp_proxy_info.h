@@ -6,6 +6,7 @@
 #define COMPONENTS_WINHTTP_SCOPED_WINTTP_PROXY_INFO_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <string>

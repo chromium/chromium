@@ -4,13 +4,14 @@
 
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_provider_win.h"
 
-#include <stdint.h>
-#include <windows.h>  // Must precede lmjoin.h.
+#include <objbase.h>
+
+#include <windows.h>
 
 #include <lmcons.h>
 #include <lmjoin.h>
-#include <objbase.h>
 #include <proofofpossessioncookieinfo.h>
+#include <stdint.h>
 #include <windows.security.authentication.web.core.h>
 #include <wrl/client.h>
 

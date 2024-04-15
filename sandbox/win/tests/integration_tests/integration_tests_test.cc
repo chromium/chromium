@@ -4,10 +4,10 @@
 
 // Some tests for the framework itself.
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdlib.h>
-
-#include <windows.h>
 
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"

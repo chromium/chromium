@@ -153,10 +153,12 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <combaseapi.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
+
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+
+#include <uiautomation.h>
 #endif
 
 #if defined(USE_AURA)

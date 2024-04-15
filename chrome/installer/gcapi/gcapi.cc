@@ -12,7 +12,6 @@
 
 #include <windows.h>
 
-// Must be after windows.h.
 #include <versionhelpers.h>
 
 #include <sddl.h>
@@ -21,6 +20,7 @@
 #include <string.h>
 #define STRSAFE_NO_DEPRECATE
 #include <objbase.h>
+
 #include <strsafe.h>
 #include <tlhelp32.h>
 #include <wrl/client.h>

@@ -5,6 +5,7 @@
 #include "chrome/browser/device_reauth/win/authenticator_win.h"
 
 #include <objbase.h>
+
 #include <windows.foundation.h>
 #include <windows.security.credentials.ui.h>
 #include <windows.storage.streams.h>

@@ -4,11 +4,11 @@
 
 #include "chrome/app/chrome_exe_main_win.h"
 
+#include <tchar.h>
 #include <windows.h>
 
 #include <malloc.h>
 #include <stddef.h>
-#include <tchar.h>
 
 #include <algorithm>
 #include <array>

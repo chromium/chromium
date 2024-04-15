@@ -5,7 +5,9 @@
 #include "base/process/process_handle.h"
 
 #include <windows.h>
+
 #include <winternl.h>
+
 #include <ostream>
 
 #include "base/check.h"

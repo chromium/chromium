@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/device_policies_manager.h"
+
 #include <windows.h>
 
 #include "base/strings/strcat_win.h"
@@ -9,7 +11,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"

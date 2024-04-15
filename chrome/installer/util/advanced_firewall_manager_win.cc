@@ -5,6 +5,7 @@
 #include "chrome/installer/util/advanced_firewall_manager_win.h"
 
 #include <objbase.h>
+
 #include <stddef.h>
 
 #include "base/logging.h"

@@ -5,9 +5,9 @@
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 
 #include <windows.h>
-#include <stdint.h>
 
 #include <shellapi.h>
+#include <stdint.h>
 
 #include <string>
 

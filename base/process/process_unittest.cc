@@ -40,9 +40,9 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/base_win_buildflags.h"
-
 #include <windows.h>
+
+#include "base/win/base_win_buildflags.h"
 #endif
 
 namespace {

@@ -4,9 +4,9 @@
 
 #include "chrome/installer/util/lzma_util.h"
 
-#include <ntstatus.h>
 #include <windows.h>
 
+#include <ntstatus.h>
 #include <stddef.h>
 
 #include <set>

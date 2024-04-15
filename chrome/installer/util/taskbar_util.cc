@@ -5,6 +5,7 @@
 #include "chrome/installer/util/taskbar_util.h"
 
 #include <objbase.h>
+
 #include <shellapi.h>
 #include <shlobj.h>
 #include <wrl/client.h>

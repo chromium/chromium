@@ -4,10 +4,12 @@
 
 #include "chrome/services/util_win/av_products.h"
 
-#include <iwscapi.h>
 #include <objbase.h>
-#include <stddef.h>
+
 #include <windows.h>
+
+#include <iwscapi.h>
+#include <stddef.h>
 #include <wrl/client.h>
 #include <wscapi.h>
 

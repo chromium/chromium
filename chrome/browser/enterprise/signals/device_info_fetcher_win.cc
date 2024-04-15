@@ -4,12 +4,18 @@
 
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
-#include <Windows.h>
+#include <windows.h>
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
 #define SECURITY_WIN32 1
 #include <security.h>
 #undef SECURITY_WIN32
+#include <shobjidl.h>  // NOLINT(build/include_order)
+
+#include <DSRole.h>        // NOLINT(build/include_order)
+#include <iphlpapi.h>      // NOLINT(build/include_order)
+#include <powersetting.h>  // NOLINT(build/include_order)
+#include <propsys.h>       // NOLINT(build/include_order)
 #include <wincred.h>
 
 #include "base/files/file_path.h"
@@ -21,18 +27,10 @@
 #include "base/system/sys_info.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-
-// Those headers need defines from windows_types.h, thus have to come after it.
-#include <DSRole.h>        // NOLINT(build/include_order)
-#include <iphlpapi.h>      // NOLINT(build/include_order)
-#include <powersetting.h>  // NOLINT(build/include_order)
-#include <propsys.h>       // NOLINT(build/include_order)
-#include <shobjidl.h>      // NOLINT(build/include_order)
 
 namespace enterprise_signals {
 

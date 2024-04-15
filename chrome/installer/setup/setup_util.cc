@@ -7,8 +7,10 @@
 #include "chrome/installer/setup/setup_util.h"
 
 #include <objbase.h>
-#include <stddef.h>
+
 #include <windows.h>
+
+#include <stddef.h>
 #include <wtsapi32.h>
 
 #include <initializer_list>

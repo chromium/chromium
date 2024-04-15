@@ -5,6 +5,7 @@
 #include "components/metrics/machine_id_provider.h"
 
 #include <windows.h>
+
 #include <stdint.h>
 #include <winioctl.h>
 

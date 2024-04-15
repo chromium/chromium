@@ -5,7 +5,9 @@
 #include "remoting/host/remote_open_url/url_forwarder_configurator_win.h"
 
 #include <windows.h>
+
 #include <wtsapi32.h>
+
 #include <memory>
 #include <string>
 

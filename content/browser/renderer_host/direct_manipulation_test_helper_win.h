@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DIRECT_MANIPULATION_TEST_HELPER_WIN_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DIRECT_MANIPULATION_TEST_HELPER_WIN_H_
 
-#include <directmanipulation.h>
 #include <windows.h>
+
+#include <directmanipulation.h>
 #include <wrl.h>
+
 #include <array>
 
 namespace content {

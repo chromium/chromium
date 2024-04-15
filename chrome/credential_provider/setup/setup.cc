@@ -6,12 +6,12 @@
 // that the app can be made entireless silent, as required by omaha.
 
 #include <Windows.h>
-#include <shlobj.h>  // Needed for IsUserAnAdmin()
 
+#include <shlobj.h>  // Needed for IsUserAnAdmin()
 #include <stdlib.h>
-#include <string>
 
 #include <algorithm>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"

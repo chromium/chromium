@@ -5,10 +5,10 @@
 #ifndef NET_CERT_X509_UTIL_WIN_H_
 #define NET_CERT_X509_UTIL_WIN_H_
 
+#include <windows.h>
+
 #include <memory>
 #include <vector>
-
-#include <windows.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/win/wincrypt_shim.h"

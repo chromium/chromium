@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <windows.h>
+
 #include <mmsystem.h>
 #include <stddef.h>
 #include <stdint.h>

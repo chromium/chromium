@@ -156,8 +156,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <objbase.h>
-#include <shlobj.h>
+
 #include <windows.h>
+
+#include <shlobj.h>
 #include <wrl/client.h>
 
 #include "base/win/scoped_com_initializer.h"

@@ -4,11 +4,11 @@
 
 #include "sandbox/policy/win/sandbox_win.h"
 
+#include <windows.h>
+
 #include <set>
 #include <string>
 #include <vector>
-
-#include <windows.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"

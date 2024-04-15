@@ -6,14 +6,13 @@
 
 #include <windows.h>
 
+#include <atlcomcli.h>
+#include <atlconv.h>
 #include <lm.h>
 #include <ntsecapi.h>
 #include <ntstatus.h>
 #include <process.h>
 #include <sddl.h>
-
-#include <atlcomcli.h>
-#include <atlconv.h>
 
 #include <string>
 

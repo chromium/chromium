@@ -6,6 +6,7 @@
 #define UI_BASE_RESOURCE_RESOURCE_DATA_DLL_WIN_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include <memory>

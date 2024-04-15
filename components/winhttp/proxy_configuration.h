@@ -6,6 +6,7 @@
 #define COMPONENTS_WINHTTP_PROXY_CONFIGURATION_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <optional>

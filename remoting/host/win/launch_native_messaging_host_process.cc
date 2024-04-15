@@ -5,6 +5,7 @@
 #include "remoting/host/win/launch_native_messaging_host_process.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 
 #include <cstdint>

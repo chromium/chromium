@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/quarantine/test_support.h"
+
 #include <windows.h>
 
 #include <string>
@@ -14,7 +16,6 @@
 #include "base/win/scoped_handle.h"
 #include "components/services/quarantine/common.h"
 #include "components/services/quarantine/common_win.h"
-#include "components/services/quarantine/test_support.h"
 
 namespace quarantine {
 

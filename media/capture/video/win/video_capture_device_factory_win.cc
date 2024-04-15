@@ -4,9 +4,10 @@
 
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 
+#include <objbase.h>
+
 #include <mfapi.h>
 #include <mferror.h>
-#include <objbase.h>
 #include <stddef.h>
 #include <windows.devices.enumeration.h>
 #include <windows.foundation.collections.h>

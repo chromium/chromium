@@ -4,8 +4,9 @@
 
 #include "chrome/installer/util/logging_installer.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <tuple>
 

@@ -79,9 +79,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/strings/string_util_win.h"
-
 #include <windows.h>
+
+#include "base/strings/string_util_win.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef GetCommandLine

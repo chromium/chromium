@@ -5,6 +5,7 @@
 #include "components/storage_monitor/storage_monitor_win.h"
 
 #include <windows.h>
+
 #include <dbt.h>
 #include <fileapi.h>
 #include <shlobj.h>

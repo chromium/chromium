@@ -6,9 +6,9 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_WIN_H_
 
 #include <objbase.h>
+
 #include <oleacc.h>
 #include <oleauto.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <array>
@@ -29,6 +29,8 @@
 #include "ui/accessibility/platform/ichromeaccessible.h"
 #include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/gfx/range/range.h"
+
+#include <uiautomation.h>
 
 // This nonstandard GUID is taken directly from the Mozilla sources
 // (https://searchfox.org/mozilla-central/source/accessible/windows/msaa/ServiceProvider.cpp#60).

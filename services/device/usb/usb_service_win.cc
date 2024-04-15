@@ -4,15 +4,15 @@
 
 #include "services/device/usb/usb_service_win.h"
 
-// windows.h must be included first.
 #include <windows.h>
 
 #include <string_view>
 
 #define INITGUID
 
-#include <devpkey.h>
 #include <objbase.h>
+
+#include <devpkey.h>
 #include <setupapi.h>
 #include <stdint.h>
 #include <usbiodef.h>

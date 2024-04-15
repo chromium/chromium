@@ -5,6 +5,7 @@
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 
 #include <objbase.h>
+
 #include <string>
 #include <utility>
 

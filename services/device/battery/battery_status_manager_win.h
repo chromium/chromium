@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_BATTERY_BATTERY_STATUS_MANAGER_WIN_H_
 
 #include <windows.h>
+
 #include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace device {

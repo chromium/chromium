@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/win/src/process_mitigations.h"
-
 #include <windows.h>
 
 #include <string>
 
+#include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/process_mitigations_win32k_policy.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/tests/common/controller.h"

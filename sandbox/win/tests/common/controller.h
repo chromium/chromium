@@ -6,6 +6,7 @@
 #define SANDBOX_WIN_TESTS_COMMON_CONTROLLER_H_
 
 #include <windows.h>
+
 #include <string>
 
 #include "base/dcheck_is_on.h"

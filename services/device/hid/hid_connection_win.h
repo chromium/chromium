@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_HID_HID_CONNECTION_WIN_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 

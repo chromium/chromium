@@ -4,9 +4,10 @@
 
 #include "base/system/sys_info.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <bit>

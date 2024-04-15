@@ -29,10 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <windows.h>  // For GetACP()
+
 #include <freetype/freetype.h>
 #include <ft2build.h>
 #include <unicode/uscript.h>
-#include <windows.h>  // For GetACP()
 
 #include <memory>
 #include <string>

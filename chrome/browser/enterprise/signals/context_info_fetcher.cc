@@ -40,8 +40,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <netfw.h>
 #include <windows.h>
+
+#include <netfw.h>
 #include <wrl/client.h>
 
 #include "net/dns/public/win_dns_system_settings.h"

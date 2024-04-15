@@ -5,8 +5,9 @@
 #ifndef UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_H_
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_H_
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <map>
 #include <memory>

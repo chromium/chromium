@@ -4,8 +4,9 @@
 
 #include "ui/base/ime/win/tsf_input_scope.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"

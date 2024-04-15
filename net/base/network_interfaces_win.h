@@ -9,6 +9,7 @@
 // of network_interfaces_win.cc to tests.
 
 #include <winsock2.h>
+
 #include <iphlpapi.h>
 #include <wlanapi.h>
 

@@ -52,10 +52,12 @@
 #include "testing/platform_test.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <shellapi.h>
-#include <shlobj.h>
 #include <tchar.h>
 #include <windows.h>
+
+#include <shellapi.h>
+#include <shlobj.h>
+
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/file_path_reparse_point_win.h"

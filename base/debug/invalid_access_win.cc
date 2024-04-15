@@ -4,9 +4,10 @@
 
 #include "base/debug/invalid_access_win.h"
 
+#include <windows.h>
+
 #include <intrin.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "base/check.h"
 #include "build/build_config.h"

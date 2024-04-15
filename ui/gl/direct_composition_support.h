@@ -5,9 +5,10 @@
 #ifndef UI_GL_DIRECT_COMPOSITION_SUPPORT_H_
 #define UI_GL_DIRECT_COMPOSITION_SUPPORT_H_
 
+#include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/no_destructor.h"

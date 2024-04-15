@@ -7,7 +7,6 @@
 // Needed for <uiautomation.h>
 #include <objbase.h>
 
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <utility>
@@ -16,6 +15,8 @@
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+
+#include <uiautomation.h>
 
 namespace {
 

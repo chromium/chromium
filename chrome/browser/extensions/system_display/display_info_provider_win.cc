@@ -4,11 +4,12 @@
 
 #include "chrome/browser/extensions/system_display/display_info_provider_win.h"
 
-#include <memory>
-#include <utility>
+#include <windows.h>
 
 #include <stddef.h>
-#include <windows.h>
+
+#include <memory>
+#include <utility>
 
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"

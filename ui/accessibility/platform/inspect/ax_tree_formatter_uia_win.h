@@ -4,11 +4,9 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
 
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
-
 #include <ole2.h>
+
 #include <stdint.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <map>
@@ -17,6 +15,9 @@
 
 #include "base/component_export.h"
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+
+#include <uiautomation.h>
 
 namespace ui {
 

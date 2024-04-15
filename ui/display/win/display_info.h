@@ -6,6 +6,7 @@
 #define UI_DISPLAY_WIN_DISPLAY_INFO_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include "ui/display/display.h"

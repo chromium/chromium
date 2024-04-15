@@ -5,6 +5,7 @@
 #include "chrome/credential_provider/gaiacp/event_logs_upload_manager.h"
 
 #include <windows.h>
+
 #include <winevt.h>
 
 #include <memory>

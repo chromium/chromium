@@ -6,6 +6,7 @@
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_EVENT_LOGGING_API_MANAGER_H_
 
 #include <windows.h>
+
 #include <winevt.h>
 
 #include <string>

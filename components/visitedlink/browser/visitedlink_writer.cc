@@ -34,9 +34,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <io.h>
 #include <shlobj.h>
-#include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserThread;

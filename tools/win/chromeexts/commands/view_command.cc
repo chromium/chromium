@@ -4,8 +4,9 @@
 
 #include "tools/win/chromeexts/commands/view_command.h"
 
-#include <dbgeng.h>
 #include <windows.h>
+
+#include <dbgeng.h>
 #include <wrl/client.h>
 
 #include <ostream>

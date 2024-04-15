@@ -4,15 +4,16 @@
 
 #include "components/services/quarantine/quarantine.h"
 
+#include <objbase.h>
+
+#include <shobjidl.h>
 #include <windows.h>
-#include <wrl/client.h>
 
 #include <cguid.h>
-#include <objbase.h>
 #include <shellapi.h>
 #include <shlobj.h>
-#include <shobjidl.h>
 #include <wininet.h>
+#include <wrl/client.h>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"

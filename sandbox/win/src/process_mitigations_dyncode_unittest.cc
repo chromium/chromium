@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "sandbox/win/src/process_mitigations.h"
-
 #include <windows.h>
 
 #include <string>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"

@@ -191,9 +191,10 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <commctrl.h>
 #include <shellapi.h>
-#include <windows.h>
 
 #include "base/threading/platform_thread_win.h"
 #include "net/base/winsock_init.h"

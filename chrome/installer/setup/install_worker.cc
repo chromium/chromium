@@ -7,12 +7,13 @@
 
 #include "chrome/installer/setup/install_worker.h"
 
+#include <windows.h>
+
 #include <oaidl.h>
 #include <shlobj.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include <memory>

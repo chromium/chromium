@@ -8,10 +8,10 @@
 // Include common system include files.
 
 #include <windows.h>
-#include <winternl.h>
 
 #include <wincred.h>
 #include <wincrypt.h>
+#include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <Shellapi.h>  // For CommandLineToArgvW()

@@ -4,6 +4,11 @@
 
 #include "net/proxy_resolution/win/dhcp_pac_file_adapter_fetcher_win.h"
 
+#include <windows.h>
+#include <winsock2.h>
+
+#include <dhcpcsdk.h>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,10 +22,6 @@
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 #include "net/proxy_resolution/win/dhcpcsvc_init_win.h"
 #include "net/url_request/url_request_context.h"
-
-#include <windows.h>
-#include <winsock2.h>
-#include <dhcpcsdk.h>
 
 namespace {
 

@@ -4,9 +4,10 @@
 
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 
+#include <windows.h>
+
 #include <d3d11.h>
 #include <d3d11_1.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include <memory>

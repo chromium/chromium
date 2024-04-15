@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TASK_MANAGER_SAMPLING_SHARED_SAMPLER_WIN_DEFINES_H_
 
 #include <windows.h>
+
 #include <winternl.h>
 
 #include "build/build_config.h"

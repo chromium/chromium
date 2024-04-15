@@ -6,6 +6,7 @@
 #define BASE_WIN_VARIANT_VECTOR_H_
 
 #include <objbase.h>
+
 #include <oleauto.h>
 
 #include <type_traits>

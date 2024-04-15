@@ -4,9 +4,10 @@
 
 #include "base/win/wmi.h"
 
+#include <objbase.h>
+
 #include <windows.h>
 
-#include <objbase.h>
 #include <stdint.h>
 
 #include <string_view>

@@ -4,12 +4,14 @@
 
 #include "media/audio/win/core_audio_util_win.h"
 
+#include <objbase.h>
+
 #include <comdef.h>
 #include <devicetopology.h>
 #include <functiondiscoverykeys_devpkey.h>
-#include <objbase.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <bitset>
 
 #include "base/command_line.h"

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <ntstatus.h>
 #include <windows.h>
+
+#include <ntstatus.h>
 
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"

@@ -9,6 +9,7 @@
 #define MEDIA_CAPTURE_VIDEO_WIN_SINK_FILTER_WIN_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 
 #include "base/memory/scoped_refptr.h"

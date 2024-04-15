@@ -5,6 +5,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 
 #include <windows.h>
+
 #include <commctrl.h>
 
 #include <cstdint>

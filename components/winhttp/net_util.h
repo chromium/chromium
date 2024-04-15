@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_WINHTTP_NET_UTIL_H_
 #define COMPONENTS_WINHTTP_NET_UTIL_H_
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 #include <winhttp.h>
 
 #include <ostream>

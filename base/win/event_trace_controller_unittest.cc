@@ -4,6 +4,8 @@
 //
 // Unit tests for event trace controller.
 
+#include "base/win/event_trace_controller.h"
+
 #include <objbase.h>
 
 #include <initguid.h>  // NOLINT - has to be last
@@ -16,7 +18,6 @@
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/win/event_trace_controller.h"
 #include "base/win/event_trace_provider.h"
 #include "base/win/scoped_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"

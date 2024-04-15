@@ -19,8 +19,9 @@
 
 #define INITGUID
 
-#include <hidclass.h>
 #include <windows.h>
+
+#include <hidclass.h>
 
 extern "C" {
 #include <hidsdi.h>

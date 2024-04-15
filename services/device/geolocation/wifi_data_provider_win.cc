@@ -5,6 +5,7 @@
 #include "services/device/geolocation/wifi_data_provider_win.h"
 
 #include <windows.h>
+
 #include <winioctl.h>
 #include <wlanapi.h>
 

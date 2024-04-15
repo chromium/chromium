@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/storage_monitor/storage_monitor_win.h"
+
 #include <windows.h>
+
 #include <dbt.h>
 #include <stddef.h>
 
@@ -21,7 +24,6 @@
 #include "components/storage_monitor/portable_device_watcher_win.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_info.h"
-#include "components/storage_monitor/storage_monitor_win.h"
 #include "components/storage_monitor/test_portable_device_watcher_win.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor_win.h"

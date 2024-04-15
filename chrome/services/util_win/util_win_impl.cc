@@ -5,6 +5,7 @@
 #include "chrome/services/util_win/util_win_impl.h"
 
 #include <objbase.h>
+
 #include <shldisp.h>
 #include <wrl/client.h>
 

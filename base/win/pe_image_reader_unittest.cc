@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/win/pe_image_reader.h"
+
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 #include <wintrust.h>
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/win/pe_image_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

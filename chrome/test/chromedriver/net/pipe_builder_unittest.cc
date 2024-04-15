@@ -9,8 +9,9 @@
 #include "base/compiler_specific.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <fcntl.h>
 #include <windows.h>
+
+#include <fcntl.h>
 #endif
 
 #include "base/command_line.h"

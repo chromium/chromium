@@ -4,13 +4,13 @@
 
 #include "chrome/common/conflicts/module_watcher_win.h"
 
+#include <windows.h>
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 class ModuleWatcherTest : public testing::Test {
  public:

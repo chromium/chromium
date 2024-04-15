@@ -12,8 +12,9 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <ntstatus.h>
 #include <windows.h>
+
+#include <ntstatus.h>
 
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"

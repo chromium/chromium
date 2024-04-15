@@ -6,6 +6,7 @@
 #define UI_GL_DIRECT_COMPOSITION_CHILD_SURFACE_WIN_H_
 
 #include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
 #include <wrl/client.h>

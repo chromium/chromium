@@ -4,8 +4,9 @@
 
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <memory>
 

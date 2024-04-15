@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string.h>
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+
 #include <windows.h>
+
+#include <string.h>
 
 #include <memory>
 #include <utility>
@@ -26,7 +29,6 @@
 #include "base/win/windows_types.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"

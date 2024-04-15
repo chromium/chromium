@@ -4,10 +4,11 @@
 
 #include "chrome/install_static/install_util.h"
 
+#include <windows.h>
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <limits>

@@ -5,10 +5,10 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_IACCESSIBLE2_SCOPED_CO_MEM_ARRAY_H_
 #define UI_ACCESSIBILITY_PLATFORM_IACCESSIBLE2_SCOPED_CO_MEM_ARRAY_H_
 
+#include <objbase.h>
+
 #include <cstddef>
 #include <utility>
-
-#include <objbase.h>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"

@@ -4,12 +4,12 @@
 
 #include "sandbox/win/src/app_container_base.h"
 
-#include <memory>
-#include <utility>
-
 #include <windows.h>
 
 #include <userenv.h>
+
+#include <memory>
+#include <utility>
 
 #include "base/win/security_descriptor.h"
 #include "sandbox/win/src/acl.h"

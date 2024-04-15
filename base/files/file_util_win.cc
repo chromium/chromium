@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 
 #include <windows.h>
+#include <winsock2.h>
 
 #include <io.h>
 #include <psapi.h>
@@ -13,7 +14,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
-#include <winsock2.h>
 
 #include <algorithm>
 #include <limits>

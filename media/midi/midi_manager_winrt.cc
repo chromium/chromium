@@ -9,13 +9,14 @@
 
 #define INITGUID
 
+#include <objbase.h>
+
+#include <initguid.h>
 #include <windows.h>
 
 #include <cfgmgr32.h>
 #include <comdef.h>
 #include <devpkey.h>
-#include <initguid.h>
-#include <objbase.h>
 #include <robuffer.h>
 #include <windows.devices.enumeration.h>
 #include <windows.devices.midi.h>

@@ -5,6 +5,7 @@
 #include "base/test/file_path_reparse_point_win.h"
 
 #include <windows.h>
+
 #include <winioctl.h>
 
 #include <utility>

@@ -5,8 +5,9 @@
 #ifndef UI_BASE_IME_WIN_TSF_BRIDGE_H_
 #define UI_BASE_IME_WIN_TSF_BRIDGE_H_
 
-#include <msctf.h>
 #include <windows.h>
+
+#include <msctf.h>
 #include <wrl/client.h>
 
 #include <memory>

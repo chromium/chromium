@@ -4,8 +4,9 @@
 
 #include "components/winhttp/scoped_hinternet.h"
 
-#include <versionhelpers.h>
 #include <windows.h>
+
+#include <versionhelpers.h>
 
 #include <string_view>
 #include <utility>

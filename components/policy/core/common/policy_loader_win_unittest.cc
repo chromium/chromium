@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_loader_win.h"
 
 #include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <userenv.h>

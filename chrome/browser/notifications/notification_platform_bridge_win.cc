@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
 
 #include <objbase.h>
+
 #include <wrl/event.h>
 
 #include <map>

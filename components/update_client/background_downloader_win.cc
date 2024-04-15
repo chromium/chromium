@@ -5,10 +5,12 @@
 #include "components/update_client/background_downloader_win.h"
 
 #include <objbase.h>
+
+#include <windows.h>
+
 #include <shlobj_core.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 #include <winerror.h>
 
 #include <limits>

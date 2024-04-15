@@ -5,9 +5,10 @@
 #ifndef MEDIA_BASE_WIN_MEDIA_FOUNDATION_CDM_PROXY_H_
 #define MEDIA_BASE_WIN_MEDIA_FOUNDATION_CDM_PROXY_H_
 
+#include <unknwn.h>
+
 #include <mfobjects.h>
 #include <stdint.h>
-#include <unknwn.h>
 #include <windef.h>
 
 #include "base/memory/ref_counted.h"

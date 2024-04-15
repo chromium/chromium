@@ -4,9 +4,10 @@
 
 #include "media/capture/video/win/video_capture_device_win.h"
 
+#include <objbase.h>
+
 #include <ks.h>
 #include <ksmedia.h>
-#include <objbase.h>
 
 #include <algorithm>
 #include <list>

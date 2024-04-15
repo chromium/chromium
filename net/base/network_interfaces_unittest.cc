@@ -16,10 +16,12 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include <net/if.h>
 #elif BUILDFLAG(IS_WIN)
+#include <objbase.h>
+
 #include <windows.h>
 
 #include <iphlpapi.h>
-#include <objbase.h>
+
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
 #endif

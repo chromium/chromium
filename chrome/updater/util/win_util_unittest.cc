@@ -5,10 +5,12 @@
 #include "chrome/updater/util/win_util.h"
 
 #include <objbase.h>
+
+#include <windows.h>
+
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
-#include <windows.h>
 
 #include <optional>
 #include <string>

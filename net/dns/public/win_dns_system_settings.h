@@ -6,6 +6,7 @@
 #define NET_DNS_PUBLIC_WIN_DNS_SYSTEM_SETTINGS_H_
 
 #include <winsock2.h>
+
 #include <iphlpapi.h>
 #include <iptypes.h>
 

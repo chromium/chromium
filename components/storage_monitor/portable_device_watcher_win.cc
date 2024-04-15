@@ -8,8 +8,9 @@
 
 #include "components/storage_monitor/portable_device_watcher_win.h"
 
-#include <dbt.h>
 #include <objbase.h>
+
+#include <dbt.h>
 #include <portabledevice.h>
 #include <wrl/client.h>
 

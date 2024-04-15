@@ -5,23 +5,21 @@
 #include "chrome/browser/media/router/discovery/discovery_network_list_win.h"
 
 #include <winsock2.h>
-#include <wrl/client.h>
 
 #include <windot11.h>  // NOLINT
 #include <wlanapi.h>   // NOLINT
+#include <wrl/client.h>
 
 #include <algorithm>
 #include <cstring>
-
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/threading/scoped_thread_priority.h"
-
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"

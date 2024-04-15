@@ -4,8 +4,9 @@
 
 #include "ui/gfx/win/hwnd_util.h"
 
-#include <dwmapi.h>  // DWMWA_CLOAKED
 #include <windows.h>
+
+#include <dwmapi.h>  // DWMWA_CLOAKED
 
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/logging.h"

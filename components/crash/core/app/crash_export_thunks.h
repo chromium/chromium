@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_CRASH_CORE_APP_CRASH_EXPORT_THUNKS_H_
 #define COMPONENTS_CRASH_CORE_APP_CRASH_EXPORT_THUNKS_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <time.h>
-#include <windows.h>
 
 #include "build/build_config.h"
 

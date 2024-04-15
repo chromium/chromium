@@ -5,6 +5,7 @@
 #include "ui/display/win/screen_win.h"
 
 #include <windows.h>
+
 #include <inttypes.h>
 #include <stddef.h>
 

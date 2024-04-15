@@ -4,6 +4,8 @@
 
 #include "base/files/file.h"
 
+#include <windows.h>
+
 #include <io.h>
 #include <stdint.h>
 
@@ -16,8 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
-
-#include <windows.h>
 
 namespace base {
 

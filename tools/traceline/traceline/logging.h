@@ -6,6 +6,7 @@
 #define TRACELINE_LOGGING_H_
 
 #include <windows.h>
+
 #include <stdio.h>
 
 #define CHECK(exp, ...) \

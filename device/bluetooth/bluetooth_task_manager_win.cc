@@ -4,8 +4,9 @@
 
 #include "device/bluetooth/bluetooth_task_manager_win.h"
 
-#include <stddef.h>
 #include <winsock2.h>
+
+#include <stddef.h>
 
 #include <memory>
 #include <string>

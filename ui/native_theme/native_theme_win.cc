@@ -4,11 +4,12 @@
 
 #include "ui/native_theme/native_theme_win.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <uxtheme.h>
 #include <vsstyle.h>
 #include <vssym32.h>
-#include <windows.h>
 
 #include <optional>
 #include <tuple>

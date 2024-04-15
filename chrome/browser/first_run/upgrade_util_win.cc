@@ -4,10 +4,10 @@
 
 #include "chrome/browser/first_run/upgrade_util_win.h"
 
-// Must be first.
+#include <objbase.h>
+
 #include <windows.h>
 
-#include <objbase.h>
 #include <psapi.h>
 #include <shellapi.h>
 #include <wrl/client.h>

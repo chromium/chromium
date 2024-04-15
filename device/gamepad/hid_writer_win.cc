@@ -5,9 +5,10 @@
 #include "device/gamepad/hid_writer_win.h"
 
 #include <Unknwn.h>
+#include <windows.h>
+
 #include <WinDef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include "base/strings/string_util_win.h"
 

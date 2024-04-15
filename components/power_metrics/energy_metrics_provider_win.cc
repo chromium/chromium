@@ -4,11 +4,10 @@
 
 #include "components/power_metrics/energy_metrics_provider_win.h"
 
+#include <initguid.h>
 #include <windows.h>
+
 #include <devioctl.h>
-
-#include <initguid.h>  // This has to be before emi.h
-
 #include <emi.h>
 #include <setupapi.h>
 

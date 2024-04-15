@@ -8,7 +8,6 @@
 #include <oleacc.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <iostream>
@@ -33,6 +32,8 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
+
+#include <uiautomation.h>
 
 namespace {
 

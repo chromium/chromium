@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <wtsapi32.h>
 #endif  // BUILDFLAG(IS_WIN)
 

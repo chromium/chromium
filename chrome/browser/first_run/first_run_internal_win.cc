@@ -5,6 +5,7 @@
 #include "chrome/browser/first_run/first_run_internal.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 #include <stdint.h>
 

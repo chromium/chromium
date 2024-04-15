@@ -4,8 +4,9 @@
 
 #include "chrome/browser/win/chrome_process_finder.h"
 
-#include <shellapi.h>
 #include <windows.h>
+
+#include <shellapi.h>
 
 #include <string>
 #include <string_view>

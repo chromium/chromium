@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/core/broker.h"
+
 #include <windows.h>
 
 #include <limits>
@@ -11,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "mojo/core/broker.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/platform_handle_utils.h"

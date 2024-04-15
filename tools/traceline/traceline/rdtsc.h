@@ -6,6 +6,7 @@
 #define TRACELINE_RDTSC_H_
 
 #include <windows.h>
+
 #include <powrprof.h>
 
 #include "logging.h"

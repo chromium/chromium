@@ -4,10 +4,12 @@
 
 #include "media/audio/win/device_enumeration_win.h"
 
-#include <MMDeviceAPI.h>
-#include <mmsystem.h>
 #include <objbase.h>
-#include <Functiondiscoverykeys_devpkey.h>  // MMDeviceAPI.h must come first
+
+#include <MMDeviceAPI.h>
+
+#include <Functiondiscoverykeys_devpkey.h>
+#include <mmsystem.h>
 #include <stddef.h>
 #include <wrl/client.h>
 

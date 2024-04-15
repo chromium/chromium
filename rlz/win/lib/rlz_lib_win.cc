@@ -5,9 +5,8 @@
 // A library to manage RLZ information for access-points shared
 // across different client applications.
 
-#include "rlz/lib/machine_deal_win.h"
-
 #include <windows.h>
+
 #include <aclapi.h>
 #include <stddef.h>
 #include <winerror.h>
@@ -16,6 +15,7 @@
 
 #include "base/win/registry.h"
 #include "rlz/lib/assert.h"
+#include "rlz/lib/machine_deal_win.h"
 #include "rlz/lib/rlz_value_store.h"
 #include "rlz/win/lib/machine_deal.h"
 #include "rlz/win/lib/rlz_value_store_registry.h"

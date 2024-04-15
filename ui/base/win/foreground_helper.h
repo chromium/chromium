@@ -5,11 +5,11 @@
 #ifndef UI_BASE_WIN_FOREGROUND_HELPER_H_
 #define UI_BASE_WIN_FOREGROUND_HELPER_H_
 
+#include <windows.h>
+
 #include "base/component_export.h"
 #include "base/notreached.h"
 #include "ui/gfx/win/window_impl.h"
-
-#include <windows.h>
 
 namespace ui {
 

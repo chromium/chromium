@@ -4,10 +4,10 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
-#include <windows.h>  // Must be in front of other Windows header files.
+#include <tchar.h>
+#include <windows.h>
 
 #include <psapi.h>
-#include <tchar.h>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"

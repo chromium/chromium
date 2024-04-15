@@ -4,12 +4,12 @@
 
 #include "base/process/kill.h"
 
-#include <algorithm>
-
 #include <windows.h>
 
 #include <io.h>
 #include <stdint.h>
+
+#include <algorithm>
 
 #include "base/logging.h"
 #include "base/notreached.h"

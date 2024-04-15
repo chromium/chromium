@@ -5,11 +5,11 @@
 #ifndef UI_GL_CHILD_WINDOW_WIN_H_
 #define UI_GL_CHILD_WINDOW_WIN_H_
 
+#include <windows.h>
+
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "ui/gl/gl_export.h"
-
-#include <windows.h>
 
 namespace gfx {
 class Size;

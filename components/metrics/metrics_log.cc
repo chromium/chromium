@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/current_module.h"
 #endif
 

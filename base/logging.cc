@@ -65,8 +65,9 @@
 #endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
-#include <io.h>
 #include <windows.h>
+
+#include <io.h>
 
 #include "base/win/win_util.h"
 

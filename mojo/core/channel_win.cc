@@ -4,8 +4,9 @@
 
 #include "mojo/core/channel.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <algorithm>
 #include <limits>

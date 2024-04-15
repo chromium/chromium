@@ -30,8 +30,9 @@
 #include "crypto/sha2.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <aclapi.h>
 #include <windows.h>
+
+#include <aclapi.h>
 
 #include "base/win/scoped_localalloc.h"
 #include "base/win/sid.h"

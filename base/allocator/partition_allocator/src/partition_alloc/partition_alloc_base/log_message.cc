@@ -25,10 +25,9 @@
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
 #if BUILDFLAG(IS_WIN)
-
-#include <io.h>
 #include <windows.h>
 
+#include <io.h>
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

@@ -5,12 +5,12 @@
 #ifndef CHROME_ELEVATION_SERVICE_ELEVATOR_H_
 #define CHROME_ELEVATION_SERVICE_ELEVATOR_H_
 
-#include <string>
-
 #include <windows.h>
 
 #include <wrl/implements.h>
 #include <wrl/module.h>
+
+#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"

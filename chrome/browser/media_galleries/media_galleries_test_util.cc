@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif  // BUILDFLAG(IS_WIN)

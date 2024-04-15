@@ -4,9 +4,9 @@
 
 #include "chrome/installer/mini_installer/delete_with_retry.h"
 
-#include <utility>
-
 #include <windows.h>
+
+#include <utility>
 
 namespace mini_installer {
 

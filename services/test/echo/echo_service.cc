@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <winevt.h>
 
 #include "base/native_library.h"

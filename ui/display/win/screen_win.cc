@@ -4,8 +4,9 @@
 
 #include "ui/display/win/screen_win.h"
 
-#include <shellscalingapi.h>
 #include <windows.h>
+
+#include <shellscalingapi.h>
 
 #include <algorithm>
 #include <optional>

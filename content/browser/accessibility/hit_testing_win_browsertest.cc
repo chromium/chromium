@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_HIT_TESTING_WIN_BROWSERTEST_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_HIT_TESTING_WIN_BROWSERTEST_H_
 
-#include "content/browser/accessibility/hit_testing_browsertest.h"
+#include <objbase.h>
+
+#include <wrl/client.h>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/hit_testing_browsertest.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -18,9 +21,7 @@
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/accessibility_features.h"
 
-#include <objbase.h>
 #include <uiautomation.h>
-#include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
 

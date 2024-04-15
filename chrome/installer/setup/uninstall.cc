@@ -6,9 +6,10 @@
 
 #include "chrome/installer/setup/uninstall.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <initializer_list>
 #include <memory>

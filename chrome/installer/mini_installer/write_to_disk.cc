@@ -4,8 +4,9 @@
 
 #include "chrome/installer/mini_installer/write_to_disk.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <algorithm>
 

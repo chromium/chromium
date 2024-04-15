@@ -4,10 +4,11 @@
 
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 
-#include <iphlpapi.h>
-#include <wincred.h>  // For <ntsecapi.h>
 #include <windows.h>
 #include <winsock2.h>
+
+#include <iphlpapi.h>
+#include <wincred.h>  // For <ntsecapi.h>
 #include <winternl.h>
 
 #include <string>

@@ -4,11 +4,13 @@
 
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 
-#include <coml2api.h>
 #include <objbase.h>
+
+#include <shobjidl.h>
+
+#include <coml2api.h>
 #include <objidl.h>
 #include <shlobj.h>
-#include <shobjidl.h>
 #include <stdint.h>
 #include <wrl/client.h>
 

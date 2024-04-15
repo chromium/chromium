@@ -10,6 +10,7 @@
 #define SANDBOX_WIN_SRC_INTERCEPTION_AGENT_H_
 
 #include <windows.h>
+
 #include <winternl.h>
 
 #include "base/memory/raw_ptr_exclusion.h"

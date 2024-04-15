@@ -4,8 +4,9 @@
 
 #include "base/test/test_reg_util_win.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <string_view>
 

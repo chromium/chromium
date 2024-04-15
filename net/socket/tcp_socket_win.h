@@ -5,8 +5,9 @@
 #ifndef NET_SOCKET_TCP_SOCKET_WIN_H_
 #define NET_SOCKET_TCP_SOCKET_WIN_H_
 
-#include <stdint.h>
 #include <winsock2.h>
+
+#include <stdint.h>
 
 #include <memory>
 

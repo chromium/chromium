@@ -5,9 +5,10 @@
 #ifndef BASE_WIN_PE_IMAGE_READER_H_
 #define BASE_WIN_PE_IMAGE_READER_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <memory>
 

@@ -5,10 +5,11 @@
 // These tests have been added to specifically tests issues arising from (A)LPC
 // lock down.
 
-#include <algorithm>
-
 #include <windows.h>
+
 #include <winioctl.h>
+
+#include <algorithm>
 
 #include "build/build_config.h"
 #include "sandbox/win/src/heap_helper.h"

@@ -4,11 +4,12 @@
 
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 
+#include <objbase.h>
+
 #include <codecapi.h>
 #include <d3d11_1.h>
 #include <mferror.h>
 #include <mftransform.h>
-#include <objbase.h>
 
 #include <algorithm>
 #include <iterator>

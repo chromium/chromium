@@ -5,10 +5,10 @@
 #include "sandbox/win/src/filesystem_policy.h"
 
 #include <windows.h>
-#include <winternl.h>
 
 #include <ntstatus.h>
 #include <stdint.h>
+#include <winternl.h>
 
 #include <string>
 

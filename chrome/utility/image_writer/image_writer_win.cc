@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/utility/image_writer/image_writer.h"
+
 #include <windows.h>
+
 #include <setupapi.h>
 #include <stddef.h>
 #include <winioctl.h>
 
 #include "base/logging.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
-#include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {
 

@@ -39,9 +39,10 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <fcntl.h>
 #include <io.h>
-#include <windows.h>
 #endif
 
 namespace content {

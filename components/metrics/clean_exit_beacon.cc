@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"

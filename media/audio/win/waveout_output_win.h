@@ -6,8 +6,9 @@
 #define MEDIA_AUDIO_WIN_WAVEOUT_OUTPUT_WIN_H_
 
 #include <windows.h>
-#include <mmsystem.h>
+
 #include <mmreg.h>
+#include <mmsystem.h>
 #include <stddef.h>
 #include <stdint.h>
 

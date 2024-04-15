@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/direct_manipulation_helper_win.h"
-
 #include <objbase.h>
 
+#include "content/browser/renderer_host/direct_manipulation_helper_win.h"
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"

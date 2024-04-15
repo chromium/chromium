@@ -5,6 +5,7 @@
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 
 #include <windows.h>
+
 #include <softpub.h>
 #include <stddef.h>
 #include <stdint.h>

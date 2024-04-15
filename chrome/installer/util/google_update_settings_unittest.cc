@@ -4,8 +4,9 @@
 
 #include "chrome/installer/util/google_update_settings.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <memory>
 #include <string_view>

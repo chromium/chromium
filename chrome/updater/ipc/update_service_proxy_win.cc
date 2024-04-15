@@ -5,6 +5,7 @@
 #include "chrome/updater/ipc/update_service_proxy_win.h"
 
 #include <windows.h>
+
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

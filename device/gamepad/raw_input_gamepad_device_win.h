@@ -6,11 +6,12 @@
 #define DEVICE_GAMEPAD_RAW_INPUT_GAMEPAD_DEVICE_WIN_H_
 
 #include <Unknwn.h>
+#include <windows.h>
+
 #include <WinDef.h>
 #include <hidsdi.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <memory>
 #include <optional>

@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UTIL_WIN_UTIL_H_
 
 #include <windows.h>
+
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

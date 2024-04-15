@@ -4,8 +4,9 @@
 
 #include "chrome/updater/win/app_command_runner.h"
 
-#include <shellapi.h>
 #include <windows.h>
+
+#include <shellapi.h>
 
 #include <optional>
 #include <string>

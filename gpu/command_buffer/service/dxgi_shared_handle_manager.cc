@@ -4,8 +4,9 @@
 
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 
-#include <d3d11_1.h>
 #include <windows.h>
+
+#include <d3d11_1.h>
 
 #include "base/atomic_ref_count.h"
 #include "base/logging.h"

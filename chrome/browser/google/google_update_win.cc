@@ -5,6 +5,7 @@
 #include "chrome/browser/google/google_update_win.h"
 
 #include <objbase.h>
+
 #include <stdint.h>
 #include <string.h>
 

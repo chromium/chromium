@@ -4,8 +4,9 @@
 
 #include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
 
-#include <wbemidl.h>
 #include <windows.h>
+
+#include <wbemidl.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

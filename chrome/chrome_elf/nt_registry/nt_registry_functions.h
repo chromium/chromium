@@ -6,6 +6,7 @@
 #define CHROME_CHROME_ELF_NT_REGISTRY_NT_REGISTRY_FUNCTIONS_H_
 
 #include <windows.h>
+
 #include <winternl.h>
 
 typedef enum _KEY_VALUE_INFORMATION_CLASS {

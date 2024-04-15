@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <math.h>
 #include <objbase.h>
+
+#include <math.h>
 #include <sapi.h>
 #include <stdint.h>
 #include <wrl/client.h>

@@ -5,9 +5,10 @@
 #ifndef PRINTING_EMF_WIN_H_
 #define PRINTING_EMF_WIN_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <memory>
 #include <vector>

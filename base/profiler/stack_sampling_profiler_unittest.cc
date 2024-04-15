@@ -39,9 +39,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <intrin.h>
 #include <malloc.h>
-#include <windows.h>
 #else
 #include <alloca.h>
 #endif

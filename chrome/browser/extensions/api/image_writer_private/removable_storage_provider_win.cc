@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 
 #include <windows.h>
+
 #include <setupapi.h>
 
 // LogSeverity is both a macro in setupapi.h and a typedef in base/logging.h

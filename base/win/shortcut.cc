@@ -5,6 +5,7 @@
 #include "base/win/shortcut.h"
 
 #include <objbase.h>
+
 #include <propkey.h>
 #include <shlobj.h>
 #include <wrl/client.h>

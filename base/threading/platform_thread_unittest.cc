@@ -20,6 +20,7 @@
 #include "base/threading/platform_thread_internal_posix.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/threading/platform_thread_win.h"
 #endif
 

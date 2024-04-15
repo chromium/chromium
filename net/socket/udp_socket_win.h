@@ -5,9 +5,10 @@
 #ifndef NET_SOCKET_UDP_SOCKET_WIN_H_
 #define NET_SOCKET_UDP_SOCKET_WIN_H_
 
+#include <winsock2.h>
+
 #include <qos2.h>
 #include <stdint.h>
-#include <winsock2.h>
 
 // Must be after winsock2.h:
 #include <MSWSock.h>

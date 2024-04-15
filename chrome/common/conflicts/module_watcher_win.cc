@@ -5,6 +5,7 @@
 #include "chrome/common/conflicts/module_watcher_win.h"
 
 #include <windows.h>
+
 #include <tlhelp32.h>
 #include <winternl.h>  // For UNICODE_STRING.
 

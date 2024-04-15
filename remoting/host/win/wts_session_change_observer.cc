@@ -5,6 +5,7 @@
 #include "remoting/host/win/wts_session_change_observer.h"
 
 #include <windows.h>
+
 #include <winuser.h>
 #include <wtsapi32.h>
 

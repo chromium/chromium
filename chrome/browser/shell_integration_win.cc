@@ -4,11 +4,12 @@
 
 #include "chrome/browser/shell_integration_win.h"
 
+#include <objbase.h>
+
 #include <shobjidl.h>
 #include <windows.h>
 
-#include <objbase.h>
-#include <propkey.h>  // Needs to come after shobjidl.h.
+#include <propkey.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <wrl/client.h>

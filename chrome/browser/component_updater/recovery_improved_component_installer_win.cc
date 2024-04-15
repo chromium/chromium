@@ -6,6 +6,7 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #include <windows.h>
+
 #include <wrl/client.h>
 
 #include <tuple>

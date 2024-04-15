@@ -6,6 +6,7 @@
 #define CHROME_ELEVATION_SERVICE_SERVICE_MAIN_H_
 
 #include <windows.h>
+
 #include <wrl/implements.h>
 
 #include "base/no_destructor.h"

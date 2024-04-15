@@ -5,8 +5,9 @@
 #ifndef UI_GL_VSYNC_THREAD_WIN_H_
 #define UI_GL_VSYNC_THREAD_WIN_H_
 
-#include <d3d11.h>
 #include <windows.h>
+
+#include <d3d11.h>
 #include <wrl/client.h>
 
 #include "base/containers/flat_set.h"

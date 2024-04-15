@@ -4,9 +4,10 @@
 
 #include "services/device/generic_sensor/platform_sensor_reader_win.h"
 
+#include <objbase.h>
+
 #include <Sensors.h>
 #include <comdef.h>
-#include <objbase.h>
 #include <wrl/implements.h>
 
 #include <iomanip>

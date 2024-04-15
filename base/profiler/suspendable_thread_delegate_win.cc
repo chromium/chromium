@@ -5,6 +5,7 @@
 #include "base/profiler/suspendable_thread_delegate_win.h"
 
 #include <windows.h>
+
 #include <winternl.h>
 
 #include <vector>

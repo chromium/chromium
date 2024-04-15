@@ -5,8 +5,9 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 
 #include <windows.h>
-#include <winternl.h>
+
 #include <lm.h>  // Needed for PNTSTATUS
+#include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <MDMRegistration.h>  // For RegisterDeviceWithManagement()

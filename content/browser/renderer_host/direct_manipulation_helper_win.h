@@ -9,6 +9,7 @@
 
 #include <directmanipulation.h>
 #include <wrl.h>
+
 #include <memory>
 #include <string>
 

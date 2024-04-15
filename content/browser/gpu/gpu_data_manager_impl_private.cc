@@ -7,9 +7,10 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <aclapi.h>
 #include <sddl.h>
-#include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
 #include <array>

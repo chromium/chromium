@@ -53,6 +53,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <objbase.h>
+
 #include "media/gpu/windows/mf_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif  //  BUILDFLAG(IS_WIN)

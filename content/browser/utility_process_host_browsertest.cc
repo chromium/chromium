@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/win/src/sandbox_types.h"
 #endif  // BUILDFLAG(IS_WIN)

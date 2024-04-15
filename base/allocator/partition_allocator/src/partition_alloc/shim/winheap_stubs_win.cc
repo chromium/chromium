@@ -8,9 +8,10 @@
 
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
+#include <windows.h>
+
 #include <malloc.h>
 #include <new.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <bit>

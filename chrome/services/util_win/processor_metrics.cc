@@ -5,6 +5,7 @@
 #include "chrome/services/util_win/processor_metrics.h"
 
 #include <objbase.h>
+
 #include <sysinfoapi.h>
 #include <wbemidl.h>
 #include <winbase.h>

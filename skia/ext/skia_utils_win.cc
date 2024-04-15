@@ -4,8 +4,9 @@
 
 #include "skia/ext/skia_utils_win.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include "base/check_op.h"
 #include "base/debug/gdi_debug_util_win.h"

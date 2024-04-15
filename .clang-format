@@ -46,7 +46,7 @@ IncludeCategories:
     Priority:        5
 # ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeismainregex
 IncludeIsMainRegex: "\
-(_(android|apple|chromeos|freebsd|fuchsia|fuzzer|ios|linux|mac|nacl|openbsd|posix|stubs?|win))?\
+(_(32|64|android|apple|chromeos|freebsd|fuchsia|fuzzer|ios|linux|mac|nacl|openbsd|posix|stubs?|win))?\
 (_(unit|browser|perf)?tests?)?$"
 
 # Make sure code like:

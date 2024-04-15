@@ -5,9 +5,10 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_WIN_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_WIN_H_
 
+#include <windows.h>
+
 #include <netlistmgr.h>
 #include <ocidl.h>
-#include <windows.h>
 #include <wrl.h>
 #include <wrl/client.h>
 

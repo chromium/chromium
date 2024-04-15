@@ -4,15 +4,16 @@
 
 #include "remoting/host/input_injector.h"
 
-#include <stdint.h>
 #include <windows.h>
 
+#include <stdint.h>
+
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"

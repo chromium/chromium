@@ -33,11 +33,11 @@
 
 #include "base/time/time.h"
 
-#include <windows.foundation.h>
 #include <windows.h>
 
 #include <mmsystem.h>
 #include <stdint.h>
+#include <windows.foundation.h>
 
 #include <atomic>
 #include <ostream>

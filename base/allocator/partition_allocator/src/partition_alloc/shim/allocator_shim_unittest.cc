@@ -23,8 +23,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <malloc.h>
 #include <windows.h>
+
+#include <malloc.h>
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 

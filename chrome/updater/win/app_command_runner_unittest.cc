@@ -4,9 +4,10 @@
 
 #include "chrome/updater/win/app_command_runner.h"
 
+#include <windows.h>
+
 #include <shellapi.h>
 #include <shlobj.h>
-#include <windows.h>
 
 #include <array>
 #include <optional>

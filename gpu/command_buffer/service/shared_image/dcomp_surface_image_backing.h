@@ -5,12 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DCOMP_SURFACE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DCOMP_SURFACE_IMAGE_BACKING_H_
 
-#include <d3d11.h>
-#include <dcomp.h>
 #include <windows.h>
-#include <wrl/client.h>
 
+#include <d3d11.h>
 #include <dawn/native/D3DBackend.h>
+#include <dcomp.h>
+#include <wrl/client.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_representation.h"

@@ -4,9 +4,10 @@
 
 #include "components/zucchini/exception_filter_helper_win.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <map>
 

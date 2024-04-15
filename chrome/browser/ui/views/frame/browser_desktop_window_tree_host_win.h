@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_WIN_H_
 
 #include <shobjidl.h>
+
 #include <wrl/client.h>
 
 #include <memory>

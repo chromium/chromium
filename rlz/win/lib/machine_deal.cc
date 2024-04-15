@@ -7,6 +7,7 @@
 #include "rlz/win/lib/machine_deal.h"
 
 #include <windows.h>
+
 #include <stddef.h>
 
 #include <vector>

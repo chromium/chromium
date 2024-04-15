@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/installer/setup/brand_behaviors.h"
-
 #include <windows.h>
 
 #include <shellapi.h>
@@ -24,6 +22,7 @@
 #include "base/win/wmi.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/setup/brand_behaviors.h"
 #include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chrome/installer/util/install_util.h"
