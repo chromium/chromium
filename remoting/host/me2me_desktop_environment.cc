@@ -136,6 +136,9 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
       capabilities += protocol::kClientControlledLayoutCapability;
     }
   }
+#elif BUILDFLAG(IS_MAC)
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
 #endif  // BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
 
   return capabilities;
