@@ -666,6 +666,11 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
                             GetSheetType(), SheetType::COUNT);
 
+  // This may have been set to false when the user triggers the use other
+  // account pop-up on the modal to prevent dismissing when the user closes the
+  // pop-up. However if the user clicks cancel, we should dismiss so we should
+  // set this back to true.
+  notify_delegate_of_dismiss_ = true;
   GetDialogWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }

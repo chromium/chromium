@@ -1431,6 +1431,34 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   CreateAndShowPopupWindow(*controller);
 }
 
+// Test user triggering the use another account flow then clicking on the cancel
+// button in the modal without completing the use other account flow.
+TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate the user clicking "cancel" button. This should close the widget.
+  observer->OnCloseButtonClicked(CreateMouseEvent());
+  EXPECT_TRUE(dialog_widget_->IsClosed());
+}
+
 // Tests that the error dialog can be shown.
 TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogShown) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
