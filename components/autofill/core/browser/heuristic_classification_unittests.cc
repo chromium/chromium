@@ -626,13 +626,18 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   // Replace \r\n on windows with \n to get a canonical representation.
   base::RemoveChars(*output_json_text, "\r", &(*output_json_text));
 
-  // Write output if and only if it is different.
-  if (input_json_text != output_json_text) {
     base::FilePath output_file =
         GetParam().AddExtension(FILE_PATH_LITERAL(".new"));
-    LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
-    EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
-  }
+    if (input_json_text != output_json_text) {
+      // Write output if and only if it is different.
+      LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
+      EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
+    } else {
+      // If output is as expected, delete stale .new files.
+      if (base::PathExists(output_file)) {
+        base::DeleteFile(output_file);
+      }
+    }
 
   EXPECT_EQ(old_stats, new_stats);
 
