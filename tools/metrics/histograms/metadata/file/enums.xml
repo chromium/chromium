@@ -438,6 +438,10 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="HTTP_CONFLICT"/>
   <int value="36" label="HTTP_TOO_MANY_REQUESTS"/>
   <int value="37" label="HTTP_SERVICE_UNAVAILABLE"/>
+  <int value="38" label="THROTTLING_TENANT_APPLICATION"/>
+  <int value="39" label="THROTTLING_TENANT"/>
+  <int value="40" label="THROTTLING_APPLICATION"/>
+  <int value="41" label="THROTTLING_UNKNOWN"/>
 </enum>
 
 <enum name="FileSystemProviderMountType">
