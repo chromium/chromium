@@ -2416,6 +2416,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_tabPanel() {
+        performHtmlTest("tab-panel.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_textAlign() {
         performHtmlTest("text-align.html");
     }

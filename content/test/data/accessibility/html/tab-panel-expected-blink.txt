@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tab name='First Tab' selected=true controlsIds=tabPanel
+++++++++staticText name='First Tab'
+++++++++++inlineTextBox
+++++++tab name='Second Tab' selected=false controlsIds=
+++++++++staticText name='Second Tab'
+++++++++++inlineTextBox
+++++++tab name='Third Tab' selected=false controlsIds=
+++++++++staticText name='Third Tab'
+++++++++++inlineTextBox
+++++++tabPanel name='First Tab'
+++++++++paragraph
+++++++++++staticText name='Content for the first panel, this should be read.'
+++++++++++++inlineTextBox

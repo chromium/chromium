@@ -3383,6 +3383,11 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("table-multiple-row-and-column-headers.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTabPanel) {
+  RunHtmlTest(FILE_PATH_LITERAL("tab-panel.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTextAlign) {
   RunHtmlTest(FILE_PATH_LITERAL("text-align.html"));
 }

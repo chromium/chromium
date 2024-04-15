@@ -1,0 +1,7 @@
+AXWebArea
+++AXRadioButton AXSubrole=AXTabButton AXTitle='First Tab' AXValue=1
+++AXRadioButton AXSubrole=AXTabButton AXTitle='Second Tab' AXValue=0
+++AXRadioButton AXSubrole=AXTabButton AXTitle='Third Tab' AXValue=0
+++AXGroup AXSubrole=AXTabPanel AXDescription='First Tab'
+++++AXGroup
+++++++AXStaticText AXValue='Content for the first panel, this should be read.'

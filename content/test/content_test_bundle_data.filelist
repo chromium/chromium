@@ -4821,6 +4821,15 @@ data/accessibility/html/svg-with-non-link-anchors-expected-blink.txt
 data/accessibility/html/svg-with-non-link-anchors-expected-fuchsia.txt
 data/accessibility/html/svg-with-non-link-anchors.html
 data/accessibility/html/svg.html
+data/accessibility/html/tab-panel-expected-android-assist-data.txt
+data/accessibility/html/tab-panel-expected-android-external.txt
+data/accessibility/html/tab-panel-expected-android.txt
+data/accessibility/html/tab-panel-expected-auralinux.txt
+data/accessibility/html/tab-panel-expected-blink.txt
+data/accessibility/html/tab-panel-expected-mac.txt
+data/accessibility/html/tab-panel-expected-uia-win.txt
+data/accessibility/html/tab-panel-expected-win.txt
+data/accessibility/html/tab-panel.html
 data/accessibility/html/tabindex-expose-children-expected-android-assist-data.txt
 data/accessibility/html/tabindex-expose-children-expected-android-external.txt
 data/accessibility/html/tabindex-expose-children-expected-android.txt
