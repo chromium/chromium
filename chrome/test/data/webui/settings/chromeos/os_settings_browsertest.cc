@@ -162,8 +162,8 @@ class OSSettingsMochaTestAppParentalControlsEnabled
  protected:
   OSSettingsMochaTestAppParentalControlsEnabled() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kAdditionalOnDeviceAppsParentalControls,
-         features::kForceAdditionalOnDeviceAppsParentalControlsAllRegions},
+        {features::kOnDeviceAppControls,
+         features::kForceOnDeviceAppControlsForAllRegions},
         {});
   }
 

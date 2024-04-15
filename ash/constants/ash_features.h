@@ -20,7 +20,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAdaptiveCharging);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAdaptiveChargingForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kAdditionalOnDeviceAppsParentalControls);
+BASE_DECLARE_FEATURE(kOnDeviceAppControls);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAdvancedDocumentScanAPI);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAllowAmbientEQ);
@@ -402,9 +402,9 @@ extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFingerprintAuthFactor);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFocusMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kForceAdditionalOnDeviceAppsParentalControlsAllRegions);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kForceOnDeviceAppControlsForAllRegions);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kForceReSyncDrive);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kForestFeature);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -930,13 +930,13 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool AreHelpAppWelcomeTipsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePromiseIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePromiseIconsForWebAppsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreSideAlignedToastsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ForceOnDeviceAppControlsForAllRegions();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoEnrollmentKioskInOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool Is16DesksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingForTestingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsAdditionalOnDeviceAppsParentalControlsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOnDeviceAppControlsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdvancedDocumentScanAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
@@ -1043,8 +1043,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexAutoEnrollmentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFocusModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsForceAdditionalOnDeviceAppsParentalControlsAllRegionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognitionForDev();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForceReSyncDriveEnabled();

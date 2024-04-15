@@ -1,0 +1,68 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
+
+#include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "base/no_destructor.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/on_device_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+
+namespace {
+constexpr char kServiceName[] = "AppsControlsService";
+}
+
+namespace ash {
+namespace on_device_controls {
+
+// static
+AppControlsServiceFactory* AppControlsServiceFactory::GetInstance() {
+  static base::NoDestructor<AppControlsServiceFactory> instance;
+  return instance.get();
+}
+
+// static
+bool AppControlsServiceFactory::IsOnDeviceAppControlsAvailable(
+    content::BrowserContext* context) {
+  // On device apps parental controls is only available for unmanaged consumer
+  // users.
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile);
+  if (profile->GetProfilePolicyConnector()->IsManaged() || profile->IsChild()) {
+    return false;
+  }
+
+  if (!features::IsOnDeviceAppControlsEnabled()) {
+    return false;
+  }
+
+  const std::string region = on_device_controls::GetDeviceRegionCode();
+  return on_device_controls::IsOnDeviceControlsRegion(region) ||
+         features::ForceOnDeviceAppControlsForAllRegions();
+}
+
+// static
+AppControlsService* AppControlsServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
+  return static_cast<AppControlsService*>(
+      GetInstance()->GetServiceForBrowserContext(context, true /* create */));
+}
+
+AppControlsServiceFactory::AppControlsServiceFactory()
+    : ProfileKeyedServiceFactory(kServiceName) {}
+
+AppControlsServiceFactory::~AppControlsServiceFactory() = default;
+
+std::unique_ptr<KeyedService>
+AppControlsServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return std::make_unique<AppControlsService>();
+}
+
+}  // namespace on_device_controls
+}  // namespace ash

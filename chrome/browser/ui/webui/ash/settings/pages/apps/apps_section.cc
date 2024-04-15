@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/child_accounts/on_device_controls/on_device_apps_parental_controls_service_factory.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -555,10 +555,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("privacyHubAppPermissionsV2Enabled",
                           features::IsCrosPrivacyHubAppPermissionsV2Enabled());
 
-  html_source->AddBoolean(
-      "isAppParentalControlsFeatureAvailable",
-      OnDeviceAppsParentalControlsServiceFactory::
-          IsOnDeviceAppsParentalControlsAvailable(profile()));
+  html_source->AddBoolean("isAppParentalControlsFeatureAvailable",
+                          on_device_controls::AppControlsServiceFactory::
+                              IsOnDeviceAppControlsAvailable(profile()));
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);
