@@ -28,7 +28,7 @@
 namespace {
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
-}
+}  // namespace
 
 TabSharingInfoBar::TabSharingInfoBar(
     std::unique_ptr<TabSharingInfoBarDelegate> delegate)
@@ -37,8 +37,9 @@ TabSharingInfoBar::TabSharingInfoBar(
   label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
 
-  const auto buttons = delegate_ptr->GetButtons();
-  const auto create_button = [&](TabSharingInfoBarDelegate::InfoBarButton type,
+  const int buttons = delegate_ptr->GetButtons();
+  const auto create_button = [&](TabSharingInfoBarDelegate::
+                                     TabSharingInfoBarButton type,
                                  void (TabSharingInfoBar::*click_function)(),
                                  int button_context =
                                      views::style::CONTEXT_BUTTON_MD) {

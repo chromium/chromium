@@ -48,7 +48,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     ui::ImageModel icon;
   };
 
-  enum InfoBarButton {
+  enum TabSharingInfoBarButton {
     kNone = 0,
     kStop = 1 << 0,
     kShareThisTabInstead = 1 << 1,
@@ -113,10 +113,10 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // TODO(crbug.com/1224363): Inline these methods into TabSharingInfoBar where
   // feasible or add comments to document their function better.
   std::u16string GetMessageText() const;
-  std::u16string GetButtonLabel(InfoBarButton button) const;
-  ui::ImageModel GetButtonImage(InfoBarButton button) const;
-  bool GetButtonEnabled(InfoBarButton button) const;
-  std::u16string GetButtonTooltip(InfoBarButton button) const;
+  std::u16string GetButtonLabel(TabSharingInfoBarButton button) const;
+  ui::ImageModel GetButtonImage(TabSharingInfoBarButton button) const;
+  bool GetButtonEnabled(TabSharingInfoBarButton button) const;
+  std::u16string GetButtonTooltip(TabSharingInfoBarButton button) const;
   int GetButtons() const;
 
   void Stop();

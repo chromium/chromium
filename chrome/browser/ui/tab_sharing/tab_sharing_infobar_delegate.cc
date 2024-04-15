@@ -356,7 +356,7 @@ std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
 }
 
 std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
-    InfoBarButton button) const {
+    TabSharingInfoBarButton button) const {
   switch (button) {
     case kNone:
       break;
@@ -386,7 +386,7 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
 }
 
 ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
-    InfoBarButton button) const {
+    TabSharingInfoBarButton button) const {
   switch (button) {
     case kNone:
       break;
@@ -411,7 +411,8 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
   NOTREACHED_NORETURN();
 }
 
-bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
+bool TabSharingInfoBarDelegate::GetButtonEnabled(
+    TabSharingInfoBarButton button) const {
   switch (button) {
     case kNone:
       break;
@@ -433,7 +434,7 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
 }
 
 std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
-    InfoBarButton button) const {
+    TabSharingInfoBarButton button) const {
   switch (button) {
     case kNone:
       break;

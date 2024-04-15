@@ -74,6 +74,8 @@ using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Mock;
 using ::testing::Values;
+using TabSharingInfoBarButton =
+    ::TabSharingInfoBarDelegate::TabSharingInfoBarButton;
 
 using CapturedSurfaceControllerFactoryCallback =
     ::base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
@@ -90,8 +92,8 @@ static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
 static const std::u16string kShareThisTabInsteadMessage =
     u"Share this tab instead";
 
-constexpr TabSharingInfoBarDelegate::InfoBarButton kCscIndicator =
-    TabSharingInfoBarDelegate::InfoBarButton::kCapturedSurfaceControlIndicator;
+constexpr TabSharingInfoBarButton kCscIndicator =
+    TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
@@ -227,15 +229,14 @@ bool HasCscIndicator(content::WebContents* web_contents) {
 
 bool HasShareThisTabInsteadButton(content::WebContents* web_contents) {
   return GetDelegate(web_contents)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead;
+         TabSharingInfoBarButton::kShareThisTabInstead;
 }
 
 std::u16string GetShareThisTabInsteadButtonLabel(
     content::WebContents* web_contents) {
   DCHECK(HasShareThisTabInsteadButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
-      ->GetButtonLabel(
-          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
+      ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {

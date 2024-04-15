@@ -53,9 +53,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
-
 using ::testing::_;
 using ::testing::Not;
+using TabSharingInfoBarButton =
+    ::TabSharingInfoBarDelegate::TabSharingInfoBarButton;
 
 content::WebContents* GetWebContents(Browser* browser, int tab) {
   return browser->tab_strip_model()->GetWebContentsAt(tab);
@@ -83,65 +84,61 @@ std::u16string GetInfobarMessageText(Browser* browser, int tab) {
 
 bool HasShareThisTabInsteadButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead;
+         TabSharingInfoBarButton::kShareThisTabInstead;
 }
 
 std::u16string GetShareThisTabInsteadButtonLabel(Browser* browser, int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(
-          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
+      ->GetButtonLabel(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 ui::ImageModel GetShareThisTabInsteadButtonImage(Browser* browser, int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(
-          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
+      ->GetButtonImage(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 bool ShareThisTabInsteadButtonIsEnabled(Browser* browser, int tab) {
   DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonEnabled(
-          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
+      ->GetButtonEnabled(TabSharingInfoBarButton::kShareThisTabInstead);
 }
 
 bool HasQuickNavButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::kQuickNav;
+         TabSharingInfoBarButton::kQuickNav;
 }
 
 std::u16string GetQuickNavButtonLabel(Browser* browser, int tab) {
   DCHECK(HasQuickNavButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
+      ->GetButtonLabel(TabSharingInfoBarButton::kQuickNav);
 }
 
 ui::ImageModel GetQuickNavButtonImage(Browser* browser, int tab) {
   DCHECK(HasQuickNavButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
+      ->GetButtonImage(TabSharingInfoBarButton::kQuickNav);
 }
 
 bool HasCscIndicatorButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::
-             kCapturedSurfaceControlIndicator;
+         TabSharingInfoBarButton::kCapturedSurfaceControlIndicator;
 }
 
 std::u16string GetCscIndicatorButtonLabel(Browser* browser, int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::
-                           kCapturedSurfaceControlIndicator);
+      ->GetButtonLabel(
+          TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
 }
 
 ui::ImageModel GetCscIndicatorButtonImage(Browser* browser, int tab) {
   DCHECK(HasCscIndicatorButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::
-                           kCapturedSurfaceControlIndicator);
+      ->GetButtonImage(
+          TabSharingInfoBarButton::kCapturedSurfaceControlIndicator);
 }
 
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
