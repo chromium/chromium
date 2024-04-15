@@ -26,8 +26,7 @@ class SetValueEffectSlider : public views::View {
   METADATA_HEADER(SetValueEffectSlider, views::View)
 
  public:
-  SetValueEffectSlider(VideoConferenceTrayController* controller,
-                       const VcHostedEffect* effect);
+  explicit SetValueEffectSlider(const VcHostedEffect* effect);
 
   SetValueEffectSlider(const SetValueEffectSlider&) = delete;
   SetValueEffectSlider& operator=(const SetValueEffectSlider&) = delete;

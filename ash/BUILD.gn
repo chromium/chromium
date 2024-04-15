@@ -3095,7 +3095,6 @@ component("ash") {
     "//ash/quick_pair/ui",
     "//ash/style",
     "//ash/system/mahi/resources:mahi_resources_grit",
-    "//ash/system/video_conference/resources:vc_resources_grit",
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/diagnostics_ui/mojom:mojom",
     "//ash/webui/eche_app_ui:eche_connection_status",

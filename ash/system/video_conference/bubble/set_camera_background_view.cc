@@ -11,9 +11,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
-#include "ash/system/video_conference/resources/grit/vc_resources.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#include "ash/system/video_conference/video_conference_utils.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/callback_helpers.h"
@@ -31,12 +29,9 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash::video_conference {
 
@@ -54,8 +49,9 @@ constexpr char kCreateWithAiButtonHistogramName[] =
 constexpr gfx::Insets kSetCameraBackgroundViewInsideBorderInsets =
     gfx::Insets::TLBR(10, 0, 0, 0);
 
-constexpr gfx::Insets kImageLabelContainerInsideBorderInsets =
-    gfx::Insets::TLBR(6, 0, 6, 0);
+// This extra border is added to `CreateImageButton` to make it consistent with
+// other buttons in the video conference bubble.
+constexpr gfx::Insets kCreateImageButtonBorderInsets = gfx::Insets::VH(8, 0);
 
 constexpr int kCreateImageButtonBetweenChildSpacing = 12;
 constexpr int kSetCameraBackgroundViewBetweenChildSpacing = 10;
@@ -92,21 +88,6 @@ gfx::Size CalculateWantedImageSize(const int index, int image_count) {
 
 CameraEffectsController* GetCameraEffectsController() {
   return Shell::Get()->camera_effects_controller();
-}
-
-// Returns a gradient lottie animation defined in the resource file for the
-// `Create with AI` button.
-std::unique_ptr<lottie::Animation> GetGradientAnimation(
-    const ui::ColorProvider* color_provider) {
-  std::optional<std::vector<uint8_t>> lottie_data =
-      ui::ResourceBundle::GetSharedInstance().GetLottieData(
-          IDR_VC_CREATE_WITH_AI_BUTTON_ANIMATION);
-  CHECK(lottie_data.has_value());
-
-  return std::make_unique<lottie::Animation>(
-      cc::SkottieWrapper::UnsafeCreateSerializable(lottie_data.value()),
-      video_conference_utils::CreateColorMapForGradientAnimation(
-          color_provider));
 }
 
 // Image button for the recently used images as camera background.
@@ -318,44 +299,26 @@ BEGIN_METADATA(RecentlyUsedBackgroundView)
 END_METADATA
 
 // Button for "Create with AI".
-class CreateImageButton : public views::Button {
-  METADATA_HEADER(CreateImageButton, views::Button)
+class CreateImageButton : public views::LabelButton {
+  METADATA_HEADER(CreateImageButton, views::LabelButton)
 
  public:
-  explicit CreateImageButton(VideoConferenceTrayController* controller)
-      : views::Button(base::BindRepeating(&CreateImageButton::OnButtonClicked,
-                                          base::Unretained(this))),
+  CreateImageButton(VideoConferenceTrayController* controller)
+      : views::LabelButton(
+            base::BindRepeating(&CreateImageButton::OnButtonClicked,
+                                base::Unretained(this)),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME)),
         controller_(controller) {
-    // TODO(b/334205690): Use view builder pattern.
     SetID(BubbleViewID::kCreateWithAiButton);
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME));
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetBorder(views::CreateEmptyBorder(kCreateImageButtonBorderInsets));
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    SetImageLabelSpacing(kCreateImageButtonBetweenChildSpacing);
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase, kSetCameraBackgroundViewRadius));
-
-    lottie_animation_view_ =
-        AddChildView(std::make_unique<views::AnimatedImageView>());
-
-    auto* image_label_view_container =
-        AddChildView(std::make_unique<views::BoxLayoutView>());
-    image_label_view_container->SetBetweenChildSpacing(
-        kCreateImageButtonBetweenChildSpacing);
-    image_label_view_container->SetOrientation(
-        views::BoxLayout::Orientation::kHorizontal);
-    image_label_view_container->SetMainAxisAlignment(
-        views::LayoutAlignment::kCenter);
-    image_label_view_container->SetInsideBorderInsets(
-        kImageLabelContainerInsideBorderInsets);
-    image_label_view_container->SetMainAxisAlignment(
-        views::LayoutAlignment::kCenter);
-
-    image_label_view_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kAiWandIcon, ui::kColorMenuIcon, kButtonHeight)));
-    image_label_view_container->AddChildView(
-        std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-            IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME)));
+    SetImageModel(ButtonState::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kAiWandIcon, ui::kColorMenuIcon, kButtonHeight));
   }
 
   CreateImageButton(const CreateImageButton&) = delete;
@@ -363,116 +326,14 @@ class CreateImageButton : public views::Button {
   ~CreateImageButton() override = default;
 
  private:
-  // views::Button:
-  // Reset the animated image on theme changed to get correct color for the
-  // animation if the `lottie_animation_view_` should be shown and is visible.
-  void OnThemeChanged() override {
-    views::Button::OnThemeChanged();
-
-    // Don't need to reset the animated image when animation shouldn't be shown
-    // or `lottie_animation_view_` is invisible, or this button's bounds is
-    // empty.
-    // TODO(b/334205691): Set visibility correctly to make the check for bounds
-    // no longer needed.
-    if (!controller_->ShouldShowCreateWithAiButtonAnimation() ||
-        !lottie_animation_view_->GetVisible() ||
-        GetBoundsInScreen().IsEmpty()) {
-      return;
-    }
-
-    lottie_animation_view_->SetAnimatedImage(
-        GetGradientAnimation(GetColorProvider()));
-    lottie_animation_view_->Play();
-  }
-
-  // CreateImageButton could be not laid out if there's no recently used images.
-  // We don't want to play the animation if the button is not shown yet.
-  void AddedToWidget() override {
-    // TODO(b/334205691): Set visibility correctly to make the check for bounds
-    // no longer needed.
-    if (!controller_->ShouldShowCreateWithAiButtonAnimation() ||
-        GetBoundsInScreen().IsEmpty()) {
-      lottie_animation_view_->SetVisible(false);
-      if (lottie_animation_view_->animated_image()) {
-        lottie_animation_view_->Stop();
-      }
-      return;
-    }
-
-    PlayAnimation();
-  }
-
-  // Used to indicate when the button is laid out and shown.
-  // TODO(b/334205691): Set visibility correctly. Change this function to
-  // VisibilityChanged();
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    UpdateAnimationViewVisibility();
-  }
-
-  void UpdateAnimationViewVisibility() {
-    // TODO(b/334205691): Set visibility correctly to make the check for bounds
-    // no longer needed.
-    if (!is_first_time_animation_ ||
-        !controller_->ShouldShowCreateWithAiButtonAnimation() ||
-        GetBoundsInScreen().IsEmpty()) {
-      lottie_animation_view_->SetVisible(false);
-      if (lottie_animation_view_->animated_image()) {
-        lottie_animation_view_->Stop();
-      }
-      return;
-    }
-
-    PlayAnimation();
-  }
-
   void OnButtonClicked(const ui::Event& event) {
-    HideAnimationView();
     controller_->CreateBackgroundImage();
-    controller_->DismissCreateWithAiButtonAnimationForever();
 
     base::UmaHistogramBoolean(kCreateWithAiButtonHistogramName, true);
   }
 
-  void PlayAnimation() {
-    if (!lottie_animation_view_->animated_image()) {
-      lottie_animation_view_->SetAnimatedImage(
-          GetGradientAnimation(GetColorProvider()));
-    }
-    lottie_animation_view_->SetVisible(true);
-    lottie_animation_view_->Play();
-    stop_animation_timer_.Start(FROM_HERE, kGradientAnimationDuration, this,
-                                &CreateImageButton::StopAnimation);
-  }
-
-  void StopAnimation() {
-    is_first_time_animation_ = false;
-    stop_animation_timer_.Stop();
-    lottie_animation_view_->Stop();
-    lottie_animation_view_->SetVisible(false);
-  }
-
-  void HideAnimationView() {
-    if (!lottie_animation_view_->GetVisible()) {
-      return;
-    }
-    stop_animation_timer_.Stop();
-    lottie_animation_view_->Stop();
-    lottie_animation_view_->SetVisible(false);
-  }
-
   // Unowned by `CreateImageButton`.
   const raw_ptr<VideoConferenceTrayController> controller_;
-
-  // Owned by the View's hierarchy. Used to play the animation on the button.
-  raw_ptr<views::AnimatedImageView> lottie_animation_view_ = nullptr;
-
-  // It's set false when the animation has been played during the lifetime of
-  // `this`. When it's false, we shouldn't play animation animation anymore.
-  bool is_first_time_animation_ = true;
-
-  // Started when `lottie_animation_view_` starts playing the animation. It's
-  // used to stop the animation after the animation duration.
-  base::OneShotTimer stop_animation_timer_;
 };
 
 BEGIN_METADATA(CreateImageButton)

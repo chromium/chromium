@@ -72,7 +72,6 @@
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
-#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
@@ -167,7 +166,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   UserEducationController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
-  VideoConferenceTrayController::RegisterProfilePrefs(registry);
   VpnDetailedView::RegisterProfilePrefs(registry);
   WallpaperDailyRefreshScheduler::RegisterProfilePrefs(registry);
   WallpaperTimeOfDayScheduler::RegisterProfilePrefs(registry);
