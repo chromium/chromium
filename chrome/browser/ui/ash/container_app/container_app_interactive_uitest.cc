@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_view.h"
@@ -42,6 +43,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_constants/constants.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
@@ -56,6 +58,8 @@ namespace {
 
 // Aliases.
 using ::testing::AllOf;
+using ::testing::Bool;
+using ::testing::Conditional;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::IsEmpty;
@@ -176,16 +180,15 @@ bool IsShelfAppButtonForWebApp(
 
 }  // namespace
 
-// ContainerAppInteractiveUiTest -----------------------------------------------
+// ContainerAppInteractiveUiTestBase -------------------------------------------
 
 // Base class for interactive UI tests of the container app.
-class ContainerAppInteractiveUiTest
+class ContainerAppInteractiveUiTestBase
     : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
-  ContainerAppInteractiveUiTest(
-      const AccountId& account_id = GetAccountId(/*managed=*/false),
-      user_manager::UserType user_type = user_manager::UserType::kRegular,
-      bool should_ignore_feature_key = true)
+  ContainerAppInteractiveUiTestBase(const AccountId& account_id,
+                                    user_manager::UserType user_type,
+                                    bool should_ignore_feature_key)
       : user_session_mixin_(CreateUserSessionMixin(account_id, user_type)) {
     // Conditionally ignore the container app preinstallation key.
     if (should_ignore_feature_key) {
@@ -260,6 +263,13 @@ class ContainerAppInteractiveUiTest
   }
 
   void SetUpOnMainThread() override {
+    // There's nothing to do if not logging in the user.
+    if (!ShouldLogInUser()) {
+      InteractiveBrowserTestT<
+          MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
+      return;
+    }
+
     // For logged-in user sessions, perform login prior to
     // `InteractiveBrowserTestT<>::SetUpOnMainThread()` so that the interactive
     // browser test base class will successfully set the context widget for the
@@ -309,6 +319,9 @@ class ContainerAppInteractiveUiTest
         account_id);
   }
 
+  // Returns whether the user should be logged in as part of test setup.
+  virtual bool ShouldLogInUser() const { return true; }
+
   // Used to manage either a guest or logged-in user session based on test
   // parameterization.
   absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
@@ -324,10 +337,83 @@ class ContainerAppInteractiveUiTest
   std::unique_ptr<base::AutoReset<bool>> ignore_container_app_preinstall_key_;
 };
 
+// ContainerAppInteractiveUiTest -----------------------------------------------
+
+// Base class for interactive UI tests of the container app, parameterized by
+// whether the logged-in user is new or existing. Tests include a PRE_ session,
+// where user state is initialized, followed by a subsequent session containing
+// test logic. Chrome is restarted between sessions.
+class ContainerAppInteractiveUiTest
+    : public ContainerAppInteractiveUiTestBase,
+      public WithParamInterface</*existing_user=*/bool> {
+ public:
+  ContainerAppInteractiveUiTest()
+      : ContainerAppInteractiveUiTestBase(GetAccountId(/*managed=*/false),
+                                          user_manager::UserType::kRegular,
+                                          /*should_ignore_feature_key=*/true) {
+    // Disable the container app during the PRE_ session so that the subsequent
+    // session containing test logic is when the app preinstallation occurs.
+    if (IsPreSession()) {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kContainerAppPreinstall);
+    }
+  }
+
+ protected:
+  // ContainerAppInteractiveUiTestBase:
+  void SetUpOnMainThread() override {
+    ContainerAppInteractiveUiTestBase::SetUpOnMainThread();
+
+    // Check that session state is as expected.
+    const auto* session_controller = ash::Shell::Get()->session_controller();
+    EXPECT_THAT(session_controller->GetSessionState(),
+                Conditional(ShouldLogInUser(),
+                            Eq(session_manager::SessionState::ACTIVE),
+                            Eq(session_manager::SessionState::LOGIN_PRIMARY)));
+
+    // Check that login state is as expected.
+    EXPECT_THAT(
+        session_controller->IsUserFirstLogin(),
+        Conditional(IsPreSession(), IsExistingUser(), Not(IsExistingUser())));
+  }
+
+  bool ShouldLogInUser() const override {
+    // Existing users should be logged in for both the PRE_ session and the
+    // subsequent session containing test logic. New users should only be logged
+    // in for the subsequent session.
+    return IsExistingUser() || !IsPreSession();
+  }
+
+  // Returns whether the logged-in user is existing given test parameterization.
+  bool IsExistingUser() const { return GetParam(); }
+
+  // Returns whether the current session is the PRE_ session. The PRE_ session
+  // is the session before the subsequent session containing test logic.
+  bool IsPreSession() const {
+    return base::StartsWith(
+        testing::UnitTest::GetInstance()->current_test_info()->name(), "PRE_");
+  }
+
+ private:
+  // Used to disable container app preinstallation for the PRE_ session.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContainerAppInteractiveUiTest,
+    /*existing_user=*/Bool(),
+    [](const testing::TestParamInfo</*existing_user=*/bool>& info) {
+      return info.param ? "ExistingUser" : "NewUser";
+    });
+
 // Tests -----------------------------------------------------------------------
 
+// Initializes user state and restarts Chrome before `LaunchFromAppList`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, PRE_LaunchFromAppList) {}
+
 // Verifies that the container app can be launched from the app list.
-IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromAppList) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromAppList) {
   // Views.
   raw_ptr<ash::AppsGridView> apps_grid_view = nullptr;
   raw_ptr<ash::AppListItemView> container_app = nullptr;
@@ -385,6 +471,9 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromAppList) {
         std::vector<raw_ptr<ash::AppListItemView>> apps;
         FindDescendantsOfClass(apps_grid_view, apps);
         const auto container_app_index = FindIndex(apps, container_app.get());
+        if (IsExistingUser()) {
+          return container_app_index == 0u;
+        }
         const auto files_app_index = FindIndex(apps, files_app.get());
         const auto gmail_app_index = FindIndex(apps, gmail_app.get());
         return (files_app_index == container_app_index.value() - 1u) &&
@@ -413,8 +502,11 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromAppList) {
                               GetContainerAppLaunchUrl()));
 }
 
+// Initializes user state and restarts Chrome before `LaunchFromShelf`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, PRE_LaunchFromShelf) {}
+
 // Verifies that the container app can be launched from the shelf.
-IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, LaunchFromShelf) {
   // Views.
   raw_ptr<ash::ShelfAppButton> chrome_app = nullptr;
   raw_ptr<ash::ShelfAppButton> container_app = nullptr;
@@ -457,8 +549,11 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
       Check([&]() {
         std::vector<raw_ptr<ash::ShelfAppButton>> apps;
         FindDescendantsOfClass(shelf, apps);
-        const auto chrome_app_index = FindIndex(apps, chrome_app.get());
         const auto container_app_index = FindIndex(apps, container_app.get());
+        if (IsExistingUser()) {
+          return container_app_index == 0u;
+        }
+        const auto chrome_app_index = FindIndex(apps, chrome_app.get());
         const auto gmail_app_index = FindIndex(apps, gmail_app.get());
         return (chrome_app_index == container_app_index.value() - 1u) &&
                (gmail_app_index == container_app_index.value() + 1u);
@@ -482,8 +577,12 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, LaunchFromShelf) {
                               GetContainerAppLaunchUrl()));
 }
 
+// Initializes user state and restarts Chrome before `UninstallFromAppList`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest,
+                       PRE_UninstallFromAppList) {}
+
 // Verifies that the container app cannot be uninstalled from the app list.
-IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromAppList) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromAppList) {
   RunTestSequence(
       // Launch app list.
       DoDefaultAction(ash::kHomeButtonElementId),
@@ -516,8 +615,12 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromAppList) {
                                               Eq(ash::UNINSTALL))))))));
 }
 
+// Initializes user state and restarts Chrome before `UninstallFromSettings`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest,
+                       PRE_UninstallFromSettings) {}
+
 // Verifies that the container app cannot be uninstalled from the Settings app.
-IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromSettings) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromSettings) {
   // Views.
   raw_ptr<ash::ShelfView> shelf = nullptr;
 
@@ -599,8 +702,11 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromSettings) {
           "button]')"));
 }
 
+// Initializes user state and restarts Chrome before `UninstallFromShelf`.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, PRE_UninstallFromShelf) {}
+
 // Verifies that the container app cannot be uninstalled from the shelf.
-IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromShelf) {
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiTest, UninstallFromShelf) {
   // Views.
   raw_ptr<ash::ShelfView> shelf = nullptr;
 
@@ -665,16 +771,16 @@ inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
 
 // Base class for interactive UI tests of container app ineligibility.
 class ContainerAppInteractiveUiIneligibilityTest
-    : public ContainerAppInteractiveUiTest,
+    : public ContainerAppInteractiveUiTestBase,
       public WithParamInterface<IneligibilityReason> {
  public:
   // Incorrect key param/switch for the container app preinstallation feature.
   static constexpr char kIncorrectKey[] = "<INCORRECT_KEY>";
 
   ContainerAppInteractiveUiIneligibilityTest()
-      : ContainerAppInteractiveUiTest(GetAccountId(),
-                                      GetUserType(),
-                                      ShouldIgnoreFeatureKey()) {
+      : ContainerAppInteractiveUiTestBase(GetAccountId(),
+                                          GetUserType(),
+                                          ShouldIgnoreFeatureKey()) {
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
@@ -703,9 +809,9 @@ class ContainerAppInteractiveUiIneligibilityTest
   }
 
  private:
-  // ContainerAppInteractiveUiTest:
+  // ContainerAppInteractiveUiTestBase:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    ContainerAppInteractiveUiTest::SetUpDefaultCommandLine(command_line);
+    ContainerAppInteractiveUiTestBase::SetUpDefaultCommandLine(command_line);
 
     // Feature key switch.
     if (IsFeatureKeySwitchIncorrect()) {
@@ -725,7 +831,7 @@ class ContainerAppInteractiveUiIneligibilityTest
       app_data->apps.emplace_back(web_app::GetConfigForContainer());
     }
 
-    ContainerAppInteractiveUiTest::SetUpOnMainThread();
+    ContainerAppInteractiveUiTestBase::SetUpOnMainThread();
   }
 
   // Returns the `AccountId` for the user given test parameterization.
