@@ -3968,6 +3968,12 @@ void RenderWidgetHostImpl::DisableCompositorMetricRecording() {
   compositor_metric_recorder_.reset();
 }
 
+void RenderWidgetHostImpl::ForceRedrawForTesting() {
+  CHECK(blink_widget_);
+
+  blink_widget_->ForceRedraw(base::DoNothing());
+}
+
 RenderWidgetHostImpl::CompositorMetricRecorder::CompositorMetricRecorder(
     RenderWidgetHostImpl* owner)
     : owner_(owner) {}

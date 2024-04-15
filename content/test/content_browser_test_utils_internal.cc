@@ -1010,9 +1010,13 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
 // TODO(https://crbug.com/1473319): Use
 // `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
 void WaitForCopyableViewInWebContents(WebContents* web_contents) {
+  WaitForCopyableViewInFrame(web_contents->GetPrimaryMainFrame());
+}
+
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
+  auto* rwhv = render_frame_host->GetView();
   {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    MainThreadFrameObserver obs(rwhv->GetRenderWidgetHost());
     obs.Wait();
   }
   // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
@@ -1022,8 +1026,12 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents) {
   // guarantees this, since the second frame cannot be sent until the first
   // frame was ACKed by Viz.
   {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    // Force a redraw to ensure the wait below goes through the complete
+    // compositing pipeline.
+    static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+        ->ForceRedrawForTesting();
+
+    MainThreadFrameObserver obs(rwhv->GetRenderWidgetHost());
     obs.Wait();
   }
 
@@ -1031,8 +1039,7 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents) {
   // embeds a surface or not (as opposed to sending a IPC to the GPU). However
   // if the browser does not embed any surface, we won't be able to issue any
   // copy requests.
-  ASSERT_TRUE(
-      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
+  ASSERT_TRUE(rwhv->IsSurfaceAvailableForCopy());
 }
 
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {

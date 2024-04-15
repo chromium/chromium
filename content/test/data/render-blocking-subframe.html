@@ -1,0 +1,19 @@
+<!doctype html>
+<head>
+<link rel="stylesheet" href="/slow-response">
+<script>
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('red')) {
+    document.documentElement.style.background = "red";
+  } else {
+    document.documentElement.style.background = "blue";
+  }
+</script>
+<style>
+  html {
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+</body>

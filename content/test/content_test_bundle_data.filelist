@@ -7113,6 +7113,8 @@ data/register_service_worker.html
 data/remove_frame_on_load.html
 data/remove_frame_on_unload.html
 data/remove_object_element_with_invalid_data.html
+data/render-blocking-mainframe.html
+data/render-blocking-subframe.html
 data/render_frame_host/beforeunload.html
 data/render_frame_host/canonical_link.html
 data/render_frame_host/canonical_link_in_body.html

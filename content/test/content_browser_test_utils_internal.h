@@ -719,10 +719,15 @@ class CommitNavigationPauser
   mojom::DidCommitProvisionalLoadInterfaceParamsPtr paused_interface_params_;
 };
 
-// Blocks the current execution until the renderer main thread is in a steady
-// state, so the caller can issue an `viz::CopyOutputRequest` against the
-// current `WebContents`.
+// Blocks the current execution until the renderer main thread in the main frame
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against the current `WebContents`.
 void WaitForCopyableViewInWebContents(WebContents* web_contents);
+
+// Blocks the current execution until the renderer main thread in the subframe
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against its view.
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
 
 // Blocks the current execution until the frame submitted via the browser's
 // compositor is presented on the screen.

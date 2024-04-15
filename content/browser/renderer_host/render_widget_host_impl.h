@@ -972,6 +972,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   virtual RenderInputRouter* GetRenderInputRouter();  // virtual for testing.
 
+  // Requests a commit and forced redraw in the renderer compositor.
+  void ForceRedrawForTesting();
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
