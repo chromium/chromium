@@ -123,7 +123,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       isHfpMicSrEnabled: {
         type: Boolean,
-        observer: SettingsAudioElement.prototype.onHfpMicSrEnabledChanged,
       },
 
       showHfpMicSr: {
@@ -259,21 +258,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     }
 
     this.crosAudioConfig_.setForceRespectUiGainsEnabled(!enabled);
-  }
-
-  /** Handles updates to hfp mic sr state. */
-  protected onHfpMicSrEnabledChanged(
-      enabled: SettingsAudioElement['isHfpMicSrEnabled'],
-      previousEnabled: SettingsAudioElement['isHfpMicSrEnabled']): void {
-    // Polymer triggers change event on all assignment to
-    // `isHfpMicSrEnabled_` even if the value is logically unchanged.
-    // Check previous value before calling `setHfpMicSrEnabled` to test
-    // if value actually updated.
-    if (previousEnabled === undefined || previousEnabled === enabled) {
-      return;
-    }
-
-    this.crosAudioConfig_.setHfpMicSrEnabled(enabled);
   }
 
   /**
@@ -436,6 +420,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
   private toggleNoiseCancellationEnabled_(e: CustomEvent<boolean>): void {
     this.crosAudioConfig_.setNoiseCancellationEnabled(e.detail);
+  }
+
+  private toggleHfpMicSrEnabled_(e: CustomEvent<boolean>): void {
+    this.crosAudioConfig_.setHfpMicSrEnabled(e.detail);
   }
 
   private toggleStartupSoundEnabled_(e: CustomEvent<boolean>): void {

@@ -216,6 +216,16 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   }
 
   /**
+   * Returns true if hfpMicSrState is enabled on the device with id `deviceId`.
+   */
+  isHfpMicSrEnabled(deviceId: bigint): boolean {
+      const device = this.audioSystemProperties.inputDevices.find(
+          (device: AudioDevice) => device.id === deviceId);
+      assert(device !== undefined);
+      return device.hfpMicSrState === AudioEffectState.kEnabled;
+  }
+
+  /**
    * Sets the mute state based on provided value.
    */
   setOutputMuted(muted: boolean): void {

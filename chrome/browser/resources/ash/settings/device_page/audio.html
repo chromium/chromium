@@ -212,13 +212,21 @@
           checked="{{isAllowAGCEnabled}}">
       </cr-toggle>
     </div>
-    <settings-toggle-button
-        id="audioInputHfpMicSrToggle"
-        checked="{{isHfpMicSrEnabled}}"
-        label="$i18n{audioHfpMicSrTitle}"
-        sub-label="$i18n{audioHfpMicSrDescription}"
+    <div id="audioInputHfpMicSrSubsection" class="settings-box"
         hidden="[[!showHfpMicSr]]">
-    </settings-toggle-button>
+      <div id="audioInputHfpMicSrLabel"
+          class="settings-box-text start" aria-hidden="true">
+        $i18n{audioHfpMicSrTitle}
+        <div class="secondary">
+          $i18n{audioHfpMicSrDescription}
+        </div>
+      </div>
+      <cr-toggle id="audioInputHfpMicSrToggle"
+          checked="{{isHfpMicSrEnabled}}"
+          aria-labelledby="audioInputHfpMicSrLabel"
+          on-change="toggleHfpMicSrEnabled_">
+      </cr-toggle>
+    </div>
   </div>
 </div>
 

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -982,12 +982,16 @@ suite('<settings-device-page>', () => {
 
     test(
         'simulate hfp mic sr with flag off and unsupported state', async () => {
+          const audioHfpMicSrSubsection =
+              audioPage.shadowRoot!.querySelector<HTMLElement>(
+                  '#audioInputHfpMicSrSubsection');
           const audioInputHfpMicSrToggle =
-              audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              audioPage.shadowRoot!.querySelector<CrToggleElement>(
                   '#audioInputHfpMicSrToggle');
 
           // default
-          assertFalse(isVisible(audioInputHfpMicSrToggle));
+          assertTrue(!!audioHfpMicSrSubsection);
+          assertTrue(audioHfpMicSrSubsection.hidden);
           assertTrue(!!audioInputHfpMicSrToggle);
           assertFalse(audioInputHfpMicSrToggle.checked);
 
@@ -998,14 +1002,15 @@ suite('<settings-device-page>', () => {
               hfpMicSrNotSupportedAudioSystemProperties);
           await flushTasks();
 
-          assertFalse(isVisible(audioInputHfpMicSrToggle));
+          assertTrue(!!audioHfpMicSrSubsection);
+          assertTrue(audioHfpMicSrSubsection.hidden);
           assertFalse(audioInputHfpMicSrToggle.checked);
         });
 
     test('simulate hfp mic sr with flag on and unsupported state', async () => {
-      const audioInputHfpMicSrToggle =
-          audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#audioInputHfpMicSrToggle');
+      const audioHfpMicSrSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioInputHfpMicSrSubsection');
 
       setEnableAudioHfpMicSRToggleEnabled(true);
       await init();
@@ -1013,13 +1018,14 @@ suite('<settings-device-page>', () => {
           hfpMicSrNotSupportedAudioSystemProperties);
       await flushTasks();
 
-      assertFalse(isVisible(audioInputHfpMicSrToggle));
+      assertTrue(!!audioHfpMicSrSubsection);
+      assertTrue(audioHfpMicSrSubsection.hidden);
     });
 
     test('simulate hfp mic sr with flag off and supported state', async () => {
-      const audioInputHfpMicSrToggle =
-          audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#audioInputHfpMicSrToggle');
+      const audioHfpMicSrSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioInputHfpMicSrSubsection');
 
       setEnableAudioHfpMicSRToggleEnabled(false);
       await init();
@@ -1027,12 +1033,16 @@ suite('<settings-device-page>', () => {
           hfpMicSrSupportedAudioSystemProperties);
       await flushTasks();
 
-      assertFalse(isVisible(audioInputHfpMicSrToggle));
+      assertTrue(!!audioHfpMicSrSubsection);
+      assertTrue(audioHfpMicSrSubsection.hidden);
     });
 
     test('simulate hfp mic sr with flag on and supported state', async () => {
+      const audioHfpMicSrSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioInputHfpMicSrSubsection');
       const audioInputHfpMicSrToggle =
-          audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
               '#audioInputHfpMicSrToggle');
 
       setEnableAudioHfpMicSRToggleEnabled(true);
@@ -1041,8 +1051,8 @@ suite('<settings-device-page>', () => {
           hfpMicSrSupportedAudioSystemProperties);
       await flushTasks();
 
-      // TODO(cranelw): Uncomment the line below (Visible when deployed on DUT.)
-      // assertTrue(isVisible(audioInputHfpMicSrToggle));
+      assertTrue(!!audioHfpMicSrSubsection);
+      assertFalse(audioHfpMicSrSubsection.hidden);
       assertTrue(!!audioInputHfpMicSrToggle);
       assertFalse(audioInputHfpMicSrToggle.checked);
     });
@@ -1056,13 +1066,16 @@ suite('<settings-device-page>', () => {
               hfpMicSrSupportedAudioSystemProperties);
           await flushTasks();
 
-          // default not enabled
+          const audioHfpMicSrSubsection =
+              audioPage.shadowRoot!.querySelector<HTMLElement>(
+                  '#audioInputHfpMicSrSubsection');
           const audioInputHfpMicSrToggle =
-              audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              audioPage.shadowRoot!.querySelector<CrToggleElement>(
                   '#audioInputHfpMicSrToggle');
 
-          // TODO(cranelw): Uncomment the line below (Visible when deployed on
-          // DUT.) assertTrue(isVisible(audioInputHfpMicSrToggle));
+          // default not enabled
+          assertTrue(!!audioHfpMicSrSubsection);
+          assertFalse(audioHfpMicSrSubsection.hidden);
           assertTrue(!!audioInputHfpMicSrToggle);
           assertFalse(audioInputHfpMicSrToggle.checked);
 
@@ -1070,26 +1083,26 @@ suite('<settings-device-page>', () => {
           await audioInputHfpMicSrToggle.click();
           await flushTasks();
 
-          // TODO(cranelw): Uncomment the line below (Visible when deployed on
-          // DUT.) assertTrue(isVisible(audioInputHfpMicSrToggle));
+          const micId =
+              fakeCrosAudioConfig.fakeBluetoothNbMicActiveHfpMicSrNotEnabled.id;
+          assertTrue(crosAudioConfig.isHfpMicSrEnabled(micId));
+          assertFalse(audioHfpMicSrSubsection.hidden);
           assertTrue(audioInputHfpMicSrToggle.checked);
+
+          // clicks the toggle again
+          await audioInputHfpMicSrToggle.click();
+          await flushTasks();
+
+          assertFalse(crosAudioConfig.isHfpMicSrEnabled(micId));
+          assertFalse(audioHfpMicSrSubsection.hidden);
+          assertFalse(audioInputHfpMicSrToggle.checked);
 
           // selects other input device that doesn't support the feature
           crosAudioConfig.setActiveDevice(
               fakeCrosAudioConfig.fakeMicJackInactive.id);
           await flushTasks();
 
-          assertFalse(isVisible(audioInputHfpMicSrToggle));
-
-          // selects back again
-          crosAudioConfig.setActiveDevice(
-              fakeCrosAudioConfig.fakeBluetoothNbMicActiveHfpMicSrNotEnabled
-                  .id);
-          await flushTasks();
-
-          // TODO(cranelw): Uncomment the line below (Visible when deployed on
-          // DUT.) assertTrue(isVisible(audioInputHfpMicSrToggle));
-          assertTrue(audioInputHfpMicSrToggle.checked);
+          assertTrue(audioHfpMicSrSubsection.hidden);
         });
 
     test('simulate input muted by hardware', async () => {
