@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_
 #define CHROME_BROWSER_DIPS_PERSISTENT_REPEATING_TIMER_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -26,9 +28,23 @@ namespace dips {
 // to disk.
 class PersistentRepeatingTimer {
  public:
+  class Storage {
+   public:
+    using TimeCallback = base::OnceCallback<void(std::optional<base::Time>)>;
+    virtual ~Storage();
+    virtual void GetLastFired(TimeCallback callback) const = 0;
+    virtual void SetLastFired(base::Time time) = 0;
+  };
+
+  // TODO: crbug.com/328209292 - Remove this constructor.
   // The timer is not started at creation.
   PersistentRepeatingTimer(PrefService* prefs,
                            const char* timer_last_update_pref_name,
+                           base::TimeDelta delay,
+                           base::RepeatingClosure task);
+
+  // The timer is not started at creation.
+  PersistentRepeatingTimer(std::unique_ptr<Storage> timer_storage,
                            base::TimeDelta delay,
                            base::RepeatingClosure task);
 
@@ -38,21 +54,17 @@ class PersistentRepeatingTimer {
   void Start();
 
  private:
-  // Reads the date of the last event from the pref.
-  base::Time GetLastFired();
-
-  // Updates the pref with the current time.
-  void SetLastFiredNow();
-
   // Called when |timer_| fires.
   void OnTimerFired();
 
-  raw_ptr<PrefService> prefs_;
-  std::string last_fired_pref_name_;
+  void StartWithLastFired(std::optional<base::Time> last_fired);
+
+  std::unique_ptr<Storage> storage_;
   base::TimeDelta delay_;
   base::RepeatingClosure user_task_;
 
   base::RetainingOneShotTimer timer_;
+  base::WeakPtrFactory<PersistentRepeatingTimer> weak_factory_{this};
 };
 
 }  // namespace dips
