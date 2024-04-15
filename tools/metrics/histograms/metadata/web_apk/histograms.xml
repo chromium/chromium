@@ -22,11 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="LegacyIdentifierType">
-  <variant name="ManifestUrl"/>
-  <variant name="StartUrl"/>
-</variants>
-
 <variants name="WebApkDistributorType">
   <variant name=".Browser" summary="Installed by Chrome"/>
   <variant name=".DevicePolicy" summary="Installed by device policy"/>
@@ -398,22 +393,6 @@ chromium-metrics-reviews@google.com.
     documented in
     chrome/android/webapk/shell_apk/current_version/current_version.gni
   </summary>
-</histogram>
-
-<histogram name="WebApk.Update.UniqueId{SameOrEmpty}.{LegacyIdentifierType}"
-    enum="Boolean" expires_after="2024-04-28">
-  <owner>eirage@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When WebAPK updates with empty or same UniqueId, record whether each of the
-    {LegacyIdentifierType} was the same.
-  </summary>
-  <token key="SameOrEmpty">
-    <variant name="Empty"/>
-    <variant name="Same"/>
-  </token>
-  <token key="LegacyIdentifierType" variants="LegacyIdentifierType"/>
 </histogram>
 
 <histogram name="WebApk.Update.UpdateEmptyUniqueId.NeedsUpgrade" enum="Boolean"

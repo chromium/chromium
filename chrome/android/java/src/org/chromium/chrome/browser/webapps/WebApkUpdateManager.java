@@ -538,8 +538,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             boolean isManifestStale,
             boolean appIdentityUpdateSupported,
             List<Integer> updateReasons) {
-        recordWebApkUpdateUniqueIdHistogram(mInfo, mFetchedInfo);
-
         Callback<Boolean> callback =
                 (success) -> {
                     if (!success) {
@@ -559,20 +557,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 appIdentityUpdateSupported,
                 updateReasons,
                 callback);
-    }
-
-    private void recordWebApkUpdateUniqueIdHistogram(WebappInfo oldInfo, WebappInfo fetchedInfo) {
-        if (fetchedInfo == null) return;
-
-        String baseName =
-                "WebApk.Update.UniqueId"
-                        + (TextUtils.isEmpty(oldInfo.manifestId()) ? "Empty" : "Same");
-        RecordHistogram.recordBooleanHistogram(
-                baseName + ".ManifestUrl",
-                TextUtils.equals(oldInfo.manifestUrl(), fetchedInfo.manifestUrl()));
-        RecordHistogram.recordBooleanHistogram(
-                baseName + ".StartUrl",
-                TextUtils.equals(oldInfo.manifestStartUrl(), fetchedInfo.manifestStartUrl()));
     }
 
     /** Schedules update for when WebAPK is not running. */
