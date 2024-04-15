@@ -124,10 +124,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
     return scrolling_bounds_;
   }
 
-  void set_should_use_spawn_animation(bool value) {
-    should_use_spawn_animation_ = value;
-  }
-
   bool should_use_spawn_animation() const {
     return should_use_spawn_animation_;
   }
@@ -157,8 +153,8 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   virtual OverviewItem* GetLeafItemForWindow(aura::Window* window) = 0;
 
   // Restores and animates the managed window(s) to its non overview mode state.
-  // Doesn't animate if `animate` is true. If `reset_transform` equals false,
-  // the window's transform will not be reset to identity transform when exiting
+  // Animates if `animate` is true. If `reset_transform` equals true, the
+  // window's transform will be reset to identity transform when exiting
   // overview mode. It's needed when dragging an Arc app window in overview mode
   // to put it in split screen. In this case the restore of its transform needs
   // to be deferred until the Arc app window is snapped successfully, otherwise
@@ -216,6 +212,8 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   // Dispatched before entering overview.
   virtual void PrepareForOverview() = 0;
+
+  virtual void SetShouldUseSpawnAnimation(bool value) = 0;
 
   // Called when the starting animation is completed, or called immediately
   // if there was no starting animation to do any necessary visual changes.

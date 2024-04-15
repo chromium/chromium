@@ -157,6 +157,8 @@ float OverviewDropTarget::GetOpacity() const {
 
 void OverviewDropTarget::PrepareForOverview() {}
 
+void OverviewDropTarget::SetShouldUseSpawnAnimation(bool value) {}
+
 void OverviewDropTarget::OnStartingAnimationComplete() {}
 
 void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}

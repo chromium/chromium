@@ -632,6 +632,10 @@ void OverviewItem::PrepareForOverview() {
   prepared_for_overview_ = true;
 }
 
+void OverviewItem::SetShouldUseSpawnAnimation(bool value) {
+  should_use_spawn_animation_ = value;
+}
+
 void OverviewItem::OnStartingAnimationComplete() {
   CHECK(item_widget_);
 

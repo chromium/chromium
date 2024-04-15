@@ -935,7 +935,7 @@ void OverviewGrid::AddItem(
   const bool should_animate = animate && !IsShowingSavedDeskLibrary();
 
   if (should_animate && use_spawn_animation && reposition) {
-    item->set_should_use_spawn_animation(true);
+    item->SetShouldUseSpawnAnimation(true);
   } else {
     // The item is added after overview enter animation is complete, so
     // just call OnStartingAnimationComplete() only if we won't animate it with

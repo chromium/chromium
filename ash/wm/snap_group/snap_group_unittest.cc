@@ -31,6 +31,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -98,6 +99,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/test/test_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -4010,6 +4012,93 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDeskWithSnapGroup) {
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w2.get(), w3.get()));
   ActivateDesk(desk0);
+}
+
+// Tests that pressing the 'Close All' button closes both windows in a Snap
+// Group.
+TEST_F(SnapGroupDesksTest, CloseAll) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  ASSERT_TRUE(desk0->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(w0.get());
+  views::test::TestWidgetObserver observer0(window_widget0);
+  auto* window_widget1 = views::Widget::GetWidgetForNativeView(w1.get());
+  views::test::TestWidgetObserver observer1(window_widget1);
+
+  // Pre-release ownership of `w0` and `w1` using `release()`. This is crucial
+  // to avoid double-freeing memory. When unique_ptr goes out of scope, its
+  // destructor will attempt to deallocate the owned memory. Since CloseAll will
+  // already handle the window destruction, leaving the unique_ptrs to manage
+  // the memory would lead to a second deallocation attempt on the same address,
+  // resulting in crash.
+  w0.release();
+  w1.release();
+
+  RemoveDesk(desk0, DeskCloseType::kCloseAllWindows);
+  ASSERT_TRUE(desk0->is_desk_being_removed());
+  EXPECT_EQ(1u, desks_controller->desks().size());
+
+  // Widget closure is asynchronous and may not finish immediately. For
+  // guaranteed completion, run the current thread's RunLoop until idle (See
+  // `NativeWidgetAura::Close()` for details).
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(observer0.widget_closed());
+  EXPECT_TRUE(observer1.widget_closed());
+}
+
+// Verifies Snap Group behavior during desk removal and undo: windows become
+// invisible during removal, and clicking 'Undo' restores them to their original
+// desk.
+TEST_F(SnapGroupDesksTest, DeskRemovalAndUndo) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  RemoveDesk(desk0, DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_TRUE(desk0->is_desk_being_removed());
+  // `w0` and `w1` will remain invisible while the desk is being removed.
+  EXPECT_FALSE(w0->IsVisible());
+  EXPECT_FALSE(w1->IsVisible());
+
+  // Restoring desk0 will also restore the visibility of `w0` and `w1`.
+  views::LabelButton* dismiss_button =
+      DesksTestApi::GetCloseAllUndoToastDismissButton();
+  ASSERT_TRUE(dismiss_button);
+  LeftClickOn(dismiss_button);
+  EXPECT_TRUE(w0->IsVisible());
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  EXPECT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
 }
 
 // -----------------------------------------------------------------------------

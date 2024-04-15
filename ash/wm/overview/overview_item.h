@@ -116,6 +116,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void SetOpacity(float opacity) override;
   float GetOpacity() const override;
   void PrepareForOverview() override;
+  void SetShouldUseSpawnAnimation(bool value) override;
   void OnStartingAnimationComplete() override;
   void HideForSavedDeskLibrary(bool animate) override;
   void RevertHideForSavedDeskLibrary(bool animate) override;

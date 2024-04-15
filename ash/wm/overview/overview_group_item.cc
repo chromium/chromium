@@ -317,6 +317,12 @@ void OverviewGroupItem::PrepareForOverview() {
   prepared_for_overview_ = true;
 }
 
+void OverviewGroupItem::SetShouldUseSpawnAnimation(bool value) {
+  for (const auto& item : overview_items_) {
+    item->SetShouldUseSpawnAnimation(value);
+  }
+}
+
 void OverviewGroupItem::OnStartingAnimationComplete() {
   for (const auto& item : overview_items_) {
     item->OnStartingAnimationComplete();
