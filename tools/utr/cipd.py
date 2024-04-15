@@ -29,7 +29,9 @@ def fetch_recipe_bundle(is_verbose):
     # our own root for the bundle.
     cmd = [exe, 'init', '-force', str(_CIPD_ROOT_DIR)]
     logging.info('Initializing cipd root for bundle:')
-    logging.info(' '.join(cmd))
+    # Use the "basic_logger" here (and below) to avoid rich from coloring random
+    # bits of the printed command.
+    logging.getLogger('basic_logger').info(' '.join(cmd))
     subprocess.check_call(cmd)
 
   cmd = [
@@ -43,8 +45,6 @@ def fetch_recipe_bundle(is_verbose):
       'debug' if is_verbose else 'warning',
   ]
   logging.info('[cyan]Running bundle install command:[/]')
-  # Use the "basic_logger" to avoid rich from coloring random bits of the
-  # printed command.
   logging.getLogger('basic_logger').info(' '.join(cmd))
   # The stdout of `cipd install` seems noisy, and all useful logs appear to go
   # to stderr anyway.
