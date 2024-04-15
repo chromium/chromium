@@ -1,3 +1,4 @@
 include_rules = [
   "+components/background_task_scheduler/android/java/src/org/chromium/components/background_task_scheduler",
+  "+mojo/public/cpp/base",
 ]

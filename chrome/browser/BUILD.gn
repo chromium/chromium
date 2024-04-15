@@ -2570,6 +2570,7 @@ static_library("browser") {
     "//media/webrtc",
     "//mojo/core/embedder",
     "//mojo/core/embedder:features",
+    "//mojo/public/cpp/base:protobuf_support",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:extras",

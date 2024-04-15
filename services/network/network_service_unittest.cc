@@ -32,6 +32,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -188,7 +189,7 @@ TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
   resourceOwner->set_owner_name("foo");
   resourceOwner->add_owned_resources()->set_domain("example.com");
   service()->UpdateMaskedDomainList(
-      mdl.SerializeAsString(),
+      mojo_base::ProtoWrapper(mdl),
       /*exclusion_list=*/std::vector<std::string>());
   task_environment()->RunUntilIdle();
 
@@ -215,7 +216,7 @@ TEST_F(NetworkServiceTest,
   resourceOwner->set_owner_name("foo");
   resourceOwner->add_owned_resources()->set_domain("example.com");
   service()->UpdateMaskedDomainList(
-      mdl.SerializeAsString(),
+      mojo_base::ProtoWrapper(mdl),
       /*exclusion_list=*/std::vector<std::string>());
   task_environment()->RunUntilIdle();
 
@@ -1087,7 +1088,7 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
   resourceOwner->add_owned_resources()->set_domain("example.com");
 
   service()->UpdateMaskedDomainList(
-      mdl.SerializeAsString(),
+      mojo_base::ProtoWrapper(mdl),
       /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsPopulated());

@@ -39,6 +39,7 @@
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
@@ -927,15 +928,16 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
 }
 
 void NetworkService::UpdateMaskedDomainList(
-    const std::string& raw_mdl,
+    mojo_base::ProtoWrapper masked_domain_list,
     const std::vector<std::string>& exclusion_list) {
   const base::Time start_time = base::Time::Now();
-  auto mdl = masked_domain_list::MaskedDomainList();
-  if (mdl.ParseFromString(raw_mdl)) {
+  auto mdl = masked_domain_list.As<masked_domain_list::MaskedDomainList>();
+  if (mdl.has_value()) {
     UMA_HISTOGRAM_MEMORY_KB("NetworkService.MaskedDomainList.SizeInKB",
-                            mdl.ByteSizeLong() / 1024);
+                            mdl->ByteSizeLong() / 1024);
 
-    network_service_proxy_allow_list_->UseMaskedDomainList(mdl, exclusion_list);
+    network_service_proxy_allow_list_->UseMaskedDomainList(mdl.value(),
+                                                           exclusion_list);
 
     base::UmaHistogramBoolean(
         "NetworkService.IpProtection.ProxyAllowList."

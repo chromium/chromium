@@ -8,6 +8,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/prefs",
   "+components/tpcd",
+  "+mojo/public/cpp/base",
   "+net/base",
   "+services/network/public",
 ]

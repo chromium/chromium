@@ -97,6 +97,7 @@ include_rules = [
   # network service related unit tests
   "+services/network/test",
   "+mojo/core/embedder/embedder.h",
+  "+mojo/public/cpp/base",
   "+mojo/public/cpp/system",
 
   # Background tracing support

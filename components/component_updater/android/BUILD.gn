@@ -125,5 +125,6 @@ static_library("loader_policies") {
     "//base",
     "//components/component_updater",
     "//components/component_updater/installer_policies",
+    "//mojo/public/cpp/base:protobuf_support",
   ]
 }

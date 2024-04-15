@@ -66,6 +66,10 @@
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
+namespace mojo_base {
+class ProtoWrapper;
+}
+
 namespace net {
 class FileNetLogObserver;
 class HostResolverManager;
@@ -220,7 +224,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                          base::Time update_time) override;
 
   void UpdateMaskedDomainList(
-      const std::string& raw_mdl,
+      mojo_base::ProtoWrapper masked_domain_list,
       const std::vector<std::string>& exclusion_list) override;
 
 #if BUILDFLAG(IS_ANDROID)

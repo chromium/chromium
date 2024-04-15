@@ -39,6 +39,7 @@ static_library("installer_policies_no_content_deps") {
     "//components/prefs",
     "//components/tpcd/metadata",
     "//components/update_client",
+    "//mojo/public/cpp/base:protobuf_support",
     "//services/network/public/cpp",
   ]
 
@@ -81,7 +82,9 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
     "//components/tpcd/metadata",
+    "//mojo/public/cpp/base:protobuf_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

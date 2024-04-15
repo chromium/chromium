@@ -623,6 +623,7 @@ mojom_component("base") {
 
 mojom_component("protobuf_support") {
   sources = [ "proto_wrapper.mojom" ]
+  generate_java = true
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
   if (is_chromeos_ash) {
     generate_webui_js_bindings = true

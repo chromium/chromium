@@ -1426,6 +1426,7 @@ mojom("mojom") {
     "//components/content_settings/core/common:mojo_bindings",
     "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//sandbox/policy/mojom",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",

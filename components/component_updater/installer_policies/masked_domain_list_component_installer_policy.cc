@@ -4,6 +4,8 @@
 
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -13,6 +15,8 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #include "services/network/public/cpp/features.h"
 
 using component_updater::ComponentUpdateService;
@@ -37,21 +41,26 @@ constexpr char kExperimentalVersionAttributeName[] =
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
 
-std::optional<std::string> ReadFile(const base::FilePath& pb_path) {
-  std::string raw_list;
-  if (base::ReadStreamToString(
-          FileToFILE(base::File(pb_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ),
-                     "r"),
-          &raw_list)) {
-    return raw_list;
-  }
-  return nullptr;
-}
+constexpr char kMaskedDomainListProto[] = "masked_domain_list.MaskedDomainList";
 
 }  // namespace
 
 namespace component_updater {
+
+// Helper class to read file to named proto class for mojo wrapper.
+class ReadMaskedDomainListProto {
+ public:
+  static std::optional<mojo_base::ProtoWrapper> ReadFile(
+      const base::FilePath& pb_path) {
+    auto file_contents = base::ReadFileToBytes(pb_path);
+    if (file_contents.has_value()) {
+      return mojo_base::ProtoWrapper(
+          file_contents.value(), kMaskedDomainListProto,
+          mojo_base::ProtoWrapperBytes::GetPassKey());
+    }
+    return std::nullopt;
+  }
+};
 
 MaskedDomainListComponentInstallerPolicy::
     MaskedDomainListComponentInstallerPolicy(
@@ -107,7 +116,8 @@ void MaskedDomainListComponentInstallerPolicy::ComponentReady(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadFile, GetInstalledPath(install_dir)),
+      base::BindOnce(&ReadMaskedDomainListProto::ReadFile,
+                     GetInstalledPath(install_dir)),
       base::BindOnce(on_list_ready_, version));
 }
 

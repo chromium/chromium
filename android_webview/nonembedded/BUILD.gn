@@ -203,6 +203,7 @@ source_set("nonembedded") {
     "//components/update_client:in_process_unzipper",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
+    "//mojo/public/cpp/base:protobuf_support",
     "//url",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.

@@ -8,6 +8,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 
+namespace component_updater {
+class ReadMaskedDomainListProto;
+}  // namespace component_updater
+
 namespace mojo_base {
 
 // PassKey that allows people to directly name or access the bytes of a wrapped
@@ -26,6 +30,7 @@ class ProtoWrapperBytes {
 
   // Add friend classes that need direct access to the underlying span_bytes()
   // or to directly set the contained class name and bytes with from_span().
+  friend class component_updater::ReadMaskedDomainListProto;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

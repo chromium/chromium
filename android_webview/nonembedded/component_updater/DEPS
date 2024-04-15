@@ -3,4 +3,5 @@ include_rules = [
   "+components/services/patch",
   "+components/services/unzip",
   "+components/update_client",
+  "+mojo/public/cpp/base",
 ]
