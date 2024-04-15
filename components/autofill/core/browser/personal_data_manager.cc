@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
-#include "base/i18n/timezone.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -34,7 +33,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
-#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -68,7 +66,7 @@ PersonalDataManager::PersonalDataManager(
     const std::string& app_locale,
     const std::string& variations_country_code)
     : app_locale_(app_locale),
-      variations_country_code_(variations_country_code) {}
+      variations_country_code_(GeoIpCountryCode(variations_country_code)) {}
 
 PersonalDataManager::PersonalDataManager(const std::string& app_locale)
     : PersonalDataManager(app_locale, std::string()) {}
@@ -93,12 +91,12 @@ void PersonalDataManager::Init(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, sync_service, identity_manager,
-      strike_database, notify_observers,
-      GeoIpCountryCode(variations_country_code_), app_locale_);
+      strike_database, notify_observers, variations_country_code_, app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
-      identity_manager, app_locale_, notify_observers);
+      identity_manager, variations_country_code_, app_locale_,
+      notify_observers);
 
   pref_service_ = pref_service;
   identity_manager_ = identity_manager;
@@ -361,28 +359,6 @@ std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
          payments_data_manager_->IsAutofillPaymentMethodsEnabled();
-}
-
-const std::string& PersonalDataManager::GetCountryCodeForExperimentGroup()
-    const {
-  // Set to |variations_country_code_| if it exists.
-  if (experiment_country_code_.empty()) {
-    experiment_country_code_ = variations_country_code_;
-  }
-
-  // Failing that, guess based on system timezone.
-  if (experiment_country_code_.empty()) {
-    experiment_country_code_ = base::CountryCodeForCurrentTimezone();
-  }
-
-  // Failing that, guess based on locale. This returns "US" if there is no good
-  // guess.
-  if (experiment_country_code_.empty()) {
-    experiment_country_code_ =
-        AutofillCountry::CountryCodeForLocale(app_locale());
-  }
-
-  return experiment_country_code_;
 }
 
 void PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(

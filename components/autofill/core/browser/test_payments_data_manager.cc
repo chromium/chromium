@@ -18,6 +18,7 @@ TestPaymentsDataManager::TestPaymentsDataManager(
                           /*pref_service=*/nullptr,
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
+                          /*variations_country_code=*/GeoIpCountryCode("US"),
                           app_locale,
                           std::move(notify_pdm_observers)) {}
 

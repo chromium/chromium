@@ -2221,6 +2221,7 @@ TEST_F(PaymentsDataManagerTest,
       /*pref_service=*/nullptr,
       /*sync_service=*/nullptr,
       /*identity_manager=*/nullptr,
+      /*variations_country_code=*/GeoIpCountryCode("US"),
       /*app-locale=*/"en-US", /*notify_pdm_observers=*/base::DoNothing());
 
   histogram_tester.ExpectTotalCount(

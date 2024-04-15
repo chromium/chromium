@@ -1222,7 +1222,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(
-                              personal_data->GetCountryCodeForExperimentGroup(),
+                              personal_data->payments_data_manager()
+                                  .GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
 
   html_source->AddBoolean("deviceAuthAvailable",

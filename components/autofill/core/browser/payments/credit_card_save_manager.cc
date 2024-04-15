@@ -414,7 +414,8 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
       personal_data_manager_->payments_data_manager()
           .GetAccountInfoForPaymentsServer()
           .email,
-      personal_data_manager_->GetCountryCodeForExperimentGroup(),
+      personal_data_manager_->payments_data_manager()
+          .GetCountryCodeForExperimentGroup(),
       personal_data_manager_->payments_data_manager()
           .GetPaymentsSigninStateForMetrics(),
       client_->GetLogManager());

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -62,6 +63,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
+      GeoIpCountryCode variations_country_code,
       const std::string& app_locale,
       base::RepeatingClosure notify_pdm_observers);
 
@@ -399,6 +401,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // about the current sync state.
   void LogServerIbanLinkClicked() const;
 
+  // Returns our best guess for the country a user is in, for experiment group
+  // purposes. The value is calculated once and cached, so it will only update
+  // when Chrome is restarted.
+  const std::string& GetCountryCodeForExperimentGroup() const;
+
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
   void SetSyncingForTest(bool is_syncing_for_test) {
     is_syncing_for_test_ = is_syncing_for_test;
@@ -578,6 +585,13 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_observer_{this};
+
+  // The determined country code for experiment group purposes. Uses
+  // |variations_country_code_| if it exists but falls back to other methods if
+  // necessary to ensure it always has a value.
+  mutable std::string experiment_country_code_;
+
+  const GeoIpCountryCode variations_country_code_;
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

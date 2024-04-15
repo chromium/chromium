@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -351,11 +352,6 @@ class PersonalDataManager : public KeyedService,
   // Returns the |app_locale_| that was provided during construction.
   const std::string& app_locale() const { return app_locale_; }
 
-  // Returns our best guess for the country a user is in, for experiment group
-  // purposes. The value is calculated once and cached, so it will only update
-  // when Chrome is restarted.
-  const std::string& GetCountryCodeForExperimentGroup() const;
-
   // Returns all virtual card usage data linked to the credit card.
   virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
 
@@ -434,16 +430,11 @@ class PersonalDataManager : public KeyedService,
 
   // Stores the country code that was provided from the variations service
   // during construction.
-  std::string variations_country_code_;
+  const GeoIpCountryCode variations_country_code_;
 
   // If true, new addresses imports are automatically accepted without a prompt.
   // Only to be used for testing.
   bool auto_accept_address_imports_for_testing_ = false;
-
-  // The determined country code for experiment group purposes. Uses
-  // |variations_country_code_| if it exists but falls back to other methods if
-  // necessary to ensure it always has a value.
-  mutable std::string experiment_country_code_;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can

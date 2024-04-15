@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/i18n/timezone.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -269,6 +271,7 @@ PaymentsDataManager::PaymentsDataManager(
     PrefService* pref_service,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
+    GeoIpCountryCode variations_country_code,
     const std::string& app_locale,
     base::RepeatingClosure notify_pdm_observers)
     : notify_pdm_observers_(notify_pdm_observers),
@@ -276,6 +279,7 @@ PaymentsDataManager::PaymentsDataManager(
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
+      variations_country_code_(std::move(variations_country_code)),
       app_locale_(app_locale) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
@@ -1822,6 +1826,28 @@ void PaymentsDataManager::LogServerCardLinkClicked() const {
 void PaymentsDataManager::LogServerIbanLinkClicked() const {
   autofill_metrics::LogServerIbanLinkClicked(
       GetPaymentsSigninStateForMetrics());
+}
+
+const std::string& PaymentsDataManager::GetCountryCodeForExperimentGroup()
+    const {
+  // Set to |variations_country_code_| if it exists.
+  if (experiment_country_code_.empty()) {
+    experiment_country_code_ = variations_country_code_.value();
+  }
+
+  // Failing that, guess based on system timezone.
+  if (experiment_country_code_.empty()) {
+    experiment_country_code_ = base::CountryCodeForCurrentTimezone();
+  }
+
+  // Failing that, guess based on locale. This returns "US" if there is no good
+  // guess.
+  if (experiment_country_code_.empty()) {
+    experiment_country_code_ =
+        AutofillCountry::CountryCodeForLocale(app_locale_);
+  }
+
+  return experiment_country_code_;
 }
 
 void PaymentsDataManager::SetSyncServiceForTest(
