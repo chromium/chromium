@@ -1685,10 +1685,12 @@ fyi_mac_builder(
             "release_builder",
             "reclient",
             "minimal_symbols",
+            "x64",
         ],
     ),
     builderless = True,
     cores = None,  # crbug.com/1245114
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "cmp",
