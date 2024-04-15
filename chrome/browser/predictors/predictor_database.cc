@@ -11,7 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -60,6 +63,8 @@ class PredictorDatabaseInternal
   // Cancels pending DB transactions. Should only be called on the UI thread.
   void SetCancelled();
 
+  void ReportUMA();
+
   bool is_loading_predictor_enabled_;
   base::FilePath db_path_;
   std::unique_ptr<sql::Database> db_;
@@ -69,6 +74,7 @@ class PredictorDatabaseInternal
   // to using a WeakPtr instead.
   scoped_refptr<AutocompleteActionPredictorTable> autocomplete_table_;
   scoped_refptr<ResourcePrefetchPredictorTables> resource_prefetch_tables_;
+  std::unique_ptr<base::RepeatingTimer> uma_report_timer_;
 };
 
 PredictorDatabaseInternal::PredictorDatabaseInternal(
@@ -93,6 +99,13 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
 }
 
 PredictorDatabaseInternal::~PredictorDatabaseInternal() {
+  if (uma_report_timer_) {
+    // Since `uma_report_timer_` run on `db_task_runner_`, we need to shut down
+    // it on DB sequence.
+    db_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&base::RepeatingTimer::Stop,
+                                             std::move(uma_report_timer_)));
+  }
   // The connection pointer needs to be deleted on the DB sequence since there
   // might be a task in progress on the DB sequence which uses this connection.
   db_task_runner_->DeleteSoon(FROM_HERE, db_.release());
@@ -115,6 +128,11 @@ void PredictorDatabaseInternal::Initialize() {
   resource_prefetch_tables_->Initialize(db_.get());
 
   LogDatabaseStats();
+  ReportUMA();
+  uma_report_timer_ = std::make_unique<base::RepeatingTimer>();
+  // Report DB usage periodically to see its growth.
+  uma_report_timer_->Start(FROM_HERE, base::Days(1), this,
+                           &PredictorDatabaseInternal::ReportUMA);
 }
 
 void PredictorDatabaseInternal::SetCancelled() {
@@ -131,6 +149,17 @@ void PredictorDatabaseInternal::LogDatabaseStats() {
   autocomplete_table_->LogDatabaseStats();
   if (is_loading_predictor_enabled_)
     resource_prefetch_tables_->LogDatabaseStats();
+}
+
+void PredictorDatabaseInternal::ReportUMA() {
+  int64_t db_file_size;
+  if (!base::GetFileSize(db_path_, &db_file_size)) {
+    return;
+  }
+  // "x>>10 == x/1024"
+  const int kb_size = base::saturated_cast<int>(db_file_size >> 10);
+  base::UmaHistogramCounts1M("LoadingPredictor.PredictorDatabaseFileSize",
+                             kb_size);
 }
 
 PredictorDatabase::PredictorDatabase(

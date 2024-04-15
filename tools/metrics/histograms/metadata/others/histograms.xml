@@ -7207,6 +7207,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LoadingPredictor.PredictorDatabaseFileSize" units="KB"
+    expires_after="2024-07-09">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <component>Internals&gt;Preload</component>
+  <summary>
+    The size, in kilobytes, of the database used for the loading prediction.
+    Values can range from 1KiB to 1GiB. Logged at browser startup and daily.
+  </summary>
+</histogram>
+
 <histogram name="LoadingPredictor.PreresolveCount" units="hosts"
     expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
