@@ -26,6 +26,11 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+// As policy test server can be used not only for regular managed users,
+// but also for unicorn users, we need to handle some policy aspects for
+// them in a special way.
+inline constexpr char kUnicornUsersDomain[] = "gmail.com";
+
 RequestHandlerForPolicy::RequestHandlerForPolicy(
     EmbeddedPolicyTestServer* parent)
     : EmbeddedPolicyTestServer::RequestHandler(parent) {}
@@ -179,8 +184,13 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
                                         ? kDefaultUsername
                                         : policy_storage()->policy_user());
   policy_data.set_username(username);
-  policy_data.set_managed_by(
-      gaia::ExtractDomainName(gaia::SanitizeEmail(username)));
+
+  std::string domain = gaia::ExtractDomainName(gaia::SanitizeEmail(username));
+
+  if (domain != kUnicornUsersDomain) {
+    // Unicorn users don't have "managed by" field.
+    policy_data.set_managed_by(domain);
+  }
   policy_data.set_policy_invalidation_topic(
       policy_storage()->policy_invalidation_topic());
 
@@ -231,8 +241,6 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
     // Set the verification signature appropriate for the policy domain.
     // TODO(http://crbug.com/328038): Use the enrollment domain for public
     // accounts when we add key validation for ChromeOS.
-    std::string domain =
-        gaia::ExtractDomainName(gaia::SanitizeEmail(policy_data.username()));
     if (!signing_key->GetSignatureForDomain(
             domain,
             fetch_response
