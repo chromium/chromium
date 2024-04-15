@@ -218,12 +218,19 @@ void GaiaScreen::ShowImpl() {
   context()->skip_to_login_for_tests = false;
   view_->Show();
 
-  // Determine the QuickStart button visibility
-  WizardController::default_controller()
-      ->quick_start_controller()
-      ->DetermineEntryPointVisibility(
-          base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
-                         weak_ptr_factory_.GetWeakPtr()));
+  // QuickStart entry point may only be visible for the default flow.
+  // TODO(b/334944713) - Cover with tests for the other paths.
+  if (LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->gaia_config.gaia_path == WizardContext::GaiaPath::kDefault) {
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->DetermineEntryPointVisibility(
+            base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    SetQuickStartButtonVisibility(/*visible=*/false);
+  }
 }
 
 void GaiaScreen::HideImpl() {
