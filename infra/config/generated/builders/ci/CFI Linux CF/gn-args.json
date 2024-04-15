@@ -9,6 +9,7 @@
     "use_cfi_icall": true,
     "use_cfi_recover": true,
     "use_remoteexec": true,
+    "use_siso": true,
     "use_thin_lto": true
   }
 }
