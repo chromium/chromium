@@ -38,6 +38,13 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
       const PasswordCrossDomainConfirmationPopupControllerImpl&) = delete;
   ~PasswordCrossDomainConfirmationPopupControllerImpl() override;
 
+  // PasswordCrossDomainConfirmationPopupController:
+  void Show(const gfx::RectF& element_bounds,
+            base::i18n::TextDirection text_direction,
+            const GURL& domain,
+            const std::u16string& password_origin,
+            base::OnceClosure confirmation_callback) override;
+
   // autofill::AutofillPopupViewDelegate:
   void Hide(autofill::PopupHidingReason reason) override;
   void ViewDestroyed() override;
@@ -45,13 +52,6 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
-
-  // PasswordCrossDomainConfirmationPopupController:
-  void Show(const gfx::RectF& element_bounds,
-            base::i18n::TextDirection text_direction,
-            const GURL& domain,
-            const std::u16string& password_origin,
-            base::OnceClosure confirmation_callback) override;
 
   // content::WebContentsObserver:
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
