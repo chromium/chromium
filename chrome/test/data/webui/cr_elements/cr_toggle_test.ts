@@ -27,16 +27,12 @@ suite('cr-toggle', function() {
     assertTrue(toggle.checked);
     assertTrue(toggle.hasAttribute('checked'));
     assertEquals('true', toggle.getAttribute('aria-pressed'));
-    // Asserting that the toggle button has actually moved.
-    assertTrue(getComputedStyle(toggle.$.knob).transform.includes('matrix'));
   }
 
   function assertNotChecked() {
     assertFalse(toggle.checked);
     assertEquals(null, toggle.getAttribute('checked'));
     assertEquals('false', toggle.getAttribute('aria-pressed'));
-    // Asserting that the toggle button has not moved.
-    assertEquals('none', getComputedStyle(toggle.$.knob).transform);
   }
 
   function assertDisabled() {
@@ -295,5 +291,29 @@ suite('cr-toggle', function() {
     const toggle = element.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggle);
     toggle.click();
+  });
+
+  test('cssPositionOfKnob', async () => {
+    // Disable transitions for tests on the #knob to test accurate pixels.
+    toggle.$.knob.style.transition = 'none';
+
+    // Distance between center of knob and left edge of toggle should be
+    // --cr-toggle-knob-center-edge-distance_ (8).
+    let toggleBounds = toggle.getBoundingClientRect();
+    let knobBounds = toggle.$.knob.getBoundingClientRect();
+    let knobCenterDistance =
+        (knobBounds.left + knobBounds.width / 2) - toggleBounds.left;
+    assertEquals(8, knobCenterDistance);
+
+    toggle.click();
+    await toggle.updateComplete;
+
+    // Distance between center of knob and right edge of toggle should be
+    // --cr-toggle-knob-center-edge-distance_ (8).
+    toggleBounds = toggle.getBoundingClientRect();
+    knobBounds = toggle.$.knob.getBoundingClientRect();
+    knobCenterDistance =
+        toggleBounds.right - (knobBounds.left + knobBounds.width / 2);
+    assertEquals(8, knobCenterDistance);
   });
 });
