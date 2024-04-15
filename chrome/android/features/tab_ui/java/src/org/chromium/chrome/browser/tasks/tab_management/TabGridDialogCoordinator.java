@@ -122,6 +122,23 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
+
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+                    LayoutInflater.from(activity)
+                            .inflate(
+                                    R.layout.data_sharing_group_bar,
+                                    mDialogView.findViewById(R.id.dialog_container_view),
+                                    /* attachToRoot= */ true);
+                    ViewGroup manageBar = mDialogView.findViewById(R.id.dialog_data_sharing_manage);
+                    mSharedImageTilesCoordinator =
+                            new SharedImageTilesCoordinator(mDialogView.getContext());
+                    manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
+
+                    mShareBottomSheetContent =
+                            new TabGridDialogShareBottomSheetContent(
+                                    LayoutInflater.from(activity)
+                                            .inflate(R.layout.data_sharing_bottom_sheet, null));
+                }
             }
 
             if (!activity.isDestroyed() && !activity.isFinishing()) {
@@ -129,25 +146,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
             } else {
                 mSnackbarManager = null;
-            }
-
-            View shareBar = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
-                shareBar =
-                        LayoutInflater.from(activity)
-                                .inflate(
-                                        R.layout.data_sharing_group_bar,
-                                        mDialogView.findViewById(R.id.dialog_container_view),
-                                        false);
-                ViewGroup manageBar = shareBar.findViewById(R.id.dialog_data_sharing_manage);
-                mSharedImageTilesCoordinator =
-                        new SharedImageTilesCoordinator(mDialogView.getContext());
-                manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
-
-                mShareBottomSheetContent =
-                        new TabGridDialogShareBottomSheetContent(
-                                LayoutInflater.from(activity)
-                                        .inflate(R.layout.data_sharing_bottom_sheet, null));
             }
 
             Runnable showShareBottomSheetRunnable =
@@ -217,6 +215,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             LayoutInflater.from(activity)
                                     .inflate(R.layout.tab_group_ui_toolbar, recyclerView, false);
             toolbarView.setupDialogToolbarLayout();
+
+            View shareBar = mDialogView.findViewById(R.id.dialog_data_sharing_group_bar);
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
                             mModel,
