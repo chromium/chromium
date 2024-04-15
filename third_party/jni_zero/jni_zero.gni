@@ -4,6 +4,9 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 _JAVAP_PATH = "//third_party/jdk/current/bin/javap"
 
@@ -230,7 +233,14 @@ template("generate_jni_registration") {
 # JNI target implementation. See generate_jni or generate_jar_jni for usage.
 template("generate_jni_impl") {
   public_configs = []
-  _jni_zero_action_target_name = target_name + "__action"
+
+  # A hack to prevent GN from treating this dep as a java dep, since we depend
+  # onto the invoke_jni_zero action from a java_library, which unfortunately
+  # checks to see if a given dep is a java dep by searching for the strings
+  # "java" or "junit".
+  _target_name_without_java_or_junit =
+      string_replace(string_replace(target_name, "_java", "_J"), "_junit", "_U")
+  _jni_zero_action_target_name = _target_name_without_java_or_junit + "__action"
   if (current_toolchain != default_toolchain && target_os == "android") {
     # Rather than regenerating .h files in secondary toolchains, re-use the
     # ones from the primary toolchain by depending on it and adding the
@@ -251,6 +261,17 @@ template("generate_jni_impl") {
     }
   } else {
     _final_target_name = target_name
+    if (defined(invoker.classes)) {
+      _from_source = false
+    } else {
+      _from_source = true
+
+      # Using final_target_name to make srcjar_deps work.
+      _srcjar_output = "$target_gen_dir/$_final_target_name.srcjar"
+      _placeholder_srcjar_output =
+          "$target_gen_dir/${_final_target_name}_placeholder.srcjar"
+    }
+
     _invoke_jni_zero(_jni_zero_action_target_name) {
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_final_target_name"
@@ -276,10 +297,10 @@ template("generate_jni_impl") {
       inputs = []
       outputs = []
       args = []
-      if (defined(invoker.classes)) {
-        args += [ "from-jar" ]
-      } else {
+      if (_from_source) {
         args += [ "from-source" ]
+      } else {
+        args += [ "from-jar" ]
       }
       args += [
         "--output-dir",
@@ -288,7 +309,34 @@ template("generate_jni_impl") {
         rebase_path(_jni_generator_include, _jni_output_dir),
       ]
 
-      if (defined(invoker.classes)) {
+      if (_from_source) {
+        assert(defined(invoker.sources))
+
+        args += [
+          "--srcjar-path",
+          rebase_path(_srcjar_output, root_build_dir),
+          "--placeholder-srcjar-path",
+          rebase_path(_placeholder_srcjar_output, root_build_dir),
+        ]
+        outputs += [
+          _srcjar_output,
+          _placeholder_srcjar_output,
+        ]
+        inputs += invoker.sources
+        _input_args = rebase_path(invoker.sources, root_build_dir)
+        _input_names = invoker.sources
+        if (use_hashed_jni_names) {
+          args += [ "--use-proxy-hash" ]
+        }
+
+        if (defined(invoker.enable_jni_multiplexing) &&
+            invoker.enable_jni_multiplexing) {
+          args += [ "--enable-jni-multiplexing" ]
+        }
+        if (defined(invoker.namespace)) {
+          args += [ "--namespace=${invoker.namespace}" ]
+        }
+      } else {
         if (is_robolectric) {
           not_needed(invoker, [ "jar_file" ])
         } else {
@@ -314,31 +362,8 @@ template("generate_jni_impl") {
             invoker.unchecked_exceptions) {
           args += [ "--unchecked-exceptions" ]
         }
-      } else {
-        assert(defined(invoker.sources))
-
-        # Using final_target_name to make srcjar_deps work.
-        _srcjar_output = "$target_gen_dir/$_final_target_name.srcjar"
-        args += [
-          "--srcjar-path",
-          rebase_path(_srcjar_output, root_build_dir),
-        ]
-        outputs += [ _srcjar_output ]
-        inputs += invoker.sources
-        _input_args = rebase_path(invoker.sources, root_build_dir)
-        _input_names = invoker.sources
-        if (use_hashed_jni_names) {
-          args += [ "--use-proxy-hash" ]
-        }
-
-        if (defined(invoker.enable_jni_multiplexing) &&
-            invoker.enable_jni_multiplexing) {
-          args += [ "--enable-jni-multiplexing" ]
-        }
-        if (defined(invoker.namespace)) {
-          args += [ "--namespace=${invoker.namespace}" ]
-        }
       }
+
       if (defined(invoker.split_name)) {
         args += [ "--split-name=${invoker.split_name}" ]
       }
@@ -356,6 +381,26 @@ template("generate_jni_impl") {
 
       foreach(_input, _input_args) {
         args += [ "--input-file=$_input" ]
+      }
+    }
+
+    if (_from_source) {
+      java_library("${_final_target_name}_java") {
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+        srcjars = [
+          _srcjar_output,
+          _placeholder_srcjar_output,
+        ]
+        supports_android = true
+        jar_included_patterns = [
+          "*Jni.class",
+          "*Jni\$*.class",
+        ]
+        prevent_excluded_classes_from_classpath = true
+        deps = [
+          ":$_jni_zero_action_target_name",
+          "//third_party/jni_zero:jni_zero_java",
+        ]
       }
     }
 

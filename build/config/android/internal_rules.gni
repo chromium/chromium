@@ -3047,9 +3047,12 @@ if (enable_java_templates) {
       _dep_name = get_label_info(dep, "name")
       _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
     }
+    if (defined(invoker.srcjars)) {
+      _java_srcjars += invoker.srcjars
+    }
 
     # generated_jar_path is an output when use_turbine and an input otherwise.
-    if (!invoker.use_turbine) {
+    if (!invoker.use_turbine && defined(invoker.generated_jar_path)) {
       _java_srcjars += [ invoker.generated_jar_path ]
     }
 
@@ -3254,6 +3257,10 @@ if (enable_java_templates) {
       _dep_gen_dir = get_label_info(dep, "target_gen_dir")
       _dep_name = get_label_info(dep, "name")
       _java_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
+    }
+
+    if (defined(invoker.srcjars)) {
+      _java_srcjars += invoker.srcjars
     }
 
     action_with_pydeps(target_name) {
@@ -3511,7 +3518,22 @@ if (enable_java_templates) {
     if (defined(invoker.srcjar_deps)) {
       _srcjar_deps = invoker.srcjar_deps
     }
-    _has_sources = _source_files != [] || _srcjar_deps != []
+    _srcjars = []
+    if (defined(invoker.srcjars)) {
+      _srcjars = invoker.srcjars
+    }
+    _has_sources = _source_files != [] || _srcjar_deps != [] || _srcjars != []
+    if (_is_prebuilt || _has_sources) {
+      # This allows us to use jar_excluded_patterns and prevent even the
+      # interface jars from having these classes. This means that, with this
+      # flag, nobody depending on this java library will be able to see these
+      # classes. These excluded classes are only used for the exact target they
+      # are compiled in. We do this by not making a header jar, and replacing
+      # all usages of the header jar with the processed (post-exclusion) jar.
+      _skip_header_jar =
+          defined(invoker.prevent_excluded_classes_from_classpath) &&
+          invoker.prevent_excluded_classes_from_classpath
+    }
 
     if (_is_prebuilt) {
       assert(!_has_sources)
@@ -3811,7 +3833,14 @@ if (enable_java_templates) {
         custom_package = invoker.resources_package
       }
       if (_is_prebuilt || _has_sources) {
-        ijar_path = _final_ijar_path
+        if (_skip_header_jar) {
+          # We are tricking everything that is looking for an ijar into looking
+          # at the processed jar path, which is has the excluded classes
+          # removed.
+          ijar_path = _device_processed_jar_path
+        } else {
+          ijar_path = _final_ijar_path
+        }
         unprocessed_jar_path = _unprocessed_jar_path
       }
       if (_build_host_jar) {
@@ -3831,6 +3860,7 @@ if (enable_java_templates) {
         _dep_name = get_label_info(d, "name")
         bundled_srcjars += [ "$_dep_gen_dir/$_dep_name.srcjar" ]
       }
+      bundled_srcjars += _srcjars
       if (defined(invoker.include_java_resources) &&
           invoker.include_java_resources) {
         java_resources_jar = _unprocessed_jar_path
@@ -3969,20 +3999,24 @@ if (enable_java_templates) {
         "javac_args",
         "processor_args_javac",
         "skip_build_server",
+        "srcjars",
       ]
-      _annotation_processor_deps = []
-      if (defined(invoker.annotation_processor_deps)) {
-        _annotation_processor_deps = invoker.annotation_processor_deps
-      }
 
-      compile_java_helper(_header_target_name) {
-        forward_variables_from(invoker, _compile_java_forward_variables)
-        use_turbine = true
-        output_jar_path = _final_ijar_path
-        generated_jar_path = _generated_jar_path
-        deps = _annotation_processor_deps
-        if (_kt_files != []) {
-          kotlin_jar_path = _kotlin_interface_jar_path
+      if (!_skip_header_jar) {
+        _annotation_processor_deps = []
+        if (defined(invoker.annotation_processor_deps)) {
+          _annotation_processor_deps = invoker.annotation_processor_deps
+        }
+
+        compile_java_helper(_header_target_name) {
+          forward_variables_from(invoker, _compile_java_forward_variables)
+          use_turbine = true
+          output_jar_path = _final_ijar_path
+          generated_jar_path = _generated_jar_path
+          deps = _annotation_processor_deps
+          if (_kt_files != []) {
+            kotlin_jar_path = _kotlin_interface_jar_path
+          }
         }
       }
 
@@ -3990,13 +4024,22 @@ if (enable_java_templates) {
       compile_java_helper(_compile_java_target) {
         forward_variables_from(invoker, _compile_java_forward_variables)
         output_jar_path = _javac_jar_path
-        deps = [ ":$_header_target_name" ]
-        header_jar_path = _final_ijar_path
-        generated_jar_path = _generated_jar_path
+        if (!_skip_header_jar) {
+          deps = [ ":$_header_target_name" ]
+          header_jar_path = _final_ijar_path
+          generated_jar_path = _generated_jar_path
+        }
         if (_kt_files != []) {
           kotlin_jar_path = _kotlinc_jar_path
         }
       }
+
+      if (_skip_header_jar) {
+        group(_header_target_name) {
+          public_deps = [ ":$_compile_java_target" ]
+        }
+      }
+
       if (_enable_errorprone) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
@@ -4008,12 +4051,14 @@ if (enable_java_templates) {
             }
             javac_args += invoker.errorprone_args
           }
-          deps = [ ":$_header_target_name" ]
           if (_kt_files != []) {
             kotlin_jar_path = _kotlinc_jar_path
           }
-          header_jar_path = _final_ijar_path
-          generated_jar_path = _generated_jar_path
+          if (!_skip_header_jar) {
+            deps = [ ":$_header_target_name" ]
+            header_jar_path = _final_ijar_path
+            generated_jar_path = _generated_jar_path
+          }
           output_jar_path = "$target_out_dir/$target_name.errorprone.stamp"
         }
         _java_validate_deps += [ ":$_compile_java_errorprone_target" ]

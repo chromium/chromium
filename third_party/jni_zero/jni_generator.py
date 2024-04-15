@@ -537,27 +537,35 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
             proxy_natives=jni_obj.proxy_natives)
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
         already_added.add(zip_path)
+        # In rare circumstances, another file in our generate_jni list will
+        # import the FooJni from another class within the same generate_jni
+        # target. We want to make sure we don't make placeholders for these, but
+        # we do want placeholders for all BarJni classes that aren't a part of
+        # this generate_jni.
+        fake_zip_path = main_class.class_without_prefix.full_name_with_slashes + 'Jni.java'
+        already_added.add(fake_zip_path)
+
+      placeholders = collections.defaultdict(list)
       # Doing this in 2 phases to ensure that the Jni classes (the ones that
       # can have @NativeMethods) all get added first, so we don't accidentally
       # write a stubbed version of the class if it's imported by another class.
       for jni_obj in jni_objs:
-        placeholders = collections.defaultdict(list)
         for java_class in jni_obj.GetClassesToBeImported():
           if java_class.full_name_with_slashes.startswith('java/'):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.
           if java_class.is_nested():
             placeholders[java_class.get_outer_class()].append(java_class)
-          else:
+          elif java_class not in placeholders:
             placeholders[java_class] = []
-        for java_class, nested_classes in placeholders.items():
-          zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
-          if zip_path not in already_added:
-            content = placeholder_java_type.Generate(java_class,
-                                                     nested_classes,
-                                                     script_name=script_name)
-            common.add_to_zip_hermetic(srcjar, zip_path, data=content)
-            already_added.add(zip_path)
+      for java_class, nested_classes in placeholders.items():
+        zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
+        if zip_path not in already_added:
+          content = placeholder_java_type.Generate(java_class,
+                                                   nested_classes,
+                                                   script_name=script_name)
+          common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+          already_added.add(zip_path)
 
 
 def _WriteHeaders(jni_objs, output_names, output_dir):
