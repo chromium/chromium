@@ -2813,20 +2813,6 @@
     "expires": "Feb 1, 2025"
   },
   {
-    "prefix": "model-execution",
-    "owners": [
-      "leimy@chromium.org",
-      "fergal@chromium.org"
-    ],
-    "platforms": ["Linux", "Mac", "Win"],
-    "exclusive_tests": "ALL",
-    "bases": [
-      "wpt_internal/model-execution/run-from-detached-iframe.html"
-    ],
-    "args": ["--enable-features=EnableModelExecutionAPI"],
-    "expires": "Apr 4, 2025"
-  },
-  {
     "prefix": "css-line-clamp",
     "platforms": ["Linux"],
     "bases": ["external/wpt/css/css-overflow", "fast/overflow"],
