@@ -11,7 +11,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -81,14 +80,6 @@ gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
 bool CanShowDropdownHere(int item_height,
                          const gfx::Rect& content_area_bounds,
                          const gfx::Rect& element_bounds);
-
-// Returns whether any of the `widgets` overlap with the `screen_bounds`, with a
-// few exceptions: non-"dialog box" widgets, widgets of certain autofill IPH's
-// and `web_contents_widget` are ignored.
-bool BoundsOverlapWithAnyWidget(const views::Widget::Widgets& widgets,
-                                const gfx::Rect& screen_bounds,
-                                const views::Widget* web_contents_widget,
-                                const content::WebContents* web_contents);
 
 // Returns whether there is any open prompt in |web_contents| with bounds that
 // overlap |screen_bounds|.

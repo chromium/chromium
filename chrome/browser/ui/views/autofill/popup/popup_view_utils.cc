@@ -14,13 +14,11 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/views/widget/widget.h"
 
 using views::BubbleBorder;
 
@@ -255,59 +253,6 @@ bool CanShowDropdownHere(int item_height,
           element_bottom_is_within_content_area_bounds);
 }
 
-bool BoundsOverlapWithAnyWidget(const views::Widget::Widgets& widgets,
-                                const gfx::Rect& screen_bounds,
-                                const views::Widget* web_contents_widget,
-                                const content::WebContents* web_contents) {
-  return base::ranges::any_of(widgets, [&screen_bounds, web_contents_widget,
-                                        web_contents](views::Widget* w) {
-    // If the autofill popup overlaps with certain autofill IPH bubbles, then
-    // keep displaying the autofill popup.
-    //
-    // This code is needed because hiding the IPH bubble is an asynchronous
-    // process. If the caller hides the IPH bubble before showing the autofill
-    // popup, it cannot be guaranteed that the IPH bubble is hidden at this
-    // moment of time. Hence, the code ignores a potential overlap between the
-    // autofill popup and the IPH bubble.
-    //
-    // IMPORTANT: The expectation is that the caller will make a call to hide
-    // the IPH bubble immediately AFTER it shows the autofill popup. Even with
-    // this code in place, if one attempted to hide the IPH bubble before
-    // showing the autofill popup, this code will be reached in a weird state
-    // in which `IsFeaturePromoActive()` returns false (because this happens
-    // synchronously), while the popup is not hidden yet (because hiding the
-    // popup happens asynchronously).
-    //
-    // From the user perspective, it will appear that the IPH bubble is hidden
-    // the moment the autofill popup is displayed. They will see no overlap.
-    //
-    // This will most likely not be a concern for IPH's attached to the autofill
-    // bubble, but only for IPH's attached directly to DOM elements. That's why
-    // this check doesn't contain all autofill IPH's.
-    //
-    // The logic behind this check is that the feature engagement code allows
-    // only one IPH to be shown at a time. So there can be only one help bubble
-    // widget at a time, and that help bubble will correspond to the feature for
-    // which `IsFeaturePromoActive(feature)` returns true.
-    //
-    // Note: To add a new IPH bubble to this exception, it is enough to append
-    // the following check to the if:
-    // `|| IsFeaturePromoActive(new_iph_feature)`.
-    views::DialogDelegate* delegate = w->widget_delegate()->AsDialogDelegate();
-    if (delegate && user_education::HelpBubbleView::IsHelpBubble(delegate) &&
-        chrome::FindBrowserWithTab(web_contents)
-            ->window()
-            ->IsFeaturePromoActive(
-                feature_engagement::kIPHAutofillManualFallbackFeature)) {
-      return false;
-    }
-
-    return w->IsDialogBox() &&
-           w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&
-           w != web_contents_widget;
-  });
-}
-
 // Keep in sync with TryToCloseAllPrompts() from autofill_uitest.cc.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents) {
@@ -337,8 +282,12 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                        : top_level_view;
   views::Widget::Widgets all_widgets;
   views::Widget::GetAllChildWidgets(top_level_view, &all_widgets);
-  return BoundsOverlapWithAnyWidget(all_widgets, screen_bounds,
-                                    web_contents_widget, web_contents);
+  return base::ranges::any_of(
+      all_widgets, [&screen_bounds, web_contents_widget](views::Widget* w) {
+        return w->IsDialogBox() &&
+               w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&
+               w != web_contents_widget;
+      });
 }
 
 bool BoundsOverlapWithOpenPermissionsPrompt(

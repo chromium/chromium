@@ -15,9 +15,6 @@ namespace autofill {
 
 // This class is the controller for the `AutofillFieldPromoView`. Its main
 // function is to control the view's lifetime.
-// IMPORTANT! Upon creating a controller instance for a new IPH feature, please
-// also add an exception for the feature in
-// `popup_view_utils.cc::BoundsOverlapWithAnyWidget()`.
 class AutofillFieldPromoController {
  public:
   virtual ~AutofillFieldPromoController() = default;
