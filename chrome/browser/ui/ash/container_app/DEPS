@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "container_app_interactive_uitest\.cc": [
+    # TODO(http://b/333907855): Remove after migrating app.
+    "+chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h",
+  ]
+}

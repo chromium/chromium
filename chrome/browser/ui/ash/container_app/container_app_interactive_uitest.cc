@@ -25,19 +25,24 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/app_constants/constants.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
@@ -56,7 +61,10 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointer;
+using ::testing::PrintToStringParamName;
 using ::testing::Property;
+using ::testing::ValuesIn;
+using ::testing::WithParamInterface;
 
 // Elements --------------------------------------------------------------------
 
@@ -73,7 +81,22 @@ inline char kFilesAppElementName[] = "FilesApp";
 inline char kGmailAppElementName[] = "GmailApp";
 inline char kShowAppInfoMenuItemElementName[] = "ShowAppInfoMenuItem";
 
+// Users -----------------------------------------------------------------------
+
+inline char kManagedUserEmail[] = "managed@example.com";
+inline char kManagedUserGaiaId[] = "<MANAGED_USER_GAIA_ID>";
+inline char kUnmanagedUserEmail[] = "unmanaged@gmail.com";
+inline char kUnmanagedUserGaiaId[] = "<UNMANAGED_USER_GAIA_ID>";
+
 // Helpers ---------------------------------------------------------------------
+
+// Returns an `AccountId` for either a `managed` or an unmanaged user.
+AccountId GetAccountId(bool managed) {
+  return managed ? AccountId::FromUserEmailGaiaId(kManagedUserEmail,
+                                                  kManagedUserGaiaId)
+                 : AccountId::FromUserEmailGaiaId(kUnmanagedUserEmail,
+                                                  kUnmanagedUserGaiaId);
+}
 
 // Returns all `descendants` of the specified `parent` matching the given class.
 template <typename ViewClass>
@@ -146,8 +169,9 @@ bool IsShelfAppButtonForWebApp(
     std::reference_wrapper<const raw_ptr<ash::ShelfView>> shelf,
     std::string_view id,
     const views::View* view) {
-  return views::IsViewClass<ash::ShelfAppButton>(view) &&
-         shelf.get()->GetShelfAppButton(FindShelfItemForWebApp(id)->id) == view;
+  const ash::ShelfItem* const item = FindShelfItemForWebApp(id);
+  return views::IsViewClass<ash::ShelfAppButton>(view) && item &&
+         shelf.get()->GetShelfAppButton(item->id) == view;
 }
 
 }  // namespace
@@ -155,23 +179,26 @@ bool IsShelfAppButtonForWebApp(
 // ContainerAppInteractiveUiTest -----------------------------------------------
 
 // Base class for interactive UI tests of the container app.
-class ContainerAppInteractiveUiTest : public InteractiveBrowserTest {
+class ContainerAppInteractiveUiTest
+    : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
  public:
-  ContainerAppInteractiveUiTest() {
+  ContainerAppInteractiveUiTest(
+      const AccountId& account_id = GetAccountId(/*managed=*/false),
+      user_manager::UserType user_type = user_manager::UserType::kRegular,
+      bool should_ignore_feature_key = true)
+      : user_session_mixin_(CreateUserSessionMixin(account_id, user_type)) {
+    // Conditionally ignore the container app preinstallation key.
+    if (should_ignore_feature_key) {
+      ignore_container_app_preinstall_key_ = std::make_unique<
+          base::AutoReset<bool>>(
+          chromeos::features::SetIgnoreContainerAppPreinstallKeyForTesting());
+    }
+
     // Enable container app preinstallation.
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kContainerAppPreinstall,
          chromeos::features::kFeatureManagementContainerAppPreinstall},
         {});
-
-    // Do not launch the browser. The only browser expected to launch will be
-    // that associated with the container app.
-    set_launch_browser_for_testing(nullptr);
-
-    // Since we suppressed the browser from launching, we also need to prevent
-    // premature shutdown that would otherwise occur due to the lack of a
-    // browser. If we did not do so, system web apps would fail to launch.
-    set_exit_when_last_browser_closes(false);
 
     // Use a consistent context for element tracking. Otherwise each widget has
     // its own context, greatly increasing the complexity of tracking
@@ -218,51 +245,83 @@ class ContainerAppInteractiveUiTest : public InteractiveBrowserTest {
     return Do([ptr]() { ptr.get() = nullptr; });
   }
 
- private:
-  // InteractiveBrowserTest:
+ protected:
+  // InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTest::SetUpDefaultCommandLine(command_line);
+    InteractiveBrowserTestT<
+        MixinBasedInProcessBrowserTest>::SetUpDefaultCommandLine(command_line);
 
     // Remove the `switches::kDisableDefaultApps` switch to ensure that default
     // apps are installed. The container app is a default app.
     command_line->RemoveSwitch(switches::kDisableDefaultApps);
+
+    // Disable sync as it would otherwise block updating of shelf pins.
+    command_line->AppendSwitch(syncer::kDisableSync);
   }
 
   void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
+    // For logged-in user sessions, perform login prior to
+    // `InteractiveBrowserTestT<>::SetUpOnMainThread()` so that the interactive
+    // browser test base class will successfully set the context widget for the
+    // test sequence. The context widget will be associated with the browser.
+    if (absl::holds_alternative<ash::LoggedInUserMixin>(user_session_mixin_)) {
+      absl::get<ash::LoggedInUserMixin>(user_session_mixin_).LogInUser();
+    }
+
+    InteractiveBrowserTestT<
+        MixinBasedInProcessBrowserTest>::SetUpOnMainThread();
 
     // Wait for installation of both system and external web apps. The container
     // app is an external app and this test suite will verify its adjacency to
     // system web apps.
-    Profile* const profile = ProfileManager::GetActiveUserProfile();
+    Profile* const profile = browser()->profile();
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();
     web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
         web_app::WebAppProvider::GetForTest(profile));
     AppListClientImpl::GetInstance()->UpdateProfile();
 
-    // `InteractiveBrowserTest`s must set a context widget prior to invoking
-    // `RunTestSequence()`. This needs to be done explicitly since we suppressed
-    // launching the browser. Note that it doesn't matter what this widget is,
-    // but convention is to use the `ash::StatusAreaWidget`.
-    SetContextWidget(ash::Shell::GetPrimaryRootWindowController()
-                         ->shelf()
-                         ->GetStatusAreaWidget());
-
     // Cache install info for the container app.
     container_app_install_info_ =
         web_app::GetConfigForContainer().app_info_factory.Run();
   }
 
-  // Used to ignore the container app preinstallation key.
-  const base::AutoReset<bool> ignore_container_app_preinstall_key_{
-      chromeos::features::SetIgnoreContainerAppPreinstallKeyForTesting()};
+ private:
+  // Creates the appropriate guest or logged-in user session mixin based on
+  // the specified `account_id` and `user_type`.
+  absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
+  CreateUserSessionMixin(const AccountId& account_id,
+                         user_manager::UserType user_type) {
+    if (user_type == user_manager::UserType::kGuest) {
+      return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
+          absl::in_place_type_t<ash::GuestSessionMixin>(), &mixin_host_);
+    }
+
+    CHECK(user_type == user_manager::UserType::kChild ||
+          user_type == user_manager::UserType::kRegular);
+
+    return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
+        absl::in_place_type_t<ash::LoggedInUserMixin>(), &mixin_host_,
+        user_type == user_manager::UserType::kChild
+            ? ash::LoggedInUserMixin::LogInType::kChild
+            : ash::LoggedInUserMixin::LogInType::kRegular,
+        embedded_test_server(), this, /*should_launch_browser=*/true,
+        account_id);
+  }
+
+  // Used to manage either a guest or logged-in user session based on test
+  // parameterization.
+  absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
+      user_session_mixin_;
 
   // Used to enable the container app preinstallation.
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Used to retrieve expected title/URL for the container app.
   std::unique_ptr<web_app::WebAppInstallInfo> container_app_install_info_;
+
+  // Used to conditionally ignore the container app preinstallation key.
+  std::unique_ptr<base::AutoReset<bool>> ignore_container_app_preinstall_key_;
 };
 
 // Tests -----------------------------------------------------------------------
@@ -571,5 +630,221 @@ IN_PROC_BROWSER_TEST_F(ContainerAppInteractiveUiTest, UninstallFromShelf) {
                                               Eq(ash::UNINSTALL))))))));
 }
 
+// ContainerAppInteractiveUiIneligibilityTest ----------------------------------
+
+// Reasons why the user may be ineligible for container app preinstallation.
+enum class IneligibilityReason {
+  kMinValue = 0,
+  kFeatureFlagDisabled = kMinValue,
+  kFeatureKeyEmpty,
+  kFeatureKeyParamIncorrect,
+  kFeatureKeySwitchIncorrect,
+  kFeatureManagementFlagDisabled,
+  kUserManaged,
+  kUserTypeChild,
+  kUserTypeGuest,
+  kMaxValue = kUserTypeGuest,
+};
+
+#define INELIGIBILITY_REASON_CASE(reason) \
+  case IneligibilityReason::reason:       \
+    return os << std::string(#reason)
+
+inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
+  switch (reason) {
+    INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
+    INELIGIBILITY_REASON_CASE(kFeatureKeyEmpty);
+    INELIGIBILITY_REASON_CASE(kFeatureKeyParamIncorrect);
+    INELIGIBILITY_REASON_CASE(kFeatureKeySwitchIncorrect);
+    INELIGIBILITY_REASON_CASE(kFeatureManagementFlagDisabled);
+    INELIGIBILITY_REASON_CASE(kUserManaged);
+    INELIGIBILITY_REASON_CASE(kUserTypeChild);
+    INELIGIBILITY_REASON_CASE(kUserTypeGuest);
+  }
+}
+
+// Base class for interactive UI tests of container app ineligibility.
+class ContainerAppInteractiveUiIneligibilityTest
+    : public ContainerAppInteractiveUiTest,
+      public WithParamInterface<IneligibilityReason> {
+ public:
+  // Incorrect key param/switch for the container app preinstallation feature.
+  static constexpr char kIncorrectKey[] = "<INCORRECT_KEY>";
+
+  ContainerAppInteractiveUiIneligibilityTest()
+      : ContainerAppInteractiveUiTest(GetAccountId(),
+                                      GetUserType(),
+                                      ShouldIgnoreFeatureKey()) {
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+
+    // Feature flag and key param.
+    if (IsFeatureFlagDisabled()) {
+      disabled.emplace_back(chromeos::features::kContainerAppPreinstall);
+    } else {
+      enabled.emplace_back(
+          chromeos::features::kContainerAppPreinstall,
+          IsFeatureKeyParamIncorrect()
+              ? base::FieldTrialParams({{"key", kIncorrectKey}})
+              : base::FieldTrialParams());
+    }
+
+    // Feature management flag.
+    if (IsFeatureManagementFlagDisabled()) {
+      disabled.emplace_back(
+          chromeos::features::kFeatureManagementContainerAppPreinstall);
+    } else {
+      enabled.emplace_back(
+          chromeos::features::kFeatureManagementContainerAppPreinstall,
+          base::FieldTrialParams());
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+ private:
+  // ContainerAppInteractiveUiTest:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    ContainerAppInteractiveUiTest::SetUpDefaultCommandLine(command_line);
+
+    // Feature key switch.
+    if (IsFeatureKeySwitchIncorrect()) {
+      command_line->AppendSwitchASCII(
+          chromeos::switches::kContainerAppPreinstallKey, kIncorrectKey);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    // Web app preinstallation times out for child user types due to failure to
+    // install some default web apps. Since this test suite only cares about the
+    // preinstallation of the container app, circumvent timeouts by disabling
+    // other default web apps.
+    std::unique_ptr<web_app::ScopedTestingPreinstalledAppData> app_data;
+    if (GetUserType() == user_manager::UserType::kChild) {
+      app_data = std::make_unique<web_app::ScopedTestingPreinstalledAppData>();
+      app_data->apps.emplace_back(web_app::GetConfigForContainer());
+    }
+
+    ContainerAppInteractiveUiTest::SetUpOnMainThread();
+  }
+
+  // Returns the `AccountId` for the user given test parameterization.
+  AccountId GetAccountId() const {
+    return ::GetAccountId(/*managed=*/GetParam() ==
+                          IneligibilityReason::kUserManaged);
+  }
+
+  // Returns the type for the user given test parameterization.
+  user_manager::UserType GetUserType() const {
+    switch (GetParam()) {
+      case IneligibilityReason::kUserTypeChild:
+        return user_manager::UserType::kChild;
+      case IneligibilityReason::kUserTypeGuest:
+        return user_manager::UserType::kGuest;
+      default:
+        return user_manager::UserType::kRegular;
+    }
+  }
+
+  // Returns whether the feature flag is disabled given test parameterization.
+  bool IsFeatureFlagDisabled() const {
+    return GetParam() == IneligibilityReason::kFeatureFlagDisabled;
+  }
+
+  // Returns whether the feature key param is incorrect given test
+  // parameterization.
+  bool IsFeatureKeyParamIncorrect() const {
+    return GetParam() == IneligibilityReason::kFeatureKeyParamIncorrect;
+  }
+
+  // Returns whether the feature key switch is incorrect given test
+  // parameterization.
+  bool IsFeatureKeySwitchIncorrect() const {
+    return GetParam() == IneligibilityReason::kFeatureKeySwitchIncorrect;
+  }
+
+  // Returns whether the feature management flag is disabled given test
+  // parameterization.
+  bool IsFeatureManagementFlagDisabled() const {
+    return GetParam() == IneligibilityReason::kFeatureManagementFlagDisabled;
+  }
+
+  // Returns whether the feature key should be ignored given test
+  // parameterization.
+  bool ShouldIgnoreFeatureKey() const {
+    return !std::set<IneligibilityReason>(
+                {IneligibilityReason::kFeatureKeyEmpty,
+                 IneligibilityReason::kFeatureKeyParamIncorrect,
+                 IneligibilityReason::kFeatureKeySwitchIncorrect})
+                .contains(GetParam());
+  }
+
+  // Used to enable/disable the container app preinstallation based on test
+  // parameterization.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContainerAppInteractiveUiIneligibilityTest,
+    ValuesIn(([]() {
+      std::vector<IneligibilityReason> reasons(
+          static_cast<int>(IneligibilityReason::kMaxValue) -
+          static_cast<int>(IneligibilityReason::kMinValue) + 1);
+      base::ranges::generate(
+          reasons.begin(), reasons.end(),
+          [i = static_cast<int>(IneligibilityReason::kMinValue)]() mutable {
+            return static_cast<IneligibilityReason>(i++);
+          });
+      return reasons;
+    })()),
+    PrintToStringParamName());
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies the container app is absent from the app list for ineligible users.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiIneligibilityTest,
+                       AbsentFromAppList) {
+  RunTestSequence(
+      // Launch app list.
+      DoDefaultAction(ash::kHomeButtonElementId),
+
+      // Find apps page.
+      NameDescendantViewByType<ash::AppListBubbleAppsPage>(
+          ash::kAppListBubbleViewElementId, kAppListBubbleAppsPageElementName),
+
+      // Find apps grid.
+      NameDescendantViewByType<ash::AppsGridView>(
+          kAppListBubbleAppsPageElementName, kAppsGridViewElementName),
+
+      // Check container app absent.
+      CheckView(
+          kAppsGridViewElementName, [](ash::AppsGridView* apps_grid_view) {
+            std::vector<raw_ptr<ash::AppListItemView>> apps;
+            FindDescendantsOfClass(apps_grid_view, apps);
+            return apps.size() &&
+                   base::ranges::none_of(apps, [&](ash::AppListItemView* app) {
+                     return IsAppListItemViewForWebApp(web_app::kContainerAppId,
+                                                       app);
+                   });
+          }));
+}
+
+// Verifies the container app is absent from the shelf for ineligible users.
+IN_PROC_BROWSER_TEST_P(ContainerAppInteractiveUiIneligibilityTest,
+                       AbsentFromShelf) {
+  RunTestSequence(
+      // Check container app absent.
+      CheckView(ash::kShelfViewElementId, [](ash::ShelfView* shelf) {
+        std::vector<raw_ptr<ash::ShelfAppButton>> apps;
+        FindDescendantsOfClass(shelf, apps);
+        return apps.size() &&
+               base::ranges::none_of(
+                   apps, [&, shelf = raw_ptr(shelf)](ash::ShelfAppButton* app) {
+                     return IsShelfAppButtonForWebApp(
+                         std::cref(shelf), web_app::kContainerAppId, app);
+                   });
+      }));
+}
+
 // TODO(http://b/331668699): Test container app position for existing users.
-// TODO(http://b/331668699): Test container app preinstall ineligibility.
