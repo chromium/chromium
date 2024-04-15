@@ -638,6 +638,21 @@ void FedCmMetrics::RecordMultipleRequestsRpMode(
   base::UmaHistogramEnumeration("Blink.FedCm.MultipleRequestsRpMode", status);
 }
 
+void FedCmMetrics::RecordTimeBetweenUserInfoAndButtonModeAPI(
+    base::TimeDelta duration) {
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetTiming_GetUserInfoToButtonMode(
+        ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  base::UmaHistogramMediumTimes("Blink.FedCm.Timing.GetUserInfoToButtonMode",
+                                duration);
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {

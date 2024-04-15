@@ -1802,6 +1802,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.GetUserInfoToButtonMode" units="ms"
+    expires_after="M130">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time in milliseconds from when the getUserInfo() API is called
+    to the time when the Button Mode API is called. Recorded when the Button
+    mode is invoked and there was a getUserInfo call on this page. Recorded at
+    most once per getUserInfo API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.IdTokenResponse" units="ms"
     expires_after="2024-08-16">
   <owner>yigu@chromium.org</owner>

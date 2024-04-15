@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -19,7 +20,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
@@ -483,6 +483,11 @@ bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {
 
   bool flag_enabled = IsFedCmAuthzFlagEnabled();
   return runtime_enabled || flag_enabled;
+}
+
+FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
+  return FederatedAuthRequestPageData::GetOrCreateForPage(
+      render_frame_host->GetPage());
 }
 
 }  // namespace content::webid

@@ -378,6 +378,10 @@ class CONTENT_EXPORT FedCmMetrics {
       blink::mojom::RpMode pending_request_rp_mode,
       blink::mojom::RpMode new_request_rp_mode);
 
+  // Records the time from when a User Info API call, if any, most likely upon
+  // page load, to when the first Button Mode API is called afterwards, if any.
+  void RecordTimeBetweenUserInfoAndButtonModeAPI(base::TimeDelta duration);
+
  private:
   ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
 

@@ -332,11 +332,6 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
                                     /*for_display=*/true);
 }
 
-FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
-  return FederatedAuthRequestPageData::GetOrCreateForPage(
-      render_frame_host->GetPage());
-}
-
 FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
     const IdpNetworkRequestManager::AccountList& accounts) {
   if (accounts.empty()) {
@@ -757,7 +752,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (HasPendingRequest()) {
     FederatedAuthRequestImpl* pending_request =
-        GetPageData(&render_frame_host())->PendingWebIdentityRequest();
+        webid::GetPageData(&render_frame_host())->PendingWebIdentityRequest();
 
     RpMode pending_request_rp_mode = pending_request->GetRpMode();
     RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
@@ -823,7 +818,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
   mediation_requirement_ = requirement;
   auth_request_token_callback_ = std::move(callback);
-  GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
+  webid::GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(this);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
@@ -831,6 +826,14 @@ void FederatedAuthRequestImpl::RequestToken(
   if (IsFedCmButtonModeEnabled() &&
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
+    std::optional<base::TimeTicks> user_info_accounts_response_time =
+        webid::GetPageData(&render_frame_host())
+            ->ConsumeUserInfoAccountsResponseTime(
+                idp_get_params_ptrs[0]->providers[0]->config->config_url);
+    if (user_info_accounts_response_time) {
+      fedcm_metrics_->RecordTimeBetweenUserInfoAndButtonModeAPI(
+          start_time_ - user_info_accounts_response_time.value());
+    }
     // TODO(crbug.com/329235198): Support other mediation mode in button mode.
     mediation_requirement_ = MediationRequirement::kRequired;
     if (!had_transient_user_activation_) {
@@ -1162,7 +1165,8 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
 
 bool FederatedAuthRequestImpl::HasPendingRequest() const {
   bool has_pending_request =
-      GetPageData(&render_frame_host())->PendingWebIdentityRequest() != nullptr;
+      webid::GetPageData(&render_frame_host())->PendingWebIdentityRequest() !=
+      nullptr;
   DCHECK(has_pending_request || !auth_request_token_callback_);
   return has_pending_request;
 }
@@ -2560,7 +2564,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   if (!should_delay_callback || should_complete_request_immediately_) {
     CleanUp();
-    GetPageData(&render_frame_host())->SetPendingWebIdentityRequest(nullptr);
+    webid::GetPageData(&render_frame_host())
+        ->SetPendingWebIdentityRequest(nullptr);
     errors_logged_to_console_ = false;
 
     blink::mojom::TokenErrorPtr error;

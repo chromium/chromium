@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -229,6 +230,10 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
         FederatedAuthUserInfoRequestResult::kInvalidAccountsResponse);
     return;
   }
+
+  webid::GetPageData(render_frame_host_)
+      ->SetUserInfoAccountsResponseTime(idp_config_url_,
+                                        base::TimeTicks::Now());
 
   // Populate the accounts login state.
   for (auto& account : accounts) {
