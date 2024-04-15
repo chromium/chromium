@@ -328,19 +328,13 @@ void ZeroSuggestProviderTest::OnProviderUpdate(
   provider_did_notify_ = true;
 }
 
-// Tests whether zero-suggest is allowed on NTP when the external request
-// conditions are met.
+// Tests whether zero-suggest is allowed on NTP.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
   AutocompleteInput zero_prefix_ntp_input = OnFocusInputForNTP();
   AutocompleteInput prefix_ntp_input = PrefixInputForNTP();
 
-  EXPECT_CALL(*client_, IsAuthenticated())
-      .WillRepeatedly(testing::Return(false));
-
-  // Enable on-focus zero-suggest for signed-out users.
+  // zero-suggest suggestions are allowed on NTP.
   {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
 
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
               ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
@@ -351,16 +345,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
               ZeroSuggestProvider::ResultTypeToRun(prefix_ntp_input));
     EXPECT_FALSE(
         provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_ntp_input));
-  }
-  // Disable on-focus zero-suggest for signed-out users.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
-
-    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
-                                                       zero_prefix_ntp_input));
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
-              ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
   }
 }
 
@@ -516,9 +500,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   // Enable on-focus for OTHER and SRP.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestOnNTPForSignedOutUsers},
-      /*disabled_features=*/{});
 
   // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();

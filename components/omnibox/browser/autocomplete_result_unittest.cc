@@ -1237,38 +1237,6 @@ TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
   }
 }
 
-// Verify the fix to https://crbug.com/1340548.
-TEST_F(AutocompleteResultTest, SortAndCullAllowsNonMatchingZeroSuggestions) {
-  ACMatches matches;
-  const AutocompleteMatchTestData data[] = {
-      {"http://history-url/", AutocompleteMatchType::HISTORY_URL},
-      {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE},
-  };
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {}, {omnibox::kGroupingFrameworkForZPS});
-
-  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
-
-  // On-focus suggestions (ZeroSuggest) is allowed to have the input scheme
-  // differ from the suggestions scheme (like if the clipboard provider has a
-  // URL with a different scheme).
-  AutocompleteInput input(u"https://secure-prefix",
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-
-  AutocompleteResult result;
-  result.AppendMatches(matches);
-
-  // It doesn't matter what the results are. We just verify that we DO NOT hit a
-  // DCHECK like we did before the bug was fixed.
-  result.SortAndCull(input, template_url_service_.get(),
-                     triggered_feature_service());
-  ASSERT_EQ(2U, result.size());
-}
-
 TEST_F(AutocompleteResultTest, DemoteOnDeviceSearchSuggestions) {
   // clang-format off
   TestData data[] = {
@@ -1979,147 +1947,6 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
 }
 #endif
 
-TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
-       {omnibox::kMaxZeroSuggestMatches,
-        {{OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, "5"}}}},
-      {omnibox::kDynamicMaxAutocomplete, omnibox::kGroupingFrameworkForZPS});
-
-  const auto group_1 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED;
-  const auto group_2 = omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS;
-  TestData data[] = {
-      {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
-      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-  };
-  ACMatches matches;
-  PopulateAutocompleteMatches(data, std::size(data), &matches);
-
-  // Suggestion groups have the omnibox::SECTION_DEFAULT and
-  // omnibox::GroupConfig_SideType_DEFAULT_PRIMARY by default.
-  omnibox::GroupConfigMap suggestion_groups_map;
-  suggestion_groups_map[group_1];
-  suggestion_groups_map[group_2];
-
-  {
-    SCOPED_TRACE("Input 'a'");
-    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
-                                  TestSchemeClassifier());
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(typed_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
-    const std::array<TestData, 6> expected_data{{
-        // Default suggestion comes 1st.
-        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-        // other types
-        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-        // Group one is scored higher
-        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        // Group two is scored lower
-        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-    }};
-    AssertResultMatches(result, expected_data);
-  }
-  {
-    SCOPED_TRACE("Zero input");
-    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
-                                        TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(
-        metrics::OmniboxFocusType::INTERACTION_FOCUS);
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_prefix_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
-    // Should include the top 5 scoring suggestions.
-    const std::array<TestData, 5> expected_data{{
-        // Default match comes 1st.
-        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-        // other types
-        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-        // omnibox::SECTION_REMOTE_ZPS_1 comes first.
-        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-    }};
-    AssertResultMatches(result, expected_data);
-  }
-
-  // Set sections that contradict the scores of the matches in groups.
-  suggestion_groups_map[group_1].set_section(omnibox::SECTION_REMOTE_ZPS_1);
-  suggestion_groups_map[group_2].set_section(omnibox::SECTION_REMOTE_ZPS_2);
-
-  {
-    SCOPED_TRACE("Input 'a', with explicit sections");
-    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
-                                  TestSchemeClassifier());
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(typed_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    // typed matches are first culled, then grouped based on group IDs, and
-    // then ordered based on group sections.
-    ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
-    const std::array<TestData, 6> expected_data{{
-        // Default match comes 1st.
-        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-        // other types
-        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-        // omnibox::SECTION_REMOTE_ZPS_1 comes first.
-        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        // omnibox::SECTION_REMOTE_ZPS_2 comes second.
-        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-    }};
-    AssertResultMatches(result, expected_data);
-  }
-  {
-    SCOPED_TRACE("Zero input, with explicit sections");
-    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
-                                        TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(
-        metrics::OmniboxFocusType::INTERACTION_FOCUS);
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_prefix_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    // zero-prefix matches are first grouped basd on group IDs, then ordered
-    // based on group sections, then culled.
-    ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
-    const std::array<TestData, 5> expected_data{{
-        // Default match comes 1st.
-        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-        // other types
-        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-        // omnibox::SECTION_REMOTE_ZPS_1 comes first.
-        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-        {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-    }};
-    AssertResultMatches(result, expected_data);
-  }
-}
-
 TEST_F(AutocompleteResultTest,
        GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions) {
   base::test::ScopedFeatureList feature_list;
@@ -2687,7 +2514,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     SCOPED_TRACE("Query from omnibox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}}},
+        {},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2713,8 +2540,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     SCOPED_TRACE("Query from WebUI omnibox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kWebUIOmniboxPopup, {}}},
+        {{omnibox::kWebUIOmniboxPopup, {}}},
         {omnibox::kGroupingFrameworkForNonZPS});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2751,7 +2577,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     SCOPED_TRACE("Query from realbox");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}}},
+        {},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2779,7 +2605,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     SCOPED_TRACE("Query from realbox - no secondary matches");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}}},
+        {},
         {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -3258,83 +3084,8 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
   zero_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   {
-    SCOPED_TRACE("Inspire Me Enabled with 0 limit count");
+    SCOPED_TRACE("Trend suggestions are only available on iPhones");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "2"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "0"}}}},
-        {});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Ipads should keep the default config.
-      const std::array<TestData, 3> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-      }};
-      AssertResultMatches(result, expected_data);
-    } else {
-      const std::array<TestData, 2> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-      }};
-      AssertResultMatches(result, expected_data);
-    }
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 1 limit count and 3 psuggest");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "3"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "1"}}}},
-        {});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(zero_input, template_url_service_.get(),
-                       triggered_feature_service());
-
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Ipads should keep the default config.
-      const std::array<TestData, 3> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-      }};
-      AssertResultMatches(result, expected_data);
-    } else {
-      const std::array<TestData, 4> expected_data{{
-          {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-          {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-      }};
-      AssertResultMatches(result, expected_data);
-    }
-  }
-
-  {
-    SCOPED_TRACE("Inspire Me Enabled with 2 limit count and 3 psuggest");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kGroupingFrameworkForZPS, {}},
-         {omnibox::kInspireMe,
-          {{OmniboxFieldTrial::kInspireMePsuggestQueries.name, "3"},
-           {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name,
-            "2"}}}},
-        {});
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);

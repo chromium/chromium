@@ -361,17 +361,14 @@ void ZpsSectionWithMVTiles::InitFromMatches(ACMatches& matches) {
   ZpsSection::InitFromMatches(matches);
 }
 
-IOSNTPZpsSection::IOSNTPZpsSection(size_t max_trending_queries,
-                                   size_t max_psuggest_queries,
-                                   omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(
-          max_trending_queries + max_psuggest_queries + 1,
-          {
-              {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-              {max_psuggest_queries, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-              {max_trending_queries, omnibox::GROUP_TRENDS},
-          },
-          group_configs) {}
+IOSNTPZpsSection::IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(26,
+                 {
+                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                     {5, omnibox::GROUP_TRENDS},
+                 },
+                 group_configs) {}
 
 IOSSRPZpsSection::IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs)
     : ZpsSectionWithMVTiles(20,

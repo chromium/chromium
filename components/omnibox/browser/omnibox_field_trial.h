@@ -682,20 +682,6 @@ bool IsMlUrlScoreCachingEnabled();
 
 // Specify number of additional Related and Trending queries appended to the
 // suggestion list, when the Inspire Me feature is enabled.
-constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
-    &omnibox::kInspireMe,
-    "AdditionalRelatedQueries",
-    0);
-
-constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
-    &omnibox::kInspireMe,
-    "AdditionalTrendingQueries",
-    5);
-
-constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
-    &omnibox::kInspireMe,
-    "PersonalizedSuggestQueries",
-    20);
 
 constexpr base::FeatureParam<int> kQueryTilesCacheMaxAge(
     &omnibox::kQueryTilesInZPSOnNTP,

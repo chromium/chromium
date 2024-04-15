@@ -1255,12 +1255,9 @@ TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection_mostVisitedTiles) {
 // Tests the groups, limits, and rules for the iOS NTP ZPS.
 TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
-    size_t max_trending_queries = 3;
-    size_t max_psuggest_queries = 3;
     PSections sections;
     omnibox::GroupConfigMap group_configs;
-    sections.push_back(std::make_unique<IOSNTPZpsSection>(
-        max_trending_queries, max_psuggest_queries, group_configs));
+    sections.push_back(std::make_unique<IOSNTPZpsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1278,7 +1275,7 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
           CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
           CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
           CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST)},
-         {100, 99, 98});
+         {100, 99, 98, 97});
   }
 
   {
@@ -1288,8 +1285,10 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
     test({CreateMatch(100, omnibox::GROUP_TRENDS),
           CreateMatch(99, omnibox::GROUP_TRENDS),
           CreateMatch(98, omnibox::GROUP_TRENDS),
-          CreateMatch(97, omnibox::GROUP_TRENDS)},
-         {100, 99, 98});
+          CreateMatch(97, omnibox::GROUP_TRENDS),
+          CreateMatch(96, omnibox::GROUP_TRENDS),
+          CreateMatch(95, omnibox::GROUP_TRENDS)},
+         {100, 99, 98, 97, 96});
   }
 
   {
@@ -1304,7 +1303,7 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
           CreateMatch(95, omnibox::GROUP_TRENDS),
           CreateMatch(94, omnibox::GROUP_TRENDS),
           CreateMatch(93, omnibox::GROUP_TRENDS)},
-         {100, 99, 98, 96, 95, 94});
+         {100, 99, 98, 97, 96, 95, 94, 93});
   }
 }
 

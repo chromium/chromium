@@ -213,9 +213,7 @@ class DesktopNonZpsSection : public Section {
 //  - up to `max_trending_queries` trending suggestions.
 class IOSNTPZpsSection : public ZpsSection {
  public:
-  explicit IOSNTPZpsSection(size_t max_trending_queries,
-                            size_t max_psuggest_queries,
-                            omnibox::GroupConfigMap& group_configs);
+  explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the SRP.

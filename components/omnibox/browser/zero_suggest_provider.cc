@@ -132,16 +132,8 @@ bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
     return false;
   }
 
-  // Zero-suggest on the NTP is allowed only if the user is signed-in. This
-  // check is done not for privacy reasons but to prevent signed-out users from
-  // querying the server which does not have any suggestions for them.
-  bool check_authentication_state = !base::FeatureList::IsEnabled(
-      omnibox::kZeroSuggestOnNTPForSignedOutUsers);
-
-  return (!check_authentication_state || client->IsAuthenticated()) &&
-         BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
-             default_provider, template_url_service->search_terms_data(),
-             client);
+  return BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
+      default_provider, template_url_service->search_terms_data(), client);
 }
 
 // Called in StoreRemoteResponse() and ReadStoredResponse() to determine if the
