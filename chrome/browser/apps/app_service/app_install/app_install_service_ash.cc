@@ -118,6 +118,7 @@ void AppInstallServiceAsh::InstallApp(
 
   switch (package_id.package_type()) {
     case PackageType::kArc: {
+      // TODO(b/334733649): Avoid hard coding install URLs.
       constexpr char kPlayStoreAppDetailsPage[] =
           "https://play.google.com/store/apps/details";
       GURL url = net::AppendOrReplaceQueryParameter(
@@ -125,22 +126,6 @@ void AppInstallServiceAsh::InstallApp(
       MaybeLaunchPreferredAppForUrl(&*profile_, url,
                                     LaunchSource::kFromInstaller);
       std::move(result_callback).Run(AppInstallResult::kUnknown);
-      return;
-    }
-    case PackageType::kWeb: {
-      // Observe for `anchor_window` being destroyed during async work.
-      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
-      if (anchor_window) {
-        anchor_window_tracker =
-            views::NativeWindowTracker::Create(*anchor_window);
-      }
-
-      FetchAppInstallData(
-          package_id,
-          base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
-                         weak_ptr_factory_.GetWeakPtr(), surface, package_id,
-                         anchor_window, std::move(anchor_window_tracker),
-                         std::move(result_callback)));
       return;
     }
     case PackageType::kBorealis: {
@@ -164,6 +149,33 @@ void AppInstallServiceAsh::InstallApp(
       // website. We don't yet know whether that flow will result in a
       // successfully installed game.
       std::move(result_callback).Run(AppInstallResult::kUnknown);
+      return;
+    }
+    case PackageType::kGeForceNow: {
+      // TODO(b/334733649): Avoid hard coding install URLs.
+      constexpr char kGeForceNowAppDetailsPage[] =
+          "https://play.geforcenow.com/games";
+      GURL url = net::AppendOrReplaceQueryParameter(
+          GURL(kGeForceNowAppDetailsPage), "game-id", package_id.identifier());
+      MaybeLaunchPreferredAppForUrl(&*profile_, url,
+                                    LaunchSource::kFromInstaller);
+      std::move(result_callback).Run(AppInstallResult::kUnknown);
+      return;
+    }
+    case PackageType::kWeb: {
+      // Observe for `anchor_window` being destroyed during async work.
+      std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker;
+      if (anchor_window) {
+        anchor_window_tracker =
+            views::NativeWindowTracker::Create(*anchor_window);
+      }
+
+      FetchAppInstallData(
+          package_id,
+          base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
+                         weak_ptr_factory_.GetWeakPtr(), surface, package_id,
+                         anchor_window, std::move(anchor_window_tracker),
+                         std::move(result_callback)));
       return;
     }
     case PackageType::kChromeApp:

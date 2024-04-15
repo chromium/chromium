@@ -22,7 +22,13 @@ APP_ENUM_TO_STRING(AppType,
                    kExtension,
                    kStandaloneBrowserExtension,
                    kBruschetta)
-APP_ENUM_TO_STRING(PackageType, kUnknown, kArc, kChromeApp, kWeb, kBorealis)
+APP_ENUM_TO_STRING(PackageType,
+                   kUnknown,
+                   kArc,
+                   kBorealis,
+                   kChromeApp,
+                   kGeForceNow,
+                   kWeb)
 APP_ENUM_TO_STRING(Readiness,
                    kUnknown,
                    kReady,
@@ -94,12 +100,14 @@ std::optional<AppType> ConvertPackageTypeToAppType(PackageType package_type) {
       return AppType::kUnknown;
     case PackageType::kArc:
       return AppType::kArc;
-    case PackageType::kChromeApp:
-      return AppType::kChromeApp;
-    case PackageType::kWeb:
-      return AppType::kWeb;
     case PackageType::kBorealis:
       return AppType::kBorealis;
+    case PackageType::kChromeApp:
+      return AppType::kChromeApp;
+    case PackageType::kGeForceNow:
+      return std::nullopt;
+    case PackageType::kWeb:
+      return AppType::kWeb;
   }
 }
 

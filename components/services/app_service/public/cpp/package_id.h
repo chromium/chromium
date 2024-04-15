@@ -31,6 +31,7 @@ namespace apps {
 // kArc        | "android"   | package name          | "android:com.foo.bar"
 // kBorealis   | "steam"     | Steam Game ID         | "steam:123456"
 // kChromeApp  | "chromeapp" | Extension ID          | "chromeapp:mmfbcljfglbok"
+// kGeForceNow | "gfn"       | GeForce Game ID       | "gfn:123456"
 // kWeb        | "web"       | processed manifest ID | "web:https://app.com/id"
 class COMPONENT_EXPORT(APP_TYPES) PackageId {
  public:

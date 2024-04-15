@@ -47,6 +47,29 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
       expected_result, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest, InstallGfnAppOpensGfn) {
+  base::HistogramTester histogram_tester;
+
+  content::TestNavigationObserver navigation_observer(
+      GURL("https://play.geforcenow.com/games?game-id=test"));
+  navigation_observer.StartWatchingNewWebContents();
+
+  AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppInstallService()
+      .InstallApp(AppInstallSurface::kAppInstallUriUnknown,
+                  PackageId(PackageType::kGeForceNow, "test"),
+                  /*anchor_window=*/std::nullopt, base::DoNothing());
+
+  navigation_observer.Wait();
+
+  AppInstallResult expected_result = AppInstallResult::kUnknown;
+  histogram_tester.ExpectUniqueSample("Apps.AppInstallService.AppInstallResult",
+                                      expected_result, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Apps.AppInstallService.AppInstallResult.AppInstallUriUnknown",
+      expected_result, 1);
+}
+
 class AppInstallServiceAshGuestBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<bool> {

@@ -19,6 +19,7 @@ constexpr char kUnknownName[] = "unknown";
 constexpr char kArcPlatformName[] = "android";
 constexpr char kBorealisPlatformName[] = "steam";
 constexpr char kChromeAppPlatformName[] = "chromeapp";
+constexpr char kGeForceNowPlatformName[] = "gfn";
 constexpr char kWebPlatformName[] = "web";
 
 PackageType PlatformNameToPackageType(std::string_view platform_name) {
@@ -28,11 +29,14 @@ PackageType PlatformNameToPackageType(std::string_view platform_name) {
   if (platform_name == kBorealisPlatformName) {
     return PackageType::kBorealis;
   }
-  if (platform_name == kWebPlatformName) {
-    return PackageType::kWeb;
-  }
   if (platform_name == kChromeAppPlatformName) {
     return PackageType::kChromeApp;
+  }
+  if (platform_name == kGeForceNowPlatformName) {
+    return PackageType::kGeForceNow;
+  }
+  if (platform_name == kWebPlatformName) {
+    return PackageType::kWeb;
   }
 
   return PackageType::kUnknown;
@@ -48,6 +52,8 @@ std::string_view PackageTypeToPlatformName(PackageType package_type) {
       return kBorealisPlatformName;
     case PackageType::kChromeApp:
       return kChromeAppPlatformName;
+    case PackageType::kGeForceNow:
+      return kGeForceNowPlatformName;
     case PackageType::kWeb:
       return kWebPlatformName;
     default:
