@@ -29,6 +29,14 @@ BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableComposeProactiveNudge,
+             "ComposeProactiveNudge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableComposeSavedStateNotification,
+             "EnableComposeSavedStateNotification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableComposeLanguageBypass,
              "ComposeLanguageBypass",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -39,10 +47,6 @@ BASE_FEATURE(kEnableComposeWebUIAnimations,
 
 BASE_FEATURE(kEnableComposeOnDeviceDogfoodFooter,
              "EnableComposeOnDeviceDogfoodFooter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableComposeSavedStateNotification,
-             "EnableComposeSavedStateNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeUiParams,
@@ -64,5 +68,9 @@ BASE_FEATURE(kComposeRequestLatencyTimeout,
 BASE_FEATURE(kComposeUiRefinement,
              "ComposeUiRefinement",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
+             "ComposeEnableNudgeForUnspecifiedHint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace compose::features

@@ -78,6 +78,15 @@ class ComposeEnabling {
       const url::Origin& element_frame_origin,
       bool is_newsted_within_fenced_frame);
 
+  bool ShouldTriggerNoStatePopup(std::string_view autocomplete_attribute,
+                                 Profile* profile,
+                                 translate::TranslateManager* translate_manager,
+                                 const url::Origin& top_level_frame_origin,
+                                 const url::Origin& element_frame_origin,
+                                 GURL url);
+  bool ShouldTriggerSavedStatePopup(
+      autofill::AutofillSuggestionTriggerSource trigger_source);
+
   static base::expected<void, compose::ComposeShowStatus> CheckEnabling(
       OptimizationGuideKeyedService* opt_guide,
       signin::IdentityManager* identity_manager);

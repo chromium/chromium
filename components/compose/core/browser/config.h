@@ -44,12 +44,12 @@ struct Config {
   // Whether to send a compose when the dialog is first opened,
   // if there is an acceptable input text selected.
   bool auto_submit_with_selection = false;
-  // If nudging is enabled, show the popup when focus appears on a field with no
-  // saved state.
-  bool popup_with_no_saved_state = false;
-  // If nudging is enabled, show the popup when focus appears on a field with
-  // saved state.
-  bool popup_with_saved_state = true;
+
+  // Whether to enable the nudge on focus when there is saved state.
+  bool saved_state_nudge_enabled = true;
+
+  // Whether to enable the proactive nudge with no saved state.
+  bool proactive_nudge_enabled = false;
 
   // The duration that the saved state notification is shown before
   // auto-dismissal.

@@ -50,13 +50,11 @@ Config::Config() {
   auto_submit_with_selection =
       base::FeatureList::IsEnabled(features::kComposeAutoSubmit);
 
-  popup_with_saved_state = base::GetFieldTrialParamByFeatureAsBool(
-      features::kEnableComposeNudge, "popup_with_saved_state",
-      popup_with_saved_state);
+  saved_state_nudge_enabled =
+      base::FeatureList::IsEnabled(features::kEnableComposeNudge);
 
-  popup_with_no_saved_state = base::GetFieldTrialParamByFeatureAsBool(
-      features::kEnableComposeNudge, "popup_with_no_saved_state",
-      popup_with_no_saved_state);
+  proactive_nudge_enabled =
+      base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge);
 
   saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,

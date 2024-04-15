@@ -7951,6 +7951,10 @@ const char kComposeTextSelectionDescription[] =
 const char kComposeUiRefinementName[] = "Compose UI Refinements";
 const char kComposeUiRefinementDescription[] =
     "Bundle of refinements to the Compose dialog";
+
+const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
+const char kComposeProactiveNudgeDescription[] =
+    "Enables proactive nudging for Compose";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

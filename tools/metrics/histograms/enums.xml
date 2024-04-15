@@ -21353,6 +21353,7 @@ from previous Chrome versions.
   <int value="83422372"
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
+  <int value="84092881" label="ComposeProactiveNudge:enabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
   <int value="86563978" label="CCTTextFragmentLookupApiEnabled:enabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
@@ -21633,6 +21634,7 @@ from previous Chrome versions.
   <int value="211561930" label="TouchDragAndContextMenu:disabled"/>
   <int value="212194994" label="PerAppLanguage:enabled"/>
   <int value="212245695" label="PowerBookmarksSidePanel:disabled"/>
+  <int value="212361556" label="ComposeProactiveNudge:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="213214333" label="UnifiedPasswordManagerReenrollment:enabled"/>

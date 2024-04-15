@@ -190,8 +190,6 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   return base::ok();
 }
 
-// TODO(b/303502029): make return state an enum instead of a bool so we
-// can return a different value when we have saved state for this field.
 bool ComposeEnabling::ShouldTriggerPopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
@@ -201,26 +199,22 @@ bool ComposeEnabling::ShouldTriggerPopup(
     const url::Origin& element_frame_origin,
     GURL url,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
-  if (trigger_source ==
-          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
-      !base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification)) {
-    return false;
+  if (ongoing_session) {
+    return ShouldTriggerSavedStatePopup(trigger_source);
   }
+  return ShouldTriggerNoStatePopup(autocomplete_attribute, profile,
+                                   translate_manager, top_level_frame_origin,
+                                   element_frame_origin, url);
+}
 
-  if (trigger_source !=
-          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
-      !base::FeatureList::IsEnabled(compose::features::kEnableComposeNudge)) {
-    return false;
-  }
-
-  // Check URL with Optimization guide.
-  compose::ComposeHintDecision decision =
-      GetOptimizationGuidanceForUrl(url, profile);
-  if (decision == compose::ComposeHintDecision::
-                      COMPOSE_HINT_DECISION_COMPOSE_DISABLED ||
-      decision ==
-          compose::ComposeHintDecision::COMPOSE_HINT_DECISION_DISABLE_NUDGE) {
+bool ComposeEnabling::ShouldTriggerNoStatePopup(
+    std::string_view autocomplete_attribute,
+    Profile* profile,
+    translate::TranslateManager* translate_manager,
+    const url::Origin& top_level_frame_origin,
+    const url::Origin& element_frame_origin,
+    GURL url) {
+  if (!compose::GetComposeConfig().proactive_nudge_enabled) {
     return false;
   }
 
@@ -233,22 +227,40 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
-  auto& config = compose::GetComposeConfig();
+  // Check autocomplete attribute if the proactive nudge would be presented.
+  // TODO(b/303288183): Decide if we should keep this check or not.
+  if (!AutocompleteAllowed(autocomplete_attribute)) {
+    DVLOG(2) << "autocomplete=off";
+    return false;
+  }
 
-  if (ongoing_session) {
-    if (!config.popup_with_saved_state) {
+  // Check URL with Optimization guide.
+  switch (GetOptimizationGuidanceForUrl(url, profile)) {
+    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED:
+    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_DISABLE_NUDGE:
       return false;
-    }
-  } else {
-    if (!config.popup_with_no_saved_state) {
-      return false;
-    }
-    // Check autocomplete attribute if the proactive nudge would be presented.
-    // TODO(b/303288183): Decide if we should keep this check or not.
-    if (!AutocompleteAllowed(autocomplete_attribute)) {
-      DVLOG(2) << "autocomplete=off";
-      return false;
-    }
+    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED:
+      return true;
+    case compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED:
+      return base::FeatureList::IsEnabled(
+          compose::features::kEnableNudgeForUnspecifiedHint);
+  }
+}
+
+bool ComposeEnabling::ShouldTriggerSavedStatePopup(
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
+  // No need to preform field and page level checks since there is already saved
+  // state. Only check config and features.
+
+  if (!compose::GetComposeConfig().saved_state_nudge_enabled) {
+    return false;
+  }
+
+  if (trigger_source ==
+          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
+      !base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    return false;
   }
 
   return true;
@@ -292,6 +304,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
         compose::ComposeShowStatus::kShouldShow);
     return true;
   }
+
   compose::LogComposeContextMenuShowStatus(show_status.error());
   DVLOG(2) << "page level checks failed";
   return false;

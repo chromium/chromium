@@ -25,8 +25,15 @@ BASE_DECLARE_FEATURE(kComposeAutoSubmit);
 // Force compose off even if enabled by other switches..
 BASE_DECLARE_FEATURE(kComposeEligible);
 
-// Controls whether or not the Nudge UI entrypoint is enabled for Compose.
+// Controls whether or not the saved state nudge is enabled.
+// TODO(b/334158978): Rename to kEnableComposeSavedStateNudge
 BASE_DECLARE_FEATURE(kEnableComposeNudge);
+
+// Controls whether or not the proactive nudge is enabled.
+BASE_DECLARE_FEATURE(kEnableComposeProactiveNudge);
+
+// Controls whether or not the saved state notification is shown.
+BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
 
 // Controls whether the language check is bypassed for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeLanguageBypass);
@@ -37,9 +44,6 @@ BASE_DECLARE_FEATURE(kEnableComposeWebUIAnimations);
 // Controls whether to enable the dogfood footer when on device evaluation is
 // used.
 BASE_DECLARE_FEATURE(kEnableComposeOnDeviceDogfoodFooter);
-
-// Controls whether or not the saved state notification is shown.
-BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
 
 // Controls parameters around UI rendering.
 BASE_DECLARE_FEATURE(kComposeUiParams);
@@ -55,6 +59,9 @@ BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
 
 // Enables enhanced compose dialog UI.
 BASE_DECLARE_FEATURE(kComposeUiRefinement);
+
+// Default nudge allow/deny decision for unspecified hint.
+BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 
 }  // namespace compose::features
 

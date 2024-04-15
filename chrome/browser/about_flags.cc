@@ -10703,6 +10703,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeUiRefinementDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kComposeUiRefinement)},
+
+    {"compose-proactive-nudge", flag_descriptions::kComposeProactiveNudgeName,
+     flag_descriptions::kComposeProactiveNudgeDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kEnableComposeProactiveNudge)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
