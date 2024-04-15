@@ -119,13 +119,14 @@ void EnableSetAsDefaultButton(UIButton* button, BOOL is_enabled) {
         [UIColor colorNamed:kBlueColor];
     button_configuration.baseForegroundColor =
         [UIColor colorNamed:kSolidButtonTextColor];
-    button.accessibilityHint = @"";
+    button.accessibilityHint = nil;
   } else {
     button_configuration.background.backgroundColor =
         [UIColor colorNamed:kTertiaryBackgroundColor];
     button_configuration.baseForegroundColor =
         [UIColor colorNamed:kDisabledTintColor];
-    l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT);
+    button.accessibilityHint =
+        l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_DEFAULT_HINT);
   }
   button.configuration = button_configuration;
   button.enabled = is_enabled;
