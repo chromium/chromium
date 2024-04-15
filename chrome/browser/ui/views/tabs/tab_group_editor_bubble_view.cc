@@ -243,8 +243,18 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   SetCloseCallback(base::BindOnce(&TabGroupEditorBubbleView::OnBubbleClose,
                                   base::Unretained(this)));
 
-  // Create view hierarchy.
+  std::unique_ptr<views::LabelButton> move_menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
+      l10n_util::GetStringUTF16(
+          IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
+      base::BindRepeating(
+          &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
+          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
+                                         ? kMoveGroupToNewWindowRefreshIcon
+                                         : kMoveGroupToNewWindowIcon));
 
+  // Create view hierarchy.
   title_field_ =
       AddChildView(std::make_unique<TitleField>(stop_context_menu_propagation));
   title_field_->SetText(title);
@@ -262,7 +272,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       base::BindRepeating(&TabGroupEditorBubbleView::UpdateGroup,
                           base::Unretained(this))));
 
-  auto* const separator = AddChildView(std::make_unique<views::Separator>());
+  auto* const visual_data_separator =
+      AddChildView(std::make_unique<views::Separator>());
 
   views::View* save_group_line_container = nullptr;
 
@@ -313,6 +324,11 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                                          : kNewTabInGroupIcon)));
   menu_items_.push_back(new_tab_menu_item);
 
+  views::LabelButton* move_menu_item_ptr;
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    move_menu_item_ptr = AddChildView(std::move(move_menu_item));
+  }
+
   menu_items_.push_back(AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_UNGROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
@@ -333,23 +349,20 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                                      kTabGroupEditorBubbleCloseGroupButtonId);
   menu_items_.push_back(close_group_menu_item);
 
-  views::LabelButton* move_menu_item = AddChildView(CreateMenuItem(
-      TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
-      l10n_util::GetStringUTF16(
-          IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
-      base::BindRepeating(
-          &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
-          base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kMoveGroupToNewWindowRefreshIcon
-                                         : kMoveGroupToNewWindowIcon)));
-  move_menu_item->SetEnabled(
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    // The move menu item must not be added to the menu by this point.
+    CHECK(move_menu_item);
+    move_menu_item_ptr = AddChildView(std::move(move_menu_item));
+  }
+
+  // The move menu item must be added to the menu by this point.
+  CHECK(!move_menu_item);
+  move_menu_item_ptr->SetEnabled(
       tab_strip_model->count() !=
       tab_strip_model->group_model()->GetTabGroup(group_)->tab_count());
-  menu_items_.push_back(move_menu_item);
+  menu_items_.push_back(move_menu_item_ptr);
 
   // Setting up the layout.
-
   const gfx::Insets control_insets = new_tab_menu_item->GetInsets();
   const int vertical_spacing = control_insets.top();
   const int horizontal_spacing = control_insets.left();
@@ -365,8 +378,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   color_selector_->SetProperty(views::kMarginsKey,
                                gfx::Insets::VH(0, horizontal_spacing));
 
-  separator->SetProperty(views::kMarginsKey,
-                         gfx::Insets::VH(vertical_spacing, 0));
+  visual_data_separator->SetProperty(views::kMarginsKey,
+                                     gfx::Insets::VH(vertical_spacing, 0));
 
   if (save_group_line_container) {
     gfx::Insets save_group_margins = control_insets;
@@ -451,10 +464,17 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
   }
 
-  return saved_tab_group_service->model()->Contains(group_)
-             ? l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP)
-             : l10n_util::GetStringUTF16(
-                   IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+  // The UI updates now just name this "Close group" instead of "Delete Group"
+  // Since delete group is separate if the group is saved.
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
+  } else {
+    return saved_tab_group_service->model()->Contains(group_)
+               ? l10n_util::GetStringUTF16(
+                     IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP)
+               : l10n_util::GetStringUTF16(
+                     IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+  }
 }
 
 const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName() {

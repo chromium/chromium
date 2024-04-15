@@ -28,7 +28,7 @@ constexpr int kTitleAdjustmentForEmptyHeader = 2;
 constexpr int kTitleAdjustmentForNonEmptyHeader = -2;
 // The width of the sync icon when a tab group is saved.
 constexpr int kSyncIconWidth = 16;
-// The size of the empty chips.
+// The size of the empty chip.
 constexpr int kEmptyChipSize = 22;
 
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
