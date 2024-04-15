@@ -2189,6 +2189,9 @@ void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_SUBHEADER,
           chrome::kSafeBrowsingUseInChromeURL));
+
+  html_source->AddString("safetyHubHelpCenterURL",
+                         chrome::kSafetyHubHelpCenterURL);
 }
 
 void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
