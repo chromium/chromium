@@ -202,7 +202,10 @@ class BirchModelTest : public AshTestBase {
 class BirchModelWithoutWeatherTest : public AshTestBase {
  public:
   BirchModelWithoutWeatherTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatures({features::kForestFeature},
+                                   {features::kBirchWeather});
+  }
   void SetUp() override {
     switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
@@ -222,7 +225,7 @@ class BirchModelWithoutWeatherTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
 };
 
