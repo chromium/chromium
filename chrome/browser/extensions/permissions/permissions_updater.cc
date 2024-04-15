@@ -650,33 +650,43 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   PermissionsManager::Get(browser_context)
       ->NotifyExtensionPermissionsUpdated(*extension, *changed, reason);
 
-  // Send the new permissions to the renderers.
-  for (RenderProcessHost::iterator host_iterator(
-           RenderProcessHost::AllHostsIterator());
-       !host_iterator.IsAtEnd(); host_iterator.Advance()) {
-    RenderProcessHost* host = host_iterator.GetCurrentValue();
-    if (host->IsInitializedAndNotDead() &&
-        profile->IsSameOrParent(
-            Profile::FromBrowserContext(host->GetBrowserContext()))) {
+  // Send the new permissions to the renderers iff extension is enabled.
+  // A disabled extension can have its permissions updated by the user in
+  // chrome://extensions. Disabled extensions will have their permissions
+  // updated in the renderer when they are next loaded.
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(browser_context);
+  if (extension_registry->enabled_extensions().Contains(extension->id())) {
+    for (auto host_iterator(RenderProcessHost::AllHostsIterator());
+         !host_iterator.IsAtEnd(); host_iterator.Advance()) {
+      RenderProcessHost* host = host_iterator.GetCurrentValue();
+      if (!host->IsInitializedAndNotDead() ||
+          !profile->IsSameOrParent(
+              Profile::FromBrowserContext(host->GetBrowserContext()))) {
+        continue;
+      }
+
       mojom::Renderer* renderer =
           RendererStartupHelperFactory::GetForBrowserContext(
               host->GetBrowserContext())
               ->GetRenderer(host);
-      if (renderer) {
-        const PermissionsData* permissions_data = extension->permissions_data();
-        renderer->UpdatePermissions(
-            extension->id(),
-            std::move(*permissions_data->active_permissions().Clone()),
-            std::move(*permissions_data->withheld_permissions().Clone()),
-            permissions_data->policy_blocked_hosts(),
-            permissions_data->policy_allowed_hosts(),
-            permissions_data->UsesDefaultPolicyHostRestrictions());
+      if (!renderer) {
+        continue;
+      }
 
-        // Notify ScriptInjectionTracker when host permissions change.
-        if (!changed->effective_hosts().is_empty()) {
-          ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
-              base::PassKey<PermissionsUpdater>(), *extension, *host);
-        }
+      const PermissionsData* permissions_data = extension->permissions_data();
+      renderer->UpdatePermissions(
+          extension->id(),
+          std::move(*permissions_data->active_permissions().Clone()),
+          std::move(*permissions_data->withheld_permissions().Clone()),
+          permissions_data->policy_blocked_hosts(),
+          permissions_data->policy_allowed_hosts(),
+          permissions_data->UsesDefaultPolicyHostRestrictions());
+
+      // Notify ScriptInjectionTracker when host permissions change.
+      if (!changed->effective_hosts().is_empty()) {
+        ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+            base::PassKey<PermissionsUpdater>(), *extension, *host);
       }
     }
   }

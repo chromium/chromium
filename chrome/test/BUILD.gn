@@ -3830,6 +3830,7 @@ if (!is_android) {
         "../browser/extensions/pack_extension_browsertest.cc",
         "../browser/extensions/permissions/active_tab_apitest.cc",
         "../browser/extensions/permissions/permissions_manager_browsertest.cc",
+        "../browser/extensions/permissions/permissions_updater_browsertest.cc",
         "../browser/extensions/permissions/site_permissions_helper_browsertest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",

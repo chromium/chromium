@@ -588,7 +588,7 @@ void StoreExtensionsInjectingScripts(
     const std::vector<const Extension*>& extensions,
     ScriptInjectionTracker::ScriptType script_type,
     content::RenderProcessHost& process) {
-  // ContentScriptTracker never removes entries from this set - once a
+  // ScriptInjectionTracker never removes entries from this set - once a
   // renderer process gains an ability to talk on behalf of a content script,
   // it retains this ability forever.  Note that the `process_data` will be
   // destroyed together with the RenderProcessHost (see also a comment inside
