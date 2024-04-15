@@ -10,13 +10,50 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 extern const char* kFuzzerBinary;
 extern const char* kFuzzerArgs;
+
+namespace {
+void HandleReplayModeIfNeeded(auto& args) {
+  // For libfuzzer fuzzers, nothing needs to be done. To detect whether we're
+  // running a libfuzzer fuzztest, we check for `undefok` in the fuzzer args
+  // provided at compile time, which is only set for libfuzzer.
+  if (kFuzzerArgs && std::string_view(kFuzzerArgs).find("-undefok=") !=
+                         std::string_view::npos) {
+    return;
+  }
+
+  // We're handling a centipede based fuzzer. If the last argument is a
+  // filepath, we're trying to replay a testcase, since it doesn't make sense
+  // to get a filepath when running with the centipede binary.
+  base::FilePath test_case(args.back());
+  if (!base::PathExists(test_case)) {
+    return;
+  }
+
+  auto env = base::Environment::Create();
+#if BUILDFLAG(IS_WIN)
+  auto env_value = base::WideToUTF8(args.back());
+#else
+  auto env_value = args.back();
+#endif
+  env->SetVar("FUZZTEST_REPLAY", env_value);
+  env->UnSetVar("CENTIPEDE_RUNNER_FLAGS");
+  std::cerr << "FuzzTest wrapper setting env var: FUZZTEST_REPLAY="
+            << args.back() << '\n';
+
+  // We must not add the testcase to the command line, as this will not be
+  // parsed correctly by centipede.
+  args.pop_back();
+}
+}  // namespace
 
 int main(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
@@ -32,8 +69,11 @@ int main(int argc, const char* const* argv) {
   for (auto arg : additional_args) {
     cmdline.AppendArg(arg);
   }
+  auto args = base::CommandLine::ForCurrentProcess()->argv();
+  HandleReplayModeIfNeeded(args);
+
   bool skipped_first = false;
-  for (auto arg : base::CommandLine::ForCurrentProcess()->argv()) {
+  for (auto arg : args) {
     if (!skipped_first) {
       skipped_first = true;
       continue;
