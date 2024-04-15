@@ -6,6 +6,7 @@
 
 #include <atk/atk.h>
 
+#include "base/functional/bind.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -15,6 +16,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
+#include "ui/base/glib/scoped_gsignal.h"
 
 namespace content {
 
@@ -74,18 +76,22 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
   ui::AXPlatformNodeAuraLinux* root_document_root_node =
       static_cast<ui::AXPlatformNodeAuraLinux*>(
           ui::AXPlatformNode::FromNativeViewAccessible(atk_root));
-  g_signal_connect(atk_root, "children-changed::remove",
-                   G_CALLBACK(+[](AtkObject* obj, int index, gpointer child,
-                                  gpointer user_data) {
-                     EXPECT_EQ(ATK_ROLE_DOCUMENT_WEB, atk_object_get_role(obj));
-                   }),
-                   nullptr);
-  g_signal_connect(atk_root, "children-changed::add",
-                   G_CALLBACK(+[](AtkObject* obj, int index, gpointer child,
-                                  gpointer user_data) {
-                     EXPECT_EQ(ATK_ROLE_DOCUMENT_WEB, atk_object_get_role(obj));
-                   }),
-                   nullptr);
+  {
+    ScopedGSignal signal1(
+        atk_root, "children-changed::remove",
+        base::BindRepeating(
+            +[](AtkObject* obj, int index, gpointer child, gpointer user_data) {
+              EXPECT_EQ(ATK_ROLE_DOCUMENT_WEB, atk_object_get_role(obj));
+            }));
+    EXPECT_TRUE(signal1.Connected());
+    ScopedGSignal signal2(
+        atk_root, "children-changed::add",
+        base::BindRepeating(
+            +[](AtkObject* obj, int index, gpointer child, gpointer user_data) {
+              EXPECT_EQ(ATK_ROLE_DOCUMENT_WEB, atk_object_get_role(obj));
+            }));
+    EXPECT_TRUE(signal2.Connected());
+  }
   BrowserAccessibility* static_text_accessible =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
   // StaticText node triggers 'children-changed' event to the parent,
@@ -97,18 +103,22 @@ TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {
                                              static_text_accessible->node());
 
   AtkObject* atk_object = root_document_root_node->ChildAtIndex(0);
-  g_signal_connect(atk_object, "children-changed::remove",
-                   G_CALLBACK(+[](AtkObject*, int index, gpointer child,
-                                  gpointer user_data) {
-                     EXPECT_TRUE(false) << "should not be reached.";
-                   }),
-                   nullptr);
-  g_signal_connect(atk_object, "children-changed::add",
-                   G_CALLBACK(+[](AtkObject* obj, int index, gpointer child,
-                                  gpointer user_data) {
-                     EXPECT_TRUE(false) << "should not be reached.";
-                   }),
-                   nullptr);
+  {
+    ScopedGSignal signal3(
+        atk_object, "children-changed::remove",
+        base::BindRepeating(
+            +[](AtkObject*, int index, gpointer child, gpointer user_data) {
+              EXPECT_TRUE(false) << "should not be reached.";
+            }));
+    EXPECT_TRUE(signal3.Connected());
+    ScopedGSignal signal4(
+        atk_object, "children-changed::add",
+        base::BindRepeating(
+            +[](AtkObject* obj, int index, gpointer child, gpointer user_data) {
+              EXPECT_TRUE(false) << "should not be reached.";
+            }));
+    EXPECT_TRUE(signal4.Connected());
+  }
 
   // The static text is a platform leaf.
   ASSERT_EQ(0U, static_text_accessible->PlatformChildCount());
