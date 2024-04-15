@@ -38,6 +38,7 @@ def __use_large_b289968566(ctx, step_config):
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./lacros_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
+        "./lacros_clang_x64/obj/content/browser/browser/render_frame_host_impl.o",
         "./lacros_clang_x64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         "./lacros_clang_x64/obj/third_party/blink/public/mojom/mojom_platform/speech_recognition_grammar.mojom.o",
         "./obj/chrome/browser/ash/ash/autotest_private_api.o",
