@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+
 #include <algorithm>
 #include <cstring>
 #include <limits>
@@ -24,10 +26,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator_test_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 using ThreadPoolExecutionMode =
@@ -1481,6 +1483,90 @@ TEST_P(ParkableStringTestLessAggressiveMode, NoParkingInForeground) {
   manager.SetRendererBackgrounded(true);
   EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
   WaitForAging();
+  EXPECT_TRUE(parkable.Impl()->is_parked());
+  WaitForDiskWriting();
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+  // The tick eventually stops.
+  WaitForAging();
+  CheckOnlyCpuCostTaskRemains();
+}
+
+// Same test as the previous one, with RAIL mode transitions.
+TEST_P(ParkableStringTestLessAggressiveMode, NoParkingWhileLoading) {
+  auto& manager = ParkableStringManager::Instance();
+  manager.OnRAILModeChanged(RAILMode::kLoad);
+
+  ParkableString parkable(MakeLargeString().Impl());
+  ASSERT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_EQ(1u, manager.Size());
+  task_environment_.FastForwardBy(ParkableStringManager::kFirstParkingDelay);
+  // No aging.
+  EXPECT_EQ(ParkableStringImpl::Age::kYoung,
+            parkable.Impl()->age_for_testing());
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  CheckOnlyCpuCostTaskRemains();
+
+  manager.OnRAILModeChanged(RAILMode::kIdle);
+  // A tick task has been posted.
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  // Aging restarts.
+  WaitForAging();
+  EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
+  manager.OnRAILModeChanged(RAILMode::kLoad);
+  // Another task has been posted.
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  // But the string does not age further, since we are in foreground.
+  WaitForAging();
+  EXPECT_EQ(ParkableStringImpl::Age::kOld, parkable.Impl()->age_for_testing());
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  CheckOnlyCpuCostTaskRemains();
+
+  // Back to idle, pick up where we left off.
+  manager.OnRAILModeChanged(RAILMode::kIdle);
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  WaitForAging();
+  EXPECT_TRUE(parkable.Impl()->is_parked());
+  WaitForDiskWriting();
+  EXPECT_TRUE(parkable.Impl()->is_on_disk());
+  // The tick eventually stops.
+  WaitForAging();
+  CheckOnlyCpuCostTaskRemains();
+}
+
+// Combination of background and loading.
+TEST_P(ParkableStringTestLessAggressiveMode,
+       NoParkingWhileLoadingOrInForeground) {
+  auto& manager = ParkableStringManager::Instance();
+  // Loading in background.
+  manager.OnRAILModeChanged(RAILMode::kLoad);
+  manager.SetRendererBackgrounded(true);
+
+  ParkableString parkable(MakeLargeString().Impl());
+  ASSERT_FALSE(parkable.Impl()->is_parked());
+  EXPECT_EQ(1u, manager.Size());
+  task_environment_.FastForwardBy(ParkableStringManager::kFirstParkingDelay);
+  // No aging.
+  EXPECT_EQ(ParkableStringImpl::Age::kYoung,
+            parkable.Impl()->age_for_testing());
+  EXPECT_FALSE(parkable.Impl()->is_parked());
+  CheckOnlyCpuCostTaskRemains();
+
+  // Idle in foreground, no parking.
+  manager.SetRendererBackgrounded(false);
+  manager.OnRAILModeChanged(RAILMode::kIdle);
+  CheckOnlyCpuCostTaskRemains();
+
+  // Animation in foreground, no parking.
+  manager.SetRendererBackgrounded(false);
+  manager.OnRAILModeChanged(RAILMode::kAnimation);
+  CheckOnlyCpuCostTaskRemains();
+
+  // Not loading in background, restarting the tick.
+  manager.SetRendererBackgrounded(true);
+  manager.OnRAILModeChanged(RAILMode::kAnimation);
+  // A tick task has been posted.
+  EXPECT_EQ(2u, task_environment_.GetPendingMainThreadTaskCount());
+  WaitForDelayedParking();
   EXPECT_TRUE(parkable.Impl()->is_parked());
   WaitForDiskWriting();
   EXPECT_TRUE(parkable.Impl()->is_on_disk());

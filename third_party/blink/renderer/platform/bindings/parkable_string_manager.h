@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -54,7 +55,7 @@ class PLATFORM_EXPORT ParkableStringManagerDumpProvider
 // possible to temporarily have an unparked `ParkableString` inaccessible
 // through `unparked_strings_`. This can cause aging of the string to be
 // delayed or a variation on the sizes recorded in 'ComputeStatistics()`.
-class PLATFORM_EXPORT ParkableStringManager {
+class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
   USING_FAST_MALLOC(ParkableStringManager);
 
  public:
@@ -63,10 +64,11 @@ class PLATFORM_EXPORT ParkableStringManager {
   static ParkableStringManager& Instance();
   ParkableStringManager(const ParkableStringManager&) = delete;
   ParkableStringManager& operator=(const ParkableStringManager&) = delete;
-  ~ParkableStringManager();
+  ~ParkableStringManager() override;
 
   void SetRendererBackgrounded(bool backgrounded);
-  bool IsRendererBackgrounded() const;
+  void OnRAILModeChanged(RAILMode rail_mode) override;
+
   void PurgeMemory();
   // Number of parked and unparked strings. Public for testing.
   size_t Size() const;
@@ -188,6 +190,8 @@ class PLATFORM_EXPORT ParkableStringManager {
 
   void AssertRemoved(ParkableStringImpl* string);
   void ResetForTesting();
+  bool IsPaused() const;
+  bool HasPendingWork() const;
   ParkableStringManager();
 
   // Arbitrarily chosen, was shown to not regress metrics in a field experiment
@@ -201,6 +205,7 @@ class PLATFORM_EXPORT ParkableStringManager {
       base::Seconds(10);
 
   bool backgrounded_ = false;
+  RAILMode rail_mode_ = RAILMode::kIdle;
   bool has_pending_aging_task_ = false;
   bool has_posted_unparking_time_accounting_task_ = false;
   bool did_register_memory_pressure_listener_ = false;

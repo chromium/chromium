@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -111,21 +112,22 @@ ParkableStringManager::~ParkableStringManager() = default;
 
 void ParkableStringManager::SetRendererBackgrounded(bool backgrounded) {
   DCHECK(IsMainThread());
-  bool state_did_change = backgrounded != backgrounded_;
+  bool was_paused = IsPaused();
   backgrounded_ = backgrounded;
 
-  if (state_did_change && backgrounded_ &&
-      base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
-      (!unparked_strings_.empty() || !parked_strings_.empty())) {
-    // Restart the aging tick, since it stops running while we are in
-    // foreground.
+  if (was_paused && !IsPaused() && HasPendingWork()) {
     ScheduleAgingTaskIfNeeded();
   }
 }
 
-bool ParkableStringManager::IsRendererBackgrounded() const {
+void ParkableStringManager::OnRAILModeChanged(RAILMode rail_mode) {
   DCHECK(IsMainThread());
-  return backgrounded_;
+  bool was_paused = IsPaused();
+  rail_mode_ = rail_mode;
+
+  if (was_paused && !IsPaused() && HasPendingWork()) {
+    ScheduleAgingTaskIfNeeded();
+  }
 }
 
 bool ParkableStringManager::OnMemoryDump(
@@ -378,8 +380,7 @@ void ParkableStringManager::AgeStringsAndPark() {
   DCHECK(CompressionEnabled());
   has_pending_aging_task_ = false;
 
-  if (base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
-      !IsRendererBackgrounded()) {
+  if (IsPaused()) {
     return;
   }
 
@@ -411,16 +412,13 @@ void ParkableStringManager::AgeStringsAndPark() {
   // we need to age and park strings after the renderer becomes idle, meaning
   // that this has to run when the idle tasks are not. As a consequence, it
   // is important to make sure that this will not reschedule tasks forever.
-  bool reschedule = (!unparked_strings_.empty() || !parked_strings_.empty()) &&
-                    can_make_progress;
+  bool reschedule = HasPendingWork() && can_make_progress;
   if (reschedule)
     ScheduleAgingTaskIfNeeded();
 }
 
 void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
-  if (!CompressionEnabled() ||
-      (base::FeatureList::IsEnabled(features::kLessAggressiveParkableString) &&
-       !IsRendererBackgrounded())) {
+  if (IsPaused()) {
     return;
   }
 
@@ -544,6 +542,23 @@ void ParkableStringManager::ResetForTesting() {
   first_string_aging_was_delayed_ = false;
 }
 
+bool ParkableStringManager::IsPaused() const {
+  DCHECK(IsMainThread());
+  if (!CompressionEnabled()) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kLessAggressiveParkableString)) {
+    return false;
+  }
+
+  return !(backgrounded_ && (rail_mode_ != RAILMode::kLoad));
+}
+
+bool ParkableStringManager::HasPendingWork() const {
+  return !unparked_strings_.empty() || !parked_strings_.empty();
+}
+
 bool ParkableStringManager::IsOnParkedMapForTesting(
     ParkableStringImpl* string) {
   auto it = parked_strings_.find(string->digest());
@@ -557,6 +572,11 @@ bool ParkableStringManager::IsOnDiskMapForTesting(ParkableStringImpl* string) {
 
 ParkableStringManager::ParkableStringManager()
     : task_runner_(Thread::MainThread()->GetTaskRunner(
-          MainThreadTaskRunnerRestricted())) {}
+          MainThreadTaskRunnerRestricted())) {
+  // Should unregister in the destructor, but `this` is a NoDestructor static
+  // local.
+  ThreadScheduler::Current()->ToMainThreadScheduler()->AddRAILModeObserver(
+      this);
+}
 
 }  // namespace blink
