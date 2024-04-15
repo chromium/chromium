@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.util.LruCache;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.WebViewMediaIntegrityProvider;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentViewStatics;
+import org.chromium.url.Origin;
 
 import java.util.Objects;
 import java.util.Set;
@@ -104,14 +104,14 @@ public class AwBrowserContext implements BrowserContextHandle {
      */
     public static final class AwMediaIntegrityProviderKey {
 
-        private final Uri mTopFrameOrigin;
-        private final Uri mSourceOrigin;
+        private final Origin mTopFrameOrigin;
+        private final Origin mSourceOrigin;
         @MediaIntegrityApiStatus private final int mRequestMode;
         private final long mCloudProjectNumber;
 
-        AwMediaIntegrityProviderKey(
-                Uri topFrameOrigin,
-                Uri sourceOrigin,
+        public AwMediaIntegrityProviderKey(
+                Origin topFrameOrigin,
+                Origin sourceOrigin,
                 @MediaIntegrityApiStatus int requestMode,
                 long cloudProjectNumber) {
             mTopFrameOrigin = topFrameOrigin;
@@ -134,14 +134,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                     && Objects.equals(this.mSourceOrigin, other.mSourceOrigin)
                     && this.mRequestMode == other.mRequestMode
                     && this.mCloudProjectNumber == other.mCloudProjectNumber;
-        }
-
-        public @MediaIntegrityApiStatus int getRequestMode() {
-            return mRequestMode;
-        }
-
-        public Uri getSourceOrigin() {
-            return mSourceOrigin;
         }
     }
 
@@ -251,15 +243,6 @@ public class AwBrowserContext implements BrowserContextHandle {
                                     .getQuotaManagerBridge(mNativeAwBrowserContext));
         }
         return mQuotaManagerBridge;
-    }
-
-    public AwMediaIntegrityProviderKey createAwMediaIntegrityProviderKey(
-            @NonNull Uri sourceOrigin,
-            @NonNull Uri topLevelOrigin,
-            @MediaIntegrityApiStatus int apiStatus,
-            long cloudProjectNumber) {
-        return new AwMediaIntegrityProviderKey(
-                sourceOrigin, topLevelOrigin, apiStatus, cloudProjectNumber);
     }
 
     @Nullable

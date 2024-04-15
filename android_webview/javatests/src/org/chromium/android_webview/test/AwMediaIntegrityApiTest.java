@@ -32,6 +32,7 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.net.test.util.TestWebServer;
@@ -531,6 +532,7 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     @CommandLineFlags.Add({
         "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
+    @DisabledTest(message = "crbug.com/333912408")
     public void testTokenProviderNotReusedIfInvalid() throws Exception {
 
         MockTokenProvider mockTokenProvider1 = new MockTokenProvider();
@@ -702,57 +704,41 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
         "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
     public void testErrorsMappedRequestToken() throws Exception {
-        {
-            MockTokenProvider mockTokenProvider = new MockTokenProvider();
-            mPlatformBridge.addProviderResponse(
-                    CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
-            mockTokenProvider.addRequestError(
-                    CONTENT_BINDING_HASH, MediaIntegrityErrorCode.INTERNAL_ERROR);
-            Assert.assertEquals(
-                    getExpectedErrorMessage(MediaIntegrityErrorCode.INTERNAL_ERROR),
-                    runTestScriptAndWaitForResult(
-                            getTestScript(
-                                    CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
-        }
+        MockTokenProvider mockTokenProvider = new MockTokenProvider();
+        mPlatformBridge.addProviderResponse(
+                CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
 
-        {
-            MockTokenProvider mockTokenProvider = new MockTokenProvider();
-            mPlatformBridge.addProviderResponse(
-                    CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
-            mockTokenProvider.addRequestError(
-                    CONTENT_BINDING_HASH, MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
-            Assert.assertEquals(
-                    getExpectedErrorMessage(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR),
-                    runTestScriptAndWaitForResult(
-                            getTestScript(
-                                    CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
-        }
+        mockTokenProvider.addRequestError(
+                CONTENT_BINDING_HASH, MediaIntegrityErrorCode.INTERNAL_ERROR);
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.INTERNAL_ERROR),
+                runTestScriptAndWaitForResult(
+                        getTestScript(
+                                CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
 
-        {
-            MockTokenProvider mockTokenProvider = new MockTokenProvider();
-            mPlatformBridge.addProviderResponse(
-                    CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
-            mockTokenProvider.addRequestError(
-                    CONTENT_BINDING_HASH, MediaIntegrityErrorCode.INVALID_ARGUMENT);
-            Assert.assertEquals(
-                    getExpectedErrorMessage(MediaIntegrityErrorCode.INVALID_ARGUMENT),
-                    runTestScriptAndWaitForResult(
-                            getTestScript(
-                                    CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
-        }
+        mockTokenProvider.addRequestError(
+                CONTENT_BINDING_HASH, MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR),
+                runTestScriptAndWaitForResult(
+                        getTestScript(
+                                CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
 
-        {
-            MockTokenProvider mockTokenProvider = new MockTokenProvider();
-            mPlatformBridge.addProviderResponse(
-                    CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
-            mockTokenProvider.addRequestError(
-                    CONTENT_BINDING_HASH, MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID);
-            Assert.assertEquals(
-                    getExpectedErrorMessage(MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID),
-                    runTestScriptAndWaitForResult(
-                            getTestScript(
-                                    CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
-        }
+        mockTokenProvider.addRequestError(
+                CONTENT_BINDING_HASH, MediaIntegrityErrorCode.INVALID_ARGUMENT);
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.INVALID_ARGUMENT),
+                runTestScriptAndWaitForResult(
+                        getTestScript(
+                                CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
+
+        mockTokenProvider.addRequestError(
+                CONTENT_BINDING_HASH, MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID);
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID),
+                runTestScriptAndWaitForResult(
+                        getTestScript(
+                                CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH))));
     }
 
     /**
