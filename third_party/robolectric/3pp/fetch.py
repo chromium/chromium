@@ -12,6 +12,33 @@ import pathlib
 _ROBO_URL_FILES = {
     'android-all-14-robolectric-10818077.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all/14-robolectric-10818077/android-all-14-robolectric-10818077.jar',
+    'android-all-instrumented-14-robolectric-10818077-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/14-robolectric-10818077-i6/android-all-instrumented-14-robolectric-10818077-i6.jar',
+    'android-all-instrumented-13-robolectric-9030017-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/13-robolectric-9030017-i6/android-all-instrumented-13-robolectric-9030017-i6.jar',
+    'android-all-instrumented-12.1-robolectric-8229987-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/12.1-robolectric-8229987-i6/android-all-instrumented-12.1-robolectric-8229987-i6.jar',
+    'android-all-instrumented-12-robolectric-7732740-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/12-robolectric-7732740-i6/android-all-instrumented-12-robolectric-7732740-i6.jar',
+    'android-all-instrumented-11-robolectric-6757853-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/11-robolectric-6757853-i6/android-all-instrumented-11-robolectric-6757853-i6.jar',
+    'android-all-instrumented-10-robolectric-5803371-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/10-robolectric-5803371-i6/android-all-instrumented-10-robolectric-5803371-i6.jar',
+    'android-all-instrumented-9-robolectric-4913185-2-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/9-robolectric-4913185-2-i6/android-all-instrumented-9-robolectric-4913185-2-i6.jar',
+    'android-all-instrumented-8.1.0-robolectric-4611349-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/8.1.0-robolectric-4611349-i6/android-all-instrumented-8.1.0-robolectric-4611349-i6.jar',
+    'android-all-instrumented-8.0.0_r4-robolectric-r1-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/8.0.0_r4-robolectric-r1-i6/android-all-instrumented-8.0.0_r4-robolectric-r1-i6.jar',
+    'android-all-instrumented-7.1.0_r7-robolectric-r1-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.1.0_r7-robolectric-r1-i6/android-all-instrumented-7.1.0_r7-robolectric-r1-i6.jar',
+    'android-all-instrumented-7.0.0_r1-robolectric-r1-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.0.0_r1-robolectric-r1-i6/android-all-instrumented-7.0.0_r1-robolectric-r1-i6.jar',
+    'android-all-instrumented-6.0.1_r3-robolectric-r1-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/6.0.1_r3-robolectric-r1-i6/android-all-instrumented-6.0.1_r3-robolectric-r1-i6.jar',
+    'android-all-instrumented-5.0.2_r3-robolectric-r0-i6.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/5.0.2_r3-robolectric-r0-i6/android-all-instrumented-5.0.2_r3-robolectric-r0-i6.jar',
+    # i4 versions left in until migration to robolectric 4.12.1 is complete.
     'android-all-instrumented-14-robolectric-10818077-i4.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/14-robolectric-10818077-i4/android-all-instrumented-14-robolectric-10818077-i4.jar',
     'android-all-instrumented-13-robolectric-9030017-i4.jar':
