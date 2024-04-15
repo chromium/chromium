@@ -69,6 +69,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -636,16 +637,17 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
           mojom::UserDisplayMode::kBrowser);
       synced_specifics_data->SetName("Name From Sync");
 
-      WebApp::SyncFallbackData sync_fallback_data;
-      sync_fallback_data.name = "Name From Sync";
-      sync_fallback_data.theme_color = SK_ColorMAGENTA;
-      sync_fallback_data.scope = GURL("https://example.com/sync_scope");
+      sync_pb::WebAppSpecifics sync_proto;
+      sync_proto.set_name("Name From Sync");
+      sync_proto.set_theme_color(SK_ColorMAGENTA);
+      sync_proto.set_scope(GURL("https://example.com/sync_scope").spec());
 
       apps::IconInfo apps_icon_info = CreateIconInfo(
           /*icon_base_url=*/start_url, IconPurpose::MONOCHROME, 64);
-      sync_fallback_data.icon_infos.push_back(std::move(apps_icon_info));
+      sync_proto.mutable_icon_infos()->Add(
+          AppIconInfoToSyncProto(std::move(apps_icon_info)));
 
-      synced_specifics_data->SetSyncFallbackData(std::move(sync_fallback_data));
+      synced_specifics_data->SetSyncProto(std::move(sync_proto));
 
       add_synced_apps_data.push_back(std::move(synced_specifics_data));
     }

@@ -481,7 +481,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   DCHECK(web_app.manifest_id().is_valid());
 
   // Set sync data to sync proto.
-  *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
+  *(local_data->mutable_sync_data()) = web_app.sync_proto();
 
   local_data->set_name(web_app.untranslated_name());
 
@@ -1015,35 +1015,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  // Store both platform-specific UserDisplayModes from sync_data if available.
-  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    if (sync_data.has_user_display_mode_cros()) {
-      web_app->SetUserDisplayModeCrOS(
-          ToMojomUserDisplayMode(sync_data.user_display_mode_cros()));
-    }
-    if (sync_data.has_user_display_mode_default()) {
-      web_app->SetUserDisplayModeDefault(
-          ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
-    }
-    // Note: migration runs after database opened to ensure the current platform
-    // always has a UserDisplayMode set (see
-    // `EnsureAppsHaveUserDisplayModeForCurrentPlatform`).
-  } else {
-    web_app->SetUserDisplayModeDefault(
-        ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
-  }
-
-  // Ordinals used for chrome://apps page.
-  syncer::StringOrdinal page_ordinal =
-      syncer::StringOrdinal(sync_data.user_page_ordinal());
-  if (!page_ordinal.IsValid())
-    page_ordinal = syncer::StringOrdinal();
-  syncer::StringOrdinal launch_ordinal =
-      syncer::StringOrdinal(sync_data.user_launch_ordinal());
-  if (!launch_ordinal.IsValid())
-    launch_ordinal = syncer::StringOrdinal();
-  web_app->SetUserPageOrdinal(page_ordinal);
-  web_app->SetUserLaunchOrdinal(launch_ordinal);
+  web_app->SetSyncProto(sync_data);
 
   if (!local_data.has_is_locally_installed()) {
     DLOG(ERROR) << "WebApp proto parse error: no is_locally_installed field";
@@ -1167,14 +1139,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetFirstInstallTime(
         syncer::ProtoTimeToTime(local_data.first_install_time()));
   }
-
-  std::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =
-      ParseSyncFallbackDataStruct(sync_data);
-  if (!parsed_sync_fallback_data.has_value()) {
-    // ParseSyncFallbackDataStruct() reports any errors.
-    return nullptr;
-  }
-  web_app->SetSyncFallbackData(std::move(parsed_sync_fallback_data.value()));
 
   std::optional<std::vector<apps::IconInfo>> parsed_manifest_icons =
       ParseAppIconInfos("WebApp", local_data.manifest_icons());
@@ -1880,22 +1844,6 @@ DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode) {
       return DisplayMode::kBorderless;
     case WebAppProto::PICTURE_IN_PICTURE:
       return DisplayMode::kPictureInPicture;
-  }
-}
-
-DisplayMode ToMojomDisplayMode(
-    ::sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode) {
-  switch (user_display_mode) {
-    case ::sync_pb::WebAppSpecifics::BROWSER:
-      return DisplayMode::kBrowser;
-    case ::sync_pb::WebAppSpecifics::TABBED:
-      return DisplayMode::kTabbed;
-    // New display modes will most likely be of the window variety than the
-    // browser tab variety so default to windowed if it's an enum value we don't
-    // know about.
-    case ::sync_pb::WebAppSpecifics::UNSPECIFIED:
-    case ::sync_pb::WebAppSpecifics::STANDALONE:
-      return DisplayMode::kStandalone;
   }
 }
 

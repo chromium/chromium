@@ -65,6 +65,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -364,11 +365,17 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
                                              OnceInstallCallback callback,
                                              const base::Location& location) {
   DCHECK(web_app.is_from_sync_and_pending_installation());
+  std::vector<apps::IconInfo> icon_infos =
+      ParseAppIconInfos("InstallFromSync", web_app.sync_proto().icon_infos())
+          .value_or(std::vector<apps::IconInfo>());
+  std::optional<SkColor> theme_color;
+  if (web_app.sync_proto().has_theme_color()) {
+    theme_color = web_app.sync_proto().theme_color();
+  }
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
       web_app.app_id(), web_app.manifest_id(), web_app.start_url(),
-      web_app.sync_fallback_data().name, web_app.sync_fallback_data().scope,
-      web_app.sync_fallback_data().theme_color, web_app.user_display_mode(),
-      web_app.sync_fallback_data().icon_infos);
+      web_app.sync_proto().name(), GURL(web_app.sync_proto().scope()),
+      theme_color, web_app.user_display_mode(), icon_infos);
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(&profile_.get(), params,
                                                std::move(callback)),

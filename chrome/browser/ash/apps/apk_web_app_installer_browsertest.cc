@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/apps/apk_web_app_installer.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -20,7 +22,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -110,19 +112,23 @@ void ExpectInitialManifestFieldsFromWebAppInstallInfo(
   ASSERT_TRUE(web_app->theme_color().has_value());
   EXPECT_EQ(SK_ColorBLUE, web_app->theme_color().value());
 
-  ASSERT_TRUE(web_app->sync_fallback_data().theme_color.has_value());
-  EXPECT_EQ(SK_ColorBLUE, web_app->sync_fallback_data().theme_color.value());
+  ASSERT_TRUE(web_app->sync_proto().has_theme_color());
+  EXPECT_EQ(SK_ColorBLUE, web_app->sync_proto().theme_color());
 
-  EXPECT_EQ("App Title", web_app->sync_fallback_data().name);
-  EXPECT_EQ(url.Resolve("scope"), web_app->sync_fallback_data().scope);
+  EXPECT_EQ("App Title", web_app->sync_proto().name());
+  EXPECT_EQ(url.Resolve("scope").spec(), web_app->sync_proto().scope());
   {
     SCOPED_TRACE("web_app->manifest_icons()");
     ExpectInitialIconInfosFromWebAppInstallInfo(web_app->manifest_icons(), url);
   }
   {
-    SCOPED_TRACE("web_app->sync_fallback_data().icon_infos");
-    ExpectInitialIconInfosFromWebAppInstallInfo(
-        web_app->sync_fallback_data().icon_infos, url);
+    SCOPED_TRACE("web_app->sync_proto().icon_infos");
+    std::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
+        web_app::ParseAppIconInfos(
+            "ExpectInitialManifestFieldsFromWebAppInstallInfo",
+            web_app->sync_proto().icon_infos());
+    ASSERT_TRUE(parsed_icon_infos.has_value());
+    ExpectInitialIconInfosFromWebAppInstallInfo(parsed_icon_infos.value(), url);
   }
 
   // Manifest Resources:

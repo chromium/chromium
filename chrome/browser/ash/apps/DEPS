@@ -34,6 +34,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_install_params.h",
   "+chrome/browser/web_applications/web_app_install_utils.h",
+  "+chrome/browser/web_applications/web_app_proto_utils.h",
   "+chrome/browser/web_applications/web_app_provider_factory.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",

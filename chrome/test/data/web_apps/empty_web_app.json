@@ -60,19 +60,11 @@
    "start_url": "",
    "supported_links_offer_dismiss_count": 0,
    "supported_links_offer_ignore_count": 0,
-   "sync_fallback_data": {
-      "manifest_icons": [  ],
-      "name": "",
-      "scope": "",
-      "theme_color": "none"
+   "sync_proto": {
    },
    "tab_strip": null,
    "theme_color": "none",
    "url_handlers": [  ],
-   "user_display_mode_cros": null,
-   "user_display_mode_default": null,
-   "user_launch_ordinal": "INVALID[]",
    "user_link_capturing_preference": "0",
-   "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false
 }

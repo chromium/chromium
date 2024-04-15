@@ -38,18 +38,12 @@ std::optional<std::vector<blink::Manifest::ImageResource>>
 ParseAppImageResource(const char* container_name_for_logging,
                       const RepeatedImageResourceProto& manifest_icons_proto);
 
-// Use the given |app| to populate a |WebAppSpecifics| sync proto.
-sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app);
-
 // Use the given |icon_info| to populate a |WebAppIconInfo| sync proto.
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(const apps::IconInfo& icon_info);
 
 // Use the given |image_resource| to populate a |ImageResource| proto.
 content::proto::ImageResource AppImageResourceToProto(
     const blink::Manifest::ImageResource& image_resource);
-
-std::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
-    const sync_pb::WebAppSpecifics& sync_proto);
 
 RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode);
 

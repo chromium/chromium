@@ -118,23 +118,23 @@ void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
   EXPECT_EQ(web_app->display_mode(), DisplayMode::kStandalone);
   EXPECT_FALSE(web_app->theme_color().has_value());
 
-  EXPECT_FALSE(web_app->sync_fallback_data().theme_color.has_value());
-  EXPECT_EQ("Basic web app", web_app->sync_fallback_data().name);
-  EXPECT_EQ(expect_scope.spec(), web_app->sync_fallback_data().scope);
+  EXPECT_FALSE(web_app->sync_proto().has_theme_color());
+  EXPECT_EQ("Basic web app", web_app->sync_proto().name());
+  EXPECT_EQ(expect_scope.spec(), web_app->sync_proto().scope());
 
-  EXPECT_EQ(2u, web_app->sync_fallback_data().icon_infos.size());
+  ASSERT_EQ(2, web_app->sync_proto().icon_infos_size());
 
-  EXPECT_EQ(expect_start_url.Resolve("basic-48.png"),
-            web_app->sync_fallback_data().icon_infos[0].url);
-  EXPECT_EQ(48, web_app->sync_fallback_data().icon_infos[0].square_size_px);
-  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-            web_app->sync_fallback_data().icon_infos[0].purpose);
+  EXPECT_EQ(expect_start_url.Resolve("basic-48.png").spec(),
+            web_app->sync_proto().icon_infos(0).url());
+  EXPECT_EQ(48, web_app->sync_proto().icon_infos(0).size_in_px());
+  EXPECT_EQ(sync_pb::WebAppIconInfo_Purpose_ANY,
+            web_app->sync_proto().icon_infos(0).purpose());
 
-  EXPECT_EQ(expect_start_url.Resolve("basic-192.png"),
-            web_app->sync_fallback_data().icon_infos[1].url);
-  EXPECT_EQ(192, web_app->sync_fallback_data().icon_infos[1].square_size_px);
-  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-            web_app->sync_fallback_data().icon_infos[1].purpose);
+  EXPECT_EQ(expect_start_url.Resolve("basic-192.png").spec(),
+            web_app->sync_proto().icon_infos(1).url());
+  EXPECT_EQ(192, web_app->sync_proto().icon_infos(1).size_in_px());
+  EXPECT_EQ(sync_pb::WebAppIconInfo_Purpose_ANY,
+            web_app->sync_proto().icon_infos(1).purpose());
 
   // Manifest Resources: This is chrome/test/data/web_apps/basic-192.png
   EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager, web_app->app_id(),

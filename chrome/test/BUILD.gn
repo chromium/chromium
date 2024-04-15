@@ -12000,6 +12000,7 @@ if (!is_android) {
       "//components/trusted_vault:test_support",
       "//components/undo",
       "//components/webapps/browser",
+      "//components/webapps/common",
       "//components/webauthn/core/browser",
       "//testing/gmock",
       "//testing/gtest",

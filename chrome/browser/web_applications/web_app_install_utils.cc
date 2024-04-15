@@ -29,6 +29,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -55,6 +57,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -1157,12 +1160,25 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
              SK_AlphaOPAQUE);
   web_app.SetDarkModeBackgroundColor(web_app_info.dark_mode_background_color);
 
-  WebApp::SyncFallbackData sync_fallback_data;
-  sync_fallback_data.name = base::UTF16ToUTF8(web_app_info.title);
-  sync_fallback_data.theme_color = web_app_info.theme_color;
-  sync_fallback_data.scope = web_app_info.scope;
-  sync_fallback_data.icon_infos = web_app_info.manifest_icons;
-  web_app.SetSyncFallbackData(std::move(sync_fallback_data));
+  sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
+  // Sync proto has already been initialized by setting the start_url and/or
+  // manifest_id above.
+  CHECK(sync_proto.has_start_url(), base::NotFatalUntil::M126);
+  CHECK(sync_proto.has_relative_manifest_id(), base::NotFatalUntil::M126);
+  sync_proto.set_name(base::UTF16ToUTF8(web_app_info.title));
+  sync_proto.clear_theme_color();
+  if (web_app_info.theme_color.has_value()) {
+    sync_proto.set_theme_color(web_app_info.theme_color.value());
+  }
+  sync_proto.clear_scope();
+  if (web_app_info.scope.is_valid()) {
+    sync_proto.set_scope(web_app_info.scope.spec());
+  }
+  sync_proto.clear_icon_infos();
+  for (const apps::IconInfo& icon_info : web_app_info.manifest_icons) {
+    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
+  }
+  web_app.SetSyncProto(std::move(sync_proto));
 
   if (!skip_icons_on_download_failure) {
     SetWebAppProductIconFields(web_app_info, web_app);

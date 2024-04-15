@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -663,22 +664,42 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetIsLocallyInstalled(random.next_bool());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
-  const mojom::UserDisplayMode user_display_modes[3] = {
-      mojom::UserDisplayMode::kBrowser, mojom::UserDisplayMode::kStandalone,
-      mojom::UserDisplayMode::kTabbed};
+  const sync_pb::WebAppSpecifics::UserDisplayMode user_display_modes[3] = {
+      sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER,
+      sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE,
+      sync_pb::WebAppSpecifics_UserDisplayMode_TABBED};
   // Explicitly set a UserDisplayMode for each platform (instead of calling
   // `SetUserDisplayMode` which sets the current platform's value only) so the
   // test expectations are consistent across platforms.
-  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+  {
+    // Copy proto, retaining existing fields (including unknown fields).
+    sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
+    if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
+      if (random.next_bool()) {
+        sync_proto.set_user_display_mode_default(
+            user_display_modes[random.next_uint(3)]);
+      }
+      // Must have at least one platform's UserDisplayMode set.
+      if (!sync_proto.has_user_display_mode_default() || random.next_bool()) {
+        sync_proto.set_user_display_mode_cros(
+            user_display_modes[random.next_uint(3)]);
+      }
+    } else {
+      sync_proto.set_user_display_mode_default(
+          user_display_modes[random.next_uint(3)]);
+    }
+
     if (random.next_bool()) {
-      app->SetUserDisplayModeDefault(user_display_modes[random.next_uint(3)]);
+      sync_proto.set_user_launch_ordinal(
+          syncer::StringOrdinal::CreateInitialOrdinal().ToInternalValue());
     }
-    // Must have at least one platform's UserDisplayMode set.
-    if (!app->user_display_mode_default().has_value() || random.next_bool()) {
-      app->SetUserDisplayModeCrOS(user_display_modes[random.next_uint(3)]);
+
+    if (random.next_bool()) {
+      sync_proto.set_user_page_ordinal(
+          syncer::StringOrdinal::CreateInitialOrdinal().ToInternalValue());
     }
-  } else {
-    app->SetUserDisplayModeDefault(user_display_modes[random.next_uint(3)]);
+
+    app->SetSyncProto(std::move(sync_proto));
   }
 
   app->SetLastBadgingTime(random.next_time());
@@ -806,12 +827,19 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetWindowControlsOverlayEnabled(false);
 
-  WebApp::SyncFallbackData sync_fallback_data;
-  sync_fallback_data.name = "Sync" + name;
-  sync_fallback_data.theme_color = synced_theme_color;
-  sync_fallback_data.scope = app->scope();
-  sync_fallback_data.icon_infos = app->manifest_icons();
-  app->SetSyncFallbackData(std::move(sync_fallback_data));
+  {
+    // Copy proto, retaining existing fields (including unknown fields).
+    sync_pb::WebAppSpecifics sync_proto = app->sync_proto();
+    sync_proto.set_name("Sync" + name);
+    if (synced_theme_color.has_value()) {
+      sync_proto.set_theme_color(synced_theme_color.value());
+    }
+    sync_proto.set_scope(app->scope().spec());
+    for (const apps::IconInfo& icon_info : app->manifest_icons()) {
+      *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
+    }
+    app->SetSyncProto(std::move(sync_proto));
+  }
 
   if (random.next_bool()) {
     app->SetLaunchHandler(

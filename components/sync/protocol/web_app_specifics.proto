@@ -37,6 +37,9 @@ message WebAppIconInfo {
 
 // WebApp data. This is a synced part of
 // chrome/browser/web_applications/proto/web_app.proto data.
+// Note: Pre-M125 clients will incorrectly drop any unrecognized new fields
+// added to the proto. Handling should be added to ApplySyncDataToApp in
+// web_app_sync_bridge.cc if new fields need to be preserved.
 message WebAppSpecifics {
   // This enum should be a subset of the DisplayMode enum in
   // chrome/browser/web_applications/proto/web_app.proto and

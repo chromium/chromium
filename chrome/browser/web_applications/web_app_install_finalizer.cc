@@ -17,6 +17,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -54,6 +56,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -133,7 +136,7 @@ void ApplyUserDisplayModeSyncMitigations(
   }
 
   // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
-  CHECK(web_app.user_display_mode_cros().has_value(),
+  CHECK(web_app.sync_proto().has_user_display_mode_cros(),
         base::NotFatalUntil::M125);
 
   // Don't mitigate installations from sync, this is only for installs that will
@@ -148,22 +151,24 @@ void ApplyUserDisplayModeSyncMitigations(
   }
 
   // Don't override existing default-platform value.
-  if (web_app.user_display_mode_default().has_value()) {
+  if (web_app.sync_proto().has_user_display_mode_default()) {
     return;
   }
 
-  switch (web_app.user_display_mode_cros().value()) {
-    case mojom::UserDisplayMode::kBrowser:
+  sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
+
+  switch (web_app.sync_proto().user_display_mode_cros()) {
+    case sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER:
       if (!base::FeatureList::IsEnabled(
               kUserDisplayModeSyncBrowserMitigation)) {
-        break;
+        return;
       }
 
       // CrOS devices with kSeparateUserDisplayModeForCrOS disabled (including
       // pre-M122 devices) use the user_display_mode_default sync field instead
       // of user_display_mode_cros. If user_display_mode_default is ever unset
       // they will fallback to using kStandalone even if user_display_mode_cros
-      // is set to kBrowser. This mitigation esures user_display_mode_default
+      // is set to kBrowser. This mitigation ensures user_display_mode_default
       // is set to kBrowser for these devices.
       // Example user journey:
       // - Install web app as browser shortcut on post-M122 CrOS device.
@@ -171,13 +176,14 @@ void ApplyUserDisplayModeSyncMitigations(
       // - Check that it is synced as a browser shortcut.
       // TODO(b/321617981): Remove when there are sufficiently few pre-M122 CrOS
       // devices in circulation.
-      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
+      sync_proto.set_user_display_mode_default(
+          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
       break;
 
-    case mojom::UserDisplayMode::kStandalone: {
+    case sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE: {
       if (!base::FeatureList::IsEnabled(
               kUserDisplayModeSyncStandaloneMitigation)) {
-        break;
+        return;
       }
 
       // Ensure standalone averse apps don't get defaulted to kStandalone on
@@ -194,15 +200,21 @@ void ApplyUserDisplayModeSyncMitigations(
       if (!is_standalone_averse_app) {
         break;
       }
-      web_app.SetUserDisplayModeDefault(mojom::UserDisplayMode::kBrowser);
+      sync_proto.set_user_display_mode_default(
+          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
       break;
     }
 
-    case mojom::UserDisplayMode::kTabbed:
+    case sync_pb::WebAppSpecifics_UserDisplayMode_TABBED:
       // This can only be reached when kDesktopPWAsTabStripSettings is enabled,
       // this is only for testing and is planned to be removed.
-      break;
+      return;
+    case sync_pb::WebAppSpecifics_UserDisplayMode_UNSPECIFIED:
+      // Ignore unknown UserDisplayMode values.
+      return;
   }
+
+  web_app.SetSyncProto(std::move(sync_proto));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -285,6 +297,15 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     web_app = std::make_unique<WebApp>(*existing_web_app);
   } else {
     web_app = std::make_unique<WebApp>(app_id);
+    // Ensure `web_app` has a start_url and manifest_id set before other calls
+    // that depend on state being complete, eg. `WebApp::sync_proto()`.
+    web_app->SetStartUrl(web_app_info.start_url);
+    // TODO(b/280862254): CHECK that the manifest_id isn't empty after the
+    // no-arg `WebAppInstallInfo` constructor is removed. Currently,
+    // `SetStartUrl` sets a default manifest_id based on the start_url.
+    if (web_app_info.manifest_id.is_valid()) {
+      web_app->SetManifestId(web_app_info.manifest_id);
+    }
   }
 
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
