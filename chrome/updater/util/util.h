@@ -110,8 +110,9 @@ std::optional<base::FilePath> GetCrashDatabasePath(UpdaterScope scope);
 // Returns the path to the crashpad database, creating it if it does not exist.
 std::optional<base::FilePath> EnsureCrashDatabasePath(UpdaterScope scope);
 
-// Contains the parsed values from the tag. The tag is provided as a command
-// line argument to the `--install` or the `--handoff` switch.
+// Return the parsed values from --tag command line argument. The functions
+// return {} if there was no tag at all. An error is set if the tag fails to
+// parse.
 struct TagParsingResult {
   TagParsingResult();
   TagParsingResult(std::optional<tagging::TagArgs> tag_args,
@@ -123,8 +124,6 @@ struct TagParsingResult {
   tagging::ErrorCode error = tagging::ErrorCode::kSuccess;
 };
 
-// These functions return {} if there was no tag at all. An error is set if the
-// tag fails to parse.
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line);
 TagParsingResult GetTagArgs();

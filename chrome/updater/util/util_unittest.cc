@@ -40,6 +40,7 @@ class UtilTagArgsTest : public ::testing::TestWithParam<UtilTagArgsTestCase> {};
 INSTANTIATE_TEST_SUITE_P(UtilTagArgsTestCases,
                          UtilTagArgsTest,
                          ::testing::ValuesIn(std::vector<UtilTagArgsTestCase>{
+                             {kTagSwitch},
                              {kInstallSwitch},
                              {kHandoffSwitch},
                          }));

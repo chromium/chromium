@@ -59,6 +59,7 @@ class TagSwitchTest : public ::testing::WithParamInterface<TagSwitchTestCase>,
 INSTANTIATE_TEST_SUITE_P(TagSwitchTestCases,
                          TagSwitchTest,
                          ::testing::ValuesIn(std::vector<TagSwitchTestCase>{
+                             {kTagSwitch},
                              {kInstallSwitch},
                              {kHandoffSwitch},
                          }));
