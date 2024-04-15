@@ -319,7 +319,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void OnRequestSafetyResult(
       on_device_model::mojom::InputOptionsPtr options,
       int request_check_idx,
-      proto::InternalOnDeviceModelExecutionInfo check_log,
+      std::string check_input_text,
       on_device_model::mojom::SafetyInfoPtr safety_info);
 
   // Begins request execution (leads to OnResponse/OnComplete).

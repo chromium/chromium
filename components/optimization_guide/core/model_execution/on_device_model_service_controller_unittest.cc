@@ -1284,6 +1284,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
   Initialize();
 
   {
@@ -1334,6 +1338,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
   Initialize();
 
   {
@@ -1382,8 +1390,66 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   EXPECT_TRUE(response_log.is_unsafe());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "false"}});
+  Initialize();
+
+  {
+    auto safety_config =
+        std::make_unique<proto::FeatureTextSafetyConfiguration>();
+    auto* default_threshold = safety_config->add_safety_category_thresholds();
+    default_threshold->set_output_index(0);
+    default_threshold->set_threshold(0.1);
+    auto* check = safety_config->add_request_check();
+    auto* input_template = check->add_input_template();
+    input_template->set_string_template("url: %s");
+    AddPageUrlSubstitution(input_template);
+    auto* threshold1 = check->add_safety_category_thresholds();
+    threshold1->set_output_index(0);
+    threshold1->set_threshold(0.5);
+    SetFeatureTextSafetyConfiguration(std::move(safety_config));
+  }
+
+  // Score output as completely safe.
+  g_safety_info = on_device_model::mojom::SafetyInfo::New();
+  g_safety_info->class_scores = {0.0, 0.0};
+
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  ExecuteModel(*session, "unsafe_url");
+  task_environment_.RunUntilIdle();
+  // Should still succeed, because on_device_retract_unsafe_content is false.
+  EXPECT_TRUE(response_received_);
+  EXPECT_FALSE(response_error_);
+
+  // Make sure check was logged.
+  ASSERT_TRUE(log_entry_received_);
+  const auto& logged_execution_infos =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info()
+          .execution_infos();
+  ASSERT_GE(logged_execution_infos.size(), 2);
+  const auto& check_log = logged_execution_infos[1];
+  EXPECT_EQ(check_log.request().text_safety_model_request().text(),
+            "url: unsafe_url");
+  const auto& response_log = check_log.response().text_safety_model_response();
+  EXPECT_THAT(response_log.scores(), ElementsAre(0.8));
+  EXPECT_TRUE(response_log.is_unsafe());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest,
        RequestCheckFailsWithSafeUrlWithFallbackThreshold) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
   Initialize();
 
   {
@@ -1432,6 +1498,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        RequestCheckFailsWithUnmetRequiredLanguage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
   Initialize();
 
   {
@@ -1455,6 +1525,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Score output as completely safe.
   g_safety_info = on_device_model::mojom::SafetyInfo::New();
   g_safety_info->class_scores = {0.0, 0.0};
+  g_safety_info->language =
+      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
@@ -1469,6 +1541,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        RequestCheckPassesWithMetRequiredLanguage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
   Initialize();
 
   {
@@ -1492,6 +1568,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Score output as completely safe.
   g_safety_info = on_device_model::mojom::SafetyInfo::New();
   g_safety_info->class_scores = {0.0, 0.0};
+  g_safety_info->language =
+      on_device_model::mojom::LanguageDetectionResult::New("eo", 1.0);
 
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,

@@ -426,44 +426,43 @@ void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
         ExecuteModelResult::kFailedConstructingMessage);
     return;
   }
-  proto::InternalOnDeviceModelExecutionInfo check_log;
-  check_log.mutable_request()->mutable_text_safety_model_request()->set_text(
-      check_input->input_string);
   on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
       check_input->input_string,
       base::BindOnce(&SessionImpl::OnRequestSafetyResult,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
                      std::move(options), request_check_idx,
-                     std::move(check_log)));
+                     check_input->input_string));
 }
 
 void SessionImpl::OnRequestSafetyResult(
     on_device_model::mojom::InputOptionsPtr options,
     int request_check_idx,
-    proto::InternalOnDeviceModelExecutionInfo check_log,
+    std::string check_input_text,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   // Evaluate the check.
   bool is_unsafe = on_device_state_->opts.safety_cfg.IsRequestUnsafe(
       request_check_idx, safety_info);
+  bool is_unsupported_language =
+      on_device_state_->opts.safety_cfg
+          .IsTextInUnsupportedOrUndeterminedLanguage(safety_info);
 
   // Log the check execution.
-  auto* response_log =
-      check_log.mutable_response()->mutable_text_safety_model_response();
-  *response_log->mutable_scores() = {safety_info->class_scores.begin(),
-                                     safety_info->class_scores.end()};
-  response_log->set_is_unsafe(is_unsafe);
-  if (safety_info->language) {
-    response_log->set_language_code(safety_info->language->code);
-  }
-  *(on_device_state_->log_ai_data_request->mutable_model_execution_info()
-        ->mutable_on_device_model_execution_info()
-        ->add_execution_infos()) = std::move(check_log);
+  on_device_state_->AddTextSafetyExecutionLogging(
+      check_input_text, safety_info, is_unsafe);
 
   // Handle the result.
-  if (is_unsafe) {
-    CancelPendingResponse(ExecuteModelResult::kRequestUnsafe,
-                          ModelExecutionError::kFiltered);
-    return;
+  if (is_unsafe || is_unsupported_language) {
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kRequestUnsafe);
+    }
+    if (features::GetOnDeviceModelRetractUnsafeContent()) {
+      CancelPendingResponse(ExecuteModelResult::kRequestUnsafe,
+                            is_unsupported_language
+                                ? ModelExecutionError::kUnsupportedLanguage
+                                : ModelExecutionError::kFiltered);
+      return;
+    }
   }
   RunNextRequestSafetyCheckOrBeginExecution(std::move(options),
                                             request_check_idx + 1);
@@ -970,8 +969,7 @@ bool SafetyConfig::IsRequestUnsafe(
   const auto& thresholds = check.safety_category_thresholds().empty()
                                ? proto_->safety_category_thresholds()
                                : check.safety_category_thresholds();
-  return IsTextInUnsupportedOrUndeterminedLanguage(safety_info) ||
-         HasUnsafeScores(thresholds, safety_info);
+  return HasUnsafeScores(thresholds, safety_info);
 }
 
 bool SafetyConfig::HasRawOutputCheck() const {
