@@ -87,6 +87,7 @@ source_set("libpng_sources") {
     configs += [ "//build/config/compiler:optimize_speed" ]
   } else if (current_cpu == "mips64el" && mips_use_msa) {
     sources += [
+      "mips/filter_mmi_inline_assembly.c",
       "mips/filter_msa_intrinsics.c",
       "mips/mips_init.c",
     ]

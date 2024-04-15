@@ -1,11 +1,6 @@
 This directory contains patches applied on top of libpng, which haven't been
 upstreamed or released to the canonical libpng repository [1] yet.
 
-[1] https://github.com/glennrp/libpng
+(At present, we have no local patches.)
 
-== Patches applied on top of libpng ==
-
- - 0001-chunkerror.patch: Change chunk errors into benign errors
-   (https://crrev.com/c/1014027).
- - 0002-fuzzeroom.patch: Add custom malloc/free to limit too-large
-   allocations to prevent clusterfuzz OOMs (https://crrev.com/c/1330936).
+[1] https://github.com/pnggroup/libpng
