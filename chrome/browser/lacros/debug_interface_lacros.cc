@@ -4,8 +4,9 @@
 
 #include "chrome/browser/lacros/debug_interface_lacros.h"
 
+#include <vector>
+
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/crosapi/mojom/debug_interface.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -13,11 +14,26 @@
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/compositor/debug_utils.h"
 #include "ui/views/debug_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace crosapi {
+
+namespace {
+// Gets all `views::Widget`s in the window tree starting from `window`.
+void GetWidgetsForWindow(aura::Window* window,
+                         std::vector<views::Widget*>& widgets) {
+  if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window)) {
+    widgets.push_back(widget);
+  }
+
+  for (aura::Window* child : window->children()) {
+    GetWidgetsForWindow(child, widgets);
+  }
+}
+}  // namespace
 
 DebugInterfaceLacros::DebugInterfaceLacros() {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -50,9 +66,9 @@ void DebugInterfaceLacros::PrintUiHierarchy(mojom::PrintTarget target) {
 void DebugInterfaceLacros::PrintLayerHierarchy() {
   std::ostringstream out;
   out << "\n";
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    aura::Window* root_window = window->GetRootWindow();
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
+    aura::Window* root_window = host->window();
     ui::Layer* layer = root_window->layer();
     if (layer) {
       gfx::Point last_mouse_location =
@@ -70,12 +86,9 @@ void DebugInterfaceLacros::PrintLayerHierarchy() {
 
 void DebugInterfaceLacros::PrintWindowHierarchy() {
   aura::Window::Windows windows;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetRootWindow()) {
-      window = window->GetRootWindow();
-    }
-    windows.push_back(window);
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
+    windows.push_back(host->window());
   }
 
   if (!windows.size()) {
@@ -91,13 +104,20 @@ void DebugInterfaceLacros::PrintWindowHierarchy() {
 void DebugInterfaceLacros::PrintViewHierarchy() {
   std::ostringstream out;
   out << "\n";
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
+
+  std::vector<views::Widget*> widgets;
+  for (aura::WindowTreeHost* host :
+       aura::Env::GetInstance()->window_tree_hosts()) {
+    aura::Window* root_window = host->window();
+    GetWidgetsForWindow(root_window, widgets);
+  }
+
+  for (views::Widget* widget : widgets) {
     out << "WidgetInfo: ";
     views::PrintWidgetInformation(*widget, /*detailed*/ true, &out);
     views::PrintViewHierarchy(widget->GetRootView(), &out);
   }
+
   LOG(ERROR) << out.str();
 }
 
