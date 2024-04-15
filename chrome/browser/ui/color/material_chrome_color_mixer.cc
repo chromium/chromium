@@ -40,7 +40,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // downloads bar etc). While both design systems continue to exist, the
   // material recipes are intended to leverage the existing chrome color mixers,
   // overriding when required to do so according to the new material spec.
-  // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
+  // TODO(crbug.com/40888516): Update color recipes to match UX mocks.
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // Apply default color transformations irrespective of whether a custom theme

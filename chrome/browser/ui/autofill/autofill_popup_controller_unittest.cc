@@ -1002,9 +1002,9 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 // Tests that if the popup is shown in the *sub frame*, a navigation in the
 // *main frame* hides the popup.
 //
-// TODO(crbug.com/1519872): This test only makes little sense: with BFcache, the
-// navigation doesn't destroy the `sub_frame()` and thus we wouldn't hide the
-// popup. What hides the popup in reality is
+// TODO(crbug.com/41492848): This test only makes little sense: with BFcache,
+// the navigation doesn't destroy the `sub_frame()` and thus we wouldn't hide
+// the popup. What hides the popup in reality is
 // AutofillExternalDelegate::DidEndTextFieldEditing().
 TEST_F(AutofillPopupControllerTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {

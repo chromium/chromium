@@ -36,7 +36,7 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kCvc:
       return ui::ImageModel();
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      // TODO(crbug.com/1521960): Add kThreeDomainSecure logic.
+      // TODO(crbug.com/41494927): Add kThreeDomainSecure logic.
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }

@@ -544,7 +544,7 @@ void MediaClientImpl::HandleMediaAction(ui::KeyboardCode keycode) {
     case ui::VKEY_MEDIA_PLAY_PAUSE:
       router->NotifyTogglePlayState();
       break;
-    // TODO(https://crbug.com/1053777): Handle media action for VKEY_MEDIA_PLAY,
+    // TODO(crbug.com/40675345): Handle media action for VKEY_MEDIA_PLAY,
     // VKEY_MEDIA_PAUSE, VKEY_MEDIA_STOP, VKEY_OEM_103, and VKEY_OEM_104.
     case ui::VKEY_MEDIA_PLAY:
     case ui::VKEY_MEDIA_PAUSE:

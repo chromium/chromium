@@ -38,7 +38,7 @@ class ProfilePickerDiceSignInProvider
   // in its `IdentityManager`, but the account may not be set as primary yet.
   // If the flow gets canceled by closing the window, the callback never gets
   // called.
-  // TODO(crbug.com/1240650): Properly support saml sign in so that the special
+  // TODO(crbug.com/40785551): Properly support saml sign in so that the special
   // casing is not needed here.
   using SignedInCallback =
       base::OnceCallback<void(Profile*,
@@ -156,7 +156,7 @@ class ProfilePickerDiceSignInProvider
 
   // Because of ProfileOAuth2TokenService intricacies, the sign in should not
   // finish before both the notification gets called.
-  // TODO(crbug.com/1249488): Remove this if the bug gets resolved.
+  // TODO(crbug.com/40791271): Remove this if the bug gets resolved.
   bool refresh_token_updated_ = false;
 
   base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};

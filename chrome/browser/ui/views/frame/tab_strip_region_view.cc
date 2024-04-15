@@ -463,7 +463,7 @@ void TabStripRegionView::UpdateButtonBorders() {
   // of the tabstrip bounds. This is essential to ensure it is targetable on the
   // edge of the screen when in fullscreen mode and ensures the button abides
   // by the correct Fitt's Law behavior (https://crbug.com/1136557).
-  // TODO(crbug.com/1142016): The left border is 0 in order to abut the NTB
+  // TODO(crbug.com/40727472): The left border is 0 in order to abut the NTB
   // directly with the tabstrip. That's the best immediately available
   // approximation to the prior behavior of aligning the NTB relative to the
   // trailing separator (instead of the right bound of the trailing tab). This

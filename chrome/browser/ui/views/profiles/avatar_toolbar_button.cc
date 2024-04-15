@@ -152,7 +152,7 @@ void AvatarToolbarButton::AddedToWidget() {
 void AvatarToolbarButton::Layout(PassKey) {
   LayoutSuperclass<ToolbarButton>(this);
 
-  // TODO(crbug.com/1108671): this is a hack to avoid mismatch between avatar
+  // TODO(crbug.com/40707582): this is a hack to avoid mismatch between avatar
   // bitmap scaling and DIP->canvas pixel scaling in fractional DIP scaling
   // modes (125%, 133%, etc.) that can cause the right-hand or bottom pixel row
   // of the avatar image to be sliced off at certain specific browser sizes and
@@ -191,7 +191,7 @@ void AvatarToolbarButton::UpdateText() {
         !IsLabelPresentAndVisible());
   }
 
-  // TODO(crbug.com/1078221): this is a hack because toolbar buttons don't
+  // TODO(crbug.com/40689215): this is a hack because toolbar buttons don't
   // correctly calculate their preferred size until they've been laid out once
   // or twice, because they modify their own borders and insets in response to
   // their size and have their own preferred size caching mechanic. These should

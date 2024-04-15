@@ -59,7 +59,7 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
           *web_contents),
       coupon_service_(CouponServiceFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  // TODO(crbug.com/1187190): Explore if there is a way to move CouponService
+  // TODO(crbug.com/40172797): Explore if there is a way to move CouponService
   // out of this file.
   if (coupon_service_)
     coupon_service_observation_.Observe(coupon_service_);

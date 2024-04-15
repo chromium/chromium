@@ -94,7 +94,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 
 // Invokes a dialog that allows the user to select what view of their desktop
 // they would like to share.
-// TODO(crbug.com/1238879): Test is flaky on Win.
+// TODO(crbug.com/40784430): Test is flaky on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else

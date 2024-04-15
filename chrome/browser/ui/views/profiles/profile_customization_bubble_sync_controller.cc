@@ -66,8 +66,8 @@ void ProfileCustomizationBubbleSyncController::
   Profile* profile = browser->profile();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/1213112): A speculative fix, remove if not functional or not
-  // needed.
+  // TODO(crbug.com/40183503): A speculative fix, remove if not functional or
+  // not needed.
   if (!anchor_view || !sync_service)
     return;
 

@@ -56,7 +56,7 @@ public class AccountPickerBottomSheetMediator
     private final boolean mIsWebSignin;
     private final @SigninAccessPoint int mSigninAccessPoint;
 
-    // TODO(crbug.com/1515277): Use CoreAccountInfo here instead.
+    // TODO(crbug.com/41487829): Use CoreAccountInfo here instead.
     private @Nullable String mSelectedAccountEmail;
     private @Nullable String mDefaultAccountEmail;
     private @Nullable String mAddedAccountEmail;
@@ -121,8 +121,8 @@ public class AccountPickerBottomSheetMediator
      * Notifies that the user has selected an account.
      *
      * @param accountName The email of the selected account.
-     *     <p>TODO(https://crbug.com/1115965): Use CoreAccountInfo instead of account's email as the
-     *     first argument of the method.
+     *     <p>TODO(crbug.com/40144553): Use CoreAccountInfo instead of account's email as the first
+     *     argument of the method.
      */
     @Override
     public void onAccountSelected(String accountName) {

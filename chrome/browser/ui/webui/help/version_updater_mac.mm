@@ -73,7 +73,7 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
       break;
     case updater::UpdateService::UpdateState::State::kUpdateError:
       status = VersionUpdater::Status::FAILED;
-      // TODO(https://crbug.com/1146201): Localize error string.
+      // TODO(crbug.com/40729907): Localize error string.
       err_message = base::StringPrintf(
           "An error occurred. (Error code: %d) (Extra code: %d)",
           update_state.error_code, update_state.extra_code1);

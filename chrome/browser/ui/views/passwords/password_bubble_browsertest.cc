@@ -118,7 +118,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PasswordBubbleBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-// TODO(crbug.com/1493957): Remove this class once
+// TODO(crbug.com/40286006): Remove this class once
 // kNewConfirmationBubbleForGeneratedPasswords is fully propagated and add test
 // back to PasswordBubbleBrowserTest.
 // First test parameter is responsible for toggling RTL.

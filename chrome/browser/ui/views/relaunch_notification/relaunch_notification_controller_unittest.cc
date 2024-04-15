@@ -246,7 +246,7 @@ TEST_F(RelaunchNotificationControllerTest, CreateDestroy) {
 // should not be observing the UpgradeDetector, and should therefore never
 // attempt to show any notifications.
 
-// TODO(1004568) Disabled due to race condition.
+// TODO(crbug.com/40099078) Disabled due to race condition.
 #if defined(THREAD_SANATIZER)
 #define MAYBE_PolicyUnset DISABLED_PolicyUnset
 #else

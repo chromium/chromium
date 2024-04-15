@@ -111,7 +111,7 @@ std::optional<std::string> GetSessionManagerIdentity();
 // a domain name (ie foo.com). For FlexOrgs, this will be the email address of
 // the admin of the FlexOrg (ie user@foo.com). If DMServer does not provide this
 // information, this function defaults to the domain of the account.
-// TODO(crbug.com/1081272): Refactor localization hints for all strings that
+// TODO(crbug.com/40130449): Refactor localization hints for all strings that
 // depend on this function.
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile);
 

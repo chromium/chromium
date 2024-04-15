@@ -262,8 +262,8 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1487301): Figure out a way having this test be run on ChromeOS
-// Ash, i.e. properly trigger a browser context shutdown.
+// TODO(crbug.com/40283231): Figure out a way having this test be run on
+// ChromeOS Ash, i.e. properly trigger a browser context shutdown.
 
 using WebAppProfileDeletionTest_WebContentsGracefulShutdown =
     WebAppProfileDeletionBrowserTest;

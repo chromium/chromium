@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
 #endif
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main_guest) {
-// TODO(crbug.com/1427667): ChromeOS specific profile logic still needs to be
+// TODO(crbug.com/40899974): ChromeOS specific profile logic still needs to be
 // updated, setup this test for a Guest user session with appropriate command
 // line switches afterwards.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

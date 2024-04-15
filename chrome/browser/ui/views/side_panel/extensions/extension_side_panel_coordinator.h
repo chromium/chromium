@@ -35,7 +35,7 @@ class Extension;
 // ExtensionSidePanelCoordinator handles the creation and registration of
 // SidePanelEntries for the associated extension and creates the view to be
 // shown if this extension's SidePanelEntry is active.
-// TODO(crbug.com/1434219): Separate into different classes for global vs
+// TODO(crbug.com/40264634): Separate into different classes for global vs
 // contextual extension side panels given the difference in behavior betweeen
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,

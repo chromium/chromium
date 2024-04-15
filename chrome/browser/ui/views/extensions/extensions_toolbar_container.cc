@@ -548,9 +548,9 @@ ExtensionsToolbarContainer::GetPoppedOutActionId() const {
 void ExtensionsToolbarContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
 #if BUILDFLAG(IS_MAC)
-    // TODO(crbug/1065584): Remove hiding active popup here once this bug is
-    // fixed.
-    HideActivePopup();
+  // TODO(crbug.com/40124221): Remove hiding active popup here once this bug is
+  // fixed.
+  HideActivePopup();
 #endif
 
     extension_with_open_context_menu_id_ = action_id;
@@ -789,7 +789,7 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
   if (it == model_->pinned_action_ids().cend())
     return false;
 
-  // TODO(crbug.com/1275586): Force-pinned extensions are not draggable.
+  // TODO(crbug.com/40808374): Force-pinned extensions are not draggable.
   return !model_->IsActionForcePinned(*it);
 }
 

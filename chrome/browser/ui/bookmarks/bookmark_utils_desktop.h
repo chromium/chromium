@@ -61,7 +61,7 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 // the dialog (if shown).
 // `launch_action` represents the location and time of the bookmark launch
 // action for callsites that support it.
-// TODO(crbug.com/1449016): This should be made non-optional once all callsites
+// TODO(crbug.com/40914589): This should be made non-optional once all callsites
 // have all the information needed to correctly construct the `launch_action`.
 void OpenAllIfAllowed(
     Browser* browser,

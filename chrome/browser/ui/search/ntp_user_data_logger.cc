@@ -254,7 +254,7 @@ NTPUserDataLogger::NTPUserDataLogger(Profile* profile,
     : during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
       ntp_url_(ntp_url),
       profile_(profile),
-      // TODO(https://crbug.com/1280310): Migrate NTP navigation startup time
+      // TODO(crbug.com/40811386): Migrate NTP navigation startup time
       // from base::Time to base::TimeTicks to avoid time glitches.
       ntp_navigation_start_time_(
           base::TimeTicks::UnixEpoch() +

@@ -115,7 +115,7 @@ void CredentialLeakDialogView::AddedToWidget() {
     // Reduce width by a pixel on each side. This enforces that the banner image
     // is rescaled during the ImageView::OnPaint step. Without the rescaling,
     // the image will display compression artifacts due to the size mismatch.
-    // TODO(crbug.com/1171763): Remove once the scaling works automatically.
+    // TODO(crbug.com/40745285): Remove once the scaling works automatically.
     max_width -= 2;
     const float scale = max_width / preferred_size.width();
     preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);

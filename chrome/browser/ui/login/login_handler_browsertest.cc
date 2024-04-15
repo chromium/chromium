@@ -2187,7 +2187,7 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
 
 // Tests that basic proxy auth works as expected, for HTTPS pages.
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1000446): Re-enable this test.
+// TODO(crbug.com/40645658): Re-enable this test.
 #define MAYBE_ProxyAuthHTTPS DISABLED_ProxyAuthHTTPS
 #else
 #define MAYBE_ProxyAuthHTTPS ProxyAuthHTTPS

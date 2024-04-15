@@ -596,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kUnexpectedResponse);
 }
 
-// TODO(crbug.com/1489482): Remove kNoPasskeySyncing path after metadata syncing
-// is enabled by default.
+// TODO(crbug.com/40284051): Remove kNoPasskeySyncing path after metadata
+// syncing is enabled by default.
 enum HasPasskeySyncing {
   kHasPasskeySyncing,
   kNoPasskeySyncing,

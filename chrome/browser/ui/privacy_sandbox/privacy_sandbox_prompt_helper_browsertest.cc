@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
         1}});
 }
 
-// TODO(crbug.com/1452014): Debug and re-enable the test.
+// TODO(crbug.com/40270789): Debug and re-enable the test.
 # if BUILDFLAG(IS_CHROMEOS)
 # define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
 # else

@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_AssistantBrowserTest,
   tester()->ExpectTextResponse("Night Mode isn't available on your device");
 }
 
-// TODO(crbug.com/1112278): Disabled because it's flaky.
+// TODO(crbug.com/40142964): Disabled because it's flaky.
 IN_PROC_BROWSER_TEST_F(DISABLED_AssistantBrowserTest,
                        ShouldShowSingleErrorOnNetworkDown) {
   tester()->StartAssistantAndWaitForReady();

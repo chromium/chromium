@@ -190,7 +190,8 @@ class CompanionPageHandler
   std::optional<base::TimeTicks> ui_ready_for_page_content_time_;
   // Used to store the page content before the side panel is ready for it. This
   // is untrustworthy content which will be sent to the webui for processing.
-  // TODO(1493364): Use an opaque mojo type to hold this data in the browser.
+  // TODO(crbug.com/40285814): Use an opaque mojo type to hold this data in the
+  // browser.
   std::optional<std::string> inner_html_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};

@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(https://crbug.com/1126736): Flaky on Win10.
+// TODO(crbug.com/40718668): Flaky on Win10.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_DetailedPermission DISABLED_InvokeUi_DetailedPermission
 #else
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(https://crbug.com/1126741): Flaky on Win10.
+// TODO(crbug.com/40718673): Flaky on Win10.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_WithWithholdingOption \
   DISABLED_InvokeUi_WithWithholdingOption
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/1445932): Flaky on Win10.
+// TODO(crbug.com/40912720): Flaky on Win10.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_AllInfoTypes DISABLED_InvokeUi_AllInfoTypes
 #else

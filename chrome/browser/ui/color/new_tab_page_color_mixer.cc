@@ -236,7 +236,7 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
 
 // Dialog colors currently track the native theme and not the browser theme.
 void AddNewTabPageDialogColors(ui::ColorMixer& mixer, bool dark_mode) {
-  // TODO(crbug.com/1376226): Colors defined below should come from core color
+  // TODO(crbug.com/40061402): Colors defined below should come from core color
   // mixer definitions to be inline with how other browser surfaces look. For
   // now, until 'Customize Chrome' UI is refined, we rely on colors that match
   // other WebUI surfaces.
@@ -392,7 +392,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
-  // TODO(crbug.com/1375876): Once the NTP Comprehensive Theming feature has
+  // TODO(crbug.com/40061386): Once the NTP Comprehensive Theming feature has
   // fully launched, remove these variables used to preserve the current GTK+
   // 'Customize Chrome" appearance and instead use core mixer colors.
   const SkColor accent_color =

@@ -369,7 +369,7 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
                                       &button_bounds, sizeof(button_bounds)))) {
     gfx::RectF button_bounds_in_dips = gfx::ConvertRectToDips(
         gfx::Rect(button_bounds), display::win::GetDPIScale());
-    // TODO(crbug.com/1131681): GetMirroredRect() requires an integer rect,
+    // TODO(crbug.com/40150311): GetMirroredRect() requires an integer rect,
     // but the size in DIPs may not be an integer with a fractional device
     // scale factor. If we want to keep using integers, the choice to use
     // ToFlooredRectDeprecated() seems to be doing the wrong thing given the

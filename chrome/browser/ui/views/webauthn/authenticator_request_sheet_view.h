@@ -54,7 +54,7 @@ class NonAccessibleImageView;
 // |                                   OK   CANCEL   | <- Not part of this view.
 // +-------------------------------------------------+
 //
-// TODO(https://crbug.com/852352): The Web Authentication and Web Payment APIs
+// TODO(crbug.com/41394359): The Web Authentication and Web Payment APIs
 // both use the concept of showing multiple "sheets" in a single dialog. To
 // avoid code duplication, consider factoring out common parts.
 class AuthenticatorRequestSheetView : public views::View {

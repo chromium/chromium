@@ -62,7 +62,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 // Returns the first icon larger than `kIconSize` from `manifest_icons`. If none
 // exist, returns the largest icon. Returns an empty IconInfo if there are no
 // icons.
-// TODO(crbug.com/1488697): This function assumes manifest_icons is sorted,
+// TODO(crbug.com/40283709): This function assumes manifest_icons is sorted,
 // which it may not be. Icon purpose also needs to be considered.
 apps::IconInfo GetIcon(const std::vector<apps::IconInfo>& manifest_icons) {
   for (const auto& icon_info : manifest_icons) {

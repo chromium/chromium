@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
   ASSERT_TRUE(RunTest("update_theme_letter_spacing.js"));
 }
 
-// TODO(crbug.com/1442570): unflake and re-enable
+// TODO(crbug.com/40910623): unflake and re-enable
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
                        DISABLED_ConnectedCallback_ShowLoadingScreen) {
   ASSERT_TRUE(RunTest("connected_callback_show_loading_screen.js"));
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
   ASSERT_TRUE(RunTest("update_content_selection_with_inline_text.js"));
 }
 
-// TODO(crbug.com/1521475): Test is flaky on macOS 12
+// TODO(crbug.com/41494444): Test is flaky on macOS 12
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UpdateContent_SetSelectedText \
   DISABLED_UpdateContent_SetSelectedText

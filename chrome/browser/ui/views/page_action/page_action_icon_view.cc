@@ -300,7 +300,7 @@ content::WebContents* PageActionIconView::GetWebContents() const {
 void PageActionIconView::UpdateBorder() {
   gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
   if (ShouldShowLabel() && OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    // TODO(crbug.com/1447066): Figure out what these values should be. For
+    // TODO(crbug.com/40913366): Figure out what these values should be. For
     // bonus point also try to move parts of this into the parent class. This is
     // too bespoke.
     new_insets += gfx::Insets::TLBR(0, 4, 0, 8);

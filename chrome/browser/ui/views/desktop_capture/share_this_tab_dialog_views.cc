@@ -124,7 +124,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetText(
       l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_));
-  // TODO(crbug.com/1448008): Prevent non-initial focus of the title label.
+  // TODO(crbug.com/40269137): Prevent non-initial focus of the title label.
   title_label->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   SetInitiallyFocusedView(title_label);
 

@@ -243,7 +243,7 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
 views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
   // Prefer height consistency over accommodating edge case icons that may
   // bump up the container height (e.g. extension action icons with badges).
-  // TODO(https://crbug.com/889745): Fix the inconsistent icon sizes found in
+  // TODO(crbug.com/41417506): Fix the inconsistent icon sizes found in
   // the right-hand container and turn this into a DCHECK that the container
   // height is the same as the app menu button height.
   const auto* const layout =

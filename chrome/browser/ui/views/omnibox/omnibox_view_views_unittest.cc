@@ -557,7 +557,7 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
                                            false, false);
   EXPECT_EQ(gfx::NO_ELIDE, render_text->elide_behavior());
 
-  // TODO(https://crbug.com/1094386): this assertion fails because
+  // TODO(crbug.com/40699469): this assertion fails because
   // EmphasizeURLComponents() sets the textfield's directionality to
   // DIRECTIONALITY_AS_URL. This should be either fixed or the assertion
   // removed.

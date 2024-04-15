@@ -70,7 +70,7 @@ AccessorySheetField ConvertJavaUserInfoField(
 // bridge — it's only required because it is referenced in callbacks. Therefore,
 // the java_object can always be used, even if the controller has been
 // dismissed.
-// TODO(crbug.com/1354183): Pass a delegate/callback and not the bridge object.
+// TODO(crbug.com/40858913): Pass a delegate/callback and not the bridge object.
 ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
     ScopedJavaGlobalRef<jobject> java_object,
     AccessorySheetData tab_data) {

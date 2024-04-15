@@ -206,7 +206,7 @@ std::u16string LocationIconView::GetText() const {
   if (delegate_->GetWebContents()) {
     // On ChromeOS, this can be called using web_contents from
     // SimpleWebViewDialog::GetWebContents() which always returns null.
-    // TODO(crbug.com/680329) Remove the null check and make
+    // TODO(crbug.com/40501128) Remove the null check and make
     // SimpleWebViewDialog::GetWebContents return the proper web contents
     // instead.
     const std::u16string extension_name =

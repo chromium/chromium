@@ -431,7 +431,7 @@ bool TabStripPageHandler::CanDragEnter(
     content::WebContents* source,
     const content::DropData& data,
     blink::DragOperationsMask operations_allowed) {
-  // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
+  // TODO(crbug.com/40110968): Prevent dragging across Chromium instances.
   if (auto it = data.custom_data.find(kWebUITabIdDataType);
       it != data.custom_data.end()) {
     int tab_id;
@@ -746,7 +746,7 @@ void TabStripPageHandler::ShowTabContextMenu(int32_t tab_id,
   }
 
   if (browser != browser_) {
-    // TODO(crbug.com/1141573): Investigate how a context menu is being opened
+    // TODO(crbug.com/40727240): Investigate how a context menu is being opened
     // for a tab that is no longer in the tab strip. Until then, fire a
     // tab-removed event so the tab is removed from this tab strip.
     page_->TabRemoved(tab_id);

@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-// TODO(crbug.com/1230771) Flaky on Linux-ozone, Lacros and MacOS.
+// TODO(crbug.com/40779265) Flaky on Linux-ozone, Lacros and MacOS.
 #if (BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_TabEntersPresentationModeFromWindowed \
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 // Tests pointer lock then fullscreen.
-// TODO(crbug.com/1318638): Re-enable this test
+// TODO(crbug.com/40835508): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PointerLockThenFullscreen DISABLED_PointerLockThenFullscreen
 #else
@@ -1757,8 +1757,8 @@ class MAYBE_FullscreenOnScreensChangeFullscreenControllerInteractiveTest
 
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
-// TODO(crbug.com/1183791): Disabled on Mac due to flaky ObserverList crashes.
-// TODO(crbug.com/1420348): Disabled on ChromiumOS due to flakes and even, on
+// TODO(crbug.com/40171349): Disabled on Mac due to flaky ObserverList crashes.
+// TODO(crbug.com/40895682): Disabled on ChromiumOS due to flakes and even, on
 // MSAN, consistent failures.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FullscreenOnScreensChange DISABLED_FullscreenOnScreensChange

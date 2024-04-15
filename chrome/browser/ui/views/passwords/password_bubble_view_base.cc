@@ -66,7 +66,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       CreateBubble(web_contents, anchor_view, reason);
   DCHECK(bubble);
   DCHECK_EQ(bubble, g_manage_passwords_bubble_);
-  // TODO(crbug.com/1305276): In non-DCHECK mode we could fall through here and
+  // TODO(crbug.com/40218026): In non-DCHECK mode we could fall through here and
   // hard-crash if we requested a bubble and were in the wrong state. In the
   // meantime we will abort if we did not create a bubble.
   if (!g_manage_passwords_bubble_)

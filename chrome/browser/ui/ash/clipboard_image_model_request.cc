@@ -85,7 +85,7 @@ ClipboardImageModelRequest::ScopedClipboardModifier::ScopedClipboardModifier(
   // Put |html_markup| on the clipboard temporarily so it can be pasted into
   // the WebContents. This is preferable to directly loading |html_markup_| in a
   // data URL because pasting the data into WebContents sanitizes the markup.
-  // TODO(https://crbug.com/1144962): Sanitize copied HTML prior to storing it
+  // TODO(crbug.com/40729185): Sanitize copied HTML prior to storing it
   // in the clipboard buffer. Then |html_markup_| can be loaded from a data URL
   // and will not need to be pasted in this manner.
   auto new_data = std::make_unique<ui::ClipboardData>();

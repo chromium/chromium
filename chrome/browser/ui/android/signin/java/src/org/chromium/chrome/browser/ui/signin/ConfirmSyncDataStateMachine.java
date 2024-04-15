@@ -67,8 +67,8 @@ public class ConfirmSyncDataStateMachine
     }
 
     /**
-     * Callback for completion of the {@link ConfirmSyncDataStateMachine}.
-     * TODO(https://crbug.com/1155123): Change this method to package internal after modularization
+     * Callback for completion of the {@link ConfirmSyncDataStateMachine}. TODO(crbug.com/40159777):
+     * Change this method to package internal after modularization
      */
     public interface Listener {
         /**

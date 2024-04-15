@@ -643,7 +643,7 @@ class SystemTrayClientShowChannelInfoGiveFeedbackTest
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-// TODO(crbug.com/1352326): Flaky on release bots.
+// TODO(crbug.com/40857702): Flaky on release bots.
 #if defined(NDEBUG)
 #define MAYBE_RecordFeedbackSourceChannelIndicator \
   DISABLED_RecordFeedbackSourceChannelIndicator

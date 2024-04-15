@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1324444): For Mac builders, the test fails after activating
+// TODO(crbug.com/40839289): For Mac builders, the test fails after activating
 // the browser and cannot spot the widget. Needs investigation and fix.
 #define MAYBE_SwitchTabs DISABLED_SwitchTabs
 #else

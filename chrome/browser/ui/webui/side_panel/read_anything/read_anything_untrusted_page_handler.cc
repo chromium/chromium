@@ -523,7 +523,7 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   if (inner_contents.size() == 1 &&
       IsPdfExtensionOrigin(
           inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    // TODO(crbug.com/1513227): Improve PDF OCR support for Reading Mode. Maybe
+    // TODO(crbug.com/41485800): Improve PDF OCR support for Reading Mode. Maybe
     // it would make it easy to read and maintain the code if setting the AXMode
     // for PDF OCR (i.e. `ui::AXMode::kPDFOcr`) is handled by
     // `PdfOcrController`. Enable accessibility to receive events (data) from

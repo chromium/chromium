@@ -88,7 +88,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
     source->AddLocalizedString("signinErrorTitle",
                                IDS_OLD_PROFILES_DISABLED_TITLE);
   } else if (last_login_error.email().empty()) {
-    // TODO(https://crbug.com/1133189): investigate whether an empty email
+    // TODO(crbug.com/40150925): investigate whether an empty email
     // string is ever passed and possibly add a DCHECK.
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
   } else {

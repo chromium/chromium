@@ -81,9 +81,9 @@ void ExtensionsRequestAccessButton::Update(
     return;
   }
 
-  // TODO(crbug.com/1239772): Set the label and background color without borders
-  // separately to match the mocks. For now, using SetHighlight to display that
-  // adds a border and highlight color in addition to the label.
+  // TODO(crbug.com/40784980): Set the label and background color without
+  // borders separately to match the mocks. For now, using SetHighlight to
+  // display that adds a border and highlight color in addition to the label.
   std::optional<SkColor> color;
   SetHighlight(
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,

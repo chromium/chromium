@@ -55,7 +55,8 @@ class PopupTestBase : public InProcessBrowserTest {
   static display::Display GetDisplayNearestBrowser(const Browser* browser);
 
   // Waits for any active user activation to expire.
-  // TODO(crbug.com/1467695): Improve and consolidate this to a common function.
+  // TODO(crbug.com/40276892): Improve and consolidate this to a common
+  // function.
   static void WaitForUserActivationExpiry(Browser* browser);
 };
 

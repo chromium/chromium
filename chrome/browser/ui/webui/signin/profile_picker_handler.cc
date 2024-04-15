@@ -394,7 +394,7 @@ void ProfilePickerHandler::RegisterMessages() {
       "selectNewAccount",
       base::BindRepeating(&ProfilePickerHandler::HandleSelectNewAccount,
                           base::Unretained(this)));
-  // TODO(crbug.com/1115056): Consider renaming this message to
+  // TODO(crbug.com/40144179): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
   web_ui()->RegisterMessageCallback(
       "getAvailableIcons",
@@ -610,7 +610,7 @@ void ProfilePickerHandler::DisplayForceSigninErrorDialog(
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(
     const base::Value::List& args) {
-  // TODO(crbug.com/1063856): Add check |IsGuestModeEnabled| once policy
+  // TODO(crbug.com/40123459): Add check |IsGuestModeEnabled| once policy
   // checking has been added to the UI.
   profiles::SwitchToGuestProfile(
       base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
@@ -754,7 +754,7 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
   if (!profile_path)
     return;
 
-  // TODO(https://crbug.com/1182206): remove the profile used for the sign-in
+  // TODO(crbug.com/40751337): remove the profile used for the sign-in
   // flow.
   profiles::SwitchToProfile(
       *profile_path, /*always_create=*/false,

@@ -266,7 +266,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
 
-// TODO(https://crbug.com/1289161): Flaky failures.
+// TODO(crbug.com/40817360): Flaky failures.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_Navigation DISABLED_Navigation
 #else

@@ -113,8 +113,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(ChromeLabsButton* anchor_view)
   // behavior was confusing.
   SetAccessibleWindowRole(ax::mojom::Role::kDialog);
 
-  // TODO(crbug.com/1259763): Currently basing this off what extension menu uses
-  // for sizing as suggested as an initial fix by UI. Discuss a more formal
+  // TODO(crbug.com/40797818): Currently basing this off what extension menu
+  // uses for sizing as suggested as an initial fix by UI. Discuss a more formal
   // solution.
   constexpr int kMaxChromeLabsHeightDp = 448;
   auto scroll_view = std::make_unique<views::ScrollView>(

@@ -10,7 +10,7 @@
 namespace autofill {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/676221): Change this to pixels
+// TODO(crbug.com/41292313): Change this to pixels
 const int kPopupBorderThickness = 1;
 #else
 // In views, the implementation takes care of the border itself.

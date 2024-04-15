@@ -174,7 +174,7 @@ class SiteSettingsHandler
   void HandleRevokeFileSystemGrants(const base::Value::List& args);
 
   // Gets and sets a list of ContentSettingTypes for an origin.
-  // TODO(https://crbug.com/739241): Investigate replacing the
+  // TODO(crbug.com/40528601): Investigate replacing the
   // '*CategoryPermissionForPattern' equivalents below with these methods.
   void HandleGetOriginPermissions(const base::Value::List& args);
   void HandleSetOriginPermissions(const base::Value::List& args);

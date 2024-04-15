@@ -252,7 +252,7 @@ void BookmarkButton::StartPreconnecting(GURL url) {
 }
 
 void BookmarkButton::StartPrerendering(GURL url) {
-  // TODO(https://crbug.com/1422819): Prerender only for https scheme, and add
+  // TODO(crbug.com/40259793): Prerender only for https scheme, and add
   // an enum metric to report the protocol scheme.
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
   if (!prerender_handle_) {

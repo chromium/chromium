@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
       static_cast<int>(WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
-// TODO(crbug.com/1178846): Test is flaky on Linux.
+// TODO(crbug.com/40749398): Test is flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PopupInWindow_IsWindowTrue DISABLED_PopupInWindow_IsWindowTrue
 #else
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       static_cast<int>(WindowOpenDisposition::NEW_POPUP));
 }
 
-// TODO(crbug.com/1146598): Test is flaky on Lacros, Linux Ozone Wayland.
+// TODO(crbug.com/40730174): Test is flaky on Lacros, Linux Ozone Wayland.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
 #else
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   test_ukm_recorder_->ExpectEntryMetric(entry, kUkmRedirectCount, 2);
 }
 
-// TODO(crbug.com/1179859): Test is flaky on Windows, Linux and Lacros.
+// TODO(crbug.com/40749954): Test is flaky on Windows, Linux and Lacros.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PopupJavascriptRenavigation_RedirectCountZero \
   DISABLED_PopupJavascriptRenavigation_RedirectCountZero

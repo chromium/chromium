@@ -600,7 +600,7 @@ Browser::~Browser() {
 
   // The tab strip should not have any tabs at this point.
   //
-  // TODO(crbug.com/1407055): This DCHECK doesn't always pass.
+  // TODO(crbug.com/40887606): This DCHECK doesn't always pass.
   // TODO(crbug.com/1434387): convert this to CHECK.
   DCHECK(tab_strip_model_->empty());
 
@@ -1492,7 +1492,7 @@ void Browser::CreateSmsPrompt(content::RenderFrameHost*,
                               const std::string& one_time_code,
                               base::OnceClosure on_confirm,
                               base::OnceClosure on_cancel) {
-  // TODO(crbug.com/1015645): implementation left pending deliberately.
+  // TODO(crbug.com/40103792): implementation left pending deliberately.
   std::move(on_confirm).Run();
 }
 
@@ -1604,7 +1604,7 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// TODO(crbug.com/1198344): Remove this.
+// TODO(crbug.com/40177301): Remove this.
 void Browser::MediaWatchTimeChanged(
     const content::MediaPlayerWatchTime& watch_time) {}
 
@@ -2746,7 +2746,7 @@ void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
   // WebContents may in some rare cases send updates after they've been detached
   // from the tabstrip but before they are deleted, causing a potential crash if
   // we proceed. For now bail out.
-  // TODO(crbug.com/1007379) Figure out a safe way to detach browser delegate
+  // TODO(crbug.com/40100269) Figure out a safe way to detach browser delegate
   // from WebContents when it's removed so this doesn't happen - then put a
   // DCHECK back here.
   if (tab_strip_model_->GetIndexOfWebContents(source) == TabStripModel::kNoTab)
@@ -2856,7 +2856,7 @@ void Browser::ProcessPendingUIUpdates() {
     // hidden.
     if (flags & content::INVALIDATE_TYPE_TAB) {
       UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_TAB_STATE);
-      // TODO(crbug.com/1062235): Ideally, we should simply ask the state to
+      // TODO(crbug.com/40122780): Ideally, we should simply ask the state to
       // update, and doing that in an appropriate and efficient manner.
       window()->UpdatePageActionIcon(PageActionIconType::kPwaInstall);
     }

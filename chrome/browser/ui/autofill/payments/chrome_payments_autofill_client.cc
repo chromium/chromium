@@ -227,7 +227,7 @@ void ChromePaymentsAutofillClient::ShowUnmaskPrompt(
       base::Unretained(web_contents())));
 }
 
-// TODO(crbug.com/1220990): Refactor this for both CVC and Biometrics flows.
+// TODO(crbug.com/40186650): Refactor this for both CVC and Biometrics flows.
 void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
     AutofillClient::PaymentsRpcResult result) {
   if (unmask_controller_) {

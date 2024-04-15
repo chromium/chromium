@@ -406,7 +406,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      *     the search box. If not we will use medium Google sans typeface for surface polish.
      */
     void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        // TODO(crbug.com/1487760): Use TextAppearance style instead.
+        // TODO(crbug.com/40283393): Use TextAppearance style instead.
         Typeface typeface =
                 useDefaultUrlBarTypeface
                         ? Typeface.defaultFromStyle(Typeface.NORMAL)

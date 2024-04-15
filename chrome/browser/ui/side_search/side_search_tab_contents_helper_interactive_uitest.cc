@@ -68,7 +68,7 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
 
     auto* config = SideSearchConfig::Get(browser()->profile());
 
-    // TODO(crbug.com/1399570): this is a workaround for a side search bug that
+    // TODO(crbug.com/40249898): this is a workaround for a side search bug that
     // can randomly close the side panel.
     config->set_skip_on_template_url_changed_for_testing(true);
 
@@ -396,7 +396,7 @@ class SideSearchExtensionsTest
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1340387): Test is flaky on Mac and Linux.
+// TODO(crbug.com/40230340): Test is flaky on Mac and Linux.
 #define MAYBE_ContentScriptsExecuteInSidePanel \
   DISABLED_ContentScriptsExecuteInSidePanel
 #else
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1340903): Test is flaky on Mac and Linux.
+// TODO(crbug.com/40230491): Test is flaky on Mac and Linux.
 #define MAYBE_WebRequestInterceptsSidePanelNavigations \
   DISABLED_WebRequestInterceptsSidePanelNavigations
 #else
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchExtensionsTest,
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1305891): Test is flaky on Mac, Windows and Linux bots.
+// TODO(crbug.com/40827415): Test is flaky on Mac, Windows and Linux bots.
 #define MAYBE_DeclarativeNetRequestInterceptsSidePanelNavigations \
   DISABLED_DeclarativeNetRequestInterceptsSidePanelNavigations
 #else

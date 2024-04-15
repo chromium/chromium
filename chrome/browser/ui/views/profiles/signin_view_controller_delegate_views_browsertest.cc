@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Creates a dialog that is not shown until the size is set. Checks that the
 // dialog is initially shown with correct size.
-// TODO(crbug.com/1296260): Fix unexpected dialog height on mac10.12.
+// TODO(crbug.com/40214711): Fix unexpected dialog height on mac10.12.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ResizeBeforeDisplay DISABLED_ResizeBeforeDisplay
 #else

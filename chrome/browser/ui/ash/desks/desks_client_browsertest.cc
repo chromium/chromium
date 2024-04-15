@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleDeskTemplates) {
   auto* desks_controller = ash::DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  // TODO(crbug.com/1273532): Note that `SetTemplate` allows setting an empty
+  // TODO(crbug.com/40206393): Note that `SetTemplate` allows setting an empty
   // desk template which shouldn't be possible in a real workflow. Make sure a
   // non empty desks are launched when this test is updated to use the real
   // workflow.
@@ -2616,7 +2616,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
 // and then save the desk, that the desk is closed. Regression test for
 // https://crbug.com/1329350.
 IN_PROC_BROWSER_TEST_F(DesksClientTest,
-                       // TODO(crbug.com/1369348): Re-enable this test
+                       // TODO(crbug.com/40240645): Re-enable this test
                        DISABLED_SystemUIReEnterLibraryAndSaveDesk) {
   // Create a template that has a window because the "Save desk for later"
   // button is not enabled on empty desks.
@@ -3324,7 +3324,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // We should be in overview mode.
   ASSERT_TRUE(ash::Shell::Get()->overview_controller()->overview_session());
 }
-// TODO(crbug.com/1333965): Add some tests to launch LaCros browser.
+// TODO(crbug.com/40228006): Add some tests to launch LaCros browser.
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:

@@ -347,7 +347,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   void GetDialogSize(gfx::Size* size) const override {
-    // TODO(crbug.com/901947): Figure out exactly what size the dialog should
+    // TODO(crbug.com/40601014): Figure out exactly what size the dialog should
     // be.
     size->SetSize(448, 610);
   }

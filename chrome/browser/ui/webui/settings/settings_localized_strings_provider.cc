@@ -659,7 +659,7 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
       ResetSettingsHandler::ShouldShowResetProfileBanner(profile));
   bool is_reset_shortcuts_feature_enabled = false;
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug/1234599): Remove this flag from the JS.
+  // TODO(crbug.com/40192052): Remove this flag from the JS.
   is_reset_shortcuts_feature_enabled = true;
 #endif
   html_source->AddBoolean("showExplanationWithBulletPoints",
@@ -1655,7 +1655,7 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"doNotTrackDialogMessage", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT},
       {"doNotTrackDialogLearnMoreA11yLabel",
        IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL},
-      // TODO(crbug.com/1062607): This string is no longer used. Remove.
+      // TODO(crbug.com/40122957): This string is no longer used. Remove.
       {"permissionsPageTitle", IDS_SETTINGS_PERMISSIONS},
       {"permissionsPageDescription", IDS_SETTINGS_PERMISSIONS_DESCRIPTION},
       {"securityPageTitle", IDS_SETTINGS_SECURITY},

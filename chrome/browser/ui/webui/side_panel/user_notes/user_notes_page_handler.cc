@@ -288,7 +288,7 @@ void UserNotesPageHandler::SetSortOrder(bool sort_by_newest) {
 
 void UserNotesPageHandler::HasNotesInAnyPages(
     HasNotesInAnyPagesCallback callback) {
-  // TODO(crbug.com/1419697) Implement a more efficient API to retrieve number
+  // TODO(crbug.com/40258459) Implement a more efficient API to retrieve number
   // of powers for a specific type instead of using GetPowerOverviewsForType
   service_->GetPowerOverviewsForType(
       sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,

@@ -376,7 +376,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   }
 }
 
-// This test fails on Windows. TODO(crbug.com/1439648): Investigate and
+// This test fails on Windows. TODO(crbug.com/40265634): Investigate and
 // fix this test on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_GetCommandLineTabsFileUrl DISABLED_GetCommandLineTabsFileUrl

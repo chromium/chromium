@@ -49,7 +49,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
-// TODO(crbug.com/1077706): come up with a more general solution for this.
+// TODO(crbug.com/40688828): come up with a more general solution for this.
 // This layout auto-resizes the host view to always adapt to changes in the size
 // of the child views.
 class PasswordSaveUpdateView::AutoResizingLayout : public views::FillLayout {

@@ -67,7 +67,7 @@ using ImmersiveModeBrowserViewTestNoWebUiTabStrip =
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1255304): Reveal does not end until mouse is moved. Find out
+// TODO(crbug.com/40199989): Reveal does not end until mouse is moved. Find out
 // if this is a product or test issue and fix it.
 #define MAYBE_ImmersiveFullscreen DISABLED_ImmersiveFullscreen
 #else
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // Also test that the immersive mode is disabled afterwards (and the shelf is
 // hidden, and the fullscreen control popup doesn't show up).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1508249): Reenable test when bug is fixed.
+// TODO(crbug.com/40948963): Reenable test when bug is fixed.
 #define MAYBE_RegularToLockedFullscreenDisablesImmersive \
   DISABLED_RegularToLockedFullscreenDisablesImmersive
 #else

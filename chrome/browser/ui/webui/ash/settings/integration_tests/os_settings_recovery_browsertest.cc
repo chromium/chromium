@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, NavigaionToRecoveryToggle) {
 
 // Check that trying to change recovery with an invalidated auth session shows
 // the password prompt again.
-// TODO(crbug.com/1436858): Re-enable this test
+// TODO(crbug.com/40906200): Re-enable this test
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, DISABLED_DestroyedSession) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();

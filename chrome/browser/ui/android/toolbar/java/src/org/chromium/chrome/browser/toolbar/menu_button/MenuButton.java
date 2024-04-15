@@ -280,7 +280,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
                         ViewCompat.getPaddingEnd(mMenuImageButton),
                         mMenuImageButton.getPaddingBottom());
             }
-            // TODO(https://crbug.com/1233703) This doesn't work well with website themes.
+            // TODO(crbug.com/40191664) This doesn't work well with website themes.
             boolean isLightPulseColor =
                     mBrandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
                             || mBrandedColorScheme == BrandedColorScheme.INCOGNITO;

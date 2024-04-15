@@ -289,7 +289,7 @@ void PriceTrackingIconView::SetVisualState(bool enable) {
 }
 
 void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
-  // TODO(crbug.com/1364739): Handles error if |success| is false.
+  // TODO(crbug.com/40865740): Handles error if |success| is false.
   if (commerce::kRevertIconOnFailure.Get() && !success) {
     bubble_coordinator_.Hide();
     UpdateImpl();

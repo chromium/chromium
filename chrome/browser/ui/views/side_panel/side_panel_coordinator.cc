@@ -1139,8 +1139,8 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     if (content_wrapper->children().size() == 1) {
       entry_view = content_wrapper->RemoveChildViewT(
           content_wrapper->children().front());
-      // TODO(crbug.com/1423211): Log the time elapsed between when this view is
-      // removed, to when the new active entry's view is shown. This can
+      // TODO(crbug.com/40897366): Log the time elapsed between when this view
+      // is removed, to when the new active entry's view is shown. This can
       // determine if the user will notice a flash in the side panel in between
       // different entries being shown.
     }

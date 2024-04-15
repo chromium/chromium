@@ -135,10 +135,11 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
     /**
      * Called when tab switcher mode is entered or exited.
+     *
      * @param inTabSwitcherMode Whether or not tab switcher mode should be shown or hidden.
      */
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
-        // TODO(https://crbug.com/914868): Use consistent logic here for setting clickable/enabled
+        // TODO(crbug.com/40606413): Use consistent logic here for setting clickable/enabled
         // on mIncognitoToggleTabLayout & mNewTabButton?
         if (!inTabSwitcherMode) {
             if (mIncognitoToggleTabLayout != null) mIncognitoToggleTabLayout.setClickable(false);
@@ -354,10 +355,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
     /**
      * @return Whether or not incognito toggle should be visible based on the enabled features,
-     *         incognito status and form-factor.
+     *     incognito status and form-factor.
      */
     private boolean shouldShowIncognitoToggle() {
-        // TODO(crbug.com/1434937): Remove top toggle (and update "New Tab" button logic,
+        // TODO(crbug.com/40904502): Remove top toggle (and update "New Tab" button logic,
         //  accordingly) for the a11y switcher, since that variant has the bottom toggle showing.
         return mIsIncognitoModeEnabledSupplier.getAsBoolean()
                 && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())

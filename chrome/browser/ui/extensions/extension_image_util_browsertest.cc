@@ -27,9 +27,9 @@ using ImageUtilTest = extensions::ExtensionBrowserTest;
 // need this test at the browser level, since the lower levels where
 // we use this value don't have access to the ThemeService.
 //
-// TODO(crbug.com/805600): The validation that uses this color should happen at
-// some point where the requesting Chrome window can supply the relevant toolbar
-// color through an interface of some sort, removing this hardcoded
+// TODO(crbug.com/40559794): The validation that uses this color should happen
+// at some point where the requesting Chrome window can supply the relevant
+// toolbar color through an interface of some sort, removing this hardcoded
 // value.
 IN_PROC_BROWSER_TEST_F(ImageUtilTest, CheckDefaultToolbarColor) {
   // TODO (crbug/1520617): This should be re-evaluated with CR2023 enabled which

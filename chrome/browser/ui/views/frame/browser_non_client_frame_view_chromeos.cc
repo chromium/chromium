@@ -393,7 +393,7 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
       !frame()->IsFullscreen() &&
       !display::Screen::GetScreen()->InTabletMode()) {
-    // TODO(crbug.com/1213133): Tab Strip hit calculation and bounds logic
+    // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
     View::ConvertPointToTarget(this, frame()->client_view(), &client_point);

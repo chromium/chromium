@@ -871,7 +871,7 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
     SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1167061): Respect SaveAddressProfilePromptOptions.
+  // TODO(crbug.com/40164488): Respect SaveAddressProfilePromptOptions.
   save_update_address_profile_flow_manager_.OfferSave(
       web_contents(), profile, original_profile,
       options.is_migration_to_account, std::move(callback));
@@ -1094,7 +1094,7 @@ void ChromeAutofillClient::DidFillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill &&
       trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
       !is_refill) {
-    // TODO(crbug.com/1428492): Test that the message was announced.
+    // TODO(crbug.com/40900538): Test that the message was announced.
     autofill::AnnounceTextForA11y(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM));
   }
@@ -1122,8 +1122,8 @@ bool ChromeAutofillClient::IsContextSecure() const {
 
   // Only dangerous security states should prevent autofill.
   //
-  // TODO(crbug.com/701018): Once passive mixed content and legacy TLS are less
-  // common, just use IsSslCertificateValid().
+  // TODO(crbug.com/41307071): Once passive mixed content and legacy TLS are
+  // less common, just use IsSslCertificateValid().
   return entry && entry->GetURL().SchemeIsCryptographic() &&
          security_level != security_state::DANGEROUS;
 }
@@ -1203,8 +1203,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
       log_manager_(
-          // TODO(crbug.com/928595): Replace the closure with a callback to the
-          // renderer that indicates if log messages should be sent from the
+          // TODO(crbug.com/40612524): Replace the closure with a callback to
+          // the renderer that indicates if log messages should be sent from the
           // renderer.
           LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
                                  web_contents->GetBrowserContext()),

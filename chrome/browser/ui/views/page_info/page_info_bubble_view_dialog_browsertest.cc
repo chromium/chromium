@@ -633,7 +633,7 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl("a.test")));
 
-    // TODO(crbug.com/1286276): It would be better to actually access the
+    // TODO(crbug.com/40210776): It would be better to actually access the
     // topic through Javascript for an end-to-end test when the API is ready.
     auto* pscs = content_settings::PageSpecificContentSettings::GetForFrame(
         browser()
@@ -763,7 +763,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     cookie_info.protections_on = protections_on_;
     cookie_info.controls_visible = controls_visible_;
     cookie_info.blocking_status = blocking_status_;
-    // TODO(crbug.com/1346305): Add fps enforcement info when finished
+    // TODO(crbug.com/40854087): Add fps enforcement info when finished
     // implementing it.
     if (fps_enabled_) {
       const std::u16string kSiteOrigin = u"example.com";

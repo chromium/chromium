@@ -87,7 +87,7 @@ std::u16string ContactInfoEditorViewController::GetInitialValueForType(
 }
 
 bool ContactInfoEditorViewController::ValidateModelAndSave() {
-  // TODO(crbug.com/712224): Move this method and its helpers to a base class
+  // TODO(crbug.com/40515884): Move this method and its helpers to a base class
   // shared with the Shipping Address editor.
   if (!ValidateInputFields())
     return false;

@@ -226,7 +226,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     @Override
-    // TODO(crbug.com/1231201): work out why this is causing a lint error
+    // TODO(crbug.com/40779510): work out why this is causing a lint error
     @SuppressWarnings("Override")
     public boolean gatherTransparentRegion(Region region) {
         // Reset the translation on the control container before attempting to compute the
@@ -449,7 +449,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     if (mConstraintsObserver != null && mTabSupplier != null) {
                         Tab tab = mTabSupplier.get();
 
-                        // TODO(https://crbug.com/1355516): Understand and fix this for native
+                        // TODO(crbug.com/40859837): Understand and fix this for native
                         // pages. It seems capturing is required for some part of theme observers to
                         // work correctly, but it shouldn't be.
                         boolean isNativePage = tab == null || tab.isNativePage();
@@ -573,7 +573,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             if (!Boolean.TRUE.equals(compositorInMotion)) {
                 if (mControlsToken == TokenHolder.INVALID_TOKEN) {
                     // Only needed when the ConstraintsChecker doesn't drive the capture.
-                    // TODO(https://crbug.com/1378721): Make this post a task similar to
+                    // TODO(crbug.com/40244055): Make this post a task similar to
                     // ConstraintsChecker.
                     onResourceRequested();
                 } else {

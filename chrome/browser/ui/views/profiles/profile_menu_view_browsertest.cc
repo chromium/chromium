@@ -1331,7 +1331,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 }
 
 // Lacros doesn't allow to disable sign-in in regular profiles yet.
-// TODO(https://crbug.com/1220066): re-enable this test once kSigninAllowed is
+// TODO(crbug.com/40772644): re-enable this test once kSigninAllowed is
 // no longer force set to true on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // List of actionable items in the correct order as they appear in the menu with

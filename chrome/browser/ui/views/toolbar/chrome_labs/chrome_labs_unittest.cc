@@ -553,7 +553,7 @@ TEST_F(ChromeLabsViewControllerTest, SelectDefaultTwiceNoRestart) {
   EXPECT_FALSE(bubble_view->IsRestartPromptVisibleForTesting());
 }
 
-// TODO(crbug.com/1128855)
+// TODO(crbug.com/40719879)
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(b/185480535): Fix the test for WebUIFeedback
 TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {

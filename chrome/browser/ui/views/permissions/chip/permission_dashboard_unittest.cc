@@ -96,7 +96,7 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
-// TODO(crbug.com/1519832): Test LHS indicators animation on macOS as well.
+// TODO(crbug.com/41492809): Test LHS indicators animation on macOS as well.
 #if !BUILDFLAG(IS_MAC)
 // This test verifies:
 // 1. Camera activity indicator chip is shown in verbose form after

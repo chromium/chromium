@@ -126,7 +126,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
 
                 if (bitmap != null) {
-                    // TODO(crbug.com/1090919): This is short term solution, resize need to be
+                    // TODO(crbug.com/40133944): This is short term solution, resize need to be
                     // handled somewhere else.
                     if (bitmap.getWidth() > 0
                             && bitmap.getHeight() > 0
@@ -210,7 +210,8 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
-    // TODO(crbug.com/1198295): Make revealButtonClickHandler and concealButtonClickHandler private.
+    // TODO(crbug.com/40177279): Make revealButtonClickHandler and concealButtonClickHandler
+    // private.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void revealButtonClickHandler(
             @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {

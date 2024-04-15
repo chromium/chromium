@@ -63,7 +63,7 @@ public class DeviceLockCoordinatorTest {
         }
     }
 
-    // TODO(crbug.com/1432028): Add more tests, particularly render tests, once flow is finalized
+    // TODO(crbug.com/40902690): Add more tests, particularly render tests, once flow is finalized
     @Test
     @SmallTest
     public void testDeviceLockCoordinator_simpleTest() {

@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
 }
 
 // Ensure blocked sites get blocked in incognito.
-// TODO(crbug.com/1405351): Fix this test and re-enable.
+// TODO(crbug.com/40886576): Fix this test and re-enable.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_ShowOnBlockIncognito) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // a combo squatting url is flagged with a hard-coded brand name.
 // This test case trigger `keyword` heuristic as well because of `google`
 // in the URL.
-// TODO(crbug.com/1343630): keyword (embedded keyword) heuristic should
+// TODO(crbug.com/40852479): keyword (embedded keyword) heuristic should
 // be removed from the code including CheckHeuristicsUkmRecord.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DontTriggerOnAllowlistedComboSquatting) {

@@ -156,7 +156,7 @@
       views::NativeWidgetMacNSWindowHost::GetFromNativeWindow([self window]);
   if (auto* bridge = host->GetInProcessNSWindowBridge())
     return bridge->in_fullscreen_transition();
-  DLOG(ERROR) << "TODO(https://crbug.com/915110): Support fullscreen "
+  DLOG(ERROR) << "TODO(crbug.com/41431787): Support fullscreen "
                  "transitions for RemoteMacViews PWA windows.";
   return false;
 }

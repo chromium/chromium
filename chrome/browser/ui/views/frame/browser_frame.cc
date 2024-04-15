@@ -282,7 +282,7 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // ThemeChanged(), regardless of whether the frame was regenerated or not.
   // Ensure that ThemeChanged() is called for this Widget if no implicit call
   // occurred.
-  // TODO(crbug.com/1476898): The entire theme propagation system needs to be
+  // TODO(crbug.com/40280130): The entire theme propagation system needs to be
   // moved to scheduling theme changes rather than synchronously demanding a
   // ThemeChange() event take place. This will reduce a ton of churn resulting
   // from independent clients increasingly issuing theme change requests.

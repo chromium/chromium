@@ -89,7 +89,7 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
 }
 
 WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
-  // TODO(crbug.com/1327363): move this to dialog->SetHighlightedButton.
+  // TODO(crbug.com/40841129): move this to dialog->SetHighlightedButton.
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;

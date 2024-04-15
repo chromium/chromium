@@ -98,7 +98,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-            // TODO(crbug/1515321): migrate this to SuggestionLayout.
+            // TODO(crbug.com/41487873): migrate this to SuggestionLayout.
             updateMargin(model, view);
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);

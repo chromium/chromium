@@ -333,4 +333,4 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
                        1);
 }
 
-// TODO(crbug.com/1318000): Cover additional AboutThisSite side panel behavior.
+// TODO(crbug.com/40222735): Cover additional AboutThisSite side panel behavior.

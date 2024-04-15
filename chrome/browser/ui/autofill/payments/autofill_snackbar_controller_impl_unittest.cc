@@ -96,7 +96,7 @@ TEST_F(AutofillSnackbarControllerImplTest, MandatoryReauthTypeMetricsTest) {
       "Autofill.Snackbar.MandatoryReauth.ActionClicked", 1, 0);
   controller()->OnDismissed();
 
-  // TODO(https://crbug.com/831123): Figure out how to mock
+  // TODO(crbug.com/40570965): Figure out how to mock
   // ShowAutofillCreditCardSettings to test ActionClicked metric.
 }
 

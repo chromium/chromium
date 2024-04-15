@@ -95,7 +95,7 @@ ManagePasswordsListView::ManagePasswordsListView(
           GetDisplayUsername(*password_form)));
     }
 
-    // TODO(crbug.com/1382017): Add a tooltip if needed.
+    // TODO(crbug.com/40245430): Add a tooltip if needed.
     AddChildView(std::move(list_item));
   }
 

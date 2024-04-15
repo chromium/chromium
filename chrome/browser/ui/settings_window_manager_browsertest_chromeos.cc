@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Open the settings again: no new window.
   settings_manager_->ShowOSSettings(browser()->profile());
-  // TODO(https://crbug.com/1517134): Remove this once we can wait for the
+  // TODO(crbug.com/41490117): Remove this once we can wait for the
   // ShowOSSettings call correctly.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(settings_browser,

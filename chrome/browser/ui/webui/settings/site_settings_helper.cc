@@ -199,7 +199,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
     {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, nullptr},
-    // TODO(crbug.com/1408520): Update JavaScript string representation when
+    // TODO(crbug.com/40253587): Update JavaScript string representation when
     // desktop UI is implemented.
     {ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
@@ -214,7 +214,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
-    // TODO(crbug.com/1464851): Update name once UI design is done.
+    // TODO(crbug.com/40275778): Update name once UI design is done.
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
@@ -917,7 +917,7 @@ void GetRawExceptionsForContentSettingsType(
     auto content_setting = setting.GetContentSetting();
     // There is no user-facing concept of SESSION_ONLY cookie exceptions that
     // use secondary patterns. These are instead presented as ALLOW.
-    // TODO(crbug.com/1404436): Perform a one time migration of the actual
+    // TODO(crbug.com/40251893): Perform a one time migration of the actual
     // content settings when the extension API no-longer allows them to be
     // created.
     if (type == ContentSettingsType::COOKIES &&

@@ -823,7 +823,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   std::string cookie_string;
   std::string fps_string;
   bool fpsPolicy = false;
-  // TODO(crbug.com/1415380): Ensure the key uniquely identifies the owner of
+  // TODO(crbug.com/40256547): Ensure the key uniquely identifies the owner of
   // the browsing data (hostname is insufficient) in the BrowsingDataModel.
   int num_cookies = 0;
   auto usage_origin = url::Origin::Create(GURL(usage_origin_));
@@ -2254,7 +2254,7 @@ void SiteSettingsHandler::RemoveNonModelData(
     return;
   }
 
-  // TODO(crbug.com/1268626): Remove client hint information, which cannot be
+  // TODO(crbug.com/40204789): Remove client hint information, which cannot be
   // associated with Cookie node information as the scheme in the cookie node
   // may not match due to HTTP / HTTPS distinction issues.
   for (const auto& origin : origins) {
@@ -2270,7 +2270,7 @@ void SiteSettingsHandler::RemoveNonModelData(
             ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Value());
     // Once user clears site setting data for `origins`, the Durable storage bit
     // should also be reset.
-    // TODO(crbug.com/1499305): This should be replaced when integrated with
+    // TODO(crbug.com/40287777): This should be replaced when integrated with
     // the BrowserDataModel.
     HostContentSettingsMapFactory::GetForProfile(profile_)
         ->SetWebsiteSettingDefaultScope(origin.GetURL(), GURL(),

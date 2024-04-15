@@ -22,7 +22,7 @@ class Size;
 // the download bubble toolbar icon. The animation is piecewise linear, composed
 // of 2 phases. During phase one, the icon moves upwards and fades in. During
 // phase two, the icon continues moving upwards and fades out.
-// TODO(crbug.com/1414062): Investigate writing this using more modern
+// TODO(crbug.com/40255939): Investigate writing this using more modern
 // frameworks like layers and views animation builder.
 class DownloadBubbleStartedAnimationViews
     : public DownloadStartedAnimationViews {

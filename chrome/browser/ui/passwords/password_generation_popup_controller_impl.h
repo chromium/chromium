@@ -56,7 +56,7 @@ class PrefService;
 //
 // NOTE: This is used on Android only to display the editing popup.
 //
-// TODO(crbug.com/944502): Clean up the popup code on Android to make its use
+// TODO(crbug.com/40619484): Clean up the popup code on Android to make its use
 // clear and remove unused code.
 class PasswordGenerationPopupControllerImpl
     : public PasswordGenerationPopupController,

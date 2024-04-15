@@ -74,7 +74,7 @@ class ManagementUITest : public InProcessBrowserTest {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1443363): flaky.
+// TODO(crbug.com/40267322): flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ManagementStateChange DISABLED_ManagementStateChange
 #else

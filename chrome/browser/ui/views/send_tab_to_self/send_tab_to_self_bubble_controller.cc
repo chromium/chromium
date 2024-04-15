@@ -132,7 +132,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
   // instead the 2 codepaths should share code.
   const GURL& shared_url = GetWebContents().GetLastCommittedURL();
   if (!model->IsReady()) {
-    // TODO(https://crbug.com/1280681): Is this legit? In STTSv2, there may not
+    // TODO(crbug.com/40811626): Is this legit? In STTSv2, there may not
     // *be* a DesktopNotificationHandler for profile, and we're violating the
     // lifetime rules of DesktopNotificationHandler here I think.
     DesktopNotificationHandler(GetProfile()).DisplayFailureMessage(shared_url);

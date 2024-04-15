@@ -901,9 +901,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   gfx::Point expected_location_of_drag_start_in_left_frame() {
-    // TODO(crbug.com/653490): The delta below should exceed kDragThresholdX and
-    // kDragThresholdY from MouseEventManager.cpp in blink.  Ideally, it would
-    // come from the OS instead.
+    // TODO(crbug.com/41279378): The delta below should exceed kDragThresholdX
+    // and kDragThresholdY from MouseEventManager.cpp in blink.  Ideally, it
+    // would come from the OS instead.
     return kMiddleOfLeftFrame + gfx::Vector2d(10, 10);
   }
 
@@ -1667,7 +1667,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 // Also disable the test on Linux due to flaky: crbug.com/1164442
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-// TODO(crbug.com/1380803): Enable on ChromeOS ASAN once flakiness is fixed.
+// TODO(crbug.com/40876472): Enable on ChromeOS ASAN once flakiness is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) ||            \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
@@ -2290,7 +2290,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // navigation.
 
 // Injecting input with scaling works as expected on Chromeos.
-// TODO(crbug.com/1344579): Enable tests with a scale factor on lacros.
+// TODO(crbug.com/40231833): Enable tests with a scale factor on lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
 #else

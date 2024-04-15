@@ -76,7 +76,7 @@ BASE_FEATURE(kBlockTabUnders,
 // static
 std::unique_ptr<content::NavigationThrottle>
 TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  // TODO(crbug.com/1222367): TabUnderNavigationThrottle doesn't block
+  // TODO(crbug.com/40187173): TabUnderNavigationThrottle doesn't block
   // prerendering activations. However, currently prerender is same-origin only
   // so a prerendered activation could never be classified as a tab-under.
   // Otherwise, it should be safe to avoid creating a throttle in non primary

@@ -116,7 +116,7 @@ public final class FullScreenSyncPromoUtil {
             return false;
         }
 
-        // TODO(crbug.com/1477562): Use IdentityManager.findExtendedAccountInfoByAccountId()
+        // TODO(crbug.com/40928908): Use IdentityManager.findExtendedAccountInfoByAccountId()
         // instead.
         final @Nullable AccountInfo firstAccount =
                 identityManager.findExtendedAccountInfoByEmailAddress(

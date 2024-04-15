@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
                      /*tabLaunches=*/0);
 }
 
-// TODO(crbug.com/1401607): Flaky on Mac.
+// TODO(crbug.com/40884336): Flaky on Mac.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DefaultApp DISABLED_DefaultApp
 #else
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
 }
 
-// TODO(crbug.com/1382269): Flaky on Mac.
+// TODO(crbug.com/40877225): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CommandLineWindowByAppId DISABLED_CommandLineWindowByAppId
 #else

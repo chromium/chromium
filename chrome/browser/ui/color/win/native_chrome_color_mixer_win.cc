@@ -219,7 +219,7 @@ void FrameColorHelper::OnAccentColorUpdated() {
 
 void FrameColorHelper::FetchAccentColors() {
   // Update the NativeTheme's user_color to reflect the system accent color.
-  // TODO(crbug.com/1477908): Explore moving FrameColorHelper logic into
+  // TODO(crbug.com/40280436): Explore moving FrameColorHelper logic into
   // NativeThemeWin.
   const auto* accent_color_observer = ui::AccentColorObserver::Get();
   const auto accent_color = accent_color_observer->accent_color();

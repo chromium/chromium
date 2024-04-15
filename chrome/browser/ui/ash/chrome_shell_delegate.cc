@@ -327,7 +327,7 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   content::DevToolsAgentHost::DetachAllClients();
 
-  // TODO(crbug/1243104): This might be interesting for DLP to change.
+  // TODO(crbug.com/40195284): This might be interesting for DLP to change.
   // Disable both screenshots and video screen captures via the capture mode
   // feature.
   ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(locked);

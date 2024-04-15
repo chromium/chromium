@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
 }
 
 // Test that the extension's side panel entry shows the extension's icon.
-// TODO(crbug.com/1450850): Re-enable this test
+// TODO(crbug.com/40915500): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_EntryShowsExtensionIcon DISABLED_EntryShowsExtensionIcon
 #else

@@ -207,7 +207,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // purposes of URL generation for MD Settings only. We need this because some
   // of the old group names are no longer appropriate.
   //
-  // TODO(crbug.com/728353): Update the group names defined in
+  // TODO(crbug.com/40523530): Update the group names defined in
   // site_settings_helper once Options is removed from Chrome. Then this list
   // will no longer be needed.
 
@@ -235,7 +235,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
 
 bool SiteGURLIsValid(const GURL& url) {
   url::Origin site_origin = url::Origin::Create(url);
-  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
+  // TODO(crbug.com/40399136): Site Details should work with file:// urls
   // when this bug is fixed, so add it to the allowlist when that happens.
   return !site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
                                    url.SchemeIs(extensions::kExtensionScheme) ||

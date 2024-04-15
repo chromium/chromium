@@ -19,7 +19,7 @@ namespace safe_browsing {
 
 // A tab modal dialog that is shown when the user's tailored security bit
 // changes and the user isn't consented to sync.
-// TODO(crbug.com/1336052): Remove this modal after launching
+// TODO(crbug.com/40847463): Remove this modal after launching
 // `TailoredSecurityDesktopModal`.
 class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   METADATA_HEADER(TailoredSecurityUnconsentedModal, views::DialogDelegateView)

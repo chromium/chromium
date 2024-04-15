@@ -40,7 +40,7 @@ public interface ButtonData {
     final class ButtonSpec {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
         @NonNull private final Drawable mDrawable;
-        // TODO(crbug.com/1185382): make mOnClickListener @NonNull
+        // TODO(crbug.com/40753109): make mOnClickListener @NonNull
         @Nullable private final View.OnClickListener mOnClickListener;
         @Nullable private final View.OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;

@@ -36,7 +36,7 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   if (indicator.get()) {
     // Currently we only show the icon and tooltip of the highest-priority
     // alert on a tab.
-    // TODO(crbug.com/861961): To show the icon of the highest-priority alert
+    // TODO(crbug.com/40584226): To show the icon of the highest-priority alert
     // with tooltip that notes all the states in play.
     if (indicator->IsCapturingWindow(contents) ||
         indicator->IsCapturingDisplay(contents)) {

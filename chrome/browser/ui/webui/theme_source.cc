@@ -420,7 +420,7 @@ std::string ThemeSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
   if (directive == network::mojom::CSPDirectiveName::DefaultSrc &&
       serve_untrusted_) {
-    // TODO(https://crbug.com/1085327): Audit and tighten CSP.
+    // TODO(crbug.com/40693568): Audit and tighten CSP.
     return std::string();
   }
 

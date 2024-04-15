@@ -74,7 +74,7 @@ class PlatformNetworksManager {
 
     private static WifiInfo getWifiInfo(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // TODO(https://crbug.com/1181393): Look into taking a dependency on net/android and
+            // TODO(crbug.com/40750822): Look into taking a dependency on net/android and
             // extracting this logic there to a method that can be called from here.
             // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
             ConnectivityManager connectivityManager =

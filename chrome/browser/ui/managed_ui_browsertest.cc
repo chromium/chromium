@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetDeviceManagedUiHelpLabelNotManaged) {
 #endif
 }
 
-// TODO(crbug.com/1447988): update the tests below to not depend on the exact
+// TODO(crbug.com/40269124): update the tests below to not depend on the exact
 // value of the user-visible string (to make string updates simpler).
 
 // On ChromeOS we don't display the management UI for enterprise or supervised

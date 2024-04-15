@@ -23,7 +23,7 @@ PinSetupScreenHandler::~PinSetupScreenHandler() = default;
 
 void PinSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(crbug.com/1104120): clean up constant names
+  // TODO(crbug.com/40139544): clean up constant names
   builder->Add("discoverPinSetup", IDS_DISCOVER_PIN_SETUP);
 
   builder->Add("discoverPinSetupDone", IDS_DISCOVER_PIN_SETUP_DONE);

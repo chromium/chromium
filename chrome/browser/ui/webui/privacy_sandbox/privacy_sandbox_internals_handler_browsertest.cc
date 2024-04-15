@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetCookieSettings) {
           SizeIs(Ge(1u))));  // Don't check exact size (default list may change)
 }
 
-// TODO(https://crbug.com/1517710): Once ConvertGenerator<T>() is provided by
+// TODO(crbug.com/41490688): Once ConvertGenerator<T>() is provided by
 // the version of googletest used by Chromium we can type the test param.
 class PrivacySandboxInternalsContentSettingsMojoTest
     : public PrivacySandboxInternalsMojoTest,

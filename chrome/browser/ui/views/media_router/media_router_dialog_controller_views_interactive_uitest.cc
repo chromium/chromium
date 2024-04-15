@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
             nullptr);
 }
 
-// TODO(crbug.com/1499812): Disabled flaky test.
+// TODO(crbug.com/40940401): Disabled flaky test.
 // Regression test for crbug.com/1308341.
 IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
                        DISABLED_MediaBubbleClosedByPlatform) {

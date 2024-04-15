@@ -131,8 +131,8 @@ struct DetachedWebContents {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel : public TabGroupController {
  public:
-  // TODO(1394210): Remove this, and use std::optional<size_t> (or at least
-  // std::optional<int>) in its place.
+  // TODO(crbug.com/40881446): Remove this, and use std::optional<size_t> (or at
+  // least std::optional<int>) in its place.
   static constexpr int kNoTab = -1;
 
   using TabDataVariant =

@@ -154,7 +154,7 @@ std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
   if (browser_view_->GetAccelerator(kAccelerator, &accelerator)) {
     accelerator_text = accelerator.GetShortcutText();
   } else {
-    // TODO(crbug.com/1432803): GetAccelerator appears to be failing
+    // TODO(crbug.com/40903127): GetAccelerator appears to be failing
     // sporadically on Windows, for unknown reasons. Since we can't have this
     // code crashing in release, it's being returned to the original NOTREACHED
     // before everything was changed to CHECKs. This bug will continue to be

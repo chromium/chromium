@@ -608,7 +608,7 @@ void PinnedToolbarActionsContainer::RemoveButton(
 
 bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
   const auto* const pinned_button = GetPinnedButtonFor(id);
-  // TODO(crbug.com/1508656): If this container is not visible treat the
+  // TODO(crbug.com/40949386): If this container is not visible treat the
   // elements inside as overflowed.
   // TODO(pengchaocai): Support popped out buttons overflow.
   return static_cast<views::LayoutManagerBase*>(GetLayoutManager())

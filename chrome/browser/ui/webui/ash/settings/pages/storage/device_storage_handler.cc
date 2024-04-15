@@ -339,7 +339,7 @@ void StorageHandler::UpdateOverallStatistics() {
   }
 
   if (in_use_bytes < 0) {
-    // TODO(crbug.com/1409774): This shouldn't happen, but we still need to
+    // TODO(crbug.com/40889316): This shouldn't happen, but we still need to
     // clarify when and how often it does. To be replaced with
     // CHECK_GE(in_use_bytes, 0).
     LOG(WARNING) << "Calculated total space (" << total_bytes

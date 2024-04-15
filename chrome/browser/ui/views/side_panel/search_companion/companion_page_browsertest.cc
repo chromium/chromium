@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, LinkClickOnCompanionPage) {
                    static_cast<int>(SidePanelOpenTrigger::kComboboxSelected));
 }
 
-// TODO(crbug.com/1495434): Test is flaking on Linux MSAN bot
+// TODO(crbug.com/40937688): Test is flaking on Linux MSAN bot
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage \
   DISABLED_LinkClickOnCompanionPageNotifiesNewTabSidePanelViaPostMessage
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_FALSE(proto.has_value());
 }
 
-// TODO(crbug.com/1479808): Flaky on linux-chromeos-chrome.
+// TODO(crbug.com/40930057): Flaky on linux-chromeos-chrome.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReloadWillRefreshCompanion DISABLED_ReloadWillRefreshCompanion
 #else

@@ -241,7 +241,7 @@ void LoginHandler::OtherHandlerFinished(bool supplied,
   }
 
   // Ignore login notification events from other StoragePartitions.
-  // TODO(crbug.com/1261928): Getting the StoragePartition from the WebContents
+  // TODO(crbug.com/40202416): Getting the StoragePartition from the WebContents
   // is fine for now, but we'll need to plumb frame information to LoginHandler
   // as part of removing the multi-WebContents architecture.
   content::StoragePartition* source_partition =

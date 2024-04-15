@@ -155,7 +155,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
   // external links like "Help", "Privacy" and "Terms" that will attempt to open
   // a browser. As long as those links are accessible, we should not try to open
   // them while Force Signin is enabled.
-  // TODO(https://crbug.com/1520921): Remove this check if the SAML speedbump is
+  // TODO(crbug.com/41493894): Remove this check if the SAML speedbump is
   // removed or if the links on the page are removed.
   if (signin_util::IsForceSigninEnabled() &&
       base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
@@ -314,7 +314,7 @@ void ProfilePickerDiceSignInProvider::InitializeDiceTabHelper(
       enable_sync_callback = base::BindRepeating(
           &ProfilePickerDiceSignInProvider::FinishFlowInPicker,
           weak_ptr_factory_.GetWeakPtr());
-      // TODO(https://crbug.com/1467483): Handle signin errors in the profile
+      // TODO(crbug.com/40276801): Handle signin errors in the profile
       // picker.
       show_signin_error_callback = base::DoNothing();
       break;

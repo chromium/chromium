@@ -38,7 +38,7 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
   NavigationEntry* entry = web_contents->GetController().GetEntryAtIndex(i);
   // Don't use the entry for sync if it doesn't exist or is the initial
   // NavigationEntry.
-  // TODO(https://crbug.com/1240138): Guarantee this won't be called when on the
+  // TODO(crbug.com/40194151): Guarantee this won't be called when on the
   // initial NavigationEntry instead of bailing out here.
   if (!entry || entry->IsInitialEntry()) {
     return nullptr;

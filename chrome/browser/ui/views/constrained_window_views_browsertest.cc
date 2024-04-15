@@ -86,7 +86,7 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Unexpected multiple focus managers on MacViews: http://crbug.com/824551
-// TODO(crbug.com/1509159):  Enable for Linux after resolving failure.
+// TODO(crbug.com/41481774):  Enable for Linux after resolving failure.
 #define MAYBE_FocusTest DISABLED_FocusTest
 #else
 #define MAYBE_FocusTest FocusTest
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
 }
 
 // Tests that tab-modal dialogs follow tabs dragged between browser windows.
-// TODO(crbug.com/1336418): On Mac, animations cause this test to be flaky.
+// TODO(crbug.com/40847696): On Mac, animations cause this test to be flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabMoveTest DISABLED_TabMoveTest
 #else

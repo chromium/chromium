@@ -1238,7 +1238,7 @@ void PrintPreviewHandler::BadMessageReceived() {
       GetInitiator()->GetPrimaryMainFrame()->GetProcess(),
       bad_message::BadMessageReason::PPH_EXTRA_PREVIEW_MESSAGE);
 #if DCHECK_IS_ON()
-  // TODO(crbug.com/1371776): Remove this once the bug is fixed.
+  // TODO(crbug.com/40870686): Remove this once the bug is fixed.
   base::debug::StackTrace().Print();
 #endif
 }

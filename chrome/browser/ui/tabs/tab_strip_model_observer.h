@@ -344,8 +344,8 @@ class TabStripModelObserver {
   // TabStripModel, which allows an observer to react to an impending change to
   // the TabStripModel. The only use case of this signal that is currently
   // supported is the drag controller completing a drag before a tab is removed.
-  // TODO(1322943): Unify and generalize this and OnTabWillBeAdded, e.g. via
-  // OnTabStripModelWillChange().
+  // TODO(crbug.com/40838330): Unify and generalize this and OnTabWillBeAdded,
+  // e.g. via OnTabStripModelWillChange().
   virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
 
   // |change| is a change in the Tab Group model or metadata. These

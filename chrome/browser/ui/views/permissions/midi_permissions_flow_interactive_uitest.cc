@@ -80,7 +80,7 @@ class MidiPermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
     return Steps(
         InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, GetURL()),
-        // TODO(crbug.com/1420307) Change this call back to just
+        // TODO(crbug.com/40063295) Change this call back to just
         // `navigator.requestMIDIAccess` once the feature is ready
         ExecuteJs(kWebContentsElementId,
                   "() => { navigator.requestMIDIAccess( { sysex: true } ) }"),

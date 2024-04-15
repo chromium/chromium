@@ -186,8 +186,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonHoverThenClick) {
   EXPECT_FALSE(back_button->GetEnabled());
 }
 
-// TODO(crbug.com/1405449): The ui test utils do not seem to adequately simulate
-// mouse hovering on Mac.
+// TODO(crbug.com/40252318): The ui test utils do not seem to adequately
+// simulate mouse hovering on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_BackButtonHoverMetricsLogged DISABLED_BackButtonHoverMetricsLogged
 #else
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
   EXPECT_NE(nullptr, extensions_container);
 }
 
-// TODO(crbug.com/991596): Setup test profiles properly for CrOS.
+// TODO(crbug.com/41474891): Setup test profiles properly for CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ExtensionsToolbarContainerForGuest \
   DISABLED_ExtensionsToolbarContainerForGuest

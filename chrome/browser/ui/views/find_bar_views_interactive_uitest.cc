@@ -112,7 +112,7 @@ class FindResulStateObserver : public ui::test::ObservationStateObserver<
 };
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResulStateObserver, kFindResultState);
 
-// TODO(crbug.com/1509945): Remaining tests should be migrated to
+// TODO(crbug.com/41482547): Remaining tests should be migrated to
 // FindInPageTest.
 class LegacyFindInPageTest : public InProcessBrowserTest {
  public:

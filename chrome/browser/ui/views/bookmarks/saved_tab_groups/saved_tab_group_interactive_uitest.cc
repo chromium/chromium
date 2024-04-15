@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
 }
 
-// TODO(crbug.com/1487362): Deflake this test before enabling
+// TODO(crbug.com/40934084): Deflake this test before enabling
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   DISABLED_MoveGroupToNewWindowFromButtonMenu
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupOverflowMenuId));
 }
 
-// TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in
+// TODO(crbug.com/40264110): Re-enable this test once it doesn't get stuck in
 // drag and drop. Maybe related issue - the relative positioning seems to be
 // interpreted as an absolute position.
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,

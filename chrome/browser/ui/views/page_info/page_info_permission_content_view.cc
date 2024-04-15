@@ -153,7 +153,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
 
   MaybeAddMediaPreview(web_contents, *separator);
 
-  // TODO(crbug.com/1225563): Consider to use permission specific text.
+  // TODO(crbug.com/40775890): Consider to use permission specific text.
   auto* subpage_manage_button = AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
           [](PageInfoPermissionContentView* view) {

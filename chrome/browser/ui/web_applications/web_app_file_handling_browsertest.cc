@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
   }
 }
 
-// TODO(crbug.com/1218210): add more tests.
+// TODO(crbug.com/40185556): add more tests.
 
 INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
 

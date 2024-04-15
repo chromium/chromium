@@ -220,7 +220,8 @@ void SecurityInformationView::AddPasswordReuseButtons(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   int kSpacingBetweenButtons = 8;
-  // TODO(crbug.com/1263516): Fix alignment if the buttons don't fit in one row.
+  // TODO(crbug.com/40800258): Fix alignment if the buttons don't fit in one
+  // row.
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kSpacingBetweenButtons);

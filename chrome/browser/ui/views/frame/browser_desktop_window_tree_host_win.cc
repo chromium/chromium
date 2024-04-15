@@ -222,7 +222,7 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
   profile_observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
 
-  // TODO(crbug.com/1051306) Make turning off this policy turn off
+  // TODO(crbug.com/40118412) Make turning off this policy turn off
   // native window occlusion on this browser win.
   if (!g_browser_process->local_state()->GetBoolean(
           policy::policy_prefs::kNativeWindowOcclusionEnabled)) {

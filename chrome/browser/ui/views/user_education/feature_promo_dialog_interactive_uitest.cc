@@ -89,7 +89,7 @@ class FeaturePromoDialogTest : public TestBase {
         /* disabled_features =*/
         {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
 
-    // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
+    // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.
     set_should_verify_dialog_bounds(false);
   }

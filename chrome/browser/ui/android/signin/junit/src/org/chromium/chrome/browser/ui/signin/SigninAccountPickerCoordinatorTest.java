@@ -154,7 +154,7 @@ public class SigninAccountPickerCoordinatorTest {
         mCoordinator.signIn(mCoreAccountInfoMock, mMediator);
 
         // Verify that the SigninManager starts sign-in but no dialog is shown for history opt-in.
-        // TODO(https://crbug.com/1520793): Update the verification when the final error states will
+        // TODO(crbug.com/41493768): Update the verification when the final error states will
         // be implemented, and add test to ensure that the delegate is called only once in the
         // coordinator's lifetime.
         verify(mSigninManagerMock, times(1))

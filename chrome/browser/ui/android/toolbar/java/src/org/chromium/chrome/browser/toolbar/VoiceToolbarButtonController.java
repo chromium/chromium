@@ -28,7 +28,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Handles displaying the voice search button on toolbar depending on several conditions (e.g.
  * device width, whether NTP is shown, whether voice is enabled).
  *
- * TODO(crbug.com/1144976): Move this to ../voice/ along with VoiceRecognitionHandler and the
+ * <p>TODO(crbug.com/40729195): Move this to ../voice/ along with VoiceRecognitionHandler and the
  * assistant support.
  */
 public class VoiceToolbarButtonController extends BaseButtonDataProvider {

@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 
-// TODO(crbug.com/1500064): Re-enable this test
+// TODO(crbug.com/40940526): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ThemeChange DISABLED_ThemeChange
 #else
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(u"onresize", title_watcher2.WaitAndGetTitle());
 }
 
-// TODO(crbug.com/1306499): Enable for mac/win when flakiness has been fixed.
+// TODO(crbug.com/40827841): Enable for mac/win when flakiness has been fixed.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 // Test to ensure crbug.com/1298226 won't reproduce.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
@@ -1819,7 +1819,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   }
 
   bool RunUntil(base::FunctionRef<bool(void)> condition) {
-    // TODO(crbug.com/1519551):`base::test::RunUntil` is flaky on Mac.
+    // TODO(crbug.com/41492531):`base::test::RunUntil` is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
     while (!condition()) {
       base::test::TestFuture<void> future;

@@ -21,7 +21,7 @@ SkAlpha WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
 
 // static
 gfx::Size WindowFrameUtil::GetWindowsCaptionButtonAreaSize() {
-  // TODO(crbug.com/1257470): Fix uses of this to dynamically compute the size
+  // TODO(crbug.com/40200697): Fix uses of this to dynamically compute the size
   // of the caption button area.
   constexpr int kNumButtons = 3;
 

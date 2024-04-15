@@ -125,7 +125,7 @@ public class SurveyThrottler {
         }
 
         // Do not roll when current survey is displayed previously.
-        // TODO(crbug.com/1195928): Support configure display survey again by the client.
+        // TODO(crbug.com/40759323): Support configure display survey again by the client.
         if (getMetadata().getLastPromptDisplayedDate() > 0) {
             recordSurveyFilteringResult(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED);
             return false;
@@ -173,7 +173,7 @@ public class SurveyThrottler {
     }
 
     private static void recordSurveyFilteringResult(@FilteringResult int value) {
-        // TODO(crbug/1487667): Add per-survey metrics.
+        // TODO(crbug.com/40283353): Add per-survey metrics.
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Survey.SurveyFilteringResults", value, FilteringResult.NUM_ENTRIES);
     }

@@ -45,7 +45,7 @@ public class DefaultBrowserPromoDeps {
 
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
-    // TODO(crbug.com/1090103): move to some util class for reuse.
+    // TODO(crbug.com/40697015): move to some util class for reuse.
     static final String[] CHROME_PACKAGE_NAMES = {
         CHROME_STABLE_PACKAGE_NAME,
         "org.chromium.chrome",

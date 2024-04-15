@@ -167,7 +167,7 @@ public class SignOutDialogCoordinator {
     }
 
     private static int getCheckBoxVisibility(Profile profile) {
-        // TODO(crbug.com/1294761): extract logic for whether data wiping is allowed into
+        // TODO(crbug.com/40820738): extract logic for whether data wiping is allowed into
         // SigninManager.
         final boolean allowDeletingData =
                 UserPrefs.get(profile).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);

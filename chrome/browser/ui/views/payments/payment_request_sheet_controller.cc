@@ -352,7 +352,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                 views::ScrollView::ScrollBarMode::kDisabled)
             // Hack to make labels in ScrollView contents wrap to scroll view
             // width.
-            // TODO(crbug.com/1479113): Fix this hack.
+            // TODO(crbug.com/40280756): Fix this hack.
             .ClipHeightTo(0, std::numeric_limits<int>::max())
             .SetContents(content_view_builder));
   } else {

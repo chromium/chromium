@@ -106,7 +106,8 @@ std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   web_app::DisplayMode display_mode =
       provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id.value());
 
-  // TODO(crbug/1113502): Plumb through better launch sources from callsites.
+  // TODO(crbug.com/40143506): Plumb through better launch sources from
+  // callsites.
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id.value(), /*event_flags=*/0,
       apps::LaunchSource::kFromChromeInternal, display_id,
@@ -175,7 +176,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
   // Callback is only supported when launching with an URL.
   DCHECK(!callback || params.url.has_value());
 
-  // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
+  // TODO(crbug.com/40723875): Implement a confirmation dialog when
   // changing to a different profile.
   Profile* profile_for_launch = GetProfileForSystemWebAppLaunch(profile);
   if (profile_for_launch == nullptr) {

@@ -101,7 +101,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
     const gfx::Size& preferred_size) {
   // If the device has no internal display (e.g., for Chromeboxes), use the
   // preferred size.
-  // TODO(https://crbug.com/1035060): It could be possible that a Chromebox is
+  // TODO(crbug.com/40112040): It could be possible that a Chromebox is
   // hooked up to a low-resolution monitor. It might be a good idea to check
   // that display's resolution as well.
   if (!display::HasInternalDisplay())
@@ -112,7 +112,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
           display::Display::InternalDisplayId(), &internal_display)) {
     // GetDisplayWithDisplayId() returns false if the laptop's lid is closed.
     // Return the preferred size instead.
-    // TODO(crbug/1158631): Test this edge case with displays
+    // TODO(crbug.com/40737061): Test this edge case with displays
     // (lid closed with external monitors).
     return preferred_size;
   }

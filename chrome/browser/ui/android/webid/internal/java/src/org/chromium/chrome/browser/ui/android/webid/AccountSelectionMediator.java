@@ -171,7 +171,7 @@ class AccountSelectionMediator {
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
                     // Sends focus events to the relevant views for accessibility.
-                    // TODO(crbug.com/1429345): Add tests for TalkBack on FedCM.
+                    // TODO(crbug.com/40262629): Add tests for TalkBack on FedCM.
                     private void focusForAccessibility() {
                         View contentView =
                                 mBottomSheetController.getCurrentSheetContent().getContentView();

@@ -1783,7 +1783,7 @@ public class ToolbarPhone extends ToolbarLayout
                     TopToolbarBlockCaptureReason.OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS);
         } else if (mLocationBar.getStatusCoordinator() != null
                 && mLocationBar.getStatusCoordinator().isStatusIconAnimating()) {
-            // TODO(https://crbug.com/1356153): It may be possible to remove the above null check.
+            // TODO(crbug.com/40860241): It may be possible to remove the above null check.
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
         } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
@@ -2284,7 +2284,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateToNtpBackground() {
-        // TODO(https://crbug.com/878135): Make the ripple drawable move properly from fake omnibox
+        // TODO(crbug.com/41410296): Make the ripple drawable move properly from fake omnibox
         //  to real omnibox when Build.VERSION.SDK_INT < Build.VERSION_CODES.P.
         NtpSearchBoxDrawable ntpSearchBoxBackground = new NtpSearchBoxDrawable(getContext(), this);
         getToolbarDataProvider()

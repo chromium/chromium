@@ -384,7 +384,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       if (download_item->CanResume())
         percent = download_item->PercentComplete();
 
-      // TODO(https://crbug.com/609255): GetHistoryPageStatusText() is using
+      // TODO(crbug.com/40467967): GetHistoryPageStatusText() is using
       // GetStatusText() as a temporary measure until the layout is fixed to
       // accommodate the longer string. Should update it to simply use
       // GetInterruptDescription().

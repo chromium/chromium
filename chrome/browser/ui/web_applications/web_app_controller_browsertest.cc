@@ -65,7 +65,7 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
 WebAppControllerBrowserTest::WebAppControllerBrowserTest(
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features)
-    // TODO(crbug.com/1378355): Fix the manifest update process by ensuring
+    // TODO(crbug.com/40874949): Fix the manifest update process by ensuring
     // during test installs, an app is installed from the manifest so that the
     // identity update dialog is not triggered after navigation. This will
     // ensure removal of update_dialog_scope_.

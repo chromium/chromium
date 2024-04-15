@@ -36,7 +36,7 @@ std::u16string CreateLabel(const Suggestion& suggestion) {
   if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty())
     return password;
 
-  // TODO(crbug.com/1313616): Re-consider whether using CHECK is an appropriate
+  // TODO(crbug.com/40221039): Re-consider whether using CHECK is an appropriate
   // way to explicitly regulate what information should be populated for the
   // interface.
   CHECK_EQ(suggestion.labels.size(), 1U);
@@ -68,7 +68,7 @@ void AutofillKeyboardAccessoryAdapter::Hide() {
 
 bool AutofillKeyboardAccessoryAdapter::OverlapsWithPictureInPictureWindow()
     const {
-  // TODO(crbug.com/1477682): Hide the KA suggestion if it overlaps with
+  // TODO(crbug.com/40280362): Hide the KA suggestion if it overlaps with
   // picture-in-picture window.
   return false;
 }

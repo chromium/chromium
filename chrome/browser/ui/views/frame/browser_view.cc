@@ -693,7 +693,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 
   bool IsContentsSeparatorEnabled() const override {
     // Web app windows manage their own separator.
-    // TODO(crbug.com/1012979): Make PWAs set the visibility of the ToolbarView
+    // TODO(crbug.com/40102629): Make PWAs set the visibility of the ToolbarView
     // based on whether it is visible instead of setting the height to 0px. This
     // will enable BrowserViewLayout to hide the contents separator on its own
     // using the same logic used by normal BrowserViews.
@@ -1041,7 +1041,7 @@ BrowserView::~BrowserView() {
   // The TabStrip attaches a listener to the model. Make sure we shut down the
   // TabStrip first so that it can cleanly remove the listener.
   //
-  // TODO(https://crbug.com/1477838): Is this actually necessary? It should be
+  // TODO(crbug.com/40280409): Is this actually necessary? It should be
   // perfectly safe to destroy the TabStrip before the TabStripModel?
   if (tabstrip_) {
     auto tabstrip = tabstrip_.ExtractAsDangling();
@@ -2570,7 +2570,7 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
       if (focusable) {
         focusable->RequestFocus();
 #if BUILDFLAG(IS_MAC)
-        // TODO(crbug.com/650859): When a view requests focus on other
+        // TODO(crbug.com/40486728): When a view requests focus on other
         // platforms, its widget is activated. When doing so in FocusManager on
         // MacOS a lot of interactive tests fail when the widget is destroyed.
         // Activating the widget here should be safe as this happens only
@@ -2698,7 +2698,7 @@ void BrowserView::NotifyWidgetSizeConstraintsChanged() {
     return;
   }
 
-  // TODO(crbug.com/1503145): Undo changes in this CL and return to use
+  // TODO(crbug.com/40943569): Undo changes in this CL and return to use
   // `WidgetObserver::OnWidgetSizeConstraintsChanged` once zoom levels are
   // refactored so that visual properties can be updated during page load.
   GetWidget()->OnSizeConstraintsChanged();
@@ -2998,7 +2998,7 @@ BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
 SharingDialog* BrowserView::ShowSharingDialog(
     content::WebContents* web_contents,
     SharingDialogData data) {
-  // TODO(https://crbug.com/1311680): Remove this altogether. This used to
+  // TODO(crbug.com/40220302): Remove this altogether. This used to
   // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
   // now gone altogether.
   auto* dialog_view =
@@ -3884,7 +3884,7 @@ bool BrowserView::GetSavedWindowPlacement(
     gfx::Rect* bounds,
     ui::WindowShowState* show_state) const {
   chrome::GetSavedWindowBoundsAndShowState(browser_.get(), bounds, show_state);
-  // TODO(crbug.com/897300): Generalize this code for app and non-app popups?
+  // TODO(crbug.com/40092782): Generalize this code for app and non-app popups?
   if (chrome::SavedBoundsAreContentBounds(browser_.get()) &&
       browser_->is_type_popup()) {
     // This is normal non-app popup window. The value passed in |bounds|
@@ -4244,7 +4244,7 @@ bool BrowserView::RotatePaneFocusFromView(views::View* focused_view,
     // |enable_wrapping| is overloaded with the start of a rotation. Therefore,
     // we can use it to ensure that we only return that we have rotated once to
     // the caller.
-    // TODO(crbug.com/1459355): the overloaded |enable_wrapping| is not
+    // TODO(crbug.com/40274273): the overloaded |enable_wrapping| is not
     // intuitive and confusing. Refactor this so that start of rotation is more
     // clear and not mangled up with wrapping.
     return enable_wrapping;
@@ -4432,7 +4432,7 @@ void BrowserView::AddedToWidget() {
   immersive_mode_controller_->Init(this);
   immersive_mode_controller_->AddObserver(this);
 
-  // TODO(https://crbug.com/1036519): Remove BrowserViewLayout dependence on
+  // TODO(crbug.com/40664862): Remove BrowserViewLayout dependence on
   // Widget and move to the constructor.
   SetLayoutManager(std::make_unique<BrowserViewLayout>(
       std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,

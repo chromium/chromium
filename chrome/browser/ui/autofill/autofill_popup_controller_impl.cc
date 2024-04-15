@@ -268,7 +268,7 @@ void AutofillPopupControllerImpl::Show(
 
   if (IsRootPopup()) {
     // We may already be observing from a previous `Show` call.
-    // TODO(crbug.com/1513659): Consider not to recycle views or controllers
+    // TODO(crbug.com/41486228): Consider not to recycle views or controllers
     // and only permit a single call to `Show`.
     key_press_observer_.Reset();
     key_press_observer_.Observe(web_contents_->GetFocusedFrame());
@@ -427,7 +427,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // `time_view_shown_` will remain null for at least
   // `kIgnoreEarlyClicksOnPopupDuration`. Therefore we do not have to check any
   // times here.
-  // TODO(crbug.com/1475902): Once `kAutofillPopupImprovedTimingChecksV2` is
+  // TODO(crbug.com/40279821): Once `kAutofillPopupImprovedTimingChecksV2` is
   // launched, clean up most of the timing checks. That is:
   // - Remove paint checks inside views.
   // - Remove `event_time` parameters.
@@ -676,7 +676,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
-  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
   if (list_index < 0 || static_cast<size_t>(list_index) >= suggestions_.size())
     return false;
 
@@ -712,7 +712,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
       }
       break;
     case FillingProduct::kCreditCard:
-      // TODO(1509457): Add metrics for credit cards.
+      // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
     case FillingProduct::kMerchantPromoCode:

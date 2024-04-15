@@ -431,7 +431,7 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
 StartupProfileInfo GetProfilePickerStartupProfileInfo() {
   // We can only show the profile picker if the system profile (where the
   // profile picker lives) also exists (or is creatable).
-  // TODO(crbug.com/1271859): Remove unnecessary system profile check here.
+  // TODO(crbug.com/40205861): Remove unnecessary system profile check here.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_manager->GetProfile(ProfileManager::GetSystemProfilePath()))
     return {.profile = nullptr, .mode = StartupProfileMode::kError};
@@ -1338,7 +1338,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // the launch behavior here isn't quite the correct behavior for an app launch
   // on Mac OS, this behavior is better than nothing and should result in the
   // app shim getting regenerated to hopefully fix future app launches.
-  // TODO(https://crbug.com/1232763): Some integration tests also rely on this
+  // TODO(crbug.com/40191242): Some integration tests also rely on this
   // code. Ideally those would be fixed to test the normal app launch path on
   // Mac instead, and this code should be changed to make it harder to
   // accidentally write tests that don't test the normal app launch path.

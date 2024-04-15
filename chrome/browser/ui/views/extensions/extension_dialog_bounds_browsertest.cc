@@ -50,7 +50,7 @@ class ExtensionDialogBoundsTest
 
 // Note that the underscores in the test names below are important as whatever
 // comes after the underscore is used as the parameter for the ShowUi() above.
-// TODO(crbug.com/1488468): File dialog no longer uses deprecated extension
+// TODO(crbug.com/40283636): File dialog no longer uses deprecated extension
 // dialog. Thus, move this test to SelectFileDialogExtensionBrowserTest and
 // remove this file.
 IN_PROC_BROWSER_TEST_F(ExtensionDialogBoundsTest, Test_OpenFileDialog) {

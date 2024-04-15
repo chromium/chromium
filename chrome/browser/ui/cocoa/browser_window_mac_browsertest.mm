@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
 
 // Test that mainMenu commands from child windows are validated by the window
 // chain.
-// TODO(crbug.com/1425317): Disabled because this test is flaky.
+// TODO(crbug.com/40898643): Disabled because this test is flaky.
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
                        DISABLED_MenuCommandsFromChildWindow) {
   NativeWidgetMacNSWindow* window =

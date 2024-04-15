@@ -34,7 +34,7 @@ class MediaRouterActionController : public media_router::IssuesObserver,
 
     virtual void ShowIcon() {}
     virtual void HideIcon() {}
-    // TODO(https://crbug.com/872392): Use the common code path to show and hide
+    // TODO(crbug.com/40588598): Use the common code path to show and hide
     // the icon's inkdrop.
     // This is called when the icon should enter pressed state.
     virtual void ActivateIcon() {}

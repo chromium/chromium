@@ -395,7 +395,7 @@ void SessionControllerClientImpl::ActiveUserChanged(User* active_user) {
 
   // Try to send user session before updating the order. Skip sending session
   // order if user session ends up to be pending (due to user profile loading).
-  // TODO(crbug.com/657149): Get rid of this after refactoring.
+  // TODO(crbug.com/40489520): Get rid of this after refactoring.
   SendUserSession(*active_user);
   if (pending_users_.find(active_user->GetAccountId()) != pending_users_.end())
     return;

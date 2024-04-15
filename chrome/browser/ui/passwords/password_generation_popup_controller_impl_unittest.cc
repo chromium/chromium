@@ -387,7 +387,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
           /*pref_service=*/nullptr);
 
   controller->SetViewForTesting(popup_view());
-  // TODO(crbug.com/1444072): Rewrite controller_->Show() function to allow
+  // TODO(crbug.com/40267532): Rewrite controller_->Show() function to allow
   // testing expectations when the view doesn't exist.  SetViewForTesting
   // prevents that currently, hence the update view flow is being called.
   ON_CALL(*popup_view(), UpdateBoundsAndRedrawPopup)

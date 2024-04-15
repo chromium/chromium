@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount("CreateShortcut"));
 }
 
-// TODO(crbug.com/1449002): flaky on Mac11 Tests builder.
+// TODO(crbug.com/40269598): flaky on Mac11 Tests builder.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_InstallSourceRecorded DISABLED_InstallSourceRecorded
 #else
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, IgnoreInvalidManifestData) {
   EXPECT_EQ(registrar().GetAppStartUrl(app_id), url);
 }
 
-// TODO(crbug.com/1400778): Un-flake and re-enable this test.
+// TODO(crbug.com/40883914): Un-flake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_CreateShortcutAgainOverwriteUserDisplayMode) {
   base::UserActionTester user_action_tester;
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
   // Shortcut apps to PWAs should launch in a tab.
   EXPECT_EQ(registrar().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kBrowser);
-  // TODO(crbug.com/1275945): We need to wait a bit longer for the
+  // TODO(crbug.com/40808578): We need to wait a bit longer for the
   // WebAppInstallTask to complete before starting another install.
   // Move the install/update/uninstall events out of
   // WebAppRegistrarObserver and into a WebAppInstallManagerObserver
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
             mojom::UserDisplayMode::kStandalone);
 }
 
-// TODO(crbug.com/1439209): Re-enable this test
+// TODO(crbug.com/40908616): Re-enable this test
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
                        DISABLED_OpenShortcutWindowOnlyOnce) {
   base::UserActionTester user_action_tester;

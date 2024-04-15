@@ -91,7 +91,7 @@ constexpr int kCircularImageButtonTransparentRefreshSize = 24;
 constexpr float kShortcutIconToImageRatio = 9.0f / 16.0f;
 constexpr float kShortcutIconToImageRefreshRatio = 20.0f / 32.0f;
 constexpr float kShortcutIconToImageTransparentRefreshRatio = 16.0f / 24.0f;
-// TODO(crbug.com/1128499): Remove this constant by extracting art height from
+// TODO(crbug.com/40148993): Remove this constant by extracting art height from
 // |avatar_header_art|.
 constexpr int kHeaderArtHeight = 80;
 constexpr int kIdentityImageBorder = 2;
@@ -217,7 +217,7 @@ const ui::ImageModel ProfileManagementImageFromIcon(
   return ui::ImageModel::FromImageSkia(SizeImage(image, kIconSize));
 }
 
-// TODO(crbug.com/1146998): Adjust button size to be 16x16.
+// TODO(crbug.com/40156444): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
   METADATA_HEADER(CircularImageButton, views::ImageButton)
 
@@ -589,7 +589,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
 
   SetEnableArrowKeyTraversal(true);
 
-  // TODO(crbug.com/1341017): Using `SetAccessibleWindowRole(kMenu)` here will
+  // TODO(crbug.com/40230528): Using `SetAccessibleWindowRole(kMenu)` here will
   // result in screenreader to announce the menu having only one item. This is
   // probably because this API sets the a11y role for the widget, but not root
   // view in it. This is confusing and prone to misuse. We should unify the two
@@ -636,7 +636,7 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
         &ProfileMenuViewBase::BuildIdentityInfoColorCallback,
         base::Unretained(this));
   } else if (avatar_header_art.empty()) {
-    // TODO(crbug.com/1147038): Remove the zero-radius rounded background.
+    // TODO(crbug.com/40156460): Remove the zero-radius rounded background.
     profile_background_container_->SetBackground(
         views::CreateBackgroundFromPainter(
             views::Painter::CreateSolidRoundRectPainter(
@@ -1229,7 +1229,7 @@ void ProfileMenuViewBase::Reset() {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  // TODO(https://crbug.com/871762): it's a workaround for the crash.
+  // TODO(crbug.com/41406562): it's a workaround for the crash.
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->ClipHeightTo(0, GetMaxHeight());
   scroll_view->SetContents(std::move(components));

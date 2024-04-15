@@ -52,7 +52,7 @@ enum class HighlightedTabDiscardStatus {
 // length is likely shorter than this, as the Label will elide it to fit the UI.
 constexpr const int kMaxPreviewTitleLength = 500;
 
-// TODO(crbug.com/1224342): Refer to central Desktop UI constants rather than
+// TODO(crbug.com/40187992): Refer to central Desktop UI constants rather than
 // hardcoding this.
 const int kListWidth = 346;
 

@@ -29,7 +29,7 @@ constexpr int kExpandButtonCaretIconSize = 20;
 
 constexpr size_t kTextPreviewMaximumLines = 3;
 constexpr size_t kImagePreviewMaxIcons = 4;
-// TODO(crbug.com/1189945) |kImagePreviewHalfIconSize| value should actually be
+// TODO(crbug.com/40173943) |kImagePreviewHalfIconSize| value should actually be
 // 19. When refactoring HoldingSpaceImage, once the DCHECK_GT(20) is removed,
 // this should be set to 19. At that point |kImagePreviewFullIconSize| can be
 // be removed and set to |::sharesheet::kIconSize|.

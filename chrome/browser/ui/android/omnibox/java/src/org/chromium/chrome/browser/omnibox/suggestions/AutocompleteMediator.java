@@ -471,7 +471,7 @@ class AutocompleteMediator
     }
 
     /**
-     * TODO(crbug.com/1138587): Figure out how to remove this.
+     * TODO(crbug.com/40725530): Figure out how to remove this.
      *
      * @return The current native pointer to the autocomplete results.
      */
@@ -752,7 +752,8 @@ class AutocompleteMediator
     private @NonNull GURL updateSuggestionUrlIfNeeded(
             @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
         if (!mNativeInitialized || mAutocomplete == null) return url;
-        // TODO(crbug/1474087): this should exclude TILE variants when horizontal render group is
+        // TODO(crbug.com/40279214): this should exclude TILE variants when horizontal render group
+        // is
         // ready.
         if (suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
             return url;
@@ -966,7 +967,8 @@ class AutocompleteMediator
             // This normally happens when the target site loads and focus is moved to the
             // webcontents. On Android T we occasionally observe focus events to be lost, resulting
             // with Suggestions list obscuring the view.
-            // TODO(crbug.com/1348324): clearing the Omnibox focus is slow, so we want to experiment
+            // TODO(crbug.com/40233313): clearing the Omnibox focus is slow, so we want to
+            // experiment
             // with two alternatives:
             // 1) Clear the Omnibox focus in a follow-up task. From a latency perspective, this is
             //    the best option: the navigation gets kicked off right away, and important
@@ -1234,7 +1236,7 @@ class AutocompleteMediator
         // delay execution of the Autocomplete request.
         if (!mNativeInitialized || mAutocomplete == null) return;
         if (delayMillis == SCHEDULE_FOR_IMMEDIATE_EXECUTION) {
-            // TODO(crbug.com/1174855): Replace the following with postAtFrontOfQueue() and
+            // TODO(crbug.com/40167699): Replace the following with postAtFrontOfQueue() and
             // correct any tests that expect data instantly.
             mCurrentAutocompleteRequest.run();
         } else {

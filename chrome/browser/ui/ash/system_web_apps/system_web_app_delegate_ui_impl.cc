@@ -29,7 +29,7 @@ Browser* SystemWebAppDelegate::GetWindowForLaunch(Profile* profile,
   return FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP);
 }
 
-// TODO(crbug.com/1231886): Reduce code duplication between SWA launch code and
+// TODO(crbug.com/40190893): Reduce code duplication between SWA launch code and
 // web app launch code, so SWAs can easily maintain feature parity with regular
 // web apps (e.g. launch_handler behaviours).
 Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
@@ -39,12 +39,12 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     const apps::AppLaunchParams& params) const {
   // System Web App windows can't be properly restored without storing the app
   // type. Until that is implemented, skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
+  // TODO(crbug.com/40098476): Enable session restore for System Web Apps by
   // passing through the underlying value of params.omit_from_session_restore.
   constexpr bool kOmitFromSessionRestore = true;
 
   // Always reuse an existing browser for popups. Otherwise let the app decide.
-  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
+  // TODO(crbug.com/40679012): Allow apps to control whether popups are single.
   Browser* browser =
       (params.disposition == WindowOpenDisposition::NEW_POPUP)
           ? FindSystemWebAppBrowser(profile, GetType(), Browser::TYPE_APP_POPUP)

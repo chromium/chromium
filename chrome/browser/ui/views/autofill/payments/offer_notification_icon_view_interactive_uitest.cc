@@ -124,7 +124,7 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
       weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/1497347): Flaky on Linux MSAN.
+// TODO(crbug.com/40938939): Flaky on Linux MSAN.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_IconAutoCollapse DISABLED_IconAutoCollapse
 #else
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
                         &OfferNotificationIconView::ShouldShowLabel, true));
 }
 
-// TODO(crbug.com/1498588): Flaky on Linux MSAN.
+// TODO(crbug.com/40939637): Flaky on Linux MSAN.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_IconCollapseAfterBubbleWidgetIsClosed \
   DISABLED_IconCollapseAfterBubbleWidgetIsClosed

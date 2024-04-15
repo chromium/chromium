@@ -527,7 +527,7 @@ class LocationBarMediator
         // side is initialized
         assert mNativeInitialized : "Loading URL before native side initialized";
 
-        // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
+        // TODO(crbug.com/40693835): Should be taking a full loaded LoadUrlParams.
         if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(
                 omniboxLoadUrlParams, mLocationBarDataProvider.isIncognito())) {
             return;
@@ -1372,7 +1372,7 @@ class LocationBarMediator
 
     @Override
     public @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
-        // TODO(crbug.com/1140333): StartSurfaceMediator can call this method after destroy().
+        // TODO(crbug.com/40153763): StartSurfaceMediator can call this method after destroy().
         if (mLocationBarLayout == null) {
             return null;
         }

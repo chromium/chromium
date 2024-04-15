@@ -205,7 +205,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabStripControlButtonInkDropRipple] = ui::SetAlpha(
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.14f * 255.0f));
   /* WebUI Tab Strip colors. */
-  // TODO(https://crbug.com/1060398): Update the tab strip color to respond
+  // TODO(crbug.com/40678998): Update the tab strip color to respond
   // appopriately to activation changes.
   mixer[kColorWebUiTabStripBackground] = {ui::kColorFrameActive};
   mixer[kColorWebUiTabStripFocusOutline] = {ui::kColorFocusableBorderFocused};

@@ -83,7 +83,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
   }
 };
 
-// TODO(crbug.com/1473988): Flakily fails on some Windows builders.
+// TODO(crbug.com/40927205): Flakily fails on some Windows builders.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_ShowDeviceList DISABLED_InvokeUi_ShowDeviceList
 #else

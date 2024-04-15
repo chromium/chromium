@@ -443,7 +443,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
   view_observations_.AddObservation(tab_contents_container_.get());
   view_observations_.AddObservation(top_container_.get());
 
-  // TODO(crbug.com/1010589) WebContents are initially assumed to be visible by
+  // TODO(crbug.com/40651211) WebContents are initially assumed to be visible by
   // default unless explicitly hidden. The WebContents need to be set to hidden
   // so that the visibility state of the document in JavaScript is correctly
   // initially set to 'hidden', and the 'visibilitychange' events correctly get

@@ -13,7 +13,7 @@ typedef ChromeRenderViewHostTestHarness ChromeWebContentsViewDelegateViewsTest;
 
 // Test that makes sure ShowContextMenu does not crash if web_contents() does
 // not have a focused frame.
-// TODO(crbug.com/1309808): Failing on Mac11.
+// TODO(crbug.com/40830006): Failing on Mac11.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ContextMenuNoFocusedFrame DISABLED_ContextMenuNoFocusedFrame
 #else

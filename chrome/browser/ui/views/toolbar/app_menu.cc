@@ -1279,7 +1279,7 @@ bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
          (IsBookmarkCommand(command_id) &&
           bookmark_menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(
               command_id, event)) ||
-         // TODO(https://crbug.com/1454311) Currently the UI for
+         // TODO(crbug.com/40272266) Currently the UI for
          // OtherProfileCommand has bespoke child views which will block
          // activation in ui/views/controls/menu/menu_controller.cc. The correct
          // fix will be to have the child view as part of

@@ -26,7 +26,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-// TODO(crbug.com/1328709): These are approved one-off dialog style, we will
+// TODO(crbug.com/40226507): These are approved one-off dialog style, we will
 // migrate when this bug is resolved.
 // Spacing between child of the Discount Consent Dialog View
 constexpr int kChildSpacing = 24;

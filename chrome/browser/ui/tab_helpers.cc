@@ -434,7 +434,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(IS_ANDROID)
     // If enabled, save sensitivity data for each non-incognito non-custom
     // android tab
-    // TODO(crbug.com/1466970): Consider moving check conditions or the
+    // TODO(crbug.com/40276584): Consider moving check conditions or the
     // registration logic to sensitivity_persisted_tab_data_android.*
     if (!profile->IsOffTheRecord()) {
       if (auto* tab = TabAndroid::FromWebContents(web_contents);
@@ -708,7 +708,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
 
   if (!profile->IsIncognitoProfile()) {
-    // TODO(1360846): Consider using the in-memory cache instead.
+    // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
     commerce::CommerceUiTabHelper::CreateForWebContents(
         web_contents,
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile),

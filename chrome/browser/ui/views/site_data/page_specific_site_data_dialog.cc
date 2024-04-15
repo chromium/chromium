@@ -237,8 +237,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // Removing origin from Browsing Data Model to support new storage types.
     // The UI assumes deletion completed successfully, so we're passing
     // `base::DoNothing` callback.
-    // TODO(crbug.com/1394352): Future tests will need to know when the deletion
-    // is completed, this will require a callback to be passed here.
+    // TODO(crbug.com/40248546): Future tests will need to know when the
+    // deletion is completed, this will require a callback to be passed here.
     allowed_browsing_data_model()->RemoveBrowsingData(origin.host(),
                                                       base::DoNothing());
     allowed_browsing_data_model()->RemovePartitionedBrowsingData(

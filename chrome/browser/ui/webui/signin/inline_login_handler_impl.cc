@@ -252,7 +252,7 @@ void OnSigninComplete(Profile* profile,
             .GetProfileAttributesWithPath(profile->GetPath());
     if (entry) {
       entry->SetLocalProfileName(profile_name, /*is_default_name=*/false);
-      // TODO(https://crbug.com/1186969): move the following code into a new
+      // TODO(crbug.com/40172714): move the following code into a new
       // `Profile::SetIsHidden()` method.
       entry->SetIsOmitted(false);
       if (!profile->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
@@ -325,7 +325,7 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
     // If user sign in in UserManager with force sign in enabled, the browser
     // window won't be opened until now.
     UnlockProfileAndHideLoginUI(profile_->GetPath(), handler_.get());
-    // TODO(https://crbug.com/1205147): In case of reauth, wait until cookies
+    // TODO(crbug.com/40764426): In case of reauth, wait until cookies
     // are set before opening a browser window.
     profiles::OpenBrowserWindowForProfile(
         base::IgnoreArgs<Browser*>(base::BindOnce(

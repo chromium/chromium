@@ -165,7 +165,7 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ(GetUpdatedReviewList(service).size(), 2UL);
 }
 
-// TODO(crbug.com/1363714): Move this test to ContentSettingsPatternTest.
+// TODO(crbug.com/40865125): Move this test to ContentSettingsPatternTest.
 TEST_F(NotificationPermissionReviewServiceTest, SingleOriginTest) {
   auto pattern_1 =
       ContentSettingsPattern::FromString("https://[*.]example1.com:443");

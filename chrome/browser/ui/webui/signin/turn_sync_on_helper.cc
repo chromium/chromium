@@ -528,7 +528,7 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // Take a SyncSetupInProgressHandle, so that the UI code can use
     // IsFirstSyncSetupInProgress() as a way to know if there is a signin in
     // progress.
-    // TODO(https://crbug.com/811211): Remove this handle.
+    // TODO(crbug.com/41369996): Remove this handle.
     sync_blocker_ = sync_service->GetSetupInProgressHandle();
     sync_service->SetSyncFeatureRequested();
 

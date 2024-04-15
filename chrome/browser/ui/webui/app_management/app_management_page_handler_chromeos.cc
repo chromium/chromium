@@ -126,7 +126,7 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
     // implausibly large app (2^63 bytes ~= 9 exabytes).
     int64_t signed_bytes = static_cast<int64_t>(bytes.value());
     if (signed_bytes < 0) {
-      // TODO(crbug.com/1418590): Investigate ARC apps which have negative data
+      // TODO(crbug.com/40063212): Investigate ARC apps which have negative data
       // sizes.
       LOG(ERROR) << "Invalid app size: " << signed_bytes;
       base::debug::DumpWithoutCrashing();

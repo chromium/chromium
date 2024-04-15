@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
 
-// TODO(crbug.com/1417525): Fix this test on Windows and Mac.
+// TODO(crbug.com/40257354): Fix this test on Windows and Mac.
 #if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
   // Navigate to a home tab URL via a target=_blank link.
   content::TestNavigationObserver nav_observer(

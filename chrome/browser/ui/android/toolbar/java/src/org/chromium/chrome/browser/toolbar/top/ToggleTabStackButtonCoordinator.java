@@ -28,10 +28,9 @@ import org.chromium.url.GURL;
 import java.util.function.BooleanSupplier;
 
 /**
- * Root component for the tab switcher button on the toolbar. Intended to own the
- * {@link ToggleTabStackButton}, but currently it only manages some signals around the tab switcher
- * button.
- * TODO(https://crbug.com/871806): Finish converting HomeButton to MVC and move more logic into this
+ * Root component for the tab switcher button on the toolbar. Intended to own the {@link
+ * ToggleTabStackButton}, but currently it only manages some signals around the tab switcher button.
+ * TODO(crbug.com/40588354): Finish converting HomeButton to MVC and move more logic into this
  * class.
  */
 public class ToggleTabStackButtonCoordinator {

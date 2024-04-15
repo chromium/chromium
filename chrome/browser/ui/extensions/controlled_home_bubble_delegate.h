@@ -22,7 +22,7 @@ class Extension;
 
 // A bubble shown for an extension overriding the user's home page (different
 // than the NTP).
-// TODO(https://crbug.com/1505612): Have this class use the new dialog builders
+// TODO(crbug.com/40946250): Have this class use the new dialog builders
 // and remove ToolbarActionsBarBubbleDelegate.
 class ControlledHomeBubbleDelegate
     : public ToolbarActionsBarBubbleDelegate,

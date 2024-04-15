@@ -63,7 +63,7 @@ ChromeShelfItemFactory::CreateShelfItemDelegateForAppId(
   auto* proxy =
       apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile_);
 
-  // TODO(crbug.com/1412708): Update the calling methods naming to avoid the
+  // TODO(crbug.com/40255408): Update the calling methods naming to avoid the
   // usage of app, to indicate that we could also create a shortcut shelf item
   // using the shortcut id.
   if ((chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) &&

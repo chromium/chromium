@@ -42,7 +42,7 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       delete;
 
  private:
-  // TODO(crbug.com/1507113) : Remove these friended test and convert the test
+  // TODO(crbug.com/40947801) : Remove these friended test and convert the test
   // to use Kombucha framework.
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            CopyPromoCode);

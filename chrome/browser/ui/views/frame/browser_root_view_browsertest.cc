@@ -75,7 +75,7 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1220680): These tests produces wayland protocol error
+// TODO(crbug.com/40186503): These tests produces wayland protocol error
 // wl_display.error(xdg_surface, 1, "popup parent not constructed") on LaCrOS
 // with Exo.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

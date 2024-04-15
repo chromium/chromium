@@ -107,7 +107,7 @@ void ShowWebFileHandlersFileLaunchDialog(
   checkbox_params.SetIsChecked(g_default_remember_selection);
   checkbox_params.SetVisible(true);
 
-  // TODO(crbug.com/1448893): Add extension name and icon. Show files. Design:
+  // TODO(crbug.com/40269541): Add extension name and icon. Show files. Design:
   // https://docs.google.com/document/d/1h7ZjryB2zYEjUG9DqPLzAM1iSUXr8ZadUUY02ycExAQ
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique))

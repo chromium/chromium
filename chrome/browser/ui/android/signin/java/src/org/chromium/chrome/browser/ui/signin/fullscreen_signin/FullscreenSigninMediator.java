@@ -194,7 +194,7 @@ public class FullscreenSigninMediator
                 && !mInitialLoadCompleted) {
             mInitialLoadCompleted = true;
             onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
-            // TODO(https://crbug.com/1353330): Rename this method and the corresponding histogram.
+            // TODO(crbug.com/40235150): Rename this method and the corresponding histogram.
             mDelegate.recordNativePolicyAndChildStatusLoadedHistogram();
             RecordHistogram.recordEnumeratedHistogram(
                     "MobileFre.SlowestLoadPoint", mSlowestLoadPoint, LoadPoint.MAX);
@@ -263,7 +263,7 @@ public class FullscreenSigninMediator
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        // TODO(crbug.com/1450614): Replace onAccountsChanged() with this method.
+        // TODO(crbug.com/40065164): Replace onAccountsChanged() with this method.
         mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
     }
 
@@ -364,7 +364,8 @@ public class FullscreenSigninMediator
 
                     @Override
                     public void onSignInAborted() {
-                        // TODO(crbug/1248090): For now we enable the buttons again to not block the
+                        // TODO(crbug.com/40790332): For now we enable the buttons again to not
+                        // block the
                         // users from continuing to the next page. Should show a dialog with the
                         // signin error.
                         mModel.set(

@@ -1396,7 +1396,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   }
 }
 
-// TODO(crbug.com/993974): When the test flake has been addressed, improve
+// TODO(crbug.com/40640473): When the test flake has been addressed, improve
 // performance by consolidating this unit test with
 // |TabletModeBrowserCaptionButtonVisibility|. Do not forget to remove the
 // corresponding |FRIEND_TEST_ALL_PREFIXES| usage from

@@ -128,8 +128,8 @@ std::unique_ptr<views::View> CreateOriginPathLabel(
 }
 
 std::u16string GetElidedPathForDisplayAsTitle(const base::FilePath& path) {
-  // TODO(crbug.com/1411723): Consider moving filename elision logic into a core
-  // component, which would allow for dynamic elision based on the _actual_
+  // TODO(crbug.com/40254943): Consider moving filename elision logic into a
+  // core component, which would allow for dynamic elision based on the _actual_
   // available pixel width and font of the dialog.
   //
   // Ensure file names containing spaces won't overflow to the next line in the

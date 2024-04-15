@@ -150,7 +150,7 @@ public interface NativePage {
      * @param isPdf Whether it is a pdf native page.
      * @return Type of the native page defined in {@link NativePageType}.
      */
-    // TODO(crbug/783819) - Convert to using GURL.
+    // TODO(crbug.com/40549331) - Convert to using GURL.
     static @NativePageType int nativePageType(
             String url, NativePage candidatePage, boolean isIncognito, boolean isPdf) {
         if (url == null) return NativePageType.NONE;

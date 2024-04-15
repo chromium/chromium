@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/935607): The test fails on Windows.
+// TODO(crbug.com/41443454): The test fails on Windows.
 #define MAYBE_Persist DISABLED_Persist
 #else
 #define MAYBE_Persist Persist

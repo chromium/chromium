@@ -490,7 +490,7 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(images_[index]->GetImageSkia(
       size, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
-  // TODO(crbug.com/1293668): Investigate why this SchedulePaint is needed.
+  // TODO(crbug.com/40213603): Investigate why this SchedulePaint is needed.
   image_preview_->GetImageViewAt(index)->SchedulePaint();
 }
 

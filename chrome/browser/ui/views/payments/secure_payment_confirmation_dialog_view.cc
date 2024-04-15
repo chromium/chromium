@@ -226,7 +226,7 @@ bool SecurePaymentConfirmationDialogView::Accept() {
   // WebAuthn dialog is showing over the SPC one. If opt-out support wasn't
   // requested by the SPC caller, it won't be visible and doesn't need disabled.
   //
-  // TODO(crbug.com/1325854): Even disabled this link still looks clickable
+  // TODO(crbug.com/40225659): Even disabled this link still looks clickable
   // (underline disappears, but color doesn't change). Force style the color?
   if (opt_out_view_->GetVisible()) {
     opt_out_view_->SetEnabled(false);

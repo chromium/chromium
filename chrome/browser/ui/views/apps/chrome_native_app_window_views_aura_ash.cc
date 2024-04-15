@@ -183,7 +183,7 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
   // Fullscreen doesn't always imply immersive mode (see
   // ShouldEnableImmersive()).
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, false);
-  // TODO(https://crbug.com/997480): Determine if all non-resizable windows
+  // TODO(crbug.com/41478054): Determine if all non-resizable windows
   // should have this behavior, or just the feedback app.
   window_observation_.Observe(window);
 }
@@ -657,7 +657,7 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // have access to window controls. Non resizable windows do not gain
   // size by hidding the title bar, so it is not hidden and thus there
   // is no need for immersive mode.
-  // TODO(crbug.com/801619): This adds a little extra animation
+  // TODO(crbug.com/41364538): This adds a little extra animation
   // when minimizing or unminimizing window.
   return display::Screen::GetScreen()->InTabletMode() && CanResize() &&
          !IsMinimized() &&

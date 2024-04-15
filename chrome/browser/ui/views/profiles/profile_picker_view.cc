@@ -412,7 +412,7 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
     // WebUI page to be loaded in the web contents. For these cases we will not
     // notify of the finished navigation to avoid crashing, but this negatively
     // affects the user experience anyway.
-    // TODO(crbug.com/1444046): Improve the user experience for this error.
+    // TODO(crbug.com/40911651): Improve the user experience for this error.
     base::debug::DumpWithoutCrashing();
     return;
   }
@@ -837,7 +837,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
 void ProfilePickerView::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
     base::OnceCallback<void(bool)> switch_finished_callback) {
-  // TODO(crbug.com/1360774): Consider having forced signin as separate step
+  // TODO(crbug.com/40237765): Consider having forced signin as separate step
   // controller for `Step::kAccountSelection`.
   if (signin_util::IsForceSigninEnabled() &&
       !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {

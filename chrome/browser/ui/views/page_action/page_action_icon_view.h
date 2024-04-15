@@ -110,7 +110,7 @@ class PageActionIconView : public IconLabelBubbleView {
   void ExecuteForTesting();
 
   // Creates and updates the loading indicator.
-  // TODO(crbug.com/964127): Ideally this should be lazily initialized in
+  // TODO(crbug.com/40627870): Ideally this should be lazily initialized in
   // SetIsLoading(), but local card migration icon has a weird behavior that
   // doing so will cause the indicator being invisible. Investigate and fix.
   void InstallLoadingIndicatorForTesting();

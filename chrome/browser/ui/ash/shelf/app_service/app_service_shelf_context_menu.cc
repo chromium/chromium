@@ -512,7 +512,7 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
     return;
   }
 
-  // TODO(crbug.com/1196697): If this comes from Lacros app, it shows the
+  // TODO(crbug.com/40176571): If this comes from Lacros app, it shows the
   // top "Apps" settings page. This is fallback, because Lacros app is not
   // registered. This is short term workaround to keep the relative
   // compatibility for Lacros Primary. We should figure out what should be shown

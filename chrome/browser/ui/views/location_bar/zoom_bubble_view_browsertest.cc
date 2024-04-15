@@ -112,7 +112,7 @@ using ZoomBubbleImmersiveDisabledBrowserTest = ZoomBubbleBrowserTest;
 // shows in fullscreen. And when the toolbar hides in fullscreen, the zoom
 // bubble should close and re-show in a new un-anchored position.
 //
-// TODO(crbug.com/1142682): Fails on Lacros bots.
+// TODO(crbug.com/40727884): Fails on Lacros bots.
 // TODO(lgrey): Disable this test for Mac or delete it when immersive is the
 // only code path. This was originally added for a Mac bug that is impossible
 // to trigger in immersive mode, and is very implementation-coupled.

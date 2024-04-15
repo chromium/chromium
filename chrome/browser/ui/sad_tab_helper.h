@@ -16,7 +16,7 @@ class SadTab;
 // frame of a WebContents has crashed. The behaviour depends on whether
 // content::ShouldSkipEarlyCommitPendingForCrashedFrame is true or not.
 //
-// TODO(https://crbug.com/1072817): The early commit path is being removed, tidy
+// TODO(crbug.com/40052076): The early commit path is being removed, tidy
 // these docs when that happens.
 //
 // If we are doing the early commit then the sad tab is removed when

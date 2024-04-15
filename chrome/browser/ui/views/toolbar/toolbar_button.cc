@@ -604,8 +604,8 @@ namespace {
 
 // The default duration does not work well for dark mode where the animation has
 // to make a big contrast difference.
-// TODO(crbug.com/967317): This needs to be consistent with the duration of the
-// border animation in ToolbarIconContainerView.
+// TODO(crbug.com/40629276): This needs to be consistent with the duration of
+// the border animation in ToolbarIconContainerView.
 constexpr base::TimeDelta kHighlightAnimationDuration = base::Milliseconds(300);
 
 SkColor FadeWithAnimation(SkColor color, const gfx::Animation& animation) {

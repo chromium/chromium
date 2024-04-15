@@ -488,7 +488,7 @@ void ExtensionsMenuViewController::OnAllowExtensionClicked(
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
   action_runner->GrantTabPermissions({GetExtension(browser_, extension_id)});
-  // TODO(crbug.com/1445399): Granting tab permission but not accepting the
+  // TODO(crbug.com/40912394): Granting tab permission but not accepting the
   // reload page means we grant tab permissions but the action is not executed.
   // This causes a mismatch between the request access button in the toolbar,
   // and the request access section in the menu when the extension is granted

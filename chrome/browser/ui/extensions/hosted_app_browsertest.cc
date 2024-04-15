@@ -357,7 +357,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
 };
 
 // Tests that "Open link in new tab" opens a link in a foreground tab.
-// TODO(crbug.com/1253366): flaky.
+// TODO(crbug.com/40199157): flaky.
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
   SetupAppWithURL(GURL(kExampleURL));
 
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 }
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
-// TODO(crbug.com/1190448): Flaky on Linux and LACROS..
+// TODO(crbug.com/40755999): Flaky on Linux and LACROS..
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
 #else
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
       kActivationUrlHasEffectiveUrl, 1);
 }
 
-// TODO(crbug.com/1411344): Flaky test.
+// TODO(crbug.com/40890220): Flaky test.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(HostedAppTest, DISABLED_LoadIcon) {
   SetupApp("hosted_app");
@@ -1450,7 +1450,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 // https://crbug.com/1034197), and that the resulting SiteInstance has a valid
 // site URL. See https://crbug.com/1016954.
 // The navigation currently fails/results in a 404 on Windows, so it's currently
-// disabled.  TODO(crbug.com/1137323): Fix this.
+// disabled.  TODO(crbug.com/40152624): Fix this.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NavigateToAppURLWithDoubleSlashPath \
   DISABLED_NavigateToAppURLWithDoubleSlashPath

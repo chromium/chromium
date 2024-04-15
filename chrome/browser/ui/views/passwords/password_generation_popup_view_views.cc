@@ -682,7 +682,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  // TODO(crbug.com/1404297): kListBox is used for the same reason as in
+  // TODO(crbug.com/40885943): kListBox is used for the same reason as in
   // `autofill::PopupViewViews`. See crrev.com/c/2545285 for details.
   // Consider using a more appropriate role (e.g. kMenuListPopup or similar).
   node_data->role = ax::mojom::Role::kListBox;

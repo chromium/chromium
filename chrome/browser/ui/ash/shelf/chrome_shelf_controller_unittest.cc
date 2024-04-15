@@ -5155,7 +5155,7 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 
 }  // namespace
 
-// TODO(https://crbug.com/1411138) Test is flaky on ChromeOS.
+// TODO(crbug.com/40890072) Test is flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DefaultApps DISABLED_DefaultApps
 #else
@@ -5495,7 +5495,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   std::unique_ptr<ash::DemoModeTestHelper> demo_mode_test_helper_;
 };
 
-// TODO(crbug.com/1363613): PinnedAppsOnline is flaky on linux-chromeos-rel.
+// TODO(crbug.com/40865068): PinnedAppsOnline is flaky on linux-chromeos-rel.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PinnedAppsOnline DISABLED_PinnedAppsOnline
 #else

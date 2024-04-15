@@ -627,7 +627,7 @@ void AppBrowserController::OnReceivedInitialURL() {
   if (!chrome::SavedBoundsAreContentBounds(browser()))
     return;
 
-  // TODO(crbug.com/964825): Correctly set the window size at creation time.
+  // TODO(crbug.com/41459774): Correctly set the window size at creation time.
   // This is currently not possible because the current url is not easily known
   // at popup construction time.
   browser()->window()->SetContentsSize(browser()->override_bounds().size());
@@ -715,7 +715,7 @@ void AppBrowserController::MaybeSetInitialUrlOnReparentTab() {
 void AppBrowserController::UpdateThemePack() {
   std::optional<SkColor> theme_color = GetThemeColor();
 
-  // TODO(crbug.com/1053823): Add tests for theme properties being set in this
+  // TODO(crbug.com/40119262): Add tests for theme properties being set in this
   // branch.
   std::optional<SkColor> background_color = GetBackgroundColor();
   if (theme_color == last_theme_color_ &&

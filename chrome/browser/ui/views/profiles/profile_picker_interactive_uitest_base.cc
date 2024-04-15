@@ -18,7 +18,7 @@
 
 ui::Accelerator WithProfilePickerInteractiveUiTestHelpers::GetAccelerator(
     int command_id) {
-  // TODO(crbug.com/1444053): Rely on `AcceleratorProvider` instead of
+  // TODO(crbug.com/40911656): Rely on `AcceleratorProvider` instead of
   // hardcoding the accelerators here.
 
   switch (command_id) {

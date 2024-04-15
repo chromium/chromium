@@ -90,8 +90,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
 
-  // TODO(crbug.com/1341399): Move this method to `SidePanelUI` after decoupling
-  // `SidePanelEntry` from views.
+  // TODO(crbug.com/40851017): Move this method to `SidePanelUI` after
+  // decoupling `SidePanelEntry` from views.
   bool IsSidePanelEntryShowing(const SidePanelEntry* entry) const;
 
   // Re-runs open new tab URL check and sets button state to enabled/disabled

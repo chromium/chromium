@@ -236,7 +236,7 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
 }
 
 void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {
-  // TODO(crbug.com/1346612): Record latency for the update status.
+  // TODO(crbug.com/40232577): Record latency for the update status.
   if (!success) {
     is_price_track_enabled_ = !is_price_track_enabled_;
     toggle_button_->SetIsOn(is_price_track_enabled_);

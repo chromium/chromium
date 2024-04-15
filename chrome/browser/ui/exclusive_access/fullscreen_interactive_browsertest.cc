@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 }
 
 // TODO(crbug.com/1278361): Flaky on Chrome OS.
-// TODO(crbug.com/1087875): Flaky on Linux.
+// TODO(crbug.com/40133132): Flaky on Linux.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_FullscreenDurationUmaLoggedCrossProcess \
   DISABLED_FullscreenDurationUmaLoggedCrossProcess

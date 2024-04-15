@@ -31,8 +31,8 @@ void ConflictsHandler::HandleRequestModuleList(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Make sure the JS doesn't call 'requestModuleList' more than once.
-  // TODO(739291): It would be better to kill the renderer instead of the
-  // browser for malformed messages.
+  // TODO(crbug.com/40528619): It would be better to kill the renderer instead
+  // of the browser for malformed messages.
   CHECK_EQ(1U, args_list.size());
   module_list_callback_id_ = args_list[0].GetString();  // CHECKs if not string
 

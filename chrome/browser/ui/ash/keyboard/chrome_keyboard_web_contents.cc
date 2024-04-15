@@ -234,7 +234,7 @@ void ChromeKeyboardWebContents::RenderFrameCreated(
 }
 
 void ChromeKeyboardWebContents::DidStopLoading() {
-  // TODO(https://crbug.com/845780): Change this to a DCHECK when we change
+  // TODO(crbug.com/40577582): Change this to a DCHECK when we change
   // ReloadKeyboardIfNeeded to also have a callback.
   if (!load_callback_.is_null())
     std::move(load_callback_).Run();

@@ -104,8 +104,8 @@ class PreviewEliderLabel : public views::Label {
         return elided_string;
     }
 
-    // TODO(crbug.com/714776): Display something meaningful if the preview can't
-    // be elided enough for the string to fit.
+    // TODO(crbug.com/40517112): Display something meaningful if the preview
+    // can't be elided enough for the string to fit.
     return std::u16string();
   }
 
@@ -444,7 +444,8 @@ void PaymentSheetViewController::FillContentView(views::View* content_view) {
     builder.AddChild(views::Builder<views::View>(std::move(shipping_row)));
     // It's possible for requestShipping to be true and for there to be no
     // shipping options yet (they will come in updateWith).
-    // TODO(crbug.com/707353): Put a better placeholder row, instead of no row.
+    // TODO(crbug.com/40513573): Put a better placeholder row, instead of no
+    // row.
     std::unique_ptr<PaymentRequestRowView> shipping_option_row =
         CreateShippingOptionRow();
     if (shipping_option_row) {

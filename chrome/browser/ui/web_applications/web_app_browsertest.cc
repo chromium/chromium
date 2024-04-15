@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoTabSelectedMenuCrash) {
 }
 
 // Tests that PWA menus have an uninstall option.
-// TODO(crbug.com/1271118): Flaky on mac arm64.
+// TODO(crbug.com/40805374): Flaky on mac arm64.
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_UninstallMenuOption DISABLED_UninstallMenuOption
 #else
@@ -2283,7 +2283,7 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
 #endif  // BUILDFLAG(IS_WIN)
 };
 
-// TODO(crbug.com/1320285): Flaky on Mac.
+// TODO(crbug.com/40223463): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_RegKeysFileExtension DISABLED_RegKeysFileExtension
 #else
@@ -2377,7 +2377,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 #endif
 }
 
-// TODO(crbug.com/1270961): Disabled because it is flaky on Mac.
+// TODO(crbug.com/40805261): Disabled because it is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UserDenyFileHandlingPermission \
   DISABLED_UserDenyFileHandlingPermission

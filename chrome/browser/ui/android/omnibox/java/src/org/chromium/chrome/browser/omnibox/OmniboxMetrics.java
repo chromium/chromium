@@ -422,7 +422,7 @@ public class OmniboxMetrics {
             default:
                 // Report an error, but fall back to a default value.
                 // Use this to detect missing new cases.
-                // TODO(crbug.com/1314765): This assert fails persistently on tablets.
+                // TODO(crbug.com/40221519): This assert fails persistently on tablets.
                 // assert false : "Unknown page classification: " + pageClass;
                 break;
         }

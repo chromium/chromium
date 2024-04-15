@@ -121,7 +121,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
     return;
   }
 
-  // TODO(crbug.com/891905): Centralize powerwash restriction checks.
+  // TODO(crbug.com/40596547): Centralize powerwash restriction checks.
   bool allow_powerwash =
       !policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&

@@ -43,7 +43,7 @@ constexpr char kHatsShouldShowSurveyReasonHistogram[] =
 
 namespace {
 
-// TODO(crbug.com/1160661): When the minimum time between any survey, and the
+// TODO(crbug.com/40162245): When the minimum time between any survey, and the
 // minimum time between a specific survey, are the same, the logic supporting
 // the latter check is superfluous.
 constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts = base::Days(180);

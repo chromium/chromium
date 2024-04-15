@@ -114,7 +114,7 @@ void AndroidLiveTabContext::SetVisualDataForGroup(
     const tab_groups::TabGroupVisualData& group_visual_data) {
   // Not supported on Android.
 
-  // TODO(crbug.com/1003128): ensure this never gets called (or remove
+  // TODO(crbug.com/40647050): ensure this never gets called (or remove
   // NOTREACHED) if we implement restoring groups for foreign session
   // windows.
   NOTREACHED();

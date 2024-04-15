@@ -586,7 +586,7 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
         Turn off
       </message>
-      <!-- TODO(crbug.com/1425882): Use finalized string.-->
+      <!-- TODO(crbug.com/40898980): Use finalized string.-->
       <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Autofill Options
       </message>

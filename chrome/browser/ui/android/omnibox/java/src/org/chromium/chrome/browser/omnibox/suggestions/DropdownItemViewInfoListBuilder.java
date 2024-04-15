@@ -220,7 +220,7 @@ class DropdownItemViewInfoListBuilder {
             final int firstSuggestionWithHeader =
                     getIndexOfFirstSuggestionWithHeader(autocompleteResult);
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
-            // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
+            // TODO(crbug.com/40127424): this should either infer the count from UI height or supply
             // the default value if height is not known. For the time being we group the entire list
             // to mimic the native behavior.
             if (firstSuggestionWithHeader > 1) {

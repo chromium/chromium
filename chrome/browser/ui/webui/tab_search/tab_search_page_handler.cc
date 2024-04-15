@@ -1043,7 +1043,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
                                         TabChangeType change_type) {
   if (!IsWebContentsVisible())
     return;
-  // TODO(crbug.com/1112496): Support more values for TabChangeType and filter
+  // TODO(crbug.com/40709736): Support more values for TabChangeType and filter
   // out the changes we are not interested in.
   if (change_type != TabChangeType::kAll)
     return;

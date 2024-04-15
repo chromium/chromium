@@ -367,10 +367,10 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
       /*observer=*/nullptr);
 
   // Triggers actual image loading with all supported scale factors.
-  // TODO(crbug.com/1442996): This is a temporary fix since the combobox and its
-  // drop down menu currently do not automatically get an image's representation
-  // when they are shown. Remove this when the aforementioend crbug has been
-  // fixed.
+  // TODO(crbug.com/40910886): This is a temporary fix since the combobox and
+  // its drop down menu currently do not automatically get an image's
+  // representation when they are shown. Remove this when the aforementioend
+  // crbug has been fixed.
   extension_icon_->image_skia().EnsureRepsForSupportedScales();
 }
 

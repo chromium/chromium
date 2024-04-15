@@ -166,7 +166,7 @@ class WindowEventObserver : public ui::EventObserver {
       return;
     }
 
-    // TODO(crbug.com/1400085): Windows doesn't capture mouse exit event
+    // TODO(crbug.com/40883490): Windows doesn't capture mouse exit event
     // sometimes when mouse leaves the window.
     // TODO(jazzhsu): We are checking if mouse is in bounds rather than strictly
     // checking mouse enter/exit event because of two reasons: 1. We are getting
@@ -853,7 +853,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
     hide_close_button_animation_.SetContainer(animation_container);
   }
 
-  // TODO(https://crbug.com/1475419): Don't force dark mode once we support a
+  // TODO(crbug.com/40279642): Don't force dark mode once we support a
   // light mode window.
   GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 

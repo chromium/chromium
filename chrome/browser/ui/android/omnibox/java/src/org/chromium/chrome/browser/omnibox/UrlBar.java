@@ -1037,7 +1037,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public void requestLayout() {
-        // TODO(crbug/1492681): it is speculated that a requestLayout invoked during an active
+        // TODO(crbug.com/40285597): it is speculated that a requestLayout invoked during an active
         // layout pass is causing Omnibox/Chrome to become unresponsive.
         // While Android seemingly supports that, emitting just a warning, we can't rule this out
         // completely. It is currently unclear where the secondary requestLayout could come from.

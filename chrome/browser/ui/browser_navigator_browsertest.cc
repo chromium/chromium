@@ -1531,7 +1531,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-// TODO(crbug.com/1171245): This is disabled for Mac OS due to flakiness.
+// TODO(crbug.com/40166082): This is disabled for Mac OS due to flakiness.
 // TODO(1024166): Timing out on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateFromNTPToOptionsPageInSameTab \

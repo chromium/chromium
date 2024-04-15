@@ -810,7 +810,7 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
 
 // static
 bool NewTabPageUI::IsDriveModuleEnabledForProfile(Profile* profile) {
-  // TODO(crbug.com/1321896): Explore not requiring sync for the drive
+  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
   // module to be enabled.
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
   if (!IsDriveModuleEnabled() || !sync_service ||
@@ -822,7 +822,7 @@ bool NewTabPageUI::IsDriveModuleEnabledForProfile(Profile* profile) {
           ntp_features::kNtpDriveModuleManagedUsersOnlyParam, true)) {
     return true;
   }
-  // TODO(crbug.com/1213351): Stop calling the private method
+  // TODO(crbug.com/40183609): Stop calling the private method
   // FindExtendedPrimaryAccountInfo().
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return /* Can be null if Chrome signin is disabled. */ identity_manager &&

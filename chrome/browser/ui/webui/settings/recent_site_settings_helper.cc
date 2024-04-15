@@ -160,7 +160,7 @@ std::vector<RecentSitePermissions> GetRecentSitePermissions(
     // Remove all permission entries in the incognito map which also have
     // an entry in the regular settings. This may result in an empty setting
     // vector, in which case we remove the map entry.
-    // TODO(https://crbug.com/1049531): Make determining actual source of
+    // TODO(crbug.com/40117710): Make determining actual source of
     // active permission simpler.
     for (auto incognito_iter = incognito_settings.begin();
          incognito_iter != incognito_settings.end();) {

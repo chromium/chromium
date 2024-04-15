@@ -41,7 +41,7 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
     // hit this check, ensure it's sane and UX-approved to extend it to your
     // new case (e.g. don't add CONTEXT_BUTTON_MD).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(https://crbug.com/1352340): Limit more specific Ash contexts.
+    // TODO(crbug.com/40234831): Limit more specific Ash contexts.
     return true;
 #else
     return context == views::style::CONTEXT_LABEL ||

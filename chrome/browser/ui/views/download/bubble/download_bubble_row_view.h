@@ -264,7 +264,7 @@ class DownloadBubbleRowView : public views::View,
   // False in tests.
   const bool is_in_partial_view_ = false;
 
-  // TODO(crbug.com/1349528): The size constraint is not passed down from the
+  // TODO(crbug.com/40233803): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound
   // the view. This is assuming that the row view is loaded inside a bubble. It
   // will break if the row view is loaded inside a different parent view.

@@ -86,7 +86,7 @@ std::string UntrustedSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::ChildSrc:
       return "child-src https:;";
     case network::mojom::CSPDirectiveName::DefaultSrc:
-      // TODO(https://crbug.com/1085325): Audit and tighten CSP.
+      // TODO(crbug.com/40693567): Audit and tighten CSP.
       return std::string();
     case network::mojom::CSPDirectiveName::FrameAncestors:
       return base::StringPrintf("frame-ancestors %s",

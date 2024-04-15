@@ -107,7 +107,7 @@ void PaymentRequestRowView::UpdateBottomSeparatorVisualState() {
   // border is needed to correctly compute the bounds of the ScrollView in the
   // PaymentRequestSheetController which is done before this is added to its
   // Widget.
-  // TODO(crbug.com/1213247): Update PaymentRequestSheetController to recompute
+  // TODO(crbug.com/40768647): Update PaymentRequestSheetController to recompute
   // the bounds of its ScrollView in response to changes in preferred size.
   SetBorder(
       bottom_separator_visible_ && GetWidget()

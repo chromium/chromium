@@ -215,7 +215,7 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   if (additional_text) {
     text.push_back(additional_text.value());
   }
-  // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
+  // TODO(crbug.com/40149768): Use placeholders or a l10n-friendly way to
   // construct this string instead of concatenation. This currently only happens
   // for stock ticker symbols.
   return base::JoinString(text, u" ");

@@ -19,7 +19,7 @@ constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
 }  // namespace
 
-// TODO(crbug.com/1479563): Cover EditAddressProfileDialogControllerImpl with
+// TODO(crbug.com/40280921): Cover EditAddressProfileDialogControllerImpl with
 // more tests.
 class EditAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {

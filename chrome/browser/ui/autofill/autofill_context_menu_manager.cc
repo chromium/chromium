@@ -68,7 +68,7 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
   // `autofill::FormControlType::kContentEditable`, which is covered by the
   // above if-condition `!params.form_control_type`.
   //
-  // TODO(crbug.com/1492339): Unify with functions from form_autofill_util.cc.
+  // TODO(crbug.com/40285492): Unify with functions from form_autofill_util.cc.
   switch (*params.form_control_type) {
     case blink::mojom::FormControlType::kInputEmail:
     case blink::mojom::FormControlType::kInputMonth:
@@ -435,7 +435,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
 
   // If the field is of address type and there is information in the profile to
   // fill it, we always show the fallback option.
-  // TODO(crbug.com/1493361): Remove the following code block once feature is
+  // TODO(crbug.com/40285811): Remove the following code block once feature is
   // cleaned up. At that point, we can only check whether a profile exists or if
   // the user is not in incognito mode. Whether the field can be filled will be
   // irrelevant.

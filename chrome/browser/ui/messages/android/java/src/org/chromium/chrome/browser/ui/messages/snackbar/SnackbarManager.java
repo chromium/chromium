@@ -203,9 +203,9 @@ public class SnackbarManager
     }
 
     /**
-     * After an infobar is added, brings snackbar view above it.
-     * TODO(crbug/1028382): Currently SnackbarManager doesn't observe InfobarContainer events.
-     * Restore this functionality, only without references to Infobar classes.
+     * After an infobar is added, brings snackbar view above it. TODO(crbug.com/40109125): Currently
+     * SnackbarManager doesn't observe InfobarContainer events. Restore this functionality, only
+     * without references to Infobar classes.
      */
     public void onAddInfoBar() {
         // Bring Snackbars to the foreground so that it's not blocked by infobars.

@@ -276,7 +276,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     /**
      * Called when URL bar gains / lost focus. When gaining focus, block the tab strip transition.
      */
-    // TODO(crbug.com/1519696): Remove this APIs - location bar is also using TabObscuringHandler.
+    // TODO(crbug.com/41492673): Remove this APIs - location bar is also using TabObscuringHandler.
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
             int token = requestDeferTabStripTransitionToken();
@@ -393,8 +393,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         // Post the invalidate to make sure another layout pass is done. This is to make sure the
         // omnibox has the URL text updated to the final width of location bar after the toolbar
         // tablet button animations.
-        // TODO(crbug.com/1520644): Trigger bitmap capture without mHandler#post.
-        // TODO(crbug.com/1521114): Remove #invalidate after CaptureObservers respect a null
+        // TODO(crbug.com/41493621): Trigger bitmap capture without mHandler#post.
+        // TODO(crbug.com/41494086): Remove #invalidate after CaptureObservers respect a null
         // dirtyRect input.
         mHandler.post(
                 () -> {
@@ -475,7 +475,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         mBrowserControlsVisibilityManager.addObserver(mTransitionKickoffObserver);
     }
 
-    // TODO(crbug.com/1498252): Find a better place to set these top margins.
+    // TODO(crbug.com/40939440): Find a better place to set these top margins.
     private void updateTabStripHeightImpl() {
         // Remove the mBrowserControlsObserver, to make sure this method is called only once.
         if (mTransitionKickoffObserver != null) {

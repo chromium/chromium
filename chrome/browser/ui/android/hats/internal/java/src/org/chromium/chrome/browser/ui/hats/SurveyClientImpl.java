@@ -171,7 +171,7 @@ class SurveyClientImpl implements SurveyClient {
         mOnCrashUploadPermissionChangeCallback =
                 permitted -> {
                     if (!permitted) {
-                        // TODO(crbug/1482447): Dismiss the on going survey if possible.
+                        // TODO(crbug.com/40281825): Dismiss the on going survey if possible.
                         mUiDelegate.dismiss();
                     }
                 };

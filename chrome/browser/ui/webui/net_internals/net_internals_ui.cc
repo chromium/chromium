@@ -479,7 +479,7 @@ void NetInternalsMessageHandler::OnResolveHostDone(
       IPEndpointsToBaseList(resolved_addresses->endpoints());
   result.Set("resolved_addresses", std::move(resolved_addresses_list));
 
-  // TODO(crbug.com/1416410): Rename `endpoint_results_with_metadata` in the
+  // TODO(crbug.com/40256843): Rename `endpoint_results_with_metadata` in the
   // Mojo API to `alternative_endpoints`, to match the terminology used in the
   // specification.
   base::Value::List alternative_endpoints_list =

@@ -122,7 +122,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         mContext, R.drawable.ic_content_copy_black, true),
                                 OmniboxResourceProvider.getString(mContext, R.string.copy_link),
                                 () -> onCopyLink(suggestion)),
-                        // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
+                        // TODO(crbug.com/40697047): do not re-use bookmark_item_edit here.
                         new Action(
                                 OmniboxDrawableState.forSmallIcon(
                                         mContext, R.drawable.bookmark_edit_active, true),

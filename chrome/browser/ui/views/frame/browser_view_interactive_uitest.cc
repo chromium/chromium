@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
 }
 
-// TODO(crbug.com/897177): Only Aura platforms use the WindowActivated
+// TODO(crbug.com/40598906): Only Aura platforms use the WindowActivated
 // accessibility event. We need to harmonize the firing of accessibility events
 // between platforms.
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)

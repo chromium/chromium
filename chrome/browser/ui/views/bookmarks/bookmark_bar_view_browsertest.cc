@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-//  TODO(crbug.com/1006033): Test flaky on Mac and Windows.
+//  TODO(crbug.com/40648550): Test flaky on Mac and Windows.
 #define MAYBE_SecFetchSiteNoneFromNonEmptyTab \
   DISABLED_SecFetchSiteNoneFromNonEmptyTab
 #else
@@ -710,7 +710,7 @@ class PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig
 
 // This test verifies prerender cancellation triggered by mouseExited, and
 // another prerender can trigger normally after that.
-// TODO(https://crbug.com/1491974): Test times out.
+// TODO(crbug.com/40935967): Test times out.
 IN_PROC_BROWSER_TEST_F(
     PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig,
     DISABLED_PrerenderMouseExitedCancellationAndPrerenderActivation) {
@@ -827,7 +827,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
 }
 
-// TODO(crbug.com/1496255): Gardener 2023-20-26: Fails consistently on bots, and ~10% locally.
+// TODO(crbug.com/40286740): Gardener 2023-20-26: Fails consistently on bots,
+// and ~10% locally.
 IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
                        DISABLED_PrerenderNonHttps) {
   base::HistogramTester histogram_tester;

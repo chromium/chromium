@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
   helper_.CheckTabCreated(Number::kOne);
 }
 
-// TODO(crbug.com/1517467): Re-enable this test
+// TODO(crbug.com/41490445): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ManifestUpdateDisplayBrowser DISABLED_ManifestUpdateDisplayBrowser
 #else

@@ -178,7 +178,7 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
 }
 
 void IconWithBadgeImageSource::Draw(gfx::Canvas* canvas) {
-  // TODO(https://crbug.com/842856): There should be a cleaner delineation
+  // TODO(crbug.com/40576276): There should be a cleaner delineation
   // between what is drawn here and what is handled by the button itself.
 
   if (icon_.IsEmpty())

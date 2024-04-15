@@ -788,7 +788,7 @@ class ExtensionPolicyUITest : public PolicyUITest,
   }
 };
 
-// TODO(https://crbug.com/911661) Flaky time outs on Linux Chromium OS ASan
+// TODO(crbug.com/41429868) Flaky time outs on Linux Chromium OS ASan
 // LSan bot.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ExtensionLoadAndSendPolicy DISABLED_ExtensionLoadAndSendPolicy

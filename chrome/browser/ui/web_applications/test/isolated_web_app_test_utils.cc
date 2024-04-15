@@ -176,7 +176,7 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
                                          iframe_id, url, permissions_policy)));
 }
 
-// TODO(crbug.com/1459157): This function should probably be built on top of
+// TODO(crbug.com/40274184): This function should probably be built on top of
 // `test::InstallDummyWebApp`, instead of committing the update and triggering
 // `NotifyWebAppInstalled` manually. However, the `InstallFromInfoCommand` used
 // by that function does not currently allow setting the `WebApp::IsolationData`

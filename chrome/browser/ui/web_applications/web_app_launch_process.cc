@@ -122,7 +122,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
 
-  // TODO(crbug.com/1477991): Figure out why this is getting hit.
+  // TODO(crbug.com/40071115): Figure out why this is getting hit.
   if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) &&
       !is_url_in_system_web_app_scope) {
     SCOPED_CRASH_KEY_STRING256("crbug1477991", "launch_url", launch_url.spec());
@@ -231,7 +231,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
     // By opening a new window we've already performed part of a "disposition",
     // the only remaining thing for Navigate() to do is navigate the new window.
     return WindowOpenDisposition::CURRENT_TAB;
-    // TODO(crbug.com/1200944): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
+    // TODO(crbug.com/40762104): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
     // The window has no tabs so it doesn't make sense to open the "current"
     // tab. We use it anyway because it happens to work.
     // If NEW_FOREGROUND_TAB is used the the WindowCanOpenTabs() check fails
@@ -334,7 +334,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       GetNavigationDisposition(is_new_browser);
 
   if (share_target) {
-    // TODO(crbug.com/1213776): Expose share target in the LaunchParams and
+    // TODO(crbug.com/40768956): Expose share target in the LaunchParams and
     // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params = NavigateParamsForShareTarget(
         browser, *share_target, *params_->intent, params_->launch_files);

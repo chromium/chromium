@@ -177,7 +177,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id);
 // TODO(crbug.com/1459990): Remove once feature is rolled out. Both the granular
 // filling feature and the autocomplete delete apply the new styles. Therefore
 // we can remove this method once any is launched.
-// TODO(crbug.com/1489242): Remove once feature is rolled out.
+// TODO(crbug.com/40283949): Remove once feature is rolled out.
 bool ShouldApplyNewAutofillPopupStyle();
 
 // Depending on the current style (see `ShouldApplyNewAutofillPopupStyle()`),

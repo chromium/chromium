@@ -107,7 +107,7 @@ class BrowserNonClientFrameViewBrowserTest
 
   // Frame view may get reset after theme change, so always access from the
   // browser view and don't retain the pointer.
-  // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
+  // TODO(crbug.com/40656280): Make it not do this and only refresh the Widget.
   BrowserNonClientFrameView* GetAppFrameView() {
     return app_browser_view_->frame()->GetFrameView();
   }
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
-// TODO(crbug.com/1349592): Flaky on linux-wayland-rel and linux-lacros-rel
+// TODO(crbug.com/40855995): Flaky on linux-wayland-rel and linux-lacros-rel
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CustomTabBarIsVisibleInFullscreen \
   DISABLED_CustomTabBarIsVisibleInFullscreen
@@ -409,7 +409,7 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/1366531): Test is flaky.
+// TODO(crbug.com/40866991): Test is flaky.
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        DISABLED_SaveCardIcon) {

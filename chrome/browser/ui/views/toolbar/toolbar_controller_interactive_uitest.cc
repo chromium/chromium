@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                                 false));
 }
 
-// TODO(crbug.com/1522194): Flaky on multiple platforms.
+// TODO(crbug.com/41495158): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        DISABLED_DeactivatedActionItemsOverflow) {
   RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {

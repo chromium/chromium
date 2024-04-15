@@ -1279,7 +1279,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a textfield
 // requesting cardholder name if cardholder name is conflicting.
-// TODO(crbug.com/1245213)
+// TODO(crbug.com/40196025)
 // This test is not applicable for explicit address save dialogs.
 // The test relies on the following sequence of events: First a credit card is
 // imported first, but the upload fails. Subsequently, an address profile is
@@ -1952,7 +1952,8 @@ IN_PROC_BROWSER_TEST_F(
                          year_input()->GetSelectedIndex().value()));
 }
 
-// TODO(crbug.com/884817): Investigate combining local vs. upload tests using a
+// TODO(crbug.com/40594007): Investigate combining local vs. upload tests using
+// a
 //                         boolean to branch local vs. upload logic.
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.

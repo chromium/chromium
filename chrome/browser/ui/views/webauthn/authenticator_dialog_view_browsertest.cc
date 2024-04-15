@@ -105,7 +105,7 @@ class TestSheetView : public AuthenticatorRequestSheetView {
 class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
 #if BUILDFLAG(IS_WIN)
-  // TODO(https://crbug.com/1517923): Make this test work with webauth versions
+  // TODO(crbug.com/41490900): Make this test work with webauth versions
   // that support hybrid mode.
   void SetUpOnMainThread() override {
     DialogBrowserTest::SetUpOnMainThread();

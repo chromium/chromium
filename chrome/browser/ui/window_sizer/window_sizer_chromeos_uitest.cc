@@ -69,7 +69,7 @@ class WindowSizerTest : public InProcessBrowserTest {
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
-// TODO(crbug.com/1038342): Test is flaky on sanitizers.
+// TODO(crbug.com/40113148): Test is flaky on sanitizers.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_OpenBrowserUsingShelfItem DISABLED_OpenBrowserUsingShelfItem
 #else

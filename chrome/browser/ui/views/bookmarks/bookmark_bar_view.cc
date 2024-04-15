@@ -339,7 +339,8 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
   ButtonSeparatorView() {
     const int leading_padding = features::IsChromeRefresh2023() ? 8 : 4;
     const int trailing_padding = features::IsChromeRefresh2023() ? 8 : 3;
-    // TODO(1465541): Rely on kThickness once value is updated for refresh.
+    // TODO(crbug.com/40923523): Rely on kThickness once value is updated for
+    // refresh.
     separator_thickness_ = features::IsChromeRefresh2023()
                                ? kBookmarkBarSeparatorRefreshThickness
                                : kThickness;
@@ -1574,7 +1575,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     // Themify chrome:// favicons and the default one. This is similar to
     // code in the tabstrip.
     bool themify_icon = favicon::ShouldThemifyFavicon(node->url());
-    // TODO(crbug.com/1099602): BookmarkModel::GetFavicon should be updated to
+    // TODO(crbug.com/40137576): BookmarkModel::GetFavicon should be updated to
     // support ImageModel.
     auto favicon = ui::ImageModel::FromImage(bookmark_model_->GetFavicon(node));
     if (favicon.IsEmpty()) {
@@ -1643,7 +1644,7 @@ bool BookmarkBarView::BookmarkNodeRemovedImpl(const BookmarkNode* parent,
   views::LabelButton* button = bookmark_buttons_[index];
   bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
   // Set not visible before removing to advance focus if needed. See
-  // crbug.com/1183980. TODO(crbug.com/1189729): remove this workaround if
+  // crbug.com/1183980. TODO(crbug.com/40755614): remove this workaround if
   // FocusManager behavior is changed.
   button->SetVisible(false);
   RemoveChildViewT(button);

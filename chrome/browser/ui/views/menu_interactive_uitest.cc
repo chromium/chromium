@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   // This test is extremely flaky on WIN10_20H2, so disable.
-  // TODO(crbug.com/1225346) Investigate why it's so flaky on that version of
+  // TODO(crbug.com/40188371) Investigate why it's so flaky on that version of
   // Windows.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10_20H2) {

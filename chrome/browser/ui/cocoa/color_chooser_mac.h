@@ -26,7 +26,7 @@ class ColorChooserMac : public content::ColorChooser,
   // this by making calls to the passed in web_contents.
   // Open() returns a new instance after freeing the previous one (i.e. it does
   // not reuse the previous instance even if it still exists).
-  // TODO(https://crbug.com/1294002): Refactor ColorChooserMac and WebContents
+  // TODO(crbug.com/40213738): Refactor ColorChooserMac and WebContents
   // interactions
   static std::unique_ptr<ColorChooserMac> Create(
       content::WebContents* web_contents,

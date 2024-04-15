@@ -174,7 +174,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
   // proper view dimensions. TabStripModel::AddWebContents() contains similar
   // logic.
   //
-  // TODO(https://crbug.com/1040221): There should be a way to ask the browser
+  // TODO(crbug.com/40113932): There should be a way to ask the browser
   // to perform a layout so that size of the WebContents is right.
   gfx::Size size = browser->window()->GetContentsSize();
   // Fallback to the restore bounds if it's empty as the window is not shown

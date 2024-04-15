@@ -404,7 +404,7 @@ public abstract class ToolbarLayout extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        // TODO(crbug.com/1021877): lazy initialize progress bar.
+        // TODO(crbug.com/40657306): lazy initialize progress bar.
         // Posting adding progress bar can prevent parent view group from using a stale children
         // count, which can cause a crash in rare cases.
         post(this::addProgressBarToHierarchy);
@@ -807,11 +807,12 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Sets the toolbar hairline color, if the toolbar has a hairline below it.
+     *
      * @param toolbarColor The toolbar color to base the hairline color on.
      */
     protected void setToolbarHairlineColor(@ColorInt int toolbarColor) {
         final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
-        // Tests don't always set this up. TODO(https://crbug.com/1365954): Refactor this dep.
+        // Tests don't always set this up. TODO(crbug.com/40866629): Refactor this dep.
         if (shadow != null) {
             shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
         }
@@ -835,7 +836,7 @@ public abstract class ToolbarLayout extends FrameLayout
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
     }
 
-    // TODO(crbug.com/1512232): Rework the API if this method is called by multiple clients.
+    // TODO(crbug.com/41484813): Rework the API if this method is called by multiple clients.
     protected void keepControlsShownForAnimation() {
         // isShown() being false implies that the toolbar isn't visible. We don't want to force it
         // back into visibility just so that we can show an animation.

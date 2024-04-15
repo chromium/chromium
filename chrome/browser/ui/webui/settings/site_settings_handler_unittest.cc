@@ -2259,7 +2259,7 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
 
-// TODO(crbug.com/1076294): Test flakes on TSAN and ASAN.
+// TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
 #if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER)
 #define MAYBE_DefaultSettingSource DISABLED_DefaultSettingSource
 #else
@@ -4236,7 +4236,7 @@ class SiteSettingsHandlerChooserExceptionTest
     // deduplicating redundant exceptions, the user-granted exception display
     // name is used because it contains the device name.
     //
-    // TODO(https://crbug.com/1392442): Update SerialChooserContext and
+    // TODO(crbug.com/40247735): Update SerialChooserContext and
     // HidChooserContext to deduplicate redundant exceptions.
     switch (content_type()) {
       case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
@@ -4244,7 +4244,7 @@ class SiteSettingsHandlerChooserExceptionTest
         // each (device,origin) pair, so persistent-device shows up for each of
         // kChromiumOrigin and kGoogleOrigin.
         //
-        // TODO(https://crbug.com/1040174): No policy-granted exceptions are
+        // TODO(crbug.com/40667219): No policy-granted exceptions are
         // included because Web Bluetooth does not support granting device
         // permissions by policy.
         EXPECT_THAT(

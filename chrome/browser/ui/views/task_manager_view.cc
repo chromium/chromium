@@ -202,7 +202,7 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
 ui::ImageModel TaskManagerView::GetWindowIcon() {
   TRACE_EVENT0("ui", "TaskManagerView::GetWindowIcon");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
+  // TODO(crbug.com/40739545): Move apps::CreateStandardIconImage to some
   // where lower in the stack.
   return ui::ImageModel::FromImageSkia(apps::CreateStandardIconImage(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(

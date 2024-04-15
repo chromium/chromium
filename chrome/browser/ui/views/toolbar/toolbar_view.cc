@@ -833,7 +833,7 @@ void ToolbarView::Layout(PassKey) {
   // to the overflow state determined by the first pass.
   // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
-    // TODO(crbug.com/1499021) Move this logic into LayoutManager.
+    // TODO(crbug.com/40939901) Move this logic into LayoutManager.
     views::ManualLayoutUtil manual_layout_util(layout_manager_);
     const bool was_overflow_button_visible =
         toolbar_controller_->overflow_button()->GetVisible();
@@ -1019,7 +1019,7 @@ void ToolbarView::InitLayout() {
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     constexpr int kToolbarFlexOrderStart = 1;
 
-    // TODO(crbug.com/1479588): Ignore containers till issue addressed.
+    // TODO(crbug.com/40929989): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         ToolbarController::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,

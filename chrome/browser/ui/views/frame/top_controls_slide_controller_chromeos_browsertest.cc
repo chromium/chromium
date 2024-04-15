@@ -921,7 +921,7 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// TODO(1323318): Flaky under dbg and sanitizers.
+// TODO(crbug.com/40224646): Flaky under dbg and sanitizers.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_DisplayRotation DISABLED_DisplayRotation
 #else
@@ -1060,7 +1060,7 @@ class PageStateUpdateWaiter : content::WebContentsObserver {
 // Verifies that we ignore the shown ratios sent from widgets other than that of
 // the main frame (such as widgets of the drop-down menus in web pages).
 // https://crbug.com/891471.
-// TODO(1337418): Flaky for dbg and ASan builds.
+// TODO(crbug.com/40848345): Flaky for dbg and ASan builds.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_TestDropDowns DISABLED_TestDropDowns
 #else
@@ -1214,7 +1214,7 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   bool seen_intermediate_ratios_ = false;
 };
 
-// TODO(crbug.com/1055958): Test is flaky.
+// TODO(crbug.com/40676580): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                        DISABLED_TestIntermediateSliding) {
   ToggleTabletMode();
@@ -1481,7 +1481,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 }
 
 // Regression test for https://crbug.com/1163276.
-// TODO(crbug.com/1190997): Test times out flakily.
+// TODO(crbug.com/40174370): Test times out flakily.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
                        DISABLED_NoCrashOnNewTabWhileScrolling) {
   ToggleTabletMode();
@@ -1517,6 +1517,6 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
-// TODO(crbug.com/989131): Add test coverage that covers using WebUITabStrip.
+// TODO(crbug.com/40638200): Add test coverage that covers using WebUITabStrip.
 
 }  // namespace

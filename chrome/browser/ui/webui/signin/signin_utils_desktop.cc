@@ -68,7 +68,7 @@ SigninUIError CanOfferSignin(Profile* profile,
           // these profile hanging around until the next restart which could
           // block subsequent profile creation, resulting in
           // SigninUIError::AccountAlreadyUsedByAnotherProfile.
-          // TODO(crbug.com/1196290): This opens the possibility for getting
+          // TODO(crbug.com/40176394): This opens the possibility for getting
           // into a state with 2 profiles syncing to the same account:
           //  - start creating a new profile and sign-in,
           //  - enabled sync for the same account in another (existing) profile,

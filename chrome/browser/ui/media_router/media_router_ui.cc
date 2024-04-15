@@ -261,7 +261,7 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
 
   media_route_starter()->StartRoute(std::move(params));
 
-  // TODO(crbug.com/1015203): This call to UpdateSinks() was originally in
+  // TODO(crbug.com/40103608): This call to UpdateSinks() was originally in
   // StartCasting(), but it causes Chrome to crash when the desktop picker
   // dialog is shown, so for now we just don't call it in that case.  Move it
   // back once the problem is resolved.

@@ -81,7 +81,7 @@ AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
 
 AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 
-// TODO(crbug.com/1061633): Clean up this two functions and add helper for
+// TODO(crbug.com/40679714): Clean up this two functions and add helper for
 // shared code.
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     content::WebContents* web_contents,
@@ -135,7 +135,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
 
-  // TODO(crbug.com/1416270): Add Show() to AutofillBubbleBase and refactor
+  // TODO(crbug.com/40893424): Add Show() to AutofillBubbleBase and refactor
   // below.
   switch (bubble_type) {
     case IbanBubbleType::kLocalSave:

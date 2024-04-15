@@ -300,7 +300,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     Browser* app_browser =
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
-    // TODO(crbug.com/1191186): Register binder for BrowserInterfaceBroker
+    // TODO(crbug.com/40174440): Register binder for BrowserInterfaceBroker
     // during testing.
     app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
         loop.QuitClosure());

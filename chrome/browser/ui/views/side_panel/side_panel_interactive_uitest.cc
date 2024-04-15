@@ -251,7 +251,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
   }
 
   auto OpenBookmarksSidePanel() {
-    // TODO(crbug/1495440): When initially writing this step, opening the
+    // TODO(crbug.com/40286543): When initially writing this step, opening the
     // bookmarks submenu is flaky and sometimes causes a crash but the crash
     // doesn't seem reproducible anymore. Unsure if the crash was fixed so will
     // need to track down cause of crash if this step becomes flaky again.

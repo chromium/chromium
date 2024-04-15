@@ -154,7 +154,7 @@ base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
           .GetProfileAttributesWithPath(profile_->GetPath());
   if (entry) {
     name = base::UTF16ToUTF8(entry->GetLocalProfileName());
-    // TODO(crbug.com/710660): return chrome://theme/IDR_PROFILE_AVATAR_*
+    // TODO(crbug.com/40515148): return chrome://theme/IDR_PROFILE_AVATAR_*
     // and update theme_source.cc to get high res avatar icons. This does less
     // work here, sends less over IPC, and is more stable with returned results.
     int kAvatarIconSize = 40.f * web_ui()->GetDeviceScaleFactor();

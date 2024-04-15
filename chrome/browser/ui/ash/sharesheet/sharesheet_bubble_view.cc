@@ -139,7 +139,7 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
     observer_.Reset();
     // |this| may be destroyed here!
 
-    // TODO(crbug.com/1188938) Code clean up.
+    // TODO(crbug.com/40173521) Code clean up.
     // There should be something here telling SharesheetBubbleView
     // that its parent widget is closing and therefore it should
     // also close. Or we should try to inherit the widget changes from
@@ -183,7 +183,7 @@ SharesheetBubbleView::SharesheetBubbleView(
 }
 
 SharesheetBubbleView::~SharesheetBubbleView() {
-  // TODO(https://crbug.com/1249491): While this is harmless, it should not be
+  // TODO(crbug.com/40057260): While this is harmless, it should not be
   // necessary unless something fishy is happening with the behavior of layer
   // animations around widget teardown.
   if (close_callback_) {

@@ -313,7 +313,7 @@ public class WebContentsDarkModeMessageController {
                 new Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
-                        // TODO(crbug.com/1257260): Set clickable to false for title icon.
+                        // TODO(crbug.com/40200588): Set clickable to false for title icon.
                         if (buttonType == ButtonType.TITLE_ICON) return;
                         if (buttonType == ButtonType.POSITIVE) {
                             if (feedbackDialogEnabled) {
@@ -362,7 +362,8 @@ public class WebContentsDarkModeMessageController {
     /** Show feedback. */
     private static void showFeedback(
             HelpAndFeedbackLauncher launcher, Activity activity, String url) {
-        // TODO(crbug.com/1260152): Import ScreenshotMode instead of hardcoding value once new build
+        // TODO(crbug.com/40201746): Import ScreenshotMode instead of hardcoding value once new
+        // build
         //  target added.
         launcher.showFeedback(activity, url, null, /* ScreenshotMode.DEFAULT */ 0, null);
     }

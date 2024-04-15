@@ -90,7 +90,7 @@ public interface LocationBar {
     /**
      * Returns a (@link OmniboxStub}.
      *
-     * <p>TODO(crbug.com/1140287): Inject OmniboxStub where needed and remove this method.
+     * <p>TODO(crbug.com/40153747): Inject OmniboxStub where needed and remove this method.
      */
     @Nullable
     OmniboxStub getOmniboxStub();

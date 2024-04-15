@@ -730,9 +730,9 @@ static_library("ui") {
     deps += [ "//components/plus_addresses/resources:vector_icons" ]
   }
 
-  # TODO(crbug.com/925153): Remove this circular dependency.
+  # TODO(crbug.com/41437292): Remove this circular dependency.
   allow_circular_includes_from = [
-    # TODO(crbug.com/1158905): Remove this circular dependency.
+    # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/safe_browsing",
@@ -2188,10 +2188,10 @@ static_library("ui") {
     ]
 
     allow_circular_includes_from += [
-      # TODO(crbug.com/1030821): Resolve circular dependencies.
+      # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",
 
-      # TODO(crbug.com/1402145): Remove circular dependencies.
+      # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
     ]
 
@@ -4790,7 +4790,7 @@ static_library("ui") {
       ]
     }
 
-    # TODO(crbug.com/1239521): ozone_platform_x11 should not be leaked outside
+    # TODO(crbug.com/40193891): ozone_platform_x11 should not be leaked outside
     # ozone.
     if (use_dbus && ozone_platform_x11) {
       sources += [

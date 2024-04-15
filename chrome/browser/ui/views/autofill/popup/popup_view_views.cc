@@ -83,7 +83,7 @@ constexpr int kAutofillPopupWidthMultiple = 12;
 // (see crbug.com/1434330).
 constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 13;
 static_assert(kAutofillPopupMinWidth > 128);
-// TODO(crbug.com/831603): move handling the max width to the base class.
+// TODO(crbug.com/41382463): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
 
 // Preferred position relative to the control sides of the sub-popup.
@@ -201,7 +201,7 @@ bool PopupViewViews::Show(
   // Check for the special "warning bubble" mode: single warning suggestion
   // which content should be just announced to the user. Triggering
   // Event::kAlert on such a row makes screen readers read its content out.
-  // TODO(crbug.com/1480487): Consider supporting "warning mode" explicitly.
+  // TODO(crbug.com/40281426): Consider supporting "warning mode" explicitly.
   if (rows_.size() == 1 &&
       absl::holds_alternative<PopupWarningView*>(rows_[0])) {
     absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(

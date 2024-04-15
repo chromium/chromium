@@ -47,7 +47,7 @@ void SceneLayer::RemoveFromParent(JNIEnv* env,
 }
 
 void SceneLayer::OnDetach() {
-  // TODO(1129451): Determine if this needed with the exposure of
+  // TODO(crbug.com/40149397): Determine if this needed with the exposure of
   //                RemoveFromParent to java.
   layer()->RemoveFromParent();
 }

@@ -63,7 +63,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 namespace {
-// TODO(crbug.com/1431513): Consider inheriting from `ChromeOmniboxClient`
+// TODO(crbug.com/40263573): Consider inheriting from `ChromeOmniboxClient`
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
 class RealboxOmniboxClient final : public OmniboxClient {
  public:

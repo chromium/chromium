@@ -56,7 +56,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     // be hidden if the available space does not allow for them. Compact mode is
     // used in smaller windows (e.g. web apps) where
     // there may not be enough space to display the buttons.
-    // TODO(crbug.com/1155421): Remove kCompact in favour of kAutoHide once the
+    // TODO(crbug.com/40159931): Remove kCompact in favour of kAutoHide once the
     // |kDesktopPWAsElidedExtensionsMenu| flag is removed.
     kCompact,
     // In auto hide mode the menu icon is hidden until

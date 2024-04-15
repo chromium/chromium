@@ -215,7 +215,7 @@ void BrowserCaptionButtonContainer::UpdateButtons() {
 
   // In touch mode, windows cannot be taken out of fullscreen or tiled mode, so
   // the maximize/restore button should be disabled, unless the window is not
-  // maximized. TODO(crbug.com/1338572): Also check if the window is tiled.
+  // maximized. TODO(crbug.com/40849150): Also check if the window is tiled.
   const bool is_touch = ui::TouchUiController::Get()->touch_ui();
   restore_button_->SetEnabled(!is_touch);
   maximize_button_->SetEnabled(!is_touch || !is_maximized);

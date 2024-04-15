@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
 
 // Tabs remember focus with find-in-page box.
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocusFindInPage) {
-  // TODO(https://crbug.com/1446127): Re-enable when child widget focus manager
+  // TODO(crbug.com/40268465): Re-enable when child widget focus manager
   // relationship is fixed.
 #if BUILDFLAG(IS_MAC)
   if (base::mac::MacOSMajorVersion() >= 13) {
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 
 // Tests that the location bar is focusable when showing, which is the case in
 // popup windows.
-// TODO(crbug.com/1255472): Flaky on Linux.
+// TODO(crbug.com/40794922): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_PopupLocationBar DISABLED_PopupLocationBar
 #else

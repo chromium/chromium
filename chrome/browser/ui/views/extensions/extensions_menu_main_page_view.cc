@@ -507,7 +507,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     : browser_(browser), menu_handler_(menu_handler) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
-  // TODO(crbug.com/1413883): Consider making the height dynamic.
+  // TODO(crbug.com/40891805): Consider making the height dynamic.
   constexpr int kMaxExtensionButtonsHeightDp = 448;
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

@@ -189,7 +189,7 @@ TEST_F(PartialTranslateBubbleViewTest, SourceLanguageTabUpdatesViewState) {
             bubble_->GetViewState());
 }
 
-// TODO(crbug.com/1337110): For some reason calling bubble_->TabSelectedAt(1)
+// TODO(crbug.com/40848161): For some reason calling bubble_->TabSelectedAt(1)
 // before bubble_->TabSelectedAt(0) in a test causes TabSelectedAt(0) to be
 // run twice, resulting in the corresponding sample being logged twice. This
 // does not happen in production. For now, test this logging separately to avoid

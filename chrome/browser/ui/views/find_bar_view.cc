@@ -110,7 +110,8 @@ class FindBarMatchCountLabel : public views::Label {
       return;
 
     last_result_ = result;
-    // TODO(1499078): Get NO_RESULTS to be announced under Orca and ChromeVox.
+    // TODO(crbug.com/40939931): Get NO_RESULTS to be announced under Orca and
+    // ChromeVox.
     SetText(l10n_util::GetStringFUTF16(
         IDS_FIND_IN_PAGE_COUNT,
         base::FormatNumber(last_result_->active_match_ordinal()),

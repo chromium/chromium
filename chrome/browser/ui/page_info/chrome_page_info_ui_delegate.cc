@@ -103,7 +103,7 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
       break;
     }
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
-    // TODO(crbug.com/1227679): This string can probably be removed.
+    // TODO(crbug.com/40189322): This string can probably be removed.
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA: {
       if (!network::IsUrlPotentiallyTrustworthy(site_url_)) {
@@ -124,7 +124,7 @@ std::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser || !browser->is_type_normal()) {
-    // TODO(crbug.com/1435450): SidePanel is not available. Evaluate if we can
+    // TODO(crbug.com/40904874): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
     return std::nullopt;
   }
@@ -167,7 +167,7 @@ bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
   return true;
 }
 
-// TODO(crbug.com/1227074): Reconcile with LastTabStandingTracker.
+// TODO(crbug.com/40776829): Reconcile with LastTabStandingTracker.
 bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   const extensions::WindowControllerList::ControllerList& windows =
       extensions::WindowControllerList::GetInstance()->windows();
@@ -202,7 +202,7 @@ void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
     ContentSettingsType type) {
   switch (type) {
-    // TODO(crbug.com/1228243): Reconcile with SiteDetailsPermissionElement.
+    // TODO(crbug.com/40777580): Reconcile with SiteDetailsPermissionElement.
     case ContentSettingsType::ADS:
       return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE);
     default:

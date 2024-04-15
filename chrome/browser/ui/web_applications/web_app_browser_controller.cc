@@ -628,7 +628,7 @@ std::u16string WebAppBrowserController::GetTitle() const {
   // When showing the toolbar, display the name of the app, instead of the
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
-    // TODO(crbug.com/1051379): Use name instead of short_name.
+    // TODO(crbug.com/40118430): Use name instead of short_name.
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
   }
 

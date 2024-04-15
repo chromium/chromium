@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
 }
 
-// TODO(crbug.com/1184132): flaky test.
+// TODO(crbug.com/40752417): flaky test.
 IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
                        DISABLED_ReloadMultipleSadTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -21,7 +21,7 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-// TODO(https://crbug.com/896640): Remove this when the tab dragging
+// TODO(crbug.com/40598679): Remove this when the tab dragging
 // interactive_ui_tests pass on Wayland.
 BASE_DECLARE_FEATURE(kAllowWindowDragUsingSystemDragDrop);
 

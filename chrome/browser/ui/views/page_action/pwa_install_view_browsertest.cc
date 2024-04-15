@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
       "Manifest listing related chrome app"));
 }
 
-// TODO(crbug.com/1258062): Flaky.
+// TODO(crbug.com/40796769): Flaky.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        DISABLED_PwaIntallIphSiteEngagement) {
   GURL app_url = GetInstallableAppURL();

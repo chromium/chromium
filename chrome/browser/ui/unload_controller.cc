@@ -328,9 +328,9 @@ void UnloadController::TabAttachedImpl(content::WebContents* contents) {
 void UnloadController::TabDetachedImpl(content::WebContents* contents) {
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, false);
-  // TODO(crbug.com/1171997): This CHECK is only in place to diagnose a UAF bug.
-  // This is both used to confirm that a WebContents* isn't being removed from
-  // this set, and also if that hypothesis is correct turns a UAF into a
+  // TODO(crbug.com/40054609): This CHECK is only in place to diagnose a UAF
+  // bug. This is both used to confirm that a WebContents* isn't being removed
+  // from this set, and also if that hypothesis is correct turns a UAF into a
   // non-security crash.
   CHECK(tabs_needing_before_unload_fired_.find(contents) ==
         tabs_needing_before_unload_fired_.end());

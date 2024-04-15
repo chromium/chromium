@@ -217,7 +217,7 @@ class StartupBrowserCreator {
   friend class StartupBrowserCreatorImpl;
   friend class StartupBrowserCreatorInfobarsTest;
   friend class StartupBrowserCreatorInfobarsWithoutStartupWindowTest;
-  // TODO(crbug.com/642442): Remove this when first_run_tabs gets refactored.
+  // TODO(crbug.com/40482804): Remove this when first_run_tabs gets refactored.
   friend class StartupTabProviderImpl;
   friend class web_app::integration_tests::WebAppIntegrationTestDriver;
   FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);

@@ -521,7 +521,7 @@ class ScopedBrowserShower {
   ~ScopedBrowserShower() {
     BrowserWindow* window = params_->browser->window();
     if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
-      // TODO(crbug.com/1490267): investigate if SHOW_WINDOW_INACTIVE needs to
+      // TODO(crbug.com/40284685): investigate if SHOW_WINDOW_INACTIVE needs to
       // be supported for tab modal popups.
       CHECK_EQ(params_->is_tab_modal_popup, false);
       window->ShowInactive();
@@ -635,7 +635,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 
   // Open System Apps in their standalone window if necessary.
-  // TODO(crbug.com/1096345): Remove this code after we integrate with intent
+  // TODO(crbug.com/40136163): Remove this code after we integrate with intent
   // handling.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::optional<ash::SystemWebAppType> capturing_system_app_type =

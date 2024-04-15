@@ -69,7 +69,7 @@ class BubbleButtonController : public views::ButtonController {
       : views::ButtonController(button, std::move(delegate)),
         bubble_owner_(bubble_owner) {}
 
-  // TODO(crbug.com/1270699): Add keyboard support.
+  // TODO(crbug.com/40205454): Add keyboard support.
   void OnMouseEntered(const ui::MouseEvent& event) override {
     if (bubble_owner_->IsBubbleShowing() || bubble_owner_->IsAnimating()) {
       return;
@@ -115,8 +115,8 @@ void ChipController::OnPermissionRequestManagerDestructed() {
 
 void ChipController::OnNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1416493): Refactor this so that this observer method is only
-  // called when a non-same-document navigation starts in the primary main
+  // TODO(crbug.com/40256881): Refactor this so that this observer method is
+  // only called when a non-same-document navigation starts in the primary main
   // frame.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {

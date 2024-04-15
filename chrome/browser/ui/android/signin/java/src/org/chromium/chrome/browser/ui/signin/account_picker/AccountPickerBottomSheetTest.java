@@ -1155,7 +1155,7 @@ public class AccountPickerBottomSheetTest {
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
 
-        // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
+        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(withText(NEW_ACCOUNT_EMAIL));
         checkCollapsedAccountListForWebSignin(NEW_ACCOUNT_EMAIL, null, null);
         accountConsistencyHistogram.assertExpected();
@@ -1394,7 +1394,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void assertSignInProceeded(View bottomSheetView) {
-        // TODO(https://crbug.com/1116348): Check AccountPickerDelegate.signIn() is called
+        // TODO(crbug.com/40144708): Check AccountPickerDelegate.signIn() is called
         // after solving AsyncTask wait problem in espresso
         // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
         // bot with DisableAnimationsTestRule, we hide the ProgressBar manually here to enable

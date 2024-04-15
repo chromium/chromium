@@ -1693,7 +1693,7 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_icon_loaders_for_profile.emplace_back(
           std::make_unique<AppServiceShortcutIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM,
-              // TODO(crbug.com/1480423): Update the size after the effects
+              // TODO(crbug.com/40281395): Update the size after the effects
               // visual done.
               extension_misc::EXTENSION_ICON_SMALLISH, this));
     }

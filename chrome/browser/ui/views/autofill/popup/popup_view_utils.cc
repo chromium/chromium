@@ -246,7 +246,8 @@ bool CanShowDropdownHere(int item_height,
       element_bounds.bottom() > content_area_bounds.y() &&
       element_bounds.bottom() <= content_area_bounds.bottom();
 
-  // TODO(crbug.com/1455336): Test the space on the left/right or forbid it explicitly.
+  // TODO(crbug.com/40272733): Test the space on the left/right or forbid it
+  // explicitly.
   return (enough_space_for_one_item_in_content_area_above_element &&
           element_top_is_within_content_area_bounds) ||
          (enough_space_for_one_item_in_content_area_below_element &&

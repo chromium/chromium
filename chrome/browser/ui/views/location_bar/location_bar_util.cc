@@ -19,7 +19,7 @@
 void ConfigureInkDropForRefresh2023(views::View* const view,
                                     const ChromeColorIds hover_color_id,
                                     const ChromeColorIds ripple_color_id) {
-  // TODO(crbug.com/1450984): Figure out if one of these are redundant.
+  // TODO(crbug.com/40065225): Figure out if one of these are redundant.
   CHECK(features::CustomizeChromeSupportsChromeRefresh2023() &&
         (features::IsChromeRefresh2023() ||
          OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||

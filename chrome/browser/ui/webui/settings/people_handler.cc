@@ -229,7 +229,7 @@ const char PeopleHandler::kConfigurePageStatus[] = "configure";
 const char PeopleHandler::kDonePageStatus[] = "done";
 const char PeopleHandler::kPassphraseFailedPageStatus[] = "passphraseFailed";
 
-// TODO(crbug/1420597): Delete parts needed only by PasswordManager once
+// TODO(crbug.com/40258836): Delete parts needed only by PasswordManager once
 // kPasswordManagerRedesign is launched.
 PeopleHandler::PeopleHandler(Profile* profile)
     : profile_(profile), configuring_sync_(false) {}
@@ -954,7 +954,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
 
 void PeopleHandler::OnStateChanged(syncer::SyncService* sync_service) {
   UpdateSyncStatus();
-  // TODO(crbug.com/1106764): Re-evaluate marking sync as configuring here,
+  // TODO(crbug.com/40140566): Re-evaluate marking sync as configuring here,
   // since this gets called whenever SyncService changes state. Inline
   // MaybeMarkSyncConfiguring() then.
   MaybeMarkSyncConfiguring();
@@ -1015,7 +1015,7 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
           identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   const SyncStatusLabels status_labels = GetSyncStatusLabels(profile_);
-  // TODO(crbug.com/1027467): Consider unifying some of the fields below to
+  // TODO(crbug.com/40660240): Consider unifying some of the fields below to
   // avoid redundancy.
   sync_status.Set("statusText",
                   GetStringUTF16(status_labels.status_label_string_id));
@@ -1033,7 +1033,7 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
                   GetSyncErrorAction(status_labels.action_type));
 
   sync_status.Set("managed", disallowed_by_policy);
-  // TODO(crbug.com/1171279): audit js usages of |disabled| and |signedIn|
+  // TODO(crbug.com/40745012): audit js usages of |disabled| and |signedIn|
   // fields, update it to use the right field, comments around and conditions
   // here. Perhaps removal of one of these to fields is possible.
   sync_status.Set("disabled", !service || disallowed_by_policy);

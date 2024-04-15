@@ -564,7 +564,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
     bool deleted) {
   // The permissions data for device APIs will always appear even if the device
   // is not currently conncted to the system.
-  // TODO(https://crbug.com/1048860): Check the connected status of devices and
+  // TODO(crbug.com/40672237): Check the connected status of devices and
   // change the icon to one that reflects that status.
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (object.ui_info->content_settings_type) {

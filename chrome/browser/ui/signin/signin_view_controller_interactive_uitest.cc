@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 // Tests that the confirm button is focused by default in the sync confirmation
 // dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
-                       // TODO(crbug.com/1474306): Re-enable this test
+                       // TODO(crbug.com/40927355): Re-enable this test
                        DISABLED_SyncConfirmationDefaultFocus) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // This test runs in the main profile.
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 
 // Tests that the confirm button is focused by default in the enterprise
 // interception dialog.
-// TODO(crbug.com/1503125): Enable the flaky test.
+// TODO(crbug.com/40943548): Enable the flaky test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_EnterpriseConfirmationDefaultFocus \
   DISABLED_EnterpriseConfirmationDefaultFocus

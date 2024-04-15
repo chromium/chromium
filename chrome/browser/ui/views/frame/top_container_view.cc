@@ -24,8 +24,8 @@ TopContainerView::~TopContainerView() = default;
 void TopContainerView::OnImmersiveRevealUpdated() {
   SchedulePaint();
 
-  // TODO(crbug.com/1516979): Remove this once the View::SchedulePaint() API has
-  // been updated to correctly invalidate layer-backed child views.
+  // TODO(crbug.com/41489962): Remove this once the View::SchedulePaint() API
+  // has been updated to correctly invalidate layer-backed child views.
   for (auto& child : children()) {
     if (child->layer()) {
       child->layer()->SchedulePaint(

@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                            /*wait_for_animation=*/false);
 }
 
-// TODO(crbug.com/1468503): Fix and re-enable.
+// TODO(crbug.com/40924925): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                        DISABLED_InactiveBrowserWindow) {
   std::string a_method_name;

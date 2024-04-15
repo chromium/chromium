@@ -34,7 +34,7 @@ constexpr gfx::Rect kPreviewRect(kPadding,
                                  kPadding,
                                  kPreviewWidth,
                                  kPreviewHeight);
-// TODO(crbug.com/1447461): Align favicon height properly with label.
+// TODO(crbug.com/40268977): Align favicon height properly with label.
 constexpr gfx::Rect kFaviconRect(kPadding,
                                  kPreviewRect.bottom() + kPadding,
                                  kFaviconWidth,
@@ -121,7 +121,7 @@ void ShareThisTabSourceView::StopRefreshing() {
 
 gfx::Size ShareThisTabSourceView::CalculatePreferredSize() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1428878): Use distances from LayoutProvider
+  // TODO(crbug.com/40262420): Use distances from LayoutProvider
   return gfx::Size(kPreviewWidth + 2 * kPadding,
                    kTabTitleMaxRect.bottom() + kPadding);
 }

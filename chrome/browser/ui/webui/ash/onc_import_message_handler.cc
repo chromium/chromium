@@ -66,7 +66,7 @@ void OncImportMessageHandler::OnImportONC(const base::Value::List& list) {
   std::string onc_blob = list[1].GetString();
   AllowJavascript();
 
-  // TODO(https://crbug.com/1186373): Pass the `NssCertDatabaseGetter` to
+  // TODO(crbug.com/40753707): Pass the `NssCertDatabaseGetter` to
   // the `CertImporter`. This is not unsafe if the profile shuts down during
   // this operation.
   content::GetIOThreadTaskRunner({})->PostTask(

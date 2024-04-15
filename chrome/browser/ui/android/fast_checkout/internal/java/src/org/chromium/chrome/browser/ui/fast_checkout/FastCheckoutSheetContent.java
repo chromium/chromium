@@ -171,7 +171,7 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
     }
 
     private int getDesiredDetailSheetHeight() {
-        // TODO(crbug.com/1334642): Investigate measuring heights dynamically instead of using
+        // TODO(crbug.com/40228235): Investigate measuring heights dynamically instead of using
         // hard-coded values.
         int height = getDimensionPixelSize(R.dimen.fast_checkout_detail_sheet_header_height);
         if (isAutofillProfileScreen()) {

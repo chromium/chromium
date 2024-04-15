@@ -211,7 +211,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
             IntentPickerBubbleView::ViewId::kRememberCheckbox));
   }
 
-  // TODO(crbug.com/1265991): There should be an explicit signal we can wait on
+  // TODO(crbug.com/40203946): There should be an explicit signal we can wait on
   // rather than assuming the AppService will be started after RunUntilIdle.
   void WaitForAppService() { base::RunLoop().RunUntilIdle(); }
 

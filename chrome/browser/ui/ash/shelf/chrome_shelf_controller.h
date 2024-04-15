@@ -450,7 +450,7 @@ class ChromeShelfController
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
-  // TODO(crbug.com/836128): Remove this once SystemWebApps are enabled by
+  // TODO(crbug.com/40573204): Remove this once SystemWebApps are enabled by
   // default.
   // An observer that manages the shelf title and icon for settings windows.
   std::unique_ptr<SettingsWindowObserver> settings_window_observer_;

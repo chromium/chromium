@@ -122,7 +122,7 @@ INSTANTIATE_TEST_SUITE_P(
                 {{::features::kChromeRefresh2023, {}}})}),
     GetTestName);
 
-// TODO(crbug.com/1473417): Disabled because this is flaky on the bots, but not
+// TODO(crbug.com/40927006): Disabled because this is flaky on the bots, but not
 // locally. Based on the logs, somehow the browser window becomes inactive
 // during the test which causes the bubble not to show.
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewPixelBrowserTest,

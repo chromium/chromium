@@ -23,7 +23,7 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
     : public AndroidBrowserTest {
  public:
   // Explicitly avoiding the migration logic because the user must be logged in.
-  // TODO(crbug.com/1421056): figure out if the user can be logged in from an
+  // TODO(crbug.com/40259080): figure out if the user can be logged in from an
   // Android browser test.
   static constexpr bool kNotMigrationToAccount = false;
 

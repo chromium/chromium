@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
             tab_strip_model->GetWebContentsAt(2)->GetVisibleURL());
 }
 
-// TODO(https://crbug.com/1335515): Flaky.
+// TODO(crbug.com/40847129): Flaky.
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        DISABLED_OpenVisitUrlsInTabGroupHardCap) {
   auto* tab_strip_model = browser()->tab_strip_model();

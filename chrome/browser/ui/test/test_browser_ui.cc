@@ -32,7 +32,7 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-// TODO(https://crbug.com/958242) support Mac for pixel tests.
+// TODO(crbug.com/40625383) support Mac for pixel tests.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -80,7 +80,7 @@ TestBrowserUi::TestBrowserUi() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-  // TODO(1429079): Make these pass with x64 win magic numbers.
+  // TODO(crbug.com/40262522): Make these pass with x64 win magic numbers.
   SetPixelMatchAlgorithm(
       std::make_unique<ui::test::FuzzySkiaGoldMatchingAlgorithm>(
           /*max_different_pixels=*/1000, /*pixel_delta_threshold=*/255 * 3));
@@ -136,7 +136,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
       // For the CR2023 screenshots add a "CR2023" prefix so that they are
       // compared exclusively with previous CR2023 screenshots. We would like
       // Skia Gold to catch regressions in both CR2023 and non-CR2023.
-      // TODO(crbug.com/1444466): remove this after CR2023 launch.
+      // TODO(crbug.com/40267716): remove this after CR2023 launch.
       features::IsChromeRefresh2023() ? "CR2023_" + screenshot_prefix
                                       : screenshot_prefix);
   bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,

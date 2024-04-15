@@ -51,7 +51,8 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   void ExecuteManagePasswordsCommand();
 
   // Put the controller, icon, and bubble into a managing-password state.
-  // TODO(1518786): Make password form url stable without having to override it.
+  // TODO(crbug.com/41491760): Make password form url stable without having to
+  // override it.
   void SetupManagingPasswords(const GURL& password_form_url = GURL());
 
   // Put the controller, icon, and bubble into the confirmation state.

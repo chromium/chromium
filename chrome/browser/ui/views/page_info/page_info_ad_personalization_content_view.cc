@@ -82,7 +82,7 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
           views::style::STYLE_SECONDARY));
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(crbug.com/1378703): Figure out why without additional horizontal
+  // TODO(crbug.com/40244046): Figure out why without additional horizontal
   // margin the size is being calculated incorrectly and the topics labels are
   // being cut off.
   auto label_margin = gfx::Insets::VH(0, 1);

@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest, MAYBE_BasicTest) {
   EXPECT_TRUE(IsShowingWebContentsModalDialog(web_contents));
 }
 
-// TODO(https://crbug.com/1020038): Crashy on Linux
+// TODO(crbug.com/40656271): Crashy on Linux
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReleaseWebContents DISABLED_ReleaseWebContents
 #else

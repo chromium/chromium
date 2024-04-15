@@ -1542,7 +1542,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 // shutting down, and then launching with kNoStartupWindow doesn't restore
 // the previously opened profiles.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(https://crbug.com/1196684): enable this test on Lacros.
+// TODO(crbug.com/40176564): enable this test on Lacros.
 #define MAYBE_RestoreWithNoStartupWindow DISABLED_RestoreWithNoStartupWindow
 #else
 #define MAYBE_RestoreWithNoStartupWindow RestoreWithNoStartupWindow
@@ -4235,7 +4235,7 @@ INSTANTIATE_TEST_SUITE_P(
       return name;
     });
 
-// TODO(crbug.com/1439821): Mocking the logger appears to not work correctly on
+// TODO(crbug.com/40265712): Mocking the logger appears to not work correctly on
 // Windows. Investigate why it is not working and enable the test on Windows.
 #if !BUILDFLAG(IS_WIN)
 class StartupBrowserCreatorIwaCommandLineInstallProfilePickerErrorTest

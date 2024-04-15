@@ -47,7 +47,7 @@ class JavaScriptTabModalDialogViewViews
   // views::View:
   void AddedToWidget() override;
 
-  // TODO(crbug.com/1330353): We cannot use unique_ptr because ownership of
+  // TODO(crbug.com/40843165): We cannot use unique_ptr because ownership of
   // this object gets passed to Views.
   static JavaScriptTabModalDialogViewViews* CreateAlertDialogForTesting(
       Browser* browser,

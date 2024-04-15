@@ -4073,7 +4073,7 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
   ManifestUpdateManager& manifest_update_manager =
       provider()->manifest_update_manager();
   WebAppCommandManager& command_manager = provider()->command_manager();
-  // TODO(crbug.com/1376155): Figure out a better way of streamlining
+  // TODO(crbug.com/40873503): Figure out a better way of streamlining
   //  the waiting instead of doing it separately for manifest updates
   //  and commands. This fails WebAppIntegrationTestDriver::CloseCustomToolbar()
   //  because DidFinishLoad() is not triggered for a backwards navigation, thus

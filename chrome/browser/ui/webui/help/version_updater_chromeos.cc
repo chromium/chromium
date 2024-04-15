@@ -222,7 +222,7 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
     // One time permission is set successfully, so we can proceed to update.
     CheckForUpdate(callback_, VersionUpdater::PromoteCallback());
   } else {
-    // TODO(https://crbug.com/927452): invoke callback to signal about page to
+    // TODO(crbug.com/40612027): invoke callback to signal about page to
     // show appropriate error message.
     LOG(ERROR) << "Error setting update over cellular one time permission.";
     callback_.Run(VersionUpdater::FAILED, 0, false, false, std::string(), 0,

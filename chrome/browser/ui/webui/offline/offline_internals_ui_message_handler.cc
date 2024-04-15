@@ -32,7 +32,7 @@
 #include "net/base/network_change_notifier.h"
 
 namespace offline_internals {
-// TODO(crbug.com/1424920): Remove all prefetch references from the internals
+// TODO(crbug.com/40260641): Remove all prefetch references from the internals
 // page.
 
 namespace {

@@ -110,7 +110,7 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
       account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
 }
 
-// TODO(crbug.com/1447913): Replace TableLayout with BoxLayout or FlexLayout,
+// TODO(crbug.com/40914008): Replace TableLayout with BoxLayout or FlexLayout,
 // since this view is not tabular data.
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
     const std::u16string& window_title,
@@ -145,7 +145,8 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
           .height();
   icon_view_ptr->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
-  // TODO(crbug.com/873140): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the right
+  // TODO(crbug.com/41407386): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the
+  // right
   //                         choice here, but INSETS_DIALOG_TITLE gives too much
   //                         padding. Create a new Harmony DistanceMetric?
   const int separator_horizontal_padding =

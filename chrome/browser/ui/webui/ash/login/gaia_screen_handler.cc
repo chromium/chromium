@@ -228,7 +228,7 @@ void UpdateAuthParams(base::Value::Dict& params) {
     params.Set("flow", "nosignup");
 }
 
-// TODO(https://crbug.com/1364455)
+// TODO(crbug.com/40239091)
 // Make this function fallible when version_loader::GetVersion()
 // returns an optional that is empty
 void GetVersionAndConsent(std::string* out_version, bool* out_consent) {

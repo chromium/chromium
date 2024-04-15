@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
   EXPECT_FALSE(GetLinkCapturingInfoBar(web_contents.get()));
 }
 
-// TODO(https://crbug.com/1492121): Flaky on all platforms.
+// TODO(crbug.com/40936015): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
                        DISABLED_InfoBarHiddenAfterDismissals) {
   ASSERT_TRUE(embedded_test_server()->Start());

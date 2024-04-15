@@ -28,7 +28,7 @@ import org.chromium.ui.widget.RectProvider;
  * Root component for the {@link HomeButton} on the toolbar. Currently owns context menu for the
  * home button.
  */
-// TODO(crbug.com/1056422): Fix the visibility bug on NTP.
+// TODO(crbug.com/40676825): Fix the visibility bug on NTP.
 public class HomeButtonCoordinator {
     private static final int ID_SETTINGS = 0;
 

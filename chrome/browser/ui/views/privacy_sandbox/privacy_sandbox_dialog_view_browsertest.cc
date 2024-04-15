@@ -63,7 +63,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
         waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
 
-    // TODO(crbug.com/1510925): Waiting for the document to exist before
+    // TODO(crbug.com/41483512): Waiting for the document to exist before
     // performing the scroll action fixes the flakiness but we should try find a
     // better approach.
     ASSERT_TRUE(base::test::RunUntil([&] {
@@ -86,7 +86,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-// TODO(crbug.com/1511604): Re-enable the test.
+// TODO(crbug.com/41484188): Re-enable the test.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
 #else

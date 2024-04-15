@@ -200,7 +200,7 @@ public class LocationBarCoordinator
                         baseChromeLayout);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
-        // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
+        // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
         mLocationBarMediator =
                 new LocationBarMediator(

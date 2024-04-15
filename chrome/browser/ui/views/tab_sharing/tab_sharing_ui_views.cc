@@ -353,7 +353,7 @@ void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
 
 void TabSharingUIViews::WebContentsDestroyed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1276816): Prevent StopSharing() from interacting with
+  // TODO(crbug.com/40207587): Prevent StopSharing() from interacting with
   // |shared_tab_| while it is being destroyed.
   StopSharing();
 }

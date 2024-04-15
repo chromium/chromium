@@ -77,7 +77,7 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTestBase
 // CardUnmaskAuthenticationSelectionDialogBrowserTestBase. Should be used to
 // test the specific functionality of a certain type of challenge option being
 // selected, instead of the overall functionality of the dialog.
-// TODO(crbug.com/1392940): Add browser tests for specific SMS OTP challenge
+// TODO(crbug.com/40247985): Add browser tests for specific SMS OTP challenge
 // selection logging.
 class CardUnmaskAuthenticationSelectionDialogBrowserTestNonParameterized
     : public CardUnmaskAuthenticationSelectionDialogBrowserTestBase {

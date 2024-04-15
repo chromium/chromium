@@ -404,7 +404,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
 
   void SetUpOnMainThread() override {
 #if !BUILDFLAG(IS_MAC)
-    // TODO(https://crbug.com/1454297): OsIntegrationTestOverrideImpl seems
+    // TODO(crbug.com/40272260): OsIntegrationTestOverrideImpl seems
     // to interfere with Kombucha on the Mac.
     base::ScopedAllowBlockingForTesting allow_blocking;
     override_registration_ =

@@ -199,7 +199,7 @@ std::string NewTabUI::NewTabHTMLSource::GetContentSecurityPolicy(
   } else if (directive ==
                  network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
              directive == network::mojom::CSPDirectiveName::TrustedTypes) {
-    // TODO(crbug.com/1098687): Trusted Type New Tab Page
+    // TODO(crbug.com/40137143): Trusted Type New Tab Page
     // This removes require-trusted-types-for and trusted-types directives
     // from the CSP header.
     return std::string();

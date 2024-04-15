@@ -238,7 +238,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
                     ->get_chip_controller_for_testing()
                     ->should_expand_for_testing());
     EXPECT_TRUE(chip_->is_animating());
-    // TODO(crbug.com/1232460): Verify that PermissionChipView::is_animating is
+    // TODO(crbug.com/40780269): Verify that PermissionChipView::is_animating is
     // true. Right now the value is flaky.
     EXPECT_EQ(PermissionChipTheme::kNormalVisibility,
               chip_->get_theme_for_testing());

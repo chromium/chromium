@@ -464,7 +464,7 @@ BASE_FEATURE(kWebUITabStrip,
 
 // The default value of this flag is aligned with platform behavior to handle
 // context menu with touch.
-// TODO(crbug.com/1257626): Enable this flag for all platforms after launch.
+// TODO(crbug.com/40796475): Enable this flag for all platforms after launch.
 BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
              "WebUITabStripContextMenuAfterTap",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -515,7 +515,7 @@ int GetLocationPermissionsExperimentLabelPromptLimit() {
 #endif
 
 // Reduce resource usage when view is hidden by not rendering loading animation.
-// TODO(crbug.com/1322081): Clean up the feature in M117.
+// TODO(crbug.com/40224168): Clean up the feature in M117.
 BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
              "StopLoadingAnimationForHiddenWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);

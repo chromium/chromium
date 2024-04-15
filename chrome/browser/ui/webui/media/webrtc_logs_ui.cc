@@ -327,7 +327,7 @@ base::Value WebRtcLogsDOMHandler::EventLogUploadInfoToValue(
     const UploadList::UploadInfo& info) const {
   switch (info.state) {
     case UploadList::UploadInfo::State::Pending:
-      // TODO(crbug.com/775415): Display actively-written logs differently
+      // TODO(crbug.com/40545136): Display actively-written logs differently
       // than fully captured pending logs.
       return info.upload_time.is_null() ? FromPendingLog(info)
                                         : FromActivelyUploadedLog(info);

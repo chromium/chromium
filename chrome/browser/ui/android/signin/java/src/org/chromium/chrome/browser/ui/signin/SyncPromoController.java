@@ -589,7 +589,8 @@ public class SyncPromoController {
         recordShowCountHistogram(UserAction.SHOWN);
     }
 
-    // TODO(crbug.com/1323197): we can share more code between setupColdState() and setupHotState().
+    // TODO(crbug.com/40838474): we can share more code between setupColdState() and
+    // setupHotState().
     // The difference between the 2 will just be the avatar and the behavior of the primary button.
     private void setupColdState(PersonalizedSigninPromoView view) {
         final Context context = view.getContext();

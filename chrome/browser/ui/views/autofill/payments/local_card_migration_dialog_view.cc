@@ -458,7 +458,7 @@ void LocalCardMigrationDialogView::OnCardCheckboxToggled() {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, GetEnableOkButton());
 }
 
-// TODO(crbug.com/913571): Figure out a way to avoid two consecutive layouts.
+// TODO(crbug.com/41430966): Figure out a way to avoid two consecutive layouts.
 void LocalCardMigrationDialogView::UpdateLayout() {
   DeprecatedLayoutImmediately();
   // Since the dialog does not have anchor view or arrow, cannot use

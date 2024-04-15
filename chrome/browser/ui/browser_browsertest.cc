@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
   alert->view()->AcceptAppModalDialog();
 }
 
-// TODO(crbug.com/997344): Test this with implicitly-created links.
+// TODO(crbug.com/40641945): Test this with implicitly-created links.
 IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1380,10 +1380,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(1126339): fix the way how exo creates accelerated widgets. At the
-// moment, they are created only after the client attaches a buffer to a surface,
-// which is incorrect and results in the "[destroyed object]: error 1: popup
-// parent not constructed" error.
+// TODO(crbug.com/40148102): fix the way how exo creates accelerated widgets. At
+// the moment, they are created only after the client attaches a buffer to a
+// surface, which is incorrect and results in the "[destroyed object]: error 1:
+// popup parent not constructed" error.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CloseWithAppMenuOpen DISABLED_CloseWithAppMenuOpen
 #else
@@ -1468,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
   }
 }
 
-// TODO(crbug.com/1394195) This test is flaky on asan lacros and may crash ash.
+// TODO(crbug.com/40248487) This test is flaky on asan lacros and may crash ash.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_StartMinimized DISABLED_StartMinimized
 #else

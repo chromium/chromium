@@ -426,7 +426,7 @@ SkColor AppIconColorCache::GetLightVibrantColorForApp(
 
   SkColor light_vibrant_color =
       CalculateLightVibrantColor(icon).value_or(kDefaultLightVibrantColor);
-  // TODO(crbug.com/1197249): Find a way to evict stale items in the
+  // TODO(crbug.com/40176836): Find a way to evict stale items in the
   // AppIconColorCache.
   vibrant_colors_by_ids_[app_id] = light_vibrant_color;
 

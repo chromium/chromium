@@ -225,7 +225,7 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   // necessary because we don't want to return true if the custom MIME type is
   // there but the mouse is not over the tab strip region, and we don't know the
   // current mouse location.
-  // TODO(crbug.com/1307594): This is a smoking gun code smell;
+  // TODO(crbug.com/40828528): This is a smoking gun code smell;
   // TabStripRegionView and Toolbar have different affordances, so they should
   // separately override the drag&drop methods.
   if (data.HasCustomFormat(

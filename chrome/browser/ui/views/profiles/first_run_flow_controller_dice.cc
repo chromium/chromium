@@ -436,7 +436,7 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   if (is_core_flow_completed) {
     RunFinishFlowCallback();
   } else {
-    // TODO(crbug.com/1466803): Revisit the enum value name for kQuitAtEnd.
+    // TODO(crbug.com/40276516): Revisit the enum value name for kQuitAtEnd.
     std::move(first_run_exited_callback_)
         .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
   }

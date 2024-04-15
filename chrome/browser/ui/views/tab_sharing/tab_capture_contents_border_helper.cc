@@ -108,7 +108,7 @@ void TabCaptureContentsBorderHelper::OnCapturerRemoved(
     CaptureSessionId capture_session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/1294187): Destroy widget when the size of
+  // TODO(crbug.com/40213800): Destroy widget when the size of
   // `session_to_bounds_` hits 0. Same for `this`.
   session_to_bounds_.erase(capture_session_id);
 

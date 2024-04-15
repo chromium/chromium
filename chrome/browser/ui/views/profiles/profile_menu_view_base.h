@@ -162,7 +162,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   Browser* browser() const { return browser_; }
 
   // Return maximal height for the view after which it becomes scrollable.
-  // TODO(crbug.com/870303): remove when a general solution is available.
+  // TODO(crbug.com/40587757): remove when a general solution is available.
   int GetMaxHeight() const;
 
   views::Button* anchor_button() const { return anchor_button_; }

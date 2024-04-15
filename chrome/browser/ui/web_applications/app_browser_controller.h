@@ -197,8 +197,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   virtual bool IsIsolatedWebApp() const;
 
-  // TODO(crbug.com/1316117): Remove this mock when `WebAppBrowserTest`s support
-  // creating Isolated Web Apps.
+  // TODO(crbug.com/40222062): Remove this mock when `WebAppBrowserTest`s
+  // support creating Isolated Web Apps.
   virtual void SetIsolatedWebAppTrueForTesting();
 
   // Returns true when the app's effective display mode is

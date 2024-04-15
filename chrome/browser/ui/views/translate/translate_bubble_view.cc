@@ -213,7 +213,7 @@ void TranslateBubbleView::ResetLanguage() {
 
 void TranslateBubbleView::WindowClosing() {
   // The operations for |model_| are valid only when a WebContents is alive.
-  // TODO(crbug.com/320497): TranslateBubbleViewModel(Impl) should not hold a
+  // TODO(crbug.com/40341719): TranslateBubbleViewModel(Impl) should not hold a
   // WebContents as a member variable because the WebContents might be destroyed
   // while the TranslateBubbleViewModel(Impl) is still alive. Instead,
   // TranslateBubbleViewModel should take a reference of a WebContents at each
@@ -634,8 +634,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
   return view;
 }
 
-// TODO(crbug/307350): Revise this later to show a specific message for each
-// error.
+// TODO(crbug.com/40336858): Revise this later to show a specific message for
+// each error.
 std::unique_ptr<views::View> TranslateBubbleView::CreateViewError() {
   auto translate_options_button =
       std::make_unique<views::MdTextButtonWithDownArrow>(

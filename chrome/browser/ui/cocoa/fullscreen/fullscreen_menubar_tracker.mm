@@ -16,7 +16,7 @@ namespace {
 // The event kind value for a undocumented menubar show/hide Carbon event.
 const CGFloat kMenuBarRevealEventKind = 2004;
 
-// TODO(https://crbug.com/1063417): Replace this with something that works
+// TODO(crbug.com/40123289): Replace this with something that works
 // on modern macOS versions.
 OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
                               EventRef event,

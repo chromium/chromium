@@ -103,7 +103,7 @@ int PopupBaseView::GetHorizontalMargin() {
 
 // static
 int PopupBaseView::GetHorizontalPadding() {
-  // TODO(crbug.com/1411172): Combine with `GetHorizontalMargin`.
+  // TODO(crbug.com/40254722): Combine with `GetHorizontalMargin`.
   return GetHorizontalMargin();
 }
 
@@ -240,7 +240,7 @@ bool PopupBaseView::DoShow() {
   if (initialize_widget) {
     // On Mac Cocoa browser, |parent_widget_| is null (the parent is not a
     // views::Widget).
-    // TODO(crbug.com/826862): Remove |parent_widget_|.
+    // TODO(crbug.com/41379554): Remove |parent_widget_|.
     if (parent_widget_) {
       parent_widget_->AddObserver(this);
     }

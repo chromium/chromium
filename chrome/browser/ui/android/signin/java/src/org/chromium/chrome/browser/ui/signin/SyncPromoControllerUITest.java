@@ -609,7 +609,7 @@ public class SyncPromoControllerUITest {
                 view, "ntp_content_suggestions_sync_promo_view_signed_in_and_not_syncing");
     }
 
-    // TODO(crbug.com/1314490): In production we observe the onProfileDataUpdated() event and then
+    // TODO(crbug.com/40832897): In production we observe the onProfileDataUpdated() event and then
     // update the view, but that's done outside of SyncPromoController, the logic is duplicated
     // for each entry point. In the long term, we should have a single observer internal to the UI
     // component. Then these tests can just wait for the right data to appear with espresso.

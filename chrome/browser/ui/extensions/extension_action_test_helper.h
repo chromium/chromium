@@ -21,7 +21,7 @@ class Image;
 class Size;
 }  // namespace gfx
 
-// TODO(https://crbug.com/1197766): A lot of this class can be cleaned up for
+// TODO(crbug.com/40177062): A lot of this class can be cleaned up for
 // the new toolbar UI. Some of it may also be removable, since we now have
 // the platform-abstract ExtensionsContainer class.
 class ExtensionActionTestHelper {

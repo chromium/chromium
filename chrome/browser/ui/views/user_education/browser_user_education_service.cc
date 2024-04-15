@@ -190,7 +190,7 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after a credit card benefit is displayed for "
                        "the first time.")));
 
-  // TODO(1432894): Use toast or snooze instead of legacy promo.
+  // TODO(crbug.com/40264177): Use toast or snooze instead of legacy promo.
   // kIPHAutofillExternalAccountProfileSuggestionFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForLegacyPromo(

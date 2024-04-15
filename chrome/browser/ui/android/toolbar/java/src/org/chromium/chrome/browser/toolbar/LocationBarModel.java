@@ -270,7 +270,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public boolean hasTab() {
-        // TODO(https://crbug.com/1147131): Remove the isInitialized() and isDestroyed checks when
+        // TODO(crbug.com/40730536): Remove the isInitialized() and isDestroyed checks when
         // we no longer wait for TAB_CLOSED events to remove this tab.  Otherwise there is a chance
         // we use this tab after {@link Tab#destroy()} is called.
         return mTab != null && mTab.isInitialized() && !mTab.isDestroyed();
@@ -287,7 +287,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    // TODO(https://crbug.com/1305374): migrate to GURL.
+    // TODO(crbug.com/40218072): migrate to GURL.
     @Deprecated
     public String getCurrentUrl() {
         return getCurrentGurl().getSpec().trim();

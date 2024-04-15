@@ -1288,7 +1288,8 @@ void VideoOverlayWindowViews::ShowInactive() {
   // If there is an existing overlay view, remove it now.
   RemoveOverlayViewIfExists();
 
-  // TODO(crbug.com/1472386): Confirm whether the anchor should remain as FLOAT.
+  // TODO(crbug.com/40278613): Confirm whether the anchor should remain as
+  // FLOAT.
   auto overlay_view =
       get_overlay_view_cb_
           ? get_overlay_view_cb_.Run()

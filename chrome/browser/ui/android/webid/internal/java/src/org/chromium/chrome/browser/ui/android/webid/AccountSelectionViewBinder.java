@@ -137,7 +137,7 @@ class AccountSelectionViewBinder {
                                 .getDimensionPixelSize(
                                         R.dimen
                                                 .account_selection_account_avatar_monogram_text_size);
-                // TODO(crbug.com/1295017): Consult UI team to determine the background color we
+                // TODO(crbug.com/40214151): Consult UI team to determine the background color we
                 // need to use here.
                 RoundedIconGenerator roundedIconGenerator =
                         new RoundedIconGenerator(
@@ -478,7 +478,7 @@ class AccountSelectionViewBinder {
                 IdentityProviderMetadata idpMetadata =
                         model.get(ErrorButtonProperties.IDP_METADATA);
 
-                // TODO(crbug.com/1484245): Decide on how to set colours for error buttons.
+                // TODO(crbug.com/40282202): Decide on how to set colours for error buttons.
                 Integer textColor = idpMetadata.getBrandBackgroundColor();
                 button.setTextColor(
                         textColor != null

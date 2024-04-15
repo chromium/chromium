@@ -126,7 +126,7 @@ class ExtensionsMenuViewController
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsContainer> extensions_container_;
   const raw_ptr<views::View> bubble_contents_;
-  // TODO(crbug.com/1425522) There are no guarantee this pointer is safe
+  // TODO(crbug.com/40260941) There are no guarantee this pointer is safe
   // to be used. In practice its lifetime is probably always shorter than
   // `this`. This has to be fixed.
   const raw_ptr<views::BubbleDialogDelegate, DisableDanglingPtrDetection>

@@ -205,7 +205,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
         if (shouldShowStartSurfaceToolbar == mIsShowing) return;
         mIsShowing = shouldShowStartSurfaceToolbar;
 
-        // TODO(https://crbug.com/1139024): The fade animator of toolbar view should always show by
+        // TODO(crbug.com/40725795): The fade animator of toolbar view should always show by
         // default. Not showing fade animator is a temporary solution for crbug.com/1249377.
         setVisibility(getVisibility(shouldShowStartSurfaceToolbar));
     }

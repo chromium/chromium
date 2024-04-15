@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                                       ClientMode::kNavigateExisting, 3);
 }
 
-// TODO(crbug.com/1308334): Fix flakiness.
+// TODO(crbug.com/40219080): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        DISABLED_ClientModeExistingClientRetain) {
   webapps::AppId app_id = InstallTestWebApp(
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 }
 
 // https://crbug.com/1444959
-// TODO(crbug.com/1459410): Re-enable this test
+// TODO(crbug.com/40919435): Re-enable this test
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SelectActiveBrowser DISABLED_SelectActiveBrowser
 #else

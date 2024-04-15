@@ -156,7 +156,7 @@ class TransparentButton : public views::Button {
         [](views::View* host) {
           // This button will be used like a LabelButton, so use the same
           // foreground base color as a label button.
-          // TODO(crbug.com/1423975): Replace by a `ui::ColorId` and use it in
+          // TODO(crbug.com/40260264): Replace by a `ui::ColorId` and use it in
           // `InkDropHost::SetBaseColorId`.
           return color_utils::DeriveDefaultIconColor(
               host->GetColorProvider()->GetColor(

@@ -439,7 +439,7 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
     return tabs;
 
   // Fallback to using about:blank if the user has customized the NTP.
-  // TODO(crbug.com/1306352): Stop using about:blank and create a dedicated
+  // TODO(crbug.com/40218325): Stop using about:blank and create a dedicated
   // Privacy Sandbox WebUI page for this scenario.
   if (HasExtensionNtpOverride(extension_registry) ||
       !IsChromeControlledNtpUrl(ntp_url)) {

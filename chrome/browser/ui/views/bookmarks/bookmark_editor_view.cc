@@ -144,7 +144,7 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
 void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
 
-  // TODO(crbug.com/1361263): Currently DialogDelegateView does not override
+  // TODO(crbug.com/40863584): Currently DialogDelegateView does not override
   // GetAccessibleNodeData, thus the call above accomplishes nothing. We need
   // this View to have a role before setting its name, but if we set it to
   // dialog, we'll wind up with a dialog (this view) inside of a dialog

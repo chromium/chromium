@@ -449,7 +449,7 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
             ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
-// TODO(crbug.com/1476021): Flaky on all platforms.
+// TODO(crbug.com/40928115): Flaky on all platforms.
 TEST_F(UnusedSitePermissionsServiceTest,
        DISABLED_ClearRevokedPermissionsListAfter30d) {
   base::test::ScopedFeatureList scoped_feature;

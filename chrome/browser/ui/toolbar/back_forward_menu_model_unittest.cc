@@ -480,7 +480,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // The case below currently fails on the linux-bfcache-rel bot with
     // back/forward cache enabled, so return early.
-    // TODO(https://crbug.com/1232883): re-enable this test.
+    // TODO(crbug.com/40780539): re-enable this test.
     return;
   }
 

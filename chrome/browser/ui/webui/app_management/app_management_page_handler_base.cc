@@ -293,7 +293,7 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
       if (!CanShowDefaultAppAssociationsUi()) {
         learn_more_url = GURL(kFileHandlingLearnMore);
       }
-      // TODO(crbug/1252505): add file handling policy support.
+      // TODO(crbug.com/40198786): add file handling policy support.
       app->file_handling_state = app_management::mojom::FileHandlingState::New(
           fh_enabled, /*is_managed=*/false, file_handling_types,
           file_handling_types_label, learn_more_url);

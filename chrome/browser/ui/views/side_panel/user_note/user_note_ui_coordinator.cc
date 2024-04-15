@@ -73,7 +73,7 @@ void UserNoteUICoordinator::SwitchTabsAndStartNoteCreation(int tab_index) {
   } else {
     // If the notes ui already exists we should wait until after the tab change
     // to start the note creation so it happens for the correct tab's ui.
-    // TODO(crbug.com/1416974): investigate when the page takes focus after tab
+    // TODO(crbug.com/40893793): investigate when the page takes focus after tab
     // change.
     if (notes_ui_) {
       Show();

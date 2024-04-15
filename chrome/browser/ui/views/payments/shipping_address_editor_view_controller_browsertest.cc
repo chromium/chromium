@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                /*accept_empty_phone_number=*/false);
 }
 
-// TODO(crbug.com/1150496): flaky.
+// TODO(crbug.com/40732468): flaky.
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        DISABLED_AsyncData) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730652): This address should be invalid.
+// TODO(crbug.com/40524578): This address should be invalid.
 // Tests that if the a profile has a country and an invalid state for the
 // country, the address is considered valid.
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,

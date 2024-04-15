@@ -288,7 +288,7 @@ using ui::WebDialogUI;
 
 namespace {
 
-// TODO(crbug.com/1295080): Allow a way to disable CSP in tests.
+// TODO(crbug.com/40214184): Allow a way to disable CSP in tests.
 void SetUpWebUIDataSource(WebUI* web_ui,
                           const char* web_ui_host,
                           base::span<const webui::ResourcePath> resources,
@@ -537,7 +537,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       case NTPResourceCache::NORMAL:
         LOG(ERROR) << "Requested load of chrome://newtab/ for incorrect "
                       "profile type.";
-        // TODO(crbug.com/1380151): Add DumpWithoutCrashing() here.
+        // TODO(crbug.com/40244589): Add DumpWithoutCrashing() here.
         return nullptr;
       case NTPResourceCache::INCOGNITO:
         [[fallthrough]];

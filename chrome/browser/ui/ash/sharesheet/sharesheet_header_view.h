@@ -52,7 +52,7 @@ class SharesheetHeaderView : public views::View {
   std::unique_ptr<views::Label> CreatePreviewLabel(const std::u16string& text);
   const gfx::VectorIcon& GetTextVectorIcon();
 
-  // TODO(crbug.com/1233830): Move business logic out of UI code.
+  // TODO(crbug.com/40191717): Move business logic out of UI code.
   void ResolveImages();
   void ResolveImage(size_t index);
   void LoadImage(const base::FilePath& file_path,
@@ -72,7 +72,7 @@ class SharesheetHeaderView : public views::View {
 
   ThumbnailLoader thumbnail_loader_;
   std::vector<base::CallbackListSubscription> image_subscription_;
-  // TODO(crbug.com/1156343): Clean up to use our own FileThumbnailImage class.
+  // TODO(crbug.com/40160331): Clean up to use our own FileThumbnailImage class.
   std::vector<std::unique_ptr<HoldingSpaceImage>> images_;
 
   base::WeakPtrFactory<SharesheetHeaderView> weak_ptr_factory_{this};

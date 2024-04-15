@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug/1499052): Re-enable the test after fixing on Lacros.
+// TODO(crbug.com/40939916): Re-enable the test after fixing on Lacros.
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";

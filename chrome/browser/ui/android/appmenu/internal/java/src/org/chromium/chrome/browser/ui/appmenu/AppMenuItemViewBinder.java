@@ -281,7 +281,7 @@ class AppMenuItemViewBinder {
      * @param iconColorResId The resounce id of the color to color the icon with.
      * @return A new drawable that portrays a badge on the passed icon.
      */
-    // TODO(crbug.com/1503649): Consider moving the following to UiUtils or somewhere re-usable.
+    // TODO(crbug.com/40944114): Consider moving the following to UiUtils or somewhere re-usable.
     private static Drawable drawIconWithBadge(
             Context context, Drawable icon, @ColorRes int iconColorResId) {
         if (icon == null || icon.getIntrinsicWidth() <= 0 || icon.getIntrinsicHeight() <= 0) {

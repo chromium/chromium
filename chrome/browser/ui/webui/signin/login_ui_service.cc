@@ -61,7 +61,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   NOTREACHED();
 #else
   last_login_error_ = error;
-  // TODO(crbug.com/1326904): Check if the condition should be `!error.IsOk()`
+  // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();

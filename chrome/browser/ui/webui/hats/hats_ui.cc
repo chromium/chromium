@@ -79,7 +79,7 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
       "https://feedback-pa.clients6.google.com/ "
       ";");
 
-  // TODO(crbug.com/1481674): Enable TrustedType.
+  // TODO(crbug.com/40281687): Enable TrustedType.
   source->DisableTrustedTypesCSP();
 }
 

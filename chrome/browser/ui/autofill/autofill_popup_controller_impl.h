@@ -233,7 +233,7 @@ class AutofillPopupControllerImpl
 
   // Callback invoked to try to show the password migration warning on Android.
   // Used to facilitate testing.
-  // TODO(crbug.com/1454469): Remove when the warning isn't needed anymore.
+  // TODO(crbug.com/40272324): Remove when the warning isn't needed anymore.
   base::RepeatingCallback<void(
       gfx::NativeWindow,
       Profile*,

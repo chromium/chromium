@@ -148,7 +148,7 @@ bool GetSettingManagedByUser(const GURL& url,
   SettingInfo info;
   ContentSetting setting;
   if (type == ContentSettingsType::COOKIES) {
-    // TODO(crbug.com/1386190): Consider whether the following check should
+    // TODO(crbug.com/40247160): Consider whether the following check should
     // somehow determine real CookieSettingOverrides rather than default to
     // none.
     setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
@@ -309,7 +309,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
 
-  // TODO(https://crbug.com/978882): Make the two arrays below static again once
+  // TODO(crbug.com/40633805): Make the two arrays below static again once
   // we no longer need to check base::FeatureList.
   const ContentSettingsTypeIdEntry kBlockedMessageIDs[] = {
       {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE},
@@ -1633,7 +1633,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
     : ContentSettingBubbleModel(delegate, web_contents) {
-  // TODO(crbug.com/1030633): This block is more defensive than it needs to be
+  // TODO(crbug.com/40110076): This block is more defensive than it needs to be
   // because ContentSettingImageModelBrowserTest exercises it without setting up
   // the correct PermissionRequestManager state. Fix that.
   permissions::PermissionRequestManager* manager =
@@ -1686,7 +1686,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       DCHECK_EQ(request_type, permissions::RequestType::kNotifications);
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_ABUSIVE_DESCRIPTION));
-      // TODO(crbug.com/1082738): It is rather confusing to have the `Cancel`
+      // TODO(crbug.com/40131070): It is rather confusing to have the `Cancel`
       // button allow the permission, but we want the primary to block.
       set_cancel_button_text(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_COMPACT_ALLOW_BUTTON));

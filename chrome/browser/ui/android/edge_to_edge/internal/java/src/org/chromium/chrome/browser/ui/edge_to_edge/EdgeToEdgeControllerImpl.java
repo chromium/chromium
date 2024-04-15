@@ -408,7 +408,7 @@ public class EdgeToEdgeControllerImpl
      */
     private void pushInsetsToBlink(boolean toEdge, @NonNull WebContents webContents) {
         // Push the insets back to the webpage if we have one.
-        // TODO(https://crbug.com/1475820) Move this work into the nascent
+        // TODO(crbug.com/40279791) Move this work into the nascent
         // SafeAreaInsetsTracker.
         assert mSystemInsets != null : "Error, trying to notify Blink without system insets set";
         Rect insetsRect = new Rect(0, 0, 0, toEdge ? scale(mSystemInsets.bottom) : 0);

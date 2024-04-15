@@ -165,7 +165,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
   label_->SetText(origin_text_);
   // CCT UI already displays origin information so there is no need to animate
   // origin text.
-  // TODO(crbug.com/1485373): Instead of DidFinishNavigation, we can use
+  // TODO(crbug.com/40282543): Instead of DidFinishNavigation, we can use
   // ReadyToCommitNavigation if this logic does not consider
   // ShouldShowCustomTabBar or if ShouldShowCustomTabBar can take pre-commit URL
   // as input. ShouldShowCustomTabBar is currently implemented to be used after

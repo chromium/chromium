@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 
 std::unique_ptr<StatusTray> StatusTray::Create() {
-  // TODO(crbug.com/1234769)
+  // TODO(crbug.com/40192123)
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }

@@ -91,7 +91,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // color choice that the user would be able to override.
   std::optional<SkColor> suggested_profile_color_;
 
-  // TODO(crbug.com/1359352): To be refactored out.
+  // TODO(crbug.com/40237338): To be refactored out.
   // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information
   // should ideally be provided to the handler of the profile switch page once
   // its controller is created instead of relying on static calls.

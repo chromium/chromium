@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {
                kDontCheckTitle);
 }
 
-// TODO(crbug.com/1115886): Flaky on Mac ASAN and Chrome OS.
+// TODO(crbug.com/40144522): Flaky on Mac ASAN and Chrome OS.
 #if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_BlockWebContentsCreationIncognito \
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
-// TODO(crbug.com/1430472): Re-enable this test
+// TODO(crbug.com/40901768): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_CtrlEnterKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 

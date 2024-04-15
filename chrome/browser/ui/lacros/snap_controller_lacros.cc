@@ -38,7 +38,7 @@ SnapControllerLacros::SnapControllerLacros() = default;
 SnapControllerLacros::~SnapControllerLacros() = default;
 
 bool SnapControllerLacros::CanSnap(aura::Window* window) {
-  // TODO(https://crbug.com/1141701): Implement this method similarly to
+  // TODO(crbug.com/40154369): Implement this method similarly to
   // ash::WindowState::CanSnap().
   return true;
 }

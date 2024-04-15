@@ -268,7 +268,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 // detail is provided in the actual test sequence.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1399655): Flaky on linux-chromeos-chrome. Reenable
+// TODO(crbug.com/40883259): Flaky on linux-chromeos-chrome. Reenable
 // this test when the flakiness will be resolved.
 #define MAYBE_CloseTabDuringDragDoesNotCrash \
   DISABLED_CloseTabDuringDragDoesNotCrash

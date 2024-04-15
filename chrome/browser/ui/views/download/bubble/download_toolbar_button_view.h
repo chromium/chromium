@@ -167,7 +167,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // already-inactive state. This is created by the DownloadToolbarButtonView
   // when the bubble is shown with ShowInactive, and is destroyed when the
   // bubble is closed.
-  // TODO(crbug.com/1503082): Factor out common logic copied from translate
+  // TODO(crbug.com/40943500): Factor out common logic copied from translate
   // bubble.
   class BubbleCloser : public ui::EventObserver {
    public:

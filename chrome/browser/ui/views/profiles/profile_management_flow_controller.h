@@ -28,7 +28,7 @@ class ProfilePickerWebContentsHost;
 // the next steps.
 class ProfileManagementFlowController {
  public:
-  // TODO(https://crbug.com/1358843): Split the steps more granularly across
+  // TODO(crbug.com/40237131): Split the steps more granularly across
   // logical steps instead of according to implementation details.
   enum class Step {
     kUnknown,

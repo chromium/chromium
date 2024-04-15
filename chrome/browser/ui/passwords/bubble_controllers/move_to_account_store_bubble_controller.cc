@@ -128,6 +128,6 @@ void MoveToAccountStoreBubbleController::ReportInteractions() {
       dismissal_reason_,
       password_manager::features_util::ComputePasswordAccountStorageUserState(
           profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile)));
-  // TODO(crbug.com/1063852): Consider recording UKM here, via:
+  // TODO(crbug.com/40123455): Consider recording UKM here, via:
   // metrics_recorder_->RecordUIDismissalReason(dismissal_reason_)
 }

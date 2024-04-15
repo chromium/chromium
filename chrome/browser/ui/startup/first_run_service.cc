@@ -88,7 +88,7 @@ bool IsFirstRunEligibleProcess() {
   }
 #endif
 
-  // TODO(crbug.com/1347504): `IsChromeFirstRun()` should be a sufficient check
+  // TODO(crbug.com/40232971): `IsChromeFirstRun()` should be a sufficient check
   // for Dice platforms. We currently keep this because some tests add
   // `--force-first-run` while keeping `--no-first-run`. We should updated the
   // affected tests to handle correctly the FRE opening instead of a tab.

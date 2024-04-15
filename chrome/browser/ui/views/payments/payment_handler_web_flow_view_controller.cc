@@ -391,7 +391,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
         /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
     app_icon_view->SetID(
         static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
-    // TODO(crbug.com/1422991): If the downloaded app icon was a vector image,
+    // TODO(crbug.com/40259861): If the downloaded app icon was a vector image,
     // see if we can store and rasterize it here instead of at download time.
     float adjusted_width =
         icon_bitmap->width() *
@@ -563,7 +563,7 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 
   // Checking uncommitted navigations (e.g., Network errors) is unnecessary
   // because the new pages have no chance to be loaded, rendered nor execute js.
-  // TODO(crbug.com/1198274): Only primary main frame is checked because unsafe
+  // TODO(crbug.com/40177268): Only primary main frame is checked because unsafe
   // iframes are blocked by the MixContentNavigationThrottle. But this design is
   // fragile.
   if (navigation_handle->HasCommitted() &&

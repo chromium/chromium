@@ -102,7 +102,7 @@ void FedCmAccountSelectionView::Show(
         identity_provider.idp_metadata, identity_provider.client_metadata,
         identity_provider.accounts, identity_provider.request_permission,
         identity_provider.has_login_status_mismatch);
-    // TODO(crbug.com/1406014): Decide what we should display if the IdPs use
+    // TODO(crbug.com/40252518): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider.rp_context;
     accounts_size += identity_provider.accounts.size();
@@ -490,7 +490,7 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
     // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
     // Make the views::Widget non-activatable while it is hidden to prevent the
     // views::Widget from being shown during focus traversal.
-    // TODO(crbug.com/1367309): fix the issue on Mac.
+    // TODO(crbug.com/40239995): fix the issue on Mac.
     GetDialogWidget()->Hide();
     GetDialogWidget()->widget_delegate()->SetCanActivate(false);
     input_protector_->VisibilityChanged(false);
@@ -756,7 +756,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // Otherwise if the pop-up window is for AuthZ or error, we destroy the
     // bubble widget and any incoming accounts fetches would not display any
     // dialog.
-    // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
+    // TODO(crbug.com/40281136): Verify if the current behaviour is what we want
     // for AuthZ/error.
     if (IsIdpSigninPopupOpen()) {
       notify_delegate_of_dismiss_ = false;

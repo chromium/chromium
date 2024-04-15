@@ -1512,7 +1512,7 @@ void AccessibilitySection::RegisterHierarchy(
   RegisterNestedSettingBulk(mojom::Subpage::kTextToSpeech,
                             kTextToSpeechSettings, generator);
 
-  // TODO(crbug.com/1383613): Change some of these to RegisterNestedSubpages.
+  // TODO(crbug.com/40246196): Change some of these to RegisterNestedSubpages.
   // Switch access.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS,
                                      mojom::Subpage::kSwitchAccessOptions,

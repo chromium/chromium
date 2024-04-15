@@ -138,7 +138,7 @@ using BrowserNonClientFrameViewMacBrowserTest =
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
-// TODO(crbug.com/1156050): Flaky on Mac.
+// TODO(crbug.com/40735737): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ToolbarLayoutFullscreenTransition \
   DISABLED_ToolbarLayoutFullscreenTransition

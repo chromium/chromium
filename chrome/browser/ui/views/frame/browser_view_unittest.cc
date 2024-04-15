@@ -340,7 +340,7 @@ TEST_P(BrowserViewTest, DISABLED_BrowserViewLayout) {
   BookmarkBarView::DisableAnimationsForTesting(false);
 }
 
-// TODO(https://crbug.com/1020758): Flaky on Linux.
+// TODO(crbug.com/40656637): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FindBarBoundingBoxLocationBar \
   DISABLED_FindBarBoundingBoxLocationBar
@@ -461,7 +461,7 @@ TEST_P(BrowserViewTest, DISABLED_RepeatedAccelerators) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Test that bookmark bar view becomes invisible when closing the browser.
-// TODO(https://crbug.com/1000251): Flaky on Linux.
+// TODO(crbug.com/40097152): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BookmarkBarInvisibleOnShutdown \
   DISABLED_BookmarkBarInvisibleOnShutdown

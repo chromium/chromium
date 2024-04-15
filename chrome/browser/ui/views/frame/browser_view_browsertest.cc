@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
 
 // Verifies that page and devtools WebViews are being correctly layed out
 // when DevTools is opened/closed/updated/undocked.
-// TODO(crbug.com/1316663): Re-enable; currently failing on multiple platforms.
+// TODO(crbug.com/40834238): Re-enable; currently failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   gfx::Rect full_bounds =
       browser_view()->GetContentsContainerForTest()->GetLocalBounds();

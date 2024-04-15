@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(GetTitle()->GetVisible());
 }
 
-// TODO(crbug.com/1427915): Flaky on Linux Tests.
+// TODO(crbug.com/40900150): Flaky on Linux Tests.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_BubblePositioning DISABLED_BubblePositioning
 #else
@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   SetTickClockForTesting(nullptr);
 }
 
-// TODO(https://crbug.com/1207312): Flaky test.
+// TODO(crbug.com/40181252): Flaky test.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
 #else

@@ -320,7 +320,7 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
 class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
  protected:
   ShelfAppBrowserTest() {
-    // TODO(crbug.com/1258445): Update expectations to support Lacros.
+    // TODO(crbug.com/40201067): Update expectations to support Lacros.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());

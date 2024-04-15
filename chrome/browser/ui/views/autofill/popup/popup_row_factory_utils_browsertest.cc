@@ -85,7 +85,7 @@ const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
 
 }  // namespace
 
-// TODO(crbug.com/1491373): Add tests for RTL and dark mode.
+// TODO(crbug.com/40285052): Add tests for RTL and dark mode.
 using TestParams =
     std::tuple<Suggestion, std::optional<PopupRowView::CellType>>;
 

@@ -117,7 +117,7 @@ class NetworkPortalSigninControllerTest : public testing::TestWithParam<bool> {
     task_environment_.RunUntilIdle();
 
     // Initialize ProfileHelper.
-    // TODO(crbug.com/1325210): Migrate it into BrowserContextHelper.
+    // TODO(crbug.com/40225390): Migrate it into BrowserContextHelper.
     ProfileHelper::Get();
 
     // Set ethernet to idle.

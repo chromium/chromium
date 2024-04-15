@@ -165,18 +165,17 @@ class AppMenuHandlerImpl
 
     /**
      * Show the app menu.
-     * @param anchorView    Anchor view (usually a menu button) to be used for the popup, if null is
-     *                      passed then hardware menu button anchor will be used.
+     *
+     * @param anchorView Anchor view (usually a menu button) to be used for the popup, if null is
+     *     passed then hardware menu button anchor will be used.
      * @param startDragging Whether dragging is started. For example, if the app menu is showed by
-     *                      tapping on a button, this should be false. If it is showed by start
-     *                      dragging down on the menu button, this should be true. Note that if
-     *                      anchorView is null, this must be false since we no longer support
-     *                      hardware menu button dragging.
-     * @return              True, if the menu is shown, false, if menu is not shown, example
-     *                      reasons: the menu is not yet available to be shown, or the menu is
-     *                      already showing.
+     *     tapping on a button, this should be false. If it is showed by start dragging down on the
+     *     menu button, this should be true. Note that if anchorView is null, this must be false
+     *     since we no longer support hardware menu button dragging.
+     * @return True, if the menu is shown, false, if menu is not shown, example reasons: the menu is
+     *     not yet available to be shown, or the menu is already showing.
      */
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ResourceType")
     boolean showAppMenu(View anchorView, boolean startDragging) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;

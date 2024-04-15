@@ -83,7 +83,7 @@ class ProfilePicker {
     // May only be used on lacros, opens a first run experience (provided no
     // policies prevent it) to let the user opt in to sync, etc. for the primary
     // profile.
-    // TODO(crbug.com/1375277): Migrate to only using kFirstRun.
+    // TODO(crbug.com/40242849): Migrate to only using kFirstRun.
     kLacrosPrimaryProfileFirstRun = 9,
     // The Profile became idle, due to the IdleProfileCloseTimeout policy.
     kProfileIdle = 10,

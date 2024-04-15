@@ -1514,7 +1514,7 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
 }
 
 void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
-  // TODO(crbug.com/401026): Talk with isandrk@chromium.org about whether this
+  // TODO(crbug.com/41124423): Talk with isandrk@chromium.org about whether this
   // is necessary for the experiment or not.
   if (is_locked_fullscreen_) {
     return;
@@ -1820,7 +1820,7 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     // Update the state of allowlisted commands:
     // IDC_CUT/IDC_COPY/IDC_PASTE,
     UpdateCommandsForContentRestrictionState();
-    // TODO(crbug.com/904637): Re-enable Find and Zoom in locked fullscreen.
+    // TODO(crbug.com/41426009): Re-enable Find and Zoom in locked fullscreen.
     // All other commands will be disabled (there is an early return in their
     // corresponding UpdateCommandsFor* functions).
 #if DCHECK_IS_ON()

@@ -74,7 +74,8 @@ public class TabSwitcherActionMenuCoordinator {
                     (ListMenuButton) view,
                     menu.buildMenuItems(),
                     (id) -> {
-                        // TODO(crbug.com/1317817): Refactor to allow subclasses to record different
+                        // TODO(crbug.com/40834987): Refactor to allow subclasses to record
+                        // different
                         // user actions and update StartSurfaceTabSwitcherActionMenuCoordinator.
                         recordUserActions(id);
                         onItemClicked.onResult(id);

@@ -1070,7 +1070,7 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
         profiles::GetPlaceholderAvatarIconResourceID());
   }
 
-  // TODO(crbug.com/1012179): it should suffice to call entry->GetAvatarIcon().
+  // TODO(crbug.com/40102223): it should suffice to call entry->GetAvatarIcon().
   // For this to work well, this class needs to observe ProfileAttributesStorage
   // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
   // being up to date (as the storage also observes IdentityManager so there's
@@ -1371,7 +1371,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
       return profiles::GetGuestAvatar(icon_size);
     case ButtonState::kExplicitTextShowing:
     case ButtonState::kShowIdentityName:
-    // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
+    // TODO(crbug.com/40756583): If sync-the-feature is disabled, the icon
     // should be different.
     case ButtonState::kSyncError:
     case ButtonState::kManagement:

@@ -186,7 +186,7 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =
       browser->profile()->GetDownloadManager();
-  // TODO(crbug.com/1186839): Update the annotation's |setting| and
+  // TODO(crbug.com/40753957): Update the annotation's |setting| and
   // |chrome_policy| fields once the Sharing Hub is landed.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("desktop_screenshot_save", R"(

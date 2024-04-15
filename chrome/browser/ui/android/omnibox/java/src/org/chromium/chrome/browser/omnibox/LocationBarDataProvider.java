@@ -17,7 +17,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
 /** Interface defining a provider for data needed by the {@link LocationBar}. */
-// TODO(crbug.com/1142887): Refine split between LocationBar properties and sub-component
+// TODO(crbug.com/40154848): Refine split between LocationBar properties and sub-component
 // properties, e.g. security state, which is only used by the status icon.
 public interface LocationBarDataProvider {
     /**
