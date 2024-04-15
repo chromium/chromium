@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -2471,15 +2472,32 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
         ->GrantSharingPermission(rp_requester, rp_embedder, idp, account_id);
   }
 
-  void NavigateToPageWithPermissionsPolicyIframe(
-      const std::string& top_level_host,
-      const std::string& embedded_host) {
+  void NavigateToPageWithPermissionsPolicyIframes(
+      std::initializer_list<const base::StringPiece> hosts_list) {
+    base::span hosts(hosts_list);
+    ASSERT_GT(hosts.size(), 0U);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), https_server().GetURL(
-                       top_level_host,
-                       base::StrCat({"/cross_site_iframe_factory.html?",
-                                     top_level_host, "(", embedded_host,
-                                     "{allow-identity-credentials-get})"}))));
+                       hosts[0], base::StrCat({
+                                     "/cross_site_iframe_factory.html?",
+                                     hosts[0],
+                                     "(",
+                                     MakeNonRootFrameNodes(hosts.subspan(1)),
+                                     ")",
+                                 }))));
+  }
+
+ private:
+  std::string MakeNonRootFrameNodes(base::span<const base::StringPiece> hosts) {
+    std::string tree;
+    for (const auto& host : hosts) {
+      base::StrAppend(&tree, {host, "{allow-identity-credentials-get}("});
+    }
+    for (const auto& host : hosts) {
+      (void)host;
+      base::StrAppend(&tree, {")"});
+    }
+    return tree;
   }
 };
 
@@ -2506,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
 
-  NavigateToPageWithPermissionsPolicyIframe(kHostA, kHostB);
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
@@ -2516,10 +2534,37 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
 
-  NavigateToPageWithPermissionsPolicyIframe(kHostA, kHostB);
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostB});
   NavigateFrameTo(EchoCookiesURL(kHostB), browser(), /*iframe_id=*/"child-0");
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+                       FedCMGrantsAllowCookieAccess_NestedFrame) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostC, kHostB});
+  EXPECT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetNestedFrame(), EchoCookiesURL(kHostB)));
+  EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
+            NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+
+  EXPECT_TRUE(
+      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 0);
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB),
+            CookieBundle("cross-site=b.test"));
+
+  NavigateToPageWithPermissionsPolicyIframes({kHostA, kHostC, kHostB});
+  EXPECT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetNestedFrame(), EchoCookiesURL(kHostB)));
+  EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostB),
+            NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
 
 // TODO(crbug.com/1448957): Add test cases of 3PC enabled by other mechanisms.
