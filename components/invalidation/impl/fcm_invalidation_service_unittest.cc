@@ -183,7 +183,6 @@ class FCMInvalidationServiceTest : public testing::Test {
             },
             std::ref(listener_)),
         base::BindRepeating(&PerUserTopicSubscriptionManager::Create,
-                            identity_provider_.get(), &pref_service_,
                             &url_loader_factory_),
         mock_instance_id_driver_.get(), &pref_service_, kSenderId);
   }

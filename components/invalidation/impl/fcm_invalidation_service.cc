@@ -212,8 +212,8 @@ void FCMInvalidationService::StartInvalidator() {
   // the startup cached messages might exists.
   invalidation_listener_ =
       fcm_invalidation_listener_callback_.Run(std::move(network));
-  auto subscription_manager =
-      per_user_topic_subscription_manager_callback_.Run(sender_id_);
+  auto subscription_manager = per_user_topic_subscription_manager_callback_.Run(
+      identity_provider_, pref_service_, sender_id_);
   invalidation_listener_->Start(this, std::move(subscription_manager));
 
   PopulateClientID();

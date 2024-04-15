@@ -208,9 +208,9 @@ PerUserTopicSubscriptionManager::~PerUserTopicSubscriptionManager() = default;
 // static
 std::unique_ptr<PerUserTopicSubscriptionManager>
 PerUserTopicSubscriptionManager::Create(
+    network::mojom::URLLoaderFactory* url_loader_factory,
     IdentityProvider* identity_provider,
     PrefService* pref_service,
-    network::mojom::URLLoaderFactory* url_loader_factory,
     const std::string& project_id) {
   return std::make_unique<PerUserTopicSubscriptionManager>(
       identity_provider, pref_service, url_loader_factory, project_id);

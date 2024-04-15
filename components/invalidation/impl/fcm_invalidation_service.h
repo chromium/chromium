@@ -36,6 +36,8 @@ using FCMNetworkHandlerCallback =
 
 using PerUserTopicSubscriptionManagerCallback =
     base::RepeatingCallback<std::unique_ptr<PerUserTopicSubscriptionManager>(
+        IdentityProvider* identity_provider,
+        PrefService* pref_service,
         const std::string& project_id)>;
 
 using FCMInvalidationListenerCallback =

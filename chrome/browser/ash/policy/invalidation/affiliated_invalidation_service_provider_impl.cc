@@ -368,7 +368,6 @@ AffiliatedInvalidationServiceProviderImpl::
           base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
           base::BindRepeating(
               &invalidation::PerUserTopicSubscriptionManager::Create,
-              device_identity_provider_.get(), g_browser_process->local_state(),
               base::RetainedRef(url_loader_factory)),
           device_instance_id_driver_.get(), g_browser_process->local_state(),
           kPolicyFCMInvalidationSenderID);

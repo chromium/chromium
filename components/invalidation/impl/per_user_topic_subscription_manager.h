@@ -64,9 +64,9 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
 
   // Just calls std::make_unique. For ease of base::Bind'ing
   static std::unique_ptr<PerUserTopicSubscriptionManager> Create(
+      network::mojom::URLLoaderFactory* url_loader_factory,
       IdentityProvider* identity_provider,
       PrefService* pref_service,
-      network::mojom::URLLoaderFactory* url_loader_factory,
       const std::string& project_id);
 
   // RegisterProfilePrefs and RegisterPrefs register the same prefs, because on

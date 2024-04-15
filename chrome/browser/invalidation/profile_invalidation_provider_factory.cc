@@ -58,8 +58,7 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
               ->driver()),
       base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
       base::BindRepeating(
-          &PerUserTopicSubscriptionManager::Create, identity_provider,
-          profile->GetPrefs(),
+          &PerUserTopicSubscriptionManager::Create,
           base::RetainedRef(profile->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess())),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
