@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 
 namespace webnn {
@@ -235,6 +236,10 @@ ValidateReduceAxesAndInferOutput(base::span<const uint32_t> input_dimensions,
                                  base::span<const uint32_t> axes,
                                  bool keep_dimensions) {
   auto input_rank = input_dimensions.size();
+  if (input_rank == 0) {
+    return base::unexpected(
+        "The rank of input must be larger than or equal to 1.");
+  }
   auto validation_result = ValidateAxes(axes, input_rank);
   if (!validation_result.has_value()) {
     return base::unexpected(validation_result.error());
