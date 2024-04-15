@@ -2130,6 +2130,27 @@ TEST_F(SyncServiceImplTest,
 }
 
 TEST_F(SyncServiceImplTest,
+       ShouldNotForwardTypesWithErrorToSyncClientUponGetLocalDataDescriptions) {
+  SignInWithoutSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a data type error.
+  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
+
+  // DEVICE_INFO and AUTOFILL_WALLET_DATA are queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // Only DEVICE_INFO is queried from the sync client.
+  EXPECT_CALL(*sync_client(), GetLocalDataDescriptions(
+                                  ModelTypeSet{DEVICE_INFO}, ::testing::_));
+
+  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
+}
+
+TEST_F(SyncServiceImplTest,
        ShouldNotForwardToSyncClientUponGetLocalDataDescriptionsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
@@ -2147,14 +2168,11 @@ TEST_F(SyncServiceImplTest,
 
   // DEVICE_INFO is queried from the sync service.
   ModelTypeSet requested_types{DEVICE_INFO};
-  base::MockOnceCallback<void(std::map<ModelType, LocalDataDescription>)>
-      callback;
-  // No query to the sync client.
-  EXPECT_CALL(*sync_client(), GetLocalDataDescriptions).Times(0);
-  // Returns empty.
-  EXPECT_CALL(callback, Run(IsEmpty()));
+  // No data type queried to the sync client.
+  EXPECT_CALL(*sync_client(),
+              GetLocalDataDescriptions(ModelTypeSet{}, ::testing::_));
 
-  service()->GetLocalDataDescriptions(requested_types, callback.Get());
+  service()->GetLocalDataDescriptions(requested_types, base::DoNothing());
 }
 
 TEST_F(SyncServiceImplTest,
@@ -2204,6 +2222,28 @@ TEST_F(SyncServiceImplTest,
 
 TEST_F(
     SyncServiceImplTest,
+    ShouldNotForwardTypesWithErrorToSyncClientUponTriggerLocalDataMigration) {
+  SignInWithoutSyncConsent();
+  InitializeService(
+      /*registered_types_and_transport_mode_support=*/
+      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a data type error.
+  service()->ReportDataTypeErrorForTest(AUTOFILL_WALLET_DATA);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(AUTOFILL_WALLET_DATA));
+
+  // DEVICE_INFO and AUTOFILL_WALLET_DATA are queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // Only DEVICE_INFO is queried from the sync client.
+  EXPECT_CALL(*sync_client(),
+              TriggerLocalDataMigration(ModelTypeSet{DEVICE_INFO}));
+
+  service()->TriggerLocalDataMigration(requested_types);
+}
+
+TEST_F(
+    SyncServiceImplTest,
     ShouldNotForwardToSyncClientUponTriggerLocalDataMigrationIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
@@ -2221,8 +2261,8 @@ TEST_F(
 
   // DEVICE_INFO is queried from the sync service.
   ModelTypeSet requested_types{DEVICE_INFO};
-  // No query to the sync client.
-  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration).Times(0);
+  // No data type queried to the sync client.
+  EXPECT_CALL(*sync_client(), TriggerLocalDataMigration(ModelTypeSet{}));
 
   service()->TriggerLocalDataMigration(requested_types);
 }
