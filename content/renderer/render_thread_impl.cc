@@ -1350,12 +1350,6 @@ void RenderThreadImpl::SetProcessState(
 }
 
 void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
-  if (battery_saver_mode_enabled) {
-    base::MessagePump::OverrideAlignWakeUpsState(true, base::Milliseconds(32));
-  } else {
-    base::MessagePump::ResetAlignWakeUpsState();
-  }
-
   blink::SetBatterySaverModeForAllIsolates(battery_saver_mode_enabled);
 }
 
