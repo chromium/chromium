@@ -24,10 +24,13 @@
 #include "components/version_info/channel.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace lens {
@@ -38,6 +41,7 @@ namespace {
 constexpr char kClientDataHeader[] = "X-Client-Data";
 constexpr char kHttpMethod[] = "POST";
 constexpr char kContentType[] = "application/x-protobuf";
+constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr base::TimeDelta kServerRequestTimeout = base::Minutes(1);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -105,10 +109,8 @@ lens::CenterRotatedBox ConvertToServerCenterRotatedBox(
 
 LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
-    base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
-        url_callback,
-    base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-        interaction_data_callback,
+    LensOverlayUrlResponseCallback url_callback,
+    LensOverlayInteractionResponseCallback interaction_data_callback,
     Profile* profile)
     : request_id_generator_{std::make_unique<
           lens::LensOverlayRequestIdGenerator>()},
@@ -128,36 +130,34 @@ void LensOverlayQueryController::StartQueryFlow(const SkBitmap& screenshot) {
       base::BindOnce(&DownscaleAndEncodeBitmap, screenshot)
           .Then(base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindOnce(
-                  &LensOverlayQueryController::HandleFullImageDataCreated,
-                  weak_ptr_factory_.GetWeakPtr())))
-          .Then(base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&LensOverlayQueryController::FetchFullImageRequest,
                              weak_ptr_factory_.GetWeakPtr(),
                              request_id_generator_->GetNextRequestId()))));
 }
 
-void LensOverlayQueryController::HandleFullImageDataCreated(
-    lens::ImageData image_data) {
-  DCHECK_EQ(query_controller_state_,
-            QueryControllerState::kAwaitingFullImageResponse);
-  full_image_data_.Clear();
-  full_image_data_.CopyFrom(image_data);
+lens::LensOverlayClientContext
+LensOverlayQueryController::CreateClientContext() {
+  lens::LensOverlayClientContext context;
+  context.set_surface(lens::SURFACE_CHROMIUM);
+  context.set_platform(lens::WEB);
+  context.mutable_rendering_context()->set_rendering_environment(
+      lens::RENDERING_ENV_LENS_OVERLAY);
+  return context;
 }
 
 void LensOverlayQueryController::FetchFullImageRequest(
-    std::unique_ptr<lens::LensOverlayRequestId> request_id) {
+    std::unique_ptr<lens::LensOverlayRequestId> request_id,
+    lens::ImageData image_data) {
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kAwaitingFullImageResponse);
   // Create the request.
   lens::LensOverlayServerRequest request;
   lens::LensOverlayRequestContext request_context;
   request_context.mutable_request_id()->CopyFrom(*request_id.get());
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
-  request.mutable_objects_request()->mutable_image_data()->CopyFrom(
-      full_image_data_);
+  request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
 
   // Fetch the request.
   full_image_endpoint_fetcher_ = CreateEndpointFetcher(request);
@@ -177,15 +177,8 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   query_controller_state_ = QueryControllerState::kReceivedFullImageResponse;
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(full_image_callback_,
-                       std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
+    RunFullImageCallbackForError();
     return;
-  }
-
-  if (has_pending_interaction_) {
-    FetchInteractionRequestAndGenerateLensSearchUrl();
   }
 
   lens::LensOverlayServerResponse server_response;
@@ -193,11 +186,23 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   bool parse_successful = server_response.ParseFromArray(
       response_string.data(), response_string.size());
   if (!parse_successful) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(full_image_callback_,
-                       std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
+    RunFullImageCallbackForError();
     return;
+  }
+
+  if (!server_response.has_objects_response() ||
+      !server_response.objects_response().has_cluster_info()) {
+    RunFullImageCallbackForError();
+    return;
+  }
+
+  cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
+  cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
+
+  if (!cluster_info_received_callback_.is_null()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cluster_info_received_callback_),
+                                  *cluster_info_));
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -208,116 +213,142 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
           lens::CreateTextMojomFromServerResponse(server_response)));
 }
 
+void LensOverlayQueryController::RunFullImageCallbackForError() {
+  ResetRequestFlowState();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(full_image_callback_,
+                     std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
+}
+
 void LensOverlayQueryController::EndQuery() {
   full_image_endpoint_fetcher_.reset();
   interaction_endpoint_fetcher_.reset();
-  last_object_id_.reset();
-  last_region_.reset();
-  last_multimodal_query_text_.reset();
+  cluster_info_received_callback_.Reset();
+  cluster_info_ = std::nullopt;
   query_controller_state_ = QueryControllerState::kOff;
 }
 
 void LensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region) {
-  last_object_id_.reset();
-  last_multimodal_query_text_.reset();
-  last_region_ = std::move(region);
-  SendInteraction();
+  SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
+                  /*object_id=*/std::nullopt);
 }
 
 void LensOverlayQueryController::SendObjectSelection(
     const std::string& object_id) {
-  last_region_.reset();
-  last_multimodal_query_text_.reset();
-  last_object_id_ = std::make_optional<std::string>(object_id);
-  SendInteraction();
+  SendInteraction(/*region=*/lens::mojom::CenterRotatedBoxPtr(),
+                  /*query_text=*/std::nullopt,
+                  /*object_id=*/std::make_optional<std::string>(object_id));
 }
 
 void LensOverlayQueryController::SendMultimodalRequest(
     lens::mojom::CenterRotatedBoxPtr region,
     const std::string& query_text) {
-  last_object_id_.reset();
-  last_region_ = std::move(region);
-  last_multimodal_query_text_ = std::make_optional<std::string>(query_text);
-  SendInteraction();
+  if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
+    return;
+  }
+
+  SendInteraction(/*region=*/std::move(region),
+                  /*query_text=*/std::make_optional<std::string>(query_text),
+                  /*object_id=*/std::nullopt);
 }
 
 void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text) {
-  last_object_id_.reset();
-  last_region_.reset();
-  last_multimodal_query_text_.reset();
-
-  has_pending_interaction_ = false;
+  // Increment the request counter to cancel previously issued fetches.
+  request_counter_++;
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
-  lens_overlay_url_response.set_url(lens::BuildSearchURL(query_text).spec());
+  lens_overlay_url_response.set_url(
+      lens::BuildTextOnlySearchURL(query_text).spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
 }
 
-void LensOverlayQueryController::SendInteraction() {
-  has_pending_interaction_ = true;
+void LensOverlayQueryController::SendInteraction(
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<std::string> query_text,
+    std::optional<std::string> object_id) {
+  request_counter_++;
+  int request_index = request_counter_;
 
   // Trigger asynchronous image cropping, then attempt to send the request.
   base::ThreadPool::PostTask(
       base::BindOnce(&DownscaleAndEncodeBitmapRegionIfNeeded,
-                     original_screenshot_, last_region_.Clone())
+                     original_screenshot_, region.Clone())
           .Then(base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(
-                  &LensOverlayQueryController::MaybeFetchInteractionRequest,
-                  weak_ptr_factory_.GetWeakPtr()))));
+                  &LensOverlayQueryController::
+                      FetchInteractionRequestAndGenerateUrlIfClusterInfoReady,
+                  weak_ptr_factory_.GetWeakPtr(), request_index, region.Clone(),
+                  query_text, object_id))));
 }
 
-void LensOverlayQueryController::MaybeFetchInteractionRequest(
-    std::optional<lens::ImageCrop> image_crop) {
-  if (image_crop.has_value()) {
-    cropped_image_data_.Clear();
-    cropped_image_data_.CopyFrom(*image_crop);
-  }
-  if (query_controller_state_ ==
-      QueryControllerState::kAwaitingFullImageResponse) {
+void LensOverlayQueryController::
+    FetchInteractionRequestAndGenerateUrlIfClusterInfoReady(
+        int request_index,
+        lens::mojom::CenterRotatedBoxPtr region,
+        std::optional<std::string> query_text,
+        std::optional<std::string> object_id,
+        std::optional<lens::ImageCrop> image_crop) {
+  if (cluster_info_.has_value()) {
+    FetchInteractionRequestAndGenerateLensSearchUrl(
+        request_index, std::move(region), query_text, object_id, image_crop,
+        *cluster_info_);
     return;
   }
-  // Check to make sure there is still a pending interaction,
-  // as a text-only query may cancel the pending interaction.
-  if (has_pending_interaction_) {
-    FetchInteractionRequestAndGenerateLensSearchUrl();
-  }
+  cluster_info_received_callback_ =
+      base::BindOnce(&LensOverlayQueryController::
+                         FetchInteractionRequestAndGenerateLensSearchUrl,
+                     weak_ptr_factory_.GetWeakPtr(), request_index,
+                     std::move(region), query_text, object_id, image_crop);
 }
 
 lens::LensOverlayServerRequest
 LensOverlayQueryController::CreateInteractionRequest(
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<std::string> query_text,
+    std::optional<std::string> object_id,
+    std::optional<lens::ImageCrop> image_crop,
     std::unique_ptr<lens::LensOverlayRequestId> request_id) {
   lens::LensOverlayServerRequest server_request;
   lens::LensOverlayRequestContext request_context;
   request_context.mutable_request_id()->CopyFrom(*request_id.get());
+  request_context.mutable_client_context()->CopyFrom(CreateClientContext());
   server_request.mutable_interaction_request()
       ->mutable_request_context()
       ->CopyFrom(request_context);
 
   lens::LensOverlayInteractionRequestMetadata interaction_request_metadata;
-  if (!last_region_.is_null()) {
-    // Add the region for region and multimodal requests.
+  if (!region.is_null() && image_crop.has_value()) {
+    // Add the region for region search and multimodal requests.
     server_request.mutable_interaction_request()
         ->mutable_image_crop()
-        ->CopyFrom(cropped_image_data_);
+        ->CopyFrom(*image_crop);
     interaction_request_metadata.set_type(
         lens::LensOverlayInteractionRequestMetadata::REGION);
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_region()
         ->mutable_region()
-        ->CopyFrom(ConvertToServerCenterRotatedBox(last_region_.Clone()));
-  } else if (last_object_id_.has_value()) {
+        ->CopyFrom(ConvertToServerCenterRotatedBox(region.Clone()));
+
+    // Add the text, for multimodal requests.
+    if (query_text.has_value()) {
+      interaction_request_metadata.mutable_query_metadata()
+          ->mutable_text_query()
+          ->set_query(*query_text);
+    }
+  } else if (object_id.has_value()) {
     // Add object request details.
     interaction_request_metadata.set_type(
         lens::LensOverlayInteractionRequestMetadata::TAP);
     interaction_request_metadata.mutable_selection_metadata()
         ->mutable_object()
-        ->set_object_id(*last_object_id_);
+        ->set_object_id(*object_id);
   } else {
-    // The last interaction data should have a region
-    // or an object request.
+    // There should be a region or an object id in the request.
     NOTREACHED();
   }
 
@@ -328,15 +359,24 @@ LensOverlayQueryController::CreateInteractionRequest(
 }
 
 void LensOverlayQueryController::
-    FetchInteractionRequestAndGenerateLensSearchUrl() {
+    FetchInteractionRequestAndGenerateLensSearchUrl(
+        int request_index,
+        lens::mojom::CenterRotatedBoxPtr region,
+        std::optional<std::string> query_text,
+        std::optional<std::string> object_id,
+        std::optional<lens::ImageCrop> image_crop,
+        lens::LensOverlayClusterInfo cluster_info) {
+  if (request_index != request_counter_) {
+    // Early exit if this is an old request.
+    return;
+  }
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kReceivedFullImageResponse);
-  DCHECK(has_pending_interaction_);
-  has_pending_interaction_ = false;
 
   // Fetch the interaction request.
-  lens::LensOverlayServerRequest server_request =
-      CreateInteractionRequest(request_id_generator_->GetNextRequestId());
+  lens::LensOverlayServerRequest server_request = CreateInteractionRequest(
+      std::move(region), query_text, object_id, image_crop,
+      request_id_generator_->GetNextRequestId());
   interaction_endpoint_fetcher_ = CreateEndpointFetcher(server_request);
   interaction_endpoint_fetcher_.get()->PerformRequest(
       base::BindOnce(
@@ -345,9 +385,11 @@ void LensOverlayQueryController::
       google_apis::GetAPIKey().c_str());
 
   // Generate and send the Lens search url.
-  // TODO(b/333134094): Create the url, add the multimodal text, and use
-  // request_id_generator_->GetNextRequestId().
   lens::proto::LensOverlayUrlResponse lens_overlay_url_response;
+  lens_overlay_url_response.set_url(
+      lens::BuildLensSearchURL(
+          query_text, request_id_generator_->GetNextRequestId(), cluster_info)
+          .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));
 }
@@ -356,15 +398,46 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
     std::unique_ptr<EndpointResponse> response) {
   DCHECK_EQ(query_controller_state_,
             QueryControllerState::kReceivedFullImageResponse);
-  // TODO(b/331501820): Add retry logic and set query_controller_state_ back to
-  // kAwaitingFullImageResponse based on the response status, as that
-  // indicates that the data on the server is no longer available.
+  // TODO(b/331501820): Add retry logic using a timeout to clear the request
+  // flow state.
+  if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    RunInteractionCallbackForError();
+    return;
+  }
 
-  // TODO(b/331488406): Use real data.
+  lens::LensOverlayServerResponse server_response;
+  const std::string response_string = response->response;
+  bool parse_successful = server_response.ParseFromArray(
+      response_string.data(), response_string.size());
+  if (!parse_successful) {
+    RunInteractionCallbackForError();
+    return;
+  }
+
+  if (!server_response.has_interaction_response()) {
+    RunInteractionCallbackForError();
+    return;
+  }
+
   lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals(
+      server_response.interaction_response().encoded_response());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(interaction_data_callback_,
                                 lens_overlay_interaction_response));
+}
+
+void LensOverlayQueryController::RunInteractionCallbackForError() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(interaction_data_callback_,
+                                lens::proto::LensOverlayInteractionResponse()));
+}
+
+void LensOverlayQueryController::ResetRequestFlowState() {
+  cluster_info_received_callback_.Reset();
+  interaction_endpoint_fetcher_.reset();
+  cluster_info_ = std::nullopt;
+  request_id_generator_->ResetRequestId();
 }
 
 std::unique_ptr<EndpointFetcher>
@@ -384,9 +457,18 @@ LensOverlayQueryController::CreateEndpointFetcher(
         variations::mojom::GoogleWebVisibility::FIRST_PARTY));
   }
 
+  GURL fetch_url = GURL(lens::features::GetLensOverlayEndpointURL());
+  if (cluster_info_.has_value()) {
+    // The endpoint fetches should use the server session id from the cluster
+    // info.
+    fetch_url = net::AppendOrReplaceQueryParameter(
+        fetch_url, kSessionIdQueryParameterKey,
+        cluster_info_->server_session_id());
+  }
+
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/g_browser_process->shared_url_loader_factory(),
-      /*url=*/GURL(lens::features::GetLensOverlayEndpointURL()),
+      /*url=*/fetch_url,
       /*http_method=*/kHttpMethod,
       /*content_type=*/kContentType,
       /*timeout=*/kServerRequestTimeout,
