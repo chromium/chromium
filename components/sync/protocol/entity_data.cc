@@ -62,6 +62,9 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(legacy_parent_id);
   memory_usage += EstimateMemoryUsage(recipient_public_key);
   memory_usage += EstimateMemoryUsage(collaboration_id);
+  if (deletion_origin.has_value()) {
+    memory_usage += EstimateMemoryUsage(*deletion_origin);
+  }
   return memory_usage;
 }
 

@@ -253,7 +253,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldClearStorageKeyForTombstone) {
   ASSERT_EQ(kStorageKey1, entity->storage_key());
 
   // Mark the entity as removed.
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
   ASSERT_EQ(1u, entity_tracker_.size());
   ASSERT_EQ(0u, entity_tracker_.CountNonTombstoneEntries());
 
@@ -274,7 +274,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldOverrideTombstone) {
   ASSERT_EQ(kStorageKey1, entity->storage_key());
 
   // Mark the entity as removed.
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
   ASSERT_EQ(1u, entity_tracker_.size());
   ASSERT_EQ(0u, entity_tracker_.CountNonTombstoneEntries());
 

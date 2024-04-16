@@ -149,6 +149,7 @@ size_t EstimateMemoryUsage(const P& proto) {
 INSTANTIATE(CrossUserSharingPublicKey)
 INSTANTIATE(DataTypeContext)
 INSTANTIATE(DataTypeProgressMarker)
+INSTANTIATE(DeletionOrigin)
 INSTANTIATE(EntityMetadata)
 INSTANTIATE(EntitySpecifics)
 INSTANTIATE(ModelTypeState)

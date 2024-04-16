@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
@@ -93,6 +94,10 @@ struct EntityData {
   // Note that EntityData would be considered to represent a deletion if its
   // specifics hasn't been set.
   bool is_deleted() const { return specifics.ByteSize() == 0; }
+
+  // Optionally populated for outgoing deletions. See corresponding field in
+  // SyncEntity for details.
+  std::optional<sync_pb::DeletionOrigin> deletion_origin;
 
   // Dumps all info into a base::Value::Dict and returns it.
   base::Value::Dict ToDictionaryValue() const;

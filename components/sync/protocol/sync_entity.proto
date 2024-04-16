@@ -11,6 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
 
@@ -230,4 +231,12 @@ message SyncEntity {
     optional string collaboration_id = 1;
   }
   optional CollaborationMetadata collaboration = 27;
+
+  // Optionally present in CommitMessage for committed deletions (but may remain
+  // unset if the origin is unspecified), it represents which piece of code
+  // triggered a deletion. It is a debug-only field with no compatibility
+  // guarantees, subject to change over time. The main purpose is to help with
+  // investigating and mitigating user reports or incidents that cause data
+  // deletion. Introduced in M126.
+  optional DeletionOrigin deletion_origin = 28;
 }

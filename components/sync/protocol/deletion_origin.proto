@@ -1,0 +1,43 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Protobuf representation of the DeletionOrigin class.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Represents a fingerprint-like token that identifies, or may help identity,
+// which piece of functionality is responsible for issuing a deletion that
+// propagates via Sync. It is sent to the Sync server as part of deletion
+// requests, as a safeguard to investigate and mitigate user reports or even
+// large-scale incidents.
+message DeletionOrigin {
+  // Populated by chromium-based browsers with the version that originally
+  // created the deletion. This will often be the same as the version that
+  // uploaded (committed) the deletion, but in rare cases the latter could be
+  // greater (i.e. the browser was updated in between).
+  optional string chromium_version = 1;
+
+  // Reserved for Google Play Services version information.
+  reserved 2;
+
+  // Hash of the filename in the source code where the deletion originated. The
+  // precise hashing function is unspecified and may change over time. It may
+  // only be assumed that the hashing function is the same for a given version
+  // of the client (see fields above). Hashing is used instead of including the
+  // actual name to reduce the size of this message.
+  optional fixed32 file_name_hash = 3;
+
+  // Line of code where the deletion originated.
+  optional int32 file_line_number = 4;
+}

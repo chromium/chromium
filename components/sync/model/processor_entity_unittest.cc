@@ -450,7 +450,7 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
   const std::string specifics_hash = entity->metadata().specifics_hash();
 
   // Make a local delete.
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
 
   EXPECT_TRUE(entity->metadata().is_deleted());
   EXPECT_EQ(1, entity->metadata().sequence_number());
@@ -490,6 +490,7 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
   EXPECT_EQ(1, request.sequence_number);
   EXPECT_EQ(1, request.base_version);
   EXPECT_EQ(entity->metadata().specifics_hash(), request.specifics_hash);
+  EXPECT_FALSE(entity->metadata().has_deletion_origin());
 
   // Ack the deletion.
   entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
@@ -510,12 +511,38 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
   EXPECT_FALSE(entity->HasCommitData());
 }
 
+TEST_F(ProcessorEntityTest, LocalDeletionWithSpecifiedOrigin) {
+  std::unique_ptr<ProcessorEntity> entity = CreateSynced();
+  const std::string specifics_hash = entity->metadata().specifics_hash();
+  const base::Location location = FROM_HERE;
+
+  // Make a local delete.
+  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(location));
+
+  ASSERT_TRUE(entity->metadata().is_deleted());
+  ASSERT_TRUE(entity->IsUnsynced());
+  ASSERT_TRUE(entity->RequiresCommitRequest());
+
+  // Generate a commit request. The metadata should not change.
+  const sync_pb::EntityMetadata metadata_v1 = entity->metadata();
+  CommitRequestData request;
+  entity->InitializeCommitRequestData(&request);
+  EXPECT_EQ(metadata_v1.SerializeAsString(),
+            entity->metadata().SerializeAsString());
+
+  EXPECT_TRUE(entity->metadata().has_deletion_origin());
+  EXPECT_EQ(location.line_number(),
+            entity->metadata().deletion_origin().file_line_number());
+  EXPECT_TRUE(entity->metadata().deletion_origin().has_file_name_hash());
+  EXPECT_TRUE(entity->metadata().deletion_origin().has_chromium_version());
+}
+
 // Test a local deletion followed by an undeletion (creation).
 TEST_F(ProcessorEntityTest, LocalUndeletion) {
   std::unique_ptr<ProcessorEntity> entity = CreateSynced();
   const std::string specifics_hash = entity->metadata().specifics_hash();
 
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
   ASSERT_TRUE(entity->metadata().is_deleted());
   ASSERT_TRUE(entity->IsUnsynced());
   ASSERT_EQ(1, entity->metadata().sequence_number());
@@ -744,7 +771,7 @@ TEST_F(ProcessorEntityTest,
       {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion});
 
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
   EXPECT_FALSE(entity->metadata().has_deleted_by_version());
 }
 
@@ -754,7 +781,7 @@ TEST_F(ProcessorEntityTest, LocalDeletionRecordsVersionInfoIfFeatureIsEnabled) {
       {syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion},
       {/* disabled_features */});
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalDeletion();
+  entity->RecordLocalDeletion(DeletionOrigin::FromLocation(FROM_HERE));
   std::string expected_version = std::string(version_info::GetVersionNumber());
   EXPECT_EQ(expected_version, entity->metadata().deleted_by_version());
 }

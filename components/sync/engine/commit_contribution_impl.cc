@@ -253,7 +253,11 @@ void CommitContributionImpl::PopulateCommitProto(
   commit_proto->set_name(entity_data.name);
   commit_proto->set_mtime(TimeToProtoTime(entity_data.modification_time));
 
-  if (!entity_data.is_deleted()) {
+  if (entity_data.is_deleted()) {
+    if (entity_data.deletion_origin.has_value()) {
+      *commit_proto->mutable_deletion_origin() = *entity_data.deletion_origin;
+    }
+  } else {
     // Handle bookmarks separately.
     if (type == BOOKMARKS) {
       // Populate SyncEntity.folder for backward-compatibility.

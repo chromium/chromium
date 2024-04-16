@@ -26,6 +26,8 @@ static_library("base") {
     "command_line_switches.h",
     "data_type_histogram.cc",
     "data_type_histogram.h",
+    "deletion_origin.cc",
+    "deletion_origin.h",
     "extensions_activity.cc",
     "extensions_activity.h",
     "hash_util.cc",

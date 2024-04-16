@@ -19,6 +19,7 @@
 #include "components/sync/protocol/compare_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -536,6 +537,12 @@ VISIT_PROTO_FIELDS(const sync_pb::DebugInfo& proto) {
   VISIT(events_dropped);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::DeletionOrigin& proto) {
+  VISIT(chromium_version);
+  VISIT(file_name_hash);
+  VISIT(file_line_number);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(cache_guid);
   VISIT(client_name);
@@ -612,6 +619,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(possibly_trimmed_base_specifics);
   VISIT(deleted_by_version);
   VISIT(collaboration);
+  VISIT(deletion_origin);
 }
 
 VISIT_PROTO_FIELDS(
@@ -1301,6 +1309,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
   VISIT(folder);
   VISIT(client_tag_hash);
   VISIT(collaboration);
+  VISIT(deletion_origin);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncEntity::CollaborationMetadata& proto) {

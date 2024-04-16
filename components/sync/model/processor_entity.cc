@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -224,12 +225,17 @@ void ProcessorEntity::RecordLocalUpdate(
   SetCommitData(std::move(data));
 }
 
-bool ProcessorEntity::RecordLocalDeletion() {
+bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
   IncrementSequenceNumber(base::Time::Now());
   metadata_.set_modification_time(TimeToProtoTime(base::Time::Now()));
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
   metadata_.clear_possibly_trimmed_base_specifics();
+
+  if (origin.is_specified()) {
+    *metadata_.mutable_deletion_origin() =
+        origin.ToProto(version_info::GetVersionNumber());
+  }
 
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion)) {
@@ -270,6 +276,9 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
     data->id = metadata_.server_id();
     data->creation_time = ProtoTimeToTime(metadata_.creation_time());
     data->modification_time = ProtoTimeToTime(metadata_.modification_time());
+    if (metadata_.has_deletion_origin()) {
+      data->deletion_origin = metadata_.deletion_origin();
+    }
     request->entity = std::move(data);
   }
 

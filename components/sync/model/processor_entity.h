@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 
 namespace sync_pb {
@@ -95,7 +96,7 @@ class ProcessorEntity {
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.
-  bool RecordLocalDeletion();
+  bool RecordLocalDeletion(const DeletionOrigin& origin);
 
   // Initializes a message representing this item's uncommitted state
   // and assumes that it is forwarded to the sync engine for commiting.

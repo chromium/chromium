@@ -508,10 +508,12 @@ void ClientTagBasedModelTypeProcessor::Delete(
     return;
   }
 
-  if (entity->RecordLocalDeletion())
+  // TODO(crbug.com/334001702): Implement plumbing for `DeletionOrigin`.
+  if (entity->RecordLocalDeletion(DeletionOrigin::Unspecified())) {
     metadata_change_list->UpdateMetadata(storage_key, entity->metadata());
-  else
+  } else {
     RemoveEntity(entity->storage_key(), metadata_change_list);
+  }
 
   NudgeForCommitIfNeeded();
 }

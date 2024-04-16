@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/deletion_origin.proto";
 import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
 
@@ -98,4 +99,9 @@ message EntityMetadata {
     optional string collaboration_id = 1;
   }
   optional CollaborationMetadata collaboration = 15;
+
+  // Optionally present for committed deletions (but may remain unset if the
+  // origin is unspecified), it represents which piece of code triggered a
+  // deletion. Introduced in M126.
+  optional DeletionOrigin deletion_origin = 16;
 }
