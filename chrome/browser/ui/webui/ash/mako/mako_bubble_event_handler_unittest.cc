@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_event_handler.h"
 
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/events/event.h"
@@ -13,6 +15,9 @@
 
 namespace ash {
 namespace {
+
+using testing::_;
+using testing::VariantWith;
 
 class DelegateForTest : public ash::MakoBubbleEventHandler::Delegate {
  public:
@@ -82,7 +87,8 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventStartsDragging) {
 
   handler_.OnTouchEvent(event.get());
 
-  EXPECT_TRUE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::DraggingState>(_));
 }
 
 TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
@@ -92,7 +98,8 @@ TEST_F(MakoBubbleEventHandlerTest, TouchPressedEventIsIgnored) {
 
   handler_.OnTouchEvent(event.get());
 
-  EXPECT_FALSE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::InitialState>(_));
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
@@ -102,7 +109,8 @@ TEST_F(MakoBubbleEventHandlerTest, MousePressedEventStartsDragging) {
 
   handler_.OnMouseEvent(event.get());
 
-  EXPECT_TRUE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::DraggingState>(_));
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MousePressedEventIsIgnored) {
@@ -112,22 +120,23 @@ TEST_F(MakoBubbleEventHandlerTest, MousePressedEventIsIgnored) {
 
   handler_.OnMouseEvent(event.get());
 
-  EXPECT_FALSE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::InitialState>(_));
 }
 
 TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventProcceedsDragging) {
   // In this test, the widget was first positioned at (x=50,y=50,w=300,h=300).
   // Mouse drags from (140, 140) to (150, 150) and so the widget should be
   // moved to (x=60, y=60, w=300, h=300).
-  handler_.set_dragging_for_testing(true);
-  handler_.set_original_bounds_in_screen_for_testing(gfx::Rect(
-      /*x=*/50,
-      /*y=*/50,
-      /*width=*/300,
-      /*height=*/300));
-  // The original pointer position is relative to screen, so it's 140 + 50.
-  handler_.set_original_pointer_pos_for_testing(
-      gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50));
+  handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{
+      .original_bounds_in_screen = gfx::Rect(
+          /*x=*/50,
+          /*y=*/50,
+          /*width=*/300,
+          /*height=*/300),
+      // The original pointer position is relative to screen, so it's 140 + 50.
+      .original_pointer_pos = gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50),
+  });
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_MOVED,
       /*in_draggable_region=*/true);
@@ -143,7 +152,7 @@ TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventProcceedsDragging) {
 }
 
 TEST_F(MakoBubbleEventHandlerTest, TouchMovedEventIsIgnored) {
-  handler_.set_dragging_for_testing(false);
+  handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_MOVED,
       /*in_draggable_region=*/true);
@@ -157,16 +166,14 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
   // In this test, the widget was first positioned at (x=50,y=50,w=300,h=300).
   // Mouse drags from (140, 140) to (150, 150) and so the widget should be
   // moved to (x=60, y=60, w=300, h=300).
-  handler_.set_dragging_for_testing(true);
-  handler_.set_original_bounds_in_screen_for_testing(gfx::Rect(
-      /*x=*/50,
-      /*y=*/50,
-      /*width=*/300,
-      /*height=*/300));
-  // The original pointer position is relative to screen, so it's 140 + 50.
-  handler_.set_original_pointer_pos_for_testing(
-      gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50));
-  handler_.set_dragging_for_testing(true);
+  handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{
+      .original_bounds_in_screen = gfx::Rect(
+          /*x=*/50,
+          /*y=*/50,
+          /*width=*/300,
+          /*height=*/300),
+      // The original pointer position is relative to screen, so it's 140 + 50.
+      .original_pointer_pos = gfx::Vector2d(/*x=*/140 + 50, /*y=*/140 + 50)});
   std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
       /*type=*/ui::ET_MOUSE_DRAGGED,
       /*in_draggable_region=*/true);
@@ -182,7 +189,7 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventProcceedsDragging) {
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventIsIgnored) {
-  handler_.set_dragging_for_testing(false);
+  handler_.set_state_for_testing(MakoBubbleEventHandler::InitialState{});
   std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
       /*type=*/ui::ET_MOUSE_DRAGGED,
       /*in_draggable_region=*/true);
@@ -193,7 +200,7 @@ TEST_F(MakoBubbleEventHandlerTest, MouseDraggedEventIsIgnored) {
 }
 
 TEST_F(MakoBubbleEventHandlerTest, TouchReleasedEventStopsDragging) {
-  handler_.set_dragging_for_testing(true);
+  handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{});
 
   std::unique_ptr<ui::TouchEvent> event = MakeTouchEvent(
       /*type=*/ui::ET_TOUCH_RELEASED,
@@ -201,11 +208,12 @@ TEST_F(MakoBubbleEventHandlerTest, TouchReleasedEventStopsDragging) {
 
   handler_.OnTouchEvent(event.get());
 
-  EXPECT_FALSE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::InitialState>(_));
 }
 
 TEST_F(MakoBubbleEventHandlerTest, MouseReleasedEventStopsDragging) {
-  handler_.set_dragging_for_testing(true);
+  handler_.set_state_for_testing(MakoBubbleEventHandler::DraggingState{});
 
   std::unique_ptr<ui::MouseEvent> event = makeMouseEvent(
       /*type=*/ui::ET_MOUSE_RELEASED,
@@ -213,7 +221,8 @@ TEST_F(MakoBubbleEventHandlerTest, MouseReleasedEventStopsDragging) {
 
   handler_.OnMouseEvent(event.get());
 
-  EXPECT_FALSE(handler_.get_dragging_for_testing());
+  EXPECT_THAT(handler_.get_state_for_testing(),
+              VariantWith<ash::MakoBubbleEventHandler::InitialState>(_));
 }
 
 }  // namespace

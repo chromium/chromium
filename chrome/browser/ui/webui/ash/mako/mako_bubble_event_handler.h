@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_BUBBLE_EVENT_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -25,6 +26,13 @@ class MakoBubbleEventHandler : public ui::EventHandler {
     virtual void SetWidgetBoundsConstrained(const gfx::Rect bounds) = 0;
   };
 
+  struct InitialState {};
+  struct DraggingState {
+    gfx::Rect original_bounds_in_screen;
+    gfx::Vector2d original_pointer_pos;
+  };
+  using State = absl::variant<InitialState, DraggingState>;
+
   explicit MakoBubbleEventHandler(Delegate* delegate);
 
   MakoBubbleEventHandler(const MakoBubbleEventHandler&) = delete;
@@ -37,20 +45,14 @@ class MakoBubbleEventHandler : public ui::EventHandler {
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // Test only
-  bool get_dragging_for_testing();
-  void set_dragging_for_testing(bool dragging);
-  void set_original_bounds_in_screen_for_testing(gfx::Rect bounds);
-  void set_original_pointer_pos_for_testing(gfx::Vector2d pos);
+  State get_state_for_testing();
+  void set_state_for_testing(State s);
 
  private:
-  bool IsInSameDisplay(const gfx::Rect& original_bounds,
-                       const gfx::Rect& new_bounds);
   void ProcessPointerEvent(ui::LocatedEvent& event);
 
   raw_ptr<Delegate> delegate_;
-  bool dragging_ = false;
-  gfx::Rect original_bounds_in_screen_;
-  gfx::Vector2d original_pointer_pos_;
+  State state_;
 };
 
 }  // namespace ash
