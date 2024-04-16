@@ -11016,7 +11016,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Sign in to let Chrome suggest tab groups
       </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI">
-        Organizing into a tab group…
+        Grouping your tabs…
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_TITLE" desc="The header text for the MVP success state in the tab organization UI">
         Tab group suggestion
