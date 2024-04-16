@@ -14,6 +14,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
@@ -175,8 +176,19 @@ class LensOverlayController : public LensSearchboxClient,
   void OnSidePanelEntryDeregistered();
 
   // Testing function to issue a text request.
-  // TODO(b/328294794): Remove this function when connecting the mojo call.
   void IssueTextSelectionRequestForTesting(const std::string& text_query);
+
+  // Gets the WebContents housed in the side panel for testing.
+  content::WebContents* GetSidePanelWebContentsForTesting();
+
+ protected:
+  // Override these methods to stub out network requests for testing.
+  virtual std::unique_ptr<lens::LensOverlayQueryController>
+  CreateLensQueryController(
+      lens::LensOverlayFullImageResponseCallback full_image_callback,
+      lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      variations::VariationsClient* variations_client);
 
  private:
   class UnderlyingWebContentsObserver;
@@ -205,6 +217,7 @@ class LensOverlayController : public LensSearchboxClient,
   const lens::LensOverlayInteractionResponse& GetLensResponse() const override;
   void OnThumbnailRemoved() const override;
   void OnSuggestionAccepted(const GURL& destination_url) override;
+  void OnPageBound() override;
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
@@ -230,7 +243,7 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Handles a text selection by sending a text-only request to the query
   // controller and to the search box.
-  void IssueTextSelectionRequest(const std::string& text_query);
+  void IssueTextSelectionRequest(const std::string& text_query) override;
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
@@ -267,6 +280,10 @@ class LensOverlayController : public LensSearchboxClient,
   // panel is not bound at the time of a text request.
   std::optional<GURL> pending_side_panel_url_ = std::nullopt;
 
+  // A pending text query to be loaded in the side panel. Needed when the side
+  // panel is not bound at the time of a text request.
+  std::optional<std::string> pending_text_query_ = std::nullopt;
+
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS
   // and has bound the connection.
@@ -284,7 +301,14 @@ class LensOverlayController : public LensSearchboxClient,
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
 
-  // Searchbox handler for passing in image and text selections.
+  // Searchbox handler for passing in image and text selections. The handler is
+  // null if the WebUI containing the searchbox has not been initialized yet,
+  // like in the case of side panel opening. In addition, the handler may be
+  // initialized, but the remote not yet set because the WebUI calls SetPage()
+  // once it is ready to receive data from C++. Therefore, we must always check
+  // that:
+  //      1) searchbox_handler_ exists and
+  //      2) searchbox_handler_->IsRemoteBound() is true.
   std::unique_ptr<RealboxHandler> searchbox_handler_;
 
   // Observer for the WebContents of the associated tab. Only valid while the

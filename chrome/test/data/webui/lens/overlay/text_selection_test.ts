@@ -128,6 +128,11 @@ suite('TextSelection', function() {
         firstWordBoundingBox.x, highlightedWords[0]!.getBoundingClientRect().x);
     assertEquals(
         firstWordBoundingBox.y, highlightedWords[0]!.getBoundingClientRect().y);
+
+    // Verify the correct request was made.
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertEquals('hello', textQuery);
   });
 
   test(
@@ -162,6 +167,11 @@ suite('TextSelection', function() {
         assertEquals(
             secondWordBoundingBox.y,
             highlightedWords[1]!.getBoundingClientRect().y);
+
+        // Verify the correct request was made.
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertEquals('hello there', textQuery);
       });
 
   test(
@@ -197,6 +207,11 @@ suite('TextSelection', function() {
         assertEquals(
             thirdWordBoundingBox.y,
             highlightedWords[1]!.getBoundingClientRect().y);
+
+        // Verify the correct request was made.
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertEquals('there test', textQuery);
       });
 
   test(
@@ -224,6 +239,11 @@ suite('TextSelection', function() {
         const highlightedWords = getHighlightedWords();
 
         assertEquals(6, highlightedWords.length);
+
+        // Verify the correct request was made.
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertEquals('hello there test a new line', textQuery);
       });
 
   test('verify that dragging across paragraphs works', async () => {
@@ -260,6 +280,11 @@ suite('TextSelection', function() {
     assertEquals(
         secondParagraphSecondWordBox.y,
         highlightedWords[2]!.getBoundingClientRect().y);
+
+    // Verify the correct request was made.
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertEquals('line FAKE HEADING', textQuery);
   });
 
   test('verify that starting a drag off a word does nothing', async () => {
@@ -268,6 +293,8 @@ suite('TextSelection', function() {
     const highlightedWords = getHighlightedWords();
 
     assertEquals(0, highlightedWords.length);
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
   });
 
   test('verify that clicking on a word unhighlights words', async () => {
@@ -313,8 +340,4 @@ suite('TextSelection', function() {
     highlightedWords = getHighlightedWords();
     assertEquals(0, highlightedWords.length);
   });
-
-  // TODO(b/328294794): Once there is logic for doing something after a text
-  // selection, add tests to ensure finishing a drag off the selection overlay
-  // still triggers text selection logic.
 });

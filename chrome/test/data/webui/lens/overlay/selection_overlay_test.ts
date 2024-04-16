@@ -99,6 +99,9 @@ suite('SelectionOverlay', function() {
             },
             {x: 0, y: 0});
 
+        const textQuery = await testBrowserProxy.handler.whenCalled(
+            'issueTextSelectionRequest');
+        assertDeepEquals('hello', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRequest'));
       });
@@ -130,6 +133,9 @@ suite('SelectionOverlay', function() {
         const rect =
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertDeepEquals(expectedRect, rect);
+        assertEquals(
+            0,
+            testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
       });
 
   test(

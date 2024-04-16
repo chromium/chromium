@@ -49,6 +49,15 @@ constexpr char kRequestNotificationsScript[] = R"(
       })
       )";
 
+constexpr char kCheckSidePanelLoadedScript[] =
+    "(function() {const root = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot; "
+    "const iframeSrcLoaded = "
+    "  root.getElementById('results').src.includes('q=' + $1);"
+    "const searchboxInputLoaded = "
+    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
+
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
   void ObjectsReceived(
@@ -326,8 +335,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             SidePanelEntry::Id::kLensOverlayResults);
 }
 
-// TODO(b/328294794): This browser test should be deleted / modified after text
-// requests are implemented from mojo.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        ShowSidePanelAfterTextSelectionRequest) {
   WaitForPaint();
@@ -347,8 +354,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // TODO(b/328294794): This function should be replaced when the text selection
-  // call from mojo is implemented.
   controller->IssueTextSelectionRequestForTesting(text_query);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));
@@ -356,9 +361,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Expect the Lens Overlay results panel to open.
   auto* coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
-  ASSERT_TRUE(coordinator->IsSidePanelShowing());
-  EXPECT_EQ(coordinator->GetCurrentEntryId(),
-            SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+
+  // Verify that the side panel displays our query.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelLoadedScript, text_query));
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

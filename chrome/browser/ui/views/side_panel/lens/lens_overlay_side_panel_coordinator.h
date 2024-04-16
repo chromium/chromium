@@ -45,6 +45,8 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver {
   // SidePanelEntryObserver:
   void OnEntryHidden(SidePanelEntry* entry) override;
 
+  content::WebContents* GetSidePanelWebContents();
+
  private:
   // Registers the entry in the side panel if it doesn't already exist.
   void RegisterEntry();

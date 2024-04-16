@@ -54,6 +54,11 @@ void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
   DeregisterEntry();
 }
 
+content::WebContents*
+LensOverlaySidePanelCoordinator::GetSidePanelWebContents() {
+  return side_panel_web_view_->GetWebContents();
+}
+
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
   auto* registry = SidePanelRegistry::Get(GetTabWebContents());
   CHECK(registry);

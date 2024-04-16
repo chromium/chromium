@@ -14,7 +14,11 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
 export class TestLensOverlayPageHandler extends TestBrowserProxy implements
     LensPageHandlerInterface {
   constructor() {
-    super(['closeRequestedByOverlay', 'issueLensRequest']);
+    super([
+      'closeRequestedByOverlay',
+      'issueLensRequest',
+      'issueTextSelectionRequest',
+    ]);
   }
 
   closeRequestedByOverlay() {
@@ -23,6 +27,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   issueLensRequest(rect: CenterRotatedBox) {
     this.methodCalled('issueLensRequest', rect);
+  }
+
+  issueTextSelectionRequest(query: string) {
+    this.methodCalled('issueTextSelectionRequest', query);
   }
 }
 

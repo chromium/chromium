@@ -35,6 +35,9 @@ class LensSearchboxClient {
 
   // Called when a suggestion is accepted. Should open the given URL.
   virtual void OnSuggestionAccepted(const GURL& destination_url) = 0;
+
+  // Called when the handler binds to the remote page, aka when SetPage is set.
+  virtual void OnPageBound() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_

@@ -167,17 +167,14 @@ void LensOverlayController::ShowUI() {
   }
 
   // Create the query controller.
-  lens_overlay_query_controller_ =
-      std::make_unique<lens::LensOverlayQueryController>(
-          base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
-                              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(
-              &LensOverlayController::HandleInteractionURLResponse,
-              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(
-              &LensOverlayController::HandleInteractionDataResponse,
-              weak_factory_.GetWeakPtr()),
-          variations_client_);
+  lens_overlay_query_controller_ = CreateLensQueryController(
+      base::BindRepeating(&LensOverlayController::HandleStartQueryResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleInteractionURLResponse,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&LensOverlayController::HandleInteractionDataResponse,
+                          weak_factory_.GetWeakPtr()),
+      variations_client_);
 
   state_ = State::kScreenshot;
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
@@ -283,7 +280,6 @@ void LensOverlayController::BindSidePanel(
   side_panel_receiver_.Bind(std::move(receiver));
   side_panel_page_.Bind(std::move(page));
   if (pending_side_panel_url_.has_value()) {
-    // TODO(b/330204523): Send query to the searchbox.
     side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
     pending_side_panel_url_.reset();
   }
@@ -363,6 +359,25 @@ void LensOverlayController::OnSidePanelEntryDeregistered() {
 void LensOverlayController::IssueTextSelectionRequestForTesting(
     const std::string& text_query) {
   IssueTextSelectionRequest(text_query);
+}
+
+content::WebContents*
+LensOverlayController::GetSidePanelWebContentsForTesting() {
+  if (!results_side_panel_coordinator_) {
+    return nullptr;
+  }
+  return results_side_panel_coordinator_->GetSidePanelWebContents();
+}
+
+std::unique_ptr<lens::LensOverlayQueryController>
+LensOverlayController::CreateLensQueryController(
+    lens::LensOverlayFullImageResponseCallback full_image_callback,
+    lens::LensOverlayUrlResponseCallback url_callback,
+    lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+    variations::VariationsClient* variations_client) {
+  return std::make_unique<lens::LensOverlayQueryController>(
+      std::move(full_image_callback), std::move(url_callback),
+      std::move(interaction_data_callback), variations_client);
 }
 
 class LensOverlayController::UnderlyingWebContentsObserver
@@ -536,6 +551,19 @@ void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
   }
 }
 
+void LensOverlayController::OnPageBound() {
+  // If ths side panel closes before the remote gets bound, searchbox_handler_
+  // could become unset. Verify it is set before sending to the side panel.
+  if (!pending_text_query_.has_value() || !searchbox_handler_ ||
+      !searchbox_handler_->IsRemoteBound()) {
+    return;
+  }
+  // TODO(b/333425452): Pass thumbnail to searchbox.
+  // Send any pending inputs for the searchbox.
+  searchbox_handler_->SetInputText(*pending_text_query_);
+  pending_text_query_.reset();
+}
+
 void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {}
 
 void LensOverlayController::TabBackgrounded(tabs::TabInterface* tab) {
@@ -588,7 +616,14 @@ void LensOverlayController::IssueTextSelectionRequest(
     const std::string& query) {
   selected_region_.reset();
 
-  // TODO(b/330204523): Send query to the searchbox.
+  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
+    searchbox_handler_->SetInputText(query);
+  } else {
+    // If the side panel was not bound at the time of request, we store the
+    // query as pending to load results on bind.
+    pending_text_query_ = query;
+  }
+
   lens_overlay_query_controller_->SendTextOnlyQuery(query);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;

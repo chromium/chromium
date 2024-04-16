@@ -11000,6 +11000,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/lens/core/mojom:mojo_bindings",
+      "//chrome/browser/lens/lens_overlay",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/permissions",

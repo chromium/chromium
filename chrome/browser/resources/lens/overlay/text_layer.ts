@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
+import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {Text, Word} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
@@ -83,12 +85,33 @@ export class TextLayerElement extends PolymerElement {
   // Whether the user is currently selecting text.
   private isSelectingText: boolean;
 
-  override ready() {
-    super.ready();
+  private readonly router: LensPageCallbackRouter;
+  private textReceivedListenerId: number|null = null;
+
+  constructor() {
+    super();
+    // Need to save the router so that if the BrowserProxyImpl instance changes,
+    // we are still adding and removing listeners to the correct router.
+    this.router = BrowserProxyImpl.getInstance().callbackRouter;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
 
     // Set up listener to receive text from C++.
-    BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
-        this.onTextReceived.bind(this));
+    this.textReceivedListenerId =
+        BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
+            this.onTextReceived.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // Set up listener to receive text from C++.
+    assert(this.textReceivedListenerId);
+    BrowserProxyImpl.getInstance().callbackRouter.removeListener(
+        this.textReceivedListenerId);
+    this.textReceivedListenerId = null;
   }
 
   handleDownGesture(event: GestureEvent): boolean {
@@ -122,8 +145,11 @@ export class TextLayerElement extends PolymerElement {
   }
 
   handleUpGesture() {
-    // TODO(b/328294794): Do something with the text selection.
     this.isSelectingText = false;
+
+    // On drag complete, send the selected text to C++.
+    BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
+        this.getHighlightedText());
   }
 
   cancelGesture() {
@@ -151,6 +177,25 @@ export class TextLayerElement extends PolymerElement {
     // Need to set this.renderedWords to a new array instead of
     // this.renderedWords.push() to ensure the dom-repeat updates.
     this.renderedWords = receivedWords;
+  }
+
+  private getHighlightedText(): string {
+    // Return early if there isn't a valid seleciton.
+    if (this.selectionStartIndex === -1 || this.selectionEndIndex === -1) {
+      return '';
+    }
+
+    const startIndex =
+        Math.min(this.selectionStartIndex, this.selectionEndIndex);
+    const endIndex = Math.max(this.selectionStartIndex, this.selectionEndIndex);
+
+    const selectedWords = this.renderedWords.slice(startIndex, endIndex + 1);
+    return selectedWords
+        .map((word, index) => {
+          return word.plainText +
+              (index < selectedWords.length - 1 ? word.textSeparator : '');
+        })
+        .join('');
   }
 
   /** @return The CSS styles string for the given word. */

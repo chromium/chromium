@@ -34,6 +34,10 @@ interface LensPageHandler {
   // TODO(b/329262670): Verify normalization does not cause off-by-1 pixel
   // errors.
   IssueLensRequest(CenterRotatedBox region);
+
+  // When this method is called, the C++ coordinator issues a SRP request with
+  // given text string in the side panel.
+  IssueTextSelectionRequest(string query);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

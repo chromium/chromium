@@ -111,11 +111,11 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayUrlResponseCallback url_callback,
     LensOverlayInteractionResponseCallback interaction_data_callback,
     variations::VariationsClient* variations_client)
-    : request_id_generator_{std::make_unique<
-          lens::LensOverlayRequestIdGenerator>()},
-      full_image_callback_{full_image_callback},
-      url_callback_{url_callback},
-      interaction_data_callback_{interaction_data_callback},
+    : full_image_callback_(std::move(full_image_callback)),
+      request_id_generator_(
+          std::make_unique<lens::LensOverlayRequestIdGenerator>()),
+      url_callback_(std::move(url_callback)),
+      interaction_data_callback_(std::move(interaction_data_callback)),
       variations_client_(variations_client) {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;

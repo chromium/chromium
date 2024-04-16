@@ -42,17 +42,16 @@ class LensOverlayQueryController {
  public:
   explicit LensOverlayQueryController(
       LensOverlayFullImageResponseCallback full_image_callback,
-      base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
-          url_callback,
-      base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-          interaction_data_callback,
+      LensOverlayUrlResponseCallback url_callback,
+      LensOverlayInteractionResponseCallback interaction_data_callback,
       variations::VariationsClient* variations_client);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
   // returning the response to the full image callback. Should be called
-  // exactly once.
-  void StartQueryFlow(const SkBitmap& screenshot);
+  // exactly once. Override these methods to stub out network requests for
+  // testing.
+  virtual void StartQueryFlow(const SkBitmap& screenshot);
 
   // Clears the state and resets stored values.
   void EndQuery();
@@ -75,6 +74,10 @@ class LensOverlayQueryController {
   // Creates an endpoint fetcher for fetching the request data.
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       lens::LensOverlayServerRequest request_data);
+
+  // The callback for full image requests, including upon query flow start
+  // and interaction retries.
+  LensOverlayFullImageResponseCallback full_image_callback_;
 
  private:
   enum class QueryControllerState {
@@ -158,9 +161,6 @@ class LensOverlayQueryController {
 
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
-  LensOverlayFullImageResponseCallback full_image_callback_;
-
-  // Url callback for an interaction.
   LensOverlayUrlResponseCallback url_callback_;
 
   // Interaction data callback for an interaction.

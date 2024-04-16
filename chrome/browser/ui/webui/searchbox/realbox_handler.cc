@@ -343,6 +343,13 @@ void RealboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
   page_set_ = page_.is_bound();
+
+  // The client may have text waiting to be sent to the searchbox that it
+  // couldn't do earlier since the page binding was not set. So now we let the
+  // client know the binding is ready.
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnPageBound();
+  }
 }
 
 void RealboxHandler::OnFocusChanged(bool focused) {
