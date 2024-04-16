@@ -50,7 +50,11 @@ rootWebArea
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox
 ++++++++textField editable protected name='Password:'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible name='Strong password'
 ++++++labelText ignored
 ++++++++staticText ignored name='Radio: '
 ++++++++radioButton name='Radio:' checkedState=false

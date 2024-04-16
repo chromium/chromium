@@ -19,9 +19,13 @@ rootWebArea
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox
 ++++++++textField editable protected name='Password:' value='%E2%80%A2%E2%80%A2%E2%80%A2'
-++++++++++genericContainer editable
-++++++++++++staticText editable name='%E2%80%A2%E2%80%A2%E2%80%A2'
-++++++++++++++inlineTextBox editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='%E2%80%A2%E2%80%A2%E2%80%A2'
+++++++++++++++++++inlineTextBox editable
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText ignored invisible name='Strong password'
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox

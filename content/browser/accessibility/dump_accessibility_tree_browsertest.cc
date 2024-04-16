@@ -123,6 +123,8 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
   // everywhere.
   enabled_features->emplace_back(
       features::kEnableAccessibilityAriaVirtualContent);
+  // crbug.com/330686628 - temporary until enabled everywhere
+  enabled_features->emplace_back(blink::features::kPasswordStrongLabel);
   DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
                                             disabled_features);
 }
