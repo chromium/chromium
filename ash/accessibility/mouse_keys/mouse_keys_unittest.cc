@@ -5,6 +5,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/events/test_event_capturer.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
@@ -61,58 +62,6 @@ class TestTextInputView : public views::WidgetDelegateView {
   raw_ptr<views::Textfield> text_field_;  // owned by views hierarchy.
 };
 
-class EventCapturer : public ui::EventHandler {
- public:
-  EventCapturer() { Reset(); }
-
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-
-  ~EventCapturer() override = default;
-
-  void Reset() {
-    key_events_.clear();
-    mouse_events_.clear();
-  }
-
-  void OnKeyEventRewrite(const ui::KeyEvent* event) {}
-
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    key_events_.push_back(*event);
-
-    // If there is a possibility that we're in an infinite loop, we should
-    // exit early with a sensible error rather than letting the test time out.
-    ASSERT_LT(key_events_.size(), 100u);
-  }
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    // Filter out extraneous mouse events like mouse entered, exited,
-    // capture changed, etc.
-    ui::EventType type = event->type();
-    if (type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED ||
-        type == ui::ET_MOUSE_MOVED) {
-      mouse_events_.push_back(
-          ui::MouseEvent(event->type(), event->location(),
-                         event->root_location(), ui::EventTimeForNow(),
-                         event->flags(), event->changed_button_flags()));
-      event->StopPropagation();
-
-      // If there is a possibility that we're in an infinite loop, we should
-      // exit early with a sensible error rather than letting the test time out.
-      ASSERT_LT(mouse_events_.size(), 100u);
-    }
-  }
-
-  const std::vector<ui::KeyEvent>& key_events() const { return key_events_; }
-  const std::vector<ui::MouseEvent>& mouse_events() const {
-    return mouse_events_;
-  }
-
- private:
-  std::vector<ui::KeyEvent> key_events_;
-  std::vector<ui::MouseEvent> mouse_events_;
-};
-
 class EventRewriterWrapper : public ui::EventRewriter {
  public:
   EventRewriterWrapper() = default;
@@ -142,6 +91,7 @@ class MouseKeysTest : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityMouseKeys);
     AshTestBase::SetUp();
+    event_capturer_.set_capture_mouse_enter_exit(false);
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(&rewriter_);
     GetContext()->AddPreTargetHandler(&event_capturer_);
 
@@ -226,7 +176,7 @@ class MouseKeysTest : public AshTestBase {
                       static_cast<int>(dominant_hand));
   }
 
-  void ClearEvents() { event_capturer_.Reset(); }
+  void ClearEvents() { event_capturer_.ClearEvents(); }
 
   void PressKey(ui::KeyboardCode key_code, int flags = 0) {
     GetEventGenerator()->PressKey(key_code, flags);
@@ -306,7 +256,7 @@ class MouseKeysTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  EventCapturer event_capturer_;
+  TestEventCapturer event_capturer_;
   EventRewriterWrapper rewriter_;
 };
 

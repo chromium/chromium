@@ -3557,6 +3557,8 @@ test("ash_unittests") {
     "events/peripheral_customization_event_rewriter_unittest.cc",
     "events/prerewritten_event_forwarder_unittest.cc",
     "events/select_to_speak_event_handler_unittest.cc",
+    "events/test_event_capturer.cc",
+    "events/test_event_capturer.h",
     "extended_desktop_unittest.cc",
     "fast_ink/fast_ink_host_frame_utils_unittest.cc",
     "fast_ink/fast_ink_host_unittest.cc",

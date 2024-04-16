@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
+#include "ash/events/test_event_capturer.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/accessibility_feature_disable_dialog.h"
@@ -36,71 +37,6 @@ namespace ash {
 
 namespace {
 const int kScrollToMenuBoundsBuffer = 18;
-
-class MouseEventCapturer : public ui::EventHandler {
- public:
-  MouseEventCapturer() { Reset(); }
-
-  MouseEventCapturer(const MouseEventCapturer&) = delete;
-  MouseEventCapturer& operator=(const MouseEventCapturer&) = delete;
-
-  ~MouseEventCapturer() override = default;
-
-  void Reset() {
-    events_.clear();
-    wheel_events_.clear();
-  }
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    bool save_event = false;
-    bool stop_event = false;
-    // Filter out extraneous mouse events like mouse entered, exited,
-    // capture changed, etc.
-    ui::EventType type = event->type();
-    if (type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_RELEASED) {
-      // Only track left and right mouse button events, ensuring that we get
-      // left-click, right-click and double-click.
-      if (!(event->flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
-          (!(event->flags() & ui::EF_RIGHT_MOUSE_BUTTON)))
-        return;
-      save_event = true;
-      // Stop event propagation so we don't click on random stuff that
-      // might break test assumptions.
-      stop_event = true;
-    } else if (type == ui::ET_MOUSE_DRAGGED) {
-      save_event = true;
-      stop_event = false;
-    } else if (type == ui::ET_MOUSEWHEEL) {
-      // Save it immediately as a MouseWheelEvent.
-      wheel_events_.push_back(ui::MouseWheelEvent(
-          event->AsMouseWheelEvent()->offset(), event->location(),
-          event->root_location(), ui::EventTimeForNow(), event->flags(),
-          event->changed_button_flags()));
-    }
-    if (save_event) {
-      events_.push_back(ui::MouseEvent(event->type(), event->location(),
-                                       event->root_location(),
-                                       ui::EventTimeForNow(), event->flags(),
-                                       event->changed_button_flags()));
-    }
-    if (stop_event)
-      event->StopPropagation();
-
-    // If there is a possibility that we're in an infinite loop, we should
-    // exit early with a sensible error rather than letting the test time out.
-    ASSERT_LT(events_.size(), 100u);
-  }
-
-  const std::vector<ui::MouseEvent>& captured_events() const { return events_; }
-  const std::vector<ui::MouseWheelEvent>& captured_mouse_wheel_events() const {
-    return wheel_events_;
-  }
-
- private:
-  std::vector<ui::MouseEvent> events_;
-  std::vector<ui::MouseWheelEvent> wheel_events_;
-};
-
 }  // namespace
 
 class AutoclickTest : public AshTestBase {
@@ -115,6 +51,8 @@ class AutoclickTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    mouse_event_capturer_.set_capture_mouse_move(false);
+    mouse_event_capturer_.set_capture_mouse_enter_exit(false);
     Shell::Get()->AddPreTargetHandler(&mouse_event_capturer_);
     GetAutoclickController()->SetAutoclickDelay(base::TimeDelta());
 
@@ -197,10 +135,10 @@ class AutoclickTest : public AshTestBase {
     return scroll_view->GetViewByID(static_cast<int>(view_id));
   }
 
-  void ClearMouseEvents() { mouse_event_capturer_.Reset(); }
+  void ClearMouseEvents() { mouse_event_capturer_.ClearEvents(); }
 
   const std::vector<ui::MouseEvent>& GetMouseEvents() {
-    return mouse_event_capturer_.captured_events();
+    return mouse_event_capturer_.mouse_events();
   }
 
   const std::vector<ui::MouseWheelEvent>& GetMouseWheelEvents() {
@@ -208,7 +146,7 @@ class AutoclickTest : public AshTestBase {
   }
 
  private:
-  MouseEventCapturer mouse_event_capturer_;
+  TestEventCapturer mouse_event_capturer_;
 };
 
 TEST_F(AutoclickTest, ToggleEnabled) {

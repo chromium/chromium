@@ -12,6 +12,7 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/events/test_event_capturer.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -104,26 +105,6 @@ class TestAccessibilityEventRewriterDelegate
   std::vector<MagnifierCommand> magnifier_commands_;
 };
 
-// Records all key events for testing.
-class EventCapturer : public ui::EventHandler {
- public:
-  EventCapturer() = default;
-  EventCapturer(const EventCapturer&) = delete;
-  EventCapturer& operator=(const EventCapturer&) = delete;
-  ~EventCapturer() override = default;
-
-  void Reset() { last_key_event_.reset(); }
-
-  ui::KeyEvent* last_key_event() { return last_key_event_.get(); }
-
- private:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    last_key_event_ = std::make_unique<ui::KeyEvent>(*event);
-  }
-
-  std::unique_ptr<ui::KeyEvent> last_key_event_;
-};
-
 class KeyboardModifierEventRewriterDelegate
     : public ui::KeyboardModifierEventRewriter::Delegate {
  public:
@@ -159,6 +140,7 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
 
   void SetUp() override {
     ash::AshTestBase::SetUp();
+    event_capturer_.set_capture_mouse_enter_exit(false);
     generator_ = AshTestBase::GetEventGenerator();
 
     accessibility_event_rewriter_ =
@@ -196,7 +178,7 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
   }
 
  protected:
-  EventCapturer& event_capturer() { return event_capturer_; }
+  TestEventCapturer& event_capturer() { return event_capturer_; }
 
   TestAccessibilityEventRewriterDelegate&
   accessibility_event_rewriter_delegate() {
@@ -219,7 +201,7 @@ class AccessibilityEventRewriterTestBase : public ash::AshTestBase {
   }
 
  private:
-  EventCapturer event_capturer_;
+  TestEventCapturer event_capturer_;
 
   ui::test::FakeEventRewriterAshDelegate event_rewriter_ash_delegate_;
   ui::StubKeyboardLayoutEngine keyboard_layout_engine_;
@@ -583,12 +565,12 @@ class MouseKeysAccessibilityEventRewriterTest
 TEST_F(MouseKeysAccessibilityEventRewriterTest, CapturesCorrectInput) {
   // Mouse Keys should treat 'i' as a click.
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_I);
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
 
   // Mouse Keys should not capture 'g'.
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_G);
-  ASSERT_TRUE(event_capturer().last_key_event());
-  EXPECT_EQ(ui::VKEY_G, event_capturer().last_key_event()->key_code());
+  ASSERT_TRUE(event_capturer().LastKeyEvent());
+  EXPECT_EQ(ui::VKEY_G, event_capturer().LastKeyEvent()->key_code());
 }
 
 class SwitchAccessAccessibilityEventRewriterTest
@@ -656,14 +638,14 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
        {ui::VKEY_2, {kSwitchAccessUsbDevice}}},
       SwitchAccessCommand::kSelect);
 
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
 
   // Press 1 from the internal keyboard.
   generator().PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
   generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       SwitchAccessCommand::kSelect,
       accessibility_event_rewriter_delegate().switch_access_commands().back());
@@ -675,7 +657,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
   generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 3 /* keyboard id */);
 
   // The event was not captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       0u,
       accessibility_event_rewriter_delegate().switch_access_commands().size());
@@ -685,7 +667,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
   generator().ReleaseKey(ui::VKEY_2, ui::EF_NONE, 2 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       SwitchAccessCommand::kSelect,
       accessibility_event_rewriter_delegate().switch_access_commands().back());
@@ -697,7 +679,7 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest, CaptureSpecifiedKeys) {
   generator().ReleaseKey(ui::VKEY_3, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was not captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       0u,
       accessibility_event_rewriter_delegate().switch_access_commands().size());
@@ -712,14 +694,14 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest,
        {ui::VKEY_3, {kSwitchAccessInternalDevice}}},
       SwitchAccessCommand::kSelect);
 
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
 
   // Press the "1" key.
   generator().PressKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
   generator().ReleaseKey(ui::VKEY_1, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       SwitchAccessCommand::kSelect,
       accessibility_event_rewriter_delegate().switch_access_commands().back());
@@ -738,16 +720,16 @@ TEST_P(SwitchAccessAccessibilityEventRewriterTest,
   // We received a new event.
 
   // The event was NOT captured by AccessibilityEventRewriter.
-  EXPECT_TRUE(event_capturer().last_key_event());
-  EXPECT_FALSE(event_capturer().last_key_event()->handled());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
+  EXPECT_FALSE(event_capturer().LastKeyEvent()->handled());
 
   // Press the "4" key.
-  event_capturer().Reset();
+  event_capturer().ClearEvents();
   generator().PressKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
   generator().ReleaseKey(ui::VKEY_4, ui::EF_NONE, 1 /* keyboard id */);
 
   // The event was captured by AccessibilityEventRewriter.
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       SwitchAccessCommand::kSelect,
       accessibility_event_rewriter_delegate().switch_access_commands().back());
@@ -951,16 +933,16 @@ TEST_P(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
   // Press and release Ctrl+Alt+Up.
   // Verify that the events are captured by AccessibilityEventRewriter.
   generator().PressModifierKeys(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  event_capturer().Reset();
+  event_capturer().ClearEvents();
 
   generator().PressKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       MagnifierCommand::kMoveUp,
       accessibility_event_rewriter_delegate().magnifier_commands().back());
 
   generator().ReleaseKey(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       MagnifierCommand::kMoveStop,
       accessibility_event_rewriter_delegate().magnifier_commands().back());
@@ -968,27 +950,27 @@ TEST_P(MagnifierAccessibilityEventRewriterTest, CaptureKeys) {
   // Press and release Ctrl+Alt+Down.
   // Verify that the events are captured by AccessibilityEventRewriter.
   generator().PressKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       MagnifierCommand::kMoveDown,
       accessibility_event_rewriter_delegate().magnifier_commands().back());
 
   generator().ReleaseKey(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_FALSE(event_capturer().last_key_event());
+  EXPECT_FALSE(event_capturer().LastKeyEvent());
   EXPECT_EQ(
       MagnifierCommand::kMoveStop,
       accessibility_event_rewriter_delegate().magnifier_commands().back());
 
   generator().ReleaseModifierKeys(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
-  event_capturer().Reset();
+  event_capturer().ClearEvents();
 
   // Press and release the "3" key.
   // Verify that the events are not captured by AccessibilityEventRewriter.
   generator().PressKey(ui::VKEY_3, ui::EF_NONE);
-  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
 
   generator().ReleaseKey(ui::VKEY_3, ui::EF_NONE);
-  EXPECT_TRUE(event_capturer().last_key_event());
+  EXPECT_TRUE(event_capturer().LastKeyEvent());
 }
 
 }  // namespace ash
