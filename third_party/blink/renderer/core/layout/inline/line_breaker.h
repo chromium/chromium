@@ -61,9 +61,6 @@ class CORE_EXPORT LineBreaker {
   // True if the last line has `box-decoration-break: clone`, which affected the
   // size.
   bool HasClonedBoxDecorations() const { return has_cloned_box_decorations_; }
-  // True if the last processed line might contain ruby overhang. It affects
-  // min-max computation.
-  bool MayHaveRubyOverhang() const { return may_have_ruby_overhang_; }
 
   // Compute the next line break point and produces InlineItemResults for
   // the line.
@@ -363,8 +360,6 @@ class CORE_EXPORT LineBreaker {
 
   // True if the resultant line contains a RubyColumn with inline-end overhang.
   bool maybe_have_end_overhang_ = false;
-  // True if the last processed line might contain ruby overhang.
-  bool may_have_ruby_overhang_ = false;
 
   // True if ShouldCreateNewSvgSegment() should be called.
   bool needs_svg_segmentation_ = false;

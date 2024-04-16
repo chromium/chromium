@@ -67,6 +67,7 @@ void LineInfo::Reset() {
   is_ruby_base_ = false;
   is_ruby_text_ = false;
   may_have_text_combine_or_ruby_item_ = false;
+  may_have_ruby_overhang_ = false;
   allow_hang_for_alignment_ = false;
 }
 

@@ -1994,7 +1994,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
           // fragment (line) that we cannot compute max-content from
           // min-content.
           !line_breaker.HasClonedBoxDecorations() &&
-          !line_breaker.MayHaveRubyOverhang();
+          !line_info.MayHaveRubyOverhang();
       if (can_compute_max_size_from_min_size)
         max_size_from_min_size.ComputeFromMinSize(line_info);
     } else {

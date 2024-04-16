@@ -229,6 +229,11 @@ class CORE_EXPORT LineInfo {
     may_have_text_combine_or_ruby_item_ = true;
   }
 
+  // True if the line might contain ruby overhang. It affects min-max
+  // computation.
+  bool MayHaveRubyOverhang() const { return may_have_ruby_overhang_; }
+  void SetMayHaveRubyOverhang() { may_have_ruby_overhang_ = true; }
+
   // Returns annotation block start adjustment base on annotation and initial
   // letter.
   LayoutUnit ComputeAnnotationBlockOffsetAdjustment() const;
@@ -321,6 +326,8 @@ class CORE_EXPORT LineInfo {
   // Note: To avoid scanning |InlineItemResults|, this variable is true
   // when |InlineItemResult| to |results_|.
   bool may_have_text_combine_or_ruby_item_ = false;
+  // True if the last processed line might contain ruby overhang.
+  bool may_have_ruby_overhang_ = false;
   bool allow_hang_for_alignment_ = false;
 
   // When adding fields, pelase ensure `Reset()` is in sync.

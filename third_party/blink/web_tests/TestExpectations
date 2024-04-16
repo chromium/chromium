@@ -7259,7 +7259,6 @@ crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/br-clear-all-002.h
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-abs.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/line-break-around-ruby-001.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/line-spacing.html [ Failure ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/nested-ruby-pairing-001.html [ Crash Failure Timeout ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-align-001.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-align-001a.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-align-002.html [ Failure ]
