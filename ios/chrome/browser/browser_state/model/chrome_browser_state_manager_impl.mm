@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -166,21 +167,35 @@ ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
 
 void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  base::Value::List last_active_browser_states =
-      CHECK_DEREF(local_state).GetList(prefs::kBrowserStatesLastActive).Clone();
+  const base::Value::List& last_active_browser_states =
+      CHECK_DEREF(local_state).GetList(prefs::kBrowserStatesLastActive);
 
-  // If there is no last active browser state load the default one.
-  if (last_active_browser_states.size() == 0) {
-    last_active_browser_states.Append(kIOSChromeInitialBrowserState);
+  std::set<std::string> last_active_browser_states_set;
+  for (const base::Value& browser_state_id : last_active_browser_states) {
+    if (browser_state_id.is_string()) {
+      last_active_browser_states_set.insert(browser_state_id.GetString());
+    }
   }
 
-  for (const base::Value& browser_state_dir : last_active_browser_states) {
-    if (!browser_state_dir.is_string()) {
-      continue;
+  // If there is no last active browser state load the default one.
+  if (last_active_browser_states_set.size() == 0) {
+    last_active_browser_states_set.insert(kIOSChromeInitialBrowserState);
+  }
+
+  // Create and load test profiles if experiment enabling Switch Profile
+  // developer UI is enabled.
+  std::optional<int> load_test_profiles =
+      experimental_flags::DisplaySwitchProfile();
+  if (load_test_profiles.has_value()) {
+    for (int i = 0; i < load_test_profiles; i++) {
+      last_active_browser_states_set.insert("TestProfile" +
+                                            base::NumberToString(i + 1));
     }
-    LoadBrowserState(
-        GetUserDataDir().AppendASCII(browser_state_dir.GetString()),
-        base::DoNothing());
+  }
+
+  for (std::string browser_state_dir : last_active_browser_states_set) {
+    LoadBrowserState(GetUserDataDir().AppendASCII(browser_state_dir),
+                     base::DoNothing());
   }
 }
 
