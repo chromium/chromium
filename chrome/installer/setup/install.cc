@@ -343,6 +343,11 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   prefs.GetBool(initial_preferences::kDoNotCreateTaskbarShortcut,
                 &do_not_create_taskbar_shortcut);
 
+  // Pinning to taskbar only makes sense for per-user shortcuts.
+  if (install_level != CURRENT_USER) {
+    do_not_create_taskbar_shortcut = true;
+  }
+
   // The default operation on update is to overwrite shortcuts with the
   // currently desired properties, but do so only for shortcuts that still
   // exist.
