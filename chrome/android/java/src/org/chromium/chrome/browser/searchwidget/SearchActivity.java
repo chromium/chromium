@@ -522,7 +522,12 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** Mark that the UMA session has ended. */
     private void umaSessionResume() {
-        mUmaActivityObserver.startUmaSession(ActivityType.TABBED, null, getWindowAndroid());
+        mUmaActivityObserver.startUmaSession(
+                mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                        ? ActivityType.CUSTOM_TAB
+                        : ActivityType.TABBED,
+                null,
+                getWindowAndroid());
     }
 
     /** Mark that the UMA session has ended. */
