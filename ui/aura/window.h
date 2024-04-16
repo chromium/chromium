@@ -577,6 +577,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   friend class ScopedWindowEventTargetingBlocker;
   friend class WindowTargeter;
   friend class test::WindowTestApi;
+  friend class TestScreen;
 
   // Handles registering FrameSinkId hierarchy for SetEmbedFrameSinkId() and
   // CreateLayerTreeFrameSink().

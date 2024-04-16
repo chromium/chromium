@@ -269,7 +269,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Posts a task to send synthesized mouse move event if there is no a pending
   // task.
-  void PostSynthesizeMouseMove();
+  void PostSynthesizeMouseMove(Window* window);
 
   // Creates and dispatches synthesized mouse move event using the current mouse
   // location.

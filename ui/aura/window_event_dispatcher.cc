@@ -144,7 +144,7 @@ void WindowEventDispatcher::RepostEvent(const ui::LocatedEvent* event) {
 void WindowEventDispatcher::OnMouseEventsEnableStateChanged(bool enabled) {
   // Send entered / exited so that visual state can be updated to match
   // mouse events state.
-  PostSynthesizeMouseMove();
+  PostSynthesizeMouseMove(window());
   // TODO(mazda): Add code to disable mouse events when |enabled| == false.
 }
 
@@ -233,7 +233,7 @@ void WindowEventDispatcher::ReleasePointerMoves() {
       if (pending_synthesize_mouse_move) {
         // Schedule a synthesized mouse move event when there is no held mouse
         // move and we should generate one.
-        PostSynthesizeMouseMove();
+        PostSynthesizeMouseMove(window());
       }
     }
   }
@@ -259,7 +259,7 @@ void WindowEventDispatcher::OnCursorMovedToRootLocation(
 
   // Synthesize a mouse move in case the cursor's location in root coordinates
   // changed but its position in WindowTreeHost coordinates did not.
-  PostSynthesizeMouseMove();
+  PostSynthesizeMouseMove(window());
 }
 
 void WindowEventDispatcher::OnPostNotifiedWindowDestroying(Window* window) {
@@ -699,7 +699,7 @@ void WindowEventDispatcher::OnWindowVisibilityChanged(Window* window,
     return;
 
   if (window->ContainsPointInRoot(GetLastMouseLocationInRoot()))
-    PostSynthesizeMouseMove();
+    PostSynthesizeMouseMove(window);
 
   // Hiding the window releases capture which can implicitly destroy the window
   // so the window may no longer be valid after this call.
@@ -738,7 +738,7 @@ void WindowEventDispatcher::OnWindowBoundsChanged(
          new_bounds_in_root.Contains(last_mouse_location)) ||
         (new_bounds_in_root.Contains(last_mouse_location) &&
          new_bounds_in_root.origin() != old_bounds_in_root.origin())) {
-      PostSynthesizeMouseMove();
+      PostSynthesizeMouseMove(window);
     }
   }
 }
@@ -829,7 +829,7 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchHeldEvents() {
   return dispatch_details;
 }
 
-void WindowEventDispatcher::PostSynthesizeMouseMove() {
+void WindowEventDispatcher::PostSynthesizeMouseMove(Window* window) {
   // No one should care where the real mouse is when this flag is on. So there
   // is no need to send a synthetic mouse move here.
   if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents())
@@ -837,6 +837,26 @@ void WindowEventDispatcher::PostSynthesizeMouseMove() {
 
   if (synthesize_mouse_move_ || in_shutdown_)
     return;
+
+#if BUILDFLAG(IS_WIN)
+  // Gets the window at the current cursor point.
+  gfx::Point cursor_point =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::NativeWindow window_under_cursor =
+      display::Screen::GetScreen()->GetWindowAtScreenPoint(cursor_point);
+
+  ConvertPointFromScreen(&cursor_point);
+  // If the mouse cursor is within the |window|, but |window_under_cursor| is
+  // null, it means another program's window is occluding ours. And also, if
+  // |window_under_cursor| doesn't belong to ours then we do not synthesize a
+  // mouse move event.
+  if (window->ContainsPointInRoot(cursor_point) &&
+      (!window_under_cursor ||
+       !host_->window()->Contains(window_under_cursor))) {
+    return;
+  }
+#endif
+
   synthesize_mouse_move_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostNonNestableTask(
       FROM_HERE,
@@ -851,7 +871,7 @@ void WindowEventDispatcher::SynthesizeMouseMoveAfterChangeToWindow(
     return;
   if (window->IsVisible() &&
       window->ContainsPointInRoot(GetLastMouseLocationInRoot())) {
-    PostSynthesizeMouseMove();
+    PostSynthesizeMouseMove(window);
   }
 }
 

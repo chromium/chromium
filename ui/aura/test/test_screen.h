@@ -45,6 +45,8 @@ class TestScreen : public display::ScreenBase, public WindowObserver {
   void SetWorkAreaInsets(const gfx::Insets& insets);
 
  protected:
+  static gfx::NativeWindow GetWindowForPoint(Window* window,
+                                             const gfx::Point& local_point);
   gfx::Transform GetRotationTransform() const;
   gfx::Transform GetUIScaleTransform() const;
 
