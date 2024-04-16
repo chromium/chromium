@@ -153,6 +153,12 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
                 std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
               },
               std::move(callback), std::move(readback_ref)));
+  // The readback ref holds a reference to the compositor which must only be
+  // accessed on the current thread. Since the result callback can be dispatched
+  // on any thread by default, explicitly set the result task runner to the
+  // current thread.
+  request->set_result_task_runner(
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   if (!src_subrect.IsEmpty())
     request->set_area(src_subrect);
