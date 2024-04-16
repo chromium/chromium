@@ -425,7 +425,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
-        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")));
+        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs"),
+        TestCase("fileDisplayLocalFilesDisabledUnmountRemovable")
+            .DontMountVolumes()
+            .NewDirectoryTree()
+            .EnableSkyVault(),
+        TestCase("fileDisplayLocalFilesDisableInMyFiles")
+            .DontMountVolumes()
+            .NewDirectoryTree()
+            .EnableSkyVault()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.js */

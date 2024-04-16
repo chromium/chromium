@@ -207,6 +207,9 @@ class FileManagerBrowserTestBase
     // Whether to enable new directory tree implementation.
     bool enable_new_directory_tree = false;
 
+    // Whether test should enable the SkyVault feature.
+    bool enable_skyvault = false;
+
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
   };

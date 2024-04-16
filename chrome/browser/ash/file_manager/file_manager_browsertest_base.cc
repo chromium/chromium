@@ -98,6 +98,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -2424,6 +2425,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesNewDirectoryTree);
   }
 
+  if (options.enable_skyvault) {
+    enabled_features.push_back(features::kSkyVault);
+  } else {
+    disabled_features.push_back(features::kSkyVault);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -3408,6 +3415,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
                                       !enabled.value());
+    return;
+  }
+
+  if (name == "setupSkyVault") {
+    profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
+                                     download_dir_util::kLocationGoogleDrive);
+    g_browser_process->local_state()->SetBoolean(prefs::kLocalUserFilesAllowed,
+                                                 false);
     return;
   }
 

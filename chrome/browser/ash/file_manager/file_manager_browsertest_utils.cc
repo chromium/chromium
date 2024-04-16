@@ -219,6 +219,11 @@ TestCase& TestCase::EnableCrosComponents() {
   return *this;
 }
 
+TestCase& TestCase::EnableSkyVault() {
+  options.enable_skyvault = true;
+  return *this;
+}
+
 std::string TestCase::GetFullName() const {
   std::string full_name = name;
 

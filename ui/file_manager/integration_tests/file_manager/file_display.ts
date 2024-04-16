@@ -972,3 +972,63 @@ export async function fileDisplayCheckNoReadOnlyIconOnGuestOs() {
   // Check: the toolbar read-only indicator should not be visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
 }
+
+/**
+ * Tests that when local files are disabled, we navigate to default set by the
+ * policy, e.g. Drive after unmounting a USB.
+ */
+export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
+  // Mount Drive and Downloads.
+  await sendTestMessage({name: 'mountDrive'});
+  await sendTestMessage({name: 'mountDownloads'});
+  // Ensure two volumes are mounted.
+  await remoteCall.waitForVolumesCount(2);
+
+  // Enable SkyVault, this should unmount Downloads.
+  await sendTestMessage({name: 'setupSkyVault'});
+  await remoteCall.waitForVolumesCount(1);
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that the Files App opened in Google Drive, as set by the policy.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+
+  // Mount USB volume in the Downloads window.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Wait for the USB mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.selectItemByType('removable');
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/fake-usb');
+
+  // Unmount the USB.
+  await sendTestMessage({name: 'unmountUsb'});
+
+  // We should navigate to My Drive.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+}
+
+/**
+ * Tests that disabling local storage while in a local folder navigates away to
+ * the default set by the policy, e.g. Drive.
+ */
+export async function fileDisplayLocalFilesDisableInMyFiles() {
+  // Mount Drive and Downloads.
+  await sendTestMessage({name: 'mountDrive'});
+  await sendTestMessage({name: 'mountDownloads'});
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that the Files App opened in MyFiles.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+
+  // Disable local storage.
+  await sendTestMessage({name: 'setupSkyVault'});
+
+  // We should navigate to Drive.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+}

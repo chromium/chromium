@@ -116,6 +116,8 @@ struct TestCase {
 
   TestCase& EnableCrosComponents();
 
+  TestCase& EnableSkyVault();
+
   std::string GetFullName() const;
 
   const char* const name;
