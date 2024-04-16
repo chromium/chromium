@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1485969">
+<link rel="match" href="icb-scaling-004-print-ref.html">
+<style>
+  @page {
+    size: 400px;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+    background: url(../support/cat.png) no-repeat;
+    background-position-y: 300px;
+  }
+  .block {
+    background: url(../support/cat.png) no-repeat;
+    background-position-y: 100px;
+    width: 600px;
+    height: 200px;
+  }
+</style>
+<div class="block">
+  There should be two identical cats on this page.
+</div>
