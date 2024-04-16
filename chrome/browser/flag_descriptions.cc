@@ -8020,9 +8020,7 @@ const char kProfilesReorderingDescription[] =
 const char kEnableBoundSessionCredentialsName[] =
     "Device Bound Session Credentials";
 const char kEnableBoundSessionCredentialsDescription[] =
-    "Enables Google session credentials binding to cryptographic keys that are "
-    "practically impossible to extract from the user device. This will mostly "
-    "prevent the usage of bound credentials outside of the user device.";
+    "Enables Google session credentials binding to cryptographic keys.";
 
 const char kEnableBoundSessionCredentialsSoftwareKeysForManualTestingName[] =
     "Device Bound Session Credentials with software keys";
