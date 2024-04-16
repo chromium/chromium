@@ -551,6 +551,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   virtual std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card);
 
+  // Invoked when the masked bank accounts cache is refreshed. This happens when
+  // the masked bank accounts are loaded for the first time as well as for any
+  // subsequent updates via ChromeSync invalidations.
+  void OnMaskedBankAccountsRefreshed();
+
   // Decides which database type to use for server and local cards.
   std::unique_ptr<PaymentsDatabaseHelper> database_helper_;
 

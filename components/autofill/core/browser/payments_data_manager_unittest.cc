@@ -251,6 +251,16 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
   std::unique_ptr<PersonalDataManager> personal_data_;
 };
 
+class MockAutofillImageFetcher : public AutofillImageFetcherBase {
+ public:
+  MOCK_METHOD(
+      void,
+      FetchImagesForURLs,
+      (base::span<const GURL> card_art_urls,
+       base::OnceCallback<void(
+           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
+      (override));
+};
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
  protected:
@@ -1981,6 +1991,31 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
   bank_accounts = payments_data_manager().GetMaskedBankAccounts();
   EXPECT_EQ(2u, bank_accounts.size());
 }
+
+TEST_F(PaymentsDataManagerTest,
+       MaskedBankAccountsIconsFetched_DatabaseUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  MockAutofillImageFetcher mock_image_fetcher;
+  test_api(payments_data_manager()).SetImageFetcher(&mock_image_fetcher);
+
+  BankAccount bank_account1(1234L, u"nickname", GURL("http://www.example1.com"),
+                            u"bank_name", u"account_number",
+                            BankAccount::AccountType::kChecking);
+  BankAccount bank_account2(5678L, u"nickname", GURL("http://www.example2.com"),
+                            u"bank_name", u"account_number",
+                            BankAccount::AccountType::kChecking);
+  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
+      {bank_account1, bank_account2}));
+
+  EXPECT_CALL(mock_image_fetcher, FetchImagesForURLs);
+
+  // We need to call `Refresh()` to ensure that the BankAccounts are loaded
+  // again from the WebDatabase which triggers the call to fetch icons from
+  // image fetcher.
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(PaymentsDataManagerTest,
@@ -2099,17 +2134,6 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_FALSE(actual_image);
   EXPECT_EQ(0, histogram_tester.GetTotalSum("Autofill.ImageFetcher.Result"));
 }
-
-class MockAutofillImageFetcher : public AutofillImageFetcherBase {
- public:
-  MOCK_METHOD(
-      void,
-      FetchImagesForURLs,
-      (base::span<const GURL> card_art_urls,
-       base::OnceCallback<void(
-           const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback),
-      (override));
-};
 
 TEST_F(PaymentsDataManagerTest, ProcessCardArtUrlChanges) {
   MockAutofillImageFetcher mock_image_fetcher;

@@ -421,6 +421,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         ReceiveLoadedDbValues(h, result.get(),
                               &pending_masked_bank_accounts_query_,
                               &masked_bank_accounts_);
+        OnMaskedBankAccountsRefreshed();
         break;
       default:
         NOTREACHED();
@@ -1963,6 +1964,21 @@ std::string PaymentsDataManager::SaveImportedCreditCard(
   SetCreditCards(&credit_cards);
 
   return guid;
+}
+
+void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
+  std::vector<GURL> updated_urls;
+  for (auto& bank_account : masked_bank_accounts_) {
+    const GURL& display_icon_url =
+        bank_account->payment_instrument().display_icon_url();
+    if (!display_icon_url.is_valid()) {
+      continue;
+    }
+    updated_urls.emplace_back(display_icon_url);
+  }
+  if (!updated_urls.empty()) {
+    FetchImagesForURLs(updated_urls);
+  }
 }
 
 }  // namespace autofill
