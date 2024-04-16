@@ -40,7 +40,7 @@ impl Display for StrSimError {
             StrSimError::DifferentLengthArgs => "Differing length arguments provided",
         };
 
-        write!(fmt, "{text}")
+        write!(fmt, "{}", text)
     }
 }
 

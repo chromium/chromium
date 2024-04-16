@@ -10,8 +10,9 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+rust-version = "1.56"
 name = "strsim"
-version = "0.11.0"
+version = "0.11.1"
 authors = [
     "Danny Guo <danny@dannyguo.com>",
     "maxbachmann <oss@maxbachmann.de>",

@@ -4,6 +4,12 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org).
 
 ## [Unreleased]
 
+## [0.11.1] - (2024-04-03)
+
+### Fixed
+
+- Drop MSRV down to 1.56 which was mistakenly changed in 0.11.0
+
 ## [0.11.0] - (2024-01-07)
 
 ### Changed
@@ -197,7 +203,8 @@ vector of results (thanks @ovarene)
 
 - Implement Hamming, Jaro, Jaro-Winkler, and Levenshtein
 
-[Unreleased]: https://github.com/rapidfuzz/strsim-rs/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/rapidfuzz/strsim-rs/compare/0.11.1...HEAD
+[0.11.1]: https://github.com/rapidfuzz/strsim-rs/compare/0.11.0...0.11.1
 [0.11.0]: https://github.com/rapidfuzz/strsim-rs/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/rapidfuzz/strsim-rs/compare/0.9.3...0.10.0
 [0.9.3]: https://github.com/rapidfuzz/strsim-rs/compare/0.9.2...0.9.3
