@@ -1752,7 +1752,7 @@
   {
     "name": "customize-chrome-side-panel-extensions-card",
     "owners": [ "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 134
   },
   {
     "name": "customize-chrome-wallpaper-search",
