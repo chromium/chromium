@@ -19,6 +19,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,11 +45,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -122,6 +125,7 @@ public class HistoryUITest {
     @Mock private SigninManager mSigninManager;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private HistoryAdapter mMockAdapter;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -425,6 +429,19 @@ public class HistoryUITest {
         toolbar.onSearchNavigationBack();
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+    }
+
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Test
+    @SmallTest
+    public void testSearch_AppFilterChipVisible() {
+        mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
+        mAdapter.setPrivacyDisclaimer();
+        Assert.assertFalse(mAdapter.hasListHeader());
+        performMenuAction(R.id.search_menu_id);
+        // The 'Filter by app' chip is now visible in the header.
+        Assert.assertTrue(mAdapter.hasListHeader());
     }
 
     @Test

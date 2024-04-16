@@ -372,6 +372,33 @@ public class ChipView extends LinearLayout {
                 this, getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
     }
 
+    /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
+    public void addDropdownIcon() {
+        if (mEndIconWrapper != null) return;
+
+        ChromeImageView endIcon = new ChromeImageView(getContext());
+        endIcon.setImageResource(R.drawable.mtrl_dropdown_arrow);
+        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
+
+        mEndIconWrapper = new FrameLayout(getContext());
+
+        FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(mEndIconWidth, mEndIconHeight);
+        layoutParams.setMarginStart(mEndIconStartPadding);
+        layoutParams.setMarginEnd(mEndIconEndPadding);
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        mEndIconWrapper.addView(endIcon, layoutParams);
+        addView(
+                mEndIconWrapper,
+                new LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        // Remove the end padding from the chip to make X icon touch target extend till the end of
+        // the chip.
+        ViewCompat.setPaddingRelative(
+                this, getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+    }
+
     /**
      * Sets a {@link android.view.View.OnClickListener} for the remove icon. {@link
      * ChipView#addRemoveIcon()} must be called prior to this method.

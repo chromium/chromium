@@ -1297,6 +1297,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_EVERYTHING" desc="The option to delete browsing data from the beginning of time.">
         All time
       </message>
+      <message name="IDS_HISTORY_FILTER_BY_APP" desc="The text of the button to filter history by app in the history search.">
+        Filter by app
+      </message>
       <message name="IDS_IMPORTANT_SITES_TITLE" desc="Title of clear storage dialogs used in a couple different places to confirm clearing site storage data. [CHAR_LIMIT=24]">
         Also clear data from these sites?
       </message>

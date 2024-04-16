@@ -87,6 +87,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         /** Called after a user clicks the open full Chrome history button. */
         void onOpenFullChromeHistoryClicked();
 
+        /** Called after a user clicks the filter by app button. */
+        default void onAppFilterClicked() {}
+
         /** Called to notify when the user's sign in or pref state has changed. */
         void onUserAccountStateChanged();
 
@@ -536,6 +539,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     /** Called after a user clicks the open full Chrome history button. */
     void onOpenFullChromeHistoryClicked() {
         mObserver.onOpenFullChromeHistoryClicked();
+    }
+
+    /** Called after a user clicks the filter by app button. */
+    void onAppFilterClicked() {
+        mObserver.onAppFilterClicked();
     }
 
     /** Removes the list header. */

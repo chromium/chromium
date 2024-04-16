@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -48,6 +49,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private HeaderItem mPrivacyDisclaimerHeaderItem;
     private HeaderItem mClearBrowsingDataButtonHeaderItem;
     private HeaderItem mHistoryOpenInChromeHeaderItem;
+    private HeaderItem mAppFilterHeaderItem;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -100,6 +102,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
     }
 
+    void onSearchStart() {
+        mIsSearching = true;
+        setHeaders();
+    }
+
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         // This adapter should only ever be attached to one RecyclerView.
@@ -136,11 +143,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     /**
      * Called to perform a search.
+     *
      * @param query The text to search for.
      */
     public void search(String query) {
         mQueryText = query;
-        mIsSearching = true;
+        onSearchStart();
         mClearOnNextQueryComplete = true;
         mHistoryProvider.queryHistory(mQueryText, mAppId);
         // TODO: Query all the app IDs to initialize app filter button.
@@ -316,10 +324,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * for them.
      */
     void generateHeaderItems() {
+        ViewGroup historyAppFilterContainer = getAppFilterContainer(null);
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
 
         ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
 
+        mAppFilterHeaderItem = new HeaderItem(0, historyAppFilterContainer);
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, privacyDisclaimerContainer);
         mPrivacyDisclaimerBottomSpace =
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
@@ -366,6 +376,20 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return viewGroup;
     }
 
+    ViewGroup getAppFilterContainer(ViewGroup parent) {
+        ViewGroup historyAppFilterContainer =
+                (ViewGroup)
+                        LayoutInflater.from(mManager.getContext())
+                                .inflate(R.layout.app_history_filter, parent, true);
+        ChipView appFilterChip =
+                (ChipView) historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
+        appFilterChip.setOnClickListener(v -> mManager.onAppFilterClicked());
+        // TODO(jinsukkim) the button text should become the app label when a filter is selected.
+        appFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
+        appFilterChip.addDropdownIcon();
+        return historyAppFilterContainer;
+    }
+
     ViewGroup getPrivacyDisclaimerContainer(ViewGroup parent) {
         Context context = mManager.getContext();
         ViewGroup privacyDisclaimerContainer =
@@ -407,12 +431,22 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /** Pass header items to {@link #setHeaders(HeaderItem...)} as parameters. */
-    private void setHeaders() {
+    void setHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
-        if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
-        if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
-        if (mManager.launchedForApp()) {
-            args.add(mHistoryOpenInChromeHeaderItem);
+        if (mIsSearching) {
+            if (HistoryManager.isAppSpecificHistoryEnabled()) {
+                args.add(mAppFilterHeaderItem);
+            }
+        } else {
+            if (mPrivacyDisclaimersVisible) {
+                args.add(mPrivacyDisclaimerHeaderItem);
+            }
+            if (mClearBrowsingDataButtonVisible) {
+                args.add(mClearBrowsingDataButtonHeaderItem);
+            }
+            if (mManager.launchedForApp()) {
+                args.add(mHistoryOpenInChromeHeaderItem);
+            }
         }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
     }

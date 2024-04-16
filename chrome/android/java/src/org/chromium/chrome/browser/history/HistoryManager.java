@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -288,12 +289,11 @@ public class HistoryManager
 
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
-            mContentManager.removeHeader();
+            mContentManager.getAdapter().onSearchStart();
             mToolbar.showSearchView(true);
             String searchEmptyString = getSearchEmptyString();
             mSelectableListLayout.onStartSearch(searchEmptyString);
             mUmaRecorder.recordSearchHistory();
-            mIsSearching = true;
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
             toggleInfoHeaderVisibility();
@@ -523,6 +523,13 @@ public class HistoryManager
         IntentUtils.addTrustedIntentExtras(fullHistoryIntent);
         mActivity.startActivity(fullHistoryIntent);
         mUmaRecorder.recordOpenFullHistory();
+    }
+
+    @Override
+    public void onAppFilterClicked() {
+        ChipView chip = (ChipView) mActivity.findViewById(R.id.app_history_filter_chip);
+        chip.setSelected(true);
+        chip.setIcon(R.drawable.ic_check_googblue_24dp, true);
     }
 
     // HistoryContentManager.Observer
