@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertNotReached} from '../assert.js';
+import {Flag} from '../flag.js';
 import {Point} from '../geometry.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {CropRegionRect, Resolution} from '../type.js';
@@ -373,6 +375,7 @@ export class DigitalZoomPTZController implements PTZController {
     const deviceOperator = assertExists(DeviceOperator.getInstance());
     await deviceOperator.resetCropRegion(this.deviceId);
     this.ptzSettings = DIGITAL_ZOOM_DEFAULT_SETTINGS;
+    state.set(state.State.SUPER_RES_ZOOM, false);
   }
 
   async pan(value: number): Promise<void> {
@@ -409,6 +412,12 @@ export class DigitalZoomPTZController implements PTZController {
     const cropRegion = calculateCropRegion(baseSettings, this.fullCropRegion);
     await deviceOperator.setCropRegion(this.deviceId, cropRegion);
     this.ptzSettings = baseSettings;
+
+    state.set(state.State.SUPER_RES_ZOOM, this.isSuperResZoom());
+  }
+
+  private isSuperResZoom(): boolean {
+    return loadTimeData.getChromeFlag(Flag.SUPER_RES);
   }
 
   private isFullFrame({zoom}: PTZSettings): boolean {

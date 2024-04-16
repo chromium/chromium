@@ -327,6 +327,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                     ash::features::kCameraAppAutoQRDetection));
   source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
                                          ash::features::kCameraAppDigitalZoom));
+  source->AddBoolean("super_res", base::FeatureList::IsEnabled(
+                                      ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",

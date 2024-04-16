@@ -8,4 +8,5 @@
 export enum Flag {
   AUTO_QR = 'auto_qr',
   DIGITAL_ZOOM = 'digital_zoom',
+  SUPER_RES = 'super_res',
 }

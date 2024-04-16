@@ -55,6 +55,7 @@ export enum State {
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
   SNAPSHOTTING = 'snapshotting',
   STREAMING = 'streaming',
+  SUPER_RES_ZOOM = 'super-res-zoom',
   SUSPEND = 'suspend',
   TABLET = 'tablet',
   TABLET_LANDSCAPE = 'tablet-landscape',

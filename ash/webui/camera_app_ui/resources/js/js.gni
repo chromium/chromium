@@ -47,6 +47,7 @@ compile_js_files = [
   "lit/components/index.ts",
   "lit/components/mode-selector.ts",
   "lit/components/record-time-chip.ts",
+  "lit/components/super-res-loading-indicator.ts",
   "lit/components/svg-wrapper.ts",
   "lit/components/switch-device-button.ts",
   "lit/components/text-tooltip.ts",

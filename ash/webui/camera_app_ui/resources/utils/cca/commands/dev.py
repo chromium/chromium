@@ -92,6 +92,7 @@ class RequestHandler:
             "timeLapse": True,
             "auto_qr": True,
             "digital_zoom": True,
+            "super_res": True,
         }
         load_time_data.update(self._load_grd_strings())
         relative_path = _get_root_relative_path(request_path)
