@@ -299,12 +299,18 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
     return;
   completed_invalidations_mask_ |= invalidation_mask;
 
-  is_invalidating_ = true;
+  auto& document = GetDocument();
+  if (document.InStyleRecalc() ||
+      document.GetStyleEngine().InDetachLayoutTree()) {
+    document.ScheduleSVGResourceInvalidation(*resource);
+  } else {
+    is_invalidating_ = true;
 
-  // Invalidate clients registered via an SVGResource.
-  resource->NotifyContentChanged();
+    // Invalidate clients registered via an SVGResource.
+    resource->NotifyContentChanged();
 
-  is_invalidating_ = false;
+    is_invalidating_ = false;
+  }
 }
 
 void LayoutSVGResourceContainer::InvalidateCache() {
