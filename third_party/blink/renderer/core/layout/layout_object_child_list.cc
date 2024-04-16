@@ -143,9 +143,6 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   old_child->RegisterSubtreeChangeListenerOnDescendants(
       old_child->ConsumesSubtreeChangeNotification());
 
-  if (AXObjectCache* cache = owner->GetDocument().ExistingAXObjectCache())
-    cache->ChildrenChanged(owner);
-
   return old_child;
 }
 
