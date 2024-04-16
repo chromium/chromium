@@ -2,13 +2,7 @@ error[E0599]: the method `quote_into_iter` exists for struct `Ipv4Addr`, but its
  --> tests/ui/not-repeatable.rs:7:13
   |
 3 | struct Ipv4Addr;
-  | ---------------
-  | |
-  | method `quote_into_iter` not found for this struct
-  | doesn't satisfy `Ipv4Addr: Iterator`
-  | doesn't satisfy `Ipv4Addr: ToTokens`
-  | doesn't satisfy `Ipv4Addr: ext::RepIteratorExt`
-  | doesn't satisfy `Ipv4Addr: ext::RepToTokensExt`
+  | --------------- method `quote_into_iter` not found for this struct because it doesn't satisfy `Ipv4Addr: Iterator`, `Ipv4Addr: ToTokens`, `Ipv4Addr: ext::RepIteratorExt` or `Ipv4Addr: ext::RepToTokensExt`
 ...
 7 |     let _ = quote! { #(#ip)* };
   |             ^^^^^^^^^^^^^^^^^^ method cannot be called on `Ipv4Addr` due to unsatisfied trait bounds
@@ -22,7 +16,7 @@ error[E0599]: the method `quote_into_iter` exists for struct `Ipv4Addr`, but its
           which is required by `Ipv4Addr: ext::RepToTokensExt`
           `&mut Ipv4Addr: Iterator`
           which is required by `&mut Ipv4Addr: ext::RepIteratorExt`
-note: the traits `ToTokens` and `Iterator` must be implemented
+note: the traits `Iterator` and `ToTokens` must be implemented
  --> src/to_tokens.rs
   |
   | pub trait ToTokens {
@@ -32,4 +26,9 @@ note: the traits `ToTokens` and `Iterator` must be implemented
   |
   | pub trait Iterator {
   | ^^^^^^^^^^^^^^^^^^
+  = help: items from traits can only be used if the trait is implemented and in scope
+  = note: the following traits define an item `quote_into_iter`, perhaps you need to implement one of them:
+          candidate #1: `ext::RepAsIteratorExt`
+          candidate #2: `ext::RepIteratorExt`
+          candidate #3: `ext::RepToTokensExt`
   = note: this error originates in the macro `$crate::quote_bind_into_iter` which comes from the expansion of the macro `quote` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -155,7 +155,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."qr_code:2.0.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."quote:1.0.35"]
+[policy."quote:1.0.36"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]

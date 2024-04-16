@@ -1,6 +1,6 @@
 [package]
 name = "quote"
-version = "1.0.35" # don't forget to update html_root_url, version in readme for breaking changes
+version = "1.0.36" # don't forget to update html_root_url, version in readme for breaking changes
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
