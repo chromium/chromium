@@ -81,9 +81,8 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
 
   // Creates a DomStorageDatabase instance for a persistent database within a
   // filesystem directory given by |directory|, which must be an absolute path.
-  // The database may or may not already exist at this path, and whether or not
-  // this operation succeeds in either case depends on options set in |options|,
-  // e.g. |create_if_missing| and/or |error_if_exists|.
+  // The database may or may not already exist at this path, and will be created
+  // if not.
   //
   // The instance will be bound to and perform all operations on |task_runner|,
   // which must support blocking operations. |callback| is called on the calling
@@ -91,7 +90,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
   static void OpenDirectory(
       const base::FilePath& directory,
       const std::string& name,
-      const leveldb_env::Options& options,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
@@ -161,7 +159,6 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       PassKey,
       const base::FilePath& directory,
       const std::string& name,
-      const leveldb_env::Options& options,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -175,19 +172,13 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
       StatusCallback callback);
 
  private:
-  // Constructs a new DomStorageDatabase, creating or opening persistent
+  // Initializes a new DomStorageDatabase, creating or opening persistent
   // on-filesystem database as specified. Asynchronously invokes `callback` on
   // `callback_task_runner` when done.
   //
   // This must be called on a sequence that allows blocking operations.
-  DomStorageDatabase(
-      const std::string& name,
-      std::unique_ptr<leveldb::Env> env,
-      const leveldb_env::Options& options,
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
-          memory_dump_id_,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      StatusCallback callback);
+  void Init(scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+            StatusCallback callback);
 
   template <typename... Args>
   static void CreateSequenceBoundDomStorageDatabase(
@@ -201,7 +192,7 @@ class DomStorageDatabase : private base::trace_event::MemoryDumpProvider {
 
   const std::string name_;
   const std::unique_ptr<leveldb::Env> env_;
-  const leveldb_env::Options options_;
+  leveldb_env::Options options_;
   const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
       memory_dump_id_;
   std::unique_ptr<leveldb::DB> db_;

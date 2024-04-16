@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_LOCAL_STORAGE_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -28,6 +29,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
+#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace blink {
 class StorageKey;
@@ -150,7 +152,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   bool force_keep_session_state_ = false;
 
-  const scoped_refptr<base::SequencedTaskRunner> leveldb_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   base::trace_event::MemoryAllocatorDumpGuid memory_dump_id_;
 

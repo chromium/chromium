@@ -36,11 +36,6 @@ class DomStorageDatabaseEnv : public leveldb_env::ChromiumEnv {
   DomStorageDatabaseEnv& operator=(const DomStorageDatabaseEnv&) = delete;
 };
 
-DomStorageDatabaseEnv* GetDomStorageDatabaseEnv() {
-  static base::NoDestructor<DomStorageDatabaseEnv> env;
-  return env.get();
-}
-
 std::string MakeFullPersistentDBName(const base::FilePath& directory,
                                      const std::string& db_name) {
   // ChromiumEnv treats DB name strings as UTF-8 file paths.
@@ -48,11 +43,19 @@ std::string MakeFullPersistentDBName(const base::FilePath& directory,
       .AsUTF8Unsafe();
 }
 
-leveldb_env::Options AddEnvToOptions(const leveldb_env::Options& options,
-                                     leveldb::Env* env) {
-  leveldb_env::Options new_options = options;
-  new_options.env = env;
-  return new_options;
+// Used for disk DBs.
+leveldb_env::Options MakeOptions() {
+  leveldb_env::Options options;
+  options.create_if_missing = true;
+  options.max_open_files = 0;  // use minimum
+  // Default write_buffer_size is 4 MB but that might leave a 3.999
+  // memory allocation in RAM from a log file recovery.
+  options.write_buffer_size = 64 * 1024;
+  options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
+
+  static base::NoDestructor<DomStorageDatabaseEnv> env;
+  options.env = env.get();
+  return options;
 }
 
 std::unique_ptr<leveldb::DB> TryOpenDB(
@@ -131,17 +134,15 @@ DomStorageDatabase::DomStorageDatabase(
     PassKey,
     const base::FilePath& directory,
     const std::string& name,
-    const leveldb_env::Options& options,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
-    : DomStorageDatabase(MakeFullPersistentDBName(directory, name),
-                         /*env=*/nullptr,
-                         options,
-                         memory_dump_id,
-                         std::move(callback_task_runner),
-                         std::move(callback)) {}
+    : name_(MakeFullPersistentDBName(directory, name)),
+      options_(MakeOptions()),
+      memory_dump_id_(memory_dump_id) {
+  Init(std::move(callback_task_runner), std::move(callback));
+}
 
 DomStorageDatabase::DomStorageDatabase(
     PassKey,
@@ -150,30 +151,17 @@ DomStorageDatabase::DomStorageDatabase(
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
-    : DomStorageDatabase("",
-                         leveldb_chrome::NewMemEnv(tracking_name),
-                         leveldb_env::Options(),
-                         memory_dump_id,
-                         std::move(callback_task_runner),
-                         std::move(callback)) {}
+    : env_(leveldb_chrome::NewMemEnv(tracking_name)),
+      memory_dump_id_(memory_dump_id) {
+  options_.env = env_.get();
+  Init(std::move(callback_task_runner), std::move(callback));
+}
 
-DomStorageDatabase::DomStorageDatabase(
-    const std::string& name,
-    std::unique_ptr<leveldb::Env> env,
-    const leveldb_env::Options& options,
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
-        memory_dump_id,
+void DomStorageDatabase::Init(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    StatusCallback callback)
-    : name_(name),
-      env_(std::move(env)),
-      options_(AddEnvToOptions(options,
-                               env_ ? env_.get() : GetDomStorageDatabaseEnv())),
-      memory_dump_id_(memory_dump_id),
-      db_(TryOpenDB(options_,
-                    name,
-                    std::move(callback_task_runner),
-                    std::move(callback))) {
+    StatusCallback callback) {
+  db_ = TryOpenDB(options_, name_, std::move(callback_task_runner),
+                  std::move(callback));
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "MojoLevelDB", base::SequencedTaskRunner::GetCurrentDefault(),
@@ -235,7 +223,6 @@ DomStorageDatabase::~DomStorageDatabase() {
 void DomStorageDatabase::OpenDirectory(
     const base::FilePath& directory,
     const std::string& name,
-    const leveldb_env::Options& options,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
@@ -243,7 +230,7 @@ void DomStorageDatabase::OpenDirectory(
   DCHECK(directory.IsAbsolute());
   CreateSequenceBoundDomStorageDatabase(std::move(blocking_task_runner),
                                         std::move(callback), directory, name,
-                                        options, memory_dump_id);
+                                        memory_dump_id);
 }
 
 // static
@@ -270,12 +257,10 @@ void DomStorageDatabase::Destroy(
           [](const std::string& db_name,
              scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
              StatusCallback callback) {
-            leveldb_env::Options options;
-            options.env = GetDomStorageDatabaseEnv();
             callback_task_runner->PostTask(
                 FROM_HERE,
                 base::BindOnce(std::move(callback),
-                               leveldb::DestroyDB(db_name, options)));
+                               leveldb::DestroyDB(db_name, MakeOptions())));
           },
           MakeFullPersistentDBName(directory, name),
           base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));

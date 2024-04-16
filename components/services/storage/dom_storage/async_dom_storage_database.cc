@@ -23,7 +23,6 @@ namespace storage {
 
 // static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
-    const leveldb_env::Options& options,
     const base::FilePath& directory,
     const std::string& dbname,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
@@ -32,8 +31,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
   DomStorageDatabase::OpenDirectory(
-      directory, dbname, options, memory_dump_id,
-      std::move(blocking_task_runner),
+      directory, dbname, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return db;
@@ -68,25 +66,6 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
             FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
       },
       std::move(callback), base::SequencedTaskRunner::GetCurrentDefault()));
-}
-
-void AsyncDomStorageDatabase::CopyPrefixed(
-    const std::vector<uint8_t>& source_key_prefix,
-    const std::vector<uint8_t>& destination_key_prefix,
-    StatusCallback callback) {
-  RunDatabaseTask(base::BindOnce(
-                      [](const std::vector<uint8_t>& prefix,
-                         const std::vector<uint8_t>& new_prefix,
-                         const DomStorageDatabase& db) {
-                        leveldb::WriteBatch batch;
-                        leveldb::Status status =
-                            db.CopyPrefixed(prefix, new_prefix, &batch);
-                        if (!status.ok())
-                          return status;
-                        return db.Commit(&batch);
-                      },
-                      source_key_prefix, destination_key_prefix),
-                  std::move(callback));
 }
 
 void AsyncDomStorageDatabase::RunBatchDatabaseTasks(

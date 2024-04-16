@@ -310,10 +310,7 @@ class RemoveLocalStorageTester {
     // how exactly the Local Storage subsystem stores persistent data.
 
     base::RunLoop open_loop;
-    leveldb_env::Options options;
-    options.create_if_missing = true;
     auto database = storage::AsyncDomStorageDatabase::OpenDirectory(
-        std::move(options),
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
         storage::kLocalStorageLeveldbName, std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),

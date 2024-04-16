@@ -39,8 +39,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/leveldb_chrome.h"
 
 namespace storage {
 
@@ -248,7 +246,7 @@ LocalStorageImpl::LocalStorageImpl(
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver)
     : directory_(storage_root.empty() ? storage_root
                                       : storage_root.Append(kLocalStoragePath)),
-      leveldb_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+      database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       memory_dump_id_(base::StringPrintf("LocalStorage/0x%" PRIXPTR,
@@ -530,18 +528,10 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
   if (!directory_.empty() && directory_.IsAbsolute() && !in_memory_only) {
     // We were given a subdirectory to write to, so use a disk-backed database.
-    leveldb_env::Options options;
-    options.create_if_missing = true;
-    options.max_open_files = 0;  // use minimum
-    // Default write_buffer_size is 4 MB but that might leave a 3.999
-    // memory allocation in RAM from a log file recovery.
-    options.write_buffer_size = 64 * 1024;
-    options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
-
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::OpenDirectory(
-        std::move(options), directory_, kLocalStorageLeveldbName,
-        memory_dump_id_, leveldb_task_runner_,
+        directory_, kLocalStorageLeveldbName, memory_dump_id_,
+        database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -550,7 +540,7 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
   // We were not given a subdirectory. Use a memory backed database.
   in_memory_ = true;
   database_ = AsyncDomStorageDatabase::OpenInMemory(
-      memory_dump_id_, "local-storage", leveldb_task_runner_,
+      memory_dump_id_, "local-storage", database_task_runner_,
       base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -657,7 +647,7 @@ void LocalStorageImpl::DeleteAndRecreateDatabase() {
   // Destroy database, and try again.
   if (!in_memory_) {
     DomStorageDatabase::Destroy(
-        directory_, kLocalStorageLeveldbName, leveldb_task_runner_,
+        directory_, kLocalStorageLeveldbName, database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));
   } else {
@@ -790,7 +780,7 @@ void LocalStorageImpl::OnShutdownComplete() {
   // Flush any final tasks on the DB task runner before invoking the callback.
   PurgeAllStorageAreas();
   database_.reset();
-  leveldb_task_runner_->PostTaskAndReply(
+  database_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
 }
 

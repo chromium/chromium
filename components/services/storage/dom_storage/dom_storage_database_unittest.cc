@@ -18,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 using ::testing::UnorderedElementsAreArray;
@@ -93,12 +92,11 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
   // Helper for tests to block on the result of an OpenDirectory call.
   base::SequenceBound<DomStorageDatabase> OpenDirectorySync(
       const base::FilePath& directory,
-      const std::string& db_name,
-      const leveldb_env::Options& options) {
+      const std::string& db_name) {
     base::SequenceBound<DomStorageDatabase> result;
     base::RunLoop loop;
     DomStorageDatabase::OpenDirectory(
-        directory, db_name, options, /*memory_dump_id=*/std::nullopt,
+        directory, db_name, /*memory_dump_id=*/std::nullopt,
         blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
@@ -154,39 +152,6 @@ TEST_F(StorageServiceDomStorageDatabaseTest, BasicOpenInMemory) {
   EXPECT_TRUE(database);
 }
 
-TEST_F(StorageServiceDomStorageDatabaseTest, BasicOpenDirectory) {
-  // Basic smoke test to verify that we can successfully create and destroy a
-  // persistent database with no problems.
-
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  const char kTestDbName[] = "test_db";
-
-  leveldb_env::Options options;
-  options.create_if_missing = true;
-  options.error_if_exists = true;
-  base::SequenceBound<DomStorageDatabase> database =
-      OpenDirectorySync(temp_dir.GetPath(), kTestDbName, options);
-  EXPECT_TRUE(database);
-
-  database.Reset();
-
-  // Destroy the database. Note that this should be safe to call immediately
-  // after |Reset()| as long as the same TaskRunner is used to open and destroy
-  // the database.
-  //
-  // Because the database owns filesystem artifacts in the temp directory, we
-  // will wait for the DomStorageDatabase instance to actually be destroyed
-  // before completing the test.
-  EXPECT_STATUS_OK(DestroySync(temp_dir.GetPath(), kTestDbName));
-
-  // Verify that the database can't be reopened.
-  options.create_if_missing = false;
-  options.error_if_exists = false;
-  database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName, options);
-  EXPECT_FALSE(database);
-}
-
 TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
   // Exercises basic Put, Get, Delete.
 
@@ -208,7 +173,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
 
 TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   // Verifies that if we Put() something into a persistent database, we can
-  // Get() it back out when we re-open the same database later.
+  // Get() it back out when we re-open the same database later. Also verifies
+  // that this is not possible if the database is deleted.
 
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
@@ -216,11 +182,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   const char kTestKey[] = "test_key";
   const char kTestValue[] = "test_value";
 
-  leveldb_env::Options options;
-  options.create_if_missing = true;
-  options.error_if_exists = true;
   base::SequenceBound<DomStorageDatabase> database =
-      OpenDirectorySync(temp_dir.GetPath(), kTestDbName, options);
+      OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
   DoSync(database, [&](const DomStorageDatabase& db) {
     EXPECT_STATUS_OK(db.Put(MakeBytes(kTestKey), MakeBytes(kTestValue)));
@@ -228,14 +191,31 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   database.Reset();
 
   // Re-open and verify that we can read what was written above.
-  options.create_if_missing = false;
-  options.error_if_exists = false;
-  database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName, options);
+  database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
   DoSync(database, [&](const DomStorageDatabase& db) {
     DomStorageDatabase::Value value;
     EXPECT_STATUS_OK(db.Get(MakeBytes(kTestKey), &value));
     EXPECT_VALUE_EQ(kTestValue, value);
+  });
+  database.Reset();
+
+  // Destroy the database. Note that this should be safe to call immediately
+  // after |Reset()| as long as the same TaskRunner is used to open and destroy
+  // the database.
+  //
+  // Because the database owns filesystem artifacts in the temp directory, we
+  // will wait for the DomStorageDatabase instance to actually be destroyed
+  // before completing the test.
+  EXPECT_STATUS_OK(DestroySync(temp_dir.GetPath(), kTestDbName));
+
+  // Verify that the database was destroyed (open again and verify it's a blank
+  // slate).
+  database = OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
+  ASSERT_TRUE(database);
+  DoSync(database, [&](const DomStorageDatabase& db) {
+    DomStorageDatabase::Value value;
+    EXPECT_TRUE(db.Get(MakeBytes(kTestKey), &value).IsNotFound());
   });
 
   // Because the database owns filesystem artifacts in the temp directory, block

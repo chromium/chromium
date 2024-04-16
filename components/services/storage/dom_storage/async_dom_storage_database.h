@@ -37,7 +37,6 @@ class AsyncDomStorageDatabase {
   ~AsyncDomStorageDatabase();
 
   static std::unique_ptr<AsyncDomStorageDatabase> OpenDirectory(
-      const leveldb_env::Options& options,
       const base::FilePath& directory,
       const std::string& dbname,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
@@ -58,10 +57,6 @@ class AsyncDomStorageDatabase {
   }
 
   void RewriteDB(StatusCallback callback);
-
-  void CopyPrefixed(const std::vector<uint8_t>& source_key_prefix,
-                    const std::vector<uint8_t>& destination_key_prefix,
-                    StatusCallback callback);
 
   template <typename ResultType>
   using DatabaseTask =
