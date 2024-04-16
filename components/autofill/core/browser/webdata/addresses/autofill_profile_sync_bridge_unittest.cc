@@ -490,7 +490,7 @@ TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Deleted) {
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(NAME_FIRST, u"Jane");
   AutofillProfileChange change(AutofillProfileChange::REMOVE, kGuidB, local);
-  EXPECT_CALL(mock_processor(), Delete(kGuidB, _));
+  EXPECT_CALL(mock_processor(), Delete(kGuidB, _, _));
   // The bridge does not need to commit when reacting to a notification about a
   // local change.
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);

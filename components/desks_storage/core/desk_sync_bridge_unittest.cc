@@ -1705,7 +1705,7 @@ TEST_F(DeskSyncBridgeTest, ApplyIncrementalSyncChangesDeleteNonexistent) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
 
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Delete).Times(0);
 
   EntityChangeList entity_change_list;
   entity_change_list.push_back(EntityChange::CreateDelete("no-such-uuid"));

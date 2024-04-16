@@ -402,7 +402,7 @@ TEST_F(WebAppSyncBridgeTest, MergeFullSyncData_LocalSetAndServerSetAreEmpty) {
 
   syncer::EntityChangeList sync_data_list;
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
 
   sync_bridge().MergeFullSyncData(sync_bridge().CreateMetadataChangeList(),
                                   std::move(sync_data_list));
@@ -422,7 +422,7 @@ TEST_F(WebAppSyncBridgeTest, MergeFullSyncData_LocalSetEqualsServerSet) {
 
   // The local app state is the same as the server state, so no changes should
   // be sent.
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
 
   sync_bridge().MergeFullSyncData(sync_bridge().CreateMetadataChangeList(),
                                   std::move(sync_data_list));
@@ -453,7 +453,7 @@ TEST_F(WebAppSyncBridgeTest, MergeFullSyncData_LocalSetGreaterThanServerSet) {
   // MergeFullSyncData below should send |expected_local_apps_to_upload| to the
   // processor() to upload to USS.
   base::RunLoop run_loop;
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -495,7 +495,7 @@ TEST_F(WebAppSyncBridgeTest, MergeFullSyncData_LocalSetLessThanServerSet) {
   ConvertAppsListToEntityChangeList(expected_apps_to_install, &sync_data_list);
   ConvertAppsListToEntityChangeList(local_and_server_apps, &sync_data_list);
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
 
   base::RunLoop run_loop;
   // This is called after apps are installed from sync in MergeFullSyncData()
@@ -556,8 +556,8 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_EmptyEntityChanges) {
   MergeFullSyncData(merged_apps);
 
   syncer::EntityChangeList entity_changes;
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   SetSyncInstallCallbackFailureIfCalled();
 
   sync_bridge().ApplyIncrementalSyncChanges(
@@ -610,8 +610,8 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
 
   // There should be no changes sent to USS in the next
   // ApplyIncrementalSyncChanges() operation.
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   base::RunLoop run_loop;
   base::RepeatingClosure barrier_closure =
@@ -691,8 +691,8 @@ TEST_F(WebAppSyncBridgeTest,
 
   // There should be no changes sent to USS in the next
   // ApplyIncrementalSyncChanges() operation.
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   base::RunLoop run_loop;
   std::vector<webapps::AppId> to_uninstall;
@@ -750,8 +750,8 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_UpdateOnly) {
     registry[app_to_update->app_id()] = std::move(app_to_update);
   }
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   // No installs or uninstalls are made here, only app updates.
   SetSyncInstallCallbackFailureIfCalled();
@@ -789,8 +789,8 @@ TEST_F(WebAppSyncBridgeTest,
                              &entity_changes);
   }
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   SetSyncInstallCallbackFailureIfCalled();
 
   sync_bridge().ApplyIncrementalSyncChanges(
@@ -845,8 +845,8 @@ TEST_F(WebAppSyncBridgeTest,
     apps_to_update.push_back(std::move(app_to_update));
   }
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   SetSyncInstallCallbackFailureIfCalled();
 
   sync_bridge().ApplyIncrementalSyncChanges(
@@ -892,8 +892,8 @@ TEST_F(WebAppSyncBridgeTest,
         app_to_uninstall, syncer::EntityChange::ACTION_DELETE, &entity_changes);
   }
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   SetSyncInstallCallbackFailureIfCalled();
 
   sync_bridge().ApplyIncrementalSyncChanges(
@@ -923,8 +923,8 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CommitWhileNotTrackingMetadata) {
   Registry expected_registry;
   InsertAppsListIntoRegistry(&expected_registry, sync_apps);
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   EXPECT_CALL(processor(), IsTrackingMetadata())
       .WillOnce(testing::Return(false));
 
@@ -942,7 +942,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CommitWhileNotTrackingMetadata) {
 
   // Do MergeFullSyncData next.
   base::RunLoop run_loop;
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -952,7 +952,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CommitWhileNotTrackingMetadata) {
           run_loop.Quit();
       });
 
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   EXPECT_CALL(processor(), IsTrackingMetadata())
       .WillOnce(testing::Return(true));
 
@@ -973,7 +973,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CreateSyncApp) {
   Registry expected_registry;
   InsertAppsListIntoRegistry(&expected_registry, sync_apps);
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -983,7 +983,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CreateSyncApp) {
         EXPECT_TRUE(IsSyncDataEqual(*expected_app, *entity_data));
         RemoveWebAppFromAppsList(&sync_apps, storage_key);
       });
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
   EXPECT_CALL(processor(), IsTrackingMetadata())
       .WillOnce(testing::Return(true));
 
@@ -1012,7 +1012,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -1021,7 +1021,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
         EXPECT_TRUE(IsSyncDataEqual(*expected_app, *entity_data));
         RemoveWebAppFromAppsList(&sync_apps, storage_key);
       });
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   base::test::TestFuture<bool> future;
   {
@@ -1061,9 +1061,10 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_DeleteSyncApp) {
 
   // Put() is called kNumApps times, since UninstallWebApp() calls Put() to
   // update the `is_uninstalling` field.
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(kNumApps);
-  ON_CALL(processor(), Delete(_, _))
+  EXPECT_CALL(processor(), Put).Times(kNumApps);
+  ON_CALL(processor(), Delete)
       .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
                          syncer::MetadataChangeList* metadata) {
         EXPECT_TRUE(base::Contains(registry, storage_key));
         RemoveWebAppFromAppsList(&sync_apps, storage_key);
@@ -1098,7 +1099,7 @@ TEST_F(WebAppSyncBridgeTest,
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -1118,7 +1119,7 @@ TEST_F(WebAppSyncBridgeTest,
 
         RemoveWebAppFromAppsList(&policy_apps, storage_key);
       });
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   base::test::TestFuture<bool> future;
   {
@@ -1165,7 +1166,7 @@ TEST_F(WebAppSyncBridgeTest,
   database_factory().WriteRegistry(registry);
   StartWebAppProvider();
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -1173,8 +1174,9 @@ TEST_F(WebAppSyncBridgeTest,
         // See TODO in WebAppSyncBridge::UpdateSync.
         RemoveWebAppFromAppsList(&policy_and_sync_apps, storage_key);
       });
-  ON_CALL(processor(), Delete(_, _))
+  ON_CALL(processor(), Delete)
       .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
                          syncer::MetadataChangeList* metadata) {
         ASSERT_TRUE(base::Contains(registry, storage_key));
         RemoveWebAppFromAppsList(&policy_and_sync_apps, storage_key);

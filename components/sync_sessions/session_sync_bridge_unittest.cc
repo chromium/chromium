@@ -970,7 +970,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // Completing the commit for the previously closed tab should issue a
   // deletion. For that to trigger, we need to trigger the next association,
   // which we do by navigating in one of the open tabs.
-  EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _));
+  EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _, _));
   real_processor()->OnCommitCompleted(
       GetModelTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag2)},
@@ -1745,8 +1745,8 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
   ASSERT_TRUE(real_processor()->IsTrackingMetadata());
 
   // Mimic the user requesting a session deletion from the UI.
-  EXPECT_CALL(mock_processor(), Delete(foreign_header_storage_key, _));
-  EXPECT_CALL(mock_processor(), Delete(foreign_tab_storage_key, _));
+  EXPECT_CALL(mock_processor(), Delete(foreign_header_storage_key, _, _));
+  EXPECT_CALL(mock_processor(), Delete(foreign_tab_storage_key, _, _));
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run());
   bridge()->GetOpenTabsUIDelegate()->DeleteForeignSession(kForeignSessionTag);
 
@@ -1827,11 +1827,12 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
       recent_mtime));
 
   // During garbage collection, we expect |kStaleSessionTag| to be deleted.
-  EXPECT_CALL(mock_processor(),
-              Delete(SessionStore::GetHeaderStorageKey(kStaleSessionTag), _));
   EXPECT_CALL(
       mock_processor(),
-      Delete(SessionStore::GetTabStorageKey(kStaleSessionTag, kTabNodeId), _));
+      Delete(SessionStore::GetHeaderStorageKey(kStaleSessionTag), _, _));
+  EXPECT_CALL(mock_processor(), Delete(SessionStore::GetTabStorageKey(
+                                           kStaleSessionTag, kTabNodeId),
+                                       _, _));
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
   real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),

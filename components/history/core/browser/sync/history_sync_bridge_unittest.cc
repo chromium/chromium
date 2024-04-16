@@ -145,6 +145,7 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   }
 
   void Delete(const std::string& storage_key,
+              const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
     NOTREACHED();
   }

@@ -205,7 +205,7 @@ TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromSyncApps) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   syncer::EntityData sync_data_1;
@@ -407,7 +407,7 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   // not included in final state (older than installed version)
@@ -462,8 +462,8 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   std::optional<syncer::ModelError> result = sync_bridge().MergeFullSyncData(
       std::move(metadata_change_list), std::move(sync_changes));
@@ -555,9 +555,9 @@ TEST_F(WebApkSyncBridgeTest, MergeFullSyncData) {
 }
 
 TEST_F(WebApkSyncBridgeTest, MergeFullSyncData_NoChanges) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -597,9 +597,9 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -691,9 +691,9 @@ TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges) {
 }
 
 TEST_F(WebApkSyncBridgeTest, ApplyIncrementalSyncChanges_NoChanges) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -723,8 +723,8 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -754,7 +754,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -806,8 +806,8 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -823,7 +823,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Put(_, _, _))
+  ON_CALL(processor(), Put)
       .WillByDefault([&](const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity_data,
                          syncer::MetadataChangeList* metadata) {
@@ -889,13 +889,14 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
 
   base::RunLoop run_loop;
 
-  ON_CALL(processor(), Delete(_, _))
+  ON_CALL(processor(), Delete)
       .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
                          syncer::MetadataChangeList* metadata_change_list) {
         EXPECT_EQ(ManifestIdStrToAppId(manifest_id), storage_key);
         run_loop.Quit();
@@ -913,9 +914,9 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppTooOld) {
 }
 
 TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppDoesNotExist) {
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -943,9 +944,9 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUninstalled_AppNewEnough) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
-  EXPECT_CALL(processor(), Put(_, _, _)).Times(0);
-  EXPECT_CALL(processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
+  EXPECT_CALL(processor(), Put).Times(0);
+  EXPECT_CALL(processor(), Delete).Times(0);
 
   InitSyncBridge();
 
@@ -1001,7 +1002,7 @@ TEST_F(WebApkSyncBridgeTest, GetData) {
 
   database_factory().WriteRegistry(registry);
 
-  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  EXPECT_CALL(processor(), ModelReadyToSync).Times(1);
   InitSyncBridge();
 
   {
@@ -1111,6 +1112,7 @@ TEST_F(WebApkSyncBridgeTest, RemoveOldWebAPKsFromSync) {
 
   ON_CALL(processor(), Delete)
       .WillByDefault([&](const std::string& storage_key,
+                         const syncer::DeletionOrigin& origin,
                          syncer::MetadataChangeList* metadata_change_list) {
         EXPECT_EQ(ManifestIdStrToAppId(manifest_id_1), storage_key);
         run_loop.Quit();

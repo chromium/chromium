@@ -205,7 +205,7 @@ TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
   auto entry = MakeRefCounted<ReadingListEntry>(
       GURL("http://unread.example.com/"), "unread title",
       AdvanceAndGetTime(&clock_));
-  EXPECT_CALL(processor_, Delete("http://unread.example.com/", _));
+  EXPECT_CALL(processor_, Delete("http://unread.example.com/", _, _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
   bridge()->DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
 }

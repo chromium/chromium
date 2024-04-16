@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -30,26 +31,35 @@ class ModelTypeChangeProcessor {
   ModelTypeChangeProcessor() = default;
   virtual ~ModelTypeChangeProcessor() = default;
 
-  // Inform the processor of a new or updated entity. The |entity_data| param
+  // Inform the processor of a new or updated entity. The `entity_data` param
   // does not need to be fully set, but it should at least have specifics and
   // non-unique name. The processor will fill in the rest if the bridge does
-  // not have a reason to care. For example, if |client_tag_hash| is not set,
+  // not have a reason to care. For example, if `client_tag_hash` is not set,
   // the bridge's GetClientTag() will be exercised (and must be supported).
   virtual void Put(const std::string& storage_key,
                    std::unique_ptr<EntityData> entity_data,
                    MetadataChangeList* metadata_change_list) = 0;
 
   // Inform the processor of a deleted entity. The call is ignored if
-  // |storage_key| is unknown.
+  // `storage_key` is unknown. `origin` allows providing fine-grained
+  // information about which codepath the deletion is coming from.
   virtual void Delete(const std::string& storage_key,
+                      const DeletionOrigin& origin,
                       MetadataChangeList* metadata_change_list) = 0;
+
+  // Convenience overload without DeletionOrigin.
+  // TODO(crbug.com/334001702): Remove this overload.
+  void Delete(const std::string& storage_key,
+              MetadataChangeList* metadata_change_list) {
+    Delete(storage_key, DeletionOrigin::Unspecified(), metadata_change_list);
+  }
 
   // Sets storage key for the new entity. This function only applies to
   // datatypes that can't generate storage key based on EntityData. Bridge
   // should call this function when handling
   // MergeFullSyncData/ApplyIncrementalSyncChanges to inform the processor about
-  // |storage_key| of an entity identified by |entity_data|. Metadata changes
-  // about new entity will be appended to |metadata_change_list|.
+  // `storage_key` of an entity identified by `entity_data`. Metadata changes
+  // about new entity will be appended to `metadata_change_list`.
   virtual void UpdateStorageKey(const EntityData& entity_data,
                                 const std::string& storage_key,
                                 MetadataChangeList* metadata_change_list) = 0;
@@ -58,12 +68,12 @@ class ModelTypeChangeProcessor {
   // that support local deletions that should not get synced up (e.g. TYPED_URL
   // does not sync up deletions of expired URLs). If the deletion should get
   // synced up, use change_processor()->Delete() instead. The call is ignored if
-  // |storage_key| is unknown.
+  // `storage_key` is unknown.
   virtual void UntrackEntityForStorageKey(const std::string& storage_key) = 0;
 
   // Remove entity metadata and do not track the entity, exactly like
   // UntrackEntityForStorageKey() above. This method may be called even if
-  // entity does not have storage key. The call is ignored if |client_tag_hash|
+  // entity does not have storage key. The call is ignored if `client_tag_hash`
   // is unknown.
   virtual void UntrackEntityForClientTagHash(
       const ClientTagHash& client_tag_hash) = 0;
@@ -86,11 +96,11 @@ class ModelTypeChangeProcessor {
       const std::string& storage_key) const = 0;
 
   // Pass the pointer to the processor so that the processor can notify the
-  // bridge of various events; |bridge| must not be nullptr and must outlive
+  // bridge of various events; `bridge` must not be nullptr and must outlive
   // this object.
   virtual void OnModelStarting(ModelTypeSyncBridge* bridge) = 0;
 
-  // The |bridge| is expected to call this exactly once unless it encounters an
+  // The `bridge` is expected to call this exactly once unless it encounters an
   // error. Ideally ModelReadyToSync() is called as soon as possible during
   // initialization, and must be called before invoking either Put() or
   // Delete(). The bridge needs to be able to synchronously handle
@@ -128,7 +138,7 @@ class ModelTypeChangeProcessor {
   virtual base::WeakPtr<ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
 
-  // Returns the cached version of remote entity specifics for |storage_key| if
+  // Returns the cached version of remote entity specifics for `storage_key` if
   // available. These specifics can be fully or partially trimmed (proto fields
   // cleared) according to the bridge's logic in
   // TrimAllSupportedFieldsFromRemoteSpecifics().

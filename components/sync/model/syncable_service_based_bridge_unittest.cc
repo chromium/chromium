@@ -448,7 +448,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalDeletion) {
   ASSERT_THAT(GetAllData(),
               ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 
-  EXPECT_CALL(mock_processor_, Delete(kClientTagHash.value(), NotNull()));
+  EXPECT_CALL(mock_processor_, Delete(kClientTagHash.value(), _, NotNull()));
 
   SyncChangeList change_list;
   change_list.emplace_back(FROM_HERE, SyncChange::ACTION_DELETE,

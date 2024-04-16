@@ -372,8 +372,8 @@ TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   urls_to_remove.push_back(history::URLRow(GURL("http://www.example2.com/")));
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(2)));
-  EXPECT_CALL(*processor(), Delete("guid1", _));
-  EXPECT_CALL(*processor(), Delete("guid2", _));
+  EXPECT_CALL(*processor(), Delete("guid1", _, _));
+  EXPECT_CALL(*processor(), Delete("guid2", _, _));
 
   bridge()->OnHistoryDeletions(nullptr, history::DeletionInfo::ForUrls(
                                             urls_to_remove, std::set<GURL>()));
@@ -453,7 +453,7 @@ TEST_F(SendTabToSelfBridgeTest, ApplyDeleteNonexistent) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
 
-  EXPECT_CALL(*processor(), Delete(_, _)).Times(0);
+  EXPECT_CALL(*processor(), Delete(_, _, _)).Times(0);
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateDelete("guid"));
@@ -551,7 +551,7 @@ TEST_F(SendTabToSelfBridgeTest, ExpireEntryDuringInit) {
   AdvanceAndGetTime(kExpiryTime / 2.0);
 
   EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(SizeIs(1)));
-  EXPECT_CALL(*processor(), Delete(_, _));
+  EXPECT_CALL(*processor(), Delete(_, _, _));
 
   InitializeBridge();
 
@@ -577,7 +577,7 @@ TEST_F(SendTabToSelfBridgeTest, AddExpiredEntry) {
   const sync_pb::SendTabToSelfSpecifics not_expired_specifics =
       CreateSpecifics(2, AdvanceAndGetTime());
 
-  EXPECT_CALL(*processor(), Delete(_, _));
+  EXPECT_CALL(*processor(), Delete(_, _, _));
 
   auto error = bridge()->ApplyIncrementalSyncChanges(
       std::move(metadata_changes),

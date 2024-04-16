@@ -543,7 +543,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldForwardLocalChangesToTheProcessor) {
               Put("2", EntityDataHasSignonRealm(kSignonRealm2),
                   IsSyncMetadataStoreChangeListWithStore(store)));
   EXPECT_CALL(mock_processor(),
-              Delete("3", IsSyncMetadataStoreChangeListWithStore(store)));
+              Delete("3", _, IsSyncMetadataStoreChangeListWithStore(store)));
 
   bridge()->ActOnPasswordStoreChanges(changes);
 }

@@ -492,6 +492,7 @@ void ClientTagBasedModelTypeProcessor::Put(
 
 void ClientTagBasedModelTypeProcessor::Delete(
     const std::string& storage_key,
+    const DeletionOrigin& origin,
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DUMP_WILL_BE_CHECK(IsAllowingChanges());
@@ -508,8 +509,7 @@ void ClientTagBasedModelTypeProcessor::Delete(
     return;
   }
 
-  // TODO(crbug.com/334001702): Implement plumbing for `DeletionOrigin`.
-  if (entity->RecordLocalDeletion(DeletionOrigin::Unspecified())) {
+  if (entity->RecordLocalDeletion(origin)) {
     metadata_change_list->UpdateMetadata(storage_key, entity->metadata());
   } else {
     RemoveEntity(entity->storage_key(), metadata_change_list);

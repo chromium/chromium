@@ -191,7 +191,7 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
 
   EXPECT_CALL(*mock_processor(),
-              Delete(entity_changes.front()->storage_key(), _));
+              Delete(entity_changes.front()->storage_key(), _, _));
   bridge()->ApplyIncrementalSyncChanges(std::move(metadata_changes),
                                         std::move(entity_changes));
 
@@ -238,7 +238,7 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   entity_changes.push_back(EntityChangeFromSpecifics(MakeSpecifics()));
 
   EXPECT_CALL(*mock_processor(),
-              Delete(entity_changes.front()->storage_key(), _));
+              Delete(entity_changes.front()->storage_key(), _, _));
   bridge()->MergeFullSyncData(std::move(metadata_changes),
                               std::move(entity_changes));
 

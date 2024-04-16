@@ -41,8 +41,13 @@ void MockModelTypeChangeProcessor::DelegateCallsByDefaultTo(
         delegate->Put(storage_key, std::move(entity_data),
                       metadata_change_list);
       });
+  // Lambda is used instead of testing::Invoke() due to overloads.
   ON_CALL(*this, Delete)
-      .WillByDefault(Invoke(delegate, &ModelTypeChangeProcessor::Delete));
+      .WillByDefault([delegate](const std::string& storage_key,
+                                const DeletionOrigin& origin,
+                                MetadataChangeList* metadata_change_list) {
+        delegate->Delete(storage_key, origin, metadata_change_list);
+      });
   ON_CALL(*this, UpdateStorageKey)
       .WillByDefault(
           Invoke(delegate, &ModelTypeChangeProcessor::UpdateStorageKey));

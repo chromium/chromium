@@ -450,7 +450,11 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
         break;
       }
       case PasswordStoreChange::REMOVE: {
-        change_processor()->Delete(storage_key, &metadata_change_list);
+        // TODO(crbug.com/334001702): Propagate an actual deletion origin all
+        // the way from PasswordStore::RemoveLogin() and similar functions.
+        change_processor()->Delete(storage_key,
+                                   syncer::DeletionOrigin::Unspecified(),
+                                   &metadata_change_list);
         break;
       }
     }

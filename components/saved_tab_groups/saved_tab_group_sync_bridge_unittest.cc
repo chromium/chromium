@@ -601,9 +601,11 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Delete(group_guid.AsLowercaseString(), _));
-  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _)).Times(0);
-  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _)).Times(0);
+  EXPECT_CALL(processor_, Delete(group_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _, _))
+      .Times(0);
+  EXPECT_CALL(processor_, Delete(tab_2_guid.AsLowercaseString(), _, _))
+      .Times(0);
 
   saved_tab_group_model_.Remove(group_guid);
 
@@ -729,7 +731,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
+  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _, _));
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 

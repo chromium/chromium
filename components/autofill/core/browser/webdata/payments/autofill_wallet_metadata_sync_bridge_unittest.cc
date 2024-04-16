@@ -889,7 +889,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   table()->SetServerCreditCards({existing_card});
   ResetBridge();
 
-  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _, _));
   // Local changes should not cause local DB writes.
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
   EXPECT_CALL(*backend(),
@@ -915,7 +915,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Check that there is some metadata, from start on.
   ASSERT_FALSE(GetAllLocalDataInclRestart().empty());
 
-  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _, _));
   // Local changes should not cause local DB writes.
   EXPECT_CALL(*backend(), CommitChanges).Times(0);
   EXPECT_CALL(*backend(),
@@ -1031,7 +1031,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Make the orphans old by advancing time.
   AdvanceTestClockByTwoYears();
 
-  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _, _));
   EXPECT_CALL(*backend(), CommitChanges());
 
   ResetBridge();
@@ -1051,7 +1051,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Make the orphans old by advancing time.
   AdvanceTestClockByTwoYears();
 
-  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _, _));
   EXPECT_CALL(*backend(), CommitChanges);
 
   ResetBridge();

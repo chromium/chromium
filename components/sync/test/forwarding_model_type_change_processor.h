@@ -27,6 +27,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
            std::unique_ptr<EntityData> entity_data,
            MetadataChangeList* metadata_change_list) override;
   void Delete(const std::string& client_tag,
+              const DeletionOrigin& origin,
               MetadataChangeList* metadata_change_list) override;
   void UpdateStorageKey(const EntityData& entity_data,
                         const std::string& storage_key,

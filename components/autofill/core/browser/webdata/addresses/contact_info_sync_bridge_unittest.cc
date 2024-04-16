@@ -329,7 +329,7 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
 
   const AutofillProfileChange change(AutofillProfileChange::REMOVE, kGUID1,
                                      TestProfile(kGUID1));
-  EXPECT_CALL(mock_processor(), Delete(kGUID1, _));
+  EXPECT_CALL(mock_processor(), Delete(kGUID1, _, _));
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
 
   bridge().AutofillProfileChanged(change);

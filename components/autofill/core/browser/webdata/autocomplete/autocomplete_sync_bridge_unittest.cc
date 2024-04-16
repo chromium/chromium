@@ -636,7 +636,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryDeleted) {
       CreateAutocompleteEntry(deleted_specifics);
   const std::string storage_key = GetStorageKey(deleted_specifics);
 
-  EXPECT_CALL(mock_processor(), Delete(storage_key, _));
+  EXPECT_CALL(mock_processor(), Delete(storage_key, _, _));
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);

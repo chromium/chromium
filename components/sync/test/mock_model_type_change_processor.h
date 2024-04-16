@@ -35,6 +35,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   MOCK_METHOD(void,
               Delete,
               (const std::string& storage_key,
+               const DeletionOrigin& origin,
                MetadataChangeList* metadata_change_list),
               (override));
   MOCK_METHOD(void,

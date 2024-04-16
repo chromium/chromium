@@ -27,8 +27,9 @@ void ForwardingModelTypeChangeProcessor::Put(
 
 void ForwardingModelTypeChangeProcessor::Delete(
     const std::string& client_tag,
+    const DeletionOrigin& origin,
     MetadataChangeList* metadata_change_list) {
-  other_->Delete(client_tag, metadata_change_list);
+  other_->Delete(client_tag, origin, metadata_change_list);
 }
 
 void ForwardingModelTypeChangeProcessor::UpdateStorageKey(
