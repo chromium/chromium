@@ -51,6 +51,10 @@ source_set("mojom_mapped_types") {
   visibility = [ "./*" ]
 
   sources = [
+    "signed_web_bundles/ecdsa_p256_public_key.cc",
+    "signed_web_bundles/ecdsa_p256_public_key.h",
+    "signed_web_bundles/ecdsa_p256_utils.cc",
+    "signed_web_bundles/ecdsa_p256_utils.h",
     "signed_web_bundles/ed25519_public_key.cc",
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/ed25519_signature.cc",
@@ -59,6 +63,7 @@ source_set("mojom_mapped_types") {
 
   deps = [
     "//base",
+    "//crypto",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -67,6 +72,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "mojom/web_bundle_parser_mojom_traits_unittest.cc",
+    "signed_web_bundles/ecdsa_p256_public_key_unittest.cc",
+    "signed_web_bundles/ecdsa_p256_utils_unittest.cc",
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/ed25519_signature_unittest.cc",
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",

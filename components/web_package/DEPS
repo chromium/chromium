@@ -3,17 +3,17 @@ include_rules = [
   "+components/cbor",
   "+mojo/public/cpp",
   "+net",
-  "+services/network/public/mojom"
+  "+services/network/public/mojom",
 ]
 
 specific_include_rules = {
   "web_bundle_parser_fuzzer\.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
-  "(web_bundle_signer|signed_web_bundle_signature_verifier|signed_web_bundle_id).cc": [
+  "(web_bundle_signer|signed_web_bundle_signature_verifier|signed_web_bundle_id|ecdsa_p256_utils)\.cc": [
     "+crypto",
   ],
-  "(integrity_block_parser|ed25519_public_key|ed25519_signature|web_bundle_parser_unittest|web_bundle_signer|signed_web_bundle_signature_verifier)\.cc": [
+  "(integrity_block_parser|ed25519_public_key|ed25519_signature|web_bundle_parser_unittest|web_bundle_signer|signed_web_bundle_signature_verifier|ecdsa_p256_utils)\.cc": [
     "+third_party/boringssl",
   ],
 }
