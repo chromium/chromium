@@ -30,6 +30,9 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
   bool Commit(HardwareDisplayPlaneList* plane_list,
               scoped_refptr<PageFlipRequest> page_flip_request,
               gfx::GpuFenceHandle* release_fence) override;
+
+  bool TestSeamlessMode(int32_t crtc_id, const drmModeModeInfo& mode) override;
+
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,11 +33,15 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
+#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
 namespace ui {
 
 namespace {
+
+using testing::_;
+using testing::Return;
 
 // TODO(https://crbug.com/1505062): These tests should not use a single-point
 // curve as the non-empty value (it is arguably not a valid input).
@@ -1728,4 +1733,70 @@ TEST(HardwareDisplayPlaneManagerAtomic, EnableBlend) {
   EXPECT_EQ(hw_plane.framebuffer(), framebuffer->opaque_framebuffer_id());
 }
 
+class HardwareDisplayPlaneManagerSeamlessModeTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    scoped_refptr<MockDrmDevice> drm_device;
+
+    // Initialize FakeDrmDevice state to have a single configured display.
+    auto drm_state =
+        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+    crtc_id_ = drm_state.AddPlaneOnCrtcAndGetCrtcId();
+
+    auto& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b1;
+
+    auto& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.modes = {
+        ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},
+    };
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+
+    drm_device_ = MockDrmDevice::CreateAndInitializeFromState(drm_state);
+    plane_manager_ =
+        std::make_unique<HardwareDisplayPlaneManagerAtomic>(drm_device_.get());
+    CHECK(plane_manager_->Initialize());
+  }
+
+  int64_t crtc_id_;
+  scoped_refptr<MockDrmDevice> drm_device_;
+  std::unique_ptr<HardwareDisplayPlaneManagerAtomic> plane_manager_;
+};
+
+TEST_F(HardwareDisplayPlaneManagerSeamlessModeTest, TestSeamlessMode) {
+  // Any arbitrary mode to be tested for seamless configuration.
+  drmModeModeInfo arbitrary_mode = {
+      .hdisplay = 1234, .vdisplay = 567, .vrefresh = 19u};
+
+  // CommitProperties is called with DRM_MODE_ATOMIC_TEST_ONLY. The result of
+  // CommitProperties propagates to the result of TestSeamlessMode.
+
+  // CommitProperties returns false.
+  EXPECT_CALL(*drm_device_,
+              CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
+      .Times(1)
+      .WillRepeatedly(Return(false));
+  EXPECT_FALSE(plane_manager_->TestSeamlessMode(crtc_id_, arbitrary_mode));
+
+  // CommitProperties returns true.
+  EXPECT_CALL(*drm_device_,
+              CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
+      .Times(1)
+      .WillRepeatedly(Return(true));
+  EXPECT_TRUE(plane_manager_->TestSeamlessMode(crtc_id_, arbitrary_mode));
+}
+
+TEST_F(HardwareDisplayPlaneManagerSeamlessModeTest,
+       TestSeamlessMode_InvalidCrtcId) {
+  // Any arbitrary mode to be tested for seamless configuration.
+  drmModeModeInfo arbitrary_mode = {
+      .hdisplay = 1234, .vdisplay = 567, .vrefresh = 19u};
+
+  // Invalid crtc will result in a DCHECK.
+  int32_t wrong_crtc_id = 9999;
+  EXPECT_NE(wrong_crtc_id, crtc_id_);
+  EXPECT_DCHECK_DEATH(
+      plane_manager_->TestSeamlessMode(wrong_crtc_id, arbitrary_mode));
+}
 }  // namespace ui

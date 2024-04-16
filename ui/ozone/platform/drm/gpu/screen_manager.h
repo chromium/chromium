@@ -62,6 +62,13 @@ class ScreenManager {
   // observer to be notified when the controller goes out of scope.
   HardwareDisplayController* GetDisplayController(const gfx::Rect& bounds);
 
+  // Returns a reference to the display controller associated with |crtc_id| on
+  // |drm|. If the caller caches the controller it must also register as an
+  // observer to be notified when the controller goes out of scope.
+  HardwareDisplayController* GetDisplayController(
+      const scoped_refptr<DrmDevice>& drm,
+      int32_t crtc_id);
+
   // Adds a window for |widget|. Note: |widget| should not be associated with a
   // window when calling this function.
   void AddWindow(gfx::AcceleratedWidget widget,

@@ -7,6 +7,7 @@
 #include <sync/sync.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -356,6 +358,37 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
   plane_list->plane_list.clear();
   plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
   return true;
+}
+
+bool HardwareDisplayPlaneManagerAtomic::TestSeamlessMode(
+    int32_t crtc_id,
+    const drmModeModeInfo& mode) {
+  TRACE_EVENT1("drm", "HardwareDisplayPlaneManagerAtomic::TestSeamlessMode",
+               "crtc_id", crtc_id);
+  ScopedDrmAtomicReqPtr atomic_request(drmModeAtomicAlloc());
+
+  ScopedDrmPropertyBlob mode_blob =
+      drm_->CreatePropertyBlob(&mode, sizeof(mode));
+  if (mode_blob == nullptr) {
+    LOG(WARNING) << "Failed to create PropertyBlob for mode.";
+    return false;
+  }
+
+  // Get a copy of the modeset_props. The actual state will not be updated until
+  // after a successful modeset.
+  CrtcProperties modeset_props = GetCrtcStateForCrtcId(crtc_id).properties;
+  modeset_props.mode_id.value = mode_blob->id();
+
+  if (!AddPropertyIfValid(atomic_request.get(), crtc_id,
+                          modeset_props.mode_id)) {
+    LOG(WARNING) << "Failed to add mode_id property";
+    return false;
+  }
+
+  const int num_crtcs = 1;
+  const uint32_t seamless_test_flags = DRM_MODE_ATOMIC_TEST_ONLY;
+  return drm_->CommitProperties(atomic_request.get(), seamless_test_flags,
+                                num_crtcs, nullptr);
 }
 
 bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(

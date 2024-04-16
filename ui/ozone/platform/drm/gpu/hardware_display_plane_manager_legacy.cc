@@ -144,6 +144,12 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(
   return ret;
 }
 
+bool HardwareDisplayPlaneManagerLegacy::TestSeamlessMode(
+    int32_t crtc_id,
+    const drmModeModeInfo& mode) {
+  return false;
+}
+
 bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
     HardwareDisplayPlaneList* plane_list) {
   // We're never going to ship legacy pageflip with overlays enabled.

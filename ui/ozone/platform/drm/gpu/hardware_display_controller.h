@@ -140,6 +140,11 @@ class HardwareDisplayController {
   // doesn't change any state.
   bool TestPageFlip(const DrmOverlayPlaneList& plane_list);
 
+  // Perform a test commit to |mode| on the CRTC to determine if it can be
+  // configured without a modeset.
+  // |mode| must have the same visible area as the currently configured mode.
+  bool TestSeamlessRefreshRate(int32_t crtc_id, const drmModeModeInfo& mode);
+
   // Return the supported modifiers for |fourcc_format| for this controller.
   std::vector<uint64_t> GetSupportedModifiers(uint32_t fourcc_format,
                                               bool is_modeset = false) const;
@@ -168,6 +173,7 @@ class HardwareDisplayController {
   gfx::Point origin() const { return origin_; }
   void set_origin(const gfx::Point& origin) { origin_ = origin; }
 
+  float GetRefreshRate() const;
   base::TimeDelta GetRefreshInterval() const;
   base::TimeTicks GetTimeOfLastFlip() const;
 

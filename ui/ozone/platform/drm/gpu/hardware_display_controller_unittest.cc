@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
+
 #include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,8 +32,8 @@
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
-#include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
+#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_modifiers_filter.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
@@ -38,6 +41,9 @@
 namespace ui {
 
 namespace {
+
+using testing::_;
+using testing::Return;
 
 constexpr uint32_t kNoModesConnectorId = 404;
 
@@ -271,6 +277,19 @@ uint64_t HardwareDisplayControllerTest::GetPlanePropertyValue(
       GetDrmPropertyForName(drm_.get(), properties.get(), property_name, &p));
   return p.value;
 }
+
+class HardwareDisplayControllerMockedDeviceTest
+    : public HardwareDisplayControllerTest {
+  void SetUp() override {
+    successful_page_flips_count_ = 0;
+    last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
+
+    auto gbm_device = std::make_unique<MockGbmDevice>();
+    drm_ = new testing::NiceMock<MockDrmDevice>(base::FilePath(),
+                                                std::move(gbm_device), true);
+    InitializeDrmDevice(/* use_atomic= */ true);
+  }
+};
 
 TEST_F(HardwareDisplayControllerTest, CheckModesettingResult) {
   DrmOverlayPlaneList modeset_planes;
@@ -1467,6 +1486,74 @@ TEST_F(HardwareDisplayControllerTest, ModifiersFilter) {
 
   EXPECT_EQ(1u, valid_modifiers.size());
   EXPECT_EQ(I915_FORMAT_MOD_X_TILED, valid_modifiers[0]);
+}
+
+TEST_F(HardwareDisplayControllerMockedDeviceTest,
+       TestSeamlessRefreshRate_DifferentSize) {
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  // Mode with visible size that doesn't match the size of the currently
+  // configured mode.
+  drmModeModeInfo wrong_size_mode = kDefaultMode;
+  wrong_size_mode.hdisplay *= 2;
+  wrong_size_mode.vdisplay *= 2;
+
+  // CommitProperties won't be called at all, because the mode is a different
+  // size.
+  EXPECT_CALL(*mock_drm, CommitProperties(_, _, _, _)).Times(0);
+  EXPECT_FALSE(
+      controller_->TestSeamlessRefreshRate(primary_crtc_, wrong_size_mode));
+}
+
+TEST_F(HardwareDisplayControllerMockedDeviceTest,
+       TestSeamlessRefreshRate_MatchingSize) {
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  // Mode with visible size that matches the size of the currently configured
+  // mode, and a different refresh rate.
+  drmModeModeInfo matching_size_mode = kDefaultMode;
+  matching_size_mode.vrefresh *= 2;
+
+  // DrmDevice will be probed because visible size matches, once for each mode.
+  // The probe result will be propagated back to the caller.
+  EXPECT_CALL(*mock_drm, CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+  EXPECT_TRUE(
+      controller_->TestSeamlessRefreshRate(primary_crtc_, kDefaultMode));
+  EXPECT_TRUE(
+      controller_->TestSeamlessRefreshRate(primary_crtc_, matching_size_mode));
+}
+
+TEST_F(HardwareDisplayControllerMockedDeviceTest,
+       TestSeamlessRefreshRate_MatchingSizeFailedProbe) {
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
+
+  DrmOverlayPlaneList modeset_planes;
+  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
+  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
+
+  // Mode with visible size that matches the size of the currently configured
+  // mode, and a different refresh rate.
+  drmModeModeInfo matching_size_mode = kDefaultMode;
+  matching_size_mode.vrefresh *= 2;
+
+  // Even if the size of the mode matches, the driver may reject a
+  // non-modesetting commit. This test failure should propagate up to
+  // TestSeamlessRefreshRate.
+  EXPECT_CALL(*mock_drm, CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
+      .Times(1)
+      .WillRepeatedly(Return(false));
+  EXPECT_FALSE(
+      controller_->TestSeamlessRefreshRate(primary_crtc_, matching_size_mode));
 }
 
 }  // namespace ui

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/display_features.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
@@ -77,6 +78,12 @@ void RefreshRateController::OnDisplayModeChanged(
 }
 
 void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
+  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
+  // enabled.
+  if (display::features::IsHardwareMirrorModeEnabled()) {
+    return;
+  }
+
   auto callback =
       base::BindOnce(&RefreshRateController::OnSeamlessRefreshRangeReceived,
                      weak_ptr_factory_.GetWeakPtr(), display_id);
@@ -116,6 +123,12 @@ void RefreshRateController::UpdateStates() {
 void RefreshRateController::RefreshThrottleState() {
   if (!base::FeatureList::IsEnabled(
           ash::features::kSeamlessRefreshRateSwitching)) {
+    return;
+  }
+
+  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
+  // enabled.
+  if (display::features::IsHardwareMirrorModeEnabled()) {
     return;
   }
 

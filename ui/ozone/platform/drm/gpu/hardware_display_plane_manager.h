@@ -137,6 +137,11 @@ class HardwareDisplayPlaneManager {
   // Commit() down below.
   virtual bool Commit(CommitRequest commit_request, uint32_t flags) = 0;
 
+  // Probe the mode for the CRTC to |mode| based on the current configuration
+  // of display hardware.
+  virtual bool TestSeamlessMode(int32_t crtc_id,
+                                const drmModeModeInfo& mode) = 0;
+
   // Clears old frame state out. Must be called before any AssignOverlayPlanes
   // calls.
   void BeginFrame(HardwareDisplayPlaneList* plane_list);

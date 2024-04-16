@@ -949,6 +949,85 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
       FindDisplayByConnectorId(secondary_connector_id);
   EXPECT_EQ(crtc_3, secondary_display->crtc());
 }
+
+// DrmGpuDisplayManagerGetSeamlessRefreshRateTest is a test fixture for tests
+// related to testing seamless refresh rates.
+class DrmGpuDisplayManagerGetSeamlessRefreshRateTest
+    : public DrmGpuDisplayManagerMockedDeviceTest {
+ protected:
+  void SetUp() override {
+    DrmGpuDisplayManagerMockedDeviceTest::SetUp();
+
+    // Create a FakeDrmDevice with state that represents a display with
+    // one downclock mode, and some other modes with different resolutions
+    // than the first (native) mode.
+    auto drm_state =
+        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+    drm_state.AddPlaneOnCrtcAndGetCrtcId();
+
+    auto& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b1;
+
+    // 120 and 60 are seamless refresh rate candidates; 90 and 40 have different
+    // sizes and thus are not.
+    auto& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.modes = {
+        ResolutionAndRefreshRate{gfx::Size(3840, 2160), 120u},
+        ResolutionAndRefreshRate{gfx::Size(3840, 2160), 60u},
+        ResolutionAndRefreshRate{gfx::Size(1920, 1080), 90u},
+        ResolutionAndRefreshRate{gfx::Size(1920, 1080), 40u},
+    };
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob = std::vector<uint8_t>(
+        kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+    fake_drm_device_ = AddAndInitializeDrmDeviceWithState(drm_state);
+    mock_drm_device_ = static_cast<MockDrmDevice*>(fake_drm_device_.get());
+
+    // Do an initial configuration of the display.
+    auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
+    CHECK_EQ(display_snapshots.size(), 1u);
+    CHECK(ConfigureDisplays(display_snapshots,
+                            {display::ModesetFlag::kCommitModeset}));
+  }
+
+  scoped_refptr<FakeDrmDevice> fake_drm_device_;
+  raw_ptr<MockDrmDevice> mock_drm_device_;
+};
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       GetSeamlessRefreshRates) {
+  // Get the display id for the display to probe.
+  auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_TRUE(!display_snapshots.empty());
+  int64_t display_id = display_snapshots[0]->display_id();
+
+  // Expect two test commits to correspond to the two modes with
+  // the same visible size as the currently configured mode.
+  const uint32_t seamless_test_flags = DRM_MODE_ATOMIC_TEST_ONLY;
+  EXPECT_CALL(*mock_drm_device_, CommitProperties(_, seamless_test_flags, _, _))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  std::optional<std::vector<float>> refresh_rates =
+      drm_gpu_display_manager_->GetSeamlessRefreshRates(display_id);
+  ASSERT_TRUE(refresh_rates);
+  EXPECT_EQ(refresh_rates->size(), 2u);
+  EXPECT_EQ(std::count(refresh_rates->begin(), refresh_rates->end(), 120u), 1);
+  EXPECT_EQ(std::count(refresh_rates->begin(), refresh_rates->end(), 60u), 1);
+}
+
+TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
+       GetSeamlessRefreshRatesWithInvalidId) {
+  // Return std::nullopt for invalid display id.
+  const int64_t wrong_display_id = 42;
+  EXPECT_CALL(*mock_drm_device_, CommitProperties(_, _, _, _)).Times(0);
+  std::optional<std::vector<float>> refresh_rates =
+      drm_gpu_display_manager_->GetSeamlessRefreshRates(wrong_display_id);
+
+  ASSERT_FALSE(refresh_rates);
+}
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_UNITTEST_CC_

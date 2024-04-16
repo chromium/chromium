@@ -689,6 +689,17 @@ HardwareDisplayController* ScreenManager::GetDisplayController(
   return nullptr;
 }
 
+HardwareDisplayController* ScreenManager::GetDisplayController(
+    const scoped_refptr<DrmDevice>& drm,
+    int32_t crtc_id) {
+  HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc_id);
+  if (it != controllers_.end()) {
+    return it->get();
+  }
+
+  return nullptr;
+}
+
 void ScreenManager::AddWindow(gfx::AcceleratedWidget widget,
                               std::unique_ptr<DrmWindow> window) {
   std::pair<WidgetToWindowMap::iterator, bool> result =
