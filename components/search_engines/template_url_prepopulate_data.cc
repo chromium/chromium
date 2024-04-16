@@ -279,7 +279,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     int prepopulated_id) {
-  // TODO(crbug.com/1500526): Refactor to better share code with
+  // TODO(crbug.com/40940777): Refactor to better share code with
   // `GetPrepopulatedEngine()`.
 
   // If there is a set of search engines in the preferences file, we look for

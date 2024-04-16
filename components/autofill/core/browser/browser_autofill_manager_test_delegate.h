@@ -12,7 +12,7 @@ namespace autofill {
 
 // Deprecated. Use AutofillManager::Observer instead, especially WaitForEvent()
 // instead.
-// TODO(crbug.com/1476270): Remove this class.
+// TODO(crbug.com/40279936): Remove this class.
 class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
  public:
   BrowserAutofillManagerTestDelegate();

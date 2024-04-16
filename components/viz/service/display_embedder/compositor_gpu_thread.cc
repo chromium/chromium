@@ -182,7 +182,7 @@ CompositorGpuThread::GetSharedContextState() {
 
 #if BUILDFLAG(SKIA_USE_DAWN)
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
-    // TODO(1504543): Determine if we need to set up a
+    // TODO(crbug.com/40945084): Determine if we need to set up a
     // DawnCachingInterfaceFactory and/or a cache blob callback.
     dawn_context_provider_ =
         gpu::DawnContextProvider::Create(gpu_preferences, workarounds);

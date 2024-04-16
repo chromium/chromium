@@ -9,7 +9,7 @@
 
 namespace wifi {
 
-// TODO(https://crbug.com/1251349): Implement WifiServiceFuchsia.
+// TODO(crbug.com/40198322): Implement WifiServiceFuchsia.
 class WifiServiceFuchsia : public WiFiService {
  public:
   WifiServiceFuchsia() = default;

@@ -282,7 +282,7 @@ TEST_F(ExternalMetricsTest, DroppedEventsWhenDisabled) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
-// TODO(crbug.com/1500822): Failing consistently on MSAN.
+// TODO(crbug.com/40941078): Failing consistently on MSAN.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_ProducedAndDroppedEventMetricCollected \
   DISABLED_ProducedAndDroppedEventMetricCollected

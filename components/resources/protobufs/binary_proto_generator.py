@@ -157,7 +157,7 @@ class BinaryProtoGenerator:
 
   def Run(self):
     parser = optparse.OptionParser()
-    # TODO(crbug.com/614082): Remove this once the bug is fixed.
+    # TODO(crbug.com/41255210): Remove this once the bug is fixed.
     parser.add_option('-w', '--wrap', action="store_true", default=False,
                       help='Wrap this script in another python '
                       'execution to disable site-packages.  This is a '

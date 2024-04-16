@@ -467,7 +467,7 @@ struct PasswordForm {
 
   // Please use IsUsingAccountStore and IsUsingProfileStore to check in which
   // store the form is present.
-  // TODO(crbug.com/1201643): Rename to in_stores to reflect possibility of
+  // TODO(crbug.com/40178769): Rename to in_stores to reflect possibility of
   // password presence in both stores.
   Store in_store = Store::kNotSet;
 

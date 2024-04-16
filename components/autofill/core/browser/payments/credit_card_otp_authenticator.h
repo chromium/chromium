@@ -18,7 +18,7 @@
 
 namespace autofill {
 
-// TODO(crbug.com/1220990): Extract common functions to a parent class after
+// TODO(crbug.com/40186650): Extract common functions to a parent class after
 // full card request is removed from the flow.
 // Authenticates credit card unmasking through OTP (One-Time Password)
 // verification.

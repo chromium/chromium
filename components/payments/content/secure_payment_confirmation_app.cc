@@ -111,7 +111,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->allow_credentials = std::move(credentials);
 
   options->challenge = request_->challenge;
-  // TODO(crbug.com/1325854): The 'showOptOut' flag status must also be signed
+  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
   // in the assertion, so that the verifier can check that the caller offered
   // the experience if desired.
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(

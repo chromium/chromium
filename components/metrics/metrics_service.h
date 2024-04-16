@@ -347,8 +347,8 @@ class MetricsService {
 
   // Writes snapshots of histograms owned by the StatisticsRecorder to a log.
   // Does not take ownership of the log.
-  // TODO(crbug/1423653): Although this class takes in |required_flags| in its
-  // constructor to filter the StatisticsRecorder histograms being put into
+  // TODO(crbug.com/40897621): Although this class takes in |required_flags| in
+  // its constructor to filter the StatisticsRecorder histograms being put into
   // the log, the |histogram_snapshot_manager_| is not aware of this. So if
   // the |histogram_snapshot_manager_| is passed to some other caller, this
   // caller will need to manually filter the histograms. Re-factor the code so

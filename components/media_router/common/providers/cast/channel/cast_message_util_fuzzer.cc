@@ -45,7 +45,7 @@ std::vector<T> MakeVector(const Field& field) {
 }  // namespace
 
 DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
-  // TODO(crbug.com/796717): Add test for CreateAuthChallengeMessage()
+  // TODO(crbug.com/40555657): Add test for CreateAuthChallengeMessage()
   switch (input_union.input_case()) {
     case CastMessageUtilInputs::kCreateLaunchRequestInput: {
       const auto& input = input_union.create_launch_request_input();

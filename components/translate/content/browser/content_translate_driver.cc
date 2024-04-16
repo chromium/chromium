@@ -168,9 +168,9 @@ ukm::SourceId ContentTranslateDriver::GetUkmSourceId() {
 }
 
 bool ContentTranslateDriver::HasCurrentPage() const {
-  // TODO(crbug.com/524208): This method previously checked for the existence of
-  // GetLastCommittedEntry(), which always exists now. Check if this is true for
-  // other implementations and consider removing this method.
+  // TODO(crbug.com/40432764): This method previously checked for the existence
+  // of GetLastCommittedEntry(), which always exists now. Check if this is true
+  // for other implementations and consider removing this method.
   return true;
 }
 
@@ -216,7 +216,7 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
     //
     // This means that the new translation won't be started when the page
     // is restored from back-forward cache, which is the right thing to do.
-    // TODO(crbug.com/1001087): Ensure that it stays disabled for
+    // TODO(crbug.com/40097545): Ensure that it stays disabled for
     // back-forward navigations even when bug above is fixed.
     return;
   }
@@ -334,13 +334,13 @@ void ContentTranslateDriver::RegisterPage(
     translate_manager_->InitiateTranslation(details.adopted_language);
 
     // Save the page language on the navigation entry so it can be synced.
-    // TODO(crbug.com/1231889): The mojo IPC coming from the renderer might race
-    // with a navigation, so the page that sent this message might already be in
-    // the pending delete state after being navigated away from. Rearchitect the
-    // renderer-browser Mojo connection to be able to explicitly determine the
-    // document/content::Page with which this language determination event is
-    // associated, thus avoiding the potential for corner cases where the
-    // detected language is attributed to the wrong page.
+    // TODO(crbug.com/40779913): The mojo IPC coming from the renderer might
+    // race with a navigation, so the page that sent this message might already
+    // be in the pending delete state after being navigated away from.
+    // Rearchitect the renderer-browser Mojo connection to be able to explicitly
+    // determine the document/content::Page with which this language
+    // determination event is associated, thus avoiding the potential for corner
+    // cases where the detected language is attributed to the wrong page.
     auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
     SetPageLanguageInNavigation(details.adopted_language, entry);
   }

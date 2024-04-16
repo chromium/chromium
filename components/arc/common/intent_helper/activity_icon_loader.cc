@@ -362,9 +362,9 @@ void ActivityIconLoader::OnIconsReady(
     return;
   }
 
-  // TODO(crbug.com/1083331): Remove when the adaptive icon feature is enabled
+  // TODO(crbug.com/40131344): Remove when the adaptive icon feature is enabled
   // by default.
-  // TODO(crbug.com/1272349): Adaptive Icon is not supported in Lacros now. Do
+  // TODO(crbug.com/40806186): Adaptive Icon is not supported in Lacros now. Do
   // not remove this until it's supported.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

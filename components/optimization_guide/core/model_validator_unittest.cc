@@ -138,7 +138,7 @@ TEST_F(ModelValidatorExecutorTest, ValidModel) {
       1);
 }
 
-// TODO(crbug.com/1240561): Enable this invalid model handling test once tflite
+// TODO(crbug.com/40194301): Enable this invalid model handling test once tflite
 // error reporter msan failure is fixed.
 TEST_F(ModelValidatorExecutorTest, DISABLED_InvalidModel) {
   base::ScopedTempDir model_dir;

@@ -42,7 +42,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
 
     // Mimics a user going through a key-retrieval flow (e.g. reauth) such that
     // keys are fetched from the server and cached in |client|.
-    // TODO(crbug.com/1434667): replace usages with GetKeysFromServer() +
+    // TODO(crbug.com/40264843): replace usages with GetKeysFromServer() +
     // client.StoreKeys()?
     void MimicKeyRetrievalByUser(const std::string& gaia_id,
                                  TrustedVaultClient* client);

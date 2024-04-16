@@ -1719,7 +1719,7 @@ TEST_P(SharedStorageManagerErrorParamTest,
       "Storage.SharedStorage.OnShutdown.RecoveryOnDiskAttempted", false, 1);
 }
 
-// TODO(crbug.com/1312273): Test is flaky.
+// TODO(crbug.com/40831552): Test is flaky.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_InitFailure_DestroyAndRecreateDatabase DISABLED_InitFailure_DestroyAndRecreateDatabase
 #else

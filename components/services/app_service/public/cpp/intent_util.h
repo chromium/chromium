@@ -33,8 +33,8 @@ extern const char kIntentActionPotentialFileHandler[];
 // will open the link, and that we should not prompt the user about it.
 extern const char kUseBrowserForLink[];
 
-// Activity name for GuestOS intent filters. TODO(crbug/1349974): Remove when
-// default file handling preferences for Files App are migrated.
+// Activity name for GuestOS intent filters. TODO(crbug.com/40233967): Remove
+// when default file handling preferences for Files App are migrated.
 extern const char kGuestOsActivityName[];
 
 struct SharedText {

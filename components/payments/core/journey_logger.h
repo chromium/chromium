@@ -301,7 +301,7 @@ class JourneyLogger {
   // least one payment method in the category (basic-card, google payment
   // method, secure payment confirmation method or other url-based payment
   // method, respectively) is requested.
-  // TODO(crbug.com/754811): Add support for non-basic-card, non-URL methods.
+  // TODO(crbug.com/40534824): Add support for non-basic-card, non-URL methods.
   void SetRequestedPaymentMethods(
       const std::vector<PaymentMethodCategory>& methods);
 

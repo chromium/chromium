@@ -307,7 +307,7 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
 
 // Record a histogram of the age of the PaaSK fields, in days. To confirm that
 // crbug.com/1465558 is fixed.
-// TODO(crbug.com/1465558): remove this function before Oct 2023.
+// TODO(crbug.com/40276038): remove this function before Oct 2023.
 void RecordPhoneAsASecurityKeyFieldsAge(const DeviceInfoSpecifics& specifics) {
   if (!specifics.has_paask_fields()) {
     return;

@@ -1791,7 +1791,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     std::unique_ptr<CopyOutputRequest> request,
     const gpu::Mailbox& mailbox) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::CopyOutput");
-  // TODO(https://crbug.com/898595): Do this on the GPU instead of CPU with
+  // TODO(crbug.com/41422493): Do this on the GPU instead of CPU with
   // Vulkan.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -1821,7 +1821,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       DCHECK(backing_representation);
 
       SkSurfaceProps surface_props;
-      // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
+      // TODO(crbug.com/40776586): Use BeginScopedReadAccess instead
       scoped_access = backing_representation->BeginScopedWriteAccess(
           /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
@@ -2859,7 +2859,8 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
   auto pixel_span = base::make_span(
       reinterpret_cast<const uint8_t*>(&premul_bytes), sizeof(uint32_t));
 
-  // TODO(crbug.com/1360538) Some work is needed to properly support F16 format.
+  // TODO(crbug.com/40237688) Some work is needed to properly support F16
+  // format.
   shared_image_factory_->CreateSharedImage(
       mailbox, solid_color_image_format_, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,

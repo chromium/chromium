@@ -64,7 +64,7 @@ DualReadingListModel::GetSyncControllerDelegate() {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 DualReadingListModel::GetSyncControllerDelegateForTransportMode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402200): This logic should be moved to a controller and
+  // TODO(crbug.com/40251098): This logic should be moved to a controller and
   // made more sophisticated by enabling it only if the user opted in (possibly
   // pref-based).
   if (syncer::IsReadingListAccountStorageEnabled()) {

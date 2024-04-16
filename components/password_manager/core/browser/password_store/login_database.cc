@@ -1634,8 +1634,8 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.signon_realm = tmp;
   form.date_created = s.ColumnTime(COLUMN_DATE_CREATED);
   form.blocked_by_user = (s.ColumnInt(COLUMN_BLOCKLISTED_BY_USER) > 0);
-  // TODO(crbug.com/1151214): Add metrics to capture how often these values fall
-  // out of the valid enum range.
+  // TODO(crbug.com/40732888): Add metrics to capture how often these values
+  // fall out of the valid enum range.
   form.scheme = static_cast<PasswordForm::Scheme>(s.ColumnInt(COLUMN_SCHEME));
   form.type =
       static_cast<PasswordForm::Type>(s.ColumnInt(COLUMN_PASSWORD_TYPE));

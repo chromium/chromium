@@ -34,7 +34,7 @@ class SendTabToSelfModelObserver {
   // Invoked when elements of the model are added, removed, or updated. This is
   // the mechanism for the sync server to push changes in the state of the model
   // to clients.
-  // TODO(crbug.com/945396) move EntriesAddedRemotely to use const refs to
+  // TODO(crbug.com/40619926) move EntriesAddedRemotely to use const refs to
   // clarify ownership.
   virtual void EntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>& new_entries) = 0;

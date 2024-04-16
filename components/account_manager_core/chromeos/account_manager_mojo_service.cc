@@ -164,7 +164,7 @@ void AccountManagerMojoService::CreateAccessTokenFetcher(
     mojom::AccountKeyPtr mojo_account_key,
     const std::string& oauth_consumer_name,
     CreateAccessTokenFetcherCallback callback) {
-  // TODO(https://crbug.com/1175741): Add metrics.
+  // TODO(crbug.com/40747515): Add metrics.
   VLOG(1) << "Received a request for access token from: "
           << oauth_consumer_name;
 

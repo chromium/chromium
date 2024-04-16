@@ -544,7 +544,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
       navigation_handle->GetFrameTreeNodeId());
 
-  // TODO(https://crbug.com/1030325): The following block is a hack to ignore
+  // TODO(crbug.com/40109934): The following block is a hack to ignore
   // certain frames that are detected by AdTagging. These frames are ignored
   // specifically for ad metrics and for the heavy ad intervention. The frames
   // ignored here are still considered ads by the heavy ad intervention. This
@@ -717,7 +717,7 @@ void AdsPageLoadMetricsObserver::OnMainFrameImageAdRectsChanged(
       main_frame_image_ad_rects);
 }
 
-// TODO(https://crbug.com/1142669): Evaluate imposing width requirements
+// TODO(crbug.com/40727873): Evaluate imposing width requirements
 // for ad density violations.
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #if BUILDFLAG(IS_ANDROID)
@@ -1002,7 +1002,7 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
   FrameVisibility visibility = FrameVisibility::kAnyVisibility;
 
   // Record the aggregate data, which is never considered activated.
-  // TODO(crbug/1109754): Does it make sense to include an aggregate peak
+  // TODO(crbug.com/40141881): Does it make sense to include an aggregate peak
   // windowed percent?  Obviously this would be a max of maxes, but might be
   // useful to have that for comparisons as well.
   ADS_HISTOGRAM("Cpu.AdFrames.Aggregate.TotalUsage2", PAGE_LOAD_HISTOGRAM,

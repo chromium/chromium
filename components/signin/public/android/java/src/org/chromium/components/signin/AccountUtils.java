@@ -33,9 +33,9 @@ public class AccountUtils {
 
     /**
      * Creates an Account object for the given {@param name}. Only used in places where we need to
-     * talk to Android which is very rare. Non-signin code should not use this method and should
-     * use {@link CoreAccountInfo} instead.
-     * TODO(crbug.com/1450614): Rename this method to createAccountFromEmail.
+     * talk to Android which is very rare. Non-signin code should not use this method and should use
+     * {@link CoreAccountInfo} instead. TODO(crbug.com/40065164): Rename this method to
+     * createAccountFromEmail.
      */
     public static Account createAccountFromName(String name) {
         return new Account(name, GOOGLE_ACCOUNT_TYPE);

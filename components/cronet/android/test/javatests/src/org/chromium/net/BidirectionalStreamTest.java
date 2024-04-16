@@ -1842,7 +1842,7 @@ public class BidirectionalStreamTest {
     }
 
     @Test
-    // TODO(crbug/1521765): Enable on Android M once fixed.
+    // TODO(crbug.com/41494733): Enable on Android M once fixed.
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToDefaultNetworkSucceeds() {
         ConnectivityManagerDelegate delegate =

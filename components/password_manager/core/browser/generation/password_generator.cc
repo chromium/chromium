@@ -206,8 +206,8 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
 
   // So far the password contains the minimally required characters at the
   // the beginning. Therefore, we create a random permutation.
-  // TODO(crbug.com/847200): Once the unittests allow controlling the generated
-  // string, test that '--' and '__' are eliminated.
+  // TODO(crbug.com/41391422): Once the unittests allow controlling the
+  // generated string, test that '--' and '__' are eliminated.
   int remaining_attempts = 5;
   do {
     base::RandomShuffle(password.begin(), password.end());

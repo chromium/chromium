@@ -74,8 +74,8 @@ void FormatValidatedNumber(const ::i18n::phonenumbers::PhoneNumber& number,
 
   // Drop the leading '+' for US/CA numbers as some sites can't handle the "+",
   // and in these regions dialing "+1..." is the same as dialing "1...".
-  // TODO(crbug/226778): Investigate whether the leading "+" is desirable in
-  // other regions. Closed bug crbug/98911 contains additional context.
+  // TODO(crbug.com/40311205): Investigate whether the leading "+" is desirable
+  // in other regions. Closed bug crbug/98911 contains additional context.
   std::string prefix;
   if (processed_number[0] == '+') {
     processed_number = processed_number.substr(1);

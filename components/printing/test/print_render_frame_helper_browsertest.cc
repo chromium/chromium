@@ -2979,7 +2979,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, LandscapeIgnorePageSizeAndMargin) {
   print_settings().Set(kSettingShouldPrintBackgrounds, true);
 
   base::Value::Dict custom_margins;
-  // TODO(crbug.com/1477190): Would be neat to test with different vertical and
+  // TODO(crbug.com/40280219): Would be neat to test with different vertical and
   // horizontal margins here.
   custom_margins.Set(kSettingMarginTop, 12);
   custom_margins.Set(kSettingMarginRight, 12);

@@ -70,7 +70,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
   delegate_->GetExtensionRequest(report_.get());
 
   if (policies_enabled_) {
-    // TODO(crbug.com/983151): Upload policy error as their IDs.
+    // TODO(crbug.com/40635691): Upload policy error as their IDs.
     auto client = delegate_->MakePolicyConversionsClient(is_machine_scope_);
     // `client` may not be provided in unit test.
     if (client) {

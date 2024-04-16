@@ -12,7 +12,7 @@ namespace messages {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/1188983): Revisit enum values. TAB_SWITCHED is not currently
+// TODO(crbug.com/40755174): Revisit enum values. TAB_SWITCHED is not currently
 // used. Likely the same for TAB_DESTROYED and ACTIVITY_DESTROYED. We also need
 // a dedicated value for message dismissed from feature code.
 enum class DismissReason {

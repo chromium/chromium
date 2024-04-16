@@ -59,7 +59,7 @@ PreconditionState GetPreconditionStateFromAccountChildStatus(
   }
   const AccountCapabilities& capabilities =
       identity_manager.FindExtendedAccountInfo(core_account_info).capabilities;
-  // TODO(crbug.com/1423319): Multiple types of child accounts exists, and this
+  // TODO(crbug.com/40259988): Multiple types of child accounts exists, and this
   // excludes all of them. Once it becomes clear which subset of child accounts
   // actually needs to be excluded, this logic can be relaxed.
   return capabilities.is_subject_to_parental_controls() ==

@@ -439,8 +439,8 @@ void SessionProtoDB<T>::OnLoadContent(LoadCallback callback,
   std::vector<KeyAndValue> results;
   if (success) {
     for (const auto& proto : *content) {
-      // TODO(crbug.com/1157881) relax requirement for proto to have a key field
-      // and return key value pairs OnLoadContent.
+      // TODO(crbug.com/40161040) relax requirement for proto to have a key
+      // field and return key value pairs OnLoadContent.
       results.emplace_back(proto.key(), proto);
     }
   }

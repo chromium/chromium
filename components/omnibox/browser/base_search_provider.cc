@@ -615,7 +615,7 @@ void BaseSearchProvider::AddMatchToMap(
     // contents. Ideally `entity_info` should also be kept on the match in its
     // entirety so it can be carried over when deduplicating the matches here or
     // later in the Autocomplete process.
-    // TODO(crbug.com/1467002): rework how `entity_info` is used in the match.
+    // TODO(crbug.com/40276602): rework how `entity_info` is used in the match.
     if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
       if (!less_relevant_duplicate_match.image_url.is_empty() &&
           existing_match.image_url.is_empty()) {

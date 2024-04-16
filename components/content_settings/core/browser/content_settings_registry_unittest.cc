@@ -155,8 +155,9 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
 
   for (const ContentSettingsInfo* info : *registry()) {
     SCOPED_TRACE("Content setting: " + info->website_settings_info()->name());
-    // TODO(crbug.com/781756): Check IsSettingValid() because "protocol-handler"
-    // and "mixed-script" don't have a proper initial default value.
+    // TODO(crbug.com/41353652): Check IsSettingValid() because
+    // "protocol-handler" and "mixed-script" don't have a proper initial default
+    // value.
 
     // ALLOW-by-default settings are not affected by incognito_behavior, so
     // they should be marked as INHERIT_IN_INCOGNITO.

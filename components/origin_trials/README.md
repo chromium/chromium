@@ -37,4 +37,4 @@ If the headers do not include a valid trial token, a request for restart will be
 ## Outstanding work
 
 -  TODO(crbug.com/1227440): Make non-persistent origin trials available through this component.
--  TODO(crbug.com/1416840): Make subdomain matching work for third-party tokens.
+-  TODO(crbug.com/40257045): Make subdomain matching work for third-party tokens.

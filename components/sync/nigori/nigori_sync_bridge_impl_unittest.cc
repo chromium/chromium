@@ -399,8 +399,8 @@ class NigoriSyncBridgeImplTestWithOptionalScryptDerivation
 // During initialization bridge should expose encrypted types via observers
 // notification.
 TEST_F(NigoriSyncBridgeImplTest, ShouldNotifyObserversOnInit) {
-  // TODO(crbug.com/1000024): Add a variant of this test, that loads Nigori from
-  // storage and exposes more complete encryption state.
+  // TODO(crbug.com/40645422): Add a variant of this test, that loads Nigori
+  // from storage and exposes more complete encryption state.
   EXPECT_CALL(*observer(),
               OnEncryptedTypesChanged(AlwaysEncryptedUserTypes(),
                                       /*encrypt_everything=*/false));

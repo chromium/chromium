@@ -129,8 +129,8 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = osdd_url;
   resource_request->request_initiator = initiator;
-  // TODO(crbug.com/1059639): Remove |resource_type| once the request is handled
-  // with RequestDestination without ResourceType.
+  // TODO(crbug.com/40121693): Remove |resource_type| once the request is
+  // handled with RequestDestination without ResourceType.
   resource_request->resource_type =
       /* blink::mojom::ResourceType::kSubResource */ 6;
   resource_request->destination = network::mojom::RequestDestination::kEmpty;

@@ -206,7 +206,7 @@ ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
 
 void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     LoadPolicy policy) {
-  // TODO(https://crbug.com/1046806): Modify this call in cases where the new
+  // TODO(crbug.com/40116607): Modify this call in cases where the new
   // |policy| matches an explicitly allowed rule, rather than using the most
   // restrictive policy for the redirect chain.
   load_policy_ = MoreRestrictiveLoadPolicy(policy, load_policy_);

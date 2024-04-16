@@ -146,7 +146,7 @@ void CronetURLRequest::FollowDeferredRedirect() {
 }
 
 bool CronetURLRequest::ReadData(net::IOBuffer* raw_read_buffer, int max_size) {
-  // TODO(https://crbug.com/1335423): Change to DCHECK() or remove after bug
+  // TODO(crbug.com/40847077): Change to DCHECK() or remove after bug
   // is fixed.
   CHECK(max_size == 0 || (raw_read_buffer && raw_read_buffer->data()));
 

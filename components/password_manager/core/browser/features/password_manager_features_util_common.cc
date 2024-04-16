@@ -146,7 +146,7 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
     return false;
   }
 
-// TODO(crbug.com/1430075): Enable the checks below on Desktop too.
+// TODO(crbug.com/40262917): Enable the checks below on Desktop too.
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // From this point on, we want to check for encryption errors, which we can
   // only do when the engine is initialized. In that meantime, we give it the
@@ -159,7 +159,7 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
   // Worse: in some cases sign-out might not clear the store. If another user
   // signs in later, the leftover data might end up in their account, see
   // crbug.com/1426774.
-  // TODO(crbug.com/1428598): Hook this code to IsTrackingMetadata().
+  // TODO(crbug.com/40262289): Hook this code to IsTrackingMetadata().
   if (sync_service->GetUserSettings()->IsPassphraseRequired() ||
       sync_service->GetUserSettings()->IsTrustedVaultKeyRequired()) {
     return false;

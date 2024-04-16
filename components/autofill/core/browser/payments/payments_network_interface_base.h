@@ -119,7 +119,7 @@ class PaymentsNetworkInterfaceBase {
   std::string access_token_;
 
   // Denotes incognito mode.
-  // TODO(crbug.com/1409158): Remove this variable, as it should not be the
+  // TODO(crbug.com/40888896): Remove this variable, as it should not be the
   // PaymentsNetworkInterface's responsibility to check if the user is off the
   // record. The sole responsibility of the PaymentsNetworkInterface is to send
   // requests to the Google Payments server.

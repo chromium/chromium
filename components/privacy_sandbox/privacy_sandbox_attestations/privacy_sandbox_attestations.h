@@ -40,7 +40,7 @@ using PrivacySandboxAttestationsGatedAPISet =
                   PrivacySandboxAttestationsGatedAPI::kTopics,
                   PrivacySandboxAttestationsGatedAPI::kMaxValue>;
 
-// TODO(crbug.com/1454847): Add a concise representation for "this site is
+// TODO(crbug.com/40272506): Add a concise representation for "this site is
 // attested for all APIs".
 using PrivacySandboxAttestationsMap =
     base::flat_map<net::SchemefulSite, PrivacySandboxAttestationsGatedAPISet>;
@@ -54,7 +54,7 @@ class PrivacySandboxAttestations {
 
     // During the time when a new parsing task is running off of the main
     // thread.
-    // TODO(crbug.com/1501408): This will no longer be true when there are two
+    // TODO(crbug.com/40941689): This will no longer be true when there are two
     // parsing tasks posted to the thread pool at the same time, in which case
     // the progress will be `kFinished` after the first one completes. This
     // could be fixed by keeping a counter of pending tasks, and moving the
@@ -103,7 +103,7 @@ class PrivacySandboxAttestations {
 
   // Record the status returned by `IsSiteAttestedInternal` to a histogram, then
   // return the status.
-  // TODO(crbug.com/1500636): This method will occasionally return false
+  // TODO(crbug.com/40940888): This method will occasionally return false
   // positives i.e. it may mark some sites as attested even when they are not.
   // This will occur for example, if the attestations file is corrupted on-disk,
   // or the file is otherwise unavailable.

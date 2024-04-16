@@ -87,7 +87,8 @@ HistoryDatabase::HistoryDatabase(
            // BeginExclusiveMode below which is called later (we have to be in
            // shared mode to start out for the in-memory backend to read the
            // data).
-           // TODO(1153459) Remove this dependency on normal locking mode.
+           // TODO(crbug.com/40159106) Remove this dependency on normal locking
+           // mode.
            .exclusive_locking = false,
            // Set the database page size to something a little larger to give us
            // better performance (we're typically seek rather than bandwidth

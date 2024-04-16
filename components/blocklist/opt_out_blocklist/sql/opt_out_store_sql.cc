@@ -106,7 +106,7 @@ void DatabaseErrorCallback(sql::Database* db,
 }
 
 void InitDatabase(sql::Database* db, base::FilePath path) {
-  // TODO(crbug.com/1092101): Migrate to OptOutBlocklist and update any backend
+  // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any backend
   // code that may depend on this tag.
   db->set_histogram_tag("OptOutBlacklist");
 

@@ -116,7 +116,7 @@ class LargeIconService : public KeyedService {
   // WARNING: This function will share the |page_url| with a Google server. This
   // Can be used only for urls that are not privacy sensitive or for users that
   // sync their history with Google servers.
-  // TODO(crbug.com/903826): It is not clear from the name of this function,
+  // TODO(crbug.com/41425581): It is not clear from the name of this function,
   // that it actually adds the icon to the local cache. Maybe
   // "StoreLargeIcon..."?
   virtual void GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(

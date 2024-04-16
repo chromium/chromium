@@ -7,8 +7,8 @@ package org.chromium.components.browser_ui.util;
 /**
  * A helper class that stores Chrome cached flag values to allow them to be used in //components.
  *
- * <p>TODO(crbug.com/1442347): Remove this class after code changes allow for //components to access
- * cached flags.
+ * <p>TODO(crbug.com/40266922): Remove this class after code changes allow for //components to
+ * access cached flags.
  */
 public class BrowserUiUtilsCachedFlags {
 

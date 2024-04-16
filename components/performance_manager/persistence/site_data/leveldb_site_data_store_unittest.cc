@@ -257,7 +257,7 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314084): Re-enable when DatabaseOpeningFailure works on
+// TODO(crbug.com/40221281): Re-enable when DatabaseOpeningFailure works on
 // Fuchsia.
 #define MAYBE_DatabaseOpeningFailure DISABLED_DatabaseOpeningFailure
 #else

@@ -272,8 +272,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "}");
     DCHECK(parsed_json);
   }
-  // TODO(crbug/1303949): Refactor when `base::JSONReader::Read` is updated to
-  // return a Dict.
+  // TODO(crbug.com/40826246): Refactor when `base::JSONReader::Read` is updated
+  // to return a Dict.
   return std::make_unique<base::Value::Dict>(std::move(parsed_json->GetDict()));
 }
 

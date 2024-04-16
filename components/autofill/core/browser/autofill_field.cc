@@ -271,9 +271,9 @@ void AutofillField::set_server_predictions(
         experimental_server_predictions_.push_back(std::move(prediction));
       }
     } else {
-      // TODO(crbug.com/1376045): captured tests store old autofill api response
-      // recordings without `source` field. We need to maintain the old behavior
-      // until these recordings will be migrated.
+      // TODO(crbug.com/40243028): captured tests store old autofill api
+      // response recordings without `source` field. We need to maintain the old
+      // behavior until these recordings will be migrated.
       server_predictions_.push_back(std::move(prediction));
     }
   }

@@ -27,7 +27,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::StrictMock;
 
-// TODO(crbug.com/1455407): Move this to a common test helper to simplify the
+// TODO(crbug.com/40272762): Move this to a common test helper to simplify the
 // setup in tests and the maintenance later.
 void SetupIdentityEnvironment(
     raw_ptr<signin::IdentityTestEnvironment> identity_test_env) {

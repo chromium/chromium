@@ -118,8 +118,8 @@ struct FrameTokenWithPredecessor {
 // The input B is an unassociated and unowned field.
 // The input C is an unassociated but an owned field.
 //
-// TODO(crbug.com/1243730): Currently, Autofill ignores unowned fields in shadow
-// DOMs.
+// TODO(crbug.com/40195555): Currently, Autofill ignores unowned fields in
+// shadow DOMs.
 //
 // The unowned fields of the frame constitute that frame's *unowned form*.
 //

@@ -193,7 +193,7 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   }
 
   // Handle main frame or its sub frame navigation in prerendered pages.
-  // TODO(crbug.com/1445438): For latter case, the cancellation of prerender is
+  // TODO(crbug.com/40912417): For latter case, the cancellation of prerender is
   // currently done by canceling them with BLOCKED_BY_CLIENT in loader
   // throttle, because current implementation of Prerender cancels
   // prerenders when the navigation of prerender's subframes (not only the

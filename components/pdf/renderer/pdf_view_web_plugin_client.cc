@@ -182,7 +182,7 @@ void PdfViewWebPluginClient::TextSelectionChanged(
     uint32_t offset,
     const gfx::Range& range) {
   // Focus the plugin's containing frame before changing the text selection.
-  // TODO(crbug.com/1234559): Would it make more sense not to change the text
+  // TODO(crbug.com/40192026): Would it make more sense not to change the text
   // selection at all in this case? Maybe we only have this problem because we
   // support a "selectAll" message.
   blink::WebLocalFrame* frame = GetFrame();

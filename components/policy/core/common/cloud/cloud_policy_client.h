@@ -249,7 +249,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // error notification. The |signing_service| is used to sign the request and
   // is expected to be available until caller receives
   // |OnRegistrationStateChanged| or |OnClientError|.
-  // TODO(crbug.com/1236148): Remove SigningService from CloudPolicyClient and
+  // TODO(crbug.com/40192631): Remove SigningService from CloudPolicyClient and
   // make callees sign their data themselves.
   virtual void RegisterWithCertificate(
       const RegistrationParameters& parameters,

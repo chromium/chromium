@@ -52,9 +52,9 @@ namespace dom_distiller {
 
 const char* kExternalTestResourcesPath =
     "third_party/dom_distiller_js/dist/test/data";
-// TODO(877461): Remove filter once image construction happens synchronously and
-// asserts do not flake anymore when exposed to different garbage collection
-// heuristics.
+// TODO(crbug.com/40590818): Remove filter once image construction happens
+// synchronously and asserts do not flake anymore when exposed to different
+// garbage collection heuristics.
 const char* kTestFilePath =
     "/war/test.html?console_log=0&filter="
     "-*.testImageExtractorWithAttributesCSSHeightCM"

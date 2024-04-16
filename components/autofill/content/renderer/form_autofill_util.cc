@@ -111,7 +111,7 @@ constexpr size_t kMaxShadowLevelsUp = 2;
 
 // Text features to detect form submission buttons. Features are selected based
 // on analysis of real forms and their buttons.
-// TODO(crbug.com/910546): Consider to add more features (e.g. non-English
+// TODO(crbug.com/41429204): Consider to add more features (e.g. non-English
 // features).
 const char* const kButtonFeatures[] = {"button", "btn", "submit",
                                        "boton" /* "button" in Spanish */};
@@ -1958,7 +1958,7 @@ void WebFormControlElementToFormField(
 
   // Traverse up through shadow hosts to see if we can gather missing
   // attributes.
-  // TODO(crbug.com/1268085): Make sure this works for all shadow DOM cases,
+  // TODO(crbug.com/40204601): Make sure this works for all shadow DOM cases,
   // including cases in which the owning form is multiple (shadow DOM) levels
   // apart from the form control element. Also check whether we cannot simplify
   // some of the shadow DOM traversals here.

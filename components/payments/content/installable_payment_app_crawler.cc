@@ -438,7 +438,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
 
   // If the initiator frame doesn't exists any more, e.g. the frame has
   // navigated away, don't download the icon.
-  // TODO(crbug.com/1058840): Move this sanity check to ManifestIconDownloader
+  // TODO(crbug.com/40121328): Move this sanity check to ManifestIconDownloader
   // after DownloadImage refactor is done.
   auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
   auto* web_contents = rfh && rfh->IsActive()

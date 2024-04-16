@@ -93,7 +93,7 @@ void SetResponseDelayOnServerThread(const std::string& path,
   CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   CHECK(g_quic_memory_cache_backend);
 
-  // TODO(crbug.com/1487185): Stop hardcoding server hostname.
+  // TODO(crbug.com/40283192): Stop hardcoding server hostname.
   CHECK(g_quic_memory_cache_backend->SetResponseDelay(
       base::StringPrintf("%s:%d", "test.example.com", kServerPort), path,
       quic::QuicTime::Delta::FromMicroseconds(delay.InMicroseconds())));

@@ -19,7 +19,7 @@ const char kEnableSnippets[] = "ntp_snippets.enable";
 const char kArticlesListVisible[] = "ntp_snippets.list_visible";
 // A boolean pref set to true if swapping out NTP isn't enabled or if DSE is
 // Google.
-// TODO(https://crbug.com/1483475): Inhibit loading feeds in native feeds code
+// TODO(crbug.com/40282032): Inhibit loading feeds in native feeds code
 // when this pref is set to false.
 const char kEnableSnippetsByDse[] = "ntp_snippets_by_dse.enable";
 

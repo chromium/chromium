@@ -340,7 +340,7 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     EXPECT_NE(exit_code, kSuccess);
     return (exit_code != kSuccess);
 #else
-    // TODO(https://crbug.com/976063): Android's implementation of
+    // TODO(crbug.com/40632533): Android's implementation of
     // WaitForMultiprocessTestChildExit can't detect child process crashes, this
     // can be fixed after minSdkVersion >= Q.
     for (int i = 0; i < TestTimeouts::action_max_timeout().InSeconds(); i++) {

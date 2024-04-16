@@ -393,7 +393,7 @@ bool AutocompleteTable::AddFormFieldValueTime(
   if (!db_->is_open()) {
     return false;
   }
-  // TODO(crbug.com/1424298): Remove once it is understood where the `false`
+  // TODO(crbug.com/40260352): Remove once it is understood where the `false`
   // results are coming from.
   auto create_debug_info = [this](const char* failure_location) {
     std::vector<std::string> message_parts = {base::StringPrintf(

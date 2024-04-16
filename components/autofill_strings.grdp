@@ -103,7 +103,7 @@
     , '''
   </message>
 
-  <!-- TODO(crbug.com/1451267): Make translatable once strings are finalized. -->
+  <!-- TODO(crbug.com/40270486): Make translatable once strings are finalized. -->
   <message name="IDS_AUTOFILL_ADDRESS_TEST_DATA" desc="The text displayed as a secondary label in the test addresses devtools suggestion." translateable="false">
     Address test data
   </message>

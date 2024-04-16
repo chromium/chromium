@@ -200,7 +200,7 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
 
 TEST_P(WindowsSpellCheckerRequestTextCheckWithSuggestionsTest,
        RequestTextCheck) {
-  // TODO(https://crbug.com/1513242): Remove once Windows fixes spellcheck.
+  // TODO(crbug.com/41485814): Remove once Windows fixes spellcheck.
 #if defined(ARCH_CPU_ARM64)
   const char* text_to_check = GetParam().text_to_check;
   if (text_to_check == kRequestTextCheckTestCases[1].text_to_check ||

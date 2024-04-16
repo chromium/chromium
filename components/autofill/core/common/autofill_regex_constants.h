@@ -667,7 +667,7 @@ inline constexpr char16_t kUPIVirtualPaymentAddressRe[] =
     u")$";
 
 // Used to match field value that might be an International Bank Account Number.
-// TODO(crbug.com/977377): The regex doesn't match IBANs for Saint Lucia (LC),
+// TODO(crbug.com/40633135): The regex doesn't match IBANs for Saint Lucia (LC),
 // Kazakhstan (KZ) and Romania (RO). Consider replace the regex with something
 // like "(?:IT|SM)\d{2}[A-Z]\d{22}|CY\d{2}[A-Z]\d{23}...". For reference:
 //    - https://www.swift.com/resource/iban-registry-pdf

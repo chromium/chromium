@@ -70,7 +70,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       bool is_virtual_card_standalone_cvc_field,
       autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
 
-  // TODO(crbug.com/1495879): Remove redundant parameters.
+  // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
   // values can be retrieved from 'form' or 'client_'.
   void OnDidShowSuggestions(

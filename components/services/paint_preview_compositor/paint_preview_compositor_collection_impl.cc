@@ -59,7 +59,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
     receiver_.Bind(std::move(receiver));
 
   // Adapted from content::InitializeSkia().
-  // TODO(crbug/1199857): Tune these limits.
+  // TODO(crbug.com/40178027): Tune these limits.
   constexpr int kMB = 1024 * 1024;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   bool is_low_end_mode =
@@ -86,13 +86,13 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   SkFontConfigInterface::SetGlobal(
       sk_make_sp<font_service::FontLoader>(std::move(font_service)));
 #endif
-  // TODO(crbug/1023377): Determine if EnsureBlinkInitialized*() does any other
-  // initialization we require. Possibly for other platforms (e.g. MacOS,
+  // TODO(crbug.com/40106998): Determine if EnsureBlinkInitialized*() does any
+  // other initialization we require. Possibly for other platforms (e.g. MacOS,
   // Android). In theory, WebSandboxSupport isn't required since we subset and
   // load all required fonts into the Skia Pictures for portability so they are
   // all local; however, this may be required for initialization on MacOS?
 
-  // TODO(crbug/1013585): PDF compositor initializes Blink to leverage some
+  // TODO(crbug.com/40102887): PDF compositor initializes Blink to leverage some
   // codecs for images. This is a huge overhead and shouldn't be necessary for
   // us. However, this may break some formats (WEBP?) so we may need to force
   // encoding to PNG or we could provide our own codec implementations.

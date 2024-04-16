@@ -59,7 +59,7 @@ struct CredentialFacet {
 // Simple struct that represents an entry inside Settings UI. Allows implicit
 // construction from PasswordForm for convenience. A single entry might
 // correspond to multiple PasswordForms.
-// TODO(crbug.com/1374029): Use class here instead of struct.
+// TODO(crbug.com/40872079): Use class here instead of struct.
 struct CredentialUIEntry {
   // Structure which represents affiliated domain and can be used by the UI to
   // display affiliated domains as links.

@@ -183,10 +183,9 @@ final class ProfileOAuth2TokenServiceDelegate {
     }
 
     /**
-     * Called by the native method
-     * ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable
-     * to check whether the account has an OAuth2 refresh token.
-     * TODO(crbug.com/1477628): Use CoreAccountId instead of string email.
+     * Called by the native method ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable to
+     * check whether the account has an OAuth2 refresh token. TODO(crbug.com/40928950): Use
+     * CoreAccountId instead of string email.
      */
     @VisibleForTesting
     @CalledByNative

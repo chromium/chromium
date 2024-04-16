@@ -504,7 +504,7 @@ TEST_F(DownloadPathReservationTrackerTest, UnresolvedConflicts) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314073): Re-enable when UnwriteableDirectory works on
+// TODO(crbug.com/40221275): Re-enable when UnwriteableDirectory works on
 // Fuchsia.
 #define MAYBE_UnwriteableDirectory DISABLED_UnwriteableDirectory
 #else

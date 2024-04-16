@@ -74,8 +74,8 @@ class AutofillOptimizationGuideTest : public testing::Test {
         personal_data_manager_(std::make_unique<TestPersonalDataManager>()),
         autofill_optimization_guide_(
             std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
-    // TODO(crbug.com/1519664): Cleanup default credit card creation in Autofill
-    // Optimization Guide unittests by defining the credit card in each
+    // TODO(crbug.com/41492641): Cleanup default credit card creation in
+    // Autofill Optimization Guide unittests by defining the credit card in each
     // individual test.
     CreditCard card = test::GetVirtualCard();
     test_api(card).set_network_for_virtual_card(kVisaCard);

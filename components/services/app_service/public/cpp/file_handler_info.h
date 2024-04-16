@@ -20,7 +20,7 @@ extern const char kShareWith[];
 
 }  // namespace file_handler_verbs
 
-// TODO(crbug.com/938103): This struct is an older representation for the same
+// TODO(crbug.com/41444843): This struct is an older representation for the same
 // thing as found in apps::FileHandler, which has been created as part of the
 // BMO project. Ultimately, it would be preferable for all systems to be
 // consistent and adopt the BMO format. Once they do, this class can be deleted.

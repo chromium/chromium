@@ -490,7 +490,7 @@ TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
   EXPECT_FALSE(widget->widget_delegate()->CanFullscreen());
 }
 
-// TODO(crbug.com/1490404): Re-enable this when flakiness is resolved.
+// TODO(crbug.com/40284737): Re-enable this when flakiness is resolved.
 TEST_F(WaylandAuraShellServerTest, DISABLED_SetUnSetFloat) {
   UpdateDisplay("800x600");
 

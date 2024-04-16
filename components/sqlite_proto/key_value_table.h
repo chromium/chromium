@@ -48,7 +48,7 @@ std::string GetDeleteAllSql(const std::string& table_name);
 //     base::BindOnce(&KeyValueTable<PrefetchData>::UpdateData,
 //                    table_->AsWeakPtr(), key, data));
 //
-// TODO(crbug.com/1115398): Supporting weak pointers is a temporary measure
+// TODO(crbug.com/40711306): Supporting weak pointers is a temporary measure
 // mitigating a crash caused by complex lifetime requirements for KeyValueTable
 // relative to the related classes. Making KeyValueTable<T> stateless instead
 // could be a better way to resolve these lifetime issues in the long run.

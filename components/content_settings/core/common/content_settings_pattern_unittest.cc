@@ -105,7 +105,7 @@ TEST(ContentSettingsPatternTest, FromURL) {
   EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:80")));
   EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:81")));
 
-  // TODO(crbug.com/1405269): Including a port with a portless scheme should
+  // TODO(crbug.com/40252232): Including a port with a portless scheme should
   // return an invalid pattern.
   pattern = ContentSettingsPattern::FromURL(GURL("devtools://devtools:80"));
   EXPECT_TRUE(pattern.Matches(GURL("devtools://devtools:80")));

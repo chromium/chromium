@@ -116,7 +116,8 @@ SourceUrlRecorderWebContentsObserver::SourceUrlRecorderWebContentsObserver(
       num_same_document_sources_for_full_navigation_source_(0) {}
 
 bool SourceUrlRecorderWebContentsObserver::ShouldRecordURLs() const {
-  // TODO(crbug/1078349): ensure we only record URLs for tabs in a tab strip.
+  // TODO(crbug.com/40689292): ensure we only record URLs for tabs in a tab
+  // strip.
 
   // If there is an outer WebContents, then this WebContents is embedded into
   // another one (e.g it is a portal or a Chrome App <webview>).
@@ -276,8 +277,8 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
     const GURL& initial_url) {
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
-  // TODO(crbug/1078355): If ShouldRecordURLs is false, we should still create a
-  // UKM source, but not add any URLs to it.
+  // TODO(crbug.com/40689295): If ShouldRecordURLs is false, we should still
+  // create a UKM source, but not add any URLs to it.
   if (!ShouldRecordURLs())
     return;
 

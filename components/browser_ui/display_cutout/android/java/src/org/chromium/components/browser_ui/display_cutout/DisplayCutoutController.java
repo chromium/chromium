@@ -246,7 +246,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         mSafeAreaInsetsTracker.setIsViewportFitCover(
                 value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
 
-        // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
+        // TODO(crbug.com/40281421): Investigate whether if() can be turned into assert.
         // Most likely we will need to just remove this section when E2E is launched.
         if (!mDelegate.isDrawEdgeToEdgeEnabled()
                 && !mDelegate.getWebContents().isFullscreenForCurrentTab()

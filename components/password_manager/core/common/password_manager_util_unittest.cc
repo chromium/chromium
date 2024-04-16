@@ -20,7 +20,8 @@ using autofill::FormFieldData;
 
 FormFieldData CreateFormField(autofill::FormControlType form_control_type,
                               std::string autocomplete_attribute) {
-  // TODO(1465839): Use autofill helpers once they are accessible to /common.
+  // TODO(crbug.com/40276144): Use autofill helpers once they are accessible to
+  // /common.
   FormFieldData field;
   field.set_form_control_type(form_control_type);
   field.autocomplete_attribute = std::move(autocomplete_attribute);

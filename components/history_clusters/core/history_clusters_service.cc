@@ -236,7 +236,8 @@ HistoryClustersService::QueryClusters(
     bool recluster,
     QueryClustersCallback callback) {
   if (!IsJourneysEnabledAndVisible()) {
-    // TODO(crbug/1441974): Make this into a CHECK after verifying all callers.
+    // TODO(crbug.com/40266727): Make this into a CHECK after verifying all
+    // callers.
     std::move(callback).Run({}, QueryClustersContinuationParams::DoneParams());
     return nullptr;
   }

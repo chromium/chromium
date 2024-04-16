@@ -560,7 +560,7 @@ void InitActiveExperiments() {
       variations::VariationsIdsProvider::GetInstance();
   DCHECK(variations_ids_provider != nullptr);
 
-  // TODO(crbug.com/1331322): Retire the hardcoded GWS ID ranges and only read
+  // TODO(crbug.com/40227501): Retire the hardcoded GWS ID ranges and only read
   // the finch parameter.
   std::vector<variations::VariationID> active_experiments =
       variations_ids_provider->GetVariationsVector(

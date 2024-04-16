@@ -123,7 +123,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kProtocolHandlerIcon;
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
-      // TODO(crbug.com/1503624): Use a proper smart card icon.
+      // TODO(crbug.com/40944087): Use a proper smart card icon.
       return cr23 ? vector_icons::kDevicesChromeRefreshIcon
                   : vector_icons::kDevicesIcon;
 #endif

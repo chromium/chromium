@@ -666,7 +666,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     if (value.empty()) {
       continue;
     }
-    // TODO(crbug.com/1417975): Use rewriter rules for all kAddressHome types.
+    // TODO(crbug.com/40257475): Use rewriter rules for all kAddressHome types.
     if (type == ADDRESS_HOME_STREET_ADDRESS || type == ADDRESS_HOME_LINE1 ||
         type == ADDRESS_HOME_LINE2 || type == ADDRESS_HOME_LINE3) {
       // This will compare street addresses after applying appropriate address

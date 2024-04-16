@@ -126,7 +126,7 @@ public class BookmarkItem {
         return mIsAccountBookmark;
     }
 
-    // TODO(https://crbug.com/1019217): Remove when BookmarkModel is stubbed in tests instead.
+    // TODO(crbug.com/40655824): Remove when BookmarkModel is stubbed in tests instead.
     public void forceEditableForTesting() {
         mForceEditableForTesting = true;
     }

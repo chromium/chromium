@@ -211,7 +211,7 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   // True if the generation popup was shown during this navigation. Used to
   // track UMA stats per page visit rather than per display, since the former
   // is more interesting.
-  // TODO(crbug.com/845458): Remove this or change the description of the
+  // TODO(crbug.com/40577440): Remove this or change the description of the
   // logged event as calling AutomaticgenerationStatusChanged will no longer
   // imply that a popup is shown. This could instead be logged with the
   // metrics collected on the browser process.
@@ -638,7 +638,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
 }
 
 bool PasswordGenerationAgent::MaybeOfferAutomaticGeneration() {
-  // TODO(crbug.com/852309): Add this check to the generation element class.
+  // TODO(crbug.com/40580560): Add this check to the generation element class.
   if (current_generation_item_->is_manually_triggered_) {
     return false;
   }

@@ -88,7 +88,7 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class ContentCaptureBrowserTestNoTestingConfig
     : public ContentCaptureBrowserTest {
  public:

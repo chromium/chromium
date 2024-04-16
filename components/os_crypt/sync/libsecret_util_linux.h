@@ -125,10 +125,11 @@ class COMPONENT_EXPORT(OS_CRYPT) LibsecretAttributesBuilder {
 
  private:
   // |name_values_| is a storage for strings referenced in |attrs_|.
-  // TODO(crbug.com/607950): Make implementation more robust by not depending on
-  // the implementation details of containers. External objects keep references
-  // to the objects stored in this container. Using a vector here will fail the
-  // ASan tests, because it may move the objects and break the references.
+  // TODO(crbug.com/41251661): Make implementation more robust by not depending
+  // on the implementation details of containers. External objects keep
+  // references to the objects stored in this container. Using a vector here
+  // will fail the ASan tests, because it may move the objects and break the
+  // references.
   std::list<std::string> name_values_;
   raw_ptr<GHashTable> attrs_;
 };

@@ -24,7 +24,7 @@ namespace {
 // Source of the shader to perform tonemapping. Note that the functions
 // ToLinearSRGBIsh, ToLinearPQ, and ToLinearHLG are copy-pasted from the GLSL
 // shader source in gfx::ColorTransform.
-// TODO(https://crbug.com/1101041): Add non-identity tonemapping to the shader.
+// TODO(crbug.com/40138176): Add non-identity tonemapping to the shader.
 NSString* tonemapping_shader_source =
     @"#include <metal_stdlib>\n"
      "#include <simd/simd.h>\n"
@@ -437,7 +437,7 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
 
   // Rasterized tiles and the primary plane specify a color space of SRGB_HDR
   // with no extended range metadata.
-  // TODO(https://crbug.com/1446302): Use extended range metadata instead of
+  // TODO(crbug.com/40268540): Use extended range metadata instead of
   // the SDR_HDR color space to indicate this.
   if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB_HDR) {
     return !is_unorm;

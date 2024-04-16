@@ -270,7 +270,7 @@ TEST_P(ActivationStateComputingThrottleMainFrameTest, Activate) {
 TEST_P(ActivationStateComputingThrottleMainFrameTest,
        NoPageActivationNotification_NoActivation) {
   if (dryrun_speculation()) {
-    GTEST_SKIP() << "TODO(crbug.com/1069398): Fix this test failure.";
+    GTEST_SKIP() << "TODO(crbug.com/40125895): Fix this test failure.";
   }
   CreateTestNavigationForMainFrame(GURL("http://example.test/"));
   SimulateStartAndExpectToProceed();
@@ -478,7 +478,7 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, DisabledStatePropagated2) {
   EXPECT_TRUE(state.generic_blocking_rules_disabled);
 }
 
-// TODO(crbug.com/1143730): A test is needed to verify that
+// TODO(crbug.com/40155196): A test is needed to verify that
 // ComputeActivationState was called appropriately.  Previously this was done
 // via looking at performance histograms, but those are now obsolete.
 

@@ -59,7 +59,7 @@ const double kLocatedEventEpsilonSquared = 1.0 / (2000.0 * 2000.0);
 
 bool SameLocation(const gfx::PointF& location_in_target,
                   const gfx::PointF& location) {
-  // TODO(crbug.com/1354573): This is no longer necessary.  Switch to
+  // TODO(crbug.com/40859165): This is no longer necessary.  Switch to
   // std::numeric_limits<float>::eplison().
   gfx::Vector2dF offset = location_in_target - location;
   return offset.LengthSquared() < (2 * kLocatedEventEpsilonSquared);

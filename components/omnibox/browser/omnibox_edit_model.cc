@@ -1161,7 +1161,7 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   // This in turn allows the user to use escape to quickly select all the text
   // for ease of replacement, and matches other browsers.
   bool user_input_was_in_progress = user_input_in_progress_;
-  // TODO(crbug.com/1340378): If the popup was open, `user_input_in_progress_`
+  // TODO(crbug.com/40230336): If the popup was open, `user_input_in_progress_`
   //  *should* also be true; checking `user_text_` in the DCHECK below, and
   //  checking `popup_was_open` in the if predicate below *should* be
   //  unnecessary. However, that's not always the case (see

@@ -438,7 +438,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   MockAutofillClient autofill_client_;
   std::unique_ptr<MockVirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
-  // TODO(crbug.com/1291003): Refactor to use the real CreditCardSaveManager.
+  // TODO(crbug.com/40818490): Refactor to use the real CreditCardSaveManager.
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
 
@@ -697,10 +697,10 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
-// TODO(crbug/1507185): Remove duplicate code present between server and local
-// CVC test suites below.
-// Tests that when triggering AttemptToOfferCvcLocalSave function, SaveCard
-// dialog will be triggered with `kCvcSaveOnly` option.
+// TODO(crbug.com/40947875): Remove duplicate code present between server and
+// local CVC test suites below. Tests that when triggering
+// AttemptToOfferCvcLocalSave function, SaveCard dialog will be triggered with
+// `kCvcSaveOnly` option.
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcLocalSave_ShouldShowSaveCardLocallyWithCvcSaveOnly) {
   CreditCard local_card = test::GetCreditCard();

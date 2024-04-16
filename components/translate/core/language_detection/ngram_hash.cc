@@ -146,7 +146,7 @@ void GetNGramHashIndices(NGramHashParams* params, int32_t* data) {
       }
       // Compute the hash for the ngram starting at the token.
       //
-      // TODO(https://crbug.com/902789): Murmur2 has only 2 remaining uses in
+      // TODO(crbug.com/40601370): Murmur2 has only 2 remaining uses in
       // Chrome. Migrate to a different hash that's more widely used in future
       // versions of the mode and also supports 32/64 bit platforms
       // seamlessly. Anything over num_bytes = 7 can overflow on 32-bit. By

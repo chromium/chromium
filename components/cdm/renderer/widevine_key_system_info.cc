@@ -251,7 +251,7 @@ EmeConfig::Rule WidevineKeySystemInfo::GetPersistentLicenseSessionSupport()
   // support only based on `is_supported` and ignore `is_hw_secure_supported`.
   // Note: On ChromeOS, platform verification (similar to CDM host verification)
   // is required for persistent license support, which requires identifier.
-  // TODO(crbug.com/1324262): Fix the logic after refactoring EmeConfig.
+  // TODO(crbug.com/40839176): Fix the logic after refactoring EmeConfig.
   if (is_supported) {
     return EmeConfig{.identifier = EmeConfigRuleState::kRequired,
                      .persistence = EmeConfigRuleState::kRequired};

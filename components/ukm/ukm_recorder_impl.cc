@@ -951,7 +951,7 @@ bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
   // Ideally, this check should be covered by the above block for
   // `EXTENSION_ID` type. For backward compatibility we still keep it here so
   // the UKMs recorded without `EXTENSION_ID` type are also properly checked.
-  // TODO(https://crbug.com/1393445): clean up all the UKM metrics with
+  // TODO(crbug.com/40248219): clean up all the UKM metrics with
   // extension URL to use the dedicated source ID type, and remove this check.
   if (sanitized_url.SchemeIs(kExtensionScheme)) {
     if (ShouldDropExtensionUrl(sanitized_url, has_recorded_reason)) {

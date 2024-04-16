@@ -466,7 +466,8 @@ class PageLoadMetricsObserverInterface {
   // subframe's position is updated explicitly or inherently (e.g. sticky
   // position while the page is being scrolled).
   //
-  // TODO(crbug/1048175): Expose intersections to observers via shared delegate.
+  // TODO(crbug.com/40117157): Expose intersections to observers via shared
+  // delegate.
   virtual void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* rfh,
       const gfx::Rect& main_frame_intersection_rect) = 0;

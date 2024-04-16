@@ -64,8 +64,8 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   params.inner.skip_accelerated_content =
       capture_params.skip_accelerated_content;
 
-  // TODO(crbug/1064253): Consider moving to client so that this always happens.
-  // Although, it is harder to get this right in the client due to its
+  // TODO(crbug.com/40123632): Consider moving to client so that this always
+  // happens. Although, it is harder to get this right in the client due to its
   // lifecycle.
   auto capture_handle =
       web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,

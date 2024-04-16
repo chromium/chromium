@@ -400,7 +400,7 @@ void WebContentsHandler::ReadyToCommitNavigation(
 
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
   rfh->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
-  // TODO(crbug.com/1187618): We shouldn't be sending the primary patterns here
+  // TODO(crbug.com/40172977): We shouldn't be sending the primary patterns here
   // because: a) we have already filtered based on them and they are not needed
   // in the renderer, and b) they could leak the embedder origin to embedded
   // pages like fenced frames.
@@ -1466,7 +1466,7 @@ void PageSpecificContentSettings::OnPrerenderingPageActivation() {
   }
 
   if (updates_queued_during_prerender_->site_data_accessed) {
-    // TODO(crbug.com/1447929): Re-attribute the
+    // TODO(crbug.com/40269100): Re-attribute the
     // `access_details.is_from_primary_page`.
     WebContentsHandler::FromWebContents(GetWebContents())
         ->NotifySiteDataObservers(

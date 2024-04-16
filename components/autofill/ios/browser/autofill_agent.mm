@@ -460,7 +460,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
            autofill::PopupItemId::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_popupDelegate) {
-      // TODO(966411): Replace 0 with the index of the selected suggestion.
+      // TODO(crbug.com/41460687): Replace 0 with the index of the selected
+      // suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
@@ -1043,7 +1044,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 // Complete a field identified with |fieldIdentifier| on the form named
 // |formName| in |frame| using |value| then move the cursor.
-// TODO(crbug.com/661621): |dataString| ends up at fillFormField() in
+// TODO(crbug.com/41284261): |dataString| ends up at fillFormField() in
 // autofill_controller.js. fillFormField() expects an AutofillFormFieldData
 // object, which |dataString| is not because 'form' is not a specified member of
 // AutofillFormFieldData. fillFormField() also expects members 'max_length' and
@@ -1089,7 +1090,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     }
   }
 
-  // TODO(crbug/1131038): Remove once the experiment is over.
+  // TODO(crbug.com/40150011): Remove once the experiment is over.
   UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
 
   ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(_webState);

@@ -111,7 +111,7 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     results = self._testChange('{PROXY_TABS, "", "", "Tabs", -1, 25},')
     self.assertEqual(0, len(results))
 
-  # TODO(crbug.com/1170749): The only remaining deprecated type doesn't satisfy
+  # TODO(crbug.com/40744701): The only remaining deprecated type doesn't satisfy
   # this test, revisit it.
   def DISABLED_testValidChangeDeprecatedEntry(self):
     results = self._testChange('{DEPRECATED_SUPERVISED_USER_ALLOWLISTS,\n'

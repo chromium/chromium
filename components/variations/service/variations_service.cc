@@ -64,7 +64,7 @@ namespace {
 // seed over http.
 const char kEncryptedMessageLabel[] = "chrome variations";
 
-// TODO(crbug.com/792239): Change this key to a unique VariationsService one,
+// TODO(crbug.com/41359527): Change this key to a unique VariationsService one,
 // once the matching private key is changed server side.
 // Key is used to encrypt headers in seed retrieval requests that happen over
 // HTTP connections (when retrying after an unsuccessful HTTPS retrieval
@@ -509,7 +509,7 @@ void VariationsService::EnsureLocaleEquals(const std::string& locale) {
   // problems in this area may only appear in the wild due to official builds
   // and end user machines.
   if (locale != field_trial_creator_.application_locale()) {
-    // TODO(crbug.com/912320): Report the two values in crash keys.
+    // TODO(crbug.com/41430274): Report the two values in crash keys.
     static auto* lhs_key = base::debug::AllocateCrashKeyString(
         "mismatched_locale_lhs", base::debug::CrashKeySize::Size256);
     static auto* rhs_key = base::debug::AllocateCrashKeyString(
@@ -976,7 +976,7 @@ std::vector<StudyGroupNames> VariationsService::GetStudiesAvailableToForce() {
     return {};
   }
 
-  // TODO(crbug.com/1519232): chrome://field-trial-internals will not support
+  // TODO(crbug.com/41492213): chrome://field-trial-internals will not support
   // studies that are constrained to a layer with LIMITED entropy mode before
   // limited entropy randomization fully lands.
   auto entropy_providers = state_manager_->CreateEntropyProviders(

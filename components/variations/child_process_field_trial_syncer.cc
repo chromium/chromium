@@ -67,7 +67,7 @@ void ChildProcessFieldTrialSyncer::Init(
   // All trials (including low anonymity ones) are required so that the browser
   // and child processes have a consistent view.
   //
-  // See also TODO(crbug.com/1431156) at
+  // See also TODO(crbug.com/40263398) at
   // |FieldTrialSynchronizer::FieldTrialSynchronizer()|.
   base::FieldTrialListIncludingLowAnonymity::AddObserver(this);
 

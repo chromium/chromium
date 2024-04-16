@@ -30,7 +30,7 @@ class CBOR_EXPORT Value {
     // Comparison predicate to order keys in a dictionary as required by the
     // canonical CBOR order defined in
     // https://tools.ietf.org/html/rfc7049#section-3.9
-    // TODO(808022): Clarify where this stands.
+    // TODO(crbug.com/40560917): Clarify where this stands.
     bool operator()(const Value& a, const Value& b) const {
       // The current implementation only supports integer, text string, byte
       // string and invalid UTF8 keys.

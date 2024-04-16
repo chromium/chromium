@@ -322,7 +322,7 @@ AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     return AsyncMatch::MATCH;
   }
 
-  // TODO(crbug.com/995926): Make this call async.
+  // TODO(crbug.com/41477281): Make this call async.
   bool is_match =
       SafeBrowsingApiHandlerBridge::GetInstance().StartCSDAllowlistCheck(url);
   return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;

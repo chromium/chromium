@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx/geometry",
 
-    # TODO(crbug.com/1233217): The V8 dependency should have been propagated
+    # TODO(crbug.com/40191420): The V8 dependency should have been propagated
     # from ":renderer".
     "//v8",
   ]

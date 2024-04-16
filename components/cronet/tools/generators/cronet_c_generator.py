@@ -517,7 +517,7 @@ class Generator(generator.Generator):
         return False
       if mojom.IsAnyInterfaceKind(kind):
         return False
-      # TODO(crbug.com/735301): Arrays and maps could be made hashable. We just
+      # TODO(crbug.com/41326458): Arrays and maps could be made hashable. We just
       # don't have a use case yet.
       if mojom.IsArrayKind(kind):
         return False

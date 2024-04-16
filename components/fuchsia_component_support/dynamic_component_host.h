@@ -45,7 +45,7 @@ class DynamicComponentHost {
 
   // Used by tests to create a child component via a `realm` other than the
   // calling component.
-  // TODO(crbug.com/1427093): Remove this once tests have an easy way to
+  // TODO(crbug.com/40261626): Remove this once tests have an easy way to
   // "bridge" sub-Realms to the TestComponentContextForProcess.
   DynamicComponentHost(fuchsia::component::RealmHandle realm,
                        base::StringPiece collection,

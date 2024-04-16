@@ -54,7 +54,7 @@ inline constexpr unsigned kMaxStringLength = 1024;
 
 // The maximum string length of selected text in contenteditables, textareas,
 // and text-mode inputs.
-// TODO(crbug.com/1501381): Reduce the value.
+// TODO(crbug.com/40941660): Reduce the value.
 inline constexpr size_t kMaxSelectedTextLength = 50 * kMaxStringLength;
 
 // The maximum list size supported by Autofill.

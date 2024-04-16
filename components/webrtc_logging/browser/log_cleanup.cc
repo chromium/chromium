@@ -194,7 +194,7 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
     if (name == log_list_path)
       continue;
     base::FileEnumerator::FileInfo file_info(log_files.GetInfo());
-    // TODO(crbug.com/827167): Handle mismatch between timestamps of the .gz
+    // TODO(crbug.com/40569303): Handle mismatch between timestamps of the .gz
     // file and the .meta file, as well as with the index.
     base::TimeDelta file_age = now - file_info.GetLastModifiedTime();
     if (file_age > kTimeToKeepLogs ||

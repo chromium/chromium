@@ -802,7 +802,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     return SubmitResult::COPY_OUTPUT_REQUESTS_NOT_ALLOWED;
   }
 
-  // TODO(crbug.com/846739): It should be possible to use
+  // TODO(crbug.com/40578019): It should be possible to use
   // |frame.metadata.frame_token| instead of maintaining a |last_frame_index_|.
   uint64_t frame_index = ++last_frame_index_;
 
@@ -1655,7 +1655,7 @@ void CompositorFrameSinkSupport::ClearAllPendingCopyOutputRequests() {
                         "CopyOutputRequest specificc for it.";
       }
     } else {
-      // TODO(https://crbug.com/1467314): We should probably transfer all
+      // TODO(crbug.com/40276723): We should probably transfer all
       // the requests to their corresponding `Surface`s or `RenderPass`es.
     }
   }

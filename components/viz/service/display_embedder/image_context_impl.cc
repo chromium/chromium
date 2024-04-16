@@ -296,7 +296,7 @@ void ImageContextImpl::BeginAccessIfNecessary(
     texture_passthrough_ =
         gpu::gles2::TexturePassthrough::CheckedCast(texture_base);
   }
-  // TODO(crbug.com/1118166): The case above handles textures with the
+  // TODO(crbug.com/40145280): The case above handles textures with the
   // passthrough command decoder, verify if something is required for the
   // validating command decoder as well.
 }

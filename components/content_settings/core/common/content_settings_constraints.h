@@ -65,7 +65,7 @@ class ContentSettingConstraints {
   //
   // If the lifetime is zero, then the setting does not expire.
   //
-  // TODO(https://crbug.com/1450356): created_at_ and lifetime_ need to be
+  // TODO(crbug.com/40270137): created_at_ and lifetime_ need to be
   // persisted (likely in/by content_settings::RuleMetaData) and recreated in
   // order be useful. Otherwise, everything still operates in terms of
   // expirations.

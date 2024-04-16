@@ -125,8 +125,8 @@ std::string ProtocolSerializerJSON::Serialize(
     if (!app.install_location.empty()) {
       app_node.Set("installedby", app.install_location);
     }
-    // TODO(crbug/1120685): Test that this is never sent to the server if the
-    // machine is not enterprise managed.
+    // TODO(crbug.com/40145897): Test that this is never sent to the server if
+    // the machine is not enterprise managed.
     if (!app.release_channel.empty()) {
       app_node.Set("release_channel", app.release_channel);
     }

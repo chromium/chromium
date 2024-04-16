@@ -16,7 +16,7 @@
 namespace performance_manager::power {
 
 std::unique_ptr<base::BatteryLevelProvider> CreateBatteryLevelProvider() {
-  // TODO(crbug.com/1373560): Move all of the creation code into the
+  // TODO(crbug.com/40871810): Move all of the creation code into the
   // platform-specific implementations once they're moved to components.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return performance_manager::power::BatteryLevelProviderChromeOS::Create();

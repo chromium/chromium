@@ -94,7 +94,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
   raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
   int surface_handle_ = gpu::kNullSurfaceHandle;
-  // TODO(https://crbug.com/836524): shouldn't have both of these closures
+  // TODO(crbug.com/41385307): shouldn't have both of these closures
   // in the same class like this.
   base::OnceClosure on_context_bound_;
 

@@ -146,7 +146,7 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
 MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
-  // TODO(https://crbug.com/1363952): Should not rely on this call.
+  // TODO(crbug.com/40238907): Should not rely on this call.
   // This method is called only in a certain situation, and most embedders
   // doesn't support to call this method before WebContentsDestroyed().
   web_contents_will_soon_be_destroyed_ = true;
@@ -440,8 +440,8 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     // RFH is used across page loads (same origin navigations, as well as some
     // cross-origin render-initiated navigations).
     //
-    // TODO(crbug.com/738577): use a DocumentId here instead, to eliminate this
-    // race.
+    // TODO(crbug.com/40528374): use a DocumentId here instead, to eliminate
+    // this race.
     return GetPageLoadTracker(render_frame_host_or_null);
   }
   return nullptr;
@@ -461,9 +461,8 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
       request_id, render_frame_host, resource_load_info.request_destination,
       resource_load_info.load_timing_info.request_start);
   if (tracker) {
-    // TODO(crbug.com/721403): Fill in data reduction proxy fields when this is
-    // available in the network service.
-    // int original_content_length =
+    // TODO(crbug.com/41318940): Fill in data reduction proxy fields when this
+    // is available in the network service. int original_content_length =
     //     was_cached ? 0
     //                : data_reduction_proxy::util::EstimateOriginalBodySize(
     //                      request, lofi_decider);
@@ -1181,7 +1180,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
 
 bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     PageLoadTracker* tracker) {
-  // TODO(crbug/1061090): Update page load metrics IPC validation to ues
+  // TODO(crbug.com/40679416): Update page load metrics IPC validation to ues
   // mojo::ReportBadMessage.
   if (!tracker) {
     RecordInternalError(ERR_IPC_WITH_NO_RELEVANT_LOAD);

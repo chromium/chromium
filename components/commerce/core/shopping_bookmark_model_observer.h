@@ -29,7 +29,8 @@ class SubscriptionsManager;
 // the bookmark was a shopping item, the meta should be removed since we can't
 // guarantee the URL still points to the product.
 //
-// TODO(1317783): We can probably update the data rather than delete it once
+// TODO(crbug.com/40834968): We can probably update the data rather than delete
+// it once
 //                privacy-preserving fetch from optimization guide becomes
 //                available.
 class ShoppingBookmarkModelObserver

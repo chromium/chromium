@@ -48,8 +48,8 @@ TEST(PaintPreviewSubsetFontTest, TestBasicSubset) {
   // the subset_typeface. This is non-trivial.
 }
 
-// TODO(crbug/1250606): Investigate removing the early exits for unsupported
-// variation fonts on at least Linux/Android.
+// TODO(crbug.com/40198064): Investigate removing the early exits for
+// unsupported variation fonts on at least Linux/Android.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 
 namespace {

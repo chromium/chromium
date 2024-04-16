@@ -196,7 +196,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       }
     }
 
-    // TODO(crbug.com/591816): Make sure parsing cc-numbers of type password
+    // TODO(crbug.com/41242238): Make sure parsing cc-numbers of type password
     // doesn't have bad side effects.
     raw_ptr<AutofillField> current_number_field;
     if (ParseFieldSpecifics(context, scanner, kCardNumberRe, kMatchNumTelAndPwd,
@@ -801,7 +801,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
   bool matches = false;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
-    // TODO(crbug/1326244): We should use a language specific regex.
+    // TODO(crbug.com/40225734): We should use a language specific regex.
     // If you add new languages, also update other places labeled with
     // [EXP_DATE_FORMAT].
     static constexpr char16_t kFormatRegex[] =

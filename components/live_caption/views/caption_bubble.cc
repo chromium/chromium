@@ -165,7 +165,7 @@ bool ParseNonTransparentRGBACSSColorString(
 #if BUILDFLAG(IS_MAC)
   // On Mac, any opacity lower than 90% leaves rendering artifacts which make
   // it appear like there is a layer of faint text beneath the actual text.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   a_int = std::max(static_cast<uint16_t>(SkColorGetA(color_provider->GetColor(
                        ui::kColorLiveCaptionBubbleBackgroundDefault))),
@@ -504,7 +504,7 @@ END_METADATA
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
 // A helper class to the CaptionBubbleLabel which observes AXMode changes and
 // updates the CaptionBubbleLabel focus behavior in response.
-// TODO(crbug.com/1191091): Implement a ui::AXModeObserver::OnAXModeRemoved
+// TODO(crbug.com/40756389): Implement a ui::AXModeObserver::OnAXModeRemoved
 // method which observes the removal of AXModes. Without that, the caption
 // bubble label will remain focusable once accessibility is enabled, even if
 // accessibility is later disabled.

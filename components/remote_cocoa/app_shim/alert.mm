@@ -225,7 +225,7 @@ const int kMessageTextMaxSlots = 2000;
   NSAlert* alert = [self alert];
   [alert layout];
   [alert.window recalculateKeyViewLoop];
-  // TODO(crbug.com/841631): Migrate to `[NSWindow
+  // TODO(crbug.com/40575730): Migrate to `[NSWindow
   // beginSheetModalForWindow:completionHandler:]` instead.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

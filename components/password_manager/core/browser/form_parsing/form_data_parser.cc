@@ -506,8 +506,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   // For the use of basic heuristics, also mark CVC fields and NOT_PASSWORD
   // fields as such.
-  // TODO(crbug/1507825): Treat non-password related fields as not password and
-  // not username fields.
+  // TODO(crbug.com/40948526): Treat non-password related fields as not password
+  // and not username fields.
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
     ProcessedField* current_field = FindField(processed_fields, prediction);
     if (!current_field)
@@ -793,7 +793,7 @@ void ParseUsingBaseHeuristics(
   if (!found_fields->HasPasswords()) {
     // What is the best interactability among passwords?
     Interactability password_max = Interactability::kUnlikely;
-    // TODO(crbug.com/1382805): The variable is used only for metrics for the
+    // TODO(crbug.com/40245821): The variable is used only for metrics for the
     // new OTP regex launch. Remove the variable after the launch.
     bool otp_field_detected_with_regex = false;
     for (const ProcessedField& processed_field : processed_fields) {

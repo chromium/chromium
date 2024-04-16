@@ -32,7 +32,8 @@ namespace {
 int Score(const query_parser::QueryNodeVector& input_query_nodes,
           const std::u16string& title,
           const GURL& url) {
-  // TODO(crbug/1287313): The bookmark provider also uses on `query_parser` and
+  // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
+  // and
   //  `ScoringFunctor` to compute its scores. However, it uses normalized match
   //  titles. (see `Normalize()` in
   //  components/bookmarks/browser/titled_url_index.cc) IDK its purpose, but we

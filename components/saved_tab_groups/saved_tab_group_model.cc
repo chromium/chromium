@@ -365,8 +365,8 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
     return;
   }
 
-  // TODO(crbug/1401965): Convert all methods to pass ids by value to prevent
-  // UAFs. Also removes the need for a separate copy variable.
+  // TODO(crbug.com/40062298): Convert all methods to pass ids by value to
+  // prevent UAFs. Also removes the need for a separate copy variable.
   const base::Uuid copy_tab_id = tab_id;
   saved_tab_groups_[index.value()].RemoveTabLocally(tab_id);
 
@@ -422,7 +422,7 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   saved_tab_groups_[index.value()].MoveTabLocally(tab_id, new_index);
 
   for (auto& observer : observers_) {
-    // TODO(crbug/1459730): Consider further optimizations.
+    // TODO(crbug.com/40919583): Consider further optimizations.
     observer.SavedTabGroupTabsReorderedLocally(group_id);
   }
 }

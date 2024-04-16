@@ -131,7 +131,7 @@ void UpdateModalDialogPosition(views::Widget* widget,
         host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
     const gfx::Rect host_screen_bounds = host_widget->GetWindowBoundsInScreen();
 
-    // TODO(crbug.com/1341530): The requested dialog bounds should never fall
+    // TODO(crbug.com/40851111): The requested dialog bounds should never fall
     // outside the bounds of the transient parent.
     DCHECK(dialog_screen_bounds.Intersects(host_screen_bounds));
 

@@ -125,7 +125,7 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
       GetTargetLanguage(translate_prefs.get(), language_model_,
                         page_language_code, target_language_origin);
 
-  // TODO(crbug.com/924980): The ranker event shouldn't be a global on this
+  // TODO(crbug.com/40610937): The ranker event shouldn't be a global on this
   // object. It should instead be passed around to code that uses it.
   InitTranslateEvent(page_language_code, target_lang, *translate_prefs);
 
@@ -324,7 +324,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      TranslationType translation_type) {
   const GURL& page_url = translate_driver_->GetVisibleURL();
   language_state_.SetTranslationType(translation_type);
-  // TODO(crbug.com/1424183): Very rarely, users can reach a state where this
+  // TODO(crbug.com/40898004): Very rarely, users can reach a state where this
   // Translate code is called on a page ineligible for translation. It is
   // unclear how this state is reached, but the crash rate is very low
   // (<0.1CPM) and this state is not breaking for the user. This crash rate

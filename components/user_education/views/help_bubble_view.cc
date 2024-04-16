@@ -187,7 +187,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
             : delegate_->GetHelpBubbleForegroundColorId());
     SetEnabledTextColors(foreground_color);
 
-    // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
+    // TODO(crbug.com/40709599): Temporary fix for Mac. Bubble shouldn't be in
     // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, foreground_color);
   }

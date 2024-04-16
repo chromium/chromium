@@ -174,7 +174,7 @@ ScopedSharedImageMailbox CopyQuadResource(
     return {};
   }
 
-  // TODO(crbug.com/1524141): We don't expect any HDR content with delegated
+  // TODO(crbug.com/41497086): We don't expect any HDR content with delegated
   // compositing due to OverlayProcessorWin bailing when it sees the color
   // conversion pass.
   CHECK(!src_representation->color_space().IsHDR());

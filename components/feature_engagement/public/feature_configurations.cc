@@ -1159,7 +1159,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // * They have not yet opened auto dark settings.
     // * The dialog has been shown 0 times before.
     // * They have done so at least 3 times.
-    // TODO(crbug.com/1251737): Update this config from test values; Will
+    // TODO(crbug.com/40198496): Update this config from test values; Will
     // likely depend on giving feedback instead of opening settings, since the
     // primary purpose  of the dialog has changed.
     std::optional<FeatureConfig> config = FeatureConfig();

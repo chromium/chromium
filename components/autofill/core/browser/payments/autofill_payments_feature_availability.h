@@ -28,7 +28,7 @@ bool VirtualCardFeatureEnabled();
 // authentication option.
 bool IsVcn3dsEnabled();
 
-// TODO(crbug.com/1431355): Move here payments related feature availability
+// TODO(crbug.com/40263500): Move here payments related feature availability
 // checks from autofill_experiments.
 
 }  // namespace autofill

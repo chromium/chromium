@@ -96,7 +96,7 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
       provider_for_encryption_ = tag;
     }
   } else {
-    // TODO(crbug.com/1373092): Return errors back via a callback.
+    // TODO(crbug.com/40241934): Return errors back via a callback.
     LOG(WARNING) << "Provider " << tag << " failed to return a key.";
   }
 

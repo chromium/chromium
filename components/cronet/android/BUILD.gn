@@ -1121,7 +1121,7 @@ shared_library("cronet_tests") {
 android_resources("cronet_test_apk_resources") {
   testonly = true
   sources = [
-    # TODO(crbug/1489244): Modify quicroot.pem to become a build time copy of
+    # TODO(crbug.com/40283951): Modify quicroot.pem to become a build time copy of
     # net/data/ssl/certificates/cronet-quic-chain.pem.
     "test/res/raw/quicroot.pem",
     "test/res/values/cronet-test-rule-configuration.xml",
@@ -1197,7 +1197,7 @@ cronet_tests_androidx_common_srcs = [
 ]
 
 # cronet_common_javatests.jar - Cronet Java test common files.
-# TODO(crbug/1458746) - refactor to cronet_api only dependency
+# TODO(crbug.com/40919033) - refactor to cronet_api only dependency
 android_library("cronet_common_javatests") {
   testonly = true
   sources = [

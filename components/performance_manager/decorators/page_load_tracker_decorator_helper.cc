@@ -162,7 +162,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
   }
 
  private:
-  // TODO(https://crbug.com/1048719): Extract the logic to manage a linked list
+  // TODO(crbug.com/40117344): Extract the logic to manage a linked list
   // of WebContentsObservers to a helper class.
   const raw_ptr<PageLoadTrackerDecoratorHelper> outer_;
   raw_ptr<WebContentsObserver> prev_ GUARDED_BY_CONTEXT(sequence_checker_);

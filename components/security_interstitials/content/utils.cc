@@ -94,7 +94,7 @@ void LaunchDateAndTimeSettings() {
   base::LaunchProcess(command, options);
 
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1233494): Send to the platform settings.
+  // TODO(crbug.com/40191566): Send to the platform settings.
   // The iOS Blink port also need to send the platform settings.
   NOTIMPLEMENTED_LOG_ONCE();
 #else

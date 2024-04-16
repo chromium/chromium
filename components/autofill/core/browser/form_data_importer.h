@@ -40,7 +40,7 @@ class FormDataImporter : public PersonalDataManagerObserver,
                          public history::HistoryServiceObserver {
  public:
   // Record type of the credit card extracted from the form, if one exists.
-  // TODO(crbug.com/1412326): Remove this enum and user CreditCard::RecordType
+  // TODO(crbug.com/40255227): Remove this enum and user CreditCard::RecordType
   // instead.
   enum CreditCardImportType {
     // No card was successfully extracted from the form.

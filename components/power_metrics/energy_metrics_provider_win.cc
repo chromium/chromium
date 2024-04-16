@@ -125,7 +125,7 @@ bool EnergyMetricsProviderWin::Initialize() {
 
   // Pick the first device interface in the returned device information set.
   //
-  // TODO(crbug.com/1385251): Determine if the first device interface is always
+  // TODO(crbug.com/40879127): Determine if the first device interface is always
   // the desired one.
   SP_DEVICE_INTERFACE_DATA dev_data = {0};
   dev_data.cbSize = sizeof(dev_data);

@@ -312,7 +312,7 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   }
 
  private:
-  // TODO(crbug/922900): consider using checked ObserverList once
+  // TODO(crbug.com/40609954): consider using checked ObserverList once
   // SyncEncryptionHandlerImpl is no longer needed or consider refactoring old
   // implementation to use checked ObserverList as well.
   base::ObserverList<SyncEncryptionHandler::Observer>::
@@ -621,7 +621,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   // default keystore Nigori.
   DCHECK(state_.keystore_keys_cryptographer);
   if (state_.keystore_keys_cryptographer->IsEmpty()) {
-    // TODO(crbug.com/1407699): try to relax this requirement for Nigori
+    // TODO(crbug.com/40253261): try to relax this requirement for Nigori
     // initialization as well. Keystore keys might not arrive, for example, due
     // to throttling. It seems easier after complete deprecation of
     // IMPLICIT_PASSPHRASE, where not initialized state will be well

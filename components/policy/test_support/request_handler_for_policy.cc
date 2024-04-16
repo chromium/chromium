@@ -94,7 +94,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   for (const auto& fetch_request :
        device_management_request.policy_request().requests()) {
     const std::string& policy_type = fetch_request.policy_type();
-    // TODO(crbug.com/1221328): Add other policy types as needed.
+    // TODO(crbug.com/40773420): Add other policy types as needed.
     if (!base::Contains(kCloudPolicyTypes, policy_type)) {
       return CreateHttpResponse(
           net::HTTP_BAD_REQUEST,

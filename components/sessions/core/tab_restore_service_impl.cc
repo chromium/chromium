@@ -310,7 +310,7 @@ CreateWindowEntryFromCommand(const SessionCommand* command,
     }
 
     // New field in M104, use default if it fails to read.
-    // TODO(crbug.com/1332968): After some time (say M114), this code can be
+    // TODO(crbug.com/40845240): After some time (say M114), this code can be
     // added into parsing above which fails when ReadInt() fails.
     if (!it.ReadInt(&parsed_fields.type)) {
       parsed_fields.type =

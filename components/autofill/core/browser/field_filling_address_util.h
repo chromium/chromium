@@ -33,7 +33,7 @@ std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
 // Returns the phone number value for the given `field_max_length`. The
 // returned value might be `number`, or `city_and_number`, or could possibly
 // be a meaningful subset `number`, if that's appropriate for the field.
-// TODO(crbug.com/1495294): Move to anonymous namespace in source file.
+// TODO(crbug.com/40286472): Move to anonymous namespace in source file.
 std::u16string GetPhoneNumberValueForInput(
     uint64_t field_max_length,
     const std::u16string& number,

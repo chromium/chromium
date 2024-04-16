@@ -80,7 +80,7 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
   // Cleans preference data that may have been saved outside of the store.
   virtual void OnStoreDeletionFromDisk() = 0;
 
-  // TODO(crbug.com/942491) Remove this after fixing the bug.
+  // TODO(crbug.com/41447167) Remove this after fixing the bug.
   virtual bool IsInMemoryPrefStore() const;
 
  protected:

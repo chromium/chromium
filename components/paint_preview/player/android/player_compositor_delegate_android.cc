@@ -354,7 +354,7 @@ ScopedJavaLocalRef<jstring> PlayerCompositorDelegateAndroid::OnClick(
     return base::android::ConvertUTF8ToJavaString(env, "");
 
   base::UmaHistogramBoolean("Browser.PaintPreview.Player.LinkClicked", true);
-  // TODO(crbug/1061435): Resolve cases where there are multiple links.
+  // TODO(crbug.com/40122441): Resolve cases where there are multiple links.
   // For now just return the first in the list.
   return base::android::ConvertUTF8ToJavaString(env, res[0]->spec());
 }

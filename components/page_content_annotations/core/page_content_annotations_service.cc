@@ -262,8 +262,8 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     // We have annotations the text for this visit, so return that immediately
     // rather than re-executing the model.
     //
-    // TODO(crbug.com/1291275): If the model was updated, the cached value could
-    // be stale so we should invalidate the cache on model updates.
+    // TODO(crbug.com/40212690): If the model was updated, the cached value
+    // could be stale so we should invalidate the cache on model updates.
     OnPageContentAnnotated(visit, it->second);
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",

@@ -39,7 +39,8 @@ void CustomHttpResponse::SendResponse(
   // net::GetHttpReasonPhrase, which requires status code to be a standard HTTP
   // status code and crashes otherwise. Hence we avoid calling it if a custom
   // HTTP code is used.
-  // TODO(crbug/1280752): Make GetHttpReasonPhrase support custom codes instead.
+  // TODO(crbug.com/40209048): Make GetHttpReasonPhrase support custom codes
+  // instead.
   if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()) !=
       base::ranges::end(kStandardHttpStatusCodes)) {
     reason = BasicHttpResponse::reason();

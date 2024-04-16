@@ -38,7 +38,7 @@ class IOSSerializedNavigationBuilder {
 
   // Construct a SerializedNavigationEntry for a particular index from the given
   // CRWNavigationItemStorage.
-  // TODO(crbug.com/1504753): Remove once support for legacy session storage is
+  // TODO(crbug.com/40945317): Remove once support for legacy session storage is
   // removed.
   static SerializedNavigationEntry FromNavigationStorageItem(
       int index,

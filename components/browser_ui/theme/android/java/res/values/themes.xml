@@ -100,7 +100,7 @@ found in the LICENSE file.
         <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
 
         <!-- This is for keeping the current TextInputLayout style.
-             TODO(crbug.com/1206024): Remove or update once the design for the app is updated. -->
+             TODO(crbug.com/40764906): Remove or update once the design for the app is updated. -->
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
     </style>
     <!-- Overridden by night mode. -->

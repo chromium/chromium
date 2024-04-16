@@ -58,7 +58,7 @@ class AutofillSaveCardDelegate {
       AutofillClient::SaveCardOfferUserDecision user_decision,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
-  // TODO(crbug.com/1486941): Make GatherAdditionalConsentIfApplicable() a pure
+  // TODO(crbug.com/40283111): Make GatherAdditionalConsentIfApplicable() a pure
   //                          virtual function.
   // This function by default saves the credit card, but allows subclasses to
   // override if there are prerequisites to saving the card (ex: Android

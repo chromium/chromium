@@ -151,11 +151,11 @@ PageEndReason EndReasonForPageTransition(ui::PageTransition transition) {
 }
 
 bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
-  // TODO(crbug.com/617904): Browser initiated navigations should have
+  // TODO(crbug.com/41257523): Browser initiated navigations should have
   // HasUserGesture() set to true. In the meantime, we consider all
   // browser-initiated navigations to be user initiated.
   //
-  // TODO(crbug.com/637345): Some browser-initiated navigations incorrectly
+  // TODO(crbug.com/40480474): Some browser-initiated navigations incorrectly
   // report that they are renderer-initiated. We will currently report that
   // these navigations are not user initiated, when in fact they are user
   // initiated.
@@ -1028,7 +1028,7 @@ void PageLoadTracker::OnTimingChanged() {
 
   // Record UMA if the LCP candidate changes.
 
-  // TODO(crbug.com/1431906): This is to track irregularities in the LCP timing
+  // TODO(crbug.com/40902605): This is to track irregularities in the LCP timing
   // values in the UKM recording. We would remove this code once we have
   // identified all of the conditions where these irregularities happen.
   bool largest_contentful_image_changed =
@@ -1137,7 +1137,7 @@ void PageLoadTracker::OnSoftNavigationChanged(
     return;
   }
 
-  // TODO(crbug.com/1451911): For soft navigation detections, the count and
+  // TODO(crbug.com/40065440): For soft navigation detections, the count and
   // start time should be monotonically increasing and navigation id different
   // each time. But we do see check failures on
   // soft_navigation_metrics.count >= soft_navigation_metrics_->count when this

@@ -223,7 +223,7 @@ class ModelTypeSyncBridge {
   // * Known fields that are just defined in the proto and not actively used
   // (e.g. a partially-implemented functionality or a functionality guarded by a
   // feature toggle).
-  // TODO(crbug.com/1408144): Consider changing the default to preserve unknown
+  // TODO(crbug.com/40253395): Consider changing the default to preserve unknown
   // fields at least.
   // By default, empty EntitySpecifics is returned.
   virtual sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(

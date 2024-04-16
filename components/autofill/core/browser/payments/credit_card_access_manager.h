@@ -147,7 +147,7 @@ class CreditCardAccessManager
 
   // Caches CreditCard and corresponding CVC for unmasked card so that
   // card info can later be filled without attempting to auth again.
-  // TODO(crbug/1069929): Add browsertests for this.
+  // TODO(crbug.com/40126138): Add browsertests for this.
   void CacheUnmaskedCardInfo(const CreditCard& card, const std::u16string& cvc);
 
   // Return the info for the server cards present in the

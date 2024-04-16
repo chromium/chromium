@@ -279,7 +279,7 @@ final class FakeCronetEngine extends CronetEngineBase {
         }
     }
 
-    // TODO(crbug.com/669707) Instantiate a fake CronetHttpUrlConnection wrapping a FakeUrlRequest
+    // TODO(crbug.com/41288733) Instantiate a fake CronetHttpUrlConnection wrapping a FakeUrlRequest
     // here.
     @Override
     public URLConnection openConnection(URL url) throws IOException {

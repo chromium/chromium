@@ -581,7 +581,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
           break;
         }
         // Copy the sync entity for later decryption.
-        // TODO(crbug.com/1270734): Any write to |entries_pending_decryption_|
+        // TODO(crbug.com/40805099): Any write to |entries_pending_decryption_|
         // should do like DeduplicatePendingUpdatesBasedOnServerId() and honor
         // entity version. Additionally, it should look up the same server id
         // in |pending_updates_| and compare versions. In fact, the 2 containers
@@ -838,7 +838,7 @@ void ModelTypeWorker::NudgeForCommit() {
 }
 
 void ModelTypeWorker::NudgeIfReadyToCommit() {
-  // TODO(crbug.com/1188034): |kNoNudgedLocalChanges| is used to keep the
+  // TODO(crbug.com/40173160): |kNoNudgedLocalChanges| is used to keep the
   // existing behaviour. But perhaps there is no need to nudge for commit if all
   // known changes are already in flight.
   if (has_local_changes_state_ != kNoNudgedLocalChanges && CanCommitItems()) {

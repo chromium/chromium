@@ -59,7 +59,7 @@ struct InstallBannerConfig;
 // SendBannerPromptRequest(), which combines the forked code paths back
 // together.
 //
-// TODO(crbug.com/1147268): remove remaining Chrome-specific functionality and
+// TODO(crbug.com/40730613): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
 class AppBannerManagerAndroid
     : public AppBannerManager,

@@ -471,7 +471,7 @@ void Server::Dispatch(base::TimeDelta timeout) {
 }
 
 void Server::Flush() {
-  // TODO(crbug.com/1508130): This should be updated to use
+  // TODO(crbug.com/40948841): This should be updated to use
   // wl_display_flush_clients() after an upstream libwayland fix has landed to
   // address crashes during client-disconnect.
   wl_client* client = nullptr;

@@ -171,7 +171,7 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
             model()->GetFormattedFullURL());
 }
 
-// TODO(https://crbug.com/1010418): Fix flakes on linux_chromium_asan_rel_ng and
+// TODO(crbug.com/40651107): Fix flakes on linux_chromium_asan_rel_ng and
 // re-enable this test.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PreventElisionWorks DISABLED_PreventElisionWorks

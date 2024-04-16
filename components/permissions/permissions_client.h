@@ -127,7 +127,7 @@ class PermissionsClient {
 
   // Returns whether cookie deletion is allowed for |browser_context| and
   // |origin|.
-  // TODO(crbug.com/1081944): Remove this method and all code depending on it
+  // TODO(crbug.com/40130734): Remove this method and all code depending on it
   // when a proper fix is landed.
   virtual bool IsCookieDeletionDisabled(
       content::BrowserContext* browser_context,

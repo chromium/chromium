@@ -467,7 +467,7 @@ void PasswordAutofillManager::LogMetricsForSuggestions(
   for (const auto& suggestion : suggestions) {
     switch (suggestion.popup_item_id) {
       case autofill::PopupItemId::kGeneratePasswordEntry:
-        // TODO(crbug.com/1062709): Revisit metrics for the "opt in and
+        // TODO(crbug.com/40122999): Revisit metrics for the "opt in and
         // generate" button.
       case autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate:
         dropdown_state = metrics_util::PasswordDropdownState::kStandardGenerate;

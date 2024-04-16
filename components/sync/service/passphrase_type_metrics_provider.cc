@@ -27,7 +27,7 @@ std::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
 
   // Note: The PassphraseType should always be known here, since the
   // TransportState is active.
-  // TODO(crbug.com/1466401): Can this be CHECKed?
+  // TODO(crbug.com/40923935): Can this be CHECKed?
   switch (user_settings->GetPassphraseType().value_or(
       PassphraseType::kImplicitPassphrase)) {
     case PassphraseType::kImplicitPassphrase:

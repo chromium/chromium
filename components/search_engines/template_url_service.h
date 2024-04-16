@@ -227,7 +227,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns the number of TemplateURLs that match `host`. Used for logging.
   // Caller must ensure TemplateURLService is loaded before calling this.
-  // TODO(crbug.com/1322216): Delete after bug is fixed.
+  // TODO(crbug.com/40224222): Delete after bug is fixed.
   size_t GetTemplateURLCountForHostForLogging(const std::string& host) const;
 
   // Adds a new TemplateURL to this model.

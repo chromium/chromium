@@ -53,7 +53,7 @@ class PerformanceManagerPrerenderingBrowserTest
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(ssl_server_.Start());
 
-    // TODO(https://crbug.com/1186893): PrerenderHost is not deleted when the
+    // TODO(crbug.com/40172688): PrerenderHost is not deleted when the
     // page enters BackForwardCache, though it should be. While this
     // functionality is not implemented, disable BackForwardCache for testing
     // and wait for the old RenderFrameHost to be deleted after we navigate away

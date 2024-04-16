@@ -190,8 +190,8 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
  public:
   DualLayerUserPrefStoreTest() : DualLayerUserPrefStoreTestBase(true) {
-    // TODO(crbug.com/1416480): Add proper test setup to enable and disable data
-    // types appropriately.
+    // TODO(crbug.com/40256875): Add proper test setup to enable and disable
+    // data types appropriately.
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -391,7 +391,7 @@ TEST_F(DualLayerUserPrefStoreTest, ReadsFromBothStores) {
   // For the prefs that only exist in one store, their value should be returned.
   expected_values.SetByDottedPath(kPref2, "local_value2");
   expected_values.SetByDottedPath(kPref3, "account_value3");
-  // TODO(crbug.com/1446256): Also set expectations for GetValue() since
+  // TODO(crbug.com/40268520): Also set expectations for GetValue() since
   // GetValues() isn't used outside of tests and may not test the real codepath.
   EXPECT_EQ(store()->GetValues(), expected_values);
 }

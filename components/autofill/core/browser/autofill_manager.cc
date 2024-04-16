@@ -823,8 +823,8 @@ void AutofillManager::OnLoadedServerPredictions(
   // and therefore appear only once. This ensures that
   // FindCachedFormsBySignature() produces an output without duplicates in the
   // forms.
-  // TODO(crbug/1064709): |queried_forms| could be a set data structure; their
-  // order should be irrelevant.
+  // TODO(crbug.com/40123827): |queried_forms| could be a set data structure;
+  // their order should be irrelevant.
   DCHECK_EQ(queried_forms.size(),
             std::set<FormStructure*>(queried_forms.begin(), queried_forms.end())
                 .size());

@@ -32,7 +32,7 @@ enum class EventSource {
 
 // Finds the target for a given location based on the AggregatedHitTestRegion
 // list aggregated by HitTestAggregator.
-// TODO(crbug.com/966939): Handle 3d space cases correctly.
+// TODO(crbug.com/41460939): Handle 3d space cases correctly.
 class VIZ_HOST_EXPORT HitTestQuery {
  public:
   HitTestQuery();

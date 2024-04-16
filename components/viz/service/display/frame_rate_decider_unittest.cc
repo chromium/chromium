@@ -279,7 +279,7 @@ TEST_F(FrameRateDeciderTest, OptimalFrameSinkIntervalIsPicked) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1413559): currently failing on iOS.
+// TODO(crbug.com/40255724): currently failing on iOS.
 #define MAYBE_MinFrameSinkIntervalIsPicked DISABLED_MinFrameSinkIntervalIsPicked
 #else
 #define MAYBE_MinFrameSinkIntervalIsPicked MinFrameSinkIntervalIsPicked

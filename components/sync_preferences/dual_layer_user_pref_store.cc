@@ -537,7 +537,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
     // Clear the account store of any garbage value without notifications. This
     // can happen if a previously syncable pref was persisted to the account
     // store but is no longer syncable.
-    // TODO(crbug.com/1466439): Look into if the garbage values can cleared on
+    // TODO(crbug.com/40067768): Look into if the garbage values can cleared on
     // browser startup.
 
     // Since there's no direct way to clear the pref store or get a list of all

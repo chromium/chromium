@@ -21,7 +21,7 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
 
-  # TODO(crbug.com/1404234) Remove when async canned helper logic is removed.
+  # TODO(crbug.com/40251822) Remove when async canned helper logic is removed.
   "+components/page_info/core",
 ]
 

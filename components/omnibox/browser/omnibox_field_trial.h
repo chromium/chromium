@@ -289,7 +289,7 @@ bool HUPSearchDatabase();
 // For UI experiments.
 
 // On Device Suggestions feature and its helper functions.
-// TODO(crbug.com/1307005): clean up head suggest flags once crbug.com/1307005
+// TODO(crbug.com/40218594): clean up head suggest flags once crbug.com/1307005
 // no longer happens.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();

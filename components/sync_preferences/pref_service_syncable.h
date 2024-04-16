@@ -56,7 +56,7 @@ class PrefServiceSyncable : public PrefService,
   // is enabled. However, it is possible that the other overload gets called
   // even if EnablePreferencesAccountStorage is enabled during test when using
   // TestingPrefServiceSyncable.
-  // TODO(crbug.com/1486803): Fix TestingPrefServiceSyncable or remove usages.
+  // TODO(crbug.com/40283048): Fix TestingPrefServiceSyncable or remove usages.
   // Note: Can be done using templates instead of overload but chosen not to for
   // more clarity.
   PrefServiceSyncable(

@@ -61,7 +61,7 @@ class FieldRef {
   FieldRendererId field_renderer_id_;
 };
 
-// TODO(crbug.com/785531): Track the select and checkbox change.
+// TODO(crbug.com/40550175): Track the select and checkbox change.
 // This class is used to track user's change of form or WebFormControlElement,
 // notifies observers of form's change and submission.
 class FormTracker : public content::RenderFrameObserver,
@@ -77,7 +77,7 @@ class FormTracker : public content::RenderFrameObserver,
       kSelectChanged,
     };
 
-    // TODO(crbug.com/1126017): Find a better name for this method.
+    // TODO(crbug.com/40147954): Find a better name for this method.
     // Invoked when form needs to be saved because of |source|, |element| is
     // valid if the callback caused by source other than
     // WILL_SEND_SUBMIT_EVENT, |form| is valid for the callback caused by

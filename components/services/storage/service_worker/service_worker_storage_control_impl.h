@@ -36,7 +36,7 @@ class ServiceWorkerLiveVersionRefImpl;
 // ServiceWorkerContextWrapper. In the near future,
 // kServiceWorkerStorageControlOnThreadPool will be the default for all
 // platforms.
-// TODO(crbug.com/1055677): Merge this implementation into ServiceWorkerStorage
+// TODO(crbug.com/40120038): Merge this implementation into ServiceWorkerStorage
 // and move the merged class to components/services/storage.
 class ServiceWorkerStorageControlImpl
     : public mojom::ServiceWorkerStorageControl {

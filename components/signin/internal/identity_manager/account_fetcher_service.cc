@@ -178,7 +178,7 @@ void AccountFetcherService::UpdateChildInfo() {
     // If a child account is present then there can be only one child account,
     // and it must be the first account on the device.
     //
-    // TODO(crbug/1268858): consider removing this assumption.
+    // TODO(crbug.com/40803816): consider removing this assumption.
     const CoreAccountId& candidate = accounts[0];
     if (candidate == child_request_account_id_)
       return;
@@ -238,7 +238,7 @@ void AccountFetcherService::ResetChildInfo() {
   if (!child_request_account_id_.empty()) {
     AccountInfo account_info =
         account_tracker_service_->GetAccountInfo(child_request_account_id_);
-    // TODO(https://crbug.com/1226501): Reset the status to kUnknown, rather
+    // TODO(crbug.com/40776452): Reset the status to kUnknown, rather
     // than kFalse.
     if (account_info.is_child_account != signin::Tribool::kUnknown)
       SetIsChildAccount(child_request_account_id_, false);
@@ -300,10 +300,10 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
                                                bool only_fetch_if_invalid) {
   DCHECK(network_fetches_enabled_);
 
-  // TODO(crbug.com/1488399): It seems quite suspect account tracker needs to start
-  // tracking the account when refreshing the account info. Understand why this
-  // is needed and ideally remove this call (it may have been added just for
-  // tests).
+  // TODO(crbug.com/40283608): It seems quite suspect account tracker needs to
+  // start tracking the account when refreshing the account info. Understand why
+  // this is needed and ideally remove this call (it may have been added just
+  // for tests).
   base::UmaHistogramBoolean(
       "Signin.AccountTracker.RefreshAccountInfo.IsAlreadyTrackingAccount",
       account_tracker_service_->IsTrackingAccount(account_id));

@@ -125,8 +125,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     // SafeBrowsingUIManager will send hit reports when it deems the context
     // appropriate to do so (see ShouldSendHitReport()). If this method returns
     // false, SafeBrowsingUIManager will never send hit reports.
-    // TODO(crbug.com/1232315): Eliminate this method if/once hit report sending
-    // is enabled in WebLayer.
+    // TODO(crbug.com/40780174): Eliminate this method if/once hit report
+    // sending is enabled in WebLayer.
     virtual bool IsSendingOfHitReportsEnabled() = 0;
   };
 

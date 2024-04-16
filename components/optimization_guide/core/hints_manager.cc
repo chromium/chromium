@@ -1172,14 +1172,15 @@ void HintsManager::FetchOptimizationGuideServiceBatchHints(
       request_context_metadata);
 }
 
-// TODO(1313521): Improve metrics coverage between all of these apis.
+// TODO(crbug.com/40832354): Improve metrics coverage between all of these apis.
 void HintsManager::CanApplyOptimization(
     const GURL& url,
     proto::OptimizationType optimization_type,
     OptimizationGuideDecisionCallback callback) {
   // Check if there is a pending fetcher for the specified URL. If there is, use
   // the async API, otherwise use the synchronous one.
-  // TODO(1312035): We should record instances of this API being used prior to a
+  // TODO(crbug.com/40831419): We should record instances of this API being used
+  // prior to a
   //                fetch for the URL being initiated.
   if (IsHintBeingFetchedForNavigation(url)) {
     CanApplyOptimizationAsync(url, optimization_type, std::move(callback));
@@ -1307,8 +1308,8 @@ void HintsManager::OnBatchUpdateHintsFetched(
     }
     return;
   }
-  // TODO(crbug/1278015): Figure out if the update time duration is the right
-  // one.
+  // TODO(crbug.com/40207998): Figure out if the update time duration is the
+  // right one.
   hint_cache_->UpdateFetchedHints(
       std::move(*get_hints_response),
       clock_->Now() + features::GetActiveTabsFetchRefreshDuration(),

@@ -323,7 +323,7 @@ content::PermissionResult PermissionContextBase::GetPermissionStatus(
   // we drop permission requests from guests for cases where it's not possible
   // for the guest to have been granted the permission. Note that sharing of
   // permissions that the guest could legitimately be granted is still possible.
-  // TODO(crbug.com/1469672): Scope granted permissions to a StoragePartition.
+  // TODO(crbug.com/40068594): Scope granted permissions to a StoragePartition.
   if (base::FeatureList::IsEnabled(
           features::kMitigateUnpartitionedWebviewPermissions)) {
     guest_view::GuestViewBase* guest =

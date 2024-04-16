@@ -652,7 +652,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   CHECK(format.is_multi_plane());
   SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
-  // TODO(crbug.com/828599): This should really default to rec709.
+  // TODO(crbug.com/41380578): This should really default to rec709.
   SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
   color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
                                 &sk_yuv_color_space);
@@ -1702,7 +1702,7 @@ void SkiaOutputSurfaceImpl::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
 
 bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
   if (graphite_recorder_) {
-    // TODO(crbug.com/1451789): Implement properly for Graphite.
+    // TODO(crbug.com/40270686): Implement properly for Graphite.
 #if BUILDFLAG(IS_IOS)
     return false;
 #else

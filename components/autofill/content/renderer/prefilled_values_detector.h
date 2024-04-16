@@ -29,7 +29,7 @@ base::span<const std::string_view> KnownUsernamePlaceholders();
 // https://www.example.com, there is a chance that the website prefills
 // the username field with "@example.com".
 //
-// TODO(crbug.com/832622): Remove this once a stable solution is in place.
+// TODO(crbug.com/41383074): Remove this once a stable solution is in place.
 bool PossiblePrefilledUsernameValue(const std::string& username_value,
                                     const std::string& possible_email_domain);
 

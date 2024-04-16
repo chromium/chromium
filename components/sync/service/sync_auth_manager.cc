@@ -40,7 +40,7 @@ constexpr net::BackoffEntry::Policy
         0.2,  // 20%
 
         // Maximum amount of time we are willing to delay our request in ms.
-        // TODO(crbug.com/246686): We should retry RequestAccessToken on
+        // TODO(crbug.com/40320443): We should retry RequestAccessToken on
         // connection state change after backoff.
         1000 * 3600 * 4,  // 4 hours.
 
@@ -54,7 +54,7 @@ constexpr net::BackoffEntry::Policy
 
 SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager) {
-  // TODO(crbug.com/1383977): During signout, it can happen that the primary
+  // TODO(crbug.com/40246339): During signout, it can happen that the primary
   // account temporarily doesn't have a refresh token (before the account
   // itself gets removed). As a workaround for crbug.com/1383912 /
   // crbug.com/897628, do *not* use the account for Sync in this case. This

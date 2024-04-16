@@ -62,7 +62,7 @@ MockPermissionRequest::MockPermissionRequest(
 }
 
 MockPermissionRequest::~MockPermissionRequest() {
-  // TODO(crbug.com/1110905): `PermissionRequest` enforces that
+  // TODO(crbug.com/40142352): `PermissionRequest` enforces that
   // `RequestFinished` is called before its destructor runs, but a lot of tests
   // were written assuming it doesn't, so we need to call it here. Clean up
   // lifetime in the tests and then remove this call to `RequestFinished`.

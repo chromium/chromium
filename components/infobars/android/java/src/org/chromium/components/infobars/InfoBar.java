@@ -195,7 +195,7 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
         if (title.length() > 0) {
             title = title + " ";
         }
-        // TODO(crbug/773717): Avoid string concatenation due to i18n.
+        // TODO(crbug.com/41349249): Avoid string concatenation due to i18n.
         return title + mContext.getString(R.string.bottom_bar_screen_position);
     }
 

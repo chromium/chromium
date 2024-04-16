@@ -67,7 +67,7 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
 
   // Indicates whether there is accumulated damage from contributing render
   // surface or layer or surface quad. Not including property changes on itself.
-  // TODO(crbug.com/1358700): By default we assume the pass is damaged. Remove
+  // TODO(crbug.com/40237077): By default we assume the pass is damaged. Remove
   // this field in favour of using |damage_rect| for feature
   // kAllowUndamagedNonrootRenderPassToSkip.
   bool has_damage_from_contributing_content = true;

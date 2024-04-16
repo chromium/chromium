@@ -81,9 +81,9 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
-    // TODO(https://crbug.com/997049): Pass in a non-empty
+    // TODO(crbug.com/40641818): Pass in a non-empty
     // NetworkAnonymizationKey.
-    // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger
+    // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
     // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
         ->GetStoragePartition()

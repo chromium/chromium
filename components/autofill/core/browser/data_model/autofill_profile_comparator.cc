@@ -617,7 +617,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   }
 
   // Figure out a country code hint.
-  // TODO(crbug.com/1313862) |GetNonEmptyOf()| prefers |p1| in case both are
+  // TODO(crbug.com/40221178) |GetNonEmptyOf()| prefers |p1| in case both are
   // non empty.
   std::string region = UTF16ToUTF8(
       GetNonEmptyOf(p1, p2, AutofillType(HtmlFieldType::kCountryCode)));

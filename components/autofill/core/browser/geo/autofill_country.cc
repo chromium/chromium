@@ -148,7 +148,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
 
 base::span<const AutofillCountry::AddressFormatExtension>
 AutofillCountry::address_format_extensions() const {
-  // TODO(crbug.com/1300548): Extend more countries. FR and GB already have
+  // TODO(crbug.com/40216312): Extend more countries. FR and GB already have
   // overwrites, because libaddressinput already provides string literals.
   static constexpr std::array<AddressFormatExtension, 1> fr_extensions{
       {{.type = FieldType::ADDRESS_HOME_STATE,

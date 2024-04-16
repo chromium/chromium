@@ -111,7 +111,7 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
     auto* const dse = url_service->GetDefaultSearchProvider();
     int relevance = kMostVisitedTilesIndividualHighRelevance;
     for (const auto& tile : container) {
-      // TODO(crbug/1474087): pass this information from History layer via
+      // TODO(crbug.com/40279214): pass this information from History layer via
       // history::MostVisitedURL.
       bool is_search =
           url_service->IsSearchResultsPageFromDefaultSearchProvider(tile.url);

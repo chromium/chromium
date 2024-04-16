@@ -63,7 +63,7 @@ class AutofillMetricsBaseTest {
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
   // create the cards.
-  // TODO(crbug/1216615): Migrate this to a params builder pattern or
+  // TODO(crbug.com/40770602): Migrate this to a params builder pattern or
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
                            bool include_masked_server_credit_card,
@@ -130,7 +130,7 @@ class AutofillMetricsBaseTest {
                                             timestamp);
   }
 
-  // TODO(crbug.com/1368096): Remove this method once the metrics are fixed.
+  // TODO(crbug.com/40240189): Remove this method once the metrics are fixed.
   void SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(
       const FormData& form,
       FormFieldData& field,

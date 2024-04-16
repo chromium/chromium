@@ -49,9 +49,9 @@ void FieldTrialsProvider::ProvideSystemProfileMetrics(
 void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
     base::TimeTicks log_creation_time,
     metrics::SystemProfileProto* system_profile_proto) {
-  // TODO(crbug/1090497): Maybe call ProvideCurrentSessionData() instead from
-  // places in which ProvideSystemProfileMetricsWithLogCreationTime() is called,
-  // e.g. startup_data.cc and background_tracing_metrics_provider.cc.
+  // TODO(crbug.com/40697205): Maybe call ProvideCurrentSessionData() instead
+  // from places in which ProvideSystemProfileMetricsWithLogCreationTime() is
+  // called, e.g. startup_data.cc and background_tracing_metrics_provider.cc.
 
   log_creation_time_ = log_creation_time;
 
@@ -59,7 +59,7 @@ void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
   if (!version.empty())
     system_profile_proto->set_variations_seed_version(version);
 
-  // TODO(crbug/1090098): Determine whether this can be deleted.
+  // TODO(crbug.com/40133600): Determine whether this can be deleted.
   GetAndWriteFieldTrials(system_profile_proto);
 }
 

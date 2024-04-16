@@ -178,7 +178,7 @@ If gating the new hint on a feature:
 *   Add a conditional to `VerifyClientHintsReceived` in [/chrome/browser/client_hints/client_hints_browsertest.cc] to skip your new header when the feature is not enabled.
 *   Add a conditional to `IsDisabledByFeature` in [/third_party/blink/common/client_hints/enabled_client_hints.cc], based on your new feature.
 
-TODO(crbug.com/1176808): There should be UseCounters measuring usage, but there are not currently.
+TODO(crbug.com/40168503): There should be UseCounters measuring usage, but there are not currently.
 
 At this point, if the hint is gated on a feature, tests should pass when that feature is disabled. In particular, check that `content_unittests` passes tests matching `*Cors*`, and `browser_tests` passes tests matching `*ClientHints*`.
 

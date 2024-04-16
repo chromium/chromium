@@ -282,7 +282,7 @@ class MessageBannerMediator implements SwipeHandler {
             }
         }
 
-        // TODO(crbug.com/1157213): See if we can use velocity to change the animation
+        // TODO(crbug.com/40736315): See if we can use velocity to change the animation
         // speed/duration.
         boolean isShow = translateTo == 0;
         mSwipeAnimationHandler.onSwipeEnd(

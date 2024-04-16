@@ -64,7 +64,7 @@ source_set("utils") {
   ]
 }
 
-# TODO(crbug.com/960243): Don't compile these codes for build without vaapi/v4l2
+# TODO(crbug.com/41457144): Don't compile these codes for build without vaapi/v4l2
 # supported.
 source_set("jpeg_encode_accelerator_service") {
   sources = [

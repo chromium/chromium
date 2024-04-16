@@ -312,7 +312,7 @@ def _IsAllowedDevicePolicyPrefix(name):
 
 class PolicyTypeProvider():
   def __init__(self):
-    # TODO(crbug.com/1171839): Persist the deduced schema types into a separate
+    # TODO(crbug.com/40166337): Persist the deduced schema types into a separate
     # file to further speed up the presubmit scripts.
     self._policy_types = {}
     # List of policies which are type 'dict' but should be type 'external'
@@ -644,7 +644,7 @@ class PolicyTemplateChecker(object):
       return
 
     # Only validate the default when present.
-    # TODO(crbug.com/1139046): Always validate the default for types that
+    # TODO(crbug.com/40725804): Always validate the default for types that
     # should have it.
     if 'default' not in policy:
       return

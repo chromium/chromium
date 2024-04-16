@@ -277,7 +277,7 @@ void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
   if (!output_surface_plane->has_value())
     return;
 
-  // TODO(https://crbug.com/1224991) : Damage propagation will allow us to
+  // TODO(crbug.com/40775556) : Damage propagation will allow us to
   // remove the primary plan entirely in the case of full delegation.
   // In that case we will do "output_surface_plane->reset()" like the existing
   // fullscreen overlay code.

@@ -169,7 +169,7 @@ void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
       !driver_) {
     return;
   }
-  // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
+  // TODO(crbug.com/40264656): Avoid using KeyboardReplacingSurfaceClosed.
   driver_->KeyboardReplacingSurfaceClosed(should_show);
 }
 

@@ -102,7 +102,7 @@ const int kDefaultLaunchPercentageOnBeta = 50;
 // and second string is its skeleton.
 // If you are adding a brand name here, you can generate its skeleton using the
 // format_url binary (components/url_formatter/tools/format_url.cc)
-// TODO(crbug.com/1349490): Generate skeletons of hard coded brand names in
+// TODO(crbug.com/40855941): Generate skeletons of hard coded brand names in
 // Chrome initialization and remove manual adding of skeletons to this list.
 constexpr std::pair<const char*, const char*> kBrandNamesForCSQ[] = {
     {"adobe", "adobe"},
@@ -243,7 +243,7 @@ bool GetSimilarDomainFromTopBucket(
       }
 
       // Check character swap on skeletons.
-      // TODO(crbug/1109056): Also check character swap on actual hostnames
+      // TODO(crbug.com/40707797): Also check character swap on actual hostnames
       // with diacritics etc removed. This is because some characters have two
       // character skeletons such as m -> rn, and this prevents us from
       // detecting character swaps between example.com and exapmle.com.
@@ -1466,7 +1466,7 @@ LookalikeActionType GetActionForMatchType(
 
     case LookalikeUrlMatchType::kTargetEmbedding:
 #if BUILDFLAG(IS_IOS)
-      // TODO(crbug.com/1104384): Only enable target embedding on iOS once we
+      // TODO(crbug.com/40705070): Only enable target embedding on iOS once we
       // can
       //    check engaged sites. Otherwise, false positives are too high.
       return LookalikeActionType::kRecordMetrics;
@@ -1546,7 +1546,7 @@ GURL GetSuggestedURL(LookalikeUrlMatchType match_type,
       navigated_url.ReplaceComponents(replace_host).GetWithEmptyPath();
 
   // Use https for top domain matches.
-  // TODO(crbug.com/1190309): If the match is against an engaged site, use the
+  // TODO(crbug.com/40755923): If the match is against an engaged site, use the
   // scheme of the engaged site instead.
   if (suggested_url.SchemeIs(url::kHttpScheme) &&
       suggested_url.IntPort() == url::PORT_UNSPECIFIED &&

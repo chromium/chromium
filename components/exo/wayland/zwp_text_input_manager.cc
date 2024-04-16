@@ -809,7 +809,7 @@ void extended_text_input_deprecated_set_input_type(wl_client* client,
                                                    uint32_t input_mode,
                                                    uint32_t input_flags,
                                                    uint32_t learning_mode) {
-  // TODO(crbug.com/1420448) This deprecated method signature is preserved to
+  // TODO(crbug.com/40258785) This deprecated method signature is preserved to
   // maintain backwards compatibility with older client versions. Once both Exo
   // and Lacros have stabilized on the new API, delete this implementation or
   // otherwise make it impossible to call.

@@ -89,7 +89,7 @@ auto MemorySummaryResultIsPositive(MeasurementAlgorithm expected_algorithm) {
       AllOf(Gt(base::TimeTicks()), Lt(base::TimeTicks::Now()));
   return QueryResultsMatch<MemorySummaryResult>(AllOf(
 #if BUILDFLAG(IS_IOS)
-      // TODO(crbug.com/1506552): iOS doesn't support private_memory_footprint,
+      // TODO(crbug.com/40947218): iOS doesn't support private_memory_footprint,
       // so it's always 0.
       Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
             Eq(0u)),

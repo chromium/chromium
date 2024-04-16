@@ -575,7 +575,7 @@ void ReadingListModelImpl::AddEntry(scoped_refptr<ReadingListEntry> entry,
   DCHECK(loaded());
   DCHECK(GetMutableEntryFromURL(entry->URL()) == nullptr);
 
-  // TODO(crbug.com/1427677): Should decide if the DCHECK(entry) should be
+  // TODO(crbug.com/40899983): Should decide if the DCHECK(entry) should be
   // removed or there's a proper fix that remove the below condition.
   if (!entry) {
     return;

@@ -345,7 +345,7 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FormDataPredictions> type_predictions =
       FormStructure::GetFieldTypePredictions(forms);
-  // TODO(crbug.com/1185232) Send the FormDataPredictions object only if the
+  // TODO(crbug.com/40753022) Send the FormDataPredictions object only if the
   // debugging flag is enabled.
   router().SendAutofillTypePredictionsToRenderer(
       this, type_predictions,

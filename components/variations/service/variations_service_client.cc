@@ -36,7 +36,7 @@ version_info::Channel VariationsServiceClient::GetChannelForVariations() {
 
   auto channel = GetChannel();
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1493502): Remove this if block after automotive beta ends.
+  // TODO(crbug.com/40936710): Remove this if block after automotive beta ends.
   if (channel == version_info::Channel::BETA &&
       base::android::BuildInfo::GetInstance()->is_automotive()) {
     return version_info::Channel::STABLE;

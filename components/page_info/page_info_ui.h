@@ -85,7 +85,7 @@ class PageInfoUI {
 
   // |CookiesNewInfo| contains information about the sites that are allowed
   // to access cookies and fps cookies info for new UI.
-  // TODO(crbug.com/1346305):  Change the name to "CookieInfo" after finishing
+  // TODO(crbug.com/40854087):  Change the name to "CookieInfo" after finishing
   // cookies subpage implementation
   struct CookiesNewInfo {
     CookiesNewInfo();

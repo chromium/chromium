@@ -466,7 +466,7 @@ void FillAndCheckState(
 }
 
 TEST_F(FormCacheBrowserTest, FillAndClear) {
-  // TODO(crbug.com/1422114): Make test work without explicit <selectlist>
+  // TODO(crbug.com/40259488): Make test work without explicit <selectlist>
   // tabindex.
   LoadHTML(R"(
     <input type="text" name="text" id="text">
@@ -687,7 +687,7 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
 // - the forms [kMaxExtractableChildFrames, kMaxExtractableFields) should have
 //   empty FormData::child_frames,
 // - the forms [kMaxExtractableFields, end) should be skipped.
-// TODO(https://crbug.com/1287782): Flaky on android.
+// TODO(crbug.com/40816477): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
 #else

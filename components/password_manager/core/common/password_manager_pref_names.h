@@ -271,7 +271,7 @@ inline constexpr char kPasswordDismissCompromisedAlertEnabled[] =
 // label is shown for the users who have not clicked on this item yet.
 // TODO(crbug.com/1217070): Remove this on Android once the feature is rolled
 // out.
-// TODO(crbug.com/1420597): Remove this for desktop once the feature is rolled
+// TODO(crbug.com/40258836): Remove this for desktop once the feature is rolled
 // out.
 inline constexpr char kPasswordsPrefWithNewLabelUsed[] =
     "passwords_pref_with_new_label_used";

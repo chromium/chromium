@@ -119,7 +119,7 @@ class MediaSinkServiceBase {
 
   // The following fields exist temporarily for sending back discovered sinks to
   // the Media Router extension.
-  // TODO(https://crbug.com/809249): Remove once the extension no longer need
+  // TODO(crbug.com/40561499): Remove once the extension no longer need
   // the sinks.
 
   // Callback to MediaRouter to provide sinks to the MR extension.

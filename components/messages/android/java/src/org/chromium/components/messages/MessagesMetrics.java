@@ -12,8 +12,8 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
- * Static utility methods for recording messages related metrics.
- * TODO(https://crbug.com/1382967): remove logs.
+ * Static utility methods for recording messages related metrics. TODO(crbug.com/40877562): remove
+ * logs.
  */
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";

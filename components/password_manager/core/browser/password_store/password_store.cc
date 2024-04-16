@@ -436,7 +436,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   }
 #else
   if (!changes.has_value()) {
-    // TODO(crbug/1423425): Record the silent failure.
+    // TODO(crbug.com/40260035): Record the silent failure.
     return;
   }
 #endif

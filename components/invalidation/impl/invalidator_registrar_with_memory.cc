@@ -129,7 +129,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
 InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!registered_handler_to_topics_map_.empty() || !handlers_.empty()) {
-    // TODO(crbug.com/1475104) figure out with these logs.
+    // TODO(crbug.com/40070281) figure out with these logs.
     // Note: This can't be just a `CHECK(...) << ...` because `CHECK` eats the
     // message in production builds.
     LOG(ERROR) << "Registered handlers during destruction: "

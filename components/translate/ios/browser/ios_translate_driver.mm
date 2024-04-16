@@ -133,7 +133,7 @@ void IOSTranslateDriver::DidFinishNavigation(
     translate_manager_->set_current_seq_no(page_seq_no_);
   }
 
-  // TODO(crbug.com/925320): support navigation types, like content/ does.
+  // TODO(crbug.com/41437388): support navigation types, like content/ does.
   const bool reload = ui::PageTransitionCoreTypeIs(
       navigation_context->GetPageTransition(), ui::PAGE_TRANSITION_RELOAD);
   translate_manager_->GetLanguageState()->DidNavigate(

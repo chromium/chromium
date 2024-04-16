@@ -69,7 +69,8 @@ class PasswordManagerDriver {
       const autofill::PasswordFormGenerationData& form) {}
 
   // Notifies the driver that the user has accepted a generated password.
-  // TODO(crbug/936011): delete this method. The UI should call the one below.
+  // TODO(crbug.com/40615624): delete this method. The UI should call the one
+  // below.
   virtual void GeneratedPasswordAccepted(const std::u16string& password) = 0;
 
   // Notifies the password manager that the user has accepted a generated

@@ -189,8 +189,8 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
 
   // If the timestamp is not prepared, we use reference time to make a rough
   // estimate. e.g. ThreadSafeCaptureOracle::DidCaptureFrame().
-  // TODO(crbug.com/618407): Fix upstream capturers to always set timestamp and
-  // reference time.
+  // TODO(crbug.com/40472286): Fix upstream capturers to always set timestamp
+  // and reference time.
   if (buffer->info->timestamp.is_zero())
     buffer->info->timestamp = reference_time - first_frame_ref_time_;
 

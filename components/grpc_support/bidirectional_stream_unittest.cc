@@ -622,7 +622,7 @@ TEST_P(BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(https://crbug.com/880474): This test is flaky on fuchsia-x64 builder.
+// TODO(crbug.com/41411684): This test is flaky on fuchsia-x64 builder.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
@@ -704,7 +704,7 @@ TEST_P(BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(crbug.com/1457033): deflake this test.
+// TODO(crbug.com/40918200): deflake this test.
 TEST_P(BidirectionalStreamTest,
        DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread) {
   class CustomTestBidirectionalStreamCallback

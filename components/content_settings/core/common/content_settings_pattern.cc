@@ -243,7 +243,7 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
   parts->scheme = base::ToLowerASCII(parts->scheme);
 
   if (parts->scheme == url::kFileScheme && !parts->is_path_wildcard) {
-    // TODO(crbug.com/1132957): Remove this loop once GURL canonicalization is
+    // TODO(crbug.com/40150835): Remove this loop once GURL canonicalization is
     // idempotent (see crbug.com/1128999).
     while (true) {
       std::string url_spec = base::StrCat(

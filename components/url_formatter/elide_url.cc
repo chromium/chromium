@@ -89,7 +89,7 @@ std::u16string ElideComponentizedPath(
   }
 
   // If the cutting point is at the beginning and nothing gets elided, return
-  // failure even if the whole text could fit. TODO(https://crbug.com/1074034).
+  // failure even if the whole text could fit. TODO(crbug.com/40127834).
   if (min_index == 0)
     return std::u16string();
 

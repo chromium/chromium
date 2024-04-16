@@ -425,7 +425,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
                                  .private_key_material()));
   if (!key_pair) {
     // Corrupted state: device is registered, but |key_pair| can't be imported.
-    // TODO(crbug.com/1094326): restore from this state (throw away the key and
+    // TODO(crbug.com/40699425): restore from this state (throw away the key and
     // trigger device registration again).
     FulfillFetchKeys(account_info.gaia, std::move(callback),
                      TrustedVaultDownloadKeysStatusForUMA::

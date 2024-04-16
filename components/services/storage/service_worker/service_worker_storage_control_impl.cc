@@ -567,7 +567,7 @@ ServiceWorkerStorageControlImpl::CreateLiveVersionReferenceRemote(
     reference->Add(remote_reference.InitWithNewPipeAndPassReceiver());
     live_versions_[version_id] = std::move(reference);
   } else {
-    // TODO(https://crbug.com/1277263): Remove the following CHECK() once the
+    // TODO(crbug.com/40207717): Remove the following CHECK() once the
     // cause is identified.
     base::debug::Alias(&version_id);
     CHECK(it->second.get()) << "Invalid version id: " << version_id;

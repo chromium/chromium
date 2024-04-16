@@ -79,7 +79,7 @@ SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
 void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason) {
-  // TODO(crbug.com/1423343): eventually histograms under
+  // TODO(crbug.com/40897451): eventually histograms under
   // components/trusted_vault should start using their own prefix instead of
   // "Sync." and migrated to the dedicated histograms.xml file.
   base::UmaHistogramEnumeration(

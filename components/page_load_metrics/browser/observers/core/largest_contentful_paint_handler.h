@@ -85,8 +85,8 @@ class ContentfulPaintTimingInfo {
           (size_ == 0u && !time_.has_value()));
 
     // Returns if timing is not set because of 0 size.
-    // TODO(crbug.com/1473188) We should revisit if we should check timing being
-    // 0 too.
+    // TODO(crbug.com/40926935) We should revisit if we should check timing
+    // being 0 too.
     return (size_ == 0u && !time_.has_value());
   }
 

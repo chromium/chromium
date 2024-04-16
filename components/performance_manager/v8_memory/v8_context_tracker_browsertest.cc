@@ -111,7 +111,7 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   ContextCounts current_counts_;
 };
 
-// TODO(crbug.com/1482180): Re-enable on Mac.
+// TODO(crbug.com/40931300): Re-enable on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AboutBlank DISABLED_AboutBlank
 #else

@@ -515,7 +515,7 @@ PrintCompositorImpl::FrameContentInfo::FrameContentInfo() = default;
 
 PrintCompositorImpl::FrameContentInfo::~FrameContentInfo() = default;
 
-// TODO(crbug.com/1008222) Make use of `document_type` parameter once
+// TODO(crbug.com/40100562) Make use of `document_type` parameter once
 // `MakeXpsDocument()` is available.
 PrintCompositorImpl::DocumentInfo::DocumentInfo(
     mojom::PrintCompositor::DocumentType document_type)

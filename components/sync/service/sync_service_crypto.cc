@@ -253,7 +253,7 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
     case RequiredUserAction::kTrustedVaultKeyRequired:
     case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
       // Cryptographer has pending keys.
-      // TODO(crbug.com/1434786): this is currently reachable on iOS due to
+      // TODO(crbug.com/40904402): this is currently reachable on iOS due to
       // discrepancy in UI code. Fix iOS implementation and avoid using more
       // strict checks here until this is done.
       NOTREACHED()
@@ -554,7 +554,7 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
 
   state_.cached_explicit_passphrase_time = passphrase_time;
 
-  // TODO(crbug.com/1466401): Also pass along the passphrase time?
+  // TODO(crbug.com/40923935): Also pass along the passphrase time?
   delegate_->PassphraseTypeChanged(type);
 
   // Clear recoverability degraded state in case a custom passphrase was set.

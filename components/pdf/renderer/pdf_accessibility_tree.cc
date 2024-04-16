@@ -1174,7 +1174,7 @@ class PdfAccessibilityTreeBuilder {
                                         ax::mojom::BoolAttribute::kSelected)) {
         first_selected_option = listbox_option_node;
       }
-      // TODO(crbug.com/1030242): Add `listbox_option_node` specific bounds
+      // TODO(crbug.com/40661774): Add `listbox_option_node` specific bounds
       // here.
       listbox_option_node->relative_bounds.bounds = choice_field.bounds;
       listbox_node->child_ids.push_back(listbox_option_node->id);
@@ -1982,7 +1982,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
     }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    // TODO(crbug.com/1474770): Update this and other cases with a
+    // TODO(crbug.com/40070182): Update this and other cases with a
     // `IsAccessiblePDF` function.
     if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
       base::UmaHistogramBoolean(

@@ -86,7 +86,7 @@ class AccountsMutator {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Seeds account into AccountTrackerService. Used by UserSessionManager to
   // manually seed the primary account before credentials are loaded.
-  // TODO(https://crbug.com/1195359): Remove after adding an account cache to
+  // TODO(crbug.com/40176006): Remove after adding an account cache to
   // AccountManagerFacade.
   virtual CoreAccountId SeedAccountInfo(const std::string& gaia,
                                         const std::string& email) = 0;

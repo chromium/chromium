@@ -66,7 +66,7 @@ class LogStore {
   // |overwrite_in_memory_store| is false, we will still not persist logs that
   // should be trimmed away, but they will still be available in memory
   // (allowing them to still be eligible for upload this session).
-  // TODO(crbug/1171830): Revisit call sites and determine what value of
+  // TODO(crbug.com/40745324): Revisit call sites and determine what value of
   // |overwrite_in_memory_store| they should use.
   virtual void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) = 0;
 

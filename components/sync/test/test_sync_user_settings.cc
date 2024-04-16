@@ -62,7 +62,7 @@ bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
 
 void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
-  // TODO(crbug.com/1330894): take custom logic for Lacros apps into account.
+  // TODO(crbug.com/40227318): take custom logic for Lacros apps into account.
 
   sync_everything_enabled_ = sync_everything;
 

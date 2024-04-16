@@ -20,7 +20,7 @@ struct PasswordForm;
 // This class caches and provides credential stores for different origins.
 class CredentialCache {
  public:
-  // TODO(crbug.com/1051553): Consider reusing this alias for other password
+  // TODO(crbug.com/40673832): Consider reusing this alias for other password
   // manager code as well.
   using IsOriginBlocklisted =
       base::StrongAlias<class IsOriginBlocklistedTag, bool>;

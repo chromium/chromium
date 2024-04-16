@@ -373,7 +373,7 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 }
 
-// TODO(crbug.com/1264925): This test is flaky on device.
+// TODO(crbug.com/40203584): This test is flaky on device.
 #if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
 #define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
 #else

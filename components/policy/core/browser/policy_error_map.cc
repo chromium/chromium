@@ -67,7 +67,7 @@ class PolicyErrorMap::PendingError {
   }
 
   std::u16string GetMessageContent() const {
-    // TODO(crbug.com/1313477): remove this together with
+    // TODO(crbug.com/40832324): remove this together with
     // AddError(policy, message, error_path) and add a DCHECK
     if (message_id_ >= 0) {
       std::vector<std::u16string> utf_16_replacements;

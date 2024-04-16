@@ -1052,7 +1052,7 @@ void AuraToplevel::OnConfigure(
         shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
             chromeos::kImmersiveImpliedByFullscreen)) {
       // Imemrsive state should NOT be set for pinned state.
-      // TODO(crbug.com/1511187): Lacros randomly enters/exits immersive state
+      // TODO(crbug.com/41483774): Lacros randomly enters/exits immersive state
       // when transitioning to pinned/unpinned state. Add CHECK to guarantee
       // `state_type` is as same as chrome::WindowStateType::kFullscreen here
       // after resolving this bug.

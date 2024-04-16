@@ -187,7 +187,7 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
       continue;
     }
 #else
-    // TODO(crbug.com/1322528): Consider deallocating the primary plane in this
+    // TODO(crbug.com/40224327): Consider deallocating the primary plane in this
     // case.
     // Non-Windows platforms use BufferQueue, which are not owned by the render
     // pass backing. ChromeOS must hold on to the root surface buffers to ensure
@@ -769,7 +769,7 @@ bool DirectRenderer::CanSkipRenderPass(
   // the RenderPass.
   if (render_pass->cache_render_pass ||
       allow_undamaged_nonroot_render_pass_to_skip_) {
-    // TODO(crbug.com/1346502): Fix CopyOutputRequest and allow the render pass
+    // TODO(crbug.com/40232521): Fix CopyOutputRequest and allow the render pass
     // with copy request to skip.
     if (render_pass->has_damage_from_contributing_content ||
         !render_pass->copy_requests.empty()) {

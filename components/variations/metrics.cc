@@ -19,7 +19,7 @@ void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
 
 #if BUILDFLAG(IS_IOS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
-  // TODO(crbug.com/1353937): Merge with Android implementation after first run
+  // TODO(crbug.com/40235387): Merge with Android implementation after first run
   // seed import on iOS is fully implemented.
 }
 #endif  // BUILDFLAG(IS_IOS)

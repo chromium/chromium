@@ -645,7 +645,7 @@ class AutofillMetrics {
       return static_cast<uint64_t>(QualitativeMetric());
     }
 
-    // TODO(crbug.com/1275953): Remove once the new UKM metric has gained
+    // TODO(crbug.com/40207287): Remove once the new UKM metric has gained
     // traction.
     autofill_metrics::FormEvent QualitativeFillableFormEvent() const;
     autofill_metrics::FormEvent QualitativeFillFormEvent() const;

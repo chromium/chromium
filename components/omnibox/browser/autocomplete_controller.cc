@@ -794,7 +794,7 @@ void AutocompleteController::
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());
-  // TODO(crbug.com/1247846): experiment_stats is a deprecated field. We should
+  // TODO(crbug.com/40197024): experiment_stats is a deprecated field. We should
   // however continue to report it for the downstream consumers that expect this
   // field. Eventually Chrome should start logging the substitute fields and
   // the downstream consumers should migrate to using those fields before we

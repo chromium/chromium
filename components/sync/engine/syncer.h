@@ -23,7 +23,7 @@ class SyncCycle;
 // This enum should be in sync with SyncerErrorValues in enums.xml. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused. Exposed for tests.
-// TODO(crbug.com/1363089): this enum no longer corresponds to SyncerError,
+// TODO(crbug.com/40864723): this enum no longer corresponds to SyncerError,
 // modernize it.
 enum class SyncerErrorValueForUma {
   // Deprecated: kUnset = 0,  // Default value.

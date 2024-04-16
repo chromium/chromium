@@ -43,7 +43,7 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(primary_paragraph_id));
 
-  // TODO(crbug.com/1302509): Change this button to "Close" when we can't go
+  // TODO(crbug.com/40825375): Change this button to "Close" when we can't go
   // back:
   load_time_data.Set(
       "proceedButtonText",

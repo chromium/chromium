@@ -163,7 +163,7 @@ test("components_unittests") {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
 
-      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # TODO(crbug.com/40055105): Investigate removing the requirement
       # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
@@ -402,7 +402,7 @@ test("components_unittests") {
       "//components/fuchsia_legacymetrics:unit_tests",
     ]
   } else {
-    # TODO(crbug.com/1290514): Enable all relevant tests on Fuchsia too.
+    # TODO(crbug.com/40818181): Enable all relevant tests on Fuchsia too.
     deps += [
       "//components/browser_sync:unit_tests",
       "//components/send_tab_to_self:unit_tests",

@@ -398,7 +398,7 @@ TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
   SetProcessExited(renderer6.get());
 
-  // TODO(crbug.com/1410503): Processes that exited at any point during the
+  // TODO(crbug.com/40889748): Processes that exited at any point during the
   // interval still return their last measurement before the interval, so
   // their delta is always empty. Capture the final CPU usage correctly, and
   // test that the renderers that have exited return their CPU usage for the

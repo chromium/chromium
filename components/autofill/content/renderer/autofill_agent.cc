@@ -260,7 +260,7 @@ void AutofillAgent::FocusStateNotifier::NotifyIfChanged(
     return;
   }
 
-  // TODO(crbug.com/1425166): Move FocusedInputChanged to AutofillDriver.
+  // TODO(crbug.com/40260756): Move FocusedInputChanged to AutofillDriver.
   agent_->GetPasswordManagerDriver().FocusedInputChanged(
       new_focused_field_id, new_focused_field_type);
 
@@ -335,7 +335,7 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
 void AutofillAgent::DidChangeScrollOffset() {
   if (!config_.focus_requires_scroll) {
     // Post a task here since scroll offset may change during layout.
-    // TODO(crbug.com/804886): Do not cancel other tasks and do not invalidate
+    // TODO(crbug.com/40559425): Do not cancel other tasks and do not invalidate
     // PasswordAutofillAgent::autofill_agent_.
     weak_ptr_factory_.InvalidateWeakPtrs();
     if (auto* render_frame = unsafe_render_frame()) {
@@ -752,7 +752,7 @@ void AutofillAgent::ClearSection() {
 
 void AutofillAgent::ClearPreviewedForm() {
   WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  // TODO(crbug.com/816533): It is very rare, but it looks like the |element_|
+  // TODO(crbug.com/40564702): It is very rare, but it looks like the |element_|
   // can be null if a provisional load was committed immediately prior to
   // clearing the previewed form.
   if (last_queried_element.IsNull()) {
@@ -970,7 +970,7 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source) {
-  // TODO(crbug.com/1467359): Make this a CHECK.
+  // TODO(crbug.com/40068004): Make this a CHECK.
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   CHECK_NE(trigger_source, AutofillSuggestionTriggerSource::kUnspecified);
 

@@ -47,7 +47,7 @@ enum ElementType : ushort (bit_flags) {
   STYLESHEET,
   OBJECT,
   XMLHTTPREQUEST,
-  // TODO(crbug.com/713774): Remove OBJECT_SUBREQUEST type once
+  // TODO(crbug.com/40516600): Remove OBJECT_SUBREQUEST type once
   // url_pattern_index no longer has a dependency on proto::UrlRule.
   OBJECT_SUBREQUEST,
   SUBDOCUMENT,

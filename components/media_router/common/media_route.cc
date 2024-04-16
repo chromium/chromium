@@ -31,7 +31,7 @@ bool IsValidMediaRouteId(const MediaRoute::Id route_id) {
 MediaRoute::Id MediaRoute::GetMediaRouteId(const std::string& presentation_id,
                                            const MediaSink::Id& sink_id,
                                            const MediaSource& source) {
-  // TODO(https://crbug.com/816628): Can the route ID just be the presentation
+  // TODO(crbug.com/40090609): Can the route ID just be the presentation
   // id?
   return base::StringPrintf("%s%s/%s/%s", kRouteIdPrefix,
                             presentation_id.c_str(), sink_id.c_str(),

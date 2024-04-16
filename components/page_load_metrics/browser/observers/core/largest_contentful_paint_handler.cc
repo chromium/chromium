@@ -13,7 +13,7 @@
 
 namespace page_load_metrics {
 
-// TODO(crbug/616901): True in test only. Since we are unable to config
+// TODO(crbug.com/41256933): True in test only. Since we are unable to config
 // navigation start in tests, we disable the offsetting to make the test
 // deterministic.
 static bool g_disable_subframe_navigation_start_offset = false;

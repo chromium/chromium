@@ -288,7 +288,7 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
   }
 
   // Record metrics only when a prerendered page is successfully activated.
-  // TODO(crbug.com/1364013): add tests to make sure that CLS and INP metrics
+  // TODO(crbug.com/40238929): add tests to make sure that CLS and INP metrics
   // are not recorded when prerendering is canceled.
   if (GetDelegate().GetPrerenderingState() ==
       page_load_metrics::PrerenderingState::kActivated) {

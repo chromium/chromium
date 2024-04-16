@@ -58,7 +58,7 @@ void RemoveUselessCredentials(
   }
 #endif  // BUILDFLAG(USE_BLINK)
 
-  // TODO(crbug.com/450621): Remove this when enough number of clients switch
+  // TODO(crbug.com/41153113): Remove this when enough number of clients switch
   // to the new version of Chrome.
   cleaning_tasks_runner->MaybeAddCleaningTask(
       std::make_unique<password_manager::OldGoogleCredentialCleaner>(store,

@@ -86,8 +86,8 @@ BASE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a progress dialog will display while authenticating with FIDO.
-// TODO(crbug.com/1337380): Clean up kAutofillEnableFIDOProgressDialog when it's
-// fully rolled out.
+// TODO(crbug.com/40229268): Clean up kAutofillEnableFIDOProgressDialog when
+// it's fully rolled out.
 BASE_FEATURE(kAutofillEnableFIDOProgressDialog,
              "AutofillEnableFIDOProgressDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);

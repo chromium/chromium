@@ -170,7 +170,7 @@ static_library("browser") {
     "//components/password_manager/core/browser/password_store:password_store_impl",
     "//components/password_manager/core/browser/sync",
 
-    # TODO(crbug.com/1479425): Remove and update all tagerts to include browser/ui directly.
+    # TODO(crbug.com/40280865): Remove and update all tagerts to include browser/ui directly.
     "//components/password_manager/core/browser/ui",
     "//components/password_manager/core/browser/well_known_change_password",
     "//components/safe_browsing:buildflags",

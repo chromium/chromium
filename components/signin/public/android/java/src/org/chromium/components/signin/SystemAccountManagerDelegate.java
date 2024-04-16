@@ -101,7 +101,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             return accounts;
         }
         // Don't report any accounts if we don't have permission.
-        // TODO(crbug.com/1502123): Throw an exception if permission was denied.
+        // TODO(crbug.com/40942462): Throw an exception if permission was denied.
         return new Account[] {};
     }
 

@@ -184,9 +184,9 @@ void LayerTreeFrameSinkHolder::ReclaimResources(
   for (auto& resource : resources) {
     // Skip resources that are also in last frame. This can happen if
     // the frame sink id changed.
-    // TODO(crbug/1448681): if viz reclaims the resources b/c the viz::Surface
-    // never gets embedded, this prevents clients from receiving release
-    // callbacks. This needs to be addressed.
+    // TODO(crbug.com/40269434): if viz reclaims the resources b/c the
+    // viz::Surface never gets embedded, this prevents clients from receiving
+    // release callbacks. This needs to be addressed.
     if (base::Contains(last_frame_resources_, resource.id)) {
       continue;
     }
@@ -345,7 +345,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   frame_sink_->SubmitCompositorFrame(std::move(*frame),
                                      /*hit_test_data_changed=*/true);
 
-  // TODO(crbug.com/1473386): Push an object to
+  // TODO(crbug.com/40278992): Push an object to
   // `pending_discarded_frame_notifications_` instead of using the counter here,
   // s.t. we don't have to wait until this counter drop to zero before
   // `SendDiscardedFrameNotifications()`, and frame_acks are properly ordered.

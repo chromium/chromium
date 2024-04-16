@@ -689,8 +689,8 @@ void MetricsService::SetUserLogStore(
     // Logs recorded before a user login will be appended to user logs. This
     // should not happen frequently.
     //
-    // TODO(crbug/1264627): Look for a way to "pause" pre-login logs and flush
-    // when INIT_TASK is done.
+    // TODO(crbug.com/40203458): Look for a way to "pause" pre-login logs and
+    // flush when INIT_TASK is done.
     log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
     RecordUserLogStoreState(kSetPreSendLogsState);
   }
@@ -712,7 +712,7 @@ void MetricsService::UnsetUserLogStore() {
   // Fast startup and logout case. We flush all histograms and discard the
   // current log. This is to prevent histograms captured during the user
   // session from leaking into local state logs.
-  // TODO(crbug/1381581): Consider not flushing histograms here.
+  // TODO(crbug.com/40245274): Consider not flushing histograms here.
 
   // Discard histograms.
   DiscardingFlattener flattener;
@@ -833,10 +833,10 @@ void MetricsService::InitializeMetricsState() {
       // do, it may not be possible to know at this point whether a session is a
       // background session.
       //
-      // TODO(crbug/1245347): On WebLayer, it is not possible to know whether
-      // it's a background session at this point.
+      // TODO(crbug.com/40788576): On WebLayer, it is not possible to know
+      // whether it's a background session at this point.
       //
-      // TODO(crbug/1245676): Ditto for WebView.
+      // TODO(crbug.com/40196247): Ditto for WebView.
       state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
     }
 #endif  // BUILDFLAG(IS_ANDROID)

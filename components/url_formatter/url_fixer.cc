@@ -337,7 +337,7 @@ bool HasPort(const std::string& original_text,
              const url::Component& scheme_component) {
   // Find the range between the ":" and the "/" and remember it in |port_piece|.
   //
-  // TODO(crbug.com/1416006): Stop parsing URLs manually once non-special URLs
+  // TODO(crbug.com/40063064): Stop parsing URLs manually once non-special URLs
   // are correctly supported.
   size_t port_start = scheme_component.end() + 1;
   size_t port_end = port_start;

@@ -54,7 +54,7 @@ public class GCMDriver {
             throw new IllegalStateException("Already instantiated");
         }
         sInstance = new GCMDriver(nativeGCMDriverAndroid);
-        // TODO(crbug.com/946486): This has been in added in M75 to migrate the
+        // TODO(crbug.com/40620351): This has been in added in M75 to migrate the
         // way we store if there are persisted messages. It should be removed in
         // M77.
         LazySubscriptionsManager.migrateHasPersistedMessagesPref();

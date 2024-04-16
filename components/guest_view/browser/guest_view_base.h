@@ -212,7 +212,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // for an extension, returns the host of its URL, which is an extension ID. If
   // the owner RenderFrameHost is a non-extension embedder of a Controlled
   // Frame, returns its serialized origin.
-  // TODO(crbug.com/1517391): Expose this information as a url::Origin.
+  // TODO(crbug.com/41490369): Expose this information as a url::Origin.
   std::string owner_host() const { return owner_host_; }
 
   // Whether the guest view is inside a plugin document.

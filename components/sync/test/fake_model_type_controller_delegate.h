@@ -52,7 +52,7 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   // The number of times sync metadata was cleared, via either
   // OnSyncStopping(CLEAR_METADATA) or ClearMetadataIfStopped() while sync
   // was actually stopped.
-  // TODO(crbug.com/1504481): Replace this with something like "HasMetadata".
+  // TODO(crbug.com/40945017): Replace this with something like "HasMetadata".
   int clear_metadata_count() const;
 
   // ModelTypeControllerDelegate overrides

@@ -356,7 +356,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   //
   // The return value is a pair of results, where the first member counts only
   // local visits, and the second counts both local and foreign (synced) visits.
-  // TODO(crbug.com/1422210): Once the "V2" domain diversity metrics are
+  // TODO(crbug.com/40896778): Once the "V2" domain diversity metrics are
   // deprecated, return only a single result, the "local" one.
   std::pair<DomainDiversityResults, DomainDiversityResults> GetDomainDiversity(
       base::Time report_time,

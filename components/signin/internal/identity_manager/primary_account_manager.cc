@@ -628,7 +628,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
            SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
 
   if (abort_signout) {
-    // TODO(crbug.com/1370026): Add 'NOTREACHED()' after updating the
+    // TODO(crbug.com/40240858): Add 'NOTREACHED()' after updating the
     // 'SigninManager', 'Dice Response Handler',
     // 'Lacros Profile Account Mapper'.
     VLOG(1) << "Ignoring attempt to sign out while signout disallowed";

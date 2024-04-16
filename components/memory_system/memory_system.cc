@@ -61,7 +61,7 @@ namespace {
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
 // Do not install allocator shim on iOS 13.4 due to high crash volume on this
-// particular version of OS. TODO(crbug.com/1108219): Remove this workaround
+// particular version of OS. TODO(crbug.com/40707342): Remove this workaround
 // when/if the bug gets fixed.
 bool ShouldInstallAllocatorShim() {
   return !base::ios::IsRunningOnOrLater(13, 4, 0) ||

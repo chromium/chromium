@@ -86,7 +86,7 @@ message GarbageCollectionDirective {
   // receiving any value of this.  This is a change from previous behavior,
   // where the client would only be required to purge items older than the
   // specified watermark.
-  // TODO(crbug.com/877951): Rename this to make clear that whenever it's set,
+  // TODO(crbug.com/41410173): Rename this to make clear that whenever it's set,
   // the client will delete ALL data, regardless of its value.
   optional int64 version_watermark = 2;
 

@@ -2079,10 +2079,10 @@ TEST_F(PaymentsDataManagerTest, AddAndGetCreditCardArtImage) {
   ASSERT_TRUE(actual_image);
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
 
-  // TODO(crbug.com/1284788): Look into integrating with PaymentsDataManagerMock
-  // and checking that PaymentsDataManager::FetchImagesForUrls() does not get
-  // triggered when PaymentsDataManager::GetCachedCardArtImageForUrl() is
-  // called.
+  // TODO(crbug.com/40210242): Look into integrating with
+  // PaymentsDataManagerMock and checking that
+  // PaymentsDataManager::FetchImagesForUrls() does not get triggered when
+  // PaymentsDataManager::GetCachedCardArtImageForUrl() is called.
   gfx::Image* cached_image =
       personal_data_->payments_data_manager().GetCachedCardArtImageForUrl(
           GURL("https://www.example.com"));

@@ -164,7 +164,7 @@ class AlternativeStateNameMap {
   // allowed to construct the class.
   friend class base::NoDestructor<AlternativeStateNameMap>;
 
-  // TODO(crbug.com/1425951): Remove lock.
+  // TODO(crbug.com/40261113): Remove lock.
   mutable base::Lock lock_;
 
   // A map that stores the alternative state names. The map is keyed

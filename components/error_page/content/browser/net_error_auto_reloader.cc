@@ -48,8 +48,8 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
          handle->GetURL().SchemeIsHTTPOrHTTPS() &&
          // Don't auto reload if the error was a secure DNS network error, since
          // the reload may interfere with the captive portal probe state.
-         // TODO(crbug.com/1016164): Explore how to allow reloads for secure DNS
-         // network errors without interfering with the captive portal probe
+         // TODO(crbug.com/40104002): Explore how to allow reloads for secure
+         // DNS network errors without interfering with the captive portal probe
          // state.
          !handle->GetResolveErrorInfo().is_secure_network_error &&
          // Don't auto reload if the error is caused by the server returning a

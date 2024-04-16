@@ -156,7 +156,7 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
   for (const auto& visit : backend->GetAnnotatedVisits(
            options, /*compute_redirect_chain_start_properties=*/true,
            /*get_unclustered_visits_only=*/false, &limited_by_max_count)) {
-    // TODO(crbug.com/1519988): Consider changing `get_unclustered_visits_only`
+    // TODO(crbug.com/41492963): Consider changing `get_unclustered_visits_only`
     // above to true, and getting rid of the `exhausted_unclustered_visits`
     // parameter setting below.
     const bool is_clustered =

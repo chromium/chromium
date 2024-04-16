@@ -141,7 +141,7 @@ public class TriStateCookieSettingsPreference extends Preference
             mViewHolder.findViewById(R.id.block_third_party_incognito).setVisibility(View.GONE);
             mViewHolder.findViewById(R.id.block_third_party).setVisibility(View.GONE);
 
-            // TODO(crbug.com/1349370): Change the buttons class into a
+            // TODO(crbug.com/40233724): Change the buttons class into a
             // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
             // PrivacySandboxFirstPartySetsUI feature is launched
             var blockTPIncognitoBtnWithDescAndAux =

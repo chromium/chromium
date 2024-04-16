@@ -16,7 +16,7 @@
 
 namespace password_manager {
 
-// TODO(crbug.com/1432264) Delete this class. Class should not be derived from
+// TODO(crbug.com/40263853) Delete this class. Class should not be derived from
 // the production class.
 class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
  public:

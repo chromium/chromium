@@ -16,14 +16,14 @@ BASE_FEATURE(kAutofillFormActivityMsgBatchingIos,
 
 // Controls whether to dynamically load the address input fields in the save
 // flow and settings based on the country value.
-// TODO(crbug.com/1482269): Remove once launched.
+// TODO(crbug.com/40281788): Remove once launched.
 BASE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput,
              "AutofillDynamicallyLoadsFieldsForAddressInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use the isolated content world instead of the page
 // content world for the Autofill JS feature scripts.
-// TODO(crbug.com/1175793) Remove once the isolated content world is launched
+// TODO(crbug.com/40747550) Remove once the isolated content world is launched
 // for Autofill.
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
              "AutofillIsolatedWorldForJavascriptIos",

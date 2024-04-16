@@ -460,7 +460,7 @@ TEST_F(OverlayAgentTest, HighlightWidget) {
 #if defined(USE_AURA)
   EXPECT_EQ(highlightingLayer->parent(), GetContext()->layer());
 #else
-// TODO(https://crbug.com/898280): Fix this for Mac.
+// TODO(crbug.com/40599413): Fix this for Mac.
 #endif
   EXPECT_TRUE(highlightingLayer->visible());
 

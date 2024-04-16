@@ -327,7 +327,7 @@ void EnsureFlagsAreListedInAlphabeticalOrder() {
   }
 }
 
-// TODO(https://crbug.com/1241068): Call this from the iOS flags unittests once
+// TODO(crbug.com/40785799): Call this from the iOS flags unittests once
 // flag expiration is supported there.
 void EnsureRecentUnexpireFlagsArePresent(
     const base::span<const flags_ui::FeatureEntry>& entries,

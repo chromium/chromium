@@ -34,7 +34,7 @@ void RemoteCommandsInvalidator::Initialize(
   invalidation_service_ = invalidation_service;
 
   state_ = STOPPED;
-  // TODO(crbug.com/1486860): Reset `invalidation_service_` to avoid dangling
+  // TODO(crbug.com/40283068): Reset `invalidation_service_` to avoid dangling
   // pointer.
   OnInitialize();
 }

@@ -337,7 +337,7 @@ void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
 }
 
 bool PasswordProtectionRequestContent::ShouldCollectVisualFeatures() {
-  // TODO(crbug.com/1471200): Unify this with the code to populate
+  // TODO(crbug.com/40926113): Unify this with the code to populate
   // content_area_width and content_area_height on desktop.
 #if BUILDFLAG(IS_ANDROID)
   if (password_protection_service()->IsExtendedReporting() &&

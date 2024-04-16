@@ -192,7 +192,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(
   DCHECK(self);
   self_for_frame_callback_.reset(self);
   if (vsync_notification_enabled_) {
-    // TODO(crbug.com/1308459): If `possible_deadlines` is present, should
+    // TODO(crbug.com/40829076): If `possible_deadlines` is present, should
     // really pick a deadline from `possible_deadlines`. However some code
     // still assume the deadline is a multiple of interval from frame time.
     int64_t deadline = frame_time_nanos + vsync_period_.InNanoseconds();

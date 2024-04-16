@@ -471,7 +471,7 @@ TEST_F(DictionaryPreferenceMergeTest, MergeValueToDictionary) {
   base::Value::Dict server_dict_value;
   server_dict_value.SetByDottedPath("key.subkey", 0);
 
-  // TODO(https://crbug.com/1187026): Migrate MergePreference() to
+  // TODO(crbug.com/40754070): Migrate MergePreference() to
   // take a base::Value::Dict.
   base::Value merged_value(helper::MergePreference(
       client_.get(), kDictionaryPrefName, base::Value(local_dict_value.Clone()),

@@ -165,7 +165,7 @@ void AffiliationsPrefetcher::OnLoginsRetained(
     if (IsFacetValidForAffiliation(facet_uri))
       facets.push_back(std::move(facet_uri));
   }
-  // TODO(crbug.com/1100818): Current logic cancels prefetch for all missing
+  // TODO(crbug.com/40138080): Current logic cancels prefetch for all missing
   // facets. This might be wrong if both account and profile store is used.
   affiliation_service_->KeepPrefetchForFacets(std::move(facets));
 }

@@ -63,7 +63,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  private:
   // Handles autocompleting single fields. The `AutocompleteHistoryManager` is
   // a KeyedService that outlives the `SingleFieldFormFillRouter`.
-  // TODO(crbug.com/1501199): Once WebView doesn't have an
+  // TODO(crbug.com/40941458): Once WebView doesn't have an
   // AutocompleteHistoryManager anymore, this should become a raw_ptr instead.
   raw_ref<AutocompleteHistoryManager> autocomplete_history_manager_;
 

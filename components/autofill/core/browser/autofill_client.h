@@ -459,7 +459,7 @@ class AutofillClient {
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
-  // TODO(crbug.com/1472094): Make sure all strike database usages check for
+  // TODO(crbug.com/40926442): Make sure all strike database usages check for
   // the nullptr.
   virtual StrikeDatabase* GetStrikeDatabase() = 0;
 
@@ -739,7 +739,7 @@ class AutofillClient {
   // Hide the Autofill popup if one is currently showing.
   virtual void HideAutofillPopup(PopupHidingReason reason) = 0;
 
-  // TODO(crbug.com/1093057): Rename all the "domain" in this flow to origin.
+  // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
   // Notifies the client to update the offer notification when the `offer` is

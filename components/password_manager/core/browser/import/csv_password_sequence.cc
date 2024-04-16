@@ -67,7 +67,7 @@ size_t GetNoteHeaderPriority(base::StringPiece name) {
           {"comments", 3},
       });
 
-  // TODO(crbug.com/1383938): record a metric if there multiple "note" columns
+  // TODO(crbug.com/40246323): record a metric if there multiple "note" columns
   // in one file and which names are used.
 
   std::string trimmed_name;

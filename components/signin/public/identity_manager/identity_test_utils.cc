@@ -551,7 +551,7 @@ void SetCookieAccounts(
   // Clears cached LIST_ACCOUNTS requests, so that the new request can trigger
   // the observers instead of being assumed as having an identical result as the
   // previous one.
-  // TODO(crbug.com/1457501): Investigate replacing this by
+  // TODO(crbug.com/40273636): Investigate replacing this by
   // `cookie_manager->ForceOnCookieChangeProcessing()`.
   cookie_manager->CancelAll();
   cookie_manager->ListAccounts(nullptr, nullptr);

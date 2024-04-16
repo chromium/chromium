@@ -274,7 +274,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const std::string& title,
     const std::string& target_device_cache_guid) {
   if (!change_processor()->IsTrackingMetadata()) {
-    // TODO(crbug.com/940512) handle failure case.
+    // TODO(crbug.com/40617641) handle failure case.
     return nullptr;
   }
 
@@ -434,7 +434,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   // Filter expired devices (some timestamps in the cached list may now be too
   // old). |target_device_info_sorted_list_| is copied here to avoid mutations
   // inside a getter.
-  // TODO(crbug.com/1257573): Consider having a timer that fires on the next
+  // TODO(crbug.com/40200734): Consider having a timer that fires on the next
   // expiry and removes the corresponding device(s) then.
   std::vector<TargetDeviceInfo> non_expired_devices =
       target_device_info_sorted_list_;
@@ -490,7 +490,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryDeleted(
     return;
   }
 
-  // TODO(crbug.com/956216): Only send the entries that targeted this device.
+  // TODO(crbug.com/40624520): Only send the entries that targeted this device.
   for (SendTabToSelfModelObserver& observer : observers_) {
     observer.EntriesRemovedRemotely(guids);
   }

@@ -733,7 +733,7 @@ AddressAutofillTable::GetAutofillProfileFromLegacyTable(
   return profile;
 }
 
-// TODO(crbug.com/1443393): This function's implementation is very similar to
+// TODO(crbug.com/40267335): This function's implementation is very similar to
 // `GetAutofillProfiles()`. Simplify somehow.
 bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
     std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {

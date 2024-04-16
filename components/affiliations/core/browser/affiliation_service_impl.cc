@@ -95,7 +95,7 @@ struct AffiliationServiceImpl::FetchInfo {
   base::OnceClosure callback;
 };
 
-// TODO(crbug.com/1246291): Create the backend task runner in Init and stop
+// TODO(crbug.com/40789139): Create the backend task runner in Init and stop
 // passing it in the constructor.
 AffiliationServiceImpl::AffiliationServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

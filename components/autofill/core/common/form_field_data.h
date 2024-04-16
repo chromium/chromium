@@ -472,7 +472,7 @@ struct FormFieldData::FillData {
   // When sent from browser to renderer, this bit indicates whether a field
   // should be filled even though it is already considered autofilled OR
   // user modified.
-  // TODO(crbug.com/1502814): Remove.
+  // TODO(crbug.com/40943206): Remove.
   bool force_override = false;
 };
 
@@ -506,7 +506,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
 
 // Prefer to use this macro in place of |EXPECT_EQ()| for comparing
 // |FormFieldData|s in test code.
-// TODO(crbug.com/1208354): Replace this with FormData::DeepEqual().
+// TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
 #define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                        \
   do {                                                                         \
     EXPECT_EQ(expected.label, actual.label);                                   \

@@ -412,7 +412,7 @@ void WiFiServiceMac::SetEventObservers(
     // -[CWWiFiClient startMonitoringEventWithType:error:] API:
     // https://developer.apple.com/documentation/corewlan/cwwificlient/1512439-startmonitoringeventwithtype?language=objc
     //
-    // TODO(https://crbug.com/1054063): Switch to using the
+    // TODO(crbug.com/40675519): Switch to using the
     // -[CWWiFiClient startMonitoringEventWithType:error:] API.
     wlan_observer_ = [NSNotificationCenter.defaultCenter
         addObserverForName:@"com.apple.coreWLAN.notification.ssid.legacy"

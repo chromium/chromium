@@ -46,7 +46,7 @@ class MetricsProvider {
   // server.
   // 2. You will not override ProvideCurrentSessionData(),
   // OnDidCreateMetricsLog(), or ProvideStabilityMetrics().
-  // TODO(crbug/1427219): Refactor the code to remove requirement 2.
+  // TODO(crbug.com/40899764): Refactor the code to remove requirement 2.
   virtual bool ProvideHistograms();
 
   // Called when a new MetricsLog is created.

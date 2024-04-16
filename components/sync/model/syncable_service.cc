@@ -8,7 +8,7 @@ namespace syncer {
 void SyncableService::OnBrowserShutdown(ModelType type) {
   // Stop the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.
-  // TODO(crbug.com/1400437): This is a temporary workaround.
+  // TODO(crbug.com/40883731): This is a temporary workaround.
   // OnBrowserShutdown() should ideally have a default empty implementation. If
   // not feasible, a better long-term approach should be to pass an
   // `is_browser_shutdown` flag to StopSyncing() instead of using this method.

@@ -672,8 +672,8 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
       // dependency won't be fulfilled until corresponding configure
       // acknowledgement.
       // Synchronize bounds to it, s.t. the fallback surface looks reasonable.
-      // TODO(crbug.com/1251778): Take non-zero origin introduced by geometry or
-      // clipping into account.
+      // TODO(crbug.com/40057347): Take non-zero origin introduced by geometry
+      // or clipping into account.
       viz::ScopedSurfaceIdAllocator scoped_suppression =
           host_window()->GetSurfaceIdAllocator(base::NullCallback());
       host_window()->layer()->SetBounds(
@@ -692,7 +692,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
       // prevent flashes.
       if (reason != ui::PropertyChangeReason::FROM_ANIMATION &&
           ash::WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned()) {
-        // TODO(crbug.com/1399478): See if we can rid of the slow lock timeout
+        // TODO(crbug.com/40249858): See if we can rid of the slow lock timeout
         // by adjusting the order of resize of windows to top to bottom.
         MaybeSetCompositorLockForNextConfigure(kSlowCompositorLockTimeoutMs);
       }

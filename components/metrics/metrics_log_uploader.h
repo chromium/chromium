@@ -33,7 +33,7 @@ class MetricsLogUploader {
 
   // Possible service types. This should correspond to a type from
   // DataUseUserData.
-  // TODO(crbug.com/1445151) Investigate cleaning up this enum if it isn't
+  // TODO(crbug.com/40912258) Investigate cleaning up this enum if it isn't
   // needed anymore.
   enum MetricServiceType {
     UMA,

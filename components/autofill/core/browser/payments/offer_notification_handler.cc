@@ -83,7 +83,7 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
   // can have a delay.
   if (ValidOfferExistsForUrl(url) &&
       !commerce::UrlContainsDiscountUtmTag(url)) {
-    // TODO(crbug.com/1203811): GetOfferForUrl needs to know whether to give
+    // TODO(crbug.com/40179715): GetOfferForUrl needs to know whether to give
     //   precedence to card-linked offers or promo code offers. Eventually,
     //   promo code offers should take precedence if a bubble is shown.
     //   Currently, if a url has both types of offers and the promo code offer
@@ -104,7 +104,7 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
         base::BindOnce(&OfferNotificationHandler::
                            UpdateOfferNotificationForShoppingServiceOffer,
                        weak_ptr_factory_.GetWeakPtr(),
-                       // TODO(crbug.com/1521706): Align lifecycles.
+                       // TODO(crbug.com/41494674): Align lifecycles.
                        std::ref(client));
   }
 

@@ -120,7 +120,7 @@ TEST(SearchSuggestionParserTest, DeserializeWithTrailingComma) {
 ////////////////////////////////////////////////////////////////////////////////
 // ExtractJsonData:
 
-// TODO(crbug.com/831283): Add some ExtractJsonData tests.
+// TODO(crbug.com/41382281): Add some ExtractJsonData tests.
 
 ////////////////////////////////////////////////////////////////////////////////
 // ParseSuggestResults:

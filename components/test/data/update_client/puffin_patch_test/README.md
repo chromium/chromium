@@ -6,7 +6,7 @@ This README assumes you are already in your Chromium repo's src directory, that 
 
     enable_puffin_patches = true
 
-<!-- TODO(crbug.com/1349060) once the enable_puffin_patches build argument is removed, we should update this documentation. -->
+<!-- TODO(crbug.com/40855693) once the enable_puffin_patches build argument is removed, we should update this documentation. -->
 
 **Linux and Mac commands**
 

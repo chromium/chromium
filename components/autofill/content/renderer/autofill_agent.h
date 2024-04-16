@@ -499,7 +499,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Timers for throttling handling of frequent events.
   base::OneShotTimer select_or_selectlist_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
-  // TODO(crbug.com/1444566): Merge some or all of these timers?
+  // TODO(crbug.com/40267764): Merge some or all of these timers?
   base::OneShotTimer process_forms_after_dynamic_change_timer_;
   base::OneShotTimer process_forms_form_extraction_timer_;
   base::OneShotTimer process_forms_form_extraction_with_response_timer_;

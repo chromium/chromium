@@ -817,7 +817,7 @@ std::u16string PageInfoUI::PermissionManagedTooltipToUIString(
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
       break;
     case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
-      // TODO(crbug.com/1225563): Consider "enforced" instead of "managed".
+      // TODO(crbug.com/40775890): Consider "enforced" instead of "managed".
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
       break;
     default:
@@ -834,7 +834,7 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
     PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
-  // TODO(crbug.com/1063023): PageInfo::PermissionInfo should be modified
+  // TODO(crbug.com/40123120): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(

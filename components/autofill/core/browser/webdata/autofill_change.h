@@ -40,8 +40,8 @@ class AutocompleteChange {
 using AutocompleteChangeList = std::vector<AutocompleteChange>;
 
 // Change notification details for Autofill related changes.
-// TODO(crbug/1476099): Update the name for `AutofillDataModelChange` as it now
-// captures non data model changes.
+// TODO(crbug.com/40928146): Update the name for `AutofillDataModelChange` as it
+// now captures non data model changes.
 template <typename DataType, typename KeyType>
   requires std::derived_from<DataType, AutofillDataModel> ||
            std::same_as<DataType, ServerCvc>

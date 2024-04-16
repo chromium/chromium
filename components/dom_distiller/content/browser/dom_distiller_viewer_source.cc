@@ -197,7 +197,7 @@ void DomDistillerViewerSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): simplify path matching.
+  // TODO(crbug.com/40050262): simplify path matching.
   const std::string path = URLDataSource::URLToRequestPath(url);
   content::WebContents* web_contents = wc_getter.Run();
   if (!web_contents)
@@ -233,7 +233,7 @@ void DomDistillerViewerSource::StartDataRequest(
   // We need the host part to validate the parameter, but it's not available
   // from |URLDataSource|. |web_contents| is the most convenient place to
   // obtain the full URL.
-  // TODO(crbug.com/991888): pass GURL in URLDataSource::StartDataRequest().
+  // TODO(crbug.com/40095934): pass GURL in URLDataSource::StartDataRequest().
   const std::string query = GURL("https://host/" + path).query();
   GURL request_url = web_contents->GetVisibleURL();
   // The query should match what's seen in |web_contents|.

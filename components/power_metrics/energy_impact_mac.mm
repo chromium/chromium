@@ -48,7 +48,7 @@ double ComputeEnergyImpactForResourceUsage(
     const coalition_resource_usage& data_sample,
     const EnergyImpactCoefficients& coefficients,
     const mach_timebase_info_data_t& mach_timebase) {
-  // TODO(https://crbug.com/1249536): The below coefficients are not used
+  // TODO(crbug.com/40197639): The below coefficients are not used
   // for now. Their units are unknown, and in the case of the network-related
   // coefficients, it's not clear how to sample the data.
   //

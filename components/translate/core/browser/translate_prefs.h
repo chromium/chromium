@@ -105,7 +105,7 @@ class TranslatePrefs {
  public:
   static constexpr char kPrefForceTriggerTranslateCount[] =
       "translate_force_trigger_on_english_count_for_backoff_1";
-  // TODO(crbug.com/524927): Remove kPrefNeverPromptSites after
+  // TODO(crbug.com/40433029): Remove kPrefNeverPromptSites after
   // 3 milestones (M74).
   static constexpr char kPrefNeverPromptSitesDeprecated[] =
       "translate_site_blacklist";

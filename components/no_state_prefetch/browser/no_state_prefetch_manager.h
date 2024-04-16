@@ -378,7 +378,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
   // PreloadingAttempt helps us to log various metrics associated with
   // particular NoStatePrefetch attempt.
-  // TODO(crbug.com/1363358): Remove nullptr as default parameter once NSP is
+  // TODO(crbug.com/40238653): Remove nullptr as default parameter once NSP is
   // integrated with all different predictors.
   std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingWithPreconnectFallback(
       Origin origin,

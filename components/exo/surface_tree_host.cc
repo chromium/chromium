@@ -180,7 +180,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     // to compositing-only, `root_surface_` will be augmented, and its
     // content_size will be ignored, producing empty bounds. Hence, set
     // set_is_augmented(false) forcibly.
-    // TODO(https://crbug.com/1280332): Remove when lacros/ash version skew
+    // TODO(crbug.com/40058249): Remove when lacros/ash version skew
     // window is passed.
     root_surface_->set_is_augmented(false);
     root_surface_->SetSurfaceDelegate(this);
@@ -667,7 +667,7 @@ viz::CompositorFrame SurfaceTreeHost::PrepareToSubmitCompositorFrame() {
   gfx::Size output_surface_size_in_pixels =
       root_surface_->surface_hierarchy_content_bounds().size();
   if (!client_submits_surfaces_in_pixel_coordinates_) {
-    // TODO(crbug.com/1131628): Should this be ceil? Why do we choose floor?
+    // TODO(crbug.com/40150290): Should this be ceil? Why do we choose floor?
     output_surface_size_in_pixels = gfx::ScaleToFlooredSize(
         output_surface_size_in_pixels, device_scale_factor);
   }
@@ -751,7 +751,7 @@ SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
 float SurfaceTreeHost::CalculateScaleFactor(
     const std::optional<float>& scale_factor) const {
   if (scale_factor) {
-    // TODO(crbug.com/1412420): Remove this once the scale factor precision
+    // TODO(crbug.com/40255259): Remove this once the scale factor precision
     // issue is fixed for ARC.
     if (std::abs(scale_factor.value() -
                  host_window_->layer()->device_scale_factor()) <

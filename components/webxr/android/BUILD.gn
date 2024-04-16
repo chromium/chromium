@@ -33,7 +33,7 @@ android_resources("cardboard_java_resources") {
   ]
 }
 source_set("android") {
-  # TODO(https://crbug.com/1426233): Investigate why this cannot simply be an
+  # TODO(crbug.com/40899237): Investigate why this cannot simply be an
   # assert(enable_vr).
   if (enable_vr) {
     sources = [

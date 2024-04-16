@@ -11,7 +11,7 @@ class Report;
 
 namespace metrics {
 
-// TODO(crbug/1015094): The UkmDemographicMetricsProvider interface is only
+// TODO(crbug.com/40103560): The UkmDemographicMetricsProvider interface is only
 // needed to break the dependency cycle `views -> ukm -> demographic metrics
 // provider -> sync -> policy -> bookmarks -> views` by removing the dependency
 // on the demographic metrics provider target to build the ukm service. This

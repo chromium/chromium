@@ -38,7 +38,7 @@ std::atomic<bool> g_use_in_memory_db_for_testing = false;
 // histograms should be removed once it has been confirmed that the data is
 // similar to the one from the other implementation.
 //
-// TODO(crbug.com/1430905): Remove these histograms when SiteDB is confirmed to
+// TODO(crbug.com/40902006): Remove these histograms when SiteDB is confirmed to
 // be working for BackgroundTabLoadingPolicy.
 const char kInitStatusHistogramLabel[] =
     "PerformanceManager.SiteDB.DatabaseInit";

@@ -62,11 +62,12 @@ public class ExternalAuthUtils {
 
     /**
      * Returns whether the caller application is a part of the system build.
+     *
      * @param pm Package manager to use for getting package related info.
      * @param packageName The package name to inquire about.
      */
     @VisibleForTesting
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("WrongConstant")
     public boolean isSystemBuild(PackageManager pm, String packageName) {
         try {
@@ -249,14 +250,16 @@ public class ExternalAuthUtils {
     }
 
     /**
-     * Invokes whatever external code is necessary to check if Google Play Services is available
-     * and returns the code produced by the attempt. Subclasses can override to force the behavior
-     * one way or another, or to change the way that the check is performed.
+     * Invokes whatever external code is necessary to check if Google Play Services is available and
+     * returns the code produced by the attempt. Subclasses can override to force the behavior one
+     * way or another, or to change the way that the check is performed.
+     *
      * @param context The current context.
      * @return The code produced by calling the external code
      */
     protected int checkGooglePlayServicesAvailable(final Context context) {
-        // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
+        // TODO(crbug.com/41233964): Temporarily allowing disk access until more permanent fix is
+        // in.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
                 TraceEvent e = TraceEvent.scoped("checkGooglePlayServicesAvailable")) {
             return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);

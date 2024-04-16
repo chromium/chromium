@@ -200,7 +200,7 @@ void JsToBrowserMessaging::PostMessage(
 void JsToBrowserMessaging::SetBrowserToJsMessaging(
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
         java_to_js_messaging) {
-  // TODO(https://crbug.com/1183557): this should really call
+  // TODO(crbug.com/40752101): this should really call
   // IsInactiveAndDisallowReactivation().
 
   // TODO(crbug.com/331250166): If an associated page is bfcached, evict it.

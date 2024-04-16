@@ -66,7 +66,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   views::Widget widget_;
 };
 
-// TODO(crbug.com/1009356): many of these tests are failing on TSan builds.
+// TODO(crbug.com/40650520): many of these tests are failing on TSan builds.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_MediaControlsProgressViewTest \
   DISABLED_MediaControlsProgressViewTest

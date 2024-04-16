@@ -515,7 +515,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kPasswordSuggestionBottomSheetV2)) {
-    // TODO(crbug.com/1448579): Remove the parameter
+    // TODO(crbug.com/40269373): Remove the parameter
     // autofill::mojom::SubmissionReadinessState::kNoInformation when the
     // feature is launched.
     if (client_->ShowKeyboardReplacingSurface(

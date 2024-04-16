@@ -97,7 +97,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // on the IO thread.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
-  // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
+  // TODO(crbug.com/40704516): Add an iOS-specific WebUIDelegate implementation
   // and pass it here to log URT requests/responses on open
   // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
   // else to log those requests/responses to stderr.
@@ -277,7 +277,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const int load_flags_;
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
-  // TODO(crbug.com/1069047): |weak_web_state_| is only used on iOS, and
+  // TODO(crbug.com/40683815): |weak_web_state_| is only used on iOS, and
   // |web_contents_getter_|, |render_process_id_|, |render_frame_token_|, and
   // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across

@@ -76,7 +76,7 @@ android_library("util_java") {
 }
 
 # Intentionally separate to keep dependencies of content view small.
-# TODO(crbug.com/1493531): Remove this library.
+# TODO(crbug.com/40075084): Remove this library.
 android_library("embedder_util_java") {
   sources = [ "java/src/org/chromium/components/embedder_support/util/TouchEventFilter.java" ]
 

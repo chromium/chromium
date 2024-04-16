@@ -12,7 +12,7 @@ import org.chromium.base.Features;
 /**
  * Provides an API for querying the status of Page Info features.
  *
- * TODO(crbug.com/1060097): generate this file.
+ * <p>TODO(crbug.com/40121881): generate this file.
  */
 @JNINamespace("page_info")
 public class PageInfoFeatures extends Features {

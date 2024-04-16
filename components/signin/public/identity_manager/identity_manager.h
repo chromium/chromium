@@ -108,7 +108,7 @@ class IdentityManager : public KeyedService,
     // NOTE: It is not guaranteed that a call to
     // OnRefreshTokenUpdatedForAccount() has previously occurred for this
     // account due to corner cases.
-    // TODO(https://crbug.com/884731): Eliminate these corner cases.
+    // TODO(crbug.com/40593967): Eliminate these corner cases.
     // NOTE: On a signout event, the ordering of this callback wrt the
     // OnPrimaryAccountCleared() callback is undefined.If this lack of ordering
     // is problematic for your use case, please contact blundell@chromium.org.
@@ -181,7 +181,7 @@ class IdentityManager : public KeyedService,
   // the required consent level.
   // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
-  // TODO(1046746): Update (./README.md).
+  // TODO(crbug.com/40116578): Update (./README.md).
   CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
 
   // Provides access to the account ID of the user's primary account. Simple
@@ -544,13 +544,13 @@ class IdentityManager : public KeyedService,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Temporary access to getters (e.g. GetTokenService()).
-  // TODO(https://crbug.com/944127): Remove this friendship by
+  // TODO(crbug.com/40619310): Remove this friendship by
   // extending identity_test_utils.h as needed.
   friend IdentityTestEnvironment;
 
   // IdentityManagerTest reaches into IdentityManager internals in
   // order to drive its behavior.
-  // TODO(https://crbug.com/943135): Find a better way to accomplish this.
+  // TODO(crbug.com/40618872): Find a better way to accomplish this.
   friend IdentityManagerTest;
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, Construct);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest,

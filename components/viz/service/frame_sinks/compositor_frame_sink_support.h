@@ -399,7 +399,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // rely on checking the number of pending frames in `pending_frames_` to
   // throttle frame production.
   //
-  // TODO(crbug.com/1396081): Track acks, presentation feedback, and resources
+  // TODO(crbug.com/40249303): Track acks, presentation feedback, and resources
   // being returned, on a per BeginFrameSource basis. For
   // BeginFrameArgs::kManualSourceId the feedback and resources should not be
   // tied to the current `begin_frame_source_`;

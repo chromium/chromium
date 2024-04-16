@@ -877,7 +877,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   DCHECK(!FiltersForPass(quad->render_pass_id))
       << "Filters should always be in a separate Effect node";
 
-  // TODO(989238): Software renderer does not support/implement kClamp_TileMode.
+  // TODO(crbug.com/40036319): Software renderer does not support/implement
+  // kClamp_TileMode.
   SkIRect result_rect;
   sk_sp<SkImage> filtered_image =
       ApplyImageFilter(filter.get(), quad, backdrop_bitmap,

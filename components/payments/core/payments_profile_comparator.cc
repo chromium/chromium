@@ -157,7 +157,7 @@ PaymentsProfileComparator::FilterProfilesForShipping(
                GetShippingCompletenessScore(p2);
       });
 
-  // TODO(crbug.com/722949): Remove profiles with no relevant information, or
+  // TODO(crbug.com/40520855): Remove profiles with no relevant information, or
   // which are subsets of more-complete profiles.
 
   return processed;

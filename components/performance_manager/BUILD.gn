@@ -430,7 +430,7 @@ source_set("unit_tests") {
       "persistence/site_data/site_data_reader_unittest.cc",
       "persistence/site_data/site_data_writer_unittest.cc",
 
-      # TODO(crbug.com/1225070): Consider using this policy on Android.
+      # TODO(crbug.com/40188246): Consider using this policy on Android.
       "graph/policies/bfcache_policy_unittest.cc",
     ]
   }

@@ -17,8 +17,8 @@
 
 namespace syncer {
 
-// TODO(crbug.com/1152824): Avoid using thread-safe refcounting, since it's only
-// needed by a few (one?) browser test.
+// TODO(crbug.com/40733890): Avoid using thread-safe refcounting, since it's
+// only needed by a few (one?) browser test.
 struct SyncData::InternalData
     : public base::RefCountedThreadSafe<InternalData> {
   InternalData() = default;

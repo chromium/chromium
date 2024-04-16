@@ -177,7 +177,7 @@ void PreferredAppsList::ApplyBulkUpdate(apps::PreferredAppChangesPtr changes) {
         });
 
     // Notify observers if any of the removed filters were supported links.
-    // TODO(crbug.com/1250153): Notify observers about all changes, not just
+    // TODO(crbug.com/40791690): Notify observers about all changes, not just
     // changes to supported links status.
     if (has_supported_link) {
       for (auto& obs : observers_) {

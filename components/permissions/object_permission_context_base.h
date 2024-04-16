@@ -46,7 +46,7 @@ class ObjectPermissionContextBase : public KeyedService {
            content_settings::SettingSource source,
            bool incognito);
     // DEPRECATED.
-    // TODO(https://crbug.com/1187001): Migrate value to base::Value::Dict.
+    // TODO(crbug.com/40172729): Migrate value to base::Value::Dict.
     Object(const url::Origin& origin,
            base::Value value,
            content_settings::SettingSource source,

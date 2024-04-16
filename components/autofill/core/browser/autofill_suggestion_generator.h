@@ -66,7 +66,7 @@ class AutofillSuggestionGenerator {
   // `with_cvc` is set to true if ANY card has cvc saved.
   // `metadata_logging_context` contains card metadata related information used
   // for metrics logging.
-  // TODO(crbug.com/1519179): Merging out-parameters into a struct.
+  // TODO(crbug.com/41492160): Merging out-parameters into a struct.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,

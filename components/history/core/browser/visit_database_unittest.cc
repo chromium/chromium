@@ -1078,7 +1078,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToURL) {
   }
 }
 
-// TODO(crbug.com/1499614): Test is failing.
+// TODO(crbug.com/40940281): Test is failing.
 TEST_F(VisitDatabaseTest, DISABLED_GetDailyVisitsToHostWithVisits) {
   base::Time begin_time = base::Time::Now();
   base::Time end_time = begin_time + base::Days(10);

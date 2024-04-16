@@ -159,7 +159,7 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   sk_sp<SkData> encoded_data = image->refEncodedData();
   if (!encoded_data || !is_supported_codec(encoded_data)) {
     // Use the default PNG at quality 100 as it is safe.
-    // TODO(crbug/1198304): Investigate supporting JPEG at quality 100 for
+    // TODO(crbug.com/40177283): Investigate supporting JPEG at quality 100 for
     // opaque images.
     encoded_data = SkPngEncoder::Encode(nullptr, image, {});
   }

@@ -242,7 +242,7 @@ public final class CronetLoggerTest {
         // The test framework bypasses the logic in CronetEngine.Builder, so we have to call it
         // directly. We want to use the test framework context though for things like
         // intercepting manifest reads.
-        // TODO(https://crbug.com/1521393): this is ugly. Ideally the test framework should be
+        // TODO(crbug.com/41494362): this is ugly. Ideally the test framework should be
         // refactored to stop violating the Single Responsibility Principle (e.g. Context
         // management and implementation selection should be separated)
         var builder = new CronetEngine.Builder(mTestRule.getTestFramework().getContext());

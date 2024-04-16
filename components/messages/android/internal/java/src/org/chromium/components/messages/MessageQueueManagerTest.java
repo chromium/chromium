@@ -254,7 +254,7 @@ public class MessageQueueManagerTest {
         testEnqueueMultipleMessagesInternal(true);
     }
 
-    // TODO(crbug.com/1517771): replace with ParameterizedRunner or remove non-stacking animation
+    // TODO(crbug.com/41490749): replace with ParameterizedRunner or remove non-stacking animation
     // test case
     private void testEnqueueMultipleMessagesInternal(boolean isStackingEnabled) {
         var testValues = new TestValues();

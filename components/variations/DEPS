@@ -1,6 +1,6 @@
 # This component is shared with the Chrome OS build, so it's important to limit
 # dependencies to a minimal set.
-# TODO(crbug.com/1256807): Remove components/metrics, it's only used for tests.
+# TODO(crbug.com/40796017): Remove components/metrics, it's only used for tests.
 include_rules = [
   "+chromeos/ash/components/dbus/featured",
   "-components",

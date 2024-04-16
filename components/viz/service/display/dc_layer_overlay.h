@@ -354,7 +354,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // Used in `RemoveClearVideoQuadCandidatesIfMoving`
   // List of clear video content candidate bounds. These rects are in root space
   // and contains the candidate rects for all render passes.
-  // TODO(crbug.com/1454329): Compute these values using
+  // TODO(crbug.com/40272272): Compute these values using
   // |previous_frame_render_pass_states_| and remove this field.
   std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_;
   int frames_since_last_overlay_candidate_rects_change_ = 0;

@@ -54,7 +54,7 @@ scoped_refptr<PasswordFormMetricsRecorder> CreatePasswordFormMetricsRecorder(
       is_main_frame_secure, kTestSourceId, pref_service);
 }
 
-// TODO(crbug.com/738921) Replace this with generalized infrastructure.
+// TODO(crbug.com/40528506) Replace this with generalized infrastructure.
 // Verifies that the metric |metric_name| was recorded with value |value| in the
 // single entry of |test_ukm_recorder_| exactly |expected_count| times.
 void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,

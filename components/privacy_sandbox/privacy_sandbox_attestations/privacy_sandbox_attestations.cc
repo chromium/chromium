@@ -535,7 +535,7 @@ void PrivacySandboxAttestations::RemoveObserver(
 
 bool PrivacySandboxAttestations::IsEverLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1498498): Add lock to `attestations_parse_progress_`.
+  // TODO(crbug.com/40287460): Add lock to `attestations_parse_progress_`.
   return attestations_map_.has_value() ||
          attestations_parse_progress_ == Progress::kFinished ||
          is_all_apis_attested_for_testing_;

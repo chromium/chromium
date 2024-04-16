@@ -382,7 +382,8 @@ final class FakeUrlRequest extends UrlRequestBase {
                                         new IllegalStateException(
                                                 "Response recieved from URL: "
                                                         + prevUrl
-                                                        + " was a redirect, but lacked a location header.")));
+                                                        + " was a redirect, but lacked a location"
+                                                        + " header.")));
                     });
             return;
         }
@@ -540,7 +541,7 @@ final class FakeUrlRequest extends UrlRequestBase {
             mState = newState;
         } else {
             if (!(mState == State.CANCELLED || mState == State.ERROR)) {
-                // TODO(crbug/1450573): Use Enums for state instead for better error messages.
+                // TODO(crbug.com/40915368): Use Enums for state instead for better error messages.
                 throw new IllegalStateException(
                         "Invalid state transition - expected " + expected + " but was " + mState);
             }
@@ -652,7 +653,8 @@ final class FakeUrlRequest extends UrlRequestBase {
                     return RequestFinishedInfo.CANCELED;
                 default:
                     throw new IllegalStateException(
-                            "Request should be in terminal state before calling getRequestFinishedReason");
+                            "Request should be in terminal state before calling"
+                                + " getRequestFinishedReason");
             }
         }
     }

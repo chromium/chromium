@@ -151,8 +151,8 @@ ProfileOAuth2TokenService::StartRequestForMultilogin(
       new OAuth2AccessTokenManager::RequestImpl(account_id, consumer));
   // Create token response from token. Expiration time and id token do not
   // matter and should not be accessed.
-  // TODO(1151018): See bug description for why the refresh token is passed
-  // in the access token field.
+  // TODO(crbug.com/40158125): See bug description for why the refresh token is
+  // passed in the access token field.
   OAuth2AccessTokenConsumer::TokenResponse token_response =
       TokenResponseBuilder().WithAccessToken(refresh_token).build();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

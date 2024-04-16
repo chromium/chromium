@@ -30,7 +30,7 @@ using LoginsResultOrError =
 // tasks upon destruction.
 class PasswordStoreConsumer {
  public:
-  // TODO(crbug.com/1361990): Use base::expected instead of absl::variant.
+  // TODO(crbug.com/40238167): Use base::expected instead of absl::variant.
   PasswordStoreConsumer();
 
   // Called when `GetLogins()` request is finished, with a vector of forms or

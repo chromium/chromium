@@ -71,7 +71,7 @@ class PasswordGenerationFrameHelper {
   //
   // Virtual for testing
   //
-  // TODO(crbug.com/855595): Add a stub for this class to facilitate testing.
+  // TODO(crbug.com/41396292): Add a stub for this class to facilitate testing.
   virtual std::u16string GeneratePassword(
       const GURL& last_committed_url,
       autofill::FormSignature form_signature,

@@ -83,7 +83,7 @@ void UserInfoFetcher::Start(const std::string& access_token) {
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  // TODO(crbug.com/1352139): Don't switch back to the legacy host once
+  // TODO(crbug.com/40857586): Don't switch back to the legacy host once
   // oauth_user_info_url() returns a valid URL on iOS. We are currently working
   // on finding the best approach to deal with the new User Info API.
   resource_request->url = SwitchBackToLegacyHostIfNeeded(

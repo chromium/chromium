@@ -255,7 +255,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
-  // TODO(crbug.com/1442268): Reset device on context loss to fix dangling ptr.
+  // TODO(crbug.com/40266876): Reset device on context loss to fix dangling ptr.
   const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
   const raw_ptr<skgpu::graphite::Context> graphite_context_;
 

@@ -606,8 +606,8 @@ class PageSpecificContentSettings
   // The origin of the media stream request. Note that we only support handling
   // settings for one request per tab. The latest request's origin will be
   // stored here. http://crbug.com/259794
-  // TODO(crbug.com/1467791): Remove `media_stream_access_origin_` and calculate
-  // a proper origin internaly.
+  // TODO(crbug.com/40276922): Remove `media_stream_access_origin_` and
+  // calculate a proper origin internaly.
   GURL media_stream_access_origin_;
 
   // The microphone and camera state at the last media stream request.

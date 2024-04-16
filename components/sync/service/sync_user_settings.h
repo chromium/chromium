@@ -78,7 +78,7 @@ class SyncUserSettings {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On Desktop, kPasswords isn't considered "selected" by default in transport
   // mode. This method returns how many accounts selected (enabled) the type.
-  // TODO(crbug.com/1503669): Remove this once the type is enabled by default.
+  // TODO(crbug.com/40944135): Remove this once the type is enabled by default.
   virtual int GetNumberOfAccountsWithPasswordsSelected() const = 0;
 #endif
 
@@ -148,7 +148,7 @@ class SyncUserSettings {
 
   // NOTE: All of the state below may only be queried or modified if the Sync
   // engine is initialized.
-  // TODO(crbug.com/1466401): Make it possible to call these APIs even without
+  // TODO(crbug.com/40923935): Make it possible to call these APIs even without
   // the engine being initialized.
 
   // Whether we are currently set to encrypt all the Sync data.

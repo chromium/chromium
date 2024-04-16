@@ -100,7 +100,7 @@ bool FCMInvalidationService::UpdateInterestedTopics(
   for (const auto& topic_name : topic_set) {
     topic_map[topic_name] = TopicMetadata(handler->IsPublicTopic(topic_name));
   }
-  // TODO(crbug.com/1054404): UpdateRegisteredTopics() should be renamed to
+  // TODO(crbug.com/40675708): UpdateRegisteredTopics() should be renamed to
   // clarify that it actually updates whether topics need subscription (aka
   // interested).
   if (!invalidator_registrar_.UpdateRegisteredTopics(handler, topic_map)) {

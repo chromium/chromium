@@ -5,7 +5,7 @@
 syntax = "proto3";
 package org.chromium.components.ip_protection_auth.common.proto;
 
-option optimize_for = LITE_RUNTIME;  // TODO(crbug/800281): Remove this after proto 4.0
+option optimize_for = LITE_RUNTIME;  // TODO(crbug.com/40557343): Remove this after proto 4.0
 option java_package = "org.chromium.components.ip_protection_auth.common.proto";
 option java_outer_classname = "IpProtectionAuthProtos";
 

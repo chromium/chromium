@@ -599,7 +599,7 @@ bool VotesUploader::UploadPasswordVote(
       form_structure.active_field_count(), /* prefs=*/nullptr);
 }
 
-// TODO(crbug.com/840384): Share common code with UploadPasswordVote.
+// TODO(crbug.com/40575167): Share common code with UploadPasswordVote.
 void VotesUploader::UploadFirstLoginVotes(
     const base::span<const PasswordForm>& best_matches,
     const PasswordForm& pending_credentials,
@@ -674,8 +674,8 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
 // UFF votes are not sent on Android, since it wasn't possible to edit the
 // username in prompt before UFF was launched. Later, password edit dialog
 // was added, but Android votes were never evaluated.
-// TODO(crbug/1475295): Verify if the votes are produced as expected on Android
-// and enable UFF voting.
+// TODO(crbug.com/40279590): Verify if the votes are produced as expected on
+// Android and enable UFF voting.
 #if !BUILDFLAG(IS_ANDROID)
   bool should_send_votes =
       (should_send_username_first_flow_votes_ ||
@@ -762,7 +762,7 @@ void VotesUploader::CalculateUsernamePromptEditState(
 
 void VotesUploader::AddForgotPasswordVoteData(
     const SingleUsernameVoteData& vote_data) {
-  // TODO(crbug/1468297): Implement votes uploading based on this.
+  // TODO(crbug.com/40277063): Implement votes uploading based on this.
   forgot_password_vote_data_[vote_data.renderer_id] = vote_data;
 }
 

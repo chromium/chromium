@@ -53,11 +53,11 @@ namespace subresource_filter {
 //   ads intervention. This is non-ideal and this behavior should be removed
 //   when metrics collection is finished, in M88.
 //
-// TODO(crbug.com/706061): Once observing changes to content settings is robust
-// enough for metrics collection, should collect metrics here too, using a
-// content_settings::Observer. Generally speaking, we want a system where we can
-// easily log metrics if the content setting has changed meaningfully from it's
-// previous value.
+// TODO(crbug.com/41309958): Once observing changes to content settings is
+// robust enough for metrics collection, should collect metrics here too, using
+// a content_settings::Observer. Generally speaking, we want a system where we
+// can easily log metrics if the content setting has changed meaningfully from
+// it's previous value.
 class SubresourceFilterContentSettingsManager {
  public:
   explicit SubresourceFilterContentSettingsManager(

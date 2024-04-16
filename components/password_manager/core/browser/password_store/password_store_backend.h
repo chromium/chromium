@@ -80,7 +80,7 @@ class PasswordStoreBackend {
   // status) saved in the given sync |account|. The passed account should be a
   // current or former syncing account, otherwise |callback| will be
   // called with an error result. Callback is called on the main sequence.
-  // TODO(crbug.com/1315594): Clean up/refactor to avoid having methods
+  // TODO(crbug.com/40833594): Clean up/refactor to avoid having methods
   // introduced for a specific backend in this interface.
   virtual void GetAllLoginsForAccountAsync(std::string account,
                                            LoginsOrErrorReply callback) = 0;

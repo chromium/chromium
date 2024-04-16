@@ -153,7 +153,7 @@ void FeatureTree::ApplyStreamStructure(
         // 'is_root' set. However, for older cached stream data, we weren't
         // storing this information. In that case, we fallback to pick the first
         // node which doesn't have a parentID as root.
-        // TODO(crbug.com/1190364): simplify this once we can depend on
+        // TODO(crbug.com/40755948): simplify this once we can depend on
         // receiving is_root.
         computed_root_ = true;
         root_tag_ = child_id;

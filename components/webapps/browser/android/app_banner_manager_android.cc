@@ -676,7 +676,7 @@ void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
 void AppBannerManagerAndroid::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
 }
 
 void AppBannerManagerAndroid::Install(

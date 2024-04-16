@@ -25,7 +25,7 @@ import traceback
 
 CONCURRENT_TASKS=multiprocessing.cpu_count()
 if sys.platform == 'win32':
-  # TODO(crbug.com/1190269) - we can't use more than 56
+  # TODO(crbug.com/40755900) - we can't use more than 56
   # cores on Windows or Python3 may hang.
   CONCURRENT_TASKS = min(CONCURRENT_TASKS, 56)
 

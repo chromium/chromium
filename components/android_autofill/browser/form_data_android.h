@@ -66,7 +66,7 @@ class FormDataAndroid {
     kNameAttribute = 1 << 3,
     kUrl = 1 << 4,
     kAction = 1 << 5,
-    // TODO(crbug.com/1265655): Remove.
+    // TODO(crbug.com/40801589): Remove.
     kIsFormTag = 1 << 6,
     kFields = 1 << 7,
     kMaxValue = kFields

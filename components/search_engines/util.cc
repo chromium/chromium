@@ -316,10 +316,10 @@ void MergeIntoEngineData(const TemplateURL* original_turl,
     url_to_update->SetShortName(original_turl->short_name());
     url_to_update->SetKeyword(original_turl->keyword());
     if (original_turl->created_from_play_api()) {
-      // TODO(crbug/1002271): Search url from Play API might contain attribution
-      // info and therefore should be preserved through prepopulated data
-      // update. In the future we might decide to take different approach to
-      // pass attribution info to search providers.
+      // TODO(crbug.com/40646573): Search url from Play API might contain
+      // attribution info and therefore should be preserved through prepopulated
+      // data update. In the future we might decide to take different approach
+      // to pass attribution info to search providers.
       url_to_update->SetURL(original_turl->url());
     }
   }

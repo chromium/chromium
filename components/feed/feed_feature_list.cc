@@ -85,7 +85,7 @@ BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
              "PersonalizeFeedUnsignedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1205923): Remove this helper, directly use kSignin instead.
+// TODO(crbug.com/40764861): Remove this helper, directly use kSignin instead.
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
   return signin::ConsentLevel::kSignin;
 }

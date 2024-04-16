@@ -134,7 +134,7 @@ AutofillOptimizationGuide::AutofillOptimizationGuide(
 
 AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 
-// TODO(crbug.com/1519658): Pass PersonalDataManager by reference and remove
+// TODO(crbug.com/41492637): Pass PersonalDataManager by reference and remove
 // check for presence.
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,

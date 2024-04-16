@@ -436,7 +436,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
   if (base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
     // We don't expose the list of accounts if the user is signed out, so it is
     // safe to assume that the account list is empty here.
-    // TODO(crbug.com/1499912): Once we expose the list of accounts all the
+    // TODO(crbug.com/40287987): Once we expose the list of accounts all the
     // time, this assumption should be re-evaluated.
     const std::vector<CoreAccountInfo> empty_accounts_list =
         std::vector<CoreAccountInfo>();

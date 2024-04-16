@@ -32,7 +32,7 @@ namespace browser_sync {
 
 // Helper class to query information about existing local data (like count,
 // domains etc.) for requested data types.
-// TODO(crbug.com/1489660): Look into reducing code duplicacy between
+// TODO(crbug.com/40074182): Look into reducing code duplicacy between
 // LocalDataQueryHelper and LocalDataMigrationHelper.
 class LocalDataQueryHelper {
  public:

@@ -84,7 +84,7 @@ void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1275075): Take metrics in Lacros as well.
+  // TODO(crbug.com/40808069): Take metrics in Lacros as well.
   ArcMetricsService::RecordArcUserInteraction(
       context_, arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
 #endif

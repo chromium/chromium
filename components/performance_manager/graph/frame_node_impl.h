@@ -216,7 +216,7 @@ class FrameNodeImpl
         network_almost_idle{false};
 
     // Indicates if a form in the frame has been interacted with.
-    // TODO(crbug.com/1156388): Remove this once HadUserEdits is known to cover
+    // TODO(crbug.com/40735910): Remove this once HadUserEdits is known to cover
     // all existing cases.
     ObservedProperty::NotifiesOnlyOnChanges<
         bool,

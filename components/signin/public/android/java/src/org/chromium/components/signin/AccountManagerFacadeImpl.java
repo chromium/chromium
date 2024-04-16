@@ -296,7 +296,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                             }
                             final String gaiaId = getAccountGaiaId(email);
                             if (gaiaId == null) {
-                                // TODO(crbug.com/1465339): Add metrics to check how often we get a
+                                // TODO(crbug.com/40275966): Add metrics to check how often we get a
                                 // null gaiaId.
                                 return null;
                             }

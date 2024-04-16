@@ -420,7 +420,7 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
         // Allow secondary zero-prefix suggestions in the NTP realbox or the
         // WebUI omnibox popup.
-        // TODO(crbug/1396174): Disallow secondary zps in the WebUI omnibox
+        // TODO(crbug.com/40062053): Disallow secondary zps in the WebUI omnibox
         // before experimentation.
         if ((page_classification == OmniboxEventProto::NTP_REALBOX ||
              base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))) {

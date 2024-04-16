@@ -1168,7 +1168,7 @@ bool HistorySyncBridge::UpdateEntityInBackend(
     const sync_pb::HistorySpecifics& specifics) {
   // Only try updating the final visit in a chain - earlier visits (i.e.
   // redirects) can't get updated anyway.
-  // TODO(crbug.com/1318028): Verify whether only updating the chain end
+  // TODO(crbug.com/40059424): Verify whether only updating the chain end
   // is indeed sufficient.
   int index = specifics.redirect_entries_size() - 1;
   VisitRow final_visit_row = MakeVisitRow(specifics, index);

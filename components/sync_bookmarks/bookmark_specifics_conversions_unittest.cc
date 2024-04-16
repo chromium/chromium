@@ -411,7 +411,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateFolderFromSpecifics) {
   EXPECT_THAT(node->uuid(), Eq(kGuid));
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kTitle)));
   EXPECT_TRUE(node->is_folder());
-  // TODO(crbug.com/1214840): Folders should propagate the creation time into
+  // TODO(crbug.com/40769579): Folders should propagate the creation time into
   // BookmarkModel, just like non-folders.
   EXPECT_THAT(node->date_added(), Ge(kTime));
   std::string value1;

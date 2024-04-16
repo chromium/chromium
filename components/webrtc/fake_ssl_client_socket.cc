@@ -65,8 +65,8 @@ static const uint8_t kSslServerHello[] = {
     0x00                                             // null compression
 };
 
-// TODO(crbug/1183244): This annotation is not test specific but is for test. We
-// should fix it.
+// TODO(crbug.com/40171113): This annotation is not test specific but is for
+// test. We should fix it.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "test",

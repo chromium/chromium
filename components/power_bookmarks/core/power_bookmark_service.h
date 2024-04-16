@@ -115,7 +115,7 @@ class PowerBookmarkService : public KeyedService,
 
   // Delete the given `guid` in the database, if it exists. Success of the
   // operation is returned through the given `callback`.
-  // TODO(crbug.com/1378793): Encapsulate the storage key if possible.
+  // TODO(crbug.com/40875199): Encapsulate the storage key if possible.
   void DeletePower(const base::Uuid& guid, SuccessCallback callback);
 
   // Delete all powers for the given `url`. Success of the operation is

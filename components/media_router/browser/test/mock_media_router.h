@@ -46,7 +46,7 @@ class MockMediaRouter : public MediaRouterBase {
 
   void Initialize() override {}
 
-  // TODO(crbug.com/729950): Use MOCK_METHOD directly once GMock gets the
+  // TODO(crbug.com/40524294): Use MOCK_METHOD directly once GMock gets the
   // move-only type support.
   void CreateRoute(const MediaSource::Id& source,
                    const MediaSink::Id& sink_id,

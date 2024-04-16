@@ -203,7 +203,7 @@ class SyncPrefs {
 
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
-  // TODO(crbug.com/1471928): Cleanup *EncryptionBootstrapToken when
+  // TODO(crbug.com/40069260): Cleanup *EncryptionBootstrapToken when
   // kSyncRememberCustomPassphraseAfterSignout is fully rolled-out. The Set/Get
   // methods will not be used, but ClearAllEncryptionBootstrapTokens will still
   // be needed to clear the gaia-keyed pref on signout for syncing users. It

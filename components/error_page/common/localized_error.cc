@@ -848,7 +848,7 @@ void AddSuggestionsDetails(int error_code,
         IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_BODY, false);
   }
 
-  // TODO(https://crbug.com/1254714): Provide meaningful strings for Fuchsia.
+  // TODO(crbug.com/40199702): Provide meaningful strings for Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
   if (suggestions & SUGGEST_PROXY_CONFIG) {
     AddSuggestionDetailDictionaryToList(

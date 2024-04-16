@@ -318,8 +318,8 @@ void MediaRouterAndroid::OnRouteClosed(
     const MediaRoute::Id& route_id,
     const std::optional<std::string>& error) {
   RemoveRoute(route_id);
-  // TODO(crbug.com/882690): When the sending context is destroyed, tell MRP to
-  // clean up the connection.
+  // TODO(crbug.com/40593074): When the sending context is destroyed, tell MRP
+  // to clean up the connection.
   if (error.has_value()) {
     NotifyPresentationConnectionClose(
         route_id,

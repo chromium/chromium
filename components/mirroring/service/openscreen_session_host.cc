@@ -148,7 +148,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
             RemotingSinkVideoCapability::CODEC_HEVC);
         continue;
 
-      // TODO(https://crbug.com/1363020): remoting should support AV1.
+      // TODO(crbug.com/40238534): remoting should support AV1.
       case openscreen::cast::VideoCapability::kAv1:
         continue;
     }
@@ -581,7 +581,7 @@ void OpenscreenSessionHost::OnNegotiated(
   LogInfoMessage(base::StringPrintf(
       "negotiated a new %s session. audio codec=%s, video codec=%s (%s)",
       (state_ == State::kRemoting ? "remoting" : "mirroring"),
-      // TODO(https://crbug.com/1363514): media::cast::Codec should be removed.
+      // TODO(crbug.com/40238715): media::cast::Codec should be removed.
       // For now, we log the integer value of the enum but this should be
       // serialized to a string once we use AudioCodec, VideoCodec.
       (audio_config
@@ -673,7 +673,7 @@ void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     // This is a highly unusual statement due to the fact that
     // `MojoVideoEncodeAccelerator` must be destroyed using `Destroy()` and has
     // a private destructor.
-    // TODO(https://crbug.com/1363905): should be castable to parent type with
+    // TODO(crbug.com/40238884): should be castable to parent type with
     // destructor.
     mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
         new media::MojoVideoEncodeAccelerator(std::move(vea)));
@@ -986,7 +986,7 @@ int OpenscreenSessionHost::GetSuggestedVideoBitrate(int min_bitrate,
   }
 
   // Then limit it based on the frame sender configuration.
-  // TODO(https://crbug.com/1423486): we should also factor in device
+  // TODO(crbug.com/40260069): we should also factor in device
   // capability when determining which bitrate to use.
   return std::clamp(suggested, min_bitrate, max_bitrate);
 }

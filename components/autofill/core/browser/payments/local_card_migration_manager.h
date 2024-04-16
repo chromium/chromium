@@ -242,7 +242,7 @@ class LocalCardMigrationManager {
 
   // The local credit cards to be uploaded. Owned by LocalCardMigrationManager.
   // The order of cards should not be changed.
-  // TODO(crbug.com/867194): Currently we will not handle the case of local
+  // TODO(crbug.com/40586517): Currently we will not handle the case of local
   // cards added/deleted during migration.
   std::vector<MigratableCreditCard> migratable_credit_cards_;
 

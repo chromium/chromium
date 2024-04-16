@@ -50,7 +50,8 @@ class LargeIconBridge {
       const base::android::JavaRef<jobject>& j_callback,
       favicon_base::GoogleFaviconServerRequestStatus status) const;
 
-  // TODO(crbug.com/1513063): Remove this when LargeIconService no longer relies
+  // TODO(crbug.com/41485636): Remove this when LargeIconService no longer
+  // relies
   //                          on CancelableTaskTracker.
   base::CancelableTaskTracker cancelable_task_tracker_;
 

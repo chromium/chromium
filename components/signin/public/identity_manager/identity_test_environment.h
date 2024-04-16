@@ -341,7 +341,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // By default, extended account info removal is disabled in testing
   // contexts. This call enables it for tests that require
   // IdentityManager::Observer::OnExtendedAccountInfoRemoved() to fire as
-  // expected. TODO(https://crbug.com/927687): Enable this unconditionally.
+  // expected. TODO(crbug.com/40612138): Enable this unconditionally.
   void EnableRemovalOfExtendedAccountInfo();
 
   // Simulate account fetching using AccountTrackerService without sending

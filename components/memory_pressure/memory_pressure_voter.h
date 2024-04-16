@@ -74,7 +74,8 @@ class MemoryPressureVoteAggregator {
   // Triggers a notification of the MemoryPressureMonitor's current pressure
   // level, allowing each of the various sources of input on MemoryPressureLevel
   // to maintain their own signalling behavior.
-  // TODO(991361): Remove this behavior and standardize across platforms.
+  // TODO(crbug.com/40639224): Remove this behavior and standardize across
+  // platforms.
   void NotifyListeners();
 
   // Returns the highest index of |votes_| with a non-zero value, as a

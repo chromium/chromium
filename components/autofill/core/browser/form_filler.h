@@ -95,8 +95,8 @@ class FormFiller {
   // `field_types_to_fill` and the classified fields for which we have data
   // stored.
   // `filling_product` is the type of filling calling this function.
-  // TODO(crbug/1275649): Add the case removed in crrev.com/c/4675831 when the
-  // experiment resumes.
+  // TODO(crbug.com/40207153): Add the case removed in crrev.com/c/4675831 when
+  // the experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
   // a FieldTypeSet.
   // TODO(crbug/1331312): Keep only one of 'field' and 'autofill_field'.

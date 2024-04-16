@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com/916420): this does not compile when blink is not enabled,
+# TODO(crbug.com/41432508): this does not compile when blink is not enabled,
 #                         where JPEGCodec (used by ImageProcessor) is not
 #                         supported. We should use an alternative encoding
 #                         scheme or support JPEGCodec in those cases.

@@ -200,7 +200,7 @@ enum ContentSettingsType {
   // scoped to the combination of requesting/top-level origin, and are managed
   // through the Storage Access API. For the time being, this content setting
   // exists in parallel to third-party cookie rules stored in COOKIES.
-  // TODO(https://crbug.com/989663): Reconcile the two.
+  // TODO(crbug.com/40638427): Reconcile the two.
   STORAGE_ACCESS,
 
   // Content setting which stores whether to allow a site to control camera

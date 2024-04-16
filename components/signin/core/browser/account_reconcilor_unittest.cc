@@ -1029,7 +1029,7 @@ const std::vector<AccountReconcilorTestTableParam> kDiceParams = {
     {  "AB",   "BC",   IsFirstReconcile::kBoth,     "UBA",  "AB",   "BA"      },
     // Check that Gaia cookie order is preserved for B.
     {  "*ABC", "CB",   IsFirstReconcile::kFirst,    "UABC", "*ABC", "ABC"     },
-    // TODO(https://crbug.com/1129931): Merge session should do XCB instead.
+    // TODO(crbug.com/40149592): Merge session should do XCB instead.
     {  "xABC", "ABC",  IsFirstReconcile::kFirst,    "UCB",  "BC",   "CB"      },
     // Check that order in the chrome_accounts is not important.
     {  "A*B",  "",     IsFirstReconcile::kBoth,     "PBA",  "A*B",  "BA"      },

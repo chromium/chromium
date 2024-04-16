@@ -304,7 +304,7 @@ class SinglePlaneFormat {
 // NOTE: This is a class rather than a namespace so that SharedImageFormat can
 // friend it to give it access to the private constructor needed for creating
 // these constants.
-// TODO(crbug.com/1366495): Eliminate these once the codebase is completely
+// TODO(crbug.com/40239769): Eliminate these once the codebase is completely
 // converted to using MultiplanarSharedImage.
 class LegacyMultiPlaneFormat {
  public:

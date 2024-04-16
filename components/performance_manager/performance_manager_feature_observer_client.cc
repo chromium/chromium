@@ -26,7 +26,7 @@ void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
       frame_node->SetIsHoldingWebLock(is_using);
       return;
 
-    // TODO(https://crbug.com/980533): Rename
+    // TODO(crbug.com/40634530): Rename
     // FrameNodeImpl::SetIsHoldingIndexedDBLock() to
     // SetIsHoldingIndexedDBConnections().
     case blink::mojom::ObservedFeatureType::kIndexedDBConnection:

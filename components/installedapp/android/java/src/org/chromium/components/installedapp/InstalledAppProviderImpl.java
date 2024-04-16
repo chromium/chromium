@@ -264,7 +264,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             return;
         }
 
-        // TODO(crbug.com/1043970): Should we expose the package name and the
+        // TODO(crbug.com/40115450): Should we expose the package name and the
         // version?
         postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
     }

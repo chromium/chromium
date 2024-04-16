@@ -17,7 +17,7 @@ struct DownloadedModelInfo {
   // Version of the OPTIMIZATION_TARGET model, reflection of ModelInfo's version
   // field in //components/optimization_guide/proto/models.proo.
   int64 version;
-  // TODO(crbug.com/1354861): Convert to mojo_base.mojo.FilePath type.
+  // TODO(crbug.com/40859328): Convert to mojo_base.mojo.FilePath type.
   string file_path;
 };
 

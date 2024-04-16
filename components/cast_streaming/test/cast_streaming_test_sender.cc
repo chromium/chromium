@@ -151,8 +151,9 @@ void CastStreamingTestSender::Stop() {
 
   // Disconnect the message port before destructing its client.
   if (message_port_) {
-    // TODO(crbug.com/1420075): CastMessagePortSender should be RAII and clean itself during
-    // the destruction instead of relying the client to call its ResetClient function.
+    // TODO(crbug.com/42050578): CastMessagePortSender should be RAII and clean
+    // itself during the destruction instead of relying the client to call its
+    // ResetClient function.
     message_port_->ResetClient();
   }
   sender_session_.reset();

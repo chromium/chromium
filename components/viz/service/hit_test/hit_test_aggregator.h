@@ -88,7 +88,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator {
   const FrameSinkId root_frame_sink_id_;
 
   // Initial hit-test region size.
-  // TODO(https://crbug.com/746385): Review and select appropriate sizes based
+  // TODO(crbug.com/41334186): Review and select appropriate sizes based
   // on telemetry / UMA.
   const uint32_t initial_region_size_;
   const uint32_t incremental_region_size_;

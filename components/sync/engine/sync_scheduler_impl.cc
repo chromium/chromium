@@ -68,7 +68,7 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
     case UNKNOWN_ERROR:
-      // TODO(crbug.com/1081266): This NOTREACHED is questionable because the
+      // TODO(crbug.com/40691256): This NOTREACHED is questionable because the
       // sync server can cause it.
       NOTREACHED();
       return false;

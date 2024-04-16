@@ -54,7 +54,7 @@ const char kSiteEngagementHeuristicEnforcementDurationHistogram[] =
 const char kInterstitialReasonHistogram[] =
     "Security.HttpsFirstMode.InterstitialReason";
 
-// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
+// TODO(crbug.com/40248833): Rename these metrics now that they apply to both
 // HTTPS-First Mode and HTTPS Upgrades.
 void RecordHttpsFirstModeNavigation(
     Event event,

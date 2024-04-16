@@ -183,8 +183,8 @@ bool XrSessionCoordinator::EnsureARCoreLoaded() {
 #if BUILDFLAG(ENABLE_ARCORE)
   DCHECK(device::IsArCoreSupported());
 
-  // TODO(crbug.com/884780): Allow loading the ARCore shim by name instead of by
-  // absolute path.
+  // TODO(crbug.com/41414239): Allow loading the ARCore shim by name instead of
+  // by absolute path.
   std::string path = base::android::BundleUtils::ResolveLibraryPath(
       /*library_name=*/"arcore_sdk_c", /*split_name=*/"");
 

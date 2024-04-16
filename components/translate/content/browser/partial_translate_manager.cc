@@ -88,8 +88,8 @@ PartialTranslateResponse PartialTranslateManager::MakeResponse(
 
   // context_ may have been disposed of in the meantime.
   if (context_) {
-    // TODO(crbug/1357202): Update this to pull from the resolved_search_term
-    // once the server supports returning target language.
+    // TODO(crbug.com/40236584): Update this to pull from the
+    // resolved_search_term once the server supports returning target language.
     response.target_language =
         context_->GetTranslationLanguages().target_language;
   }

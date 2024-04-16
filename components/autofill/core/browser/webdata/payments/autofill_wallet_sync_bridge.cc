@@ -215,8 +215,8 @@ std::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
   // metadata bridge can track changes in the data bridge and react accordingly.
   SetSyncData(entity_data, /*notify_webdata_backend=*/true);
 
-  // TODO(crbug.com/853688): Update the PaymentsAutofillTable API to know about
-  // write errors and report them here.
+  // TODO(crbug.com/40581165): Update the PaymentsAutofillTable API to know
+  // about write errors and report them here.
   return std::nullopt;
 }
 

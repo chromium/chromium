@@ -126,7 +126,7 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
                                                bool current_may_upload) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // If the user has opted out of metrics, delete local UKM state.
-  // TODO(crbug.com/1445075): Investigate if UMA needs purging logic.
+  // TODO(crbug.com/40267999): Investigate if UMA needs purging logic.
   if (consent_given_ && !current_consent_given) {
     ukm::UkmService* ukm = GetUkmService();
     if (ukm) {

@@ -121,7 +121,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   base::RemoveChars(stripped_text, u" .()-", &stripped_text);
   FormGroup::GetMatchingTypes(stripped_text, app_locale, matching_types);
 
-  // TODO(crbug.com/581391): Investigate the use of PhoneNumberUtil when
+  // TODO(crbug.com/41236729): Investigate the use of PhoneNumberUtil when
   // matching phone numbers for upload.
   // If there is not already a match for PHONE_HOME_WHOLE_NUMBER, normalize the
   // |text| based on the app_locale before comparing it to the whole number. For

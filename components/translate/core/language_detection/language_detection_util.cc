@@ -89,7 +89,7 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
   // not supported.
   if (!is_detection_reliable)
     return translate::kUnknownLanguageCode;
-  // TODO(crbug.com/1178193): Determine if ar-Latn and hi-Latn need to be added
+  // TODO(crbug.com/40169055): Determine if ar-Latn and hi-Latn need to be added
   // for the TFLite-based detection model.
   if (detected_language == "bg-Latn" || detected_language == "el-Latn" ||
       detected_language == "ja-Latn" || detected_language == "ru-Latn" ||

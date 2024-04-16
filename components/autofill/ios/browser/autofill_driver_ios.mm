@@ -166,7 +166,7 @@ void AutofillDriverIOS::ExtractForm(
     FormGlobalId form,
     base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
         response_callback) {
-  // TODO(crbug.com/1490670): Implement ExtractForm().
+  // TODO(crbug.com/40284824): Implement ExtractForm().
   NOTIMPLEMENTED();
 }
 
@@ -199,7 +199,7 @@ void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
 void AutofillDriverIOS::GetFourDigitCombinationsFromDOM(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {
-  // TODO(crbug.com/1423605): Implement GetFourDigitCombinationsFromDOM in iOS.
+  // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDOM in iOS.
   NOTIMPLEMENTED();
 }
 
@@ -250,7 +250,7 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
 void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
                                            const FormFieldData& field) {
   // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
-  // TODO(crbug.com/1448447): Distinguish between different trigger sources.
+  // TODO(crbug.com/40269303): Distinguish between different trigger sources.
   GetAutofillManager().OnAskForValuesToFill(
       form, field, /*bounding_box=*/gfx::RectF(),
       autofill::AutofillSuggestionTriggerSource::kiOS);
@@ -287,7 +287,7 @@ void AutofillDriverIOS::FormsSeen(const std::vector<FormData>& updated_forms) {
   }
 
   // TODO(crbug.com/1441921): Route this using AutofillDriverRouter.
-  // TODO(crbug.com/1215337): Notify about deleted fields.
+  // TODO(crbug.com/40184363): Notify about deleted fields.
   GetAutofillManager().OnFormsSeen(updated_forms, {});
 }
 

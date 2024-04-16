@@ -104,7 +104,7 @@ void OutputController::OnDidProcessDisplayChanges(
   UpdateActivatedDisplayIfNecessary();
 
   // Flush updated outputs to clients immediately.
-  // TODO(crbug.com/1502682): Exo should be updated to automatically flush
+  // TODO(crbug.com/40943061): Exo should be updated to automatically flush
   // buffers at the end of task processing if necessary.
   delegate_->Flush();
 }

@@ -279,7 +279,7 @@ public class AndroidPaymentApp extends PaymentApp
                         certificateChain,
                         WebPaymentIntentHelperTypeConverter.fromMojoPaymentMethodDataMap(
                                 methodDataMap),
-                        // TODO(crbug.com/1290492): Re-enable clearing of identity for
+                        // TODO(crbug.com/40212375): Re-enable clearing of identity for
                         // IS_READY_TO_PAY
                         /* clearIdFields= */ false);
         if (mBypassIsReadyToPayServiceInTest) {

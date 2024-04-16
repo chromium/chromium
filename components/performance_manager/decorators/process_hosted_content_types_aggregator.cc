@@ -39,7 +39,7 @@ void ProcessHostedContentTypesAggregator::OnTypeChanged(
     // `PageType::kExtension` should be set early on the `PageNode`, before it
     // has the opportunity to create more than one main frame or any subframe.
     //
-    // TODO(1241218): Change CHECKs to DCHECKs in September 2022 if
+    // TODO(crbug.com/40194583): Change CHECKs to DCHECKs in September 2022 if
     // there are no crash report indicating that expectations are incorrect.
     CHECK_LE(page_node->GetMainFrameNodes().size(), 1U);
     if (auto* main_frame = page_node->GetMainFrameNode()) {
@@ -53,7 +53,8 @@ void ProcessHostedContentTypesAggregator::OnTypeChanged(
 
 void ProcessHostedContentTypesAggregator::OnFrameNodeAdded(
     const FrameNode* frame_node) {
-  // TODO(1241909): Decide if prerendered frames should be handled differently.
+  // TODO(crbug.com/40194872): Decide if prerendered frames should be handled
+  // differently.
   //
   // TODO(1241218, 1111084): A fenced frame should not be treated the same way
   // as a main frame.

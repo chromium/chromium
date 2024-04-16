@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverPrerenderBrowserTest,
   EXPECT_EQ(1u, source2->urls().size());
   EXPECT_EQ(prerender_url, source2->url());
   GURL expected_ukm_url;
-  // TODO(crbug.com/1245014): The URL is not assigned yet for prerendering
+  // TODO(crbug.com/40195952): The URL is not assigned yet for prerendering
   // UKM source ids, so expect it to not be set.
   // expected_ukm_url = prerender_url;
   EXPECT_EQ(expected_ukm_url, GetAssociatedURLForWebContentsDocument());

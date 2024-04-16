@@ -139,7 +139,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTelLocalSuffix,
                                          /*field_max_length=*/0, u"4578",
                                          u"+15145554578"},
-        // TODO(crbug.com/581485): There should be a test case where the full
+        // TODO(crbug.com/40453991): There should be a test case where the full
         // number is requested (HtmlFieldType::kTel) but a
         // field_max_length of 3 would fill the prefix. Filling a phone type
         // field with a max length of 4 should fill only the suffix.
@@ -293,7 +293,7 @@ INSTANTIATE_TEST_SUITE_P(
             u"Virginia",
             u"VA - Virginia"},
         // Do accidentally match "Virginia" to "West Virginia".
-        // TODO(crbug.com/624770): This test should not pass, but it does
+        // TODO(crbug.com/40475034): This test should not pass, but it does
         // because "Virginia" is a substring of "West Virginia".
         FillSelectTestCase{{"WV - West Virginia", "TX - Texas"},
                            u"Virginia",

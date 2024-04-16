@@ -162,7 +162,8 @@ public class PageInfoController
         mContext = mWindowAndroid.getContext().get();
         mSubpageControllers = new ArrayList<>();
         // Work out the URL and connection message and status visibility.
-        // TODO(crbug.com/1033178): dedupe the DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
+        // TODO(crbug.com/40663204): dedupe the
+        // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl()
         // calls.
         String url =
                 mDelegate.isShowingOfflinePage()
@@ -276,7 +277,7 @@ public class PageInfoController
             mSubpageControllers.add(mCookiesController);
         }
 
-        // TODO(crbug.com/1173154): Setup forget this site button after history delete is
+        // TODO(crbug.com/40746014): Setup forget this site button after history delete is
         // implemented.
         // setupForgetSiteButton(mView.getForgetSiteButton());
 

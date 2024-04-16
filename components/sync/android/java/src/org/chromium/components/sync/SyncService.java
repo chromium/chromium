@@ -18,8 +18,8 @@ import java.util.Set;
 
 /**
  * Java version of the native SyncService interface. Must only be used on the UI thread.
- * TODO(crbug.com/1451811): Update to no reference UI thread.
- * TODO(crbug.com/1158816): Document the remaining methods.
+ * TODO(crbug.com/1451811): Update to no reference UI thread. TODO(crbug.com/40161455): Document the
+ * remaining methods.
  */
 public interface SyncService {
     /** Listener for the underlying sync status. */
@@ -198,7 +198,7 @@ public interface SyncService {
      * Returns the time the current explicit passphrase was set (if any). Null if no explicit
      * passphrase is in use, or no time is available.
      */
-    // TODO(crbug.com/1503649): Remove this method since no usage exists anymore.
+    // TODO(crbug.com/40944114): Remove this method since no usage exists anymore.
     public @Nullable Date getExplicitPassphraseTime();
 
     /**

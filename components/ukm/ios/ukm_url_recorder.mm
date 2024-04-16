@@ -153,7 +153,7 @@ void SourceUrlRecorderWebStateObserver::MaybeRecordUrl(
     navigation_data.urls = {initial_url};
   navigation_data.urls.push_back(final_url);
 
-  // TODO(crbug.com/873316): Fill out the other fields in NavigationData.
+  // TODO(crbug.com/41407501): Fill out the other fields in NavigationData.
 
   const ukm::SourceId source_id = ukm::ConvertToSourceId(
       navigation_context->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);

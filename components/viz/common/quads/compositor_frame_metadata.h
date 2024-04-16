@@ -150,7 +150,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // For comparing |frame_token| from different frames, use |FrameTokenGT()|
   // instead of directly comparing them, since the tokens wrap around back to 1
   // after the 32-bit max value.
-  // TODO(crbug.com/850386): A custom type would be better to avoid incorrect
+  // TODO(crbug.com/41393200): A custom type would be better to avoid incorrect
   // comparisons.
   uint32_t frame_token = kInvalidFrameToken;
 

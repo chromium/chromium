@@ -70,7 +70,7 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<BertModelHandler> model_handler_;
 };
 
-// TODO(crbug.com/1337687): Running the model is slow and times out tests on
+// TODO(crbug.com/40848529): Running the model is slow and times out tests on
 // many platforms. Ideally, we can schedule this to run infrequently but for
 // now we will only load the model.
 TEST_F(BertModelExecutorTest, ValidBertModel) {

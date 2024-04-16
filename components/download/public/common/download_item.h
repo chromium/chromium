@@ -543,8 +543,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // the test are available. This should only be called after AllDataSaved() is
   // true. If |reason| is not DOWNLOAD_INTERRUPT_REASON_NONE, then the download
   // file should be blocked.
-  // TODO(crbug.com/733291): Move DownloadInterruptReason out of here and add a
-  // new  Interrupt method instead. Same for other methods supporting
+  // TODO(crbug.com/40525770): Move DownloadInterruptReason out of here and add
+  // a new  Interrupt method instead. Same for other methods supporting
   // interruptions.
   virtual void OnContentCheckCompleted(DownloadDangerType danger_type,
                                        DownloadInterruptReason reason) = 0;

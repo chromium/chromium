@@ -1688,7 +1688,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
 
   // The header and non-placeholder tab should both be restored, but the
   // placeholder tab got lost.
-  // TODO(crbug/1462305): on Android it should be possible to reupload
+  // TODO(crbug.com/40921830): on Android it should be possible to reupload
   // placeholder tabs.
   EXPECT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
   EXPECT_THAT(GetAllData(),

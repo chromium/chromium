@@ -7,7 +7,7 @@
 namespace history_clusters {
 
 float GetNtpVisitAttributesScore(const history::ClusterVisit& visit) {
-  // TODO(crbug/1432431): Implement this.
+  // TODO(crbug.com/40902932): Implement this.
   return 0.0;
 }
 

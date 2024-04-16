@@ -281,7 +281,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314087): Re-enable when MemoryMaps works on Fuchsia.
+// TODO(crbug.com/42050458): Re-enable when MemoryMaps works on Fuchsia.
 #define MAYBE_MemoryMaps DISABLED_MemoryMaps
 #else
 #define MAYBE_MemoryMaps MemoryMaps

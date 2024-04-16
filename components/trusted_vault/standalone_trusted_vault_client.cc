@@ -117,7 +117,7 @@ void IdentityManagerObserver::OnPrimaryAccountChanged(
 }
 
 void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
-  // TODO(crbug.com/1148328): remove this handler once tests can mimic
+  // TODO(crbug.com/40156992): remove this handler once tests can mimic
   // OnAccountInCookieUpdated() properly.
   UpdateAccountsInCookieJarInfoIfNeeded(
       signin::AccountsInCookieJarInfo(/*accounts_are_fresh_param=*/true,

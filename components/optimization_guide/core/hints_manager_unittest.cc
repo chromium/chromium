@@ -3673,7 +3673,7 @@ class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1509873): test is failing on iPhone device.
+// TODO(crbug.com/41482478): test is failing on iPhone device.
 #if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
 #define MAYBE_SuccessfulPersonalizedHintsFetching \
   DISABLED_SuccessfulPersonalizedHintsFetching

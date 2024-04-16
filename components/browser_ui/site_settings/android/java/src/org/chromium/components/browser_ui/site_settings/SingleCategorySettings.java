@@ -1402,7 +1402,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         }
     }
 
-    // TODO(crbug.com/1343640): Looking at a different class setup for SingleCategorySettings that
+    // TODO(crbug.com/40852484): Looking at a different class setup for SingleCategorySettings that
     // allows category specific logic to live in separate files.
     private void updateDesktopSiteWindowSetting() {
         if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
@@ -1553,7 +1553,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.RequestDesktopSite.Changed", layout, SiteLayout.NUM_ENTRIES);
 
-        // TODO(crbug.com/1069897): Use SharedPreferencesManager if it is componentized.
+        // TODO(crbug.com/40126122): Use SharedPreferencesManager if it is componentized.
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putBoolean(

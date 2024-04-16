@@ -46,7 +46,7 @@ bool RpcDispatcherImpl::SendOutboundMessage(base::span<const uint8_t> message) {
 
 void RpcDispatcherImpl::OnMessage(
     openscreen::ErrorOr<openscreen::cast::ReceiverMessage> message) {
-  // TODO(https://crbug.com/1361112): RpcDispatcherImpl should have error
+  // TODO(crbug.com/40237878): RpcDispatcherImpl should have error
   // reporting.
   if (message.is_error()) {
     DLOG(ERROR) << __func__

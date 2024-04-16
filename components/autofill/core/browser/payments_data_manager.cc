@@ -1458,10 +1458,10 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   // off (meaning this class won't even query for the server data) so don't
   // check the server_credit_cards_/profiles_ before posting to the DB.
 
-  // TODO(crbug.com/864519): Move this null check logic to the database helper.
-  // The server database can be null for a limited amount of time before the
-  // sync service gets initialized. Not clearing it does not matter in that case
-  // since it will not have been created yet (nothing to clear).
+  // TODO(crbug.com/40585321): Move this null check logic to the database
+  // helper. The server database can be null for a limited amount of time before
+  // the sync service gets initialized. Not clearing it does not matter in that
+  // case since it will not have been created yet (nothing to clear).
   if (GetServerDatabase()) {
     GetServerDatabase()->ClearAllServerData();
   }

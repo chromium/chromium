@@ -26,7 +26,7 @@ namespace {
 
 // Backfill old shopping_specifics field to the new one. This is necessary
 // as we're transitioning from oneof powers to allowing multiple.
-// TODO(crbug.com/1349651): Also invoke this in meta updates once available.
+// TODO(crbug.com/40233844): Also invoke this in meta updates once available.
 void BackfillShoppingSpecifics(PowerBookmarkMeta* meta) {
   if (meta->has_old_shopping_specifics() && !meta->has_shopping_specifics()) {
     meta->mutable_shopping_specifics()->CopyFrom(

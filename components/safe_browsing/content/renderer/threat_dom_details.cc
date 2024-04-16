@@ -203,7 +203,7 @@ bool ShouldHandleElement(
     const blink::WebElement& element,
     const std::vector<TagAndAttributesItem>& tag_and_attributes_list) {
   // Fenced frames are always handled.
-  // TODO(https://crbug.com/1428788): Update this to support getting the URL of
+  // TODO(crbug.com/40900693): Update this to support getting the URL of
   // fenced frames loaded with a config.
   if (element.HasHTMLTagName("fencedframe")) {
     return true;

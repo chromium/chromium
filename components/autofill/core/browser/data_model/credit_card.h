@@ -575,7 +575,7 @@ class CreditCard : public AutofillDataModel {
   // The nickname of the card. May be empty when nickname is not set.
   std::u16string nickname_;
 
-  // TODO(crbug.com/1394514): Consider removing this field and all its usage
+  // TODO(crbug.com/40248631): Consider removing this field and all its usage
   // after `issuer_id_` is used.
   // The issuer for the card. This is populated from the sync response. It has a
   // default value of CreditCard::Issuer::kIssuerUnknown.

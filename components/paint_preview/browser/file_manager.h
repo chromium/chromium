@@ -46,8 +46,8 @@ class FileManager : public base::RefCountedThreadSafe<FileManager> {
   }
 
   // Creates a DirectoryKey from keying material.
-  // TODO(crbug/1056226): implement collision resolution. At present collisions
-  // result in overwriting data.
+  // TODO(crbug.com/40676728): implement collision resolution. At present
+  // collisions result in overwriting data.
   DirectoryKey CreateKey(const GURL& url) const;
   DirectoryKey CreateKey(uint64_t tab_id) const;
 

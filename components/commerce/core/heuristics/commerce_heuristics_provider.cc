@@ -105,7 +105,7 @@ const re2::RE2* GetVisitCartPattern(const GURL& url) {
   return cart_regex_map->at(domain).get();
 }
 
-// TODO(crbug/1164236): cover more shopping sites.
+// TODO(crbug.com/40163450): cover more shopping sites.
 const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
   std::string domain = eTLDPlusOne(url);
   auto* pattern_from_component =

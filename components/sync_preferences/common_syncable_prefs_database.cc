@@ -211,7 +211,7 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {prefs::kSafeBrowsingEnabled,
          {syncable_prefs_ids::kSafeBrowsingEnabled, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
-// TODO(crbug.com/1434910): Maybe move to chrome_syncable_prefs_database.cc,
+// TODO(crbug.com/40904479): Maybe move to chrome_syncable_prefs_database.cc,
 // see bug.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {prefs::kSyncedDefaultSearchProviderGUID,

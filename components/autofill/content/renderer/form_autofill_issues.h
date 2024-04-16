@@ -42,7 +42,7 @@ struct FormIssue {
 // `forms` contains information about the parsed `FormFieldData` which holds
 // label parsing details used to emit issues. See
 // `CheckForLabelsWithIncorrectForAttribute()`.
-// TODO(crbug.com/1399414): Once issues are only emitted when devtools is open,
+// TODO(crbug.com/40249826): Once issues are only emitted when devtools is open,
 // consider re-extracting labels inside `MaybeEmitFormIssuesToDevtools()` not to
 // have to pass `forms`.
 void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,

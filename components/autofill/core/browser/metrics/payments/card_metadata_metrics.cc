@@ -122,7 +122,7 @@ CardMetadataLoggingContext GetMetadataLoggingContext(
   return metadata_logging_context;
 }
 
-// TODO(crbug.com/1521067): Refactor and cleanup FormEvent logging.
+// TODO(crbug.com/41494039): Refactor and cleanup FormEvent logging.
 void LogCardWithMetadataFormEventMetric(
     CardMetadataLoggingEvent event,
     const CardMetadataLoggingContext& context,

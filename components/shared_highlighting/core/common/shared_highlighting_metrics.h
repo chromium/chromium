@@ -73,7 +73,7 @@ enum class LinkGenerationError {
   // cannot be established. Android only.
   kNoRemoteConnection = 13,
 
-  // TODO(crbug.com/1301794): This shouldn't happen, but sometimes browser side
+  // TODO(crbug.com/40824956): This shouldn't happen, but sometimes browser side
   // requests link to text when generation was never started.
   kNotGenerated = 14,
 

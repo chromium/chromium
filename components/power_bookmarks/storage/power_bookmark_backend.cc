@@ -230,7 +230,7 @@ bool PowerBookmarkBackend::CommitAndNotify(Transaction& transaction) {
 }
 
 void PowerBookmarkBackend::NotifyPowersChanged() {
-  // TODO(crbug.com/1406371): Posting a task here causes the observer method
+  // TODO(crbug.com/40252685): Posting a task here causes the observer method
   // to be called before the callback. This behavior is pretty strange, but
   // not a problem right now. Eventually we should stop using SequenceBound
   // for the backend and post tasks directly to ensure proper ordering.

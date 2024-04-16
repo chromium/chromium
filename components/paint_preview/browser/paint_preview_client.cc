@@ -83,7 +83,7 @@ PaintPreviewCaptureResponseToPaintPreviewFrameProto(
 }
 
 // Records UKM data for the capture.
-// TODO(crbug/1038390): Add more metrics;
+// TODO(crbug.com/40113169): Add more metrics;
 // - Peak memory during capture (bucketized).
 // - Compressed on disk size (bucketized).
 void RecordUkmCaptureData(ukm::SourceId source_id,
@@ -374,7 +374,7 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
 
 void PaintPreviewClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug/1044983): Investigate possible issues with cleanup if just
+  // TODO(crbug.com/40115832): Investigate possible issues with cleanup if just
   // a single subframe gets deleted.
   auto maybe_token = render_frame_host->GetEmbeddingToken();
   if (!maybe_token.has_value())

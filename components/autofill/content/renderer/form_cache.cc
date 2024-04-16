@@ -80,7 +80,7 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
 // (1) At least one form field is not-checkable. (See crbug.com/1489075.)
 // (2) At least one field has a non-empty autocomplete attribute.
 // (3) There is at least one iframe.
-// TODO(crbug.com/1489075): Should an element that IsCheckableElement() also be
+// TODO(crbug.com/40283901): Should an element that IsCheckableElement() also be
 // IsAutofillableInputElement()?
 bool IsFormInteresting(const FormData& form) {
   return !form.child_frames.empty() ||

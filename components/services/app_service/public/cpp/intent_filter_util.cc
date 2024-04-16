@@ -282,7 +282,7 @@ std::set<std::string> GetSupportedLinksForAppManagement(
                  ? "*"
                  : "",
              authority.host}));
-        // TODO(crbug.com/1468870): Display authority.port if it is not the
+        // TODO(crbug.com/40277276): Display authority.port if it is not the
         // default for the scheme.
       }
     }

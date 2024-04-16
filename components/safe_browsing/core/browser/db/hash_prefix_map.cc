@@ -625,7 +625,7 @@ HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
     return HashPrefixStr();
   }
 
-  // TODO(crbug.com/1409674): Remove crash logging.
+  // TODO(crbug.com/40062772): Remove crash logging.
   base::StringPiece start_prefix = prefixes.substr(0, prefix_size_);
   base::StringPiece end_prefix =
       prefixes.substr(prefix_size_ * (end - 1), prefix_size_);

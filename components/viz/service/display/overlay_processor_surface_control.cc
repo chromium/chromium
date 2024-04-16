@@ -41,7 +41,7 @@ OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl() {
   // Therefore, our damage tracking for overlays is incorrect and we must ignore
   // the thresholding of prioritization.
 
-  // TODO(crbug.com/1358093): We should take issue into account when trying to
+  // TODO(crbug.com/40236858): We should take issue into account when trying to
   // find a replacement for number-of-scanouts.
   prioritization_config_.changing_threshold = false;
   prioritization_config_.damage_rate_threshold = false;

@@ -315,8 +315,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
   if (!prefs_default_search_ || !prefs_default_search_->prepopulate_id)
     return;
 
-  // TODO(crbug.com/1049784): Parameters for search engine created from play api
-  // should be preserved even if corresponding prepopulated search engine
+  // TODO(crbug.com/40117818): Parameters for search engine created from play
+  // api should be preserved even if corresponding prepopulated search engine
   // exists. This logic will be revisited as part of implementation of
   // crbug.com/1049784, which will enable updating play api search engine
   // parameters with prepopulated data.

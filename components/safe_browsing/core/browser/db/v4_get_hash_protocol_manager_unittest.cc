@@ -662,7 +662,7 @@ TEST_F(V4GetHashProtocolManagerTest,
   res.mutable_negative_cache_duration()->set_seconds(600);
   ThreatMatch* m = res.add_matches();
   m->set_threat_type(API_ABUSE);
-  // TODO(crbug.com/1030487): This special case for Android will no longer be
+  // TODO(crbug.com/40661879): This special case for Android will no longer be
   // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
 #if BUILDFLAG(IS_ANDROID)
   m->set_platform_type(ANDROID_PLATFORM);

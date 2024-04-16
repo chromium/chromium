@@ -210,8 +210,8 @@ Status X25519Implementation::DeriveBits(
   }
   DCHECK_EQ(derived_bytes->size(), derived_len);
 
-  // TODO(crbug.com/1402835): There are WPT tests to ensure small-order keys are
-  // rejected when they are used for the derive operation. However, the spec
+  // TODO(crbug.com/40251305): There are WPT tests to ensure small-order keys
+  // are rejected when they are used for the derive operation. However, the spec
   // editors are discussing the possibility of performing the checks during the
   // key import operation instead.
 

@@ -228,8 +228,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Create a copy of |*this| which can be passed to the code handling
   // save-password related UI. This omits some parts of the internal data, so
   // the result is not identical to the original.
-  // TODO(crbug.com/739366): Replace with translating one appropriate class into
-  // another one.
+  // TODO(crbug.com/41328828): Replace with translating one appropriate class
+  // into another one.
   std::unique_ptr<PasswordFormManager> Clone();
 
   // Because of the android integration tests, it can't be guarded by if

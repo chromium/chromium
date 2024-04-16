@@ -790,7 +790,7 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
             return syncer::ModelError(
                 FROM_HERE, "Failed to add an entry to the password store.");
           }
-          // TODO(crbug.com/939302): It's not yet clear if the DCHECK_LE below
+          // TODO(crbug.com/40617060): It's not yet clear if the DCHECK_LE below
           // is legit. However, recent crashes suggest that 2 changes are
           // returned when trying to AddCredentialSync (details are in the bug).
           // Once this is resolved, we should update the call the

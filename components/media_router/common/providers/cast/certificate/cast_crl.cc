@@ -202,7 +202,7 @@ bool VerifyCRL(const Crl& crl,
   if (!result.HasValidPath()) {
     VLOG(2) << "CRL - Issuer certificate verification failed.";
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-    // TODO(crbug.com/634443): Log the error information.
+    // TODO(crbug.com/41267838): Log the error information.
     return false;
 #endif
   }

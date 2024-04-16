@@ -45,7 +45,7 @@ void NoStatePrefetchProcessorImpl::Create(
 
 void NoStatePrefetchProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes) {
-  // TODO(crbug.com/1029092): Remove the exception for opaque origins below and
+  // TODO(crbug.com/40109437): Remove the exception for opaque origins below and
   // allow HostsOrigin() to also verify them, including checking their
   // precursor.
   if (!initiator_origin_.opaque() &&

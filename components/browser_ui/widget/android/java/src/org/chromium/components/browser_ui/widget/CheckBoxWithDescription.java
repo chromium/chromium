@@ -19,7 +19,7 @@ import androidx.annotation.VisibleForTesting;
 /**
  * A CheckBox with a primary and descriptive text to the right.
  * The object will be inflated from {@link R.layout.checkbox_with_description).
- * TODO(https://crbug.com/1359169): Add CompoundButtonWithDescription to avoid duplicate code with
+ * TODO(crbug.com/40862238): Add CompoundButtonWithDescription to avoid duplicate code with
  * RadioButtonWithDescription.
  */
 public class CheckBoxWithDescription extends RelativeLayout implements OnClickListener {

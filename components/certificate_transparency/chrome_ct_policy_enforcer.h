@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
 
   bool IsCtEnabled() const override;
 
-  // TODO(https://crbug.com/999240): These are exposed to allow end-to-end
+  // TODO(crbug.com/41479068): These are exposed to allow end-to-end
   // testing by higher layers (i.e. that the ChromeCTPolicyEnforcer is
   // correctly constructed). When either this issue or https://crbug.com/848277
   // are fixed, the configuration can be tested independently, and these can

@@ -231,7 +231,7 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
   // obscured by other topmost widgets. See crbug.com/1431043. Setting
   // `parent_view` as the context instead of the parent to meet Aura's
   // requirement for widgets to have either a parent_view or a context.
-  // TODO(crbug.com/1459121): Aura should respect the fine-grained levels of
+  // TODO(crbug.com/40066609): Aura should respect the fine-grained levels of
   // topmost windows defined in ZOrderLevel.
   params.context = parent_view;
 #else

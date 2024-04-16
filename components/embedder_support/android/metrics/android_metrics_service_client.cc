@@ -145,7 +145,7 @@ bool IsSamplesCounterEnabled() {
       kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
 }
 
-// TODO(crbug.com/1152072): Unify this implementation with the one in
+// TODO(crbug.com/40158523): Unify this implementation with the one in
 // ChromeMetricsServiceClient.
 std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,

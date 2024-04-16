@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  public:
   // Standard constructor. Enables signature verification.
   // |safe_seed_store| controls how to load and store the safe seed data.
-  // TODO(https://crbug.com/1489453): Remove this constructor and migrate
+  // TODO(crbug.com/40935052): Remove this constructor and migrate
   // callers to the more-verbose version.
   VariationsSeedStore(PrefService* local_state,
                       std::unique_ptr<VariationsSafeSeedStore> safe_seed_store);

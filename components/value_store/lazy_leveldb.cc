@@ -67,7 +67,7 @@ LazyLevelDb::LazyLevelDb(const std::string& uma_client_name,
 
   read_options_.verify_checksums = true;
 
-  // TODO(crbug.com/1226956): Remove reference to extensions.
+  // TODO(crbug.com/40189032): Remove reference to extensions.
   // Used in lieu of UMA_HISTOGRAM_ENUMERATION because the histogram name is
   // not a constant.
   open_histogram_ = base::LinearHistogram::FactoryGet(

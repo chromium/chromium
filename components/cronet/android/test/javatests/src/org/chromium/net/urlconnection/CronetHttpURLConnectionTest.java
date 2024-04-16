@@ -708,7 +708,7 @@ public class CronetHttpURLConnectionTest {
         // Read one byte and disconnect.
         assertThat(in.read()).isNotEqualTo(1);
         mUrlConnection.disconnect();
-        // TODO(crbug/1453579): This might be racy
+        // TODO(crbug.com/40916513): This might be racy
         // Continue reading, and make sure the message loop will not block and the connection is
         // disconnected before EOF, since the response body is big.
         IOException e =

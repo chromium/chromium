@@ -15,7 +15,7 @@
 
 namespace syncer {
 
-// TODO(crbug.com/1286405): once it's impossible to launch Ash-browser only
+// TODO(crbug.com/40210838): once it's impossible to launch Ash-browser only
 // UserSelectableOsType will be relevant for Ash, guard UserSelectableType with
 // #if !BUILDFLAG(IS_CHROMEOS_ASH) and remove lower level Ash-specific code.
 //
@@ -59,7 +59,7 @@ ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type);
 // Chrome OS provides a separate UI with sync controls for OS data types. Note
 // that wallpaper is a special case due to its reliance on apps, so while it
 // appears in the UI, it is not included in this enum.
-// TODO(https://crbug.com/967987): Break this dependency.
+// TODO(crbug.com/40629581): Break this dependency.
 enum class UserSelectableOsType {
   kOsApps,
   kFirstType = kOsApps,

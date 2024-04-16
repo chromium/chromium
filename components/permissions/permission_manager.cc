@@ -592,7 +592,7 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
     const GURL& embedding_origin) {
   DCHECK(!render_process_host || !render_frame_host);
 
-  // TODO(crbug.com/1307044): Move this to PermissionContextBase.
+  // TODO(crbug.com/40218610): Move this to PermissionContextBase.
   content::RenderProcessHost* rph =
       render_frame_host ? render_frame_host->GetProcess() : render_process_host;
   PermissionContextBase* context = GetPermissionContext(permission);

@@ -24,8 +24,9 @@ void LogInvalidReason(InvalidStudyReason reason) {
   base::UmaHistogramEnumeration("Variations.InvalidStudyReason", reason);
 }
 
-// TODO(crbug/946593): Use base::FeatureList::IsValidFeatureOrFieldTrialName
-// once WebRTC trials with "," in group names are removed.
+// TODO(crbug.com/41449497): Use
+// base::FeatureList::IsValidFeatureOrFieldTrialName once WebRTC trials with ","
+// in group names are removed.
 bool IsValidExperimentName(const std::string& name) {
   return base::IsStringASCII(name) &&
          name.find_first_of("<*") == std::string::npos;

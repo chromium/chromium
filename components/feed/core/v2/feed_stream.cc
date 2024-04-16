@@ -778,7 +778,7 @@ void FeedStream::ExecuteOperations(
     DLOG(ERROR) << "Calling ExecuteOperations before the model is loaded";
     return;
   }
-  // TODO(crbug.com/1227897): Convert this to a task.
+  // TODO(crbug.com/40777338): Convert this to a task.
   return model->ExecuteOperations(std::move(operations));
 }
 
@@ -1188,7 +1188,7 @@ RequestMetadata FeedStream::GetSignedInRequestMetadata() const {
 RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
                                                bool is_for_next_page) const {
   const Stream* stream = FindStream(stream_type);
-  // TODO(crbug.com/1370127) handle null single web feed streams
+  // TODO(crbug.com/40869569) handle null single web feed streams
   DCHECK(stream);
   RequestMetadata result;
   if (is_for_next_page) {

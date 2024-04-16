@@ -223,7 +223,7 @@ public class PaymentDetailsUpdateServiceHelper {
             return false;
         }
 
-        // TODO(https://crbug.com/1086485): signatures field is deprecated in API level 28.
+        // TODO(crbug.com/40694276): signatures field is deprecated in API level 28.
         Signature[] callerSignatures = callerPackageInfo.signatures;
         Signature[] invokedAppSignatures = mInvokedAppPackageInfo.signatures;
 

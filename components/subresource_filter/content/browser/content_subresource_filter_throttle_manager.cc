@@ -315,7 +315,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     // the renderer. Currently, an aborted initial load to a URL matching the
     // filter list incorrectly has its load policy saved. We avoid tagging it as
     // an ad here to ensure frames are always tagged before DidFinishNavigation.
-    // TODO(crbug.com/1148058): Once these load policies are no longer saved,
+    // TODO(crbug.com/40156884): Once these load policies are no longer saved,
     // update the DCHECK to verify that the evidence doesn't indicate a subframe
     // (regardless of the URL).
     DCHECK(!(navigation_handle->GetURL().IsAboutBlank() &&

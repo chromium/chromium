@@ -499,7 +499,7 @@ bool HasTextInputs(const FormData& form_data) {
 // Returns a prediction whether the form that contains `username_element` and
 // `password_element` will be ready for submission after filling these two
 // elements.
-// TODO(crbug/1393271): Consider to reduce `SubmissionReadinessState` to a
+// TODO(crbug.com/40248146): Consider to reduce `SubmissionReadinessState` to a
 // boolean value (ready or not). The non-binary state is not needed for
 // auto-submission (crbug.com/1283004), but showing TTF proactively
 // (crbug.com/1393043) may need to check whether or not a given form comprises
@@ -778,7 +778,7 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
       web_input_to_password_info_[iter->second].password_was_edited_last = true;
       // Note that the suggested value of `mutable_element` was reset when its
       // value changed.
-      // TODO(crbug.com/415449): Do this through const WebInputElement.
+      // TODO(crbug.com/41132785): Do this through const WebInputElement.
       WebInputElement mutable_element = element;  // We need a non-const.
       mutable_element.SetAutofillState(WebAutofillState::kNotFilled);
     }

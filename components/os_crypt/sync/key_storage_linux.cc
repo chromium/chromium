@@ -118,7 +118,7 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateService(
   VLOG(1) << "Selected backend for OSCrypt: "
           << SelectedLinuxBackendToString(selected_backend);
 
-  // TODO(crbug.com/782851) Schedule the initialisation on each backend's
+  // TODO(crbug.com/40548841) Schedule the initialisation on each backend's
   // favourite thread.
 
   // Try initializing the selected backend.

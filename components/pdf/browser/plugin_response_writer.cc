@@ -38,7 +38,7 @@ namespace {
 // HTML and the embedded PDF. Must limit information shared with the PDF plugin
 // process through this response.
 std::string GenerateResponse(const PdfStreamDelegate::StreamInfo& stream_info) {
-  // TODO(crbug.com/1228987): This script in this response is never executed
+  // TODO(crbug.com/40189769): This script in this response is never executed
   // when JavaScript is blocked throughout the browser (set in
   // chrome://settings/content/javascript). A permanent solution would likely
   // have to hook into postMessage() natively.
@@ -71,7 +71,7 @@ $3
 </script>
 )";
 
-  // TODO(crbug.com/1252096): We should load the injected scripts as network
+  // TODO(crbug.com/40792950): We should load the injected scripts as network
   // resources instead. Until then, feel free to raise this limit as necessary.
   if (stream_info.injected_script)
     DCHECK_LE(stream_info.injected_script->size(), 16'384u);

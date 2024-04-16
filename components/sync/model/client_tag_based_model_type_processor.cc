@@ -277,7 +277,7 @@ void ClientTagBasedModelTypeProcessor::ClearAllMetadataAndResetStateImpl(
   if (change_list) {
     bridge_->ApplyDisableSyncChanges(std::move(change_list));
   } else {
-    // TODO(crbug.com/1428905): This mimics the behavior previous to
+    // TODO(crbug.com/40900767): This mimics the behavior previous to
     // https://crrev.com/c/4372288 but is quite questionable: it means sync was
     // disabled before the initial download completed, which has nothing to do
     // with sync-paused.
@@ -417,7 +417,7 @@ void ClientTagBasedModelTypeProcessor::Put(
   // Local changes based on remote update is discouraged because it may lead to
   // ping-pong issues between clients and result in uncontrolled traffic to the
   // server.
-  // TODO(crbug.com/1473599): this could be a CHECK instead, add a metric to
+  // TODO(crbug.com/40927082): this could be a CHECK instead, add a metric to
   // find out first which data types have such behavior.
   if (processing_incremental_updates_) {
     base::UmaHistogramEnumeration("Sync.LocalChangeDuringRemoteUpdate",
@@ -942,7 +942,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
         model_type_state, EntityMetadataMap());
   }
 
-  // TODO(crbug.com/1041888): the comment below may be wrong in case where a
+  // TODO(crbug.com/40668179): the comment below may be wrong in case where a
   // datatype supports non-incremental updates and local updates are
   // acceptable.
   // Given that we either just removed all existing sync entities (in the full
@@ -1001,7 +1001,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
       }
     }
 #if DCHECK_IS_ON()
-    // TODO(crbug.com/872360): The CreateEntity() call below assumes that no
+    // TODO(crbug.com/41406929): The CreateEntity() call below assumes that no
     // entity with this client_tag_hash exists already, but in some cases it
     // does.
     if (entity_tracker_->GetEntityForTagHash(client_tag_hash)) {
@@ -1361,7 +1361,7 @@ void ClientTagBasedModelTypeProcessor::
   // Check for a mismatch in authenticated account id. The id can change after
   // restart (and this does not mean the account has changed, this is checked
   // later here by cache_guid mismatch). Easy to fix in place.
-  // TODO(crbug.com/1423326): This doesn't fit the method name. It's also not
+  // TODO(crbug.com/40897441): This doesn't fit the method name. It's also not
   // clear if this codepath is even required
   if (model_type_state.authenticated_account_id() !=
       activation_request_.authenticated_account_id.ToString()) {

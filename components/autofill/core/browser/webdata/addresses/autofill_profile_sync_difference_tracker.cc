@@ -79,7 +79,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
   }
 
   // Check if profile appears under a different storage key to be de-duplicated.
-  // TODO(crbug.com/1043683): Deal with rare cases when an remote update
+  // TODO(crbug.com/40669170): Deal with rare cases when an remote update
   // contains several exact duplicates (with different guids). We should not
   // only search in local only entries but also in |update_to_local_| and
   // |add_to_local_|. Likely needs a bit of refactoring to make the resulting

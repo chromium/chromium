@@ -389,7 +389,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
   dest_model->NotifyNodeAddedForAllDescendants(added_node,
                                                /*added_by_user=*/true);
 
-  // TODO(crbug.com/1441911): Make sure this flow can never cause data loss.
+  // TODO(crbug.com/40266697): Make sure this flow can never cause data loss.
   ScheduleSaveForNode(parent);
 
   for (BookmarkModelObserver& observer : observers_) {
@@ -398,7 +398,7 @@ const BookmarkNode* BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
 
   client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
-  // TODO(https://crbug.com/1416567): Record metrics.
+  // TODO(crbug.com/40256918): Record metrics.
   return added_node;
 }
 
@@ -550,7 +550,7 @@ void BookmarkModel::Move(const BookmarkNode* node,
   }
 
   if (old_parent != new_parent) {
-    // TODO(crbug.com/1491227): Remove if check once the root cause of this
+    // TODO(crbug.com/40074470): Remove if check once the root cause of this
     // crash is identified and addressed, and new_parent->is_folder() is
     // checked at the top of this method.
     if (new_parent->is_folder()) {

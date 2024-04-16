@@ -469,7 +469,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 }
             }
 
-            // TODO(crbug.com/763982): Deal with this TODO colony.
+            // TODO(crbug.com/40539464): Deal with this TODO colony.
             // TODO(mvanouwerkerk): Make the various info types share a common interface that
             // supports reading the origin or host.
             // TODO(lshang): Merge in CookieException? It will use patterns.
@@ -684,7 +684,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             if (value == null
                     || (value != ContentSettingValues.ALLOW
                             && value != ContentSettingValues.BLOCK)) {
-                // TODO(crbug.com/735110): Figure out if this is the correct thing to do, for values
+                // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
+                // values
                 // that are non-null, but not ALLOW or BLOCK either. (In
                 // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
                 // are simply not adding it.)

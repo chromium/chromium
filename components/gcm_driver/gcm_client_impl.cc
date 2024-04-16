@@ -777,7 +777,7 @@ void GCMClientImpl::DefaultStoreCallback(bool success) {
 void GCMClientImpl::IgnoreWriteResultCallback(
     const std::string& operation_suffix_for_uma,
     bool success) {
-  // TODO(crbug.com/1081149): Implement proper error handling.
+  // TODO(crbug.com/40691191): Implement proper error handling.
   // TODO(fgorski): Ignoring the write result for now to make sure
   // sync_intergration_tests are not broken.
 }

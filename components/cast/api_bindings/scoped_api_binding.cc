@@ -34,7 +34,7 @@ ScopedApiBinding::ScopedApiBinding(Manager* bindings_manager,
 }
 
 ScopedApiBinding::~ScopedApiBinding() {
-  // TODO(crbug.com/1104369): Remove binding JS when RemoveBinding() added to
+  // TODO(crbug.com/40139651): Remove binding JS when RemoveBinding() added to
   // ApiBindingsManager.
 
   if (delegate_) {

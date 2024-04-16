@@ -577,7 +577,7 @@ TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
 
   matches = provider_->matches();
 
-  // TODO(https://crbug.com/1417053): This used to be 0u. Is 1u OK?
+  // TODO(crbug.com/40257159): This used to be 0u. Is 1u OK?
   ASSERT_EQ(matches.size(), 1u);
 
   // Turn on keyword mode, test result again, we should only get back the result

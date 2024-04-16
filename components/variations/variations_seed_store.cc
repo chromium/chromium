@@ -256,9 +256,9 @@ bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
   if (result != LoadSeedResult::kSuccess)
     return false;
 
-  // TODO(crbug/1261685): While it's not immediately obvious, |client_state| is
-  // not used for successfully loaded safe seeds that are rejected after
-  // additional validation (expiry and future milestone).
+  // TODO(crbug.com/40202311): While it's not immediately obvious,
+  // |client_state| is not used for successfully loaded safe seeds that are
+  // rejected after additional validation (expiry and future milestone).
   client_state->reference_date =
       GetTimeForStudyDateChecks(/*is_safe_seed=*/true);
   client_state->locale = safe_seed_store_->GetLocale();
@@ -276,7 +276,8 @@ bool VariationsSeedStore::StoreSafeSeed(
     const ClientFilterableState& client_state,
     base::Time seed_fetch_time) {
   ValidatedSeed seed;
-  // TODO(crbug.com/1324295): See if we can avoid calling this on the UI thread.
+  // TODO(crbug.com/40839193): See if we can avoid calling this on the UI
+  // thread.
   StoreSeedResult validation_result =
       ValidateSeedBytes(seed_data, base64_seed_signature, SeedType::SAFE,
                         signature_verification_enabled_, &seed);

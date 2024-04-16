@@ -117,7 +117,7 @@ AccountManagedStatusFinder::AccountManagedStatusFinder(
     // Wait until the account information becomes available.
     identity_manager_observation_.Observe(identity_manager_.get());
     callback_ = std::move(async_callback);
-    // TODO(crbug.com/1378553): Add a timeout mechanism.
+    // TODO(crbug.com/40243973): Add a timeout mechanism.
   }
 
   // Result is known synchronously, ignore `async_callback`.

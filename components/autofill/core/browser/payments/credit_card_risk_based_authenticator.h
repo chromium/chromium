@@ -85,7 +85,7 @@ class CreditCardRiskBasedAuthenticator {
         const RiskBasedAuthenticationResponse& response) = 0;
     // Callback function invoked when an unmask response for a virtual card has
     // been received.
-    // TODO(crbug.com/1487282): Merge virtual card authentication response
+    // TODO(crbug.com/40934051): Merge virtual card authentication response
     // handling logic with OnRiskBasedAuthenticationResponseReceived().
     virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
         AutofillClient::PaymentsRpcResult result,

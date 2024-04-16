@@ -223,7 +223,7 @@ BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if heuristic field parsing should be performed on email-only forms.
-// TODO(crbug.com/1493145): Remove when/if launched.
+// TODO(crbug.com/40285735): Remove when/if launched.
 BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
              "AutofillEnableEmailHeuristicOnlyAddressForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -252,7 +252,7 @@ BASE_FEATURE(kAutofillEnableExpirationDateImprovements,
 
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
-// TODO(crbug.com/1167484) Remove once launched.
+// TODO(crbug.com/40742746) Remove once launched.
 BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
              "AutofillEnableImportWhenMultiplePhoneNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -439,12 +439,12 @@ BASE_FEATURE(kAutofillParsingPatternProvider,
 // parameter. One of "default", "experimental", "nextgen".
 // This parameter is only supported in Chrome-branded builds. Non-Chrome branded
 // builds default to the legacy patterns.
-// TODO(crbug/1248339): Remove once experiment is finished.
+// TODO(crbug.com/40197215): Remove once experiment is finished.
 const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
     &kAutofillParsingPatternProvider, "prediction_source", "default"};
 
 // Enables detection of language from Translate.
-// TODO(crbug/1150895): Cleanup when launched.
+// TODO(crbug.com/40158074): Cleanup when launched.
 BASE_FEATURE(kAutofillPageLanguageDetection,
              "AutofillPageLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -487,7 +487,7 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
 // passed. The intent is to ensure that events that the user triggered within
 // 500 ms of the popup are showing do not arrive delayed on the UI thread of the
 // browser process.
-// TODO(crbug.com/475902): If this feature proves effective, combine it with
+// TODO(crbug.com/41167614): If this feature proves effective, combine it with
 // `kAutofillPopupImprovedTimingChecks`.
 BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
              "AutofillPopupImprovedTimingChecksV2",
@@ -590,7 +590,8 @@ BASE_FEATURE(kAutofillUseNewSectioningMethod,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to use the newest, parameterized sectioning algorithm.
-// TODO(crbug.com/1153539): Remove the feature when the experiment is completed.
+// TODO(crbug.com/40159136): Remove the feature when the experiment is
+// completed.
 BASE_FEATURE(kAutofillUseParameterizedSectioning,
              "AutofillUseParameterizedSectioning",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -635,7 +636,7 @@ BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
 
 // Controls autofill popup style, if enabled it becomes more prominent,
 // i.e. its shadow becomes more emphasized, position is also updated.
-// TODO(crbug.com/1354136): Remove once the experiment is over.
+// TODO(crbug.com/40235454): Remove once the experiment is over.
 BASE_FEATURE(kAutofillMoreProminentPopup,
              "AutofillMoreProminentPopup",
              base::FEATURE_DISABLED_BY_DEFAULT);

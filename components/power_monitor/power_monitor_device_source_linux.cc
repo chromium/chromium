@@ -48,8 +48,9 @@ PowerMonitorDeviceSourceLinux::~PowerMonitorDeviceSourceLinux() {
 }
 
 bool PowerMonitorDeviceSourceLinux::IsOnBatteryPower() {
-  // TODO(crbug.com/1320271): Use org.freedesktop.UPower to check for OnBattery.
-  // One possibility is to connect to the DeviceService's BatteryMonitor.
+  // TODO(crbug.com/40836663): Use org.freedesktop.UPower to check for
+  // OnBattery. One possibility is to connect to the DeviceService's
+  // BatteryMonitor.
   return false;
 }
 

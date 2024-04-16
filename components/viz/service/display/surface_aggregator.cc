@@ -1971,7 +1971,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // size of the RenderPassDrawQuad rect. Therefore when we find the damage
       // under the quad intersects quad render pass output rect, we extend the
       // damage rect to include the rpdq->rect.
-      // TODO(crbug/1379125): Work out how to correctly compute damage when
+      // TODO(crbug.com/40244221): Work out how to correctly compute damage when
       // offset backdrop filters may be involved.
 
       // For the pixel-moving foreground filters, all effects can be expanded

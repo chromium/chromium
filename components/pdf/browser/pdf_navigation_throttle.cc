@@ -135,7 +135,7 @@ PdfNavigationThrottle::WillStartRequest() {
   // task does run and does not get canceled due to the embedder frame becoming
   // null, we can restore the source SiteInstance at that point.
   //
-  // TODO(crbug.com/1382761): This should be fixed in a more systematic way.
+  // TODO(crbug.com/40061670): This should be fixed in a more systematic way.
   DCHECK_EQ(params.source_site_instance, embedder_frame->GetSiteInstance());
   params.source_site_instance.reset();
 

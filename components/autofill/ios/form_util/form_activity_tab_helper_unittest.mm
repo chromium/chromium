@@ -144,7 +144,7 @@ TEST_P(FormActivityTabHelperTest, TestFormSubmittedHook) {
 }
 
 // Tests that observer is called on form activity (input event).
-// TODO(crbug.com/1431960): Disabled test due to bot failure. Re-enable when
+// TODO(crbug.com/40902648): Disabled test due to bot failure. Re-enable when
 // fixed.
 TEST_P(FormActivityTabHelperTest,
        DISABLED_TestObserverFormActivityFrameMessaging) {

@@ -313,7 +313,7 @@ TEST_F(WebBundleParserTest, RequestURLIsNotUTF8) {
   ExpectFormatError(ParseUnsignedBundle(&data_source));
 }
 
-// TODO(crbug.com/966753): Revisit this once
+// TODO(crbug.com/40629011): Revisit this once
 // https://github.com/WICG/webpackage/issues/468 is resolved.
 TEST_F(WebBundleParserTest, RequestURLHasNonStandardScheme) {
   WebBundleBuilder builder;
@@ -719,8 +719,8 @@ TEST_F(WebBundleParserTest, RandomAccessContextLengthBiggerThanFile) {
   ExpectFormatError(ParseUnsignedBundle(&data_source));
 }
 
-// TODO(crbug.com/969596): Add a test case that loads a wbn file with variants,
-// once gen-bundle supports variants.
+// TODO(crbug.com/40630324): Add a test case that loads a wbn file with
+// variants, once gen-bundle supports variants.
 
 // This test verifies that even if a bundle is signed, it is still readable as
 // an unsigned bundle in random-access contexts, since the `length` field of the

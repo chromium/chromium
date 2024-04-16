@@ -758,7 +758,7 @@ TEST_F(DownloadFileTest, RenameRemovesHiddenFlag) {
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314071): Re-enable when RenameError works on Fuchsia.
+// TODO(crbug.com/40221273): Re-enable when RenameError works on Fuchsia.
 #define MAYBE_RenameError DISABLED_RenameError
 #else
 #define MAYBE_RenameError RenameError
@@ -811,7 +811,7 @@ void TestRenameCompletionCallback(base::OnceClosure closure,
 }  // namespace
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314072): Re-enable when RenameWithErrorRetry works on
+// TODO(crbug.com/40221274): Re-enable when RenameWithErrorRetry works on
 // Fuchsia.
 #define MAYBE_RenameWithErrorRetry DISABLED_RenameWithErrorRetry
 #else

@@ -21,8 +21,8 @@
 
 namespace autofill::payments {
 
-// TODO(crbug/1372613): Extend tests in this file to all of the possible card
-// unmasking test cases. The cases that are not in this file are currently
+// TODO(crbug.com/40241790): Extend tests in this file to all of the possible
+// card unmasking test cases. The cases that are not in this file are currently
 // tested in PaymentsNetworkInterface tests, but they should be tested here as
 // well.
 class UnmaskCardRequestTest : public testing::Test {
@@ -189,8 +189,8 @@ TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
 // Params of the VirtualCardUnmaskCardRequestTest:
 // -- autofill::CardUnmaskChallengeOptionType challenge_option_type
 // -- bool autofill_enable_3ds_for_vcn_yellow_path
-// TODO(crbug.com/1430297): Extend this texting fixture to test the OTP cases as
-// well.
+// TODO(crbug.com/40901660): Extend this texting fixture to test the OTP cases
+// as well.
 class VirtualCardUnmaskCardRequestTest
     : public UnmaskCardRequestTest,
       public testing::WithParamInterface<

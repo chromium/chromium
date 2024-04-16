@@ -41,7 +41,7 @@
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/986435) Provide AccountManagerFacade as a parameter once
+// TODO(crbug.com/40637107) Provide AccountManagerFacade as a parameter once
 // IdentityServicesProvider owns its instance management.
 std::unique_ptr<ProfileOAuth2TokenServiceDelegateAndroid>
 CreateAndroidOAuthDelegate(AccountTrackerService* account_tracker_service) {

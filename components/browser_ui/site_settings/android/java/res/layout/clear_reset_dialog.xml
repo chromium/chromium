@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <!--
-TODO(crbug.com/1406154) - The layout may be simplified using
+TODO(crbug.com/40252583) - The layout may be simplified using
 TextViewWithCompoundDrawables.
 -->
 

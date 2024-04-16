@@ -216,7 +216,7 @@ class BookmarkModel : public CoreBookmarkModel,
             const BookmarkNode* new_parent,
             size_t index);
 
-  // TODO(crbug.com/1453250): Change this function to be invoked on the
+  // TODO(crbug.com/40271834): Change this function to be invoked on the
   //                          destination model rather than on the source one.
   //
   // Moves `node` to another instance of `BookmarkModel` as determined by
@@ -641,7 +641,7 @@ class BookmarkModel : public CoreBookmarkModel,
 
   // The observers.
 #if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1470748) Set the parameter to `true` on all platforms.
+  // TODO(crbug.com/40277960) Set the parameter to `true` on all platforms.
   base::ObserverList<BookmarkModelObserver, true> observers_;
 #else
   base::ObserverList<BookmarkModelObserver> observers_;

@@ -19,7 +19,7 @@
 
 namespace permissions {
 
-// TODO(crbug.com/1271543): This method is a temporary solution because of
+// TODO(crbug.com/40205763): This method is a temporary solution because of
 // inconsistency between the new permissions API that is migrated to
 // `blink::mojom::PermissionStatus` and its callsites that still use
 // `ContentSetting`.
@@ -126,7 +126,7 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     return;
   }
 
-  // TODO(crbug.com/1078272): We should not need to deduce the url from the
+  // TODO(crbug.com/40129438): We should not need to deduce the url from the
   // primary pattern here. Modify the infrastructure to facilitate this
   // particular use case better.
   const GURL url(primary_pattern.ToString());

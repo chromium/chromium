@@ -109,7 +109,7 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
 bool AdsInterventionManager::ShouldActivate(
     content::NavigationHandle* navigation_handle) const {
   const GURL& url(navigation_handle->GetURL());
-  // TODO(https://crbug.com/1136987): Add new ads intervention
+  // TODO(crbug.com/40724530): Add new ads intervention
   // manager function to return struct with all ads intervention
   // metadata to reduce metadata accesses.
   std::optional<AdsInterventionManager::LastAdsIntervention> last_intervention =

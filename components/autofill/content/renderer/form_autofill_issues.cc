@@ -313,7 +313,7 @@ std::vector<FormIssue> CheckForLabelsWithIncorrectForAttribute(
 
 void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
                                    base::span<const FormData> forms) {
-  // TODO(crbug.com/1399414): Only calculate and emit these issues if devtools
+  // TODO(crbug.com/40249826): Only calculate and emit these issues if devtools
   // is open.
   WebDocument document = web_local_frame.GetDocument();
   std::vector<FormIssue> form_issues;

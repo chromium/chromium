@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
 
-// TODO(crbug.com/1165828): Clean up feedv1 features.
+// TODO(crbug.com/40741748): Clean up feedv1 features.
 
 namespace feed {
 

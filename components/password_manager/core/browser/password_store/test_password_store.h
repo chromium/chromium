@@ -48,7 +48,7 @@ class TestPasswordStore : public PasswordStore {
   // have entries of size 0.
   bool IsEmpty() const;
 
-  // TODO(crbug.com/1294735): Clean up non-essential methods.
+  // TODO(crbug.com/40214044): Clean up non-essential methods.
   const TestPasswordStore::PasswordMap& stored_passwords() const;
   ::password_manager::IsAccountStore IsAccountStore() const;
 

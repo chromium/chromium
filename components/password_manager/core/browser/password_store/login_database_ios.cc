@@ -85,7 +85,7 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
 
   OSStatus status = SecItemAdd(attributes.get(), NULL);
   if (status != errSecSuccess) {
-    // TODO(crbug.com/1091121): This was a NOTREACHED() that would trigger when
+    // TODO(crbug.com/40697564): This was a NOTREACHED() that would trigger when
     // sync runs on a locked device. When the linked bug is resolved it may be
     // possible to turn the LOG(ERROR) back into a NOTREACHED().
     LOG(ERROR) << "Unable to save password in keychain: " << status;

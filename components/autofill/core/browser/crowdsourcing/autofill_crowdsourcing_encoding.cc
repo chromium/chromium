@@ -838,7 +838,7 @@ void ProcessServerPredictionsQueryResponse(
     form->UpdateAutofillCount();
     form->RationalizeFormStructure(form_interactions_ukm_logger, log_manager);
 
-    // TODO(crbug.com/1154080): By calling this with true, autocomplete section
+    // TODO(crbug.com/40159300): By calling this with true, autocomplete section
     // attributes will be ignored.
     form->IdentifySections(/*ignore_autocomplete=*/true);
     // Metrics are intentionally only emitted after the sever response, not when

@@ -54,8 +54,8 @@ class SavedTabGroupModelObserver {
   // Called when sync / ModelTypeStore updates data.
   virtual void SavedTabGroupAddedFromSync(const base::Uuid& guid) {}
 
-  // TODO(crbug/1372072): Decide if we want to also remove the tabgroup from the
-  // tabstrip if it is open, or just remove it from sync.
+  // TODO(crbug.com/40870833): Decide if we want to also remove the tabgroup
+  // from the tabstrip if it is open, or just remove it from sync.
   virtual void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) {}
 

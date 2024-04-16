@@ -376,7 +376,7 @@ TEST_F(VotesUploaderTest, UploadUsernameEditedVote) {
 // Checks votes uploading when user modifies the username in a prompt. Simulates
 // the flow by calling the function that triggers UploadPasswordVote from a
 // level above (SendVotesOnSave).
-// TODO(crbug/1451740): It would be good to simulate the calls triggering
+// TODO(crbug.com/40270666): It would be good to simulate the calls triggering
 // set_username_change_state (such as UpdatePasswordFormUsernameAndPassword) as
 // well.
 TEST_F(VotesUploaderTest, SendVotesOnSaveEditedFlow) {

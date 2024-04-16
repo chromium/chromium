@@ -343,7 +343,7 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
   auto frame_it = frames_.find(render_frame_host);
   // Ideally this would be a DCHECK, but it's possible to receive a notification
   // for an unknown frame.
-  // TODO(1499525): Figure out how.
+  // TODO(crbug.com/40940232): Figure out how.
   if (frame_it == frames_.end()) {
     // We should only ever see this for a frame transitioning to *not* audible.
     DCHECK(!is_audible);

@@ -148,7 +148,7 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
   // initial override of |NotifyPermissionSet|. At this point, if the user
   // has denied the OS level permission, we want to notify the requestor that
   // the permission has been blocked.
-  // TODO(https://crbug.com/1060163): Ensure that this is taken into account
+  // TODO(crbug.com/40678885): Ensure that this is taken into account
   // when returning navigator.permissions results.
   ContentSetting setting = permission_granted
                                ? ContentSetting::CONTENT_SETTING_ALLOW

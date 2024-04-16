@@ -340,7 +340,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::PageLoadTimingPtr current_merged_page_timing_;
   mojom::PageLoadTimingPtr pending_merged_page_timing_;
 
-  // TODO(crbug/1058393): Replace aggregate frame metadata with a separate
+  // TODO(crbug.com/40677945): Replace aggregate frame metadata with a separate
   // struct instead of using mojo.
   mojom::FrameMetadataPtr main_frame_metadata_;
   mojom::FrameMetadataPtr subframe_metadata_;

@@ -224,8 +224,8 @@ GuestViewManager::CreateGuestWithWebContentsParams(
   if (!guest)
     return nullptr;
 
-  // TODO(crbug.com/1409929): For the noopener case, it would be better to delay
-  // the creation of the guest contents until attachment.
+  // TODO(crbug.com/40254126): For the noopener case, it would be better to
+  // delay the creation of the guest contents until attachment.
   content::WebContents::CreateParams guest_create_params(create_params);
   guest_create_params.guest_delegate = guest.get();
 
@@ -547,7 +547,8 @@ bool GuestViewManager::CanUseGuestInstanceID(int guest_instance_id) {
 bool GuestViewManager::CanEmbedderAccessInstanceID(
     int embedder_render_process_id,
     int guest_instance_id) {
-  // TODO(780728): Remove crash key once the cause of the kill is known.
+  // TODO(crbug.com/41353094): Remove crash key once the cause of the kill is
+  // known.
   static crash_reporter::CrashKeyString<32> bad_access_key("guest-bad-access");
 
   // The embedder is trying to access a guest with a negative or zero

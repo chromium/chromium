@@ -30,7 +30,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
 
   // Immediately called after |Init()| to retrieve password hash data for
   // reuse detection.
-  // TODO(crbug.com/1469280): This might need to be called from all platforms,
+  // TODO(crbug.com/40925300): This might need to be called from all platforms,
   // including ios.
   void PreparePasswordHashData(
       metrics_util::SignInState sign_in_state_for_metrics);

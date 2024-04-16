@@ -65,8 +65,9 @@ extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 
 // Enable Lens loading state removal on
 // DocumentOnLoadCompletedInPrimaryMainFrame.
-// TODO(crbug/1452161): Clean up unused listeners and flags after determining
-// which ones we want to listen to for server-side rendering backends.
+// TODO(crbug.com/40916154): Clean up unused listeners and flags after
+// determining which ones we want to listen to for server-side rendering
+// backends.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool>
     kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame;

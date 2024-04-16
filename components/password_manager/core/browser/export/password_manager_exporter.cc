@@ -207,8 +207,8 @@ void PasswordManagerExporter::Cleanup() {
   // executed, e.g. because a new export was initiated. The cleanup should be
   // carried out regardless, so we only schedule tasks which own their
   // arguments.
-  // TODO(crbug.com/811779) When Chrome is overwriting an existing file, cancel
-  // should restore the file rather than delete it.
+  // TODO(crbug.com/41370350) When Chrome is overwriting an existing file,
+  // cancel should restore the file rather than delete it.
   if (!destination_.empty()) {
     task_runner_->PostTask(
         FROM_HERE,

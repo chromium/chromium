@@ -623,7 +623,7 @@ void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
   // sync standalone invalidations are disabled).
   DCHECK_NE(sync_invalidations_service_->GetFCMRegistrationToken().value(), "");
 
-  // TODO(crbug.com/1442156): wait for FCM token to be committed before change
+  // TODO(crbug.com/40266819): wait for FCM token to be committed before change
   // the state to enabled.
   OnInvalidatorStateChange(/*enabled=*/true);
 }

@@ -3911,7 +3911,7 @@ TEST_P(RendererPixelTestWithBackdropFilter, OffsetFilter) {
       cc::FilterOperation::CreateOffsetFilter(gfx::Point(5, 5)));
   SetUpRenderPassList();
 
-  // TODO(989329): See comment in
+  // TODO(crbug.com/41473761): See comment in
   // LayerTreeHostFiltersPixelTest/BackdropFilterOffsetTest. The software
   // compositor does not correctly apply clamping when accessing content outside
   // of the layer.
@@ -4274,7 +4274,7 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
 }
 
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
-  // TODO(crbug.com/1442381): Enable test for Graphite once mipmap issue is
+  // TODO(crbug.com/40266937): Enable test for Graphite once mipmap issue is
   // fixed.
   if (is_skia_graphite()) {
     GTEST_SKIP();
@@ -5679,7 +5679,7 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
 
 TEST_P(RendererPixelTest, BlurExpandsBounds) {
 #if defined(MEMORY_SANITIZER)
-  // TODO(crbug.com/1441704): Re-enable this test.
+  // TODO(crbug.com/40266622): Re-enable this test.
   // Skia Vulkan renderer had problems with this test when MSAN was enabled.
   if (renderer_type() == RendererType::kSkiaVk) {
     GTEST_SKIP();
@@ -5760,7 +5760,8 @@ class RendererPixelTestWithOverdrawFeedback : public VizPixelTestWithParam {
 };
 
 TEST_P(RendererPixelTestWithOverdrawFeedback, TranslucentRectangles) {
-  // TODO(crbug.com/1475653): Enable this test once issue is fixed for Graphite.
+  // TODO(crbug.com/40279711): Enable this test once issue is fixed for
+  // Graphite.
   if (is_skia_graphite()) {
     GTEST_SKIP();
   }

@@ -204,7 +204,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
 
   // Conditionally set the rounded corners once the candidate's |display_rect|
   // is known.
-  // TODO(https://crbug.com/1462171): Consider moving this code to
+  // TODO(crbug.com/40274803): Consider moving this code to
   // FromDrawQuadResource() that covers all of delegated compositing.
   if (context_.disable_wire_size_optimization ||
       ShouldApplyRoundedCorner(candidate, quad)) {
@@ -420,7 +420,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         context_.supports_arbitrary_transform ||
         absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
     // Out of window clipping is enabled on Lacros only when it is supported.
-    // TODO(crbug.com/1385509): Remove the condition on `quad_within_window`
+    // TODO(crbug.com/40246811): Remove the condition on `quad_within_window`
     // when M117 becomes widely supported.
     bool can_delegate_clipping =
         context_.supports_clip_rect &&
@@ -495,7 +495,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
     clip_to_apply.Intersect(gfx::RectF(*candidate.clip_rect));
   }
 
-  // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
+  // TODO(crbug.com/40216317) : Tile quads can overlay other quads
   // and the window by one pixel. Exo does not yet clip these quads so we
   // need to clip here with the |primary_rect|.
   clip_to_apply.Intersect(primary_rect_);

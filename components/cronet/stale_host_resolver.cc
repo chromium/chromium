@@ -345,7 +345,7 @@ StaleHostResolver::CreateRequest(
     net::NetworkAnonymizationKey network_anonymization_key,
     net::NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
-  // TODO(crbug.com/1206799): Propagate scheme.
+  // TODO(crbug.com/40181080): Propagate scheme.
   return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
                        network_anonymization_key, net_log, optional_parameters);
 }

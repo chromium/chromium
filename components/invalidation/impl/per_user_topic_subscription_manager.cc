@@ -466,7 +466,7 @@ void PerUserTopicSubscriptionManager::SubscriptionFinishedForTopic(
   // If one of the subscription requests failed (and we need to either observe
   // backoff before retrying, or won't retry at all), emit SUBSCRIPTION_FAILURE.
   if (type == RequestType::kSubscribe) {
-    // TODO(crbug.com/1020117): case !code.ShouldRetry() now leads to
+    // TODO(crbug.com/40105630): case !code.ShouldRetry() now leads to
     // inconsistent behavior depending on requests completion order: if any
     // request was successful after it, we may have no |pending_subscriptions_|
     // and emit ENABLED; otherwise, if failed request is the last one, state

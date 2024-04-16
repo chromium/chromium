@@ -218,7 +218,8 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 };
 
 bool ShouldEnableBenchmarking(bool force_benchmarking_mode) {
-  // TODO(crbug/1251680): See whether it's possible to consolidate the switches.
+  // TODO(crbug.com/40792683): See whether it's possible to consolidate the
+  // switches.
   return force_benchmarking_mode ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              variations::switches::kEnableBenchmarking);

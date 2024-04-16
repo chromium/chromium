@@ -158,7 +158,7 @@ SegmentationUkmHelper* SegmentationUkmHelper::GetInstance() {
 }
 
 void SegmentationUkmHelper::Initialize() {
-  // TODO(crbug.com/1406404): Migrate models for these segments to use
+  // TODO(crbug.com/40887237): Migrate models for these segments to use
   // `upload_tensors`.
   allowed_segment_ids_.clear();
   if (base::FeatureList::IsEnabled(segmentation_platform::features::

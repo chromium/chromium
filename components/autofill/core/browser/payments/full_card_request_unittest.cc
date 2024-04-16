@@ -99,7 +99,7 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
               (override));
 };
 
-// TODO(crbug.com/881835): Simplify this test setup.
+// TODO(crbug.com/41412501): Simplify this test setup.
 // The test fixture for full card request.
 class FullCardRequestTest : public testing::Test {
  public:
@@ -411,7 +411,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
 
 // Verify getting the full PAN, the expiration and the dCVV for a virtual card
 // using CVC authentication.
-// TODO(crbug/1373232): Add a FullCardRequest test case for Virtual Card
+// TODO(crbug.com/40241969): Add a FullCardRequest test case for Virtual Card
 // retrieval via FIDO as well.
 TEST_F(FullCardRequestTest,
        GetFullCardPanAndExpirationAndDcvvForVirtualCardViaCvc) {

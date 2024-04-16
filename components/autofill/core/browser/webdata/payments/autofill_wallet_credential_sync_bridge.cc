@@ -115,7 +115,7 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
               "Failed to delete the Wallet credential data from the table");
         }
         break;
-      // TODO(crbug/1472122): Merge the Add and Update APIs for
+      // TODO(crbug.com/40926464): Merge the Add and Update APIs for
       // PaymentsAutofillTable.
       case syncer::EntityChange::ACTION_ADD:
         if (!table ||

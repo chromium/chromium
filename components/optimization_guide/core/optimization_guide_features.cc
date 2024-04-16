@@ -172,7 +172,7 @@ BASE_FEATURE(kTextSafetyRemoteFallback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The default value here is a bit of a guess.
-// TODO(crbug/1163244): This should be tuned once metrics are available.
+// TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
   return base::Milliseconds(GetFieldTrialParamByFeatureAsInt(
       kPageTextExtraction, "outstanding_requests_grace_period_ms", 1000));
@@ -384,7 +384,7 @@ base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
 }
 
 base::TimeDelta StoredModelsValidDuration() {
-  // TODO(crbug.com/1234054) This field should not be changed without VERY
+  // TODO(crbug.com/40191801) This field should not be changed without VERY
   // careful consideration. This is the default duration for models that do not
   // specify retention, so changing this can cause models to be removed and
   // refetch would only apply to newer models. Any feature relying on the model

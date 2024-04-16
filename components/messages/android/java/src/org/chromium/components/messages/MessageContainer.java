@@ -96,7 +96,7 @@ public class MessageContainer extends FrameLayout {
         super.addView(view, index);
         onChildCountChanged();
 
-        // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
+        // TODO(crbug.com/40749472): clipChildren should be set to false only when the message is in
         // motion.
     }
 

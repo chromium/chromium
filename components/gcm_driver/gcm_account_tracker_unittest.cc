@@ -38,7 +38,7 @@ GCMClient::AccountTokenInfo MakeAccountToken(const CoreAccountInfo& account) {
   GCMClient::AccountTokenInfo token_info;
   token_info.account_id = account.account_id;
 
-  // TODO(https://crbug.com/856170): This *should* be expected to be the email
+  // TODO(crbug.com/40582229): This *should* be expected to be the email
   // address for the given account, but there is a bug in AccountTracker that
   // means that |token_info.email| actually gets populated with the account ID
   // by the production code. Hence the test expectation has to match what the

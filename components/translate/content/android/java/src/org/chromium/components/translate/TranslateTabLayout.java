@@ -42,7 +42,7 @@ public class TranslateTabLayout extends TabLayout {
     private int mTabPaddingEnd;
 
     /** Constructor for inflating from XML. */
-    @SuppressLint("CustomViewStyleable") // TODO(crbug.com/807725): Remove and fix.
+    @SuppressLint("CustomViewStyleable") // TODO(crbug.com/40560764): Remove and fix.
     public TranslateTabLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 

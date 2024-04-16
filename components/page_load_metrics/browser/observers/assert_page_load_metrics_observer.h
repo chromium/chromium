@@ -146,7 +146,7 @@ class AssertPageLoadMetricsObserver final
 
   // The method below are not well investigated.
   //
-  // TODO(https://crbug.com/1350891): Add more assertions.
+  // TODO(crbug.com/40856776): Add more assertions.
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override {}

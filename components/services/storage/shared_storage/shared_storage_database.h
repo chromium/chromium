@@ -306,7 +306,7 @@ class SharedStorageDatabase {
 
   // Returns the number of unexpired entries for `context_origin` in the
   // database, or -1 on error.
-  // TODO(crbug.com/1277662): Consider renaming to something more descriptive.
+  // TODO(crbug.com/40207867): Consider renaming to something more descriptive.
   [[nodiscard]] int64_t Length(url::Origin context_origin);
 
   // From a list of all the unexpired keys for `context_origin` taken in

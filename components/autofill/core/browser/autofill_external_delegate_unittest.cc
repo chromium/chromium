@@ -2526,7 +2526,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
                        1)));
 }
 
-// TODO(crbug.com/1510618): Add test case where 'Show cards from your Google
+// TODO(crbug.com/41483208): Add test case where 'Show cards from your Google
 // account' button is clicked. Encountered issues with test sync setup when
 // attempting to make it.
 

@@ -115,7 +115,7 @@ class PerUserTopicSubscriptionRequest {
   // Note: This callback should only be invoked from
   // RunCompletedCallbackAndMaybeDie(), as invoking it has the potential to
   // destroy this object per this class's contract.
-  // TODO(crbug.com/1054759): find a way to avoid this fragile logic.
+  // TODO(crbug.com/40675891): find a way to avoid this fragile logic.
   CompletedCallback request_completed_callback_;
 
   // Full URL. Used in tests only.

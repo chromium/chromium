@@ -1207,7 +1207,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     }
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
-      // TODO(crbug.com/1502162): Make the granular filling options vary
+      // TODO(crbug.com/40942505): Make the granular filling options vary
       // depending on the locale.
       AddAddressGranularFillingChildSuggestions(last_targeted_fields,
                                                 trigger_field_type, *profile,
@@ -1445,7 +1445,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
         virtual_card_guid_to_last_four_map) {
-  // TODO(crbug.com/1453739): Refactor credit card suggestion code by moving
+  // TODO(crbug.com/40916587): Refactor credit card suggestion code by moving
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
@@ -1469,7 +1469,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.feature_for_iph =
         &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
-    // TODO(crbug.com/1511277): Create translation string for standalone CVC
+    // TODO(crbug.com/41483863): Create translation string for standalone CVC
     // suggestion which includes spacing.
     const std::u16string main_text =
         l10n_util::GetStringUTF16(
@@ -1811,7 +1811,7 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
   return ShouldShowVirtualCardOptionForServerCard(*candidate_server_card);
 }
 
-// TODO(crbug.com/1346331): Separate logic for desktop, Android dropdown, and
+// TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
 // Keyboard Accessory.
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,

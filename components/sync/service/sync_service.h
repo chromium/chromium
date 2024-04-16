@@ -247,7 +247,7 @@ class SyncService : public KeyedService {
   // Indicates the the user wants Sync-the-Feature to run. It should get invoked
   // early in the Sync setup flow, after the user has pressed "turn on Sync" but
   // before they have actually confirmed the settings.
-  // TODO(crbug.com/1219990): Remove this API once the internal sync-requested
+  // TODO(crbug.com/40772592): Remove this API once the internal sync-requested
   // bit is fully removed and rollback/killswitch safe. Note that it also
   // requires finding an alternative solution to resolving
   // IsSyncFeatureDisabledViaDashboard(), tracked in crbug.com/1443446.
@@ -352,7 +352,7 @@ class SyncService : public KeyedService {
   // *not* require first-time Sync setup to be complete.
   // Note: This refers to Sync-the-feature. Sync-the-transport may be running
   // even if this is false.
-  // TODO(crbug.com/1444344): Remove this API, in favor of
+  // TODO(crbug.com/40911804): Remove this API, in favor of
   // IsSyncFeatureEnabled().
   // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
@@ -393,7 +393,7 @@ class SyncService : public KeyedService {
 
   // Returns the set of types which are preferred for enabling. This is a
   // superset of the active types (see GetActiveDataTypes()).
-  // TODO(crbug.com/1429249): Deprecated, DO NOT USE! You probably want
+  // TODO(crbug.com/40262598): Deprecated, DO NOT USE! You probably want
   // `GetUserSettings()->GetSelectedTypes()` instead.
   virtual ModelTypeSet GetPreferredDataTypes() const = 0;
 
@@ -449,7 +449,7 @@ class SyncService : public KeyedService {
   // ASAP, presumably because a local change event has occurred but we're
   // still in deferred start mode, meaning the SyncableService hasn't been
   // told to MergeDataAndStartSyncing yet.
-  // TODO(crbug.com/1429293): Remove this API.
+  // TODO(crbug.com/40901006): Remove this API.
   virtual void OnDataTypeRequestsSyncStartup(ModelType type) = 0;
 
   // Triggers a GetUpdates call for the specified |types|, pulling any new data
@@ -474,7 +474,7 @@ class SyncService : public KeyedService {
 
   // Necessary condition for SendExplicitPassphraseToPlatformClient() (not
   // sufficient).
-  // TODO(crbug.com/1524184): Stop exposing this when UPM unenrollment is gone.
+  // TODO(crbug.com/41497129): Stop exposing this when UPM unenrollment is gone.
   virtual bool SupportsExplicitPassphrasePlatformClient() = 0;
 
   // Shares the explicit passphrase content with layers outside of the browser

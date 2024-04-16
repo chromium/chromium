@@ -51,7 +51,7 @@ extern const char kMetricsLastSeenPrefix[];
 // Preferences for recording stability logs.
 extern const char kStabilityBrowserLastLiveTimeStamp[];
 extern const char kStabilityCrashCountDueToGmsCoreUpdate[];
-// TODO(crbug/1241702): Remove this Local State pref once the new behavior
+// TODO(crbug.com/40194783): Remove this Local State pref once the new behavior
 // launches on Android Chrome.
 extern const char kStabilityExitedCleanly[];
 extern const char kStabilityFileMetricsUnsentSamplesCount[];

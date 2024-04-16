@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   std::optional<ErrorCode> GetSodaInstallErrorCode(
       LanguageCode language_code) const;
 
-  // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that
+  // TODO(crbug.com/40783492): Consider creating a MockSodaInstaller class that
   // implements these test-specific methods.
   void NeverDownloadSodaForTesting() {
     never_download_soda_for_testing_ = true;

@@ -1855,7 +1855,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       } else {
         viz::TileDrawQuad* tile_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-        // TODO(crbug.com/1339335): Support AA quads coming from exo.
+        // TODO(crbug.com/40229946): Support AA quads coming from exo.
         constexpr bool kForceAntiAliasingOff = true;
         tile_quad->SetNew(
             quad_state, quad_rect, quad_rect,

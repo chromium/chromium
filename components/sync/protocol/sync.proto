@@ -360,7 +360,7 @@ message CommitResponse {
 
     // Last modification time (in milliseconds since Unix epoch).  Allows the
     // server to override the client-supplied mtime during a commit operation.
-    // TODO(crbug.com/1182252): Delete this field too.
+    // TODO(crbug.com/40751358): Delete this field too.
     optional int64 mtime = 10 [deprecated = true];
 
     message DatatypeSpecificError {

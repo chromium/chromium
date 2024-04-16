@@ -91,7 +91,7 @@ public class RedirectHandler {
         final boolean mHasUserStartedNonInitialNavigation;
         boolean mIsOnFirstLoadInChain = true;
         boolean mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
-        // TODO(https://crbug.com/1286053): Plumb through the user activation time from blink.
+        // TODO(crbug.com/40815393): Plumb through the user activation time from blink.
         final long mNavigationChainStartTime = currentRealtime();
         boolean mUsedBackOrForward;
         boolean mPerformedHiddenCrossFrameNavigation;

@@ -123,7 +123,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
 // enabled, etc). |pref_service| must not be null. |sync_service| may be null
 // (commonly the case in incognito mode), in which case this will simply return
 // false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
-// TODO(crbug.com/1426783): This predicate is kinda confusing, especially on
+// TODO(crbug.com/40261471): This predicate is kinda confusing, especially on
 // mobile. Consider splitting it in two, "should offer move" and "should offer
 // store choice".
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
@@ -206,7 +206,7 @@ void KeepAccountStorageSettingsOnlyForUsers(
 
 // Migrates the old password_manager account storage opt-in pref to
 // SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
-// TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.
+// TODO(crbug.com/40943534): Delete the migration when appropriate, see bug.
 void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 
 // When the user declines the opt-in offer during saving, the default

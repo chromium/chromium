@@ -488,7 +488,7 @@ TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
 #if BUILDFLAG(IS_IOS)
   // Ensure that the NTP is not blocked on iOS by "*".
-  // TODO(crbug.com/1073291): On iOS, the NTP can not be blocked even by
+  // TODO(crbug.com/40686232): On iOS, the NTP can not be blocked even by
   // explicitly listing it as a blocked URL. This is due to the usage of
   // "about:newtab" as its URL which is not recognized and filtered by the
   // URLBlocklist code.

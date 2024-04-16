@@ -271,7 +271,7 @@ TEST_F(BookmarkUtilsTest, PasteBookmarkFromURL) {
             ASCIIToUTF16(new_folder->children().front()->url().spec()));
 }
 
-// TODO(https://crbug.com/1010182): Fix flakes and re-enable this test.
+// TODO(crbug.com/40651002): Fix flakes and re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CopyPaste DISABLED_CopyPaste
 #else

@@ -2506,7 +2506,7 @@ TEST_P(
 
 // Test to log when a local card is autofilled and its duplicated
 // server card exists.
-// TODO(crbug.com/1443718): Delete this test when
+// TODO(crbug.com/40267452): Delete this test when
 // kAutofillSuggestServerCardInsteadOfLocalCard is launched.
 TEST_P(AutofillMetricsIFrameTest,
        CreditCardFilledFormEventsUsingDuplicateServerCard) {

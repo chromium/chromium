@@ -163,7 +163,7 @@ struct ClientResourceProvider::ImportedResource {
     // start/stop, we cannot batch them. Instead maintain previous behaviour
     // of just calling these directly.
     //
-    // TODO(crbug.com/1449273): Create a "Scoped Resources Release" class that
+    // TODO(crbug.com/40269731): Create a "Scoped Resources Release" class that
     // can collect all of the `main_thread_release_callbacks` being removed
     // independently. Which can then perform a single thread hop to run them.
     if (main_thread_release_callback) {

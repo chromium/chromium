@@ -110,7 +110,7 @@ class CleanExitBeacon {
   // for browser crashes early on in startup as a part of Extended Variations
   // Safe Mode, which is supported by most, but not all, platforms.
   //
-  // TODO(crbug/1341125): Consider removing |is_extended_safe_mode|.
+  // TODO(crbug.com/40850854): Consider removing |is_extended_safe_mode|.
   void WriteBeaconValue(bool exited_cleanly,
                         bool is_extended_safe_mode = false);
 

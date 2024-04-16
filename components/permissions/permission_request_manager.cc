@@ -92,8 +92,8 @@ namespace {
 // permission prompt was displayed longer than `kQuietChipIgnoreTimeout`, we
 // consider it as shown long enough and it will not be shown again after it is
 // preempted.
-// TODO(crbug.com/1221083): If a user switched tabs, do not include that time as
-// "shown".
+// TODO(crbug.com/40186690): If a user switched tabs, do not include that time
+// as "shown".
 bool ShouldShowQuietRequestAgainIfPreempted(
     std::optional<base::Time> request_display_start_time) {
   if (request_display_start_time->is_null()) {

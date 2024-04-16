@@ -357,7 +357,7 @@ void PasswordProtectionRequest::SendRequestWithToken(
   MaybeAddPingToWebUI(access_token);
 
   std::string serialized_request;
-  // TODO(crbug.com/1158582): Return early if request serialization fails.
+  // TODO(crbug.com/40054172): Return early if request serialization fails.
   request_proto_->SerializeToString(&serialized_request);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

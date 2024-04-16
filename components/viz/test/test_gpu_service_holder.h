@@ -54,7 +54,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   // Don't instantiate FeatureList::ScopedDisallowOverrides when the GPU thread
   // is started. This shouldn't be required but there are existing tests that
   // initialize ScopedFeatureList after TestGpuServiceHolder.
-  // TODO(crbug.com/1241161): Fix racy tests and remove this.
+  // TODO(crbug.com/40785850): Fix racy tests and remove this.
   class ScopedAllowRacyFeatureListOverrides {
    public:
     ~ScopedAllowRacyFeatureListOverrides();
@@ -135,7 +135,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
                              base::WaitableEvent* completion);
   void DeleteOnGpuThread();
 
-// TODO(crbug.com/1267788): Fuchsia crashes. See details in the crbug.
+// TODO(crbug.com/40803043): Fuchsia crashes. See details in the crbug.
 #if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe);

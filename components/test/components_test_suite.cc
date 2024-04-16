@@ -57,7 +57,7 @@ class ComponentsTestSuite : public base::TestSuite {
 
     // These schemes need to be added globally to pass tests of
     // autocomplete_input_unittest.cc and content_settings_pattern*
-    // TODO(https://crbug.com/1047702): Move this scheme initialization into the
+    // TODO(crbug.com/40116981): Move this scheme initialization into the
     //    individual tests that need these schemes.
     url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);

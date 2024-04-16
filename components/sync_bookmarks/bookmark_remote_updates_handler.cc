@@ -107,7 +107,7 @@ syncer::UniquePosition ComputeUniquePositionForTrackedBookmarkNode(
   const SyncedBookmarkTrackerEntity* child_entity =
       bookmark_tracker->GetEntityForBookmarkNode(bookmark_node);
   DCHECK(child_entity);
-  // TODO(crbug.com/1113139): precompute UniquePosition to prevent its
+  // TODO(crbug.com/40710102): precompute UniquePosition to prevent its
   // calculation on each remote update.
   return syncer::UniquePosition::FromProto(
       child_entity->metadata().unique_position());

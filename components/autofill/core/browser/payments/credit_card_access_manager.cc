@@ -251,7 +251,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   unmask_details_request_in_progress_ = false;
   unmask_details_ = unmask_details;
 
-  // TODO(crbug.com/1409151): Rename `offer_fido_opt_in`, and check that the
+  // TODO(crbug.com/40253859): Rename `offer_fido_opt_in`, and check that the
   // user is off the record separately.
   unmask_details_.offer_fido_opt_in =
       unmask_details_.offer_fido_opt_in && !client_->IsOffTheRecord();
@@ -676,14 +676,15 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   // call below will return true and we will safely pass nullptr and that it is
   // an error into the `OnCreditCardFetchedCallback`, and end the flow.
   if (response.card) {
-    // TODO(crbug/1478392): Deprecate `response.cvc` and `response.card.cvc`.
+    // TODO(crbug.com/40929439): Deprecate `response.cvc` and
+    // `response.card.cvc`.
     card_ = std::make_unique<CreditCard>(*response.card);
     card_->set_cvc(response.cvc);
   }
 
   // Log completed CVC authentication if auth was successful. Do not log for
   // kCvcThenFido flow since that is yet to be completed.
-  // TODO(crbug/1477839): Refactor log into the new
+  // TODO(crbug.com/40280410): Refactor log into the new
   // LogMetricsAndFillFormForServerUnmaskFlows().
   if (response.did_succeed &&
       unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {

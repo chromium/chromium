@@ -80,9 +80,9 @@ TranslationType NullTranslateMetricsLogger::GetNextManualTranslationType(
 
 void TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
     std::unique_ptr<TranslatePrefs> translate_prefs) {
-  // TODO(1229371): These histograms are only recorded when Chrome starts up
-  // using the preferences of whatever profile is logged in at the time. This
-  // information should be recorded each time a profile logs in.
+  // TODO(crbug.com/40778331): These histograms are only recorded when Chrome
+  // starts up using the preferences of whatever profile is logged in at the
+  // time. This information should be recorded each time a profile logs in.
 
   std::vector<std::string> always_translate_languages =
       translate_prefs->GetAlwaysTranslateLanguages();

@@ -121,7 +121,7 @@ enum VertexOpacityUsage {
   kCount,
 };
 
-// TODO(crbug.com/1506077): If histograms were significantly cheaper we would
+// TODO(crbug.com/40946720): If histograms were significantly cheaper we would
 // not need to write custom submitting code like the accumulator below.
 void SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage usage) {
   static uint32_t vertex_usage_counter = 0;
@@ -1180,7 +1180,7 @@ void SkiaRenderer::FinishDrawingFrame() {
       if (current_frame()->root_render_pass->content_color_usage ==
           gfx::ContentColorUsage::kHDR) {
         surface_candidate.hdr_metadata.extended_range.emplace();
-        // TODO(https://crbug.com/1430768): Track the actual brightness of the
+        // TODO(crbug.com/40263227): Track the actual brightness of the
         // content. For now, assume that all HDR content is 1,000 nits.
         surface_candidate.hdr_metadata.extended_range->desired_headroom =
             gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
@@ -1484,7 +1484,7 @@ void SkiaRenderer::ClearFramebuffer() {
     // ClearCavas() call causes slight pixel difference, so linux-ref and
     // linux-blink-ref bots cannot share the same baseline for webtest.
     // So remove this ClearCanvas() call for dcheck on build for now.
-    // TODO(crbug.com/1330278): add it back.
+    // TODO(crbug.com/40227119): add it back.
     ClearCanvas(SkColors::kBlue);
 #endif
   }
@@ -3467,7 +3467,7 @@ void SkiaRenderer::FinishDrawingRenderPass() {
 
   // Defer flushing drawing task for root render pass, to avoid extra
   // MakeCurrent() call. It is expensive on GL.
-  // TODO(https://crbug.com/1141008): Consider deferring drawing tasks for
+  // TODO(crbug.com/40154045): Consider deferring drawing tasks for
   // all render passes.
   if (is_root_render_pass)
     return;
@@ -3754,7 +3754,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     // The SharedImages created here are not used by the raster interface, but
     // RASTER usage was historically listed. We are in the process of removing
     // this usage with a reverse killswitch.
-    // TODO(crbug.com/1523914): Remove this code post-safe rollout.
+    // TODO(crbug.com/41496862): Remove this code post-safe rollout.
     if (base::FeatureList::IsEnabled(kAddSharedImageRasterReadUsage)) {
       kOverlayUsage = kOverlayUsage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
     }

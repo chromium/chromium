@@ -363,7 +363,7 @@ void ShoppingServiceHandler::HandleSubscriptionChange(
       GetBookmarksWithClusterId(bookmark_model_, cluster_id);
   // Special handling when the unsubscription is caused by bookmark deletion and
   // therefore the bookmark can no longer be retrieved.
-  // TODO(crbug.com/1462668): Update mojo call to pass cluster ID and make
+  // TODO(crbug.com/40066977): Update mojo call to pass cluster ID and make
   // BookmarkProductInfo a nullable parameter.
   if (!bookmarks.size()) {
     auto bookmark_info = shopping_service::mojom::BookmarkProductInfo::New();

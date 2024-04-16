@@ -343,7 +343,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   EXPECT_EQ(400, result_metrics[1].begin()->second);
 }
 
-// TODO(crbug.com/1255496): Flaky under TSan.
+// TODO(crbug.com/40200061): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   // In the case that there is no page end time and the page has never

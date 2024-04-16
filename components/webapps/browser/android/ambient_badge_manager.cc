@@ -296,8 +296,8 @@ void AmbientBadgeManager::ShowAmbientBadge() {
 
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents(), InstallTrigger::AMBIENT_BADGE);
-  // TODO(crbug/1425546): Move the maybe show peeked bottom sheet logic out of
-  // AppBannerManager.
+  // TODO(crbug.com/40260952): Move the maybe show peeked bottom sheet logic out
+  // of AppBannerManager.
   if (!maybe_show_pwa_bottom_sheet_.is_null() &&
       std::move(maybe_show_pwa_bottom_sheet_).Run(install_source)) {
     // Bottom sheet shown.

@@ -72,10 +72,12 @@ public interface SiteSettingsDelegate {
     /**
      * @return The id of the notification channel associated with the given origin.
      */
-    // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.
+    // TODO(crbug.com/40126121): Remove this once WebLayer supports notifications.
     String getChannelIdForOrigin(String origin);
 
-    /** @return The name of the app the settings are associated with. */
+    /**
+     * @return The name of the app the settings are associated with.
+     */
     String getAppName();
 
     /**

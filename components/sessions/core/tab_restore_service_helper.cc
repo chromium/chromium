@@ -292,7 +292,7 @@ void TabRestoreServiceHelper::GroupClosed(const tab_groups::TabGroupId& group) {
 
 void TabRestoreServiceHelper::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
-  // TODO(crbug.com/1181521): Delete this function if the group entry was never
+  // TODO(crbug.com/40750891): Delete this function if the group entry was never
   // created, or adjust the group entry here to account for any unclosed tabs.
 
   closing_groups_.erase(group);

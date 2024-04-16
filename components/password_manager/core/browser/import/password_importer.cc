@@ -525,7 +525,7 @@ void PasswordImporter::ConsumePasswords(
     return;
   }
 
-  // TODO(crbug/1325290): Either move to earlier point or update histogram.
+  // TODO(crbug.com/40225420): Either move to earlier point or update histogram.
   base::Time start_time = base::Time::Now();
   // Used to compute conflicts and duplicates.
   std::map<std::u16string, std::vector<CredentialUIEntry>>

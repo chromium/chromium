@@ -600,7 +600,7 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
 base::expected<Operand, std::string> ValidateTriangularAndInferOutput(
     Operand input);
 
-// TODO(crbug.com/1273291): Add the link of the where operator definition in
+// TODO(crbug.com/40206287): Add the link of the where operator definition in
 // WebIDL.
 // Validate where operator.
 base::expected<Operand, std::string> ValidateWhereAndInferOutput(

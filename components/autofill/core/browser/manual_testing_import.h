@@ -53,7 +53,7 @@ namespace autofill {
 // All profiles and credit cards specified in the file are imported. They
 // replace any existing data.
 // The profiles are expected to be fully structured.
-// TODO(crbug/1413177): remove `profiles` from flags' name.
+// TODO(crbug.com/40255599): remove `profiles` from flags' name.
 constexpr char kManualFileImportForTestingFlag[] =
     "autofill-profiles-for-manual-testing";
 constexpr char kManualContentImportForTestingFlag[] =

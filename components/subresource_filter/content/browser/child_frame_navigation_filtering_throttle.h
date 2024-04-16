@@ -41,7 +41,7 @@ class AsyncDocumentSubresourceFilter;
 // frames owned by documents which already have filtering activated, and
 // therefore an associated (Async)DocumentSubresourceFilter.
 //
-// TODO(https://crbug.com/984562): With AdTagging enabled, this throttle delays
+// TODO(crbug.com/41471110): With AdTagging enabled, this throttle delays
 // almost all child frame navigations. This delay is necessary in blocking mode
 // due to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be
 // room for optimization during AdTagging, or migrating

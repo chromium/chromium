@@ -138,7 +138,7 @@ message SyncEnums {
 
   // New enums to describe the device type were introduced; OsType and
   // FormFactor. Deprecated 12/2022.
-  // TODO(1395353): Remove deprecated values from DeviceType enum.
+  // TODO(crbug.com/40882073): Remove deprecated values from DeviceType enum.
   enum DeviceType {
     TYPE_UNSET = 0 [deprecated = true];
     TYPE_WIN = 1 [deprecated = true];

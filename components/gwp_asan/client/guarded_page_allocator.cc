@@ -326,7 +326,7 @@ void GuardedPageAllocator::Deallocate(void* ptr) {
   // Check for double free.
   if (metadata_[metadata_idx].deallocation_occurred.exchange(true)) {
     state_.double_free_address = addr;
-    // TODO(https://crbug.com/925447): The other thread may not be done writing
+    // TODO(crbug.com/40611148): The other thread may not be done writing
     // a stack trace so we could spin here until it's read; however, it's also
     // possible we are racing an allocation in the middle of
     // RecordAllocationMetadata. For now it's possible a racy double free could

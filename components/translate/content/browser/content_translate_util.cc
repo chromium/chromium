@@ -18,8 +18,8 @@ bool IsTranslatableURL(const GURL& url) {
   // - Chrome OS file manager extension [but not able to check here]
   // Note: this is duplicated logic from TranslateService (missing a chromeos
   // file manager check at this components level).
-  // TODO(1064974) Reuse this utility in TranslateService once subframe
-  // translation launched. Note that the chromeos checks in the
+  // TODO(crbug.com/40123934) Reuse this utility in TranslateService once
+  // subframe translation launched. Note that the chromeos checks in the
   // TranslateService version will still need to be at the browser level.
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(content::kChromeDevToolsScheme) && !url.IsAboutBlank();

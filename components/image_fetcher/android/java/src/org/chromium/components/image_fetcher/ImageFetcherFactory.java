@@ -59,7 +59,7 @@ public class ImageFetcherFactory {
             ImageFetcherBridge imageFetcherBridge,
             DiscardableReferencePool discardableReferencePool,
             int inMemoryCacheSize) {
-        // TODO(crbug.com/947191):Allow server-side configuration image fetcher clients.
+        // TODO(crbug.com/41449848):Allow server-side configuration image fetcher clients.
         switch (config) {
             case ImageFetcherConfig.NETWORK_ONLY:
                 return new NetworkImageFetcher(imageFetcherBridge);

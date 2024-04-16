@@ -88,7 +88,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kDiskQuota:
       return RequestTypeForUma::QUOTA;
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1296792): Enable on Android
+    // TODO(crbug.com/40214907): Enable on Android
     case RequestType::kLocalFonts:
       return RequestTypeForUma::PERMISSION_LOCAL_FONTS;
 #endif

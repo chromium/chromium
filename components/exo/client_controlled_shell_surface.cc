@@ -467,7 +467,8 @@ void ClientControlledShellSurface::SetFullscreen(bool fullscreen,
                "fullscreen", fullscreen);
   pending_window_state_ = fullscreen ? chromeos::WindowStateType::kFullscreen
                                      : chromeos::WindowStateType::kNormal;
-  // TODO(crbug/1478300): `display_id` might need to be used here somewhere.
+  // TODO(crbug.com/40280523): `display_id` might need to be used here
+  // somewhere.
 }
 
 void ClientControlledShellSurface::SetPinned(chromeos::WindowPinType type) {
@@ -1293,7 +1294,8 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
       split_view_controller->EndSplitView();
     // As Android doesn't activate PIP tasks after they are expanded, we need
     // to do it here explicitly.
-    // TODO(937738): Investigate if we can activate PIP windows inside commit.
+    // TODO(crbug.com/40616384): Investigate if we can activate PIP windows
+    // inside commit.
     window_state->Activate();
   }
 

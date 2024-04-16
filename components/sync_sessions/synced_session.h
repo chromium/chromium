@@ -75,7 +75,7 @@ struct SyncedSessionWindow {
 // Defines a synced session for use by session sync. A synced session is a
 // list of windows along with a unique session identifer (tag) and meta-data
 // about the device being synced.
-// TODO(1386119): Change struct to class to follow style guides.
+// TODO(crbug.com/40879579): Change struct to class to follow style guides.
 struct SyncedSession {
  public:
   SyncedSession();

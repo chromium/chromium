@@ -305,8 +305,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // Called when information is ready such that we can invoke any callbacks that
   // require returning decisions to consumer features.
   //
-  // TODO(crbug/1279536): Clean this up when we clean up some of the existing
-  // interfaces.
+  // TODO(crbug.com/40208585): Clean this up when we clean up some of the
+  // existing interfaces.
   void OnBatchUpdateHintsStored(
       const base::flat_set<GURL>& urls_fetched,
       const base::flat_set<proto::OptimizationType>& optimization_types,

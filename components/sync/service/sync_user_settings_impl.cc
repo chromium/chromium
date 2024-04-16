@@ -350,7 +350,7 @@ bool SyncUserSettingsImpl::IsTrustedVaultRecoverabilityDegraded() const {
 }
 
 bool SyncUserSettingsImpl::IsUsingExplicitPassphrase() const {
-  // TODO(crbug.com/1466401): Either make this method return a Tribool, so the
+  // TODO(crbug.com/40923935): Either make this method return a Tribool, so the
   // "unknown" case is properly communicated, or just remove it altogether
   // (callers can always use the global IsExplicitPassphrase() helper).
   std::optional<PassphraseType> type = GetPassphraseType();

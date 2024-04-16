@@ -32,8 +32,8 @@ DependencyManager::~DependencyManager() {
 
 void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
 #if DCHECK_IS_ON()
-  // TODO(crbug.com/1150733): Tighten this check to ensure that no factories are
-  // registered after CreateContextServices() is called.
+  // TODO(crbug.com/40158018): Tighten this check to ensure that no factories
+  // are registered after CreateContextServices() is called.
   DCHECK(!context_services_created_ ||
          !(component->ServiceIsCreatedWithContext() ||
            component->ServiceIsNULLWhileTesting()))

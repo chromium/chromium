@@ -113,7 +113,7 @@ void IncomingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // There is no data stored locally, return an empty result.
-  // TODO(crbug.com/1445868): return at least sync metadata if available. This
+  // TODO(crbug.com/40268334): return at least sync metadata if available. This
   // requires a storage key list.
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   std::move(callback).Run(std::move(batch));

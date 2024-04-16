@@ -106,8 +106,8 @@ message AutofillProfileSpecifics {
   // joining address_home_line1/2 with a newline ("\n").
   // Full deprecation can not be achieved before all sync profiles have been
   // updated with a M86+ client.
-  // TODO(crbug/1111740): Remove usages of address_home_line1/2 and mark field
-  // as deprecated.
+  // TODO(crbug.com/40142711): Remove usages of address_home_line1/2 and mark
+  // field as deprecated.
   optional string address_home_line1 = 7;
   optional string address_home_line2 = 8;
   optional string address_home_city = 9;

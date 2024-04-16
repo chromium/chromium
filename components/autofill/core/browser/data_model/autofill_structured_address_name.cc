@@ -109,7 +109,7 @@ void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
 }
 
-// TODO(crbug.com/1113617): Honorifics are temporally disabled.
+// TODO(crbug.com/40143553): Honorifics are temporally disabled.
 NameFull::NameFull() : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
   RegisterChildNode(&first_);
   RegisterChildNode(&middle_);

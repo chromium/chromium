@@ -32,9 +32,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
  public:
   // Ideally the only external locations that call this constructor are the
   // factory, and dedicated tests.
-  // TODO(crbug.com/1406840): Currently tests dedicated to other components rely
-  // on this interface, they should be migrated to something better (such as a
-  // dedicated test builder)
+  // TODO(crbug.com/40252892): Currently tests dedicated to other components
+  // rely on this interface, they should be migrated to something better (such
+  // as a dedicated test builder)
   PrivacySandboxSettingsImpl(
       std::unique_ptr<Delegate> delegate,
       HostContentSettingsMap* host_content_settings_map,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1219626): Rename this to toolbar_back_arrow and move it to
+// TODO(crbug.com/40186140): Rename this to toolbar_back_arrow and move it to
 // //chrome/app/resources.
 
 CANVAS_DIMENSIONS, 32,

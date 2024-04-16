@@ -33,7 +33,7 @@ bool ShouldOfferLinkToText(const GURL& url) {
   static constexpr auto kBlocklist =
       base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
           {{"facebook.com", ".*"},
-           // TODO(crbug.com/1157981): special case this to cover other Google
+           // TODO(crbug.com/40736718): special case this to cover other Google
            // TLDs
            {"google.com", "^\\/amp\\/.*"},
            {"instagram.com", ".*"},

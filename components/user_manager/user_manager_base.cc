@@ -1426,9 +1426,9 @@ void UserManagerBase::DeleteUser(User* user) {
   std::erase_if(user_storage_, [user](auto& ptr) { return ptr.get() == user; });
 }
 
-// TODO(crbug/1189715): Remove dormant legacy supervised user cryptohomes. After
-// we have enough confidence that there are no more supervised users on devices
-// in the wild, remove this.
+// TODO(crbug.com/40755604): Remove dormant legacy supervised user cryptohomes.
+// After we have enough confidence that there are no more supervised users on
+// devices in the wild, remove this.
 void UserManagerBase::RemoveLegacySupervisedUser(const AccountId& account_id) {
   DCHECK(IsDeprecatedSupervisedAccountId(account_id));
   if (base::FeatureList::IsEnabled(kRemoveLegacySupervisedUsersOnStartup)) {

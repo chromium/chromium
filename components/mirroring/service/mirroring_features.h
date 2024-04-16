@@ -16,12 +16,12 @@ namespace features {
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastDisableLetterboxing);
 
-// TODO(crbug.com/1198616): Remove model name checks for querying receiver
+// TODO(crbug.com/40177436): Remove model name checks for querying receiver
 // capabilities.
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastDisableModelNameCheck);
 
-// TODO(crbug.com/1412589): Should be removed once working properly.
+// TODO(crbug.com/40255351): Should be removed once working properly.
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastEnableStreamingWithHiDPI);
 

@@ -126,7 +126,7 @@ void ResetInputs(UiControlsState* state) {
     }
   }
 
-  // TODO(crbug.com/1431512): Fix this issue and the code below should not be
+  // TODO(crbug.com/40263572): Fix this issue and the code below should not be
   // necessary.
   ui_controls::SendMouseMove(0, 0);
 }

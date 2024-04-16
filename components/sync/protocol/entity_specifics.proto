@@ -160,7 +160,7 @@ message EntitySpecifics {
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/
 
     // No-longer-supported data types, in various stages of removal.
-    // TODO(crbug.com/1395003): Eventually, these should all become "reserved"
+    // TODO(crbug.com/40881888): Eventually, these should all become "reserved"
     // fields, or at least use "EmptySpecifics". But some of them are still
     // needed by the server, e.g. to support older clients.
     EmptySpecifics app_notification = 45184 [deprecated = true];

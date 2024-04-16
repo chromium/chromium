@@ -152,7 +152,7 @@ enum OptimizationTarget {
   // Target for determining the UI visibility of a page.
   OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
   // Target for determining topics present on a page.
-  // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
+  // TODO(crbug.com/40204121): Remove PAGE_TOPICS in favor of this target.
   OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
   // Target for segmentation: Determine users with low engagement with chrome.
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT = 16;

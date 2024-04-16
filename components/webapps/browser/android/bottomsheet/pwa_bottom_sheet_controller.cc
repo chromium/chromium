@@ -198,7 +198,7 @@ void PwaBottomSheetController::UpdateScreenshot(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_screenshot =
       gfx::ConvertToJavaBitmap(screenshot);
-  // TODO(https://crbug.com/1371279): support passing label to use as
+  // TODO(crbug.com/40870351): support passing label to use as
   // the accessibility string.
   Java_PwaBottomSheetController_addWebAppScreenshot(
       env, java_screenshot, web_contents->GetJavaWebContents());

@@ -32,7 +32,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
 
   // Set callbacks to create content types (content types cannot be created
   // in remote_cocoa).
-  // TODO(https://crbug.com/888290): Move these types from content to
+  // TODO(crbug.com/40595042): Move these types from content to
   // remote_cocoa.
   using RenderWidgetHostNSViewCreateCallback = base::RepeatingCallback<void(
       uint64_t view_id,

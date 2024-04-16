@@ -867,7 +867,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   MaybeStartVoteUploadProcess(std::move(submitted_form),
                               /*observed_submission=*/true);
 
-  // TODO(crbug.com/803334): Add FormStructure::Clone() method.
+  // TODO(crbug.com/41365645): Add FormStructure::Clone() method.
   // Create another FormStructure instance.
   submitted_form = ValidateSubmittedForm(form);
   DCHECK(submitted_form);
@@ -1202,8 +1202,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // due to an unrecognized autocomplete attribute. Note that in the context
     // of Autofill, the popup for credit card related fields is not getting
     // suppressed due to an unrecognized autocomplete attribute.
-    // TODO(crbug.com/1344590): Revisit here to see whether we should offer IBAN
-    // filling for fields with unrecognized autocomplete attribute
+    // TODO(crbug.com/40853053): Revisit here to see whether we should offer
+    // IBAN filling for fields with unrecognized autocomplete attribute
     if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
       FormStructure* form_structure = nullptr;
       AutofillField* autofill_field = nullptr;
@@ -1493,7 +1493,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 #endif
 
-  // TODO(https://crbug.com/848427): Add metrics for performance impact.
+  // TODO(crbug.com/41392130): Add metrics for performance impact.
   std::vector<Suggestion> suggestions;
   SuggestionsContext context;
   // This code path checks if suggestions to be announced to a screen reader are
@@ -1518,7 +1518,7 @@ void BrowserAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
-  // TODO(crbug.com/814961): Handle select control change.
+  // TODO(crbug.com/40564270): Handle select control change.
 }
 
 void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
@@ -2405,7 +2405,7 @@ void BrowserAutofillManager::OnFormProcessed(
   if (data_util::ContainsPhone(data_util::DetermineGroups(form_structure))) {
     has_observed_phone_number_field_ = true;
   }
-  // TODO(crbug.com/869482): avoid logging developer engagement multiple
+  // TODO(crbug.com/41405154): avoid logging developer engagement multiple
   // times for a given form if it or other forms on the page are dynamic.
   LogDeveloperEngagementUkm(client().GetUkmRecorder(),
                             client().GetUkmSourceId(), form_structure);

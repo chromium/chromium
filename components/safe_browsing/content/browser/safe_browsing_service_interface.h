@@ -86,8 +86,9 @@ class SafeBrowsingServiceFactory {
 
   virtual ~SafeBrowsingServiceFactory() {}
 
-  // TODO(crbug/925153): Once callers of this function are no longer downcasting
-  // it to the SafeBrowsingService, we can make this a scoped_refptr.
+  // TODO(crbug.com/41437292): Once callers of this function are no longer
+  // downcasting it to the SafeBrowsingService, we can make this a
+  // scoped_refptr.
   virtual SafeBrowsingServiceInterface* CreateSafeBrowsingService() = 0;
 };
 

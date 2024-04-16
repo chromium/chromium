@@ -107,7 +107,7 @@ bool LibsecretLoader::LoadLibsecret() {
     // We wanted to use libsecret, but we couldn't load it. Warn, because
     // either the user asked for this, or we autodetected it incorrectly. (Or
     // the system has broken libraries, which is also good to warn about.)
-    // TODO(crbug.com/607435): Channel this message to the user-facing log
+    // TODO(crbug.com/40467093): Channel this message to the user-facing log
     VLOG(1) << "Could not load libsecret-1.so.0: " << dlerror();
     return false;
   }

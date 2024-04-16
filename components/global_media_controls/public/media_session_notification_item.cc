@@ -298,7 +298,7 @@ void MediaSessionNotificationItem::SetController(
     media_controller_remote_->AddObserver(
         observer_receiver_.BindNewPipeAndPassRemote());
 
-    // TODO(https://crbug.com/931397): Use dip to calculate the size.
+    // TODO(crbug.com/40613662): Use dip to calculate the size.
     // Bind an observer to be notified when the artwork changes.
     media_controller_remote_->ObserveImages(
         media_session::mojom::MediaSessionImageType::kArtwork,

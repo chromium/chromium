@@ -14,13 +14,13 @@ import android.view.View;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-// TODO(https://crbug.com/1435548): Investigate if this would benefit from
+// TODO(crbug.com/40904930): Investigate if this would benefit from
 // extending ChromeBaseAppCompatActivity
 
 /**
- * An activity for which will host an OpenXR instance. Having the OpenXR
- * instance be created with a separate activity than that of the main browser
- * makes lifetime tracking and returning to the 2D browser when done cleaner.
+ * An activity for which will host an OpenXR instance. Having the OpenXR instance be created with a
+ * separate activity than that of the main browser makes lifetime tracking and returning to the 2D
+ * browser when done cleaner.
  */
 public class XrHostActivity extends Activity {
 

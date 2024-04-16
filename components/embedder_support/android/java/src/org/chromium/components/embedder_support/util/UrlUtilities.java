@@ -306,7 +306,7 @@ public class UrlUtilities {
      * @return Whether the given URL matches the NTP urls exactly.
      */
     public static boolean isCanonicalizedNtpUrl(String url) {
-        // TODO(crbug.com/1267266): Let callers check if the library is initialized and make them
+        // TODO(crbug.com/40204389): Let callers check if the library is initialized and make them
         // call this method only before native is initialized.
         // After native initialization, the homepage url could become
         // "chrome://newtab/#most_visited" on carrier phones. Simply comparing the text of the URL

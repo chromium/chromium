@@ -124,7 +124,7 @@ std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"address", HtmlFieldType::kStreetAddress},
           {"coupon-code", HtmlFieldType::kMerchantPromoCode},
-          // TODO(crbug.com/1351760): Investigate if this mapping makes sense.
+          // TODO(crbug.com/40234618): Investigate if this mapping makes sense.
           {"username", HtmlFieldType::kEmail},
       });
 

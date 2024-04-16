@@ -334,7 +334,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
 void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
-  // TODO(https://crbug.com/1365324): Handle errors coming from the account
+  // TODO(crbug.com/40239372): Handle errors coming from the account
   // store.
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();

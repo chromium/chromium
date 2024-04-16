@@ -48,8 +48,8 @@ constexpr int64_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
 // Determine whether an RP ID is a 'valid domain' as per the URL spec:
 // https://url.spec.whatwg.org/#valid-domain
 //
-// TODO(crbug.com/1354209): This is a workaround to a lack of support for 'valid
-// domain's in the //url code.
+// TODO(crbug.com/40858925): This is a workaround to a lack of support for
+// 'valid domain's in the //url code.
 bool IsValidDomain(const std::string& rp_id) {
   // A valid domain, such as 'site.example', should be a URL host (and nothing
   // more of the URL!) that is not an IP address.
@@ -347,7 +347,7 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 
   // For the pilot phase, arbitrarily use the first matching credential.
-  // TODO(https://crbug.com/1110320): Handle multiple credentials.
+  // TODO(crbug.com/40142088): Handle multiple credentials.
   if (!credentials.empty())
     credential = std::move(credentials.front());
 

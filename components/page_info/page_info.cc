@@ -277,7 +277,7 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
     controller_ = delegate_->CreateCookieControlsController();
     observation_.Observe(controller_.get());
 
-    // TODO(crbug.com/1430440): SetCookieInfo is called twice, once from here
+    // TODO(crbug.com/40901748): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
     controller_->Update(web_contents);
 
@@ -1310,7 +1310,8 @@ bool PageInfo::ShouldShowPermission(
   }
 #endif
 
-  // TODO(crbug.com/1433644): Filter out FPS related STORAGE_ACCESS permissions.
+  // TODO(crbug.com/40064079): Filter out FPS related STORAGE_ACCESS
+  // permissions.
 
   // Show the content setting if it has been changed by the user since the last
   // page load.

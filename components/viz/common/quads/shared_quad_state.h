@@ -87,8 +87,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // and the OverlayProcessor. Do not set the value in CompositorRenderPass.
   // This index points to the damage rect in the surface damage rect list where
   // the overlay quad belongs to. SetAll() doesn't update this data.
-  // TODO(crbug.com/1482361): Consider moving this member out of this struct and
-  // into the quads themselves.
+  // TODO(crbug.com/40072194): Consider moving this member out of this struct
+  // and into the quads themselves.
   std::optional<size_t> overlay_damage_index;
 };
 

@@ -53,7 +53,8 @@ void Power::Merge(const Power& other) {
   // Take the power entity of the one with a more recent modified time.
   if (time_modified_ < other.time_modified_) {
     time_modified_ = other.time_modified_;
-    // TODO(1382835): Powers should be able to customize the merge logic.
+    // TODO(crbug.com/40245833): Powers should be able to customize the merge
+    // logic.
     power_entity_->CopyFrom(*other.power_entity_);
   }
 }

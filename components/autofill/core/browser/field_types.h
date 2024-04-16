@@ -166,7 +166,7 @@ enum FieldType {
   ADDRESS_HOME_CITY = 33,
   ADDRESS_HOME_STATE = 34,
   ADDRESS_HOME_ZIP = 35,
-  // TODO(crbug.com/1434216): Autofill stores country codes. When
+  // TODO(crbug.com/40264633): Autofill stores country codes. When
   // ADDRESS_HOME_COUNTRY is accessed through `AutofillProfile::GetRawInfo()`, a
   // country code is returned. When retrieved using
   // `AutofillProfile::GetInfo()`, the country name is returned.

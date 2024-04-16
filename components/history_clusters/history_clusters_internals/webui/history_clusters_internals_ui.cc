@@ -27,7 +27,7 @@ HistoryClustersInternalsUI::~HistoryClustersInternalsUI() = default;
 void HistoryClustersInternalsUI::BindInterface(
     mojo::PendingReceiver<history_clusters_internals::mojom::PageHandlerFactory>
         receiver) {
-  // TODO(https://crbug.com/1297362): Remove the reset which is needed now since
+  // TODO(crbug.com/40215132): Remove the reset which is needed now since
   // |this| is reused on internals page reloads.
   history_clusters_internals_page_factory_receiver_.reset();
   history_clusters_internals_page_factory_receiver_.Bind(std::move(receiver));

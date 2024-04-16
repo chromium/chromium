@@ -513,7 +513,7 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
                                    content_type, value));
-  // TODO(crbug.com/731126): Verify that assumptions for notification content
+  // TODO(crbug.com/40524796): Verify that assumptions for notification content
   // settings are met.
   UsedContentSettingsProviders();
 

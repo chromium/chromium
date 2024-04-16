@@ -165,7 +165,7 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
     };
   }
 
-  // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
+  // TODO(crbug.com/40734659): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
   for (const Layer& layer_proto : seed.layers()) {
     // Only constructs a layer if its ID is unique. We want to discard all
@@ -395,7 +395,7 @@ const base::FieldTrial::EntropyProvider& VariationsLayers::GetRemainderEntropy(
     uint32_t layer_id) const {
   const auto* layer_info = FindActiveLayer(layer_id);
   if (layer_info == nullptr) {
-    // TODO(crbug.com/1519262): Remove CreateTrialsForStudy fuzzer, then
+    // TODO(crbug.com/41492242): Remove CreateTrialsForStudy fuzzer, then
     // uncomment this.
     // NOTREACHED();
     return nil_entropy;

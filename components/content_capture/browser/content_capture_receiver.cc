@@ -166,7 +166,7 @@ void ContentCaptureReceiver::RemoveSession() {
   if (!has_session_)
     return;
 
-  // TODO(crbug.com/995952): Find a way to notify of session being removed if
+  // TODO(crbug.com/40641263): Find a way to notify of session being removed if
   // rfh isn't available.
   if (auto* provider = GetOnscreenContentProvider(rfh_)) {
     provider->DidRemoveSession(this);

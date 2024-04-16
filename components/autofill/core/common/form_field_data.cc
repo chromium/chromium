@@ -20,7 +20,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
-// TODO(crbug/897756): Clean up the (de)serialization code.
+// TODO(crbug.com/41422062): Clean up the (de)serialization code.
 
 namespace autofill {
 

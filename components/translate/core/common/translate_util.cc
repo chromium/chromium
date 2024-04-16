@@ -16,8 +16,8 @@ namespace translate {
 const char kSecurityOrigin[] = "https://translate.googleapis.com/";
 
 // The feature is explicitly disabled on Webview and Weblayer.
-// TODO(crbug.com/1292622): Enable the feature on Webview.
-// TODO(crbug.com/1247836): Enable the feature on WebLayer.
+// TODO(crbug.com/40819484): Enable the feature on Webview.
+// TODO(crbug.com/40790180): Enable the feature on WebLayer.
 BASE_FEATURE(kTFLiteLanguageDetectionEnabled,
              "TFLiteLanguageDetectionEnabled",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \

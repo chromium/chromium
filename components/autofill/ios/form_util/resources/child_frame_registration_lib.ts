@@ -90,7 +90,7 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
   return remoteFrameId;
 }
 
-// TODO(crbug.com/1430814): This is exposed via gCrWeb to enable use in
+// TODO(crbug.com/40263245): This is exposed via gCrWeb to enable use in
 // form_handlers.js. When that file is converted to TS, this can be removed.
 gCrWeb.child_frame_registration = {processChildFrameMessage};
 

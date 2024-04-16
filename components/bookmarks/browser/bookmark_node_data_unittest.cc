@@ -414,7 +414,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   EXPECT_EQ(u"g1", clipboard_result);
 }
 
-// TODO(https://crbug.com/1010415): This test is failing on mac.
+// TODO(crbug.com/40651106): This test is failing on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WriteToClipboardFolderAndURL DISABLED_WriteToClipboardFolderAndURL
 #else

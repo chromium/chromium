@@ -357,7 +357,7 @@ public class AutofillProviderUMA {
     public void onFormSubmitted(int submissionSource) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
         recordSession();
-        // TODO(crbug.com/1484985): Consider moving the call to the ServerPredictionRecorder
+        // TODO(crbug.com/40933028): Consider moving the call to the ServerPredictionRecorder
         // into recordSession. Is it unclear why this is only recorded on form submission.
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
         // We record this no matter autofill service is disabled or not.

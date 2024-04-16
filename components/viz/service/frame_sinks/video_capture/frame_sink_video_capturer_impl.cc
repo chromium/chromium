@@ -817,7 +817,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // activated surface sizes. To be cautious, we refresh the frame although a
   // frame damage event should happen shortly.
   //
-  // TODO(https://crbug.com/1300943): we should likely just get the frame
+  // TODO(crbug.com/40824508): we should likely just get the frame
   // region from the last aggregated surface.
   if (!gfx::Rect(region_properties->root_render_pass_size)
            .Contains(render_pass_in_root_space)) {
@@ -1061,7 +1061,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // reasonable metadata about the region capture rect. For more context, see
   // https://crbug.com/1327560.
   //
-  // TODO(https://crbug.com/1335175): Provide accurate bounds for elements
+  // TODO(crbug.com/40228439): Provide accurate bounds for elements
   // embedded in different renderers.
   const bool is_same_frame_sink_as_requested =
       resolved_target_->GetFrameSinkId() == target_->frame_sink_id;
@@ -1455,7 +1455,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1332628): When capture fails because the sub-capture-target
+  // TODO(crbug.com/40227755): When capture fails because the sub-capture-target
   // version has changed, expedite the capture/delivery of a new frame.
   const bool capture_was_successful =
       frame && frame->metadata().sub_capture_target_version ==
@@ -1524,7 +1524,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   TRACE_COUNTER("gpu.capture", "NumFramesInFlight", num_frames_in_flight_);
 #else
-  // TODO(crbug/1006541): Delete when Perfetto is the default.
+  // TODO(crbug.com/42050015): Delete when Perfetto is the default.
   TRACE_COUNTER_ID1("gpu.capture",
                     "FrameSinkVideoCapturerImpl::num_frames_in_flight_", this,
                     num_frames_in_flight_);

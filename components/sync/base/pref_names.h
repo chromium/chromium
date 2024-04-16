@@ -21,7 +21,7 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
 // NOTE: All the "internal" prefs should not be used directly by non-sync code,
 // but should rather always be accessed via SyncUserSettings.
-// TODO(crbug.com/1435427): Clean up/replace any existing references to these
+// TODO(crbug.com/40265119): Clean up/replace any existing references to these
 // prefs from outside components/sync/.
 namespace internal {
 

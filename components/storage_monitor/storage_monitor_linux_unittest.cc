@@ -327,7 +327,7 @@ class StorageMonitorLinuxTest : public testing::Test {
   std::unique_ptr<TestStorageMonitorLinux> monitor_;
 };
 
-// TODO(https://crbug.com/1297464): This test is flaky.
+// TODO(crbug.com/40822314): This test is flaky.
 // Simple test case where we attach and detach a media device.
 TEST_F(StorageMonitorLinuxTest, DISABLED_BasicAttachDetach) {
   base::FilePath test_path = CreateMountPointWithDCIMDir(kMountPointA);

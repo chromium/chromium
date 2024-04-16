@@ -86,7 +86,7 @@ struct PaymentRequestData {
 // the three, at least).
 bool IsCJKName(std::u16string_view name);
 
-// TODO(crbug.com/586510): Investigate the use of app_locale to do better name
+// TODO(crbug.com/41239336): Investigate the use of app_locale to do better name
 // splitting.
 // Returns the different name parts (given, middle and family names) of the full
 // |name| passed as a parameter.

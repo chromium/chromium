@@ -297,7 +297,7 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
       candidate->address = score_or_address;
       candidate->is_complete_suggestion = false;
 
-      // TODO(crbug.com/1506547): remove this guard after evaluating the fix.
+      // TODO(crbug.com/40947213): remove this guard after evaluating the fix.
       if (OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix()) {
         MatchCandidate unused_candidate;
         uint32_t address = params->GetModelFileStream()->tellg();

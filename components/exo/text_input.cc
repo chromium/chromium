@@ -422,7 +422,7 @@ void TextInput::ExtendSelectionAndReplace(
     size_t before,
     size_t after,
     const base::StringPiece16 replacement_text) {
-  // TODO(crbug.com/1443726): Implement this using an extended Wayland API.
+  // TODO(crbug.com/40267455): Implement this using an extended Wayland API.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

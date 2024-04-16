@@ -449,8 +449,8 @@ class AutocompleteResult {
 
   // The session data irrespective of the current result set. Cleared on
   // `Reset()`.
-  // TODO(crbug.com/1307142): This is a bandaid solution for storing the session
-  // data. It relies on `ClearMatches()`, `SwapMatchesWith()`, and
+  // TODO(crbug.com/40218651): This is a bandaid solution for storing the
+  // session data. It relies on `ClearMatches()`, `SwapMatchesWith()`, and
   // `CopyMatchesFrom()` to only modify the current result set and not the
   // session data; and for `Reset()` to be called once during the autocomplete
   // session. Ideally, this should be replaced with a more general solution such

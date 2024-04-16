@@ -330,7 +330,7 @@ TEST_F(KnownUserTest, FindGaiaIdForAdAccount) {
   EXPECT_FALSE(known_user.FindGaiaID(kAccountIdAd));
 }
 
-// TODO(https://crbug.com/1148457): Add tests for GetAccountId.
+// TODO(crbug.com/40731309): Add tests for GetAccountId.
 
 TEST_F(KnownUserTest, RemovePrefOnCustomPref) {
   KnownUser known_user(local_state());

@@ -347,7 +347,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     state_.received_invalid_request = true;
     return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
   }
-  // TODO(crbug.com/1113599): consider verifying content type and access token
+  // TODO(crbug.com/40143545): consider verifying content type and access token
   // headers.
 
   trusted_vault_pb::JoinSecurityDomainsRequest deserialized_content;

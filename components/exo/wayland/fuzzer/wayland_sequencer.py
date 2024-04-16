@@ -154,7 +154,7 @@ def GetManualSequences(dep_graph):
   c = SequenceBuilder('copy_paste', dep_graph)
   c_device = c.BuildInterface('wl_data_device')
   c_source = c.BuildInterface('wl_data_source')
-  # TODO(crbug/979456): make a fuzz-dictionary with all the mime-types.
+  # TODO(crbug.com/41468273): make a fuzz-dictionary with all the mime-types.
   c.AppendCall('wl_data_source', 'offer', [('receiver', c_source),
                                            ('mime_type', '"text/plain"')])
   c.AppendCall('wl_data_device', 'set_selection', [('receiver', c_device),

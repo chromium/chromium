@@ -356,7 +356,7 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       // `immersive_mode_titlebar_view_controller_` to be
       // displayed z-order on top of the content view. This will cover up any
       // perceived jank.
-      // TODO(https://crbug.com/1375995): Handle fullscreen exit.
+      // TODO(crbug.com/40873399): Handle fullscreen exit.
       if (!fullscreen_transition_complete_) {
         break;
       }
@@ -442,7 +442,7 @@ void ImmersiveModeControllerCocoa::OnChildWindowAdded(NSWindow* child) {
   window_lock_received_.insert(child);
   RevealLock();
 
-  // TODO(https://crbug.com/1350595): Handle a detached find bar.
+  // TODO(crbug.com/40234209): Handle a detached find bar.
 }
 
 void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {

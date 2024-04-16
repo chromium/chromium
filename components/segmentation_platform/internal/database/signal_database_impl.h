@@ -116,7 +116,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   // than 1 second are cleaned up on the subsequent invocation to WriteSample().
   std::map<SignalKey, proto::SignalData> recently_added_signals_;
 
-  // Enables the compaction fix. TODO(https://crbug.com/1357272): remove this
+  // Enables the compaction fix. TODO(crbug.com/40860954): remove this
   // after fixing the bug.
   const bool should_fix_compaction_;
 

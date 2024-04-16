@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/1179539): For some reason the layout measurements in AnchoredPopupWindow are
+<!-- TODO(crbug.com/40749767): For some reason the layout measurements in AnchoredPopupWindow are
      cutting off part of the text when a text view with a compound drawable is used. Figure out
      why and switch this to use TextViewWithCompoundDrawable. -->
 <LinearLayout

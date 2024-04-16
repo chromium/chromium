@@ -1003,7 +1003,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   EXPECT_EQ(0ul, data.size());
 }
 
-// TODO(https://crbug.com/1008697): Flakes when verifying no data found.
+// TODO(crbug.com/40650136): Flakes when verifying no data found.
 TEST_F(SessionStorageImplTest, ClearDiskState) {
   SetBackingMode(SessionStorageImpl::BackingMode::kClearDiskStateOnOpen);
   std::string namespace_id1 =

@@ -36,7 +36,7 @@
 namespace viz {
 namespace {
 
-// TODO(crbug.com/1094361): Clean up the feature in M117.
+// TODO(crbug.com/40699456): Clean up the feature in M117.
 BASE_FEATURE(kAsyncGpuLatencyReporting,
              "AsyncGpuLatencyReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);

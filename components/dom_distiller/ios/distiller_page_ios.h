@@ -73,7 +73,7 @@ class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
   bool distilling_navigation_ = false;
 
   // Used to store whether the owned WebState is currently loading or not.
-  // TODO(crbug.com/782159): this is a work-around as WebState::IsLoading()
+  // TODO(crbug.com/40548473): this is a work-around as WebState::IsLoading()
   // is/was not returning the expected value when an SLL interstitial is
   // blocked. Remove this and use WebState::IsLoading() when WebState has
   // been fixed.

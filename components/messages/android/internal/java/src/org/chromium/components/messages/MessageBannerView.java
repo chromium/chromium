@@ -285,7 +285,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         mPopupMenuShownListener = popupMenuShownListener;
     }
 
-    // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
+    // TODO(crbug.com/40740070): For the M88 experiment we decided to display single item menu in
     // response to the tap on secondary button. The code below implements this logic. Past M88 it
     // will be replaced with modal dialog driven from the feature code.
     void handleSecondaryButtonClick() {

@@ -62,8 +62,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // DualLayerUserPrefStore observers if the effective value changes.
   // Note: This does not do any merge/unmerge and does not check whether the
   // pref `key` is syncable.
-  // TODO(crbug.com/1470161): Implement a better way to handle this usage by the
-  // sync components.
+  // TODO(crbug.com/40277783): Implement a better way to handle this usage by
+  // the sync components.
   void SetValueInAccountStoreOnly(const std::string& key,
                                   base::Value value,
                                   uint32_t flags);

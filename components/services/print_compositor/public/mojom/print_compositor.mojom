@@ -44,7 +44,7 @@ interface PrintCompositor {
   // Sets the accessibility tree for the overall document. This is needed
   // to generate tagged (accessible) PDFs.
   //
-  // TODO(crbug.com/1141990): AXTreeUpdate can be quite large, hence the
+  // TODO(crbug.com/40727460): AXTreeUpdate can be quite large, hence the
   // [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate
   // can be reworked to avoid very large serialized values.
   [UnlimitedSize]

@@ -133,7 +133,7 @@ absl::StatusOr<std::string> HostnameEncodeCallback(std::string_view input) {
   // use of these characters in URLPattern.  Therefore we apply an additional
   // restrictive check for these forbidden code points.
   //
-  // TODO(crbug.com/1065667): Remove this check after the URL parser is fixed.
+  // TODO(crbug.com/40124263): Remove this check after the URL parser is fixed.
   if (ContainsForbiddenHostnameCodePoint(input)) {
     return absl::InvalidArgumentError(
         base::StrCat({"Invalid hostname pattern '", input, "'."}));

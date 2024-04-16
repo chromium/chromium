@@ -33,7 +33,7 @@ class Observer {
       ContentSettingsTypeSet content_type_set) {}
 
   // Deprecated. Use the method above instead.
-  // TODO(crbug.com/1245927): Migrate remaining clients and remove this method.
+  // TODO(crbug.com/40196354): Migrate remaining clients and remove this method.
   virtual void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,

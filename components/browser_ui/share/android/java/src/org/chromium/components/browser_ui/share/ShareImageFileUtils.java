@@ -55,8 +55,8 @@ public class ShareImageFileUtils {
     /**
      * Directory name for shared images.
      *
-     * Named "screenshot" for historical reasons as we only initially shared screenshot images.
-     * TODO(crbug.com/1055886): consider changing the directory name.
+     * <p>Named "screenshot" for historical reasons as we only initially shared screenshot images.
+     * TODO(crbug.com/40676541): consider changing the directory name.
      */
     private static final String SHARE_IMAGES_DIRECTORY_NAME = "screenshot";
 
@@ -355,7 +355,8 @@ public class ShareImageFileUtils {
                             } else {
                                 Log.w(
                                         TAG,
-                                        "Share failed -- Unable to create or write to destination file.");
+                                        "Share failed -- Unable to create or write to destination"
+                                            + " file.");
                                 StreamUtil.closeQuietly(mFileOut);
                                 saveImageCallback.onResult(null);
                             }

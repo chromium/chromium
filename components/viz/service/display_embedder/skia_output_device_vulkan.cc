@@ -320,7 +320,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   // With vulkan, if the chrome is launched in landscape mode, the chrome is
   // always blank until chrome window is rotated once. Workaround this problem
   // by using logic rotation mode.
-  // TODO(https://crbug.com/1115065): use hardware orientation mode for vulkan,
+  // TODO(crbug.com/40711137): use hardware orientation mode for vulkan,
   if (features::IsUsingVulkan())
     capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;
 #endif

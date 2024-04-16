@@ -279,7 +279,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   // macOS it is a CALayeroverlay.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_OZONE)
-  // TODO(crbug.com/1366808): Add ScopedOverlayAccess::GetOverlayImage() that
+  // TODO(crbug.com/40239878): Add ScopedOverlayAccess::GetOverlayImage() that
   // works on all platforms.
   gl::OverlayImage overlay_image = access ? access->GetNativePixmap() : nullptr;
 #elif BUILDFLAG(IS_ANDROID)

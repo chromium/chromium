@@ -130,7 +130,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
         }
     }
 
-    // TODO(crbug.com/1200974): Compare current shown messages with last shown ones.
+    // TODO(crbug.com/40762119): Compare current shown messages with last shown ones.
     /**
      * cf: Current front message. cb: Current back message. nf: Next front message. nb: Next back
      * message. Null represents no view at that position. 1. If candidates and current displayed

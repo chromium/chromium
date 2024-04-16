@@ -136,7 +136,7 @@ interface PaintPreviewCompositor {
 
 // Holds a collection of PaintPreviewCompositor instances running in the same
 // process.
-// TODO(crbug/1074323): Investigate using a different Sandbox.
+// TODO(crbug.com/40686792): Investigate using a different Sandbox.
 [ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PaintPreviewCompositorCollection {
   // Provides an interface for managing discardable shared memory regions. Must

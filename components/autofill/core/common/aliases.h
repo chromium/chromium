@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-// TODO(crbug.com/1326518): Use strong aliases for other primitives in mojom
+// TODO(crbug.com/40840597): Use strong aliases for other primitives in mojom
 // files.
 
 // Specifies whether a first suggestion gets auto selected.

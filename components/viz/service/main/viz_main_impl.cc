@@ -71,7 +71,7 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
           base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(gpu_init_);
 
-  // TODO(crbug.com/609317): Remove this when Mus Window Server and GPU are
+  // TODO(crbug.com/41252481): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to
   // run Mushrome (chrome with mus) with Mus running in the browser process.
   if (dependencies_.power_monitor_source) {

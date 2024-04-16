@@ -156,7 +156,7 @@ struct GlobalId {
 // the one they originate from, Autofill does not send GlobalIds to any renderer
 // process.
 //
-// TODO(crbug/1207920) Move to core/browser.
+// TODO(crbug.com/40181498) Move to core/browser.
 using FormGlobalId = internal::GlobalId<FormRendererId>;
 using FieldGlobalId = internal::GlobalId<FieldRendererId>;
 

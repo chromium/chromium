@@ -68,7 +68,7 @@ class PasswordStore : public PasswordStoreInterface,
   PasswordStore& operator=(const PasswordStore&) = delete;
 
   // Always call this too on the UI thread.
-  // TODO(crbug.com/1218413): Move initialization into the core interface, too.
+  // TODO(crbug.com/40185648): Move initialization into the core interface, too.
   void Init(PrefService* prefs,
             std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
 

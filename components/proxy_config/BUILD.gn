@@ -31,7 +31,7 @@ component("proxy_config") {
     "//url",
   ]
 
-  # TODO(https://crbug.com/562773): Break a header include cycle on ChromeOS
+  # TODO(crbug.com/40446749): Break a header include cycle on ChromeOS
   # and disable include checking so GN doesn't complain about the missing
   # dependency (it still links OK). This cycle should be fixed and header
   # checking enabled.

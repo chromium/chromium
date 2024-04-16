@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <!-- TODO(crbug.com/775198): update colors once UX spec available. -->
+    <!-- TODO(crbug.com/40545033): update colors once UX spec available. -->
     <color name="color_picker_border_color">@color/hairline_stroke_color_baseline</color>
     <color name="color_picker_background_color">@color/default_bg_color_baseline</color>
 </resources>

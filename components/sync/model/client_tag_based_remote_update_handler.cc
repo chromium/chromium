@@ -180,7 +180,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  // TODO(crbug.com/1409462): Remove the storage key check as storage keys
+  // TODO(crbug.com/40889096): Remove the storage key check as storage keys
   // should not be empty after IsEntityDataValid() has been implemented by all
   // bridges.
   if (!data.is_deleted() && (!bridge_->IsEntityDataValid(data) ||
@@ -281,7 +281,7 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       // Record the update and squash the pending commit. Trimming should not be
       // called for matching deleted entities to avoid failing its requirement
       // to have a `password` field present.
-      // TODO(crbug.com/1296159): Consider introducing a dedicated function for
+      // TODO(crbug.com/40214653): Consider introducing a dedicated function for
       // recording exact matching updates.
       entity->RecordForcedRemoteUpdate(
           update, update.entity.is_deleted()

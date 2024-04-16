@@ -179,7 +179,7 @@ class AutofillManager
     virtual void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) {}
   };
 
-  // TODO(crbug.com/1151542): Move to anonymous namespace once
+  // TODO(crbug.com/40733066): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
   // AutofillManager.
   static void LogAutofillTypePredictionsAvailable(

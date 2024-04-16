@@ -294,7 +294,7 @@ void ModelLoadManager::LoadModelsForType(ModelTypeController* dtc) {
     return;
   }
 
-  // TODO(crbug.com/1519487): Avoid calling LoadModelsForType() multiple times
+  // TODO(crbug.com/41492467): Avoid calling LoadModelsForType() multiple times
   // upon stop, and re-introduce a CHECK for state to be NOT_RUNNING only.
   if (dtc->state() == ModelTypeController::NOT_RUNNING) {
     dtc->LoadModels(*configure_context_,

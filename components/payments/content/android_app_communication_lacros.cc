@@ -104,7 +104,7 @@ class AndroidAppCommunicationLacros : public AndroidAppCommunication {
       const std::optional<base::UnguessableToken>& twa_instance_identifier,
       InvokePaymentAppCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    // TODO(crbug.com/1385989): Ensure the Android Play Billing interface is
+    // TODO(crbug.com/40247053): Ensure the Android Play Billing interface is
     // overlaid on top of the browser window.
     std::optional<std::string> error_message;
     if (package_name_for_testing_ == package_name) {

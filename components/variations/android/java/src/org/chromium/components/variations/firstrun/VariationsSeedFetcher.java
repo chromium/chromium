@@ -208,7 +208,8 @@ public class VariationsSeedFetcher {
 
     @VisibleForTesting
     protected String getConnectionString(SeedFetchParameters params) {
-        // TODO(crbug/1302862): Consider reusing native VariationsService::GetVariationsServerURL().
+        // TODO(crbug.com/40825562): Consider reusing native
+        // VariationsService::GetVariationsServerURL().
         String urlString;
         if (CommandLine.getInstance().hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL)) {
             urlString =

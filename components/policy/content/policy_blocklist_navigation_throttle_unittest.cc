@@ -36,7 +36,7 @@ constexpr size_t kCacheSize = 2;
 
 }  // namespace
 
-// TODO(crbug.com/1147231): Break out the tests into separate files. The
+// TODO(crbug.com/40156526): Break out the tests into separate files. The
 // SafeSites tests should be parameterized to run the same tests on both types.
 class SafeSitesNavigationThrottleTest
     : public content::RenderViewHostTestHarness,

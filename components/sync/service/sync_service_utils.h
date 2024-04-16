@@ -48,7 +48,7 @@ enum class TrustedVaultUserActionTriggerForUMA {
   // Used on Android and ChromeOS, represents OS-level notification.
   kNotification = 2,
   // Used on iOS only. Represents Infobar on the New Tab Page.
-  // TODO(crbug.com/1083973): record this bucket bucket on Android once
+  // TODO(crbug.com/40131571): record this bucket bucket on Android once
   // corresponding UI added.
   kNewTabPageInfobar = 3,
   // Used on Android only. This dialog is shown when GMSCore returned

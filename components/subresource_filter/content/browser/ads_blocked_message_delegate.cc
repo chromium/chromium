@@ -67,7 +67,7 @@ void AdsBlockedMessageDelegate::ShowMessage() {
       &AdsBlockedMessageDelegate::HandleMessageManageClicked,
       base::Unretained(this)));
 
-  // TODO(crbug.com/1223078): On rare occasions, such as the moment when
+  // TODO(crbug.com/40774444): On rare occasions, such as the moment when
   // activity is being recreated or destroyed, ads blocked message will not be
   // displayed.
   message_dispatcher_bridge->EnqueueMessage(

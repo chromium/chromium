@@ -432,7 +432,7 @@ void AutofillWalletMetadataSyncBridge::ApplyDisableSyncChanges(
 
 void AutofillWalletMetadataSyncBridge::CreditCardChanged(
     const CreditCardChange& change) {
-  // TODO(crbug.com/1206306): Clean up old metadata for local cards, this early
+  // TODO(crbug.com/40765031): Clean up old metadata for local cards, this early
   // return was missing for quite a while in production.
   if (!IsSyncedWalletCard(change.data_model())) {
     return;

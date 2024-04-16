@@ -19,7 +19,7 @@ enum class SecurePaymentConfirmationEnrollSystemPromptResult {
 void RecordEnrollSystemPromptResult(
     SecurePaymentConfirmationEnrollSystemPromptResult result);
 
-// TODO(crbug.com/1183921): Move other SPC metrics into this common file.
+// TODO(crbug.com/40171413): Move other SPC metrics into this common file.
 
 }  // namespace payments
 

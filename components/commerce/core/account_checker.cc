@@ -50,8 +50,8 @@ AccountChecker::AccountChecker(
       sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
       weak_ptr_factory_(this) {
-  // TODO(crbug.com/1366165): Avoid pushing the fetched pref value to the server
-  // again.
+  // TODO(crbug.com/40239641): Avoid pushing the fetched pref value to the
+  // server again.
   if (pref_service) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(pref_service);

@@ -338,8 +338,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
 
   // Time the prediction manager got initialized.
-  // TODO(crbug/1358568): Remove this old model store once the new model store
-  // is launched.
+  // TODO(crbug.com/40861855): Remove this old model store once the new model
+  // store is launched.
   base::TimeTicks init_time_;
 
   PredictionModelFetchTimer prediction_model_fetch_timer_

@@ -352,7 +352,7 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&
         power_bookmark_service_ &&
         base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
-      // TODO(crbug.com/1426496): Support transport mode for POWER_BOOKMARK.
+      // TODO(crbug.com/40261319): Support transport mode for POWER_BOOKMARK.
       controllers.push_back(std::make_unique<ModelTypeController>(
           syncer::POWER_BOOKMARK,
           power_bookmark_service_->CreateSyncControllerDelegate(),

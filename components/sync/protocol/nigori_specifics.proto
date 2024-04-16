@@ -96,7 +96,7 @@ message NigoriSpecifics {
   // server, and thus can't be encrypted.
   // USS clients don't read these values, datatypes are either always encrypted,
   // never encrypted or encrypted when |encrypt_everything| set to true.
-  // TODO(crbug.com/1360022): complete deprecation of encrypt_* fields (replace
+  // TODO(crbug.com/40862746): complete deprecation of encrypt_* fields (replace
   // fields with reserved) once <M82 clients aren't supported.
   optional bool encrypt_bookmarks = 13 [deprecated = true];
   optional bool encrypt_preferences = 14 [deprecated = true];

@@ -700,8 +700,8 @@ WebDatabase::State AutofillWebDataBackendImpl::AddServerCvc(
     const ServerCvcChange change{ServerCvcChange::ADD, instrument_id,
                                  server_cvc};
     for (auto& db_observer : db_observer_list_) {
-      // TODO(crbug/1477924): Add integration tests for Add, Remove and Update
-      // for Wallet Credential data.
+      // TODO(crbug.com/40929129): Add integration tests for Add, Remove and
+      // Update for Wallet Credential data.
       db_observer.ServerCvcChanged(change);
     }
     ReportResult(Result::kAddServerCvc_Success);

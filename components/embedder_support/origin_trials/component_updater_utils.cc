@@ -90,7 +90,7 @@ void SetupOriginTrialsCommandLineAndSettings(
                                       override_disabled_features);
     }
   }
-  // TODO(crbug.com/1216609): Should revisit if we want to continue allowing
+  // TODO(crbug.com/40770598): Should revisit if we want to continue allowing
   // users to override the disabled tokens list via a CLI flag or remove that
   // functionality and populate the settings only from the PrefService.
   if (!command_line->HasSwitch(kOriginTrialDisabledTokens)) {

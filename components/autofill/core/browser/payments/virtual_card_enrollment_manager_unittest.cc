@@ -297,7 +297,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
        {VirtualCardEnrollmentSource::kUpstream,
         VirtualCardEnrollmentSource::kDownstream,
         VirtualCardEnrollmentSource::kSettingsPage}) {
-// TODO(crbug.com/1320938): Makes the following test
+// TODO(crbug.com/40223706): Makes the following test
 // PersonalDataManagerTest.AddUpdateRemoveCreditCards fail on iOS.
 // That other test fails when SetNetworkImageInResourceBundle is called here.
 #if BUILDFLAG(IS_IOS)

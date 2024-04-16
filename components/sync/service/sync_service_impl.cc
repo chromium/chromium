@@ -305,7 +305,7 @@ void SyncServiceImpl::Initialize() {
         ->SetCommittedAdditionalInterestedDataTypesCallback(base::BindRepeating(
             &SyncServiceImpl::TriggerRefresh, weak_factory_.GetWeakPtr()));
 
-    // TODO(crbug.com/1417954): revisit this logic. IsSignedIn() doesn't feel
+    // TODO(crbug.com/40257467): revisit this logic. IsSignedIn() doesn't feel
     // the right condition to check.
     if (IsSignedIn()) {
       // Start receiving invalidations as soon as possible since GCMDriver drops
@@ -358,7 +358,7 @@ void SyncServiceImpl::Initialize() {
   } else if (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
     // On ChromeOS-Ash, signout is not possible, so it's not necessary to handle
     // this case.
-    // TODO(crbug.com/1454037): It *should* be harmless to handle this case on
+    // TODO(crbug.com/40272157): It *should* be harmless to handle this case on
     // ChromeOS-Ash since it's supposedly unreachable, *but* during the very
     // first startup of a fresh profile, the signed-in account isn't known yet
     // at this point (see also https://crbug.com/1458701#c7).
@@ -1114,7 +1114,7 @@ void SyncServiceImpl::OnActionableProtocolError(
         // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
         DCHECK(account_mutator);
 
-        // TODO(crbug.com/1313410): make the behaviour consistent across
+        // TODO(crbug.com/40220945): make the behaviour consistent across
         // platforms. Any platforms which support a single-step flow that signs
         // in and enables sync should clear the primary account here for
         // symmetry.
@@ -2457,7 +2457,7 @@ void SyncServiceImpl::GetTypesWithUnsyncedData(
     ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> callback) const {
   if (!engine_ || !engine_->IsInitialized()) {
-    // TODO(crbug.com/1477527): Wait for the sync engine to be initialized.
+    // TODO(crbug.com/40071018): Wait for the sync engine to be initialized.
     std::move(callback).Run(ModelTypeSet());
     return;
   }

@@ -174,7 +174,7 @@ void SystemLogsFetcher::AddResponse(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1156750): Add test cases to exercise this code path.
+// TODO(crbug.com/40736068): Add test cases to exercise this code path.
 void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Merge the lacros and ash recent crash report ids into a single log entry

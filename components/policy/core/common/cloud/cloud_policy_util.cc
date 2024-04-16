@@ -207,7 +207,7 @@ std::string GetOSUsername() {
 
   return creds->pw_name;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1257674): This should be fully implemented when there is
+  // TODO(crbug.com/40200780): This should be fully implemented when there is
   // support in fuchsia.
   return std::string();
 #else

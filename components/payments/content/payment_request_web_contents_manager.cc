@@ -37,7 +37,7 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
   // Reset the activationless show tracker at the next user-initiated
   // navigation, which is defined as either a renderer-initiated navigation with
   // a user gesture, or a non-reload browser-initiated navigation.
-  // TODO(crbug.com/1486644): Reset the bit for user-initiated browser reloads.
+  // TODO(crbug.com/40282980): Reset the bit for user-initiated browser reloads.
   //
   // TODO(crbug.com/952347): This check has to be done at DidStartNavigation
   // time, the HasUserGesture state is lost by the time the navigation

@@ -535,9 +535,9 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
   if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
     return;
   }
-  // TODO(crbug.com/1198811): Investigate passing the actually filled fields, in
-  // case the passed fields to be filled are different from the fields that were
-  // actually filled.
+  // TODO(crbug.com/40760916): Investigate passing the actually filled fields,
+  // in case the passed fields to be filled are different from the fields that
+  // were actually filled.
   bridge_->OnDidFillAutofillFormData();
 }
 
@@ -781,7 +781,7 @@ AutofillProviderAndroid::PasswordParserOverrides::FromLoginForm(
   }
   // A login form must always have a username field and a password field.
   if (!result.username_field_id || !result.password_field_id) {
-    // TODO(crbug.com/1523259): This should never be reachable. Remove once it
+    // TODO(crbug.com/41496211): This should never be reachable. Remove once it
     // is clear how it can happen.
     SCOPED_CRASH_KEY_NUMBER("crbug1523259", "pw_form.username_id",
                             pw_form.username_element_renderer_id.value());

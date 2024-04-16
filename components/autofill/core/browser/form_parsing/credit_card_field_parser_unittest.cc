@@ -578,7 +578,7 @@ TEST_P(CreditCardFieldParserTest, ParseCreditCardContextualNameNotCard) {
 
 TEST_P(CreditCardFieldParserTest,
        ParseCreditCardContextualNameNotCardAcctMatch) {
-  // TODO(crbug.com/1167977): This should be not parseable, but waiting before
+  // TODO(crbug.com/40743092): This should be not parseable, but waiting before
   // changing kNameOnCardRe to use word boundaries.
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("acctName", "Account Name", CREDIT_CARD_NAME_FULL);

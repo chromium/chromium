@@ -274,7 +274,7 @@ void AutofillDriverRouter::HidePopup(AutofillDriver* source,
   // We don't know which AutofillManager is currently displaying the popup.
   // Since the the general approach of popup hiding in Autofill seems to be
   // "better safe than sorry", broadcasting this event is fine.
-  // TODO(crbug.com/1490905): This event should go away when the popup-hiding
+  // TODO(crbug.com/40284890): This event should go away when the popup-hiding
   // mechanism has been cleaned up.
   ForEachFrame(form_forest_, callback);
 }

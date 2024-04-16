@@ -59,7 +59,7 @@ constexpr base::TaskTraits kPMTaskTraits = {
     base::MayBlock()};
 
 // Builds a UI task runner with the appropriate traits for the PM.
-// TODO(crbug.com/1189677): The PM task runner has to block shutdown as some of
+// TODO(crbug.com/40755583): The PM task runner has to block shutdown as some of
 // the tasks posted to it should be guaranteed to run before shutdown (e.g.
 // removing some entries from the site data store). The UI thread ignores
 // MayBlock and TaskShutdownBehavior, so these tasks and any blocking tasks must
@@ -176,7 +176,7 @@ bool PerformanceManager::IsAvailable() {
 PerformanceManagerImpl::~PerformanceManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(g_performance_manager, this);
-  // TODO(https://crbug.com/966840): Move this to a TearDown function.
+  // TODO(crbug.com/40629049): Move this to a TearDown function.
   graph_.TearDown();
   g_performance_manager = nullptr;
   if (on_destroyed_callback_)

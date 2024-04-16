@@ -38,7 +38,7 @@ class WebsitePreference extends ChromeImageViewPreference {
     protected final SiteSettingsCategory mCategory;
     private Runnable mRefreshZoomsListFunction;
 
-    // TODO(crbug.com/1076571): Move these constants to dimens.xml
+    // TODO(crbug.com/40688291): Move these constants to dimens.xml
     private static final int TEXT_SIZE_SP = 13;
 
     // Whether the favicon has been fetched already.
@@ -193,7 +193,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return null;
         }
 
-        // TODO(crbug.com/1478113): Check if on Android there is a possibility of other exceptions
+        // TODO(crbug.com/40071127): Check if on Android there is a possibility of other exceptions
         // being scoped to an embedder.
         return getContext()
                 .getString(R.string.website_settings_embedded_on, mSite.getEmbedder().getTitle());

@@ -3,7 +3,7 @@
   <!-- Desktop only -->
   <if expr="not is_android and not is_ios">
     <!-- Discount consent strings -->
-    <!-- TODO(crbug.com/1368330): Delete the following strings. -->
+    <!-- TODO(crbug.com/40868354): Delete the following strings. -->
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_TITLE" desc="The title shown on the consent bubble for getting discount.">
       Get discount on <ph name="MERCHANT_NAME">$1</ph> and more
     </message>
@@ -31,7 +31,7 @@
     </message>
     <!-- This string can skip translation because the feature is targeted en-us locale. Only the
          en-us user can access the feature UI. -->
-    <!-- TODO(crbug.com/1372493): Remove the special character and enable translation. -->
+    <!-- TODO(crbug.com/40241740): Remove the special character and enable translation. -->
     <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount.">
       Let Google help you find&#13;discounts for your carts
     </message>

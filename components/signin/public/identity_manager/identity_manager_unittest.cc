@@ -473,7 +473,7 @@ class IdentityManagerTest : public testing::Test {
     // behavior from all platforms, even from ones where tokens are loaded
     // asynchronously (e.g., ChromeOS). Wait for loading to finish to meet these
     // expectations.
-    // TODO(https://crbug.com/1195170): Move waiting to tests that need it.
+    // TODO(crbug.com/40175926): Move waiting to tests that need it.
     signin::WaitForRefreshTokensLoaded(identity_manager());
   }
 

@@ -163,7 +163,7 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
     }
   }
 
-  // TODO(crbug/1249178): Even after forcing the right variation,
+  // TODO(crbug.com/40197502): Even after forcing the right variation,
   // `sk_subset_typeface` may have the wrong SkFontStyle as there is no way to
   // manipulate the style while loading the font from data.
   return sk_subset_typeface->serialize(

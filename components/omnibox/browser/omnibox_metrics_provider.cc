@@ -212,7 +212,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
       suggestion->set_typed_count(match.typed_count);
     }
 
-    // TODO(https://crbug.com/1103056): send the entire set of subtypes.
+    // TODO(crbug.com/40139076): send the entire set of subtypes.
     if (!match.subtypes.empty()) {
       suggestion->set_result_subtype_identifier(*match.subtypes.begin());
     }

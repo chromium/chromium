@@ -91,7 +91,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       data->specifics = CreateSpecificsFromBookmarkNode(
           node, bookmark_model_, metadata.unique_position(),
           /*force_favicon_load=*/true);
-      // TODO(crbug.com/1058376): check after finishing if we need to use full
+      // TODO(crbug.com/40677937): check after finishing if we need to use full
       // title instead of legacy canonicalized one.
       data->name = data->specifics.bookmark().legacy_canonicalized_title();
     }

@@ -230,7 +230,7 @@ enum class ContentOrder : int {
 // ContentSuggestions.Feed.WebFeed.SortType* histograms.
 // These values are persisted to logs. Entries should never be reused.
 // This must be kept in sync with FeedSortType in enums.xml
-// TODO(crbug.com/1372865): should merge with ContentOrder.
+// TODO(crbug.com/40241876): should merge with ContentOrder.
 enum class FeedSortType : int {
   // Sort Type unspecified.
   kUnspecifiedSortType = 0,

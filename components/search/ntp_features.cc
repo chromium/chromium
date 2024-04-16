@@ -169,7 +169,7 @@ BASE_FEATURE(kNtpDriveModuleShowSixFiles,
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
 // navigation is issued.
-// TODO(crbug.com/1147589): When removing this flag, also remove the workaround
+// TODO(crbug.com/40730793): When removing this flag, also remove the workaround
 // in ChromeContentBrowserClient::OverrideNavigationParams.
 BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
              "HandleMostVisitedNavigationExplicitly",

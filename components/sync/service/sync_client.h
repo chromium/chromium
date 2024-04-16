@@ -69,7 +69,7 @@ class SyncClient {
 
   // Notifies the client that local sync metadata in preferences has been
   // cleared.
-  // TODO(crbug.com/1137346): Replace this mechanism with a more universal one,
+  // TODO(crbug.com/40724759): Replace this mechanism with a more universal one,
   // e.g. using SyncServiceObserver.
   virtual void OnLocalSyncTransportDataCleared() = 0;
 

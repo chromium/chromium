@@ -524,8 +524,8 @@ void SavedPasswordsPresenter::RemoveForms(
 void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
                                        base::OnceClosure completion) {
   for (const auto& form : forms) {
-    // TODO(crbug.com/1359392): Consider replacing |sort_key_to_password_forms_|
-    // when grouping is launched.
+    // TODO(crbug.com/40862365): Consider replacing
+    // |sort_key_to_password_forms_| when grouping is launched.
     sort_key_to_password_forms_.insert(
         std::make_pair(CreateSortKey(CredentialUIEntry(form)), form));
   }

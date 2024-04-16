@@ -32,7 +32,7 @@ class NoStatePrefetchManager;
 
 namespace browsing_data {
 
-// TODO(crbug.com/668114): DEPRECATED. Remove these functions.
+// TODO(crbug.com/40495069): DEPRECATED. Remove these functions.
 // The primary functionality of testing origin type masks has moved to
 // Remover. The secondary functionality of recognizing web schemes
 // storing browsing data has moved to url::GetWebStorageSchemes();

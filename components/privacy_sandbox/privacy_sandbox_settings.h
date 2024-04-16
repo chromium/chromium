@@ -183,7 +183,7 @@ class PrivacySandboxSettings : public KeyedService {
   // |can_bypass| indicates whether the result can be bypassed which is set to
   // true when it's disallowed due to the cookie deprecation experiment.
   //
-  // TODO(https://crbug.com/1501357): Clean up `can_bypass` after the cookie
+  // TODO(crbug.com/40941634): Clean up `can_bypass` after the cookie
   // deprecation experiment.
   virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
@@ -246,7 +246,7 @@ class PrivacySandboxSettings : public KeyedService {
   // If non-null, `out_debug_message` is updated in this call to relay details
   // back to the caller about how the returned boolean result was obtained.
   //
-  // TODO(crbug.com/1378703): This just redirects to the general
+  // TODO(crbug.com/40244046): This just redirects to the general
   // IsSharedStorageAllowed(). The implementation needs to be updated to reflect
   // the M1 preferences when release 4 is enabled.
   virtual bool IsSharedStorageSelectURLAllowed(

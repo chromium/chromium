@@ -91,7 +91,7 @@ static_library("test_support") {
       "//chromecast/cast_core/grpc:grpc",
     ]
     data = [
-      # TODO(crbug/1393862): Script should create binarypb from textpb.
+      # TODO(crbug.com/40248354): Script should create binarypb from textpb.
       # Required for policy/enrollment/psm/rlwe_test_support.cc
       "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
     ]

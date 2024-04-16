@@ -283,7 +283,7 @@ message ContentAnalysisResponse {
     }
     repeated TriggeredRule triggered_rules = 3;
 
-    // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
+    // TODO(crbug.com/40156459): Remove fields 4-6 once a definitive approach is
     // agreed upon.
     optional string malware_family = 4;
     optional string malware_category = 5;
