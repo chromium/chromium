@@ -245,6 +245,7 @@ class Distribution(object):
                  channel_customize=False,
                  package_as_dmg=True,
                  package_as_pkg=False,
+                 package_as_zip=False,
                  inflation_kilobytes=0):
         """Creates a new Distribution object. All arguments are optional.
 
@@ -275,6 +276,8 @@ class Distribution(object):
                 the product.
             package_as_pkg: If True, then a .pkg file will be created containing
                 the product.
+            package_as_zip: If True, then a .zip file will be created containing
+                the product.
             inflation_kilobytes: If non-zero, a blob of this size will be
                 inserted into the DMG. Incompatible with package_as_pkg = True.
         """
@@ -293,6 +296,7 @@ class Distribution(object):
         self.product_dirname = product_dirname
         self.creator_code = creator_code
         self.channel_customize = channel_customize
+        self.package_as_zip = package_as_zip
         self.package_as_dmg = package_as_dmg
         self.package_as_pkg = package_as_pkg
         self.inflation_kilobytes = inflation_kilobytes
@@ -310,7 +314,8 @@ class Distribution(object):
         return Distribution(self.channel, None, self.app_name_fragment,
                             self.packaging_name_fragment, self.product_dirname,
                             self.creator_code, self.channel_customize,
-                            self.package_as_dmg, self.package_as_pkg)
+                            self.package_as_dmg, self.package_as_pkg,
+                            self.package_as_zip)
 
     def to_config(self, base_config):
         """Produces a derived |config.CodeSignConfig| for the Distribution.

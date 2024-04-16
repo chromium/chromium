@@ -485,6 +485,51 @@ def _package_dmg(paths, dist, config):
     return dmg_path
 
 
+def _package_zip(paths, config):
+    """Packages a Chrome application bundle into a zip.
+
+    Args:
+        paths: A |model.Paths| object.
+        config: The |config.CodeSignConfig| object.
+
+    Returns:
+        A path to the produced ZIP file.
+    """
+    zip_path = os.path.join(paths.output,
+                            '{}.zip'.format(config.packaging_basename))
+
+    zip_command = [
+        'zip',
+        '-9',
+        '--recurse-paths',
+        '--symlinks',
+        '--quiet',
+        zip_path,
+        config.app_dir,
+    ]
+
+    # If this distribution is chrome branded, the `.keystone_install`
+    # script must be added.
+    if config.is_chrome_branded():
+        # Copy and rename `keystone_install.sh`->`.keystone_install`
+        # into the work dir, as this is the filename it must have
+        # when it is eventually executed.
+        packaging_dir = paths.packaging_dir(config)
+        ks_install_path = os.path.join(packaging_dir, 'keystone_install.sh')
+        dotted_ks_install_work_path = os.path.join(paths.work,
+                                                   '.keystone_install')
+        commands.copy_files(ks_install_path, dotted_ks_install_work_path)
+        zip_command.append('.keystone_install')
+
+    # If the file already exists, delete it so we avoid updating an old file
+    # rather than creating a new one as intended.
+    commands.delete_file_if_exists(zip_path)
+
+    commands.run_command(zip_command, cwd=paths.work)
+
+    return zip_path
+
+
 def _package_installer_tools(paths, config):
     """Signs and packages all the installer tools, which are not shipped to end-
     users.
@@ -720,8 +765,8 @@ def _sign_and_maybe_notarize_distributions(config, distributions, notary_paths,
     for dist in distributions:
         with commands.WorkDirectory(notary_paths) as paths:
             dist_config = dist.to_config(config)
-            do_packaging = (dist.package_as_dmg or
-                            dist.package_as_pkg) and not disable_packaging
+            do_packaging = (dist.package_as_dmg or dist.package_as_pkg or
+                            dist.package_as_zip) and not disable_packaging
 
             # If not packaging and not notarizing, then simply drop the
             # signed bundle in the output directory when done signing.
@@ -798,6 +843,9 @@ def _package_and_maybe_notarize_distributions(config, distributions,
             if config.notarize.should_notarize():
                 uuid = notarize.submit(pkg_path, dist_config)
                 uuids_to_package_path[uuid] = pkg_path
+
+        if dist.package_as_zip:
+            _package_zip(paths, dist_config)
 
     # If needed, wait for package notarization results to come back, and
     # staple if required.
