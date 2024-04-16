@@ -974,9 +974,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
   void ChangeTitle(const std::u16string& title) {
     title_ = title;
-    // Note UpdateWindowTitle() always does a layout, which will be invalid if
-    // the Widget needs to change size. But also SizeToContents() _only_ does a
-    // layout if the size is actually changing.
+    // UpdateWindowTitle() will lead to an invalidation if the title's string or
+    // visibility changes.
     GetWidget()->UpdateWindowTitle();
   }
 
@@ -1118,9 +1117,10 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
 
   // Grow the title incrementally until word wrap is required. There should
   // never be a point where the BubbleFrameView over- or under-estimates the
-  // size required for the title. If it did, it would cause SizeToContents() to
-  // Widget size requiring the subsequent Layout() to fill the remaining client
-  // area with something other than |delegate|'s preferred size.
+  // size required for the title. If it did, it would automatically resizes the
+  // Widget based on autosize, requiring the subsequent Layout() to fill the
+  // remaining client area with something other than |delegate|'s preferred
+  // size.
   while (bubble->GetWindowBoundsInScreen().height() == min_bubble_height) {
     title += ' ';
     title += 'i';

@@ -760,10 +760,13 @@ gfx::Insets BubbleFrameView::GetFootnoteMargins() const {
 
 void BubbleFrameView::SetPreferredArrowAdjustment(
     BubbleFrameView::PreferredArrowAdjustment adjustment) {
+  if (preferred_arrow_adjustment_ == adjustment) {
+    return;
+  }
+
   preferred_arrow_adjustment_ = adjustment;
-  // Changing |preferred_arrow_adjustment| will affect window bounds. Therefore
-  // this effect is handled during window resizing.
-  OnPropertyChanged(&preferred_arrow_adjustment_, kPropertyEffectsNone);
+  // Changing |preferred_arrow_adjustment| will affect window bounds.
+  OnPropertyChanged(&preferred_arrow_adjustment_, kPropertyEffectsLayout);
 }
 
 BubbleFrameView::PreferredArrowAdjustment
@@ -1034,8 +1037,9 @@ void BubbleFrameView::OffsetArrowIfOutOfBounds(
 
 int BubbleFrameView::GetFrameWidthForClientWidth(int client_width) const {
   // Note that GetMinimumSize() for multiline Labels is typically 0.
-  const int title_bar_width = title()->GetMinimumSize().width() +
-                              GetTitleLabelInsetsFromFrame().width();
+  const int title_bar_width =
+      GetTitleLabelInsetsFromFrame().width() +
+      (HasWindowTitle() ? title()->GetMinimumSize().width() : 0);
   const int client_area_width = client_width + content_margins_.width();
   const int frame_width =
       std::max(title_bar_width, client_area_width) + GetMainImageLeftInsets();

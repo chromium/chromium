@@ -46,7 +46,10 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
     gfx::NativeView parent_window,
     PageInfoBubbleViewBase::BubbleType type,
     content::WebContents* web_contents)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_LEFT),
+    : BubbleDialogDelegateView(anchor_view,
+                               views::BubbleBorder::TOP_LEFT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
       content::WebContentsObserver(web_contents) {
   g_shown_bubble_type = type;
   g_page_info_bubble = this;
