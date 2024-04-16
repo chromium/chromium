@@ -37,6 +37,17 @@ public interface TabWindowManager {
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
     static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
 
+    public interface Observer {
+        /** Called when a tab model selector is added for an activity opening. */
+        public void onTabModelSelectorAdded(TabModelSelector selector);
+    }
+
+    /** Add an observer. */
+    void addObserver(Observer observer);
+
+    /** Removes an observer.s */
+    void removeObserver(Observer observer);
+
     /**
      * @return The maximum number of simultaneous TabModelSelector instances in this Application.
      */

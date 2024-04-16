@@ -14,7 +14,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -30,39 +29,37 @@ public class TabArchiveSettingsTest {
             "android_tab_declutter_auto_delete_time_delta_hours";
     static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 60 * 24;
 
-    private SharedPreferencesManager mSharedPrefs;
+    private TabArchiveSettings mSettings;
 
     @Before
     public void setUp() {
-        mSharedPrefs = ChromeSharedPreferences.getInstance();
+        mSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        mSettings.resetSettingsForTesting();
     }
 
     @Test
     public void testSettings() {
-        TabArchiveSettings settings = new TabArchiveSettings(mSharedPrefs);
-        assertEquals(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT, settings.getArchiveEnabled());
-        assertEquals(ARCHIVE_TIME_DELTA_HOURS_DEFAULT, settings.getArchiveTimeDeltaHours());
+        assertEquals(TabArchiveSettings.ARCHIVE_ENABLED_DEFAULT, mSettings.getArchiveEnabled());
+        assertEquals(ARCHIVE_TIME_DELTA_HOURS_DEFAULT, mSettings.getArchiveTimeDeltaHours());
         assertEquals(
-                TabArchiveSettings.AUTO_DELETE_ENABLED_DEFAULT, settings.isAutoDeleteEnabled());
-        assertEquals(AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT, settings.getAutoDeleteTimeDeltaHours());
+                TabArchiveSettings.AUTO_DELETE_ENABLED_DEFAULT, mSettings.isAutoDeleteEnabled());
+        assertEquals(AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT, mSettings.getAutoDeleteTimeDeltaHours());
 
-        settings.setArchiveEnabled(false);
-        assertFalse(settings.getArchiveEnabled());
+        mSettings.setArchiveEnabled(false);
+        assertFalse(mSettings.getArchiveEnabled());
 
-        settings.setArchiveTimeDeltaHours(1);
-        assertEquals(1, settings.getArchiveTimeDeltaHours());
+        mSettings.setArchiveTimeDeltaHours(1);
+        assertEquals(1, mSettings.getArchiveTimeDeltaHours());
 
-        settings.setAutoDeleteEnabled(false);
-        assertFalse(settings.isAutoDeleteEnabled());
+        mSettings.setAutoDeleteEnabled(false);
+        assertFalse(mSettings.isAutoDeleteEnabled());
 
-        settings.setAutoDeleteTimeDeltaHours(1);
-        assertEquals(1, settings.getArchiveTimeDeltaHours());
+        mSettings.setAutoDeleteTimeDeltaHours(1);
+        assertEquals(1, mSettings.getArchiveTimeDeltaHours());
     }
 
     @Test
     public void testSettingsDefaultOverriddenByFinch() {
-        TabArchiveSettings settings = new TabArchiveSettings(mSharedPrefs);
-
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_TIME_DELTA_PARAM, "10");
@@ -70,13 +67,13 @@ public class TabArchiveSettingsTest {
                 ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_TIME_DELTA_PARAM, "20");
         FeatureList.setTestValues(testValues);
 
-        assertEquals(10, settings.getArchiveTimeDeltaHours());
-        assertEquals(20, settings.getAutoDeleteTimeDeltaHours());
+        assertEquals(10, mSettings.getArchiveTimeDeltaHours());
+        assertEquals(20, mSettings.getAutoDeleteTimeDeltaHours());
 
-        settings.setArchiveTimeDeltaHours(1);
-        assertEquals(1, settings.getArchiveTimeDeltaHours());
+        mSettings.setArchiveTimeDeltaHours(1);
+        assertEquals(1, mSettings.getArchiveTimeDeltaHours());
 
-        settings.setAutoDeleteTimeDeltaHours(1);
-        assertEquals(1, settings.getArchiveTimeDeltaHours());
+        mSettings.setAutoDeleteTimeDeltaHours(1);
+        assertEquals(1, mSettings.getArchiveTimeDeltaHours());
     }
 }

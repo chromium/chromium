@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
@@ -22,6 +23,12 @@ public class TabArchiveSettings {
      */
     public TabArchiveSettings(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
+        // Turn off the archive feature by default for tests since we can't control when tabs
+        // are created, and tabs disappearing from tests is very unexpected. For archive tests,
+        // this will need to be turned on manually.
+        if (BuildConfig.IS_FOR_TEST) {
+            setArchiveEnabled(false);
+        }
     }
 
     /** Returns whether archive is enabled in settings. */
@@ -73,5 +80,12 @@ public class TabArchiveSettings {
     public void setAutoDeleteTimeDeltaHours(int timeDeltaHours) {
         mPrefsManager.writeInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS, timeDeltaHours);
+    }
+
+    public void resetSettingsForTesting() {
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED);
+        mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
     }
 }

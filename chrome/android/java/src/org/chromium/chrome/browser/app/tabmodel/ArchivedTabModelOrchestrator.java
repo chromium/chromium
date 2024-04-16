@@ -13,8 +13,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
@@ -61,6 +64,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // really be using this at a time and it makes things like undo messy if it is supported in
     // multiple places simultaneously.
     private final TabCreatorManager mArchivedTabCreatorManager;
+    private final AsyncTabParamsManager mAsyncTabParamsManager;
 
     private WindowAndroid mWindow;
     private TabArchiver mTabArchiver;
@@ -88,6 +92,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     private ArchivedTabModelOrchestrator(Profile profile) {
+        assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         mProfile = profile;
         mArchivedTabCreatorManager =
                 new TabCreatorManager() {
@@ -98,6 +103,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     }
                 };
         ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
+        mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
     }
 
     @Override
@@ -124,14 +130,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mWindow = new WindowAndroid(context);
         mArchivedTabCreator = new ArchivedTabCreator(mWindow);
 
-        AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         mTabModelSelector =
                 new ArchivedTabModelSelectorImpl(
                         mProfile,
                         mArchivedTabCreatorManager,
                         new ChromeTabModelFilterFactory(context),
                         () -> NextTabPolicy.LOCATIONAL,
-                        asyncTabParamsManager);
+                        mAsyncTabParamsManager);
 
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
@@ -142,11 +147,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabPersistentStore =
                 new TabPersistentStore(
                         mTabPersistencePolicy, mTabModelSelector, mArchivedTabCreatorManager);
-        mTabArchiver =
-                new TabArchiver(
-                        mArchivedTabCreator,
-                        mTabModelSelector.getModel(/* incognito= */ false),
-                        asyncTabParamsManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();
@@ -158,6 +158,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mNativeLibraryReadyCalled = true;
 
         super.onNativeLibraryReady(tabContentManager);
+
+        mTabArchiver =
+                new TabArchiver(
+                        mTabModelSelector.getModel(false),
+                        mArchivedTabCreator,
+                        mAsyncTabParamsManager,
+                        TabWindowManagerSingleton.getInstance(),
+                        new TabArchiveSettings(ChromeSharedPreferences.getInstance()),
+                        System::currentTimeMillis);
     }
 
     @Override

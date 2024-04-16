@@ -128,5 +128,10 @@ specific_include_rules = {
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java"
   ]
 }

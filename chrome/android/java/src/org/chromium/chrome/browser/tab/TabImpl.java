@@ -1921,6 +1921,10 @@ class TabImpl implements Tab {
         mTitle = title;
     }
 
+    public void setTimestampMillisForTesting(long timestamp) {
+        mTimestampMillis = timestamp;
+    }
+
     @Override
     public long getLastNavigationCommittedTimestampMillis() {
         return mLastNavigationCommittedTimestampMillis;

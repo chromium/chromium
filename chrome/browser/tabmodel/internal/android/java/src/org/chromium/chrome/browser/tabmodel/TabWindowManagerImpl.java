@@ -20,6 +20,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
@@ -71,13 +72,13 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         int NUM_ENTRIES = 7;
     }
 
-    private TabModelSelectorFactory mSelectorFactory;
+    private final List<TabModelSelector> mSelectors = new ArrayList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
+
+    private final TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
-
-    private List<TabModelSelector> mSelectors = new ArrayList<>();
-
-    private Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
 
     TabWindowManagerImpl(
             TabModelSelectorFactory selectorFactory,
@@ -88,6 +89,16 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         ApplicationStatus.registerStateListenerForAllActivities(this);
         mMaxSelectors = maxSelectors;
         for (int i = 0; i < mMaxSelectors; i++) mSelectors.add(null);
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
     }
 
     @Override
@@ -160,6 +171,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
         Pair res = Pair.create(assignedIndex, selector);
         Log.i(TAG_MULTI_INSTANCE, "Returning new selector for " + activity + " with index: " + res);
+        for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
         return res;
     }
 
