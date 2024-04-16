@@ -6138,12 +6138,6 @@
       'linux_flavor_specific_chromium_gtests',
     ],
 
-    'chromium_linux_dbg_isolated_scripts': [
-      'desktop_chromium_isolated_scripts',
-      'linux_specific_chromium_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
-    ],
-
     'chromium_linux_gtests': [
       'aura_gtests',
       'chromium_gtests',

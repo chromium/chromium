@@ -75,7 +75,8 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_compile_dbg_ng/targets"
     }
   },
   "$build/flakiness": {

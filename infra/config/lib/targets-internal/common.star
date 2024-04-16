@@ -90,6 +90,23 @@ def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
         graph.add_edge(test_key, _targets_nodes.MIXIN.key(m))
     return test_key
 
+def _remove(*, reason):
+    """Declaration that can be used to remove a test from a bundle.
+
+    Args:
+        reason: The reason that the test is being removed.
+
+    Returns:
+        An object that can be passed as a value in the per_test_modifications
+            dict of a bundle declaration in order to remove the test from the
+            bundle.
+    """
+    if not reason:
+        fail("A non-empty reason must be specified to remove a test")
+    return struct(
+        __targets_remove__ = reason,
+    )
+
 def _create_bundle(
         *,
         name,
@@ -98,8 +115,15 @@ def _create_bundle(
         builder_group = None,
         mixins = [],
         per_test_modifications = {}):
+    tests_to_remove = []
+    for test_name, mods in per_test_modifications.items():
+        if hasattr(mods, "__targets_remove__"):
+            tests_to_remove.append(test_name)
+            per_test_modifications.pop(test_name)
+
     bundle_key = _targets_nodes.BUNDLE.add(name, props = dict(
         builder_group = builder_group,
+        tests_to_remove = tests_to_remove,
         # Record the stacktrace so that failures actually point out the failing
         # definition (this is especially important for unnamed bundles since
         # they won't have a useful name to search for)
@@ -304,6 +328,9 @@ def _spec_init(node, **kwargs):
         test = binary_node.key.id,
         test_id_prefix = binary_node.props.test_id_prefix,
         args = node.props.details.args,
+        ci_only = None,
+        precommit_args = [],
+        isolate_profile_data = None,
         # Tests will be swarmed by default, builders that don't want tests
         # swarmed will use a mixin to disable it
         swarming = _swarming(enable = True),
@@ -329,6 +356,7 @@ common = struct(
     # Functions used for creating objects that are part of the public API that
     # need to be used internally as well
     merge = _merge,
+    remove = _remove,
     swarming = _swarming,
 
     # Functions used for creating nodes by functions that define targets

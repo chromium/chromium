@@ -8,6 +8,15 @@
 
 load("//lib/targets.star", "targets")
 
+targets.bundle(
+    name = "chromium_linux_dbg_isolated_scripts",
+    targets = [
+        "desktop_chromium_isolated_scripts",
+        "linux_specific_chromium_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
 # Runs only the accessibility tests in CI/CQ to reduce accessibility
 # failures that land.
 targets.bundle(

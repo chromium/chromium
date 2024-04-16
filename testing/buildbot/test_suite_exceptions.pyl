@@ -324,11 +324,6 @@
           'shards': 8,
         },
       },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'Mac10.15 Tests': {
         'swarming': {
           'dimensions': {
@@ -612,11 +607,6 @@
         ],
         'swarming': {
           'shards': 10,
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 18,
         },
       },
       'Mac10.15 Tests': {
@@ -962,14 +952,6 @@
         'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        # crbug.com/1066161
-        # crbug.com/1459645
-        # crbug.com/1508286
-        'swarming': {
-          'shards': 32,
         },
       },
       'Mac ASan 64 Tests (1)': {
@@ -3071,11 +3053,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
         ],
       },
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
@@ -3335,11 +3312,6 @@
   },
   'leveldb_unittests': {
     'modifications': {
-      'Linux Tests (dbg)(1)': {
-        'args': [
-          '--test-launcher-timeout=90000',
-        ],
-      },
       'Win10 Tests x64 (dbg)': {
         'args': [
           '--test-launcher-timeout=90000',
@@ -3510,12 +3482,6 @@
           'shards': 4,
         }
       },
-      # The suite runs signficantly slower on linux dbg, so increase shards.
-      'Linux Tests (dbg)(1)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'ToTLinuxASan': {
         # TODO(crbug.com/1257927): net_unittests is slow under ASan.
         'swarming': {
@@ -3580,10 +3546,6 @@
     ],
   },
   'not_site_per_process_blink_web_tests': {
-    'remove_from': [
-      # TODO(dpranke): Should we be running this step on Linux Tests (dbg)(1)?
-      'Linux Tests (dbg)(1)',
-    ],
     'modifications': {
       'Linux Tests': {
         "args": [
@@ -4288,12 +4250,6 @@
           '--jobs=1',
         ],
       },
-      'Linux Tests (dbg)(1)': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
       'Mac11 Tests': {
         'ci_only': True,
       },
@@ -4758,13 +4714,6 @@
     },
   },
   'webdriver_wpt_tests': {
-    'modifications': {
-      'Linux Tests (dbg)(1)': {
-        'args': [
-          '--debug',
-        ],
-      },
-    },
     'remove_from': [
       'Linux Tests',  # https://crbug.com/929689, https://crbug.com/936557
       'linux-rel-cft',

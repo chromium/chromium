@@ -311,15 +311,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "chromium_linux_dbg_isolated_scripts",
-    basic_suites = [
-        "desktop_chromium_isolated_scripts",
-        "linux_specific_chromium_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
 # When changing something here, change chromium_linux_and_gl_gtests,
 # chromium_linux_and_gl_and_vulkan_gtests in the same way.
 targets.legacy_compound_suite(

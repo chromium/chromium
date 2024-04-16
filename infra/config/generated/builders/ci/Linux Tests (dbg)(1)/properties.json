@@ -74,7 +74,8 @@
           "builder": "linux_chromium_dbg_ng",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Tests (dbg)(1)/targets"
     }
   },
   "$build/siso": {

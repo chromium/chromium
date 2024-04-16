@@ -4766,6 +4766,11 @@
     },
   },
   {
+    # The following builders in this group groups have been migrated to set
+    # their targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.linux.star
+    #   Linux Builder (dbg)
+    #   Linux Tests (dbg)(1)
     'name': 'chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -4793,11 +4798,6 @@
           'chrome'
         ],
       },
-      'Linux Builder (dbg)': {
-        'additional_compile_targets': [
-          'all'
-        ]
-      },
       'Linux Tests': {
         'mixins': [
           'isolate_profile_data',
@@ -4820,15 +4820,6 @@
         ],
         'test_suites': {
          'gtest_tests': 'chromium_linux_gtests',
-        },
-      },
-      'Linux Tests (dbg)(1)': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_dbg_isolated_scripts',
         },
       },
       # For documentation, see //services/network/README.md.

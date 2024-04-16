@@ -11,6 +11,7 @@ load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -43,6 +44,10 @@ consoles.console_view(
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
         "cast": ["x64", "arm64"],
     },
+)
+
+targets.builder_defaults.set(
+    mixins = ["chromium-tester-service-account"],
 )
 
 ci.builder(
@@ -260,6 +265,11 @@ ci.builder(
             "reclient",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "64",
@@ -367,6 +377,66 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+            "chromium_linux_dbg_isolated_scripts",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            "browser_tests": targets.mixin(
+                # crbug.com/1066161
+                # crbug.com/1459645
+                # crbug.com/1508286
+                swarming = targets.swarming(
+                    shards = 32,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "leveldb_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-timeout=90000",
+                ],
+            ),
+            "net_unittests": targets.mixin(
+                # The suite runs signficantly slower on linux dbg, so increase shards.
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            # TODO(dpranke): Should we be running this step on Linux Tests (dbg)(1)?
+            "not_site_per_process_blink_web_tests": targets.remove(
+                reason = "removal was present before migration to starlark",
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                args = [
+                    "--xvfb",
+                    "--jobs=1",
+                ],
+            ),
+            "webdriver_wpt_tests": targets.mixin(
+                args = [
+                    "--debug",
+                ],
+            ),
+        },
     ),
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",

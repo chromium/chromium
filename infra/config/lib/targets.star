@@ -285,8 +285,8 @@ def _cipd_package(
 
 def _resultdb(
         *,
-        enable = False,
-        has_native_resultdb_integration = False,
+        enable = None,
+        has_native_resultdb_integration = None,
         result_format = None,
         result_file = None):
     """Define the ResultDB integration to be used for a test.
@@ -381,6 +381,7 @@ def _mixin_values(
         skylab = None,
         use_isolated_scripts_api = None,
         ci_only = None,
+        retry_only_failed_tests = None,
         check_flakiness_for_new_tests = None,
         resultdb = None,
         isolate_profile_data = None,
@@ -446,6 +447,10 @@ def _mixin_values(
         check_flakiness_for_new_tests: A bool indicating whether try
             builders running the test should rerun new tests additional
             times to check for flakiness.
+        retry_only_failed_tests: A bool indicating whether retrying the
+            failing test will limit execution to only the failed test
+            cases. By default, the entire shards that contain failing
+            test cases will be rerun. Applies only to swarmed tests.
         resultdb: A targets.resultdb describing the ResultDB integration
             for the test.
         isolate_profile_data: A bool indicating whether profile data for
@@ -482,6 +487,7 @@ def _mixin_values(
         skylab = skylab,
         use_isolated_scripts_api = use_isolated_scripts_api,
         ci_only = ci_only,
+        retry_only_failed_tests = retry_only_failed_tests,
         check_flakiness_for_new_tests = check_flakiness_for_new_tests,
         resultdb = resultdb,
         isolate_profile_data = isolate_profile_data,
@@ -676,13 +682,16 @@ def _legacy_compound_suite(*, name, basic_suites):
         name: The name of the matrix compound suite.
         basic_suites: A list of names of basic suites to compose.
     """
-    key = _targets_nodes.LEGACY_COMPOUND_SUITE.add(name)
-    graph.add_edge(keys.project(), key)
+    legacy_compound_suite_key = _targets_nodes.LEGACY_COMPOUND_SUITE.add(name)
+    graph.add_edge(keys.project(), legacy_compound_suite_key)
 
     for s in basic_suites:
-        graph.add_edge(key, _targets_nodes.LEGACY_BASIC_SUITE.key(s))
+        graph.add_edge(legacy_compound_suite_key, _targets_nodes.LEGACY_BASIC_SUITE.key(s))
 
-    # TODO: crbug.com/1420012 - Make compound suites usable as bundles
+    _targets_common.create_bundle(
+        name = name,
+        targets = basic_suites,
+    )
 
 def _legacy_matrix_compound_suite(*, name, basic_suites):
     """Define a matrix compound suite.
@@ -775,6 +784,7 @@ targets = struct(
     variant = _variant,
     cipd_package = _cipd_package,
     merge = _targets_common.merge,
+    remove = _targets_common.remove,
     resultdb = _resultdb,
     swarming = _targets_common.swarming,
     skylab = _skylab,
@@ -820,8 +830,20 @@ def _merge_swarming(swarming1, swarming2):
             d[k] = v
     return _targets_common.swarming(**d)
 
+_OS_SPECIFIC_ARGS = set([
+    "android_args",
+])
+
+_OS_SPECIFIC_SWARMING = set([
+    "android_swarming",
+])
+
 def _apply_mixin(spec, mixin_values):
-    invalid_mixin_values = [k for k in mixin_values if k not in spec.value]
+    invalid_mixin_values = set([k for k in mixin_values if k not in spec.value])
+    if "args" in spec.value:
+        invalid_mixin_values -= _OS_SPECIFIC_ARGS
+    if "swarming" in spec.value:
+        invalid_mixin_values -= _OS_SPECIFIC_SWARMING
     if invalid_mixin_values:
         # Return the original spec in the case of an error so that the caller
         # doesn't have to save the original value
@@ -829,6 +851,10 @@ def _apply_mixin(spec, mixin_values):
 
     spec_value = dict(spec.value)
     mixin_values = dict(mixin_values)
+
+    # TODO: crbug.com/40258588 Implement support for the os-specific mixin values
+    for a in _OS_SPECIFIC_ARGS | _OS_SPECIFIC_SWARMING:
+        mixin_values.pop(a, None)
 
     args_mixin = mixin_values.pop("args", None)
     if args_mixin:
@@ -906,6 +932,15 @@ def _get_bundle_resolver():
                         trace = n.props.stacktrace,
                     )
                 test_spec_and_source_by_name[test_name] = new_spec, n.key
+
+            for name in n.props.tests_to_remove:
+                if name not in test_spec_and_source_by_name:
+                    fail(
+                        "attempting to remove test '{}' that is not contained in the bundle"
+                            .format(name),
+                        trace = n.props.stacktrace,
+                    )
+                test_spec_and_source_by_name.pop(name)
 
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added
