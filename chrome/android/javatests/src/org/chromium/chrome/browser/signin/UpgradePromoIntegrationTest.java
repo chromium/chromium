@@ -10,14 +10,18 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.widget.ProgressBar;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -38,15 +42,19 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for the re-FRE. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -142,7 +150,7 @@ public class UpgradePromoIntegrationTest {
     public void testUserAlreadySignedIn_onlyShowsHistorySync() {
         mSigninTestRule.addTestAccountThenSignin();
 
-        launchActivity();
+        launchActivity(/* shouldReplaceProgressBars= */ false);
 
         // Verify that the history opt-in dialog is shown and accept.
         onView(withId(org.chromium.chrome.test.R.id.history_sync)).check(matches(isDisplayed()));
@@ -207,11 +215,59 @@ public class UpgradePromoIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
     }
 
+    @Test
+    @MediumTest
+    public void testAddAccount() {
+        String secondAccountEmail = "jane.doe@gmail.com";
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, secondAccountEmail);
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown with the default account.
+        onView(withId(org.chromium.chrome.test.R.id.fullscreen_signin))
+                .check(matches(isDisplayed()));
+        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()))
+                .check(matches(isDisplayed()));
+
+        // Add the second account.
+        onView(withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())).perform(click());
+        onView(withText(R.string.signin_add_account_to_device)).perform(click());
+
+        // Verify that the fullscreen sign-in promo is shown with the newly added account.
+        onView(withId(org.chromium.chrome.test.R.id.fullscreen_signin))
+                .check(matches(isDisplayed()));
+        onView(withText(secondAccountEmail)).check(matches(isDisplayed()));
+    }
+
     private void launchActivity() {
+        launchActivity(true);
+    }
+
+    private void launchActivity(boolean shouldReplaceProgressBars) {
         Intent intent =
                 SigninAndHistoryOptInActivity.createIntentForUpgradePromo(
                         ApplicationProvider.getApplicationContext());
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.RESUMED);
+
+        if (shouldReplaceProgressBars) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Replace all the progress bars with placeholders. Currently the progress
+                        // bar cannot be stopped otherwise due to some espresso issues (see
+                        // crbug.com/40144184).
+                        ProgressBar nativeAndPolicyProgressSpinner =
+                                mActivity.findViewById(
+                                        R.id.fre_native_and_policy_load_progress_spinner);
+                        nativeAndPolicyProgressSpinner.setIndeterminateDrawable(
+                                new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
+                        ProgressBar signinProgressSpinner =
+                                mActivity.findViewById(R.id.fre_signin_progress_spinner);
+                        signinProgressSpinner.setIndeterminateDrawable(
+                                new ColorDrawable(SemanticColorUtils.getDefaultBgColor(mActivity)));
+                    });
+
+            ViewUtils.waitForVisibleView(allOf(withId(R.id.fre_logo), isDisplayed()));
+        }
     }
 }

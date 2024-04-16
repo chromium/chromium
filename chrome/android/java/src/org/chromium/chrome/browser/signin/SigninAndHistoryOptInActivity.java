@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,11 +29,14 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.UpgradePromoCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -268,8 +273,31 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
     /** Implements {@link UpgradePromoCoordinator.Delegate} */
     @Override
-    public void addAccountInUpgradePromo() {
-        // TODO(b/41493788): Implement this method
+    public void addAccount() {
+        final WindowAndroid.IntentCallback onAddAccountCompleted =
+                (int resultCode, Intent data) -> {
+                    if (resultCode != Activity.RESULT_OK) {
+                        return;
+                    }
+                    String accountAddedEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    // TODO(crbug.com/41493767): Implement new account selection for when the
+                    // SigninAndHistoryOptIn coordinator is shown rather than the Upgrade promo.
+                    if (mUpgradePromoCoordinator != null && accountAddedEmail != null) {
+                        mUpgradePromoCoordinator.onAccountSelected(accountAddedEmail);
+                    }
+                };
+        AccountManagerFacadeProvider.getInstance()
+                .createAddAccountIntent(
+                        intent -> {
+                            if (intent == null) {
+                                // AccountManagerFacade couldn't create the intent, use SigninUtils
+                                // to open settings instead.
+                                SigninUtils.openSettingsForAllAccounts(this);
+                                return;
+                            }
+
+                            getWindowAndroid().showIntent(intent, onAddAccountCompleted, null);
+                        });
     }
 
     /** Implements {@link UpgradePromoCoordinator.Delegate} */
