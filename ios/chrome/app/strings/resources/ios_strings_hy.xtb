@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Բոլորը նշել որպես կարդացված</translation>
 <translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="1700629756560807968">Ընտրվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> էջանիշ</translation>
+<translation id="1710698977900873766">Միացնել բարելավված պաշտպանությունը</translation>
 <translation id="1713777106376424209">Առաքման ծառայությունը՝</translation>
 <translation id="1715515772563243997">Եթե վստահում եք <ph name="SITE" /> կայքին, մուտք գործելու համար կարող եք օգտագործել պահված գաղտնաբառ։</translation>
 <translation id="1740468249224277719">Կրկնակի հպեք՝ տեղադրելու համար:</translation>
@@ -1271,7 +1272,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7564917801238348224">ՊԱՀԵԼ…</translation>
-<translation id="7569588934989281656">Մեկ ներդիրից մյուսն անցնելու համար կարող եք թերթել ներդիրների հատվածը։</translation>
 <translation id="7582857256643797524">Այս կարգավորումը միացված է ձեր սարքում</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7598439272585186139">Ստացեք ավելի շատ անվտանգություն</translation>

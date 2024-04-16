@@ -826,6 +826,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2526280916094749336">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Kod CVC znajduje się z przodu karty. To 4-cyfrowy kod widoczny w prawym górnym rogu, nad numerem karty.</translation>
 <translation id="2529899080962247600">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Wszystkie następne wpisy będą ignorowane.</translation>
+<translation id="2533649878691950253">Tej witrynie zablokowaliśmy możliwość sprawdzania Twojej dokładnej lokalizacji, bo zazwyczaj na to nie zezwalasz</translation>
 <translation id="253493526287553278">Zobacz szczegóły kodu promocyjnego</translation>
 <translation id="2535585790302968248">Otwórz nową kartę incognito, aby przeglądać prywatnie</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
@@ -3304,6 +3305,7 @@ Dodatkowe informacje:
 <translation id="7392089738299859607">Zmień adres</translation>
 <translation id="7393161616326137353">Gry przygodowe</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>
+<translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7403392780200267761">Udostępnij tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji</translation>

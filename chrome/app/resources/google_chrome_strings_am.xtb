@@ -248,6 +248,7 @@
 <translation id="4793679854893018356">Chrome እንዴት ደህንነትዎን እንደሚጠብቅ ይወቁ</translation>
 <translation id="4828579605166583682">Google Chrome ነባር ይለፍ ቃሎችን ለመተካት እየሞከረ ነው። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="4842397268809523050">ስምረት ለጎራዎ ስለማይገኝ ChromeOS Flex ውሂብዎን ማስመር አልቻለም።</translation>
+<translation id="4862446263930606916">ድርጅትዎ እንደ እልባቶችዎ፣ ታሪክዎ እና የይለፍ ቃላትዎ ባሉ የስራ መገለጫዎ ውስጥ የአሰሳ ውሂብን ማየት እና ማስተዳደር ይችላል። በግል የChrome መገለጫዎች ውስጥ የአሰሳ ውሂብን ማየት አይችልም።</translation>
 <translation id="4873692836499071887">የወደፊት የGoogle Chrome ዝማኔዎችን ለማግኘት macOS 11 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር macOS 10.15 እየተጠቀመ ነው።</translation>
 <translation id="4873783916118289636">በChrome ውስጥ ቁልፍ የግላዊነት እና የደህንነት ቁጥጥሮችን ይገምግሙ</translation>
 <translation id="4891791193823137474">Google Chrome በጀርባ ውስጥ ይሂድ</translation>
@@ -490,6 +491,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8989968390305463310">የአሰሳ ታሪክዎ ከታች እንደተገመተው እርስዎ በሚያዩዋቸው ማስታወቂያዎች እና ዝንባሌዎች ላይ ተጽዕኖ ያሳድራል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን በራስ-ሰር ይሰርዛል። እርስዎ ካላስወገዷቸው በስተቀር ዝንባሌዎችን ማደስ ይችላሉ።</translation>
 <translation id="8999117580775242387">ኤችቲቲፒኤስ በማይኖርበት ጊዜ Chrome እርስዎን ሳያስጠነቅቅ ደህንነቱ ያልተጠበቀ ግንኙነት ይጠቀማል</translation>
 <translation id="8999208279178790196">{0,plural, =0{የChrome ዝማኔ አለ}=1{የChrome ዝማኔ አለ}one{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}}</translation>
+<translation id="9024318700713112071">Chromeን እንደ ነባሪ ያቀናብሩት</translation>
 <translation id="9053892488859122171">የChromeOS Flex ስርዓት</translation>
 <translation id="9054037008353851982">ለማዘመን ዳግም ያስጀምሩ - ትሮችዎ ዳግም ይከፍታሉ</translation>
 <translation id="9090566250983691233">Chrome ለምን አንዳንድ ፋይሎችን እንደሚያግድ ይወቁ</translation>

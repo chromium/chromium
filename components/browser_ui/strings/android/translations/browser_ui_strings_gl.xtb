@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Forzar a activación do zoom</translation>
 <translation id="3908288065506437185">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3918378745482005425">É posible que algunhas funcións non estean operativas. Os sitios relacionados poden seguir usando cookies de terceiros.</translation>
+<translation id="3933121352599513978">Contraer solicitudes non desexadas (recomendado)</translation>
 <translation id="3955193568934677022">Permitir que os sitios reproduzan contido protexido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3974105241379491420">Os sitios poderán usar a información que garden sobre ti</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">A navegación é inaccesible: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8990043154272859344">Pecharase a sesión en todos os sitios</translation>
+<translation id="8993853206419610596">Despregar todas as solicitudes</translation>
 <translation id="9002538116239926534">Cando esta opción está activada, os sitios poden gardar datos no teu dispositivo. Cando esta opción está desactivada, os sitios non poden gardar datos no teu dispositivo.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> permitido</translation>
 <translation id="9019902583201351841">Xestionado por teus pais</translation>

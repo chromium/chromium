@@ -496,6 +496,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
 <translation id="3636940436873918441">Foretrukne språk</translation>
+<translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
 <translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3690369331356918524">Advarer deg hvis passord blir avdekket i databrudd</translation>
 <translation id="3692944402865947621">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi lagringsstedet ikke kan nås.</translation>
@@ -1057,6 +1058,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6477928892249167417">Disse nettstedene ser ut til å være viktige for deg:</translation>
 <translation id="6481963882741794338">Knytt sammen Chrome og andre Google-tjenester for personlig tilpasning og andre formål</translation>
 <translation id="6482749332252372425">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av mangel på lagringsplass.</translation>
+<translation id="6495590690749880440">Vil du åpne fanegruppen?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Filen er lastet ned}other{# nedlastinger er fullført}}</translation>
 <translation id="6508722015517270189">Start Chrome på nytt</translation>
 <translation id="6518133107902771759">Bekreft</translation>

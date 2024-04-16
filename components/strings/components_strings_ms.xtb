@@ -340,6 +340,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="160851722280695521">Main permainan Dino Run dalam Chrome</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611101756749861742">Gulungan Kedua</translation>
+<translation id="1611854593425834707">Tutup senarai peranti untuk penghantaran</translation>
 <translation id="1612199629998703524">Urus topik</translation>
 <translation id="1615178538289490617">Batalkan akses untuk <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Dasar pentadbir melumpuhkan tangkapan skrin apabila kandungan sulit kelihatan</translation>
@@ -826,6 +827,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2526280916094749336">Anda boleh menggunakan alamat yang disimpan pada seluruh produk Google. Alamat ini akan disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC tertera pada bahagian hadapan kad anda. CVC ialah kod 4 digit pada bahagian atas sebelah kanan, di atas nombor kad anda.</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
+<translation id="2533649878691950253">Laman ini telah disekat daripada mengetahui lokasi tepat anda kerana biasanya anda tidak membenarkan perkara ini</translation>
 <translation id="253493526287553278">Lihat butiran kod promosi</translation>
 <translation id="2535585790302968248">Buka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
@@ -1919,6 +1921,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4691093235373904540">Perkhidmatan bumbung</translation>
 <translation id="4692623383562244444">Enjin carian</translation>
 <translation id="4698692901173737941">Sukan Tempur</translation>
+<translation id="4701307090948589984">Hantar ke...</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sisi</translation>
 <translation id="4702656508969495934">Sari Kata Langsung dapat dilihat, gunakan penukar tetingkap untuk memfokus</translation>
@@ -2109,6 +2112,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5043480802608081735">Pautan yang Anda Salin</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
+<translation id="5048293684454354469">Topik iklan adalah antara ciri yang boleh digunakan oleh laman untuk memeribadikan iklan. Walaupun tanpa topik iklan, laman masih boleh memaparkan iklan kepada anda tetapi iklan tersebut mungkin kurang diperibadikan. Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />pengurusan privasi iklan anda<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Topik aktif</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="505757197798929356">Berikan sebab untuk membuka fail (diperlukan)</translation>
@@ -2168,6 +2172,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5161334686036120870">Subjek:</translation>
 <translation id="5161506081086828129">Petak 9</translation>
 <translation id="5164798890604758545">Teks dimasukkan</translation>
+<translation id="5164928537947209380">Alat AI percubaan ini tidak sentiasa betul. Untuk meningkatkan alat ini, kandungan anda akan dihantar kepada Google.
+    <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Masukkan CVC untuk <ph name="CREDIT_CARD" />. Setelah anda mengesahkan maklumat, butiran kad daripada Google Account anda akan dikongsi dengan tapak ini.</translation>
 <translation id="5169827969064885044">Anda boleh kehilangan akses kepada akaun organisasi anda atau mengalami kecurian identiti. Chrome mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
 <translation id="5171045022955879922">Buat carian atau taipkan URL</translation>
@@ -2326,6 +2332,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     <ph name="LINE_BREAK" />
     Cuba hubungi pentadbir sistem anda.</translation>
 <translation id="549333378215107354">Saiz 3</translation>
+<translation id="5496804587179176046">Simpan kod keselamatan, tiada kod keselamatan yang disimpan pada masa ini</translation>
 <translation id="550365051221576010">Isi semua maklumat</translation>
 <translation id="5508443345185481044">Kamera &amp; Kamkorder</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3303,6 +3310,7 @@ Butiran tambahan:
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>
 <translation id="7393161616326137353">Permainan Kembara</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
+<translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Kongsi tab ini dengan berkongsi pautan, membuat kod QR, menghantar dan pelbagai lagi</translation>
@@ -4064,6 +4072,7 @@ Butiran tambahan:
 <translation id="8807160976559152894">Pangkas selepas setiap halaman</translation>
 <translation id="8809203544698246977">Topik yang disekat dipaparkan di sini</translation>
 <translation id="8811470563853401328">Simpan alamat dalam akaun?</translation>
+<translation id="8811725516933141693">Taip @gemini untuk Bersembang dengan Gemini</translation>
 <translation id="8813277370772331957">Ingatkan saya kemudian</translation>
 <translation id="8814707942599948500">Sampul C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>

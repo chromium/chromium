@@ -127,7 +127,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
 <translation id="1085064499066015002">Toujours sur tous les sites</translation>
 <translation id="1085697365578766383">Erreur lors du démarrage de la machine virtuelle. Veuillez réessayer.</translation>
-<translation id="1088659085457112967">Activer le mode Lecture</translation>
 <translation id="1090126737595388931">Aucune application ne fonctionne en arrière-plan</translation>
 <translation id="1090541560108055381">Avant de procéder à l'association, assurez-vous que ce code est le même sur les deux appareils</translation>
 <translation id="1091767800771861448">Appuyez sur ÉCHAP pour ne pas faire la mise à jour (versions non officielles uniquement).</translation>
@@ -2164,7 +2163,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2587922766792651800">Délai dépassé</translation>
 <translation id="2588636910004461974">Appareils appartenant à <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne jamais afficher les fichiers Disque</translation>
-<translation id="25899519884572181">Désactiver le mode Lecture</translation>
 <translation id="2593499352046705383">Avant de commencer, assurez-vous d'avoir une sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> écrasera les données présentes sur votre disque dur. Apprenez-en plus à la page g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gérer la sécurité V8</translation>
 <translation id="2594999711683503743">Effectuez une recherche sur Google ou entrez une adresse URL</translation>
@@ -2464,7 +2462,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers que vous téléchargez apparaissent ici</translation>
-<translation id="2809586584051668049">et <ph name="NUMBER_ADDITIONAL_DISABLED" /> autres</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Les connexions Thunderbolt ne sont pas prises en charge</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés pour que vous puissiez vous connecter instantanément</translation>
@@ -3055,7 +3052,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3285465040399788513">L'espace de stockage est insuffisant pour terminer la configuration. Libérez de l'espace de stockage et réessayez.</translation>
 <translation id="3285500645985761267">Autoriser les sites connexes à voir votre activité dans le groupe</translation>
 <translation id="328571385944182268">Enregistrer vos mots de passe?</translation>
-<translation id="3288047731229977326">Les extensions exécutées en mode développeur peuvent nuire à votre ordinateur. Si vous n'êtes pas un développeur, nous vous recommandons de désactiver celles-ci afin d'assurer la sécurité de votre ordinateur.</translation>
 <translation id="3289668031376215426">Majuscules automatiques</translation>
 <translation id="3289856944988573801">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet ou Wi-Fi.</translation>
 <translation id="3289886661311231677">Vous pouvez bloquer les sujets que vous ne souhaitez pas partager avec les sites. En outre, Chrome supprime automatiquement vos sujets datant de plus de quatre semaines.</translation>
@@ -3095,7 +3091,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3313622045786997898">Valeur de la signature du certificat</translation>
 <translation id="3313950410573257029">Vérifier la connexion</translation>
 <translation id="3315158641124845231">Masquer <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Activer le mode Lecture</translation>
 <translation id="3317459757438853210">Recto verso</translation>
 <translation id="3317521105713541270">Créer des groupes</translation>
 <translation id="3317678681329786349">La caméra et le microphone sont bloqués</translation>
@@ -3500,7 +3495,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - temps restant : <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Langues préférées</translation>
 <translation id="3637203148990213388">Comptes supplémentaires</translation>
-<translation id="3639220004740062347">Désactiver le mode Lecture</translation>
 <translation id="3640214691812501263">Ajouter « <ph name="EXTENSION_NAME" /> » pour <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protégez vos mots de passe contre l'hameçonnage</translation>
 <translation id="3640613767643722554">Apprenez à l'Assistant Google à reconnaître votre voix</translation>
@@ -4143,7 +4137,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4095483462103784441">Créer un nouveau groupe d'onglets</translation>
 <translation id="4095507791297118304">Affichage principal</translation>
 <translation id="4096421352214844684">Vous connecter automatiquement au point d'accès sans fil de votre téléphone</translation>
-<translation id="4096508467498758490">Désactiver les extensions du mode développeur</translation>
 <translation id="4096797685681362305">Consulté la semaine dernière</translation>
 <translation id="4097406557126260163">Applications et extensions</translation>
 <translation id="409742781329613461">Astuces pour Chrome</translation>
@@ -5474,7 +5467,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5146896637028965135">Voix du système</translation>
 <translation id="5147097165869384760">Vous recherchez la page système du système d'exploitation? Consultez <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recommandation</translation>
-<translation id="5147516217412920887">Suivez les instructions sur votre téléphone pour vérifier le code.</translation>
 <translation id="5147992672778369947">Utiliser le mot de passe recommandé</translation>
 <translation id="5148285448107770349">Le mot de passe doit contenir au moins huit caractères</translation>
 <translation id="5149602533174716626">Cop&amp;amp;ier l'image vidéo</translation>
@@ -6732,10 +6724,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6143186082490678276">Obtenir de l'aide</translation>
 <translation id="6143366292569327983">Choisissez la langue de la page à traduire</translation>
 <translation id="6144938890088808325">Aidez-nous à améliorer les Chromebook</translation>
-<translation id="6145480071052696715">Configurez facilement votre appareil <ph name="DEVICE_TYPE" /> avec votre téléphone. Vous pouvez ajouter votre compte Wi-Fi et Google sans entrer manuellement vos mots de passe.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible en tant que <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">La synchronisation ne fonctionne pas. Essayez de vous connecter à nouveau.</translation>
 <translation id="6147020289383635445">Échec de création de l'aperçu avant impression.</translation>
 <translation id="6147253937684562370">Pour déverrouiller le profil, connectez-vous avec l'adresse de courriel de votre compte principal : <ph name="EMAIL" /></translation>
@@ -6960,7 +6948,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6310141306111263820">Il n'a pas été possible d'installer votre profil eSIM. Pour obtenir de l'aide, veuillez communiquer avec votre fournisseur de services.</translation>
 <translation id="6311220991371174222">Impossible de démarrer Chrome, car un problème est survenu lors de l'ouverture de votre profil. Veuillez redémarrer Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{La vérification de sécurité s'est exécutée il y a 1 jour}one{La vérification de sécurité s'est exécutée il y a {NUM_DAYS} jour}other{La vérification de sécurité s'est exécutée il y a {NUM_DAYS} jours}}</translation>
-<translation id="6312638141433622592">Offrir d'afficher les articles en mode Lecteur, lorsque cela est pris en charge</translation>
 <translation id="6313950457058510656">Désactiver le partage de connexion instantané</translation>
 <translation id="6314819609899340042">Vous avez activé les fonctionnalités de débogage sur cet appareil <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voix</translation>
@@ -9372,7 +9359,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8160775796528709999">Activez l'option de sous-titres instantanés dans les paramètres pour afficher les sous-titres de vos contenus vidéo et audio</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reprendre la navigation</translation>
-<translation id="8161293209665121583">Mode Lecteur pour pages Web</translation>
 <translation id="8161604891089629425">Police de contour</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8163152278172770963">Ne pas autoriser les sites à entrer automatiquement l'Incrustation d'image</translation>

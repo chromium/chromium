@@ -671,10 +671,6 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="1557113199339446336">Als je het beleid instelt op True, rapporteren ingeschreven apparaten informatie over XDR-gebeurtenissen (Extended Detection and Response).
 
       Als je het beleid instelt op False of niet instelt, rapporteren ingeschreven apparaten niet over XDR-gebeurtenissen (Extended Detection and Response).</translation>
-<translation id="1557873444324280490">Zakelijke extensies kunnen logboeken aan een systeemlogboek toevoegen via de chrome.enterprise.systemLog API.
-
-Als je het beleid toepast, kunnen de logboeken beperkte tijd worden bewaard in het systeemlogboek.
-Als je het beleid niet toepast of niet instelt, kunnen de logboeken niet worden toegevoegd aan het systeemlogboek. Dit betekent dat logboeken niet worden bewaard tussen sessies.</translation>
 <translation id="1560279917909364275">Notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm toevoegen aan de toelatingslijst</translation>
 <translation id="1561424797596341174">Beleid overschrijft Debug-builds van de host voor externe toegang</translation>
 <translation id="1561967320164410511">U2F plus extensies voor individuele bevestiging</translation>
@@ -7103,9 +7099,6 @@ Dit beleid wordt in een toekomstige release verwijderd.</translation>
 <translation id="6704515759227307131">Dit beleid is beëindigd en is vervangen door AdvancedProtectionAllowed.
 
       Met dit beleid wordt bepaald of gebruikers die zijn ingeschreven bij 'Geavanceerde beveiliging' hun downloads naar Google mogen sturen om ze te laten scannen. Als dit beleid is ingesteld op True of niet is ingesteld, wordt ingeschreven gebruikers gevraagd hun bestanden naar Google te sturen voor een uitgebreide scan. Als gebruikers 'Scannen' selecteren, worden hun downloads naar Google gestuurd. Als dit beleid is ingesteld op False, ontvangen gebruikers geen melding en worden hun downloads niet naar Google gestuurd.</translation>
-<translation id="6704994003174661159">Dit beleid bepaalt hoe er wordt omgegaan met onveilige formulieren (formulieren die gegevens sturen via HTTP) die zijn ingesloten in beveiligde sites (HTTPS) in de browser.
-       Als je het beleid toepast of niet instelt, wordt er een waarschuwingsbericht op de volledige pagina getoond als er een onveilig formulier wordt gestuurd. Daarnaast wordt er een waarschuwingsballon naast de formuliervelden getoond als de focus erop wordt geplaatst en wordt automatisch invullen uitgezet voor deze formulieren.
-       Als je het beleid niet toepast, worden geen waarschuwingen voor onveilige formulieren getoond en werkt automatisch invullen normaal.</translation>
 <translation id="670597451099978576">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's op het inlogscherm.</translation>
 <translation id="6706330611356546885">Toestaan dat sites JavaScript JIT uitvoeren</translation>
 <translation id="6706728459859947543">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen.

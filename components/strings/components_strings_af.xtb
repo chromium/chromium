@@ -824,6 +824,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2526280916094749336">Jy kan gestoorde adresse in alle Google-produkte gebruik. Hierdie adres sal in jou Google-rekening, <ph name="ACCOUNT" />, gestoor word.</translation>
 <translation id="2527451058878391043">Jou CVC is op die voorkant van jou kaart. Dis die 4-syferkode bo regs bo jou kaartnommer.</translation>
 <translation id="2529899080962247600">Hierdie veld moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie. Alle verdere inskrywings sal geïgnoreer word.</translation>
+<translation id="2533649878691950253">Hierdie werf is verhinder om te weet wat jou presiese ligging is omdat jy dit gewoonlik nie toelaat nie</translation>
 <translation id="253493526287553278">Sien promosiekodebesonderhede</translation>
 <translation id="2535585790302968248">Maak 'n nuwe Incognito-oortjie oop om privaat te blaai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
@@ -3296,6 +3297,7 @@ Bykomende besonderhede:
 <translation id="7392089738299859607">Dateer adres op</translation>
 <translation id="7393161616326137353">Avontuurspeletjies</translation>
 <translation id="739728382607845710">Betalinghanteerder-ikoon</translation>
+<translation id="7399616692258236448">Liggingversoeke is outomaties geblokkeer vir alle werwe behalwe dié wat jy toelaat</translation>
 <translation id="7399802613464275309">Veiligheidskontrole</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Deel hierdie oortjie deur die skakel te deel, 'n QR-kode te skep, uit te saai, en meer</translation>

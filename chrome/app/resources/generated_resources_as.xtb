@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">লিংকৰ ঠি&amp;কনা প্ৰতিলিপি কৰক</translation>
 <translation id="1085064499066015002">সদায় আটাইবোৰ ছাইটত</translation>
 <translation id="1085697365578766383">ভাৰ্চুৱেল মেচিন আৰম্ভ কৰাত আসোঁৱাহ হৈছে৷ অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
-<translation id="1088659085457112967">ৰীডাৰ ম’ডলৈ যাওক</translation>
 <translation id="1090126737595388931">নেপথ্যত কোনো এপ্ চলি থকা নাই</translation>
 <translation id="1090541560108055381">পেয়াৰ কৰাৰ পূৰ্বে, দুয়োটা ডিভাইচতে এই ক’ডটো একেই হোৱাটো নিশ্চিত কৰক</translation>
 <translation id="1091767800771861448">এৰি যাবলৈ ESCAPE টিপক (কেৱল অনানুষ্ঠানিক বিল্ড)।</translation>
@@ -2175,7 +2174,6 @@
 <translation id="2587922766792651800">সময় উকলিছে</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />ৰ ডিভাইচসমূহ</translation>
 <translation id="2589658397149952302">Driveৰ ফাইলসমূহ কেতিয়াও নেদেখুৱাব</translation>
-<translation id="25899519884572181">ৰীডাৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="2593499352046705383">আৰম্ভ কৰাৰ আগতে আপোনাৰ ওচৰত নিজৰ ডেটাৰ এটা বেকআপ থকাটো নিশ্চিত কৰক। <ph name="DEVICE_OS" /> ইনষ্টল কৰিলে আপোনাৰ হাৰ্ড ড্ৰাইভটো অ’ভাৰৰাইট কৰা হ’ব। g.co/flex/InstallGuideত অধিক জানক।</translation>
 <translation id="2594832159966169099">V8 সুৰক্ষা পৰিচালনা কৰক</translation>
 <translation id="2594999711683503743">Googleত সন্ধান কৰক বা URL টাইপ কৰক</translation>
@@ -2476,7 +2474,6 @@
 <translation id="2806372837663997957">আপুনি যিটো ডিভাইচৰ সৈতে শ্বেয়াৰ কৰিবলৈ চেষ্টা কৰি আছে সেইটোৱে গ্ৰহণ নকৰিলে</translation>
 <translation id="2806891468525657116">শ্বৰ্টকাট ইতিমধ্যে আছে</translation>
 <translation id="2807517655263062534">আপুনি ডাউনল’ড কৰা ফাইলসমূহ ইয়াত প্ৰদর্শিত হ’ব</translation>
-<translation id="2809586584051668049">আৰু <ph name="NUMBER_ADDITIONAL_DISABLED" />টা</translation>
 <translation id="2811205483104563968">একাউণ্ট</translation>
 <translation id="2812049959647166806">থাণ্ডাৰব’ল্টটো সমৰ্থিত নহয়</translation>
 <translation id="2812171980080389735">নেটৱৰ্ক আৰু পাছৱৰ্ড ছেভ কৰা হ’ল যাতে আপুনি তাৎক্ষণিকভাৱে সংযোগ কৰিব পাৰে</translation>
@@ -3065,7 +3062,6 @@
 <translation id="3285465040399788513">ছেটআপ সম্পূৰ্ণ কৰিবলৈ পৰ্যাপ্ত পৰিমাণৰ ডিভাইচ ষ্ট’ৰেজ নাই। খালী ঠাই উলিয়াই পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3285500645985761267">জড়িত হৈ থকা ছাইটসমূহক গোটত আপুনি কৰা কাৰ্যকলাপ চাবলৈ অনুমতি দিয়ক</translation>
 <translation id="328571385944182268">আপোনাৰ পাছৱৰ্ডসমূহ ছেভ কৰিবনে?</translation>
-<translation id="3288047731229977326">বিকাশকর্তাৰ ম’ড চলি থকা এক্সটেনশ্বনসমূহে আপোনাৰ কম্পিউটাৰৰ ক্ষতি কৰিব পাৰে। যদি আপুনি কোনো বিকাশকর্তা নহয় তেন্তে আপুনি সুৰক্ষিত হৈ থাকিবলৈ বিকাশকর্তাৰ ম’ডত থকা এক্সটেনশ্বনসমূহ অক্ষম কৰা উচিত।</translation>
 <translation id="3289668031376215426">স্বয়ং-বৰফলাকৰণ</translation>
 <translation id="3289856944988573801">আপডে‘ট আছে নেকি চাবলৈ ইথাৰনেট বা ৱাই-ফাই ব্যৱহাৰ কৰক।</translation>
 <translation id="3289886661311231677">আপুনি ছাইটসমূহৰ সৈতে শ্বেয়াৰ কৰিবলৈ নিবিচৰা বিষয়বস্তু অৱৰোধ কৰিব পাৰে। Chromeএ ৪ সপ্তাহতকৈ পুৰণি হোৱা আপোনাৰ বিষয়সমূহো স্বয়ংক্ৰিয়ভাৱে মচে।</translation>
@@ -3105,7 +3101,6 @@
 <translation id="3313622045786997898">প্ৰমাণপত্ৰ চহীৰ মান</translation>
 <translation id="3313950410573257029">সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />ক লুকুৱাওক</translation>
-<translation id="3315442055907669208">ৰীডাৰ ম’ডলৈ যাওক</translation>
 <translation id="3317459757438853210">পৃষ্ঠাখনৰ দুয়োফালে</translation>
 <translation id="3317521105713541270">গোট সৃষ্টি কৰক</translation>
 <translation id="3317678681329786349">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ব্যৱহাৰ অৱৰোধ কৰা হৈছে</translation>
@@ -3510,7 +3505,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> বাকী আছে</translation>
 <translation id="3636940436873918441">অগ্ৰাধিকাৰ দিয়া ভাষা</translation>
 <translation id="3637203148990213388">অতিৰিক্ত একাউণ্ট</translation>
-<translation id="3639220004740062347">ৰীডাৰ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" />ৰ বাবে "<ph name="EXTENSION_NAME" />" যোগ কৰিবনে?</translation>
 <translation id="3640347231390550691">ফিশ্বিঙৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত কৰক</translation>
 <translation id="3640613767643722554">আপোনাৰ কণ্ঠস্বৰ চিনি পাবলৈ নিজৰ Assistantক শিকাওক</translation>
@@ -4152,7 +4146,6 @@
 <translation id="4095483462103784441">নতুন টেবৰ গোট সৃষ্টি কৰক</translation>
 <translation id="4095507791297118304">মুখ্য ডিছপ্লে’</translation>
 <translation id="4096421352214844684">আপোনাৰ ফ’নৰ হটস্পটৰ সৈতে স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক।</translation>
-<translation id="4096508467498758490">বিকাশকর্তাৰ ম’ড এক্সটেনশ্বন অক্ষম কৰক</translation>
 <translation id="4096797685681362305">যোৱা সপ্তাহত চোৱা হৈছে</translation>
 <translation id="4097406557126260163">এপ্‌ আৰু এক্সটেনশ্বনসমূহ</translation>
 <translation id="409742781329613461">Chromeৰ বাবে পৰামৰ্শ</translation>
@@ -5484,7 +5477,6 @@
 <translation id="5146896637028965135">ছিষ্টেম কণ্ঠধ্বনি</translation>
 <translation id="5147097165869384760">OSৰ ছিষ্টেমৰ পৃষ্ঠাখন বিচাৰি আছে নেকি? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="5147113439721488265">চুপাৰিছ</translation>
-<translation id="5147516217412920887">ক’ডটো সত্যাপন কৰিবলৈ আপোনাৰ ফ’নত থকা নিৰ্দেশাৱলী অনুসৰণ কৰক</translation>
 <translation id="5147992672778369947">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="5148285448107770349">পাছৱৰ্ডটোত কমেও ৮ টা বৰ্ণ থাকিবই লাগিব</translation>
 <translation id="5149602533174716626">ভিডিঅ’ৰ ফ্ৰে’ম প্ৰতিলিপি কৰক</translation>
@@ -6742,10 +6734,6 @@
 <translation id="6143186082490678276">সহায় লওক</translation>
 <translation id="6143366292569327983">অনুবাদ কৰিবলৈ পৃষ্ঠাখন কি ভাষাত আছে সেয়া বাছনি কৰক</translation>
 <translation id="6144938890088808325">Chromebooks উন্নত কৰাত আমাক সহায় কৰক</translation>
-<translation id="6145480071052696715">আপোনাৰ ফ'নৰ জৰিয়তে সহজে নিজৰ <ph name="DEVICE_TYPE" /> ছেট আপ কৰক। আপুনি মেনুৱেলী পাছৱর্ড নিদিয়াকৈয়ে নিজৰ ৱাই-ফাই আৰু Google একাউণ্ট যোগ দিব পাৰে।
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> হিচাপে দৃশ্যমান...</translation>
 <translation id="6146409560350811147">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই। পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="6147020289383635445">প্ৰিণ্টাৰ পূর্বদর্শন কৰিব পৰা নগ'ল।</translation>
 <translation id="6147253937684562370">প্ৰ’ফাইলটো আনলক কৰিবলৈ আপোনাৰ মুখ্য একাউণ্টৰ ইমেইলৰ জৰিয়তে ছাইন ইন কৰক: <ph name="EMAIL" /></translation>
@@ -6970,7 +6958,6 @@
 <translation id="6310141306111263820">ই-ছিমৰ প্ৰ'ফাইল ইনষ্টল কৰিব পৰা নগ'ল। সহায়ৰ বাবে, অনুগ্ৰহ কৰি আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="6311220991371174222">আপোনাৰ প্ৰফাইল খোলোঁতে কিবা ভুল হোৱাৰ বাবে Chrome আৰম্ভ কৰিব নোৱাৰি। Chrome ৰিষ্টার্ট কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{১ দিন পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}one{{NUM_DAYS} দিন পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}other{{NUM_DAYS} দিন পূর্বে সুৰক্ষা পৰীক্ষা চলোৱা হৈছিল}}</translation>
-<translation id="6312638141433622592">সমর্থিত হ'লে, প্ৰবন্ধসমূহ ৰীডাৰ ম’ডত দেখুৱাবলৈ চুপাৰিছ কৰক</translation>
 <translation id="6313950457058510656">তাৎক্ষণিক টেডাৰিং অফ কৰক</translation>
 <translation id="6314819609899340042">আপুনি এই <ph name="IDS_SHORT_PRODUCT_NAME" /> ডিভাইচটোত ডিবাগ কৰাৰ সুবিধাবোৰ সক্ষম কৰিলে।</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -9382,7 +9369,6 @@
 <translation id="8160775796528709999">ছেটিংসমূহত লাইভ কেপশ্বন সক্ষম কৰি আপোনাৰ অডিঅ’ আৰু ভিডিঅ’ৰ বাবে কেপশ্বনসমূহ পাওক</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
-<translation id="8161293209665121583">ৱে’ব পৃষ্ঠাসমূহৰ বাবে ৰীডাৰ ম’ড</translation>
 <translation id="8161604891089629425">আউটলাইন ফণ্ট</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{টেবটো নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
 <translation id="8163152278172770963">ছাইটসমূহক স্বয়ংক্ৰিয়ভাৱে picture-in-picture ম’ডলৈ যোৱাৰ অনুমতি নিদিব</translation>

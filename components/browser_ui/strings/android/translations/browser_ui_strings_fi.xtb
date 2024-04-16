@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
 <translation id="3908288065506437185">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="3918378745482005425">Kaikki ominaisuudet eivät välttämättä toimi. Aiheeseen liittyvät sivustot voivat edelleen käyttää kolmannen osapuolen evästeitä.</translation>
+<translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
 <translation id="3955193568934677022">Salli sivustojen toistaa suojattua sisältöä (suositus)</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3974105241379491420">Sivustot voivat pyytää lupaa sinusta tallennettujen tietojen käytölle</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Kohde ei ole saatavilla: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unohda</translation>
 <translation id="8990043154272859344">Sinut kirjataan ulos kaikilta sivustoilta</translation>
+<translation id="8993853206419610596">Laajenna kaikki pyynnöt</translation>
 <translation id="9002538116239926534">Kun tämä on päällä, sivustot voivat tallentaa dataa laitteellesi. Kun tämä on pois päältä, sivustot eivät voi tallentaa dataa laitteellesi.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> sallittu</translation>
 <translation id="9019902583201351841">Vanhempiesi hallinnoima</translation>

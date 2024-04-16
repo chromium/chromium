@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">Копирај адр&amp;есу линка</translation>
 <translation id="1085064499066015002">Увек на свим сајтовима</translation>
 <translation id="1085697365578766383">Грешка при покретању виртуелне машине. Пробајте поново.</translation>
-<translation id="1088659085457112967">Укључи режим читача</translation>
 <translation id="1090126737595388931">Није покренута ниједна позадинска апликација</translation>
 <translation id="1090541560108055381">Пре упаривања се уверите да је овај кôд исти на оба уређаја</translation>
 <translation id="1091767800771861448">Притисните ESCAPE да бисте прескочили (само у незваничним верзијама).</translation>
@@ -2164,7 +2163,6 @@
 <translation id="2587922766792651800">Ограничење је истекло</translation>
 <translation id="2588636910004461974">Уређаји продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Не приказуј никада фајлове са Диска</translation>
-<translation id="25899519884572181">Изађи из режима читача</translation>
 <translation id="2593499352046705383">Пре него што почнете, уверите се да сте направили резервну копију података. Инсталирањем система <ph name="DEVICE_OS" /> замениће се подаци на хард-диску. Сазнајте више на g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Управљајте безбедношћу V8</translation>
 <translation id="2594999711683503743">Претражите Google или унесите URL</translation>
@@ -2465,7 +2463,6 @@
 <translation id="2806372837663997957">Уређај са којим покушавате да делите садржај га није прихватио</translation>
 <translation id="2806891468525657116">Пречица већ постоји</translation>
 <translation id="2807517655263062534">Датотеке које преузмете ће се појавити овде</translation>
-<translation id="2809586584051668049">и још <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Налози</translation>
 <translation id="2812049959647166806">Thunderbolt није подржан</translation>
 <translation id="2812171980080389735">Сачуване мреже и лозинке које вам омогућавају да се одмах повежете</translation>
@@ -3056,7 +3053,6 @@
 <translation id="3285465040399788513">Нема довољно меморијског простора на уређају да бисте довршили подешавање. Ослободите простор, па пробајте поново.</translation>
 <translation id="3285500645985761267">Дозволите сродним сајтовима да виде ваше активности у групи</translation>
 <translation id="328571385944182268">Желите ли да сачувате лозинке?</translation>
-<translation id="3288047731229977326">Додаци покренути у режиму програмера могу да нашкоде рачунару. Ако нисте програмер, требало би да онемогућите ове додатке покренуте у режиму програмера да бисте се заштитили.</translation>
 <translation id="3289668031376215426">Аутоматско писање великих почетних слова</translation>
 <translation id="3289856944988573801">Да бисте потражили ажурирања, користите етернет или WiFi.</translation>
 <translation id="3289886661311231677">Можете да блокирате теме које не желите да делите са сајтовима. Chrome такође аутоматски брише теме старије од 4 недеље.</translation>
@@ -3096,7 +3092,6 @@
 <translation id="3313622045786997898">Вредност потписа сертификата</translation>
 <translation id="3313950410573257029">Провери везу</translation>
 <translation id="3315158641124845231">Сакриј <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Укључи режим читача</translation>
 <translation id="3317459757438853210">Обострано</translation>
 <translation id="3317521105713541270">Направи групе</translation>
 <translation id="3317678681329786349">Камера и микрофон су блокирани</translation>
@@ -3501,7 +3496,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – преостало је <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Жељени језици</translation>
 <translation id="3637203148990213388">Додатни налози</translation>
-<translation id="3639220004740062347">Изађи из режима читача</translation>
 <translation id="3640214691812501263">Додај „<ph name="EXTENSION_NAME" />“ за корисника <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Заштитите лозинке од „пецања“</translation>
 <translation id="3640613767643722554">Научите Помоћник да вам препозна глас</translation>
@@ -4145,7 +4139,6 @@
 <translation id="4095483462103784441">Направи нову групу картица</translation>
 <translation id="4095507791297118304">Главни приказ</translation>
 <translation id="4096421352214844684">аутоматски да се повежете са хотспотом телефона.</translation>
-<translation id="4096508467498758490">Онемогућите додатке у режиму програмера</translation>
 <translation id="4096797685681362305">Прегледали сте претходне недеље</translation>
 <translation id="4097406557126260163">Апликације и додаци</translation>
 <translation id="409742781329613461">Савети за Chrome</translation>
@@ -5478,7 +5471,6 @@
 <translation id="5146896637028965135">Системски глас</translation>
 <translation id="5147097165869384760">Тражите системску страницу за ОС? Посетите<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Препорука</translation>
-<translation id="5147516217412920887">Пратите упутства на телефону да бисте верификовали кôд</translation>
 <translation id="5147992672778369947">Користите препоручену лозинку</translation>
 <translation id="5148285448107770349">Лозинка мора да садржи најмање 8 знакова</translation>
 <translation id="5149602533174716626">Копирај&amp; кадар видеа</translation>
@@ -6740,10 +6732,6 @@
 <translation id="6143186082490678276">Затражите помоћ</translation>
 <translation id="6143366292569327983">Одаберите језик странице са ког се преводи</translation>
 <translation id="6144938890088808325">Помозите нам да побољшамо Chromebook-ове</translation>
-<translation id="6145480071052696715">Лако подесите <ph name="DEVICE_TYPE" /> помоћу телефона. Можете да додате WiFi и Google налог без ручног уношења лозинки.
-    <ph name="BR" />
-    <ph name="BR" />
-    Видљиво као <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Синхронизација не ради. Пробајте поново да се пријавите.</translation>
 <translation id="6147020289383635445">Преглед пре штампања није успео.</translation>
 <translation id="6147253937684562370">Да бисте откључали профил, пријавите се помоћу имејла главног налога: <ph name="EMAIL" /></translation>
@@ -6968,7 +6956,6 @@
 <translation id="6310141306111263820">Инсталирање eSIM профила није успело. Обратите се мобилном оператеру да бисте потражили помоћ.</translation>
 <translation id="6311220991371174222">Не можемо да покренемо Chrome јер је дошло до проблема при отварању профила. Пробајте поново да покренете Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Безбедносна провера је покренута пре 1 дан}one{Безбедносна провера је покренута пре {NUM_DAYS} дан}few{Безбедносна провера је покренута пре {NUM_DAYS} дана}other{Безбедносна провера је покренута пре {NUM_DAYS} дана}}</translation>
-<translation id="6312638141433622592">Нуди приказивање чланака у режиму читача када је подржан</translation>
 <translation id="6313950457058510656">Искључи тренутно привезивање</translation>
 <translation id="6314819609899340042">Омогућили сте функције за отклањање грешака на овом <ph name="IDS_SHORT_PRODUCT_NAME" /> уређају.</translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -9390,7 +9377,6 @@
 <translation id="8160775796528709999">Омогућите титл уживо у подешавањима да бисте преузимали титл за аудио и видео</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Настави прегледање</translation>
-<translation id="8161293209665121583">Режим читача за веб-странице</translation>
 <translation id="8161604891089629425">Фонт оквира</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Премести картицу у нов прозор}one{Премести картице у нов прозор}few{Премести картице у нов прозор}other{Премести картице у нов прозор}}</translation>
 <translation id="8163152278172770963">Не дозвољавајте сајтовима да аутоматски улазе у слику у слици</translation>

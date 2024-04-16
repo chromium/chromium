@@ -826,6 +826,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2526280916094749336">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas bus išsaugotas jūsų „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Jūsų kortelės saugos kodas (CVC) yra priekinėje kortelės pusėje. Tai yra keturių skaitmenų kodas, pateiktas viršuje dešinėje virš kortelės numerio.</translation>
 <translation id="2529899080962247600">Šiame lauke gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš. Į visus kitus įrašus nebus atsižvelgiama.</translation>
+<translation id="2533649878691950253">Ši svetainė užblokuota, kad nežinotų tikslios vietovės, nes paprastai jūs to neleidžiate</translation>
 <translation id="253493526287553278">Žr. išsamią reklamos kredito kodo informaciją</translation>
 <translation id="2535585790302968248">Naršykite privačiai, atidarę naują inkognito skirtuką</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ir dar 1}one{ir dar #}few{ir dar #}many{ir dar #}other{ir dar #}}</translation>
@@ -3303,6 +3304,7 @@ Papildoma išsami informacija:
 <translation id="7392089738299859607">Adreso atnaujinimas</translation>
 <translation id="7393161616326137353">Nuotykių žaidimai</translation>
 <translation id="739728382607845710">Mokėjimo doroklės piktograma</translation>
+<translation id="7399616692258236448">Vietovės užklausos automatiškai blokuojamos visose svetainėse, išskyrus svetaines, kuriose leidote tai daryti</translation>
 <translation id="7399802613464275309">Saugos patikra</translation>
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7403392780200267761">Bendrinkite šį skirtuką bendrindami nuorodą, sukurdami QR kodą, perduodami ir kt.</translation>

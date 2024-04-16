@@ -826,6 +826,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2526280916094749336">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC és a l'anvers de la targeta. És el codi de 4 dígits que hi ha a la part superior dreta sobre el número de la targeta.</translation>
 <translation id="2529899080962247600">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Totes les altres entrades s'ignoraran.</translation>
+<translation id="2533649878691950253">S'ha impedit que aquest lloc web sabés la teva ubicació precisa perquè normalment no ho permets</translation>
 <translation id="253493526287553278">Mostra els detalls del codi promocional</translation>
 <translation id="2535585790302968248">Obre una pestanya d'incògnit nova per navegar en privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i 1 més}other{i # més}}</translation>
@@ -3302,6 +3303,7 @@ Detalls addicionals:
 <translation id="7392089738299859607">Actualitza l'adreça</translation>
 <translation id="7393161616326137353">Jocs d'aventura</translation>
 <translation id="739728382607845710">Icona de gestor de pagaments</translation>
+<translation id="7399616692258236448">Les sol·licituds d'ubicació es bloquegen automàticament en tots els llocs web, excepte els que permetis</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Pots compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>

@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">Копиране на адреса на вр&amp;ъзката</translation>
 <translation id="1085064499066015002">Винаги на всички сайтове</translation>
 <translation id="1085697365578766383">Грешка при стартирането на виртуалната машина. Моля, опитайте отново.</translation>
-<translation id="1088659085457112967">Вход в режим за четене</translation>
 <translation id="1090126737595388931">Не се изпълняват приложения на заден план</translation>
 <translation id="1090541560108055381">Преди сдвояването се уверете, че този код е един и същ и на двете устройства</translation>
 <translation id="1091767800771861448">Натиснете „ESCAPE“ за пропускане (само в неофициалните версии).</translation>
@@ -2173,7 +2172,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2587922766792651800">Времето за изчакване изтече</translation>
 <translation id="2588636910004461974">Устройства от <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Без показване на файлове от Диск</translation>
-<translation id="25899519884572181">Изход от режима за четене</translation>
 <translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Управление на сигурността на V8</translation>
 <translation id="2594999711683503743">Потърсете с Google или въведете URL адрес</translation>
@@ -2474,7 +2472,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2806372837663997957">Устройството, с което се опитвате да споделите файла, не го прие</translation>
 <translation id="2806891468525657116">Прекият път вече съществува</translation>
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
-<translation id="2809586584051668049">и още <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Профили</translation>
 <translation id="2812049959647166806">Thunderbolt не се поддържа</translation>
 <translation id="2812171980080389735">Запазени мрежи и пароли, за да можете да се свързвате незабавно</translation>
@@ -3063,7 +3060,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3285465040399788513">В хранилището на устройството няма достатъчно място за завършване на настройването. Освободете място и опитайте отново.</translation>
 <translation id="3285500645985761267">Разрешаване на сродните сайтове да виждат активността ви в групата</translation>
 <translation id="328571385944182268">Да се запазят ли паролите ви?</translation>
-<translation id="3288047731229977326">Разширенията, които се изпълняват в режим за програмисти, могат да навредят на компютъра ви. Ако не сте програмист, за по-голяма безопасност трябва да деактивирате изпълнението им в този режим.</translation>
 <translation id="3289668031376215426">Автоматично поставяне на главни букви</translation>
 <translation id="3289856944988573801">За да проверите за актуализации, моля, използвайте Ethernet или Wi-Fi.</translation>
 <translation id="3289886661311231677">Можете да блокирате темите, които не искате да се споделят със сайтовете. Също така Chrome автоматично изтрива темите, по-стари от 4 седмици.</translation>
@@ -3103,7 +3099,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3313622045786997898">Стойност на подписа на сертификата</translation>
 <translation id="3313950410573257029">Проверка на връзката</translation>
 <translation id="3315158641124845231">Скриване на <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Вход в режим за четене</translation>
 <translation id="3317459757438853210">Двустранно</translation>
 <translation id="3317521105713541270">Създаване на групи</translation>
 <translation id="3317678681329786349">Достъпът до камерата и микрофона е блокиран</translation>
@@ -3508,7 +3503,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – остава/т <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Предпочитани езици</translation>
 <translation id="3637203148990213388">Допълнителни профили</translation>
-<translation id="3639220004740062347">Изход от режима за четене</translation>
 <translation id="3640214691812501263">Да се добави ли <ph name="EXTENSION_NAME" /> за <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Защитете паролите си от фишинг</translation>
 <translation id="3640613767643722554">Обучете Асистент да разпознава гласа ви</translation>
@@ -4152,7 +4146,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>
 <translation id="4095507791297118304">Основен екран</translation>
 <translation id="4096421352214844684">Автоматично свързване с точката за достъп на телефона ви.</translation>
-<translation id="4096508467498758490">Деактивиране на разширенията в режим за програмисти</translation>
 <translation id="4096797685681362305">Прегледано през миналата седмица</translation>
 <translation id="4097406557126260163">Приложения и разширения</translation>
 <translation id="409742781329613461">Съвети за Chrome</translation>
@@ -5484,7 +5477,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5146896637028965135">Системен глас</translation>
 <translation id="5147097165869384760">Търсите системната страница на операционната система? Посетете <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Препоръка</translation>
-<translation id="5147516217412920887">Изпълнете инструкциите на телефона си, за да потвърдите кода</translation>
 <translation id="5147992672778369947">Използвайте препоръчаната парола</translation>
 <translation id="5148285448107770349">Паролата трябва да е поне 8 знака</translation>
 <translation id="5149602533174716626">Копиран&amp;е на кадъра от видеоклипа</translation>
@@ -6743,10 +6735,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6143186082490678276">Получаване на помощ</translation>
 <translation id="6143366292569327983">Изберете езика на страницата, от който искате да превеждате</translation>
 <translation id="6144938890088808325">Помогнете ни да подобрим Chromebook</translation>
-<translation id="6145480071052696715">Лесно настройте устройството си <ph name="DEVICE_TYPE" /> чрез телефона си. Можете да добавите Wi-Fi мрежата и профила си в Google, без да въвеждате ръчно паролите си.
-    <ph name="BR" />
-    <ph name="BR" />
-    Вижда се като <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Синхронизирането не работи. Опитайте отново да влезете в профила си.</translation>
 <translation id="6147020289383635445">Визуализацията за печат не бе успешна.</translation>
 <translation id="6147253937684562370">За да отключите потребителския профил, влезте с имейл адреса за основния си профил: <ph name="EMAIL" /></translation>
@@ -6971,7 +6959,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6310141306111263820">Потребителският профил на електронната SIM карта не бе инсталиран. За помощ се обърнете към оператора си.</translation>
 <translation id="6311220991371174222">Chrome не може да се стартира, защото нещо се обърка при отварянето на потребителския ви профил. Опитайте да рестартирате браузъра.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Проверката на безопасността бе изпълнена преди 1 ден}other{Проверката на безопасността бе изпълнена преди {NUM_DAYS} дни}}</translation>
-<translation id="6312638141433622592">Извеждане на предложение статиите да се показват в режим за четене, когато се поддържа</translation>
 <translation id="6313950457058510656">Изключване на функцията за незабавен тетъринг</translation>
 <translation id="6314819609899340042">Успешно активирахте функциите за отстраняване на грешки на това устройство <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -9383,7 +9370,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8160775796528709999">Показване на надписи за аудио- и видеосъдържание чрез активиране на „Надписи на живо“ в настройките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Възобновяване на сърфирането</translation>
-<translation id="8161293209665121583">Режим за четене за уеб страниците</translation>
 <translation id="8161604891089629425">Контур</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на разделите в нов прозорец}}</translation>
 <translation id="8163152278172770963">Да не се разрешава на сайтовете автоматично да преминават в режим „картина в картината“</translation>

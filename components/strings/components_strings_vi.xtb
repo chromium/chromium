@@ -618,7 +618,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2126374524350484896">Trình tạo tệp PDF:</translation>
 <translation id="2130448033692577677">Các mẫu bạn đã chỉ định có thể không được áp dụng do chưa đặt chính sách DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Danh sách công cụ tìm kiếm hiển thị theo thứ tự ngẫu nhiên. Bạn có thể thay đổi công cụ tìm kiếm mặc định bất cứ lúc nào.</translation>
+<translation id="2132825047782982803">Danh sách dưới đây hiển thị theo thứ tự ngẫu nhiên. Bạn có thể thay đổi công cụ tìm kiếm mặc định bất cứ lúc nào.</translation>
 <translation id="2137891579555018930">Đang chờ cấp quyền...</translation>
 <translation id="213826338245044447">Dấu trang trên thiết bị di động</translation>
 <translation id="2141000681034340397">Chỉnh sửa thông tin bạn đã nhập</translation>
@@ -826,6 +826,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2526280916094749336">Bạn có thể sử dụng địa chỉ đã lưu trên các sản phẩm của Google. Địa chỉ này sẽ được lưu trong Tài khoản Google <ph name="ACCOUNT" /> của bạn.</translation>
 <translation id="2527451058878391043">CVC của bạn nằm ở mặt trước của thẻ. Đó là mã gồm 4 chữ số ở trên cùng bên phải, phía trên số thẻ của bạn.</translation>
 <translation id="2529899080962247600">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Tất cả mục thừa sẽ bị bỏ qua.</translation>
+<translation id="2533649878691950253">Vì bạn thường không cho phép truy cập thông tin vị trí nên hệ thống đã chặn không cho trang web này biết vị trí chính xác của bạn</translation>
 <translation id="253493526287553278">Xem chi tiết mã khuyến mại</translation>
 <translation id="2535585790302968248">Mở một thẻ ẩn danh mới để duyệt web ở chế độ riêng tư</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{và 1 miền khác}other{và # miền khác}}</translation>
@@ -3302,6 +3303,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7392089738299859607">Cập nhật địa chỉ</translation>
 <translation id="7393161616326137353">Trò chơi mạo hiểm</translation>
 <translation id="739728382607845710">Biểu tượng trình xử lý khoản thanh toán</translation>
+<translation id="7399616692258236448">Tự động chặn yêu cầu vị trí đối với mọi trang web, ngoại trừ các trang web bạn cho phép</translation>
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Chia sẻ thẻ này bằng cách chia sẻ đường liên kết, tạo mã QR, truyền và nhiều cách khác</translation>

@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="4301151630239508244">Teme oglasa su samo jedna od mnogih mogućnosti koje web lokacija može koristiti da personalizira oglase. Čak i bez tema oglasa, web lokacije i dalje mogu prikazivati oglase, ali će možda biti manje personalizirani. Saznajte više o <ph name="BEGIN_LINK_1" />upravljanju privatnošću pri izloženosti oglasima<ph name="END_LINK_1" />.</translation>
 </translationbundle>

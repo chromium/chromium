@@ -493,6 +493,7 @@
 <translation id="3631987586758005671">ለ <ph name="DEVICE_NAME" /> በማጋራት ላይ</translation>
 <translation id="363596933471559332">የተከማቹ ምስክርነቶችን በመጠቀም በራስ-ሰር ወደ የድር ጣቢያዎች መለያ ይግቡ። ባህሪው ሲጠፋ ወደ አንድ ድር ጣቢያ ከመግባትዎ በፊት ማረጋገጫ ይጠየቃሉ።</translation>
 <translation id="3636940436873918441">የተመረጡ ቋንቋዎች</translation>
+<translation id="368329460027487650">ዘግተው ወጥተዋል። በመለያ ለመግባት አማራጮችን ይክፈቱ።</translation>
 <translation id="3687645719033307815">የዚህን ገፅ ቅድመ-ዕይታ በማየት ላይ ነዎት</translation>
 <translation id="3690369331356918524">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆኑ ያስጠነቅቀዎታል</translation>
 <translation id="3692944402865947621">የማከማቻ ቦታው የማይገኝ ስለሆነ <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
@@ -1051,6 +1052,7 @@
 <translation id="6475951671322991020">ቪድዮ አውርድ</translation>
 <translation id="6477928892249167417">እነዚህ ጣቢያዎች ለእርስዎ አስፈላጊ ይመስላሉ፦</translation>
 <translation id="6482749332252372425">በማከማቻ ቦታ ጥበት ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
+<translation id="6495590690749880440">የትር ቡድን ይከፈት?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ፋይል ወርዷል}one{# ውርዶች ተጠናቅቀዋል}other{# ውርዶች ተጠናቅቀዋል}}</translation>
 <translation id="6508722015517270189">Chromeን ዳግም ያስጀምሩት</translation>
 <translation id="6518133107902771759">አረጋግጥ</translation>

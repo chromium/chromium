@@ -1043,6 +1043,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6363526231572697780">Колдонуучунун аты жок</translation>
 <translation id="6366190659675876144">Стандарттуу коргоо</translation>
 <translation id="6366663624406569102">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
+<translation id="6368038301482806847">Тизмеден издөө куралын тандаңыз.</translation>
 <translation id="6374469231428023295">Кайталап көрүңүз</translation>
 <translation id="6377118281273296434">Сайттын коопсуздугу</translation>
 <translation id="6383719166112032471">Жайгашкан жерди ачуу…</translation>
@@ -1202,6 +1203,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен жашыруун өтмөктөрдүн кулпусун ачуу</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>
+<translation id="7186568385131859684">Көрүлгөн вебсайттар Google кызматтарындагы башка маалыматыңыз менен кантип колдонуларын көзөмөлдөңүз</translation>
 <translation id="7189598951263744875">Бөлүшүү…</translation>
 <translation id="719133302483559673">Кызыккан нерселер менен параметрлерди тескеңиз.</translation>
 <translation id="7192050974311852563">Таржымалын жыйнап баштоо</translation>
@@ -1245,6 +1247,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7438481509621345350">Эми жаңы өтмөктү ачканда, <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}"}other{Кыстарма төмөнкүгө сакталды: "{title}"}}</translation>
 <translation id="7454057999980797137">Өлкө/Округ</translation>
+<translation id="7458706065921255639">Жекелештирүү жана байланыштыруу</translation>
 <translation id="745899714366929493">Күнү бою</translation>
 <translation id="7459628154744868585">Мыктылап коргоо күйүк</translation>
 <translation id="7465351360025415755">Сиз үчүн маанилүү болгон мазмунду алып туруңуз</translation>
@@ -1272,7 +1275,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7564917801238348224">САКТОО...</translation>
-<translation id="7569588934989281656">Өтмөктөр арасында которулуу үчүн өтмөктөр тактасын серпсеңиз болот.</translation>
 <translation id="7582857256643797524">Бул параметр түзмөгүңүздө иштетилген</translation>
 <translation id="7583004045319035904">Жашыруун өтмөктөрүңүздүн кулпусун <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен ачыңыз.</translation>
 <translation id="7598439272585186139">Коопсуздукту арттырыңыз</translation>

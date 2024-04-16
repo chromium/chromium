@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存され、Google サービス全体で使用できます。</translation>
 <translation id="2527451058878391043">CVC コードはカードの表面に記載されています。カード番号の右上にある 4 桁のコードです。</translation>
 <translation id="2529899080962247600">このフィールドで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。それ以降のエントリはすべて無視されます。</translation>
+<translation id="2533649878691950253">通常、正確な位置情報の共有が許可されていないため、このサイトでも許可されていません</translation>
 <translation id="253493526287553278">プロモーション コードの詳細を確認</translation>
 <translation id="2535585790302968248">新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
@@ -3302,6 +3303,7 @@
 <translation id="7392089738299859607">住所を更新</translation>
 <translation id="7393161616326137353">アドベンチャー ゲーム</translation>
 <translation id="739728382607845710">支払いハンドラのアイコン</translation>
+<translation id="7399616692258236448">許可したサイト以外の位置情報リクエストが自動的にブロックされます</translation>
 <translation id="7399802613464275309">安全チェック</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します</translation>

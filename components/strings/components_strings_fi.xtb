@@ -826,6 +826,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2526280916094749336">Voit käyttää tallennettuja osoitteita kaikissa Googlen tuotteissa. Osoite tallennetaan Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC on kortin etuosassa. Se on nelinumeroinen koodi kortin numeron yläpuolella.</translation>
 <translation id="2529899080962247600">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Tämän määrän ylittävät merkinnät ohitetaan.</translation>
+<translation id="2533649878691950253">Tämä sivusto ei saanut tietää tarkkaa sijaintiasi, koska et yleensä ole sallinut sitä</translation>
 <translation id="253493526287553278">Katso tarjouskoodin tiedot</translation>
 <translation id="2535585790302968248">Avaa uusi incognito-välilehti selataksesi yksityisesti</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ja 1 muu}other{ja # muuta}}</translation>
@@ -3303,6 +3304,7 @@ Lisätietoja:
 <translation id="7392089738299859607">Päivitä osoite</translation>
 <translation id="7393161616326137353">Seikkailupelit</translation>
 <translation id="739728382607845710">Maksujen käsittelijä ‑kuvake</translation>
+<translation id="7399616692258236448">Sijaintipyynnöt estetään automaattisesti kaikilla muilla paitsi sallituilla sivustoilla</translation>
 <translation id="7399802613464275309">Turvatarkistus</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
 <translation id="7403392780200267761">Jaa välilehti esimerkiksi jakamalla linkki, luomalla QR-koodi tai striimaamalla</translation>

@@ -29,6 +29,7 @@
 <translation id="1722370509450468186">Zaporka će se spremiti na vaš račun (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podaci Chromiuma izbrisani su</translation>
 <translation id="1791845338122684020">Otvara stranicu povijesti u Chromiumu.</translation>
+<translation id="1811860791247653035">Da biste dobili personalizaciju i druge značajke, uključite Chromium u <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium je potvrdio da je <ph name="ISSUER" /> izdao certifikat web-lokacije.</translation>
 <translation id="1843424232666537147">Chromium ima značajke koje vam pomažu u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -91,6 +92,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="3639997914391704523">Chromium može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="3688710892786762883">Chromium će otkriti brojeve za praćenje pošiljke na web-lokacijama koje posjećujete i prikazati vam novosti o paketima na novoj kartici preglednika. Vaši će se podaci podijeliti s Googleom radi pružanja te značajke i poboljšanja Shoppinga za sve korisnike.</translation>
 <translation id="372658070733623520">Da biste upotrebljavali i spremali podatke Chromiuma na svoj Google račun, potvrdite da ste to vi.</translation>
+<translation id="3728124580182886854">Povezivanje Chromiuma i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
 <translation id="3780779443901618967">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromiumova upozorenja.</translation>
 <translation id="3784369638459513223">Otvara novu anonimnu karticu u Chromiumu.</translation>
 <translation id="3805899903892079518">Chromium nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>

@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">CVC 喺信用卡嘅正面，即係信用卡號碼右上方嘅 4 位數字。</translation>
 <translation id="2529899080962247600">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會被忽略。</translation>
+<translation id="2533649878691950253">由於您通常不允許網站取得您的精確位置，因此系統已禁止此操作</translation>
 <translation id="253493526287553278">查看宣傳代碼詳情</translation>
 <translation id="2535585790302968248">開啟新的無痕式分頁以私下瀏覽內容</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
@@ -3301,6 +3302,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒險遊戲</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>
+<translation id="7399616692258236448">系統會自動封鎖所有網站的位置要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 碼、投放及其他功能來分享這個分頁</translation>

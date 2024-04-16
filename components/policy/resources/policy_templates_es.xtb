@@ -672,10 +672,6 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 <translation id="1557113199339446336">Si se le asigna el valor True a esta política, los dispositivos registrados informarán sobre los eventos de detección y respuesta extendidas (XDR).
 
       Si se le asigna el valor False a esta política o no se establece, los dispositivos registrados no informarán sobre los eventos de detección y respuesta extendidas (XDR).</translation>
-<translation id="1557873444324280490">Las extensiones de empresas pueden añadir registros a un archivo de registro del sistema mediante la API chrome.enterprise.systemLog.
-
-Si se habilita esta política, los registros se conservarán en el archivo de registro del sistema durante un tiempo limitado.
-Si se inhabilita esta política o no se define, los registros no se podrán añadir al archivo de registro del sistema, lo que significa que los registros no se conservarán de una sesión a otra.</translation>
 <translation id="1560279917909364275">Incluir en la lista de permitidas las aplicaciones para tomar notas autorizadas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1561424797596341174">La política anula las compilaciones de depuración del host de acceso remoto.</translation>
 <translation id="1561967320164410511">U2F y extensiones de confirmación individual</translation>
@@ -7171,9 +7167,6 @@ Si se habilita, la función User-Agent Client Hints GREASE Update ajustará el a
 <translation id="6704515759227307131">Esta política está obsoleta y se ha sustituido por la política AdvancedProtectionAllowed.
 
       Esta política controla si a los usuarios registrados en el Programa de Protección Avanzada se les permite enviar a Google el contenido descargado para realizar un análisis de malware. Si se asigna el valor "True" a esta política o no se le asigna ningún valor, se le pedirá al usuario que envíe los archivos descargados a Google para realizar un análisis profundo. Si el usuario selecciona "Analizar", los archivos descargados se enviarán a Google. Si se le asigna el valor "False", no se le pedirá nada al usuario y los archivos descargados no se enviarán a Google.</translation>
-<translation id="6704994003174661159">Esta política controla el tratamiento de formularios no seguros (formularios que se envían mediante HTTP) insertados en sitios web seguros (HTTPS) en el navegador.
-       Si se habilita esta política o no se le asigna ningún valor, se mostrará una advertencia a pantalla completa cuando se envíe un formulario no seguro. Además, aparecerá un cuadro de advertencia al lado de los campos del formulario cuando estén seleccionados y se inhabilitará la función Autocompletar en dichos formularios.
-       Si se inhabilita esta política, no se mostrará ninguna advertencia en los formularios no seguros y la opción Autocompletar funcionará con normalidad.</translation>
 <translation id="670597451099978576">Concede permiso automáticamente a estos sitios web para conectarse a dispositivos USB con los ID de proveedor y producto facilitados en la pantalla de inicio de sesión.</translation>
 <translation id="6706330611356546885">Permitir que JavaScript use JIT en cualquier sitio</translation>
 <translation id="6706728459859947543">Esta política da permiso a la función Respuestas rápidas para acceder al contenido seleccionado y enviar la información al servidor.

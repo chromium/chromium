@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">በመላው የGoogle ምርቶች ላይ የተቀመጡ አድራሻዎችን መጠቀም ይችላሉ። ይህ አድራሻ በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ይቀመጣል።</translation>
 <translation id="2527451058878391043">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ፊት ለፊት ላይ ነው። ከላይ በስተቀኝ በኩል ከካርድዎ ቁጥር በላይ ባለ4 አሃዙ ኮድ ነው።</translation>
 <translation id="2529899080962247600">ይህ መስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሁሉም ተጨማሪ ግቤቶች ችላ ይባላሉ።</translation>
+<translation id="2533649878691950253">እርስዎ ይህን አብዛኛው ጊዜ ስለማይፈቅዱ ይህ ጣቢያ ትክክለኛ አካባቢዎን እንዳያውቅ ታግዷል</translation>
 <translation id="253493526287553278">የማስተዋወቂያ ኮድ ዝርዝሮችን ይመልከቱ</translation>
 <translation id="2535585790302968248">በግል ለማሰስ አዲስ ማንነትን የማያሳውቅ ትርን ክፈት</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{እና 1 ተጨማሪ}one{እና # ተጨማሪ}other{እና # ተጨማሪ}}</translation>
@@ -2107,6 +2108,7 @@
 <translation id="5040262127954254034">ግላዊነት</translation>
 <translation id="5043480802608081735">የቀዱት አገናኝ</translation>
 <translation id="5045550434625856497">ትክክል ያልሆነ የይለፍ ቃል</translation>
+<translation id="5048293684454354469">የማስታወቂያ ርዕሶች አንድ ጣቢያ ማስታወቂያዎችን ግላዊ ለማድረግ ከሚጠቀምባቸው ብዙ ነገሮች ውስጥ አንዱ ብቻ ነው። የማስታወቂያ ርዕሶች ባይኖሩም እንኳ ጣቢያዎች አሁንም ማስታወቂያዎችን ሊያሳዩዎት ይችላሉ፣ ነገር ግን እነሱ ግላዊነት የተላበሱ ላይሆኑ ይችላሉ። <ph name="BEGIN_LINK" />የእርስዎን የማስታወቂያ ግላዊነት ስለማስተዳደር<ph name="LINK_END" /> የበለጠ ይወቁ።</translation>
 <translation id="5052517576853118371">ንቁ ርዕሶች</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{አቅራቢያ አጋራን በመጠቀም ይህንን ፋይል ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />) ያስለቅቁ}one{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}other{አቅራቢያ አጋራን በመጠቀም እነዚህን ፋይሎች ለመላክ በመሣሪያዎ ላይ ቦታ (<ph name="DISK_SPACE_SIZE" />)ን ያስለቅቁ}}</translation>
 <translation id="505757197798929356">የመክፈቻ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
@@ -2324,6 +2326,7 @@
     <ph name="LINE_BREAK" />
     የእርስዎን የስርዓት አስተዳዳሪ ለማነጋገር ይሞክሩ።</translation>
 <translation id="549333378215107354">መጠን 3</translation>
+<translation id="5496804587179176046">የደኅንነት ኮዶችን ያስቀምጡ፣ በአሁኑ ጊዜ ምንም የደኅንነት ኮዶች አልተቀመጡም</translation>
 <translation id="550365051221576010">ሁሉንም ነገር ይሙሉ</translation>
 <translation id="5508443345185481044">ካሜራዎች እና ካምኮርደሮች</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3301,6 +3304,7 @@
 <translation id="7392089738299859607">አድራሻን ያዘምኑ</translation>
 <translation id="7393161616326137353">የጀብዱ ጨዋታዎች</translation>
 <translation id="739728382607845710">የክፍያ መያዣ አዶ</translation>
+<translation id="7399616692258236448">እርስዎ ከፈቀዱላቸው ውጭ ለሁሉም ጣቢያዎች የአካባቢ ጥያቄዎች በራስ-ሰር ይታገዳሉ</translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">አገናኙን በማጋራት፣ የQR ኮድ በመፍጠር፣ ካስት እና ሌሎችንም በማድረግ ይህን ትር ያጋሩ</translation>

@@ -825,6 +825,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2526280916094749336">Saqlangan manzillardan Google xizmatlarida foydalanish mumkin. Bu manzil Google hisobingizda (<ph name="ACCOUNT" />) saqlanadi.</translation>
 <translation id="2527451058878391043">CVC – kartangizning old tomonida. U 4 ta raqamdan iborat kod boʻlib, karta raqamining yuqori oʻng tomonida joylashgan.</translation>
 <translation id="2529899080962247600">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Qolganlari inobatga olinmaydi.</translation>
+<translation id="2533649878691950253">Bu sayt aniq joylashuvingizni bila olmaydi, chunki odatda siz bunga ruxsat bermaysiz</translation>
 <translation id="253493526287553278">Promokod tafsilotlari</translation>
 <translation id="2535585790302968248">Internetdan maxfiy foydalanish uchun yangi Inkognito varaq ochish</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{va yana 1 ta}other{va yana # ta}}</translation>
@@ -3296,6 +3297,7 @@ Batafsil axborot:
 <translation id="7392089738299859607">Manzilni yangilash</translation>
 <translation id="7393161616326137353">Sarguzasht oʻyinlar</translation>
 <translation id="739728382607845710">Toʻlov tizimi belgisi</translation>
+<translation id="7399616692258236448">Joylashuv soʻrovlari siz ruxsat bergan saytlardan tashqari barcha saytlar uchun taqiqlanadi</translation>
 <translation id="7399802613464275309">Xavfsizlik tekshiruvi</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Bu varaqni havolani ulashish, QR kod yasash, uzatish va hokazo usullar bilan ulashish</translation>

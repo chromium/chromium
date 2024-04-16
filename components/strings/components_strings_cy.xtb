@@ -826,6 +826,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2526280916094749336">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Bydd y cyfeiriad hwn yn cael ei gadw yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Mae eich CVC ar flaen eich cerdyn. Dyma'r cod 4 digid ar y dde uchaf, uwchben rhif eich cerdyn.</translation>
 <translation id="2529899080962247600">Ni ddylai'r maes hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion. Bydd pob cofnod arall yn cael ei anwybyddu.</translation>
+<translation id="2533649878691950253">Cafodd y wefan hon ei rhwystro rhag gwybod eich union leoliad oherwydd fel rheol nid ydych yn caniatáu hyn</translation>
 <translation id="253493526287553278">Gweld manylion y cod hyrwyddo</translation>
 <translation id="2535585790302968248">Agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ac 1 arall}zero{a # arall}two{a # arall}few{a # arall}many{a # arall}other{a # arall}}</translation>
@@ -3302,6 +3303,7 @@ Manylion ychwanegol:
 <translation id="7392089738299859607">Diweddaru'r Cyfeiriad</translation>
 <translation id="7393161616326137353">Gemau Antur</translation>
 <translation id="739728382607845710">Eicon trinydd taliadau</translation>
+<translation id="7399616692258236448">Mae ceisiadau lleoliad yn cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
 <translation id="7399802613464275309">Gwiriad Diogelwch</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Gallwch rannu'r tab hwn drwy rannu'r ddolen, creu cod QR, castio, a rhagor</translation>

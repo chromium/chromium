@@ -826,6 +826,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2526280916094749336">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Celle-ci sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Votre code CVC figure au recto de votre carte. Il s'agit du code à quatre chiffres en haut à droite, au-dessus du numéro de votre carte.</translation>
 <translation id="2529899080962247600">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Les entrées supplémentaires seront ignorées.</translation>
+<translation id="2533649878691950253">Votre position exacte est bloquée pour ce site, car vous refusez habituellement de la communiquer</translation>
 <translation id="253493526287553278">Voir les détails du code promotionnel</translation>
 <translation id="2535585790302968248">Ouvrez un nouvel onglet de navigation privée pour naviguer de manière anonyme</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
@@ -3303,6 +3304,7 @@ Informations supplémentaires :
 <translation id="7392089738299859607">Mettre à jour l'adresse</translation>
 <translation id="7393161616326137353">Jeux d'aventure</translation>
 <translation id="739728382607845710">Icône du gestionnaire de paiement</translation>
+<translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="7399802613464275309">Contrôle de sécurité</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Partagez cet onglet en le castant, en créant un code QR, en partageant le lien, etc.</translation>

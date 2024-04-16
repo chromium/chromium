@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">ਲਿੰਕ ਪ&amp;ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1085064499066015002">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਹਮੇਸ਼ਾਂ ਚਾਲੂ</translation>
 <translation id="1085697365578766383">ਆਭਾਸੀ ਮਸ਼ੀਨ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="1088659085457112967">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="1090126737595388931">ਕੋਈ ਪਿਛੋਕੜ ਐਪ ਨਹੀਂ ਚੱਲ ਰਹੇ ਹਨ</translation>
 <translation id="1090541560108055381">ਜੋੜਾਬੱਧ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਕੋਡ ਦੋਵਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇੱਕੋ ਜਿਹਾ ਹੈ</translation>
 <translation id="1091767800771861448">ਛੱਡਣ ਲਈ ESCAPE ਦਬਾਓ (ਕੇਵਲ ਗੈਰ-ਅਧਿਕਾਰਤ ਬਿਲਡ)।</translation>
@@ -2178,7 +2177,6 @@
 <translation id="2587922766792651800">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> ਦੇ ਡੀਵਾਈਸ</translation>
 <translation id="2589658397149952302">Drive ਵਿੱਚ ਮੌਜੂਦ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਦੇ ਨਾ ਦਿਖਾਓ</translation>
-<translation id="25899519884572181">ਰੀਡਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="2593499352046705383">ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਤੁਹਾਡੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਹੈ। <ph name="DEVICE_OS" /> ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦਾ ਡਾਟਾ ਓਵਰਰਾਈਟ ਹੋ ਜਾਵੇਗਾ। g.co/flex/InstallGuide 'ਤੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="2594832159966169099">V8 ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2594999711683503743">Google ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
@@ -2479,7 +2477,6 @@
 <translation id="2806372837663997957">ਜਿਸ ਡੀਵਾਈਸ ਨਾਲ ਤੁਸੀਂ ਸਾਂਝਾ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ, ਉਸ ਨੇ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="2806891468525657116">ਸ਼ਾਰਟਕੱਟ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="2807517655263062534">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੀਆਂ ਹਨ</translation>
-<translation id="2809586584051668049">ਅਤੇ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ਹੋਰ</translation>
 <translation id="2811205483104563968">ਖਾਤੇ</translation>
 <translation id="2812049959647166806">ਥੰਡਰਬੋਲਟ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2812171980080389735">ਨੈੱਟਵਰਕ ਅਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਤੁਰੰਤ ਕਨੈਕਟ ਕਰ ਸਕੋ</translation>
@@ -3069,7 +3066,6 @@
 <translation id="3285465040399788513">ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</translation>
 <translation id="3285500645985761267">ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਨੂੰ ਸਮੂਹ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦੇਖਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="328571385944182268">ਕੀ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨੇ ਹਨ?</translation>
-<translation id="3288047731229977326">ਵਿਕਾਸਕਾਰ ਮੋਡ ਵਿੱਚ ਚੱਲ ਰਹੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਨੁਕਸਾਨ ਪਹੁੰਚਾ ਸਕਦੀਆਂ ਹਨ। ਜੇਕਰ ਤੁਸੀਂ ਇੱਕ ਵਿਕਾਸਕਾਰ ਨਹੀਂ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਵਿਕਾਸਕਾਰ ਮੋਡ ਵਿੱਚ ਚੱਲ ਰਹੀਆਂ ਇਹਨਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="3289668031376215426">ਪਹਿਲਾ ਅੱਖਰ ਆਪੇ ਵੱਡਾ ਹੋਣਾ</translation>
 <translation id="3289856944988573801">ਅੱਪਡੇਟਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਈਥਰਨੈਟ ਜਾਂ ਵਾਈ-ਫਾਈ ਵਰਤੋ।</translation>
 <translation id="3289886661311231677">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸਾਈਟਾਂ ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ। Chrome ਤੁਹਾਡੇ 4 ਹਫ਼ਤਿਆਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੇ ਵਿਸ਼ਿਆਂ ਨੂੰ ਵੀ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਂਦਾ ਹੈ।</translation>
@@ -3109,7 +3105,6 @@
 <translation id="3313622045786997898">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਹਸਤਾਖਰ ਲਾਭ</translation>
 <translation id="3313950410573257029">ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> ਨੂੰ ਲੁਕਾਓ</translation>
-<translation id="3315442055907669208">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="3317459757438853210">ਦੋ-ਪੱਖੀ</translation>
 <translation id="3317521105713541270">ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="3317678681329786349">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਲਾਕ ਕੀਤੇ ਗਏ</translation>
@@ -3514,7 +3509,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="3636940436873918441">ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="3637203148990213388">ਵਧੀਕ ਖਾਤੇ</translation>
-<translation id="3639220004740062347">ਰੀਡਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="3640214691812501263">ਕੀ <ph name="USER_NAME" /> ਲਈ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਜੋੜਨਾ ਹੈ?</translation>
 <translation id="3640347231390550691">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਫ਼ਿਸ਼ਿੰਗ ਤੋਂ ਸੁਰੱਖਿਆ ਕਰੋ</translation>
 <translation id="3640613767643722554">ਆਪਣੀ Assistant ਨੂੰ ਤੁਹਾਡੀ ਅਵਾਜ਼ ਪਛਾਣਨਾ ਸਿਖਾਓ</translation>
@@ -4157,7 +4151,6 @@
 <translation id="4095483462103784441">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="4095507791297118304">ਪ੍ਰਾਇਮਰੀ ਡਿਸਪਲੇ</translation>
 <translation id="4096421352214844684">ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਹੌਟਸਪੌਟ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਕਰਨਾ।</translation>
-<translation id="4096508467498758490">ਵਿਕਾਸਕਾਰ ਮੋਡ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="4096797685681362305">ਪਿਛਲੇ ਹਫ਼ਤੇ ਦੇਖੀ ਗਈ</translation>
 <translation id="4097406557126260163">ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="409742781329613461">Chrome ਲਈ ਨੁਕਤੇ</translation>
@@ -5489,7 +5482,6 @@
 <translation id="5146896637028965135">ਸਿਸਟਮ ਦੀ ਅਵਾਜ਼</translation>
 <translation id="5147097165869384760">OS ਸਿਸਟਮ ਪੰਨਾ ਲੱਭ ਰਹੇ ਹੋ? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="5147113439721488265">ਸਿਫ਼ਾਰਸ਼</translation>
-<translation id="5147516217412920887">ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਦਿੱਤੀਆਂ ਹਿਦਾਇਤਾਂ ਦੀ ਪਾਲਣਾ ਕਰੋ</translation>
 <translation id="5147992672778369947">ਸਿਫ਼ਾਰਸ਼ੀ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="5148285448107770349">ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 8 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="5149602533174716626">ਵੀਡੀਓ ਫ੍ਰੇਮ ਕਾਪੀ ਕਰੋ</translation>
@@ -6747,10 +6739,6 @@
 <translation id="6143186082490678276">ਸਹਾਇਤਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6143366292569327983">ਪੰਨੇ ਦੀ ਉਹ ਭਾਸ਼ਾ ਚੁਣੋ, ਜਿਸ ਤੋਂ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ</translation>
 <translation id="6144938890088808325">Chromebooks ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ</translation>
-<translation id="6145480071052696715">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਦਾ ਆਸਾਨੀ ਨਾਲ ਸੈੱਟਅੱਪ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਹੱਥੀਂ ਸ਼ਾਮਲ ਕੀਤੇ ਬਿਨਾਂ ਆਪਣੇ ਵਾਈ-ਫਾਈ ਅਤੇ Google ਖਾਤੇ ਨੂੰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> ਵਜੋਂ ਦਿਖਣਯੋਗ...</translation>
 <translation id="6146409560350811147">ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ। ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6147020289383635445">ਪ੍ਰਿੰਟ ਪੂਰਵ-ਝਲਕ ਅਸਫਲ ਰਹੀ।</translation>
 <translation id="6147253937684562370">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਮੁੱਖ ਖਾਤੇ ਦੀ ਈਮੇਲ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ: <ph name="EMAIL" /></translation>
@@ -6975,7 +6963,6 @@
 <translation id="6310141306111263820">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਮਦਦ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6311220991371174222">ਤੁਹਾਡਾ ਪ੍ਰੋਫ਼ਾਈਲ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੁਝ ਗੜਬੜ ਵਾਪਰਨ ਕਾਰਨ Chrome ਨੂੰ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। Chrome ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{ਸੁਰੱਖਿਆ ਜਾਂਚ 1 ਦਿਨ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}one{ਸੁਰੱਖਿਆ ਜਾਂਚ {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}other{ਸੁਰੱਖਿਆ ਜਾਂਚ {NUM_DAYS} ਦਿਨ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ}}</translation>
-<translation id="6312638141433622592">ਸੁਵਿਧਾ ਉਪਲਬਧ ਹੋਣ 'ਤੇ, ਲੇਖਾਂ ਨੂੰ ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਿਖਾਉਣ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="6313950457058510656">ਤਤਕਾਲ ਟੈਦਰਿੰਗ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6314819609899340042">ਤੁਸੀਂ ਇਸ <ph name="IDS_SHORT_PRODUCT_NAME" /> ਡੀਵਾਈਸ 'ਤੇ ਡੀਬਗਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਸਮਰੱਥ ਬਣਾਇਆ ਹੈ।</translation>
 <translation id="6315170314923504164">ਅਵਾਜ਼</translation>
@@ -9387,7 +9374,6 @@
 <translation id="8160775796528709999">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
-<translation id="8161293209665121583">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਰੀਡਰ ਮੋਡ</translation>
 <translation id="8161604891089629425">ਆਊਟਲਾਈਨ ਫ਼ੌਂਟ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
 <translation id="8163152278172770963">ਸਾਈਟਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਦਾਖਲ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>

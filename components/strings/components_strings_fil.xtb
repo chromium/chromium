@@ -826,6 +826,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2526280916094749336">Puwede kang gumamit ng mga naka-save na address sa lahat ng produkto ng Google. Mase-save ang address na ito sa iyong Google Account na <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Nasa harap ng iyong card ang CVC mo. Ito ang 4 na digit na code sa kanang bahagi sa itaas ng numero ng iyong card.</translation>
 <translation id="2529899080962247600">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang field na ito. Babalewalain ang lahat ng entry na lalampas dito.</translation>
+<translation id="2533649878691950253">Na-block ang site na ito sa pag-alam ng iyong eksaktong lokasyon dahil karaniwang hindi mo ito pinapayagan</translation>
 <translation id="253493526287553278">Tingnan ang mga detalye ng promo code</translation>
 <translation id="2535585790302968248">Magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
@@ -3302,6 +3303,7 @@ Mga karagdagang detalye:
 <translation id="7392089738299859607">I-update ang Address</translation>
 <translation id="7393161616326137353">Mga Adventure Game</translation>
 <translation id="739728382607845710">Icon ng tagapangasiwa ng pagbabayad</translation>
+<translation id="7399616692258236448">Awtomatikong naka-block ang mga request sa lokasyon para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="7399802613464275309">Pagsusuri sa Kaligtasan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Ibahagi ang tab na ito sa pamamagitan ng pagbabahagi sa link, paggawa ng QR code, pag-cast, at higit pa</translation>

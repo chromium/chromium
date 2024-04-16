@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
+<translation id="2533649878691950253">已禁止此网站获取您的精确位置信息，因为您通常不会授予这种权限</translation>
 <translation id="253493526287553278">查看促销代码详细信息</translation>
 <translation id="2535585790302968248">打开新的无痕式标签页即可进行无痕浏览</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
@@ -3297,6 +3298,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>
+<translation id="7399616692258236448">系统会自动屏蔽除您允许的网站之外的其他所有网站的位置信息请求</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7400418766976504921">网址</translation>
 <translation id="7403392780200267761">通过分享链接、创建二维码、投放等操作分享此标签页</translation>

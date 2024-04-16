@@ -826,6 +826,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2526280916094749336">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Koda CVC je na sprednji strani kartice. To je 4-mestna koda v zgornjem desnem kotu nad številko kartice.</translation>
 <translation id="2529899080962247600">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo prezrti.</translation>
+<translation id="2533649878691950253">Temu spletnemu mestu je onemogočen dostop do vaše natančne lokacije, ker običajno tega ne dovolite.</translation>
 <translation id="253493526287553278">Ogled podrobnosti o promocijskih kodah</translation>
 <translation id="2535585790302968248">Odpiranje novega anonimnega zavihka za zasebno brskanje</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
@@ -3302,6 +3303,7 @@ Dodatne podrobnosti:
 <translation id="7392089738299859607">Posodobitev naslova</translation>
 <translation id="7393161616326137353">Pustolovske igre</translation>
 <translation id="739728382607845710">Ikona rutine za obravnavo plačil</translation>
+<translation id="7399616692258236448">Zahteve za lokacijo so samodejno blokirane za vsa spletna mesta, razen tiste z vašim dovoljenjem</translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Delite ta zavihek z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>

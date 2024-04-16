@@ -245,6 +245,7 @@
 <translation id="4793679854893018356">Ketahui cara Chrome memastikan anda selamat</translation>
 <translation id="4828579605166583682">Google Chrome cuba menggantikan kata laluan sedia ada. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="4842397268809523050">Chrome OS Flex tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
+<translation id="4862446263930606916">Organisasi anda dapat melihat dan mengurus data penyemakan imbas dalam profil kerja anda, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chrome peribadi.</translation>
 <translation id="4873692836499071887">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 11 atau yang lebih baharu. Komputer ini menggunakan macOS 10.15.</translation>
 <translation id="4873783916118289636">Semak privasi dan kawalan keselamatan utama dalam Chrome</translation>
 <translation id="4891791193823137474">Biarkan Google Chrome dijalankan di latar belakang</translation>
@@ -321,6 +322,7 @@
 <translation id="6251759518630934363">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding dengan perlindungan standard. Anda boleh memilih untuk melangkau amaran Chrome.</translation>
 <translation id="6273793429163604305">Ke garisan…</translation>
 <translation id="6277547788421725101">Ibu/bapa anda telah mematikan "Kebenaran untuk laman, apl dan sambungan" untuk Chrome</translation>
+<translation id="627882678981830918">Sesuaikan dan kawal Chrome. Tetapkan Chrome sebagai lalai anda.</translation>
 <translation id="6291089322031436445">Apl Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome telah dipasang untuk semua pengguna pada komputer anda.</translation>
 <translation id="6326175484149238433">Alih keluar dari Chrome</translation>
@@ -483,6 +485,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8999117580775242387">Apabila HTTPS tidak tersedia, Chrome akan menggunakan sambungan yang tidak selamat tanpa memberi anda amaran</translation>
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
+<translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9053892488859122171">Sistem Chrome OS Flex</translation>
 <translation id="9054037008353851982">Lancarkan semula untuk Pengemaskinian - Tab anda akan dibuka semula</translation>
 <translation id="9090566250983691233">Ketahui sebab Chrome menyekat sesetengah fail</translation>

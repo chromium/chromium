@@ -127,7 +127,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1084824384139382525">Kopieer skakeladres</translation>
 <translation id="1085064499066015002">Altyd op alle werwe</translation>
 <translation id="1085697365578766383">Kon nie die virtuele masjien begin nie. Probeer asseblief weer.</translation>
-<translation id="1088659085457112967">Gaan by lesermodus in</translation>
 <translation id="1090126737595388931">Geen agtergrondprogramme wat loop nie</translation>
 <translation id="1090541560108055381">Voordat jy saambind, moet jy seker maak dat hierdie kode dieselfde is op albei toestelle</translation>
 <translation id="1091767800771861448">Druk ESCAPE om oor te slaan (Slegs nie-amptelike bou).</translation>
@@ -2175,7 +2174,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2587922766792651800">Uitgetel</translation>
 <translation id="2588636910004461974">Toestelle van <ph name="VENDOR_NAME" /> af</translation>
 <translation id="2589658397149952302">Moet nooit Drive-lêers wys nie</translation>
-<translation id="25899519884572181">Verlaat lesermodus</translation>
 <translation id="2593499352046705383">Maak seker dat jy 'n rugsteun van jou data het voordat jy begin. As jy <ph name="DEVICE_OS" /> installeer, sal jou hardeskyf vervang word. Kom meer te wete by g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Bestuur V8-sekuriteit</translation>
 <translation id="2594999711683503743">Deursoek Google of tik URL in</translation>
@@ -2475,7 +2473,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2806372837663997957">Die toestel waarmee jy probeer deel, het dit nie aanvaar nie</translation>
 <translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
-<translation id="2809586584051668049">en nog <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Rekeninge</translation>
 <translation id="2812049959647166806">Thunderbolt word nie gesteun nie</translation>
 <translation id="2812171980080389735">Gestoorde netwerke en wagwoorde sodat jy in ’n kits kan koppel</translation>
@@ -3064,7 +3061,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3285465040399788513">Daar is nie genoeg toestelberging om die opstelling te voltooi nie. Maak spasie beskikbaar en probeer weer.</translation>
 <translation id="3285500645985761267">Laat verwante werwe toe om jou aktiwiteit in die groep te sien</translation>
 <translation id="328571385944182268">Stoor jou wagwoorde?</translation>
-<translation id="3288047731229977326">Uitbreidings wat in ontwikkelaarmodus laat loop word, kan jou rekenaar beskadig. As jy nie 'n ontwikkelaar is nie, moet jy hierdie uitbreidings wat in ontwikkelaarmodus laat loop word, deaktiveer om veilig te bly.</translation>
 <translation id="3289668031376215426">Outohoofletters</translation>
 <translation id="3289856944988573801">Gebruik asseblief Ethernet of Wi-Fi om te kyk of daar opdaterings is.</translation>
 <translation id="3289886661311231677">Jy kan onderwerpe blokkeer wat jy nie wil hê met werwe gedeel moet word nie. Chrome vee ook jou onderwerpe wat ouer as 4 weke is, outomaties uit.</translation>
@@ -3103,7 +3099,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3313622045786997898">Sertifikaat-handtekeningwaarde</translation>
 <translation id="3313950410573257029">Gaan verbinding na</translation>
 <translation id="3315158641124845231">Versteek <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Gaan by lesermodus in</translation>
 <translation id="3317459757438853210">Tweekantig</translation>
 <translation id="3317521105713541270">Skep groepe</translation>
 <translation id="3317678681329786349">Kamera en mikrofoon word geblokkeer</translation>
@@ -3508,7 +3503,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> oor</translation>
 <translation id="3636940436873918441">Voorkeurtale</translation>
 <translation id="3637203148990213388">Bykomende rekeninge</translation>
-<translation id="3639220004740062347">Verlaat lesermodus</translation>
 <translation id="3640214691812501263">Voeg "<ph name="EXTENSION_NAME" />" vir <ph name="USER_NAME" /> by?</translation>
 <translation id="3640347231390550691">Beskerm jou wagwoorde teen uitvissing</translation>
 <translation id="3640613767643722554">Leer jou Assistent om jou stem te herken</translation>
@@ -4150,7 +4144,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4095425503313512126">Blaai en soek is vinniger</translation>
 <translation id="4095507791297118304">Primêre skerm</translation>
 <translation id="4096421352214844684">Koppel outomaties aan jou foon se warmkol.</translation>
-<translation id="4096508467498758490">Deaktiveer ontwikkelaarmodus se uitbreidings</translation>
 <translation id="4096797685681362305">In die afgelope week bekyk</translation>
 <translation id="4097406557126260163">Programme en uitbreidings</translation>
 <translation id="409742781329613461">Wenke vir Chrome</translation>
@@ -5480,7 +5473,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5146896637028965135">Stelselstem</translation>
 <translation id="5147097165869384760">Op soek na bedryfstelselbladsy? Besoek<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Aanbeveling</translation>
-<translation id="5147516217412920887">Volg die instruksies op jou foon om die kode te verifieer</translation>
 <translation id="5147992672778369947">Gebruik aanbevole wagwoord</translation>
 <translation id="5148285448107770349">Wagwoord moet minstens 8 karakters hê</translation>
 <translation id="5149602533174716626">Kopieer videoraam</translation>
@@ -6738,10 +6730,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6143186082490678276">Kry hulp</translation>
 <translation id="6143366292569327983">Kies die taal waaruit die bladsy vertaal moet word</translation>
 <translation id="6144938890088808325">Help ons om Chromebooks te verbeter</translation>
-<translation id="6145480071052696715">Stel jou <ph name="DEVICE_TYPE" /> maklik met jou foon op. Jy kan jou wi-fi en Google-rekening byvoeg sonder om jou wagwoorde handmatig in te voer.
-    <ph name="BR" />
-    <ph name="BR" />
-    Sigbaar as <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> …</translation>
 <translation id="6146409560350811147">Sinkronisering werk nie. Probeer weer aanmeld.</translation>
 <translation id="6147020289383635445">Drukvoorskou het misluk.</translation>
 <translation id="6147253937684562370">Meld aan met jou hoofrekening-e-pos om die profiel te ontsluit: <ph name="EMAIL" /></translation>
@@ -6966,7 +6954,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6310141306111263820">Kon nie e-SIM-profiel installeer nie. Kontak jou diensverskaffer vir hulp.</translation>
 <translation id="6311220991371174222">Kan nie Chrome begin nie omdat iets verkeerd geloop het met die oopmaak van jou profiel. Probeer om Chrome te herbegin.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Veiligheidskontrole het 1 dag gelede plaasgevind}other{Veiligheidskontrole het {NUM_DAYS} dae gelede plaasgevind}}</translation>
-<translation id="6312638141433622592">Bied aan om artikels in lesermodus te wys, as dit gesteun word</translation>
 <translation id="6313950457058510656">Skakel Kitsverbinding af</translation>
 <translation id="6314819609899340042">Jy het ontfoutingkenmerke op hierdie <ph name="IDS_SHORT_PRODUCT_NAME" />-toestel suksesvol geaktiveer.</translation>
 <translation id="6315170314923504164">Stem</translation>
@@ -9375,7 +9362,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8160775796528709999">Kry onderskrifte vir jou oudio en video deur Intydse Onderskrifte in instellings te aktiveer</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Hervat blaai</translation>
-<translation id="8161293209665121583">Lesermodus vir webbladsye</translation>
 <translation id="8161604891089629425">Buitelynlettertipe</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skuif oortjie na nuwe venster toe}other{Skuif oortjies na nuwe venster toe}}</translation>
 <translation id="8163152278172770963">Moenie toelaat dat werwe outomaties prent-in-prent ingaan nie</translation>

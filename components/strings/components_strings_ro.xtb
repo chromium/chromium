@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Codul CVC se află pe partea din față a cardului. Este codul din patru cifre din dreapta sus, deasupra numărului cardului.</translation>
 <translation id="2529899080962247600">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Intrările suplimentare vor fi ignorate.</translation>
+<translation id="2533649878691950253">Accesul acestui site la locația exactă a fost blocat, deoarece nu acorzi de obicei această permisiune</translation>
 <translation id="253493526287553278">Vezi detaliile codului promoțional</translation>
 <translation id="2535585790302968248">Deschide o nouă filă incognito pentru a naviga în privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
@@ -3302,6 +3303,7 @@ Detalii suplimentare:
 <translation id="7392089738299859607">Actualizează adresa</translation>
 <translation id="7393161616326137353">Jocuri de aventură</translation>
 <translation id="739728382607845710">Pictograma handlerului pentru plăți</translation>
+<translation id="7399616692258236448">Solicitările de localizare sunt blocate automat pentru toate site-urile, cu excepția celor pe care le permiți</translation>
 <translation id="7399802613464275309">Verificare de siguranță</translation>
 <translation id="7400418766976504921">Adresă URL</translation>
 <translation id="7403392780200267761">Distribuie fila trimițând un link, creând un cod QR, proiectând și multe altele.</translation>

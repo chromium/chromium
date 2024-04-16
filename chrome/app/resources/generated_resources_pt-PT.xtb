@@ -127,7 +127,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1084824384139382525">Copiar &amp;endereço do link</translation>
 <translation id="1085064499066015002">Sempre em todos os sites</translation>
 <translation id="1085697365578766383">Não foi possível iniciar a máquina virtual. Tente novamente.</translation>
-<translation id="1088659085457112967">Entrar no modo de leitor</translation>
 <translation id="1090126737595388931">Não há aplicações em execução em segundo plano</translation>
 <translation id="1090541560108055381">Antes de sincronizar, certifique-se de que este código é o mesmo em ambos os dispositivos</translation>
 <translation id="1091767800771861448">Prima ESCAPE para ignorar (apenas nas compilações não oficiais).</translation>
@@ -2162,7 +2161,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2587922766792651800">Tempo limite excedido</translation>
 <translation id="2588636910004461974">Dispositivos de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nunca mostrar ficheiros do Drive</translation>
-<translation id="25899519884572181">Sair do modo de leitor</translation>
 <translation id="2593499352046705383">Antes de iniciar, certifique-se de que tem uma cópia de segurança dos dados. A instalação do <ph name="DEVICE_OS" /> substitui o seu disco rígido. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Faça a gestão da segurança do V8</translation>
 <translation id="2594999711683503743">Pesquise no Google ou escreva o URL</translation>
@@ -2463,7 +2461,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2806372837663997957">O dispositivo com o qual está a tentar efetuar a partilha não aceitou.</translation>
 <translation id="2806891468525657116">O atalho já existe.</translation>
 <translation id="2807517655263062534">Os ficheiros que transferir são apresentados aqui</translation>
-<translation id="2809586584051668049">e mais <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é suportado</translation>
 <translation id="2812171980080389735">Redes e palavras-passe guardadas para ligação instantânea</translation>
@@ -3053,7 +3050,6 @@ Quer pará-lo?</translation>
 <translation id="3285465040399788513">O dispositivo não tem armazenamento suficiente para concluir a configuração. Liberte espaço e tente novamente.</translation>
 <translation id="3285500645985761267">Permitir que os sites relacionados vejam a sua atividade no grupo</translation>
 <translation id="328571385944182268">Quer guardar as suas palavras-passe?</translation>
-<translation id="3288047731229977326">As extensões que funcionam no modo de programador podem danificar o seu computador. Se não é programador, deverá desativar as extensões que sejam executadas neste modo para se manter protegido.</translation>
 <translation id="3289668031376215426">Maiúsculas automáticas</translation>
 <translation id="3289856944988573801">Para verificar se existem atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3289886661311231677">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também apaga automaticamente os tópicos com mais de 4 semanas.</translation>
@@ -3093,7 +3089,6 @@ Quer pará-lo?</translation>
 <translation id="3313622045786997898">Valor de assinatura do certificado</translation>
 <translation id="3313950410573257029">Rever ligação</translation>
 <translation id="3315158641124845231">Ocultar o <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Entrar no modo de leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317521105713541270">Criar grupos</translation>
 <translation id="3317678681329786349">Câmara e microfone bloqueados</translation>
@@ -3498,7 +3493,6 @@ Quer pará-lo?</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> restantes</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Contas adicionais</translation>
-<translation id="3639220004740062347">Sair do modo de leitor</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Proteja as suas palavras-passe contra phishing</translation>
 <translation id="3640613767643722554">Ensine o Assistente a reconhecer a sua voz</translation>
@@ -4141,7 +4135,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4095483462103784441">Criar novo grupo de separadores</translation>
 <translation id="4095507791297118304">Ecrã principal</translation>
 <translation id="4096421352214844684">Ligue-se automaticamente à zona Wi-Fi do telemóvel.</translation>
-<translation id="4096508467498758490">Desativar extensões de modo de programador</translation>
 <translation id="4096797685681362305">Visto na semana passada</translation>
 <translation id="4097406557126260163">Apps e extensões</translation>
 <translation id="409742781329613461">Sugestões para o Chrome</translation>
@@ -5472,7 +5465,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147097165869384760">Está à procura da página de sistema do SO? Visite<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomendação</translation>
-<translation id="5147516217412920887">Siga as instruções no telemóvel para validar o código</translation>
 <translation id="5147992672778369947">Use uma palavra-passe recomendada</translation>
 <translation id="5148285448107770349">A palavra-passe tem de ter, no mínimo, 8 carateres</translation>
 <translation id="5149602533174716626">Cop&amp;iar frame do vídeo</translation>
@@ -6731,10 +6723,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6143186082490678276">Obter ajuda</translation>
 <translation id="6143366292569327983">Escolha o idioma de partida da tradução da página.</translation>
 <translation id="6144938890088808325">Ajude-nos a melhorar os Chromebooks</translation>
-<translation id="6145480071052696715">Configure facilmente o dispositivo <ph name="DEVICE_TYPE" /> com o telemóvel. Pode adicionar a sua Conta Google e Wi-Fi sem introduzir manualmente as palavras-passe.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visível como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">A sincronização não está a funcionar. Experimente iniciar sessão novamente.</translation>
 <translation id="6147020289383635445">A pré-visualização da impressão falhou.</translation>
 <translation id="6147253937684562370">Para desbloquear o perfil, inicie sessão com o email da sua conta principal: <ph name="EMAIL" /></translation>
@@ -6959,7 +6947,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6310141306111263820">Não é possível instalar o perfil do eSIM. Para obter ajuda, contacte o seu operador.</translation>
 <translation id="6311220991371174222">Não é possível iniciar o Chrome porque ocorreu um erro ao abrir o seu perfil. Experimente reiniciar o Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A verificação de segurança foi efetuada há 1 dia.}other{A verificação de segurança foi efetuada há {NUM_DAYS} dias.}}</translation>
-<translation id="6312638141433622592">Sugerir a apresentação de artigos no modo de leitor, quando tal for suportado.</translation>
 <translation id="6313950457058510656">Desativar Ligação (à Internet) via telemóvel instantânea</translation>
 <translation id="6314819609899340042">Ativou com êxito as funcionalidades de depuração neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -9371,7 +9358,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8160775796528709999">Obtenha legendas para o áudio e o vídeo ao ativar as Legendas instantâneas nas definições.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
-<translation id="8161293209665121583">Modo de leitor para páginas Web</translation>
 <translation id="8161604891089629425">Tipo de letra com contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover separador para nova janela}other{Mover separadores para nova janela}}</translation>
 <translation id="8163152278172770963">Não permitir que os sites entrem automaticamente no modo ecrã no ecrã</translation>

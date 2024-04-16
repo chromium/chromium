@@ -826,6 +826,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2526280916094749336">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang verður vistað á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-númerið er á framhlið kortsins. Það er 4 tölustafa kóðinn efst til hægri ofan við kortanúmerið.</translation>
 <translation id="2529899080962247600">Þessi reitur á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> færslur. Allar frekari færslur verða hunsaðar.</translation>
+<translation id="2533649878691950253">Lokað var á að þetta vefsvæði fengi upplýsingar um nákvæma staðsetningu þína vegna þess að þú leyfir það yfirleitt ekki</translation>
 <translation id="253493526287553278">Sjá upplýsingar um kynningarkóða</translation>
 <translation id="2535585790302968248">Opnaðu nýjan huliðsflipa til að fara huldu höfði</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 í viðbót}one{og # í viðbót}other{og # í viðbót}}</translation>
@@ -3302,6 +3303,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7392089738299859607">Uppfæra heimilisfang</translation>
 <translation id="7393161616326137353">Ævintýraleikir</translation>
 <translation id="739728382607845710">Tákn greiðslumiðlara</translation>
+<translation id="7399616692258236448">Sjálfkrafa er lokað á staðsetningarbeiðnir fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="7399802613464275309">Öryggisathugun</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7403392780200267761">Deildu þessum flipa með því að deila tenglinum, búa til QR-kóða, senda út og fleira</translation>

@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1247030632403369975">एल्युमिनम</translation>
 <translation id="1252209483516427155">बाहिरी वस्त्र</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक गरिएका)</translation>
 <translation id="1255086252236620440">खाना मिक्स गर्ने मेसिन</translation>
 <translation id="1256368399071562588">&lt;p&gt;तपाईं कुनै वेबसाइटमा जान खोज्दा उक्त साइट नखुलेको खण्डमा सर्वप्रथम समस्या निवारणका यी चरणहरूको प्रयोग गरी त्रुटिको समाधान गर्ने प्रयास गर्नुहोस्:&lt;/p&gt;
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="ACCOUNT" />) मा सेभ गरिने छ।</translation>
 <translation id="2527451058878391043">तपाईंको CVC तपाईंको कार्डको अगाडिको भागमा छ। यो तपाईंको कार्ड नम्बरको सिरानको दायाँतिर रहेको ४ अङ्कको कोड हो।</translation>
 <translation id="2529899080962247600">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी प्रविष्टि हुनु हुँदैन। थप सबै प्रविष्टि बेवास्ता गरिने छन्।</translation>
+<translation id="2533649878691950253">तपाईं सामान्यतया आफ्नो सटीक लोकेसन प्रयोग गर्ने अनुमति दिनुहुन्न। त्यसैले यो साइटलाई तपाईंको सटीक लोकेसन थाहा पाउनबाट रोक लगाइएको छ</translation>
 <translation id="253493526287553278">प्रोमो कोडसम्बन्धी विवरण हेर्नुहोस्</translation>
 <translation id="2535585790302968248">तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
@@ -1509,6 +1511,7 @@
 <translation id="385489333361351399">क्यामेरा र फोटोसम्बन्धी उपकरण</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> का सर्तहरू यहाँ हेर्नुहोस्</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="3880456882942693779">कला तथा मनोरञ्जन</translation>
@@ -2346,6 +2349,7 @@
 <translation id="553377674408670169">शिक्षासम्बन्धी रोजगारीहरू</translation>
 <translation id="5536214594743852365">"<ph name="SECTION" />" खण्ड देखाउनुहोस्</translation>
 <translation id="553782666181800029">Envelope Chou 2</translation>
+<translation id="5538270463355278784">स्वतः फुल स्क्रिन हुने मोड</translation>
 <translation id="5539243836947087108">राफ्ट</translation>
 <translation id="5540224163453853">अनुरोध गरिएको लेख फेला पार्न सकिएन।</translation>
 <translation id="5540969246441091044">घोडचढी</translation>
@@ -2710,6 +2714,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
 <translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं <ph name="FINANCIAL_ACCOUNT_TYPES" /> विकल्पको रूपमा देख्नुहुने छ}other{तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं <ph name="FINANCIAL_ACCOUNT_TYPES" /> विकल्पका रूपमा देख्नुहुने छ}}</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
@@ -3300,6 +3305,7 @@
 <translation id="7392089738299859607">ठेगाना परिवर्तन गर्नुहोस्</translation>
 <translation id="7393161616326137353">साहसिक खेलहरू</translation>
 <translation id="739728382607845710">भुक्तानी ह्यान्ड्लर जनाउने आइकन</translation>
+<translation id="7399616692258236448">तपाईंले लोकेसन प्रयोग गर्ने अनुमति दिएका साइटबाहेक अन्य सबै साइटहरूका लागि लोकेसन प्रयोग गर्ने अनुरोध स्वतः ब्लक गरिन्छ</translation>
 <translation id="7399802613464275309">सुरक्षा जाँच</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक सेयर गरेर, QR कोड बनाएर, कास्ट गरेर वा अन्य तरिकाले यो ट्याब सेयर गर्नुहोस्</translation>
@@ -3844,6 +3850,7 @@
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यससम्बन्धी विवरणहरू स्पष्ट रूपमा उल्लेख नगरिएको हुन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">स्वतः फुल स्क्रिन हुने मोड</translation>
 <translation id="838307841291975086">स्टेसन वागन कारहरू</translation>
 <translation id="8389532092404711541">सामान्यतया <ph name="LOW_PRICE" /> पर्छ</translation>
 <translation id="8389940864052787379">कस्टम तथा उच्चस्तरीय सवारी साधनहरू</translation>

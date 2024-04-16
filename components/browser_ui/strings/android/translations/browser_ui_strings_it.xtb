@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
 <translation id="3908288065506437185">Blocca i cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="3918378745482005425">Alcune funzionalità potrebbero non essere disponibili. I siti correlati possono comunque utilizzare i cookie di terze parti.</translation>
+<translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
 <translation id="3955193568934677022">Consenti ai siti di riprodurre i contenuti protetti (opzione consigliata)</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3974105241379491420">I siti possono chiedere l'autorizzazione a usare le informazioni salvate su di te</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigazione inaccessibile: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8990043154272859344">Uscirai da tutti i siti</translation>
+<translation id="8993853206419610596">Espandi tutte le richieste</translation>
 <translation id="9002538116239926534">Quando l'opzione è attiva, i siti possono salvare dati sul dispositivo. Quando l'opzione è disattivata, i siti non possono salvare dati sul dispositivo.</translation>
 <translation id="9011903857143958461">Autorizzazione <ph name="SITE_NAME" /> consentita</translation>
 <translation id="9019902583201351841">Gestito dai genitori</translation>

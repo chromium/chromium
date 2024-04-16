@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Sundluba suumimine</translation>
 <translation id="3908288065506437185">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="3918378745482005425">Mõned funktsioonid ei pruugi töötada. Seotud saidid saavad siiski kolmanda osapoole küpsisefaile kasutada.</translation>
+<translation id="3933121352599513978">Ahenda soovimatud taotlused (soovitatud)</translation>
 <translation id="3955193568934677022">Luba saitidel esitada kaitstud sisu (soovitatav)</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3974105241379491420">Saidid saavad küsida luba kasutada teie kohta salvestatud teavet</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigeerimine ei ole saadaval: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="8990043154272859344">Teid logitakse kõikidelt saitidelt välja</translation>
+<translation id="8993853206419610596">Laienda kõik taotlused</translation>
 <translation id="9002538116239926534">Kui see on sisse lülitatud, saavad saidid teie seadmesse andmeid salvestada. Kui see on välja lülitatud, ei saa saidid teie seadmesse andmeid salvestada.</translation>
 <translation id="9011903857143958461">Saidi <ph name="SITE_NAME" /> jaoks lubatud</translation>
 <translation id="9019902583201351841">Vanemate hallatud</translation>

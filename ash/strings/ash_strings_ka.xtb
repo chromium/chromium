@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store აპი</translation>
 <translation id="1225748608451425081">თქვენი Chromebook დაბლოკილია ცნობილი პრობლემის გამო. შესვლას შეძლებთ გარკვეული დროის შემდეგ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">არჩევის შეწყვეტა</translation>
+<translation id="1230853660706736937">ტექსტის ძიება სურათებში და სურათების წინასწარი ვერსიების ნახვა</translation>
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
 <translation id="1240638468526743569">აპი</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685"><ph name="APP_NAME" />-ს, ასევე, ყველა აპსა და ვებსაიტს, რომლებსაც აქვს კამერის გამოყენების ნებართვა, მიენიჭება კამერაზე წვდომა. შესაძლოა, დაგჭირდეთ ვებგვერდის განახლება ან აპის გადატვირთვა.</translation>
 <translation id="3826099427150913765">პაროლზე გადართვა</translation>
 <translation id="383058930331066723">ბატარეის დამზოგის რეჟიმი ჩართულია</translation>
+<translation id="3831226344927851293">სახელმძღვანელოს ხედიდან გასვლა</translation>
 <translation id="383629559565718788">კლავიატურის პარამეტრების ჩვენება</translation>
 <translation id="384082539148746321">გსურთ, წაშალოთ შაბლონი?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, შემდეგ კი <ph name="KEY_ONE" /> ან <ph name="KEY_TWO" /> ან <ph name="KEY_THREE" /> ან <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ქსელის შესახებ ინფორმაცია არ არის</translation>
+<translation id="3848526302597027234">შემდეგ ნებართვებზე წვდომა:</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="385300504083504382">დასაწყისი</translation>
 <translation id="3859364108019690">აპების სტრიმინგი ვერ ხერხდება</translation>
@@ -1291,7 +1294,6 @@
 <translation id="598882571027504733">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook და არ გამოართოთ კლავიატურა.</translation>
 <translation id="5998374579424866922">თამაშის მართვის საშუალებების გამორთვა</translation>
 <translation id="6000279412553873020">კლავიშები, ღილაკები და სხვა</translation>
-<translation id="6002122790816966947">თქვენი მოწყობილობები</translation>
 <translation id="6012623610530968780">გვერდი <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" />-დან</translation>
 <translation id="601304062528754300">შემდეგი ერთეულის გამოყოფა თაროზე</translation>
 <translation id="6015573907265691211">შესრულებულად მონიშვნა</translation>

@@ -494,6 +494,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> と共有しています</translation>
 <translation id="363596933471559332">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能がオフの場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="3636940436873918441">優先言語</translation>
+<translation id="368329460027487650">ログアウトしています。ログインのオプションを開きます。</translation>
 <translation id="3687645719033307815">このページのプレビューを表示しています</translation>
 <translation id="3690369331356918524">データ侵害によりパスワードが漏洩した場合に警告します</translation>
 <translation id="3692944402865947621">保存場所にアクセスできないため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>

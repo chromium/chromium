@@ -135,6 +135,7 @@
 <translation id="1687475363370981210">Tümünü Okundu Olarak İşaretle</translation>
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> yer işareti seçildi</translation>
+<translation id="1710698977900873766">Gelişmiş korumayı aç</translation>
 <translation id="1713777106376424209">Teslim eden</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> kaynağına güveniyorsanız kayıtlı bir şifre kullanarak oturum açabilirsiniz.</translation>
 <translation id="1740468249224277719">Yüklemek için iki kez dokunun.</translation>
@@ -1271,7 +1272,6 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7557508262441527045">Oturum kapatıldı</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7564917801238348224">KAYDET...</translation>
-<translation id="7569588934989281656">Sekme şeridini kaydırarak sekmeler arasında geçiş yapabilirsiniz.</translation>
 <translation id="7582857256643797524">Bu ayar, cihazınızda etkinleştirildi</translation>
 <translation id="7583004045319035904">Gizli sekmelerinizin kilidini açmak için <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> kullanın.</translation>
 <translation id="7598439272585186139">Daha fazla güvenlikten yararlanın</translation>

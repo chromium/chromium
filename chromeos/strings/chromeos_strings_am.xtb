@@ -372,6 +372,7 @@
 <translation id="3170673040743561620">ሰነድዎን በቃኚው ላይ ያስቀምጡት</translation>
 <translation id="3174321110679064523">ከንጋት ወደ ጨለማ ልጣፍ</translation>
 <translation id="3178532070248519384">አቫንት-ጋርዴ</translation>
+<translation id="3182676044300231689">እንደ «የበለጠ በራስ መተማመን ያለው አድርግ» የሚል ጥያቄ ያስገቡ</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
 <translation id="319101249942218879">የአምሳያ ምስል ተለውጧል</translation>
 <translation id="3192947282887913208">የድምጽ ፋይሎች</translation>
@@ -575,6 +576,7 @@
 <translation id="4394049700291259645">አሰናክል</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />ን ዳግም በማስነሳት ላይ</translation>
 <translation id="4395835743215824109">የቁልፍ ሰሌዳ ማበጂያ</translation>
+<translation id="439946595190720558">ይህ ዳራ የተፈጠረው በAI የሚከተለውን ጽሑፍ በመጠቀም ነው፦ «<ph name="PROMPT" />።»</translation>
 <translation id="4415951057168511744">የአሁኑ አምሳያ</translation>
 <translation id="4417830657741848074">አስተዳዳሪዎ አንዳንድ መተግበሪያዎችን በራስ-ሰር እንዲጀምሩ አዘጋጅቷል። ከእነዚህ መተግበሪያዎች ውስጥ አንዳንዶቹ ያልተዘጉ ሊሆኑ ይችላሉ።</translation>
 <translation id="4422041425070339732">ታች ቀስት</translation>
@@ -1018,6 +1020,7 @@
 <translation id="6905724422583748843">ወደ <ph name="PAGE_NAME" /> ተመለስ</translation>
 <translation id="6910312834584889076">የቃኚው ሽፋን ክፍት ነው። ሽፋኑን ይዝጉ እና እንደገና ይሞክሩ።</translation>
 <translation id="6911383237894364323">ወደ ሚዲያ አገልጋዮች መገናኘት አልተቻለም</translation>
+<translation id="6930597342185648547">ስለ ዳራ</translation>
 <translation id="6939766318048400022">ካፌ</translation>
 <translation id="6943893908656559156">የርቀት ማንነት (ከተፈለገ)</translation>
 <translation id="6953137545147683679">ወርቃማ</translation>

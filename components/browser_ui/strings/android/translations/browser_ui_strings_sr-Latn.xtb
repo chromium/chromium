@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
 <translation id="3908288065506437185">Blokiraj kolačiće treće strane u režimu bez arhiviranja</translation>
 <translation id="3918378745482005425">Neke funkcije možda neće raditi. Srodni sajtovi i dalje mogu da koriste kolačiće treće strane.</translation>
+<translation id="3933121352599513978">Skupi neželjene zahteve (preporučeno)</translation>
 <translation id="3955193568934677022">Dozvoli sajtovima da puštaju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3974105241379491420">Sajtovi mogu da zatraže da koriste informacije koje su sačuvali o vama</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigacija je nedostupna: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavićete se sa svih sajtova</translation>
+<translation id="8993853206419610596">Proširi sve zahteve</translation>
 <translation id="9002538116239926534">Kada je uključeno, sajtovi mogu da čuvaju podatke na uređaju. Kada je isključeno, sajtovi ne mogu da čuvaju podatke na uređaju.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> je dozvoljen</translation>
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>

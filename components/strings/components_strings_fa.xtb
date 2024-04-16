@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره خواهد شد.</translation>
 <translation id="2527451058878391043">‏کد تأیید کارت (CVC) روی کارتتان درج شده است. این کد ۴ رقمی در بالا سمت راست شماره کارت قرار دارد.</translation>
 <translation id="2529899080962247600">این فیلد نباید بیشتر از <ph name="MAX_ITEMS_LIMIT" /> ورودی داشته باشد. همه ورودی‌های بعدی نادیده گرفته خواهند شد.</translation>
+<translation id="2533649878691950253">اجازه دسترسی به مکان دقیق شما به این سایت داده نشد چون شما معمولاً این اجازه را اعطا نمی‌کنید</translation>
 <translation id="253493526287553278">دیدن جزئیات کد ترویجی</translation>
 <translation id="2535585790302968248">برگه ناشناس جدیدی برای مرور خصوصی باز می‌شود</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{و ۱ مورد دیگر}one{و # مورد دیگر}other{و # مورد دیگر}}</translation>
@@ -3302,6 +3303,7 @@
 <translation id="7392089738299859607">به‌روزرسانی نشانی</translation>
 <translation id="7393161616326137353">بازی‌های ماجراجویی</translation>
 <translation id="739728382607845710">نماد کنترل‌كننده پرداخت</translation>
+<translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
 <translation id="7403392780200267761">هم‌رسانی این برگه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر</translation>
@@ -3924,7 +3926,7 @@
 <translation id="8528149813106025610">لباس کودکانه</translation>
 <translation id="8530813470445476232">‏سابقه مرور، کوکی، حافظه پنهان و موارد دیگر را در تنظیمات Chrome پاک کنید.</translation>
 <translation id="853246364274116957">برادوی و تئاتر موزیکال</translation>
-<translation id="8533411848724153701">Gemini Chat</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>
 <translation id="8534934518812659742">‏<ph name="PERMISSION" /> را برای Chrome خاموش کرده‌اید.</translation>
 <translation id="8536234749087605613">پاکت (پنجره‌دار)</translation>

@@ -826,6 +826,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC está en el frente de la tarjeta. Es el código de 4 dígitos que se encuentra en la parte superior derecha sobre el número de la tarjeta.</translation>
 <translation id="2529899080962247600">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán todas las entradas posteriores.</translation>
+<translation id="2533649878691950253">No se permitió que este sitio acceda a tu ubicación precisa porque generalmente no otorgas este permiso.</translation>
 <translation id="253493526287553278">Ver los detalles del código promocional</translation>
 <translation id="2535585790302968248">Abre una nueva pestaña de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
@@ -3303,6 +3304,7 @@ Detalles adicionales:
 <translation id="7392089738299859607">Actualizar dirección</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
 <translation id="739728382607845710">Ícono del controlador de pagos</translation>
+<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="7399802613464275309">Verificación de seguridad</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>

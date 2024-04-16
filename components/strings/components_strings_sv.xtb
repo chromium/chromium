@@ -340,6 +340,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="160851722280695521">Spela Dino Run-spelet i Chrome</translation>
 <translation id="161042844686301425">Cyanblå</translation>
 <translation id="1611101756749861742">Andra rullen</translation>
+<translation id="1611854593425834707">Stäng enhetslistan för casting</translation>
 <translation id="1612199629998703524">Hantera ämnen</translation>
 <translation id="1615178538289490617">Återkalla åtkomst för <ph name="PORT_NAME" /></translation>
 <translation id="1615402009686901181">Skärmbilder inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
@@ -826,6 +827,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2526280916094749336">Du kan använda sparade adresser i Googles produkter. Den här adressen sparas i ditt Google-konto, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-koden finns på framsidan av kortet. Det är den fyrsiffriga koden uppe till höger ovanför kortnumret.</translation>
 <translation id="2529899080962247600">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver det ignoreras.</translation>
+<translation id="2533649878691950253">Webbplatsen blockerades från att registrera din exakta plats eftersom du vanligtvis inte tillåter detta</translation>
 <translation id="253493526287553278">Visa information om kampanjkoden</translation>
 <translation id="2535585790302968248">Öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{och 1 till}other{och # till}}</translation>
@@ -1918,6 +1920,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4691093235373904540">Takläggning</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
 <translation id="4698692901173737941">Kampsport</translation>
+<translation id="4701307090948589984">Casta till …</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sida</translation>
 <translation id="4702656508969495934">Live Caption visas. Använd fönsterbyte för att ändra fokus</translation>
@@ -2167,6 +2170,8 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5161334686036120870">Ämne:</translation>
 <translation id="5161506081086828129">Utmatningsfack 9</translation>
 <translation id="5164798890604758545">Text skrivs</translation>
+<translation id="5164928537947209380">Det här experimentella AI-verktyget kanske inte alltid har rätt. Ditt innehåll skickas till Google för att förbättra det.
+    <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="516920405563544094">Ange CVC-koden för <ph name="CREDIT_CARD" />. När du bekräftar delas kortuppgifter från ditt Google-konto med webbplatsen.</translation>
 <translation id="5169827969064885044">Du kan förlora åtkomsten till organisationens konto eller bli utsatt för identitetsstöld. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
@@ -3302,6 +3307,7 @@ Mer information.
 <translation id="7392089738299859607">Uppdatera adressen</translation>
 <translation id="7393161616326137353">Äventyrsspel</translation>
 <translation id="739728382607845710">Ikonen Betalningshanterare</translation>
+<translation id="7399616692258236448">Platsbegäranden blockeras automatiskt på alla webbplatser utom sådana du tillåter</translation>
 <translation id="7399802613464275309">Säkerhetskontroll</translation>
 <translation id="7400418766976504921">Webbadress</translation>
 <translation id="7403392780200267761">Dela den här fliken genom att dela länken, skapa en QR-kod, casta med flera alternativ</translation>
@@ -4063,6 +4069,7 @@ Mer information:
 <translation id="8807160976559152894">Beskär efter varje sida</translation>
 <translation id="8809203544698246977">Blockerade ämnen visas här</translation>
 <translation id="8811470563853401328">Vill du spara adressen i kontot?</translation>
+<translation id="8811725516933141693">Skriv @gemini om du vill chatta med Gemini</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8814707942599948500">C8-kuvert</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>

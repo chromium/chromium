@@ -89,7 +89,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="234869673307233423">Chrome nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="235650106824528204">Všetky údaje prehliadača Chrome vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Pokračovať</translation>
-<translation id="2389730170785586152">Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>
 <translation id="2401189691232800402">Systém ChromeOS</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{K 1 zariadeniu s ľudským rozhraním malo prístup jedno alebo viac rozšírení pre Chrome}=1{K 1 zariadeniu s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}few{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}many{# HID devices are being accessed by one or more Chrome extensions}other{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre Chrome}}</translation>
 <translation id="2424440923901031101">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome a môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>

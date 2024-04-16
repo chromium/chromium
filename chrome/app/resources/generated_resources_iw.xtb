@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">העתקת כתו&amp;בת קישור</translation>
 <translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
 <translation id="1085697365578766383">קרתה שגיאה בהפעלת המכונה הווירטואלית. יש לנסות שוב.</translation>
-<translation id="1088659085457112967">כניסה למצב קורא</translation>
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
 <translation id="1090541560108055381">לפני ההתאמה צריך לוודא שמשתמשים באותו קוד בשני המכשירים</translation>
 <translation id="1091767800771861448">‏יש להקיש על ESCAPE כדי לדלג (גרסאות לא רשמיות בלבד).</translation>
@@ -2176,7 +2175,6 @@
 <translation id="2587922766792651800">פג הזמן הקצוב</translation>
 <translation id="2588636910004461974">מכשירים של <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
-<translation id="25899519884572181">יציאה ממצב קורא</translation>
 <translation id="2593499352046705383">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">‏ניהול האבטחה של V8</translation>
 <translation id="2594999711683503743">זה המקום לחפש את מה שמעניין או להקליד כתובת של אתר ספציפי</translation>
@@ -2478,7 +2476,6 @@
 <translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
 <translation id="2806891468525657116">קיצור הדרך כבר קיים</translation>
 <translation id="2807517655263062534">קבצים שמורידים יופיעו כאן</translation>
-<translation id="2809586584051668049">ועוד <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">חשבונות</translation>
 <translation id="2812049959647166806">‏Thunderbolt אינו נתמך</translation>
 <translation id="2812171980080389735">הרשתות והסיסמאות נשמרות כדי שניתן יהיה להתחבר אליהן באופן מיידי</translation>
@@ -3067,7 +3064,6 @@
 <translation id="3285465040399788513">אין מספיק נפח אחסון במכשיר להשלמת ההתקנה. עליך לפנות מקום ולנסות שוב.</translation>
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="328571385944182268">לשמור את הסיסמאות?</translation>
-<translation id="3288047731229977326">תוספים הרצים במצב מפתח יכולים להזיק למחשב שלך. אם אינך מפתח, עליך להשבית את התוספים הרצים במצב מפתח כדי לשמור על ביטחונך.</translation>
 <translation id="3289668031376215426">אותיות רישיות באופן אוטומטי</translation>
 <translation id="3289856944988573801">‏כדי לבדוק אם יש עדכונים, צריך להשתמש באתרנט או ב-Wi-Fi.</translation>
 <translation id="3289886661311231677">‏ניתן לחסום נושאים כדי שלא ישותפו עם אתרים. בנוסף, Chrome מוחק באופן אוטומטי נושאים שנוספו לפני יותר מ-4 שבועות.</translation>
@@ -3107,7 +3103,6 @@
 <translation id="3313622045786997898">ערך חתימת אישור </translation>
 <translation id="3313950410573257029">בדיקת החיבור</translation>
 <translation id="3315158641124845231">הסתרת <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">כניסה למצב קורא</translation>
 <translation id="3317459757438853210">דו-צדדי</translation>
 <translation id="3317521105713541270">יצירת קבוצות</translation>
 <translation id="3317678681329786349">לא ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
@@ -3512,7 +3507,6 @@
 <translation id="3636766455281737684">‏‎‎‎%‎‏‎‎‏‎‏‎<ph name="PERCENTAGE" />‌ - נותרו <ph name="TIME" /></translation>
 <translation id="3636940436873918441">השפות המועדפות</translation>
 <translation id="3637203148990213388">חשבונות נוספים</translation>
-<translation id="3639220004740062347">יציאה ממצב קורא</translation>
 <translation id="3640214691812501263">האם להוסיף את "<ph name="EXTENSION_NAME" />" בשביל <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">הגנה על הסיסמאות מפני פישינג</translation>
 <translation id="3640613767643722554">‏ה-Assistant יכולה ללמוד לזהות את הקול שלך</translation>
@@ -4155,7 +4149,6 @@
 <translation id="4095483462103784441">יצירה של קבוצת כרטיסיות חדשה</translation>
 <translation id="4095507791297118304">צג ראשי</translation>
 <translation id="4096421352214844684">‏להתחבר באופן אוטומטי לנקודה לשיתוף אינטרנט (Hotspot) בטלפון.</translation>
-<translation id="4096508467498758490">השבתת תוספים של מצב מפתח</translation>
 <translation id="4096797685681362305">נצפה בשבוע האחרון</translation>
 <translation id="4097406557126260163">אפליקציות ותוספים</translation>
 <translation id="409742781329613461">‏טיפים לשימוש ב-Chrome</translation>
@@ -5488,7 +5481,6 @@
 <translation id="5146896637028965135">קול המערכת</translation>
 <translation id="5147097165869384760">מנסה למצוא את דף המערכת של מערכת ההפעלה? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">המלצה</translation>
-<translation id="5147516217412920887">כדי לאמת את הקוד, עליך לפעול לפי ההוראות בטלפון</translation>
 <translation id="5147992672778369947">כדאי להשתמש בסיסמה המומלצת</translation>
 <translation id="5148285448107770349">הסיסמה חייבת להכיל 8 תווים לפחות.</translation>
 <translation id="5149602533174716626">העתקת הפריים</translation>
@@ -6746,10 +6738,6 @@
 <translation id="6143186082490678276">קבלת עזרה</translation>
 <translation id="6143366292569327983">בחירת שפת הדף שתתורגם</translation>
 <translation id="6144938890088808325">‏רוצה לעזור לנו לשפר את מחשבי Chromebook?</translation>
-<translation id="6145480071052696715">‏אפשר להגדיר בקלות את ה-<ph name="DEVICE_TYPE" /> באמצעות הטלפון. ניתן להוסיף את ה-Wi-Fi ואת חשבון Google שלך בלי להזין את הסיסמאות באופן ידני.
-    <ph name="BR" />
-    <ph name="BR" />
-    גלוי בתור <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">הסנכרון לא פועל. יש לנסות להיכנס שוב.</translation>
 <translation id="6147020289383635445">התצוגה המקדימה של ההדפסה נכשלה.</translation>
 <translation id="6147253937684562370">כדי לבטל את הנעילה של פרופיל, עליך להיכנס באמצעות כתובת האימייל הראשית של החשבון: <ph name="EMAIL" /></translation>
@@ -6974,7 +6962,6 @@
 <translation id="6310141306111263820">‏לא ניתן היה להתקין את פרופיל ה-eSim. עליך לפנות לספק לקבלת עזרה.</translation>
 <translation id="6311220991371174222">‏לא ניתן להפעיל את Chrome מכיוון שמשהו השתבש בפתיחת הפרופיל שלך. יש לנסות להפעיל מחדש את Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{בדיקת הבטיחות פעלה לפני יום אחד}one{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}two{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}other{בדיקת הבטיחות פעלה לפני {NUM_DAYS} ימים}}</translation>
-<translation id="6312638141433622592">המערכת מציעה להציג מאמרים במצב קורא, כשיש תמיכה באפשרות הזו</translation>
 <translation id="6313950457058510656">כיבוי שיתוף אינטרנט מיידי בין מכשירים</translation>
 <translation id="6314819609899340042">הפעלת בהצלחה תכונות ניפוי באגים במכשיר <ph name="IDS_SHORT_PRODUCT_NAME" /> זה.</translation>
 <translation id="6315170314923504164">קול</translation>
@@ -9391,7 +9378,6 @@
 <translation id="8160775796528709999">הפעלת כתוביות מיידיות בהגדרות תאפשר הצגת כתוביות לאודיו ולווידאו</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">המשך הגלישה</translation>
-<translation id="8161293209665121583">מצב קורא לדפי אינטרנט</translation>
 <translation id="8161604891089629425">גופן מתאר</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{העברת כרטיסייה לחלון חדש}one{העברת כרטיסיות לחלון חדש}two{העברת כרטיסיות לחלון חדש}other{העברת כרטיסיות לחלון חדש}}</translation>
 <translation id="8163152278172770963">אתרים לא יכולים להפעיל 'תמונה בתוך תמונה' אוטומטית</translation>

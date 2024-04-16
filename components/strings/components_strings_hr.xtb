@@ -136,6 +136,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminij</translation>
 <translation id="1252209483516427155">Odjeća za van</translation>
+<translation id="1253096324252841344">Plaćanje putem računa <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizirano)</translation>
 <translation id="1255086252236620440">Mikseri za hranu</translation>
 <translation id="1256368399071562588">&lt;p&gt;Ako pokušate otvoriti web-lokaciju i ona se ne otvara, najprije pokušajte riješiti poteškoću prema ovim uputama:&lt;/p&gt;
@@ -826,6 +827,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2526280916094749336">Spremljene adrese možete upotrijebiti na Googleovim proizvodima. Ta će se adresa spremiti na vaš Google račun, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC možete pronaći na prednjoj strani kartice. To je četveroznamenkasti kôd u gornjem desnom kutu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi zanemariti.</translation>
+<translation id="2533649878691950253">Web-lokaciji je blokiran pristup vašoj točnoj lokaciji jer to obično ne dopuštate</translation>
 <translation id="253493526287553278">Pogledajte pojedinosti o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu anonimnu karticu da biste pregledavali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još jedan sudionik}one{i još #}few{i još #}other{i još #}}</translation>
@@ -1511,6 +1513,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="385489333361351399">Oprema za kamere i fotoaparate</translation>
 <translation id="3858027520442213535">Ažuriraj datum i vrijeme</translation>
 <translation id="3858860766373142691">Naziv</translation>
+<translation id="3865339060090354361">Ovdje pogledajte uvjete za karticu <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3872834068356954457">Znanost</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
 <translation id="3880456882942693779">Umjetnost i zabava</translation>
@@ -2347,6 +2350,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="553377674408670169">Poslovi u obrazovanju</translation>
 <translation id="5536214594743852365">Prikaži odjeljak "<ph name="SECTION" />"</translation>
 <translation id="553782666181800029">Omotnica Chou 2</translation>
+<translation id="5538270463355278784">automatski prikaz na cijelom zaslonu</translation>
 <translation id="5539243836947087108">Podloga</translation>
 <translation id="5540224163453853">Traženi članak nije pronađen.</translation>
 <translation id="5540969246441091044">Jahanje</translation>
@@ -2711,6 +2715,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
 <translation id="6254436959401408446">Nema dovoljno memorije za otvaranje ove stranice</translation>
 <translation id="625463612687472648">Povuci dopuštenje</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opciju}one{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}few{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}other{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}}</translation>
 <translation id="6259156558325130047">&amp;Ponovi promjenu rasporeda</translation>
 <translation id="6263376278284652872">Oznake domene <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
@@ -3301,6 +3306,7 @@ Dodatne pojedinosti:
 <translation id="7392089738299859607">Ažurirajte adresu</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
 <translation id="739728382607845710">Ikona rukovatelja plaćanjem</translation>
+<translation id="7399616692258236448">Zahtjevi za lokacije automatski se blokiraju za sve web-lokacije osim onih koje dopustite</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Podijelite ovu karticu dijeljenjem veze, izradom QR koda, emitiranjem i na druge načine</translation>
@@ -3845,6 +3851,7 @@ Dodatne pojedinosti:
 <translation id="8378714024927312812">Pod upravljanjem vaše organizacije</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ta terećenja mogu biti jednokratna ili ponavljajuća i možda nisu vidljiva odmah. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">Automatski prikaz na cijelom zaslonu</translation>
 <translation id="838307841291975086">Karavani</translation>
 <translation id="8389532092404711541">Obično <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Prilagođena vozila i automobili natprosječne izvedbe</translation>

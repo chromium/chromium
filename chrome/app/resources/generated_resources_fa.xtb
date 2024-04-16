@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">کپی آدر&amp;س پیوند</translation>
 <translation id="1085064499066015002">همیشه در همه سایت‌ها</translation>
 <translation id="1085697365578766383">هنگام شروع دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
-<translation id="1088659085457112967">ورود به «حالت خواننده»</translation>
 <translation id="1090126737595388931">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="1090541560108055381">پیش‌از مرتبط‌سازی، مطمئن شوید این کد در هر دو دستگاه یکی باشد</translation>
 <translation id="1091767800771861448">‏برای رد شدن، ESCAPE را فشار دهید (فقط ساخت‌های غیررسمی).</translation>
@@ -2174,7 +2173,6 @@
 <translation id="2587922766792651800">پایان درنگ</translation>
 <translation id="2588636910004461974">دستگاه‌های <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏فایل‌های Drive هرگز نشان داده نشود</translation>
-<translation id="25899519884572181">خروج از «حالت خواننده»</translation>
 <translation id="2593499352046705383">‏پیش‌از شروع، حتماً از داده‌هایتان پشتیبان‌گیری کنید. نصب <ph name="DEVICE_OS" /> داده‌های دیسک سخت را بازنویسی خواهد کرد. در g.co/flex/InstallGuide، اطلاعات بیشتری دریافت کنید.</translation>
 <translation id="2594832159966169099">‏مدیریت امنیت V8</translation>
 <translation id="2594999711683503743">‏در Google جستجو کنید یا نشانی وب را تایپ کنید</translation>
@@ -2475,7 +2473,6 @@
 <translation id="2806372837663997957">دستگاهی که می‌خواهید با آن هم‌رسانی کنید درخواست را نپذیرفت</translation>
 <translation id="2806891468525657116">میان‌بر از قبل وجود دارد</translation>
 <translation id="2807517655263062534">فایل‌هایی که بارگیری می‌کنید اینجا نشان داده می‌شود</translation>
-<translation id="2809586584051668049">و <ph name="NUMBER_ADDITIONAL_DISABLED" /> مورد دیگر</translation>
 <translation id="2811205483104563968">حساب‌ها</translation>
 <translation id="2812049959647166806">‏از Thunderbolt پشتیبانی نمی‌شود</translation>
 <translation id="2812171980080389735">شبکه‌ها و گذرواژه‌ها ذخیره شده‌اند تا بتوانید فوراً متصل شوید</translation>
@@ -3064,7 +3061,6 @@
 <translation id="3285465040399788513">فضای ذخیره‌سازی دستگاه برای تکمیل راه‌اندازی کافی نیست. مقداری فضا آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3285500645985761267">به سایت‌های مرتبط اجازه دهید فعالیت شما را در گروه ببینند</translation>
 <translation id="328571385944182268">گذرواژه ذخیره شود؟</translation>
-<translation id="3288047731229977326">افزونه‌هایی که در حالت برنامه‌نوبس اجرا می‌شوند می‌توانند به رایانه شما آسیب برسانند. اگر برنامه‌نویس نیستید، باید این برنامه‌های افزودنی را که در حالت برنامه‌نویس اجرا می‌شوند غیرفعال کنید تا ایمن بمانید.</translation>
 <translation id="3289668031376215426">بزرگ‌نویسی خودکار حروف اول</translation>
 <translation id="3289856944988573801">‏برای بررسی موارد به‌روز لطفاً از کابل شبکه یا Wi-Fi استفاده کنید.</translation>
 <translation id="3289886661311231677">‏می‌توانید موضوعاتی را که نمی‌خواهید با سایت‌ها هم‌رسانی شود مسدود کنید. Chrome نیز موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند.</translation>
@@ -3104,7 +3100,6 @@
 <translation id="3313622045786997898">ارزش امضای گواهی</translation>
 <translation id="3313950410573257029">بررسی اتصال</translation>
 <translation id="3315158641124845231">عدم نمایش <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">ورود به «حالت خواننده»</translation>
 <translation id="3317459757438853210">دو طرفه</translation>
 <translation id="3317521105713541270">ایجاد گروه‌ها</translation>
 <translation id="3317678681329786349">دوربین و میکروفون مسدود شده‌اند</translation>
@@ -3509,7 +3504,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> باقی مانده است</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3637203148990213388">حساب‌های دیگر</translation>
-<translation id="3639220004740062347">خروج از «حالت خواننده»</translation>
 <translation id="3640214691812501263">«<ph name="EXTENSION_NAME" />» برای «<ph name="USER_NAME" />» اضافه شود؟</translation>
 <translation id="3640347231390550691">از گذرواژه‌ها درمقابل رمزگیری محافظت کنید</translation>
 <translation id="3640613767643722554">به «دستیار» آموزش دهید صدایتان را تشخیص دهد</translation>
@@ -4152,7 +4146,6 @@
 <translation id="4095483462103784441">ایجاد گروه برگه جدید</translation>
 <translation id="4095507791297118304">نمایشگر اصلی</translation>
 <translation id="4096421352214844684">به‌طور خودکار به نقطه اتصال تلفنتان متصل شوید.</translation>
-<translation id="4096508467498758490">غیرفعال کردن افزونه‌های حالت برنامه‌نویس</translation>
 <translation id="4096797685681362305">هفته گذشته مشاهده شده</translation>
 <translation id="4097406557126260163">برنامه‌ها و افزونه‌ها</translation>
 <translation id="409742781329613461">‏نکاتی درباره Chrome</translation>
@@ -5484,7 +5477,6 @@
 <translation id="5146896637028965135">صدای سیستم</translation>
 <translation id="5147097165869384760">به‌دنبال صفحه سیستم مربوط به سیستم‌عامل هستید؟ به <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> بروید.</translation>
 <translation id="5147113439721488265">توصیه</translation>
-<translation id="5147516217412920887">برای تأیید کد، دستورالعمل‌های روی تلفنتان را دنبال کنید</translation>
 <translation id="5147992672778369947">از گذرواژه توصیه‌شده استفاده کنید</translation>
 <translation id="5148285448107770349">گذرواژه باید حداقل ۸ نویسه باشد</translation>
 <translation id="5149602533174716626">کپی کردن فریم ویدیو</translation>
@@ -6742,10 +6734,6 @@
 <translation id="6143186082490678276">دریافت راهنمایی</translation>
 <translation id="6143366292569327983">زبانی که می‌خواهید صفحه را از آن ترجمه کنید انتخاب کنید</translation>
 <translation id="6144938890088808325">‏در بهبود بخشیدن دستگاه‌های Chromebook به ما کمک کنید</translation>
-<translation id="6145480071052696715">‏به‌راحتی <ph name="DEVICE_TYPE" /> را با تلفنتان راه‌اندازی کنید. می‌توانید Wi-Fi و «حساب Google» را بدون وارد کردن دستی گذرواژه‌ها اضافه کنید.
-    <ph name="BR" />
-    <ph name="BR" />
-    نمایان با نام <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">همگام‌سازی کار نمی‌کند. دوباره برای ورود به سیستم تلاش کنید.</translation>
 <translation id="6147020289383635445">پیش‌نمای چاپ کار نمی‌کند.</translation>
 <translation id="6147253937684562370">برای باز کردن قفل نمایه، با ایمیل حساب اصلی‌تان به سیستم وارد شوید: <ph name="EMAIL" /></translation>
@@ -6970,7 +6958,6 @@
 <translation id="6310141306111263820">نمایه سیم‌کارت داخلی نصب نشد. برای دریافت راهنمایی، لطفاً با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{بررسی ایمنی ۱ روز پیش اجرا شده است}one{بررسی ایمنی {NUM_DAYS} روز پیش اجرا شده است}other{بررسی ایمنی {NUM_DAYS} روز پیش اجرا شده است}}</translation>
-<translation id="6312638141433622592">پیشنهاد نمایش مقاله‌ها در «حالت خواننده»، درصورت پشتیبانی</translation>
 <translation id="6313950457058510656">خاموش کردن «اشتراک‌گذاری اینترنت فوری»</translation>
 <translation id="6314819609899340042">ویژگی‌های رفع اشکال را با موفقیت در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /> فعال کردید.</translation>
 <translation id="6315170314923504164">صدا</translation>
@@ -9383,7 +9370,6 @@
 <translation id="8160775796528709999">با فعال کردن «زیرنویس ناشنوایان زنده» در تنظیمات، برای صدا و ویدیو زیرنویس ناشنوایان دریافت کنید</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ازسر گرفتن مرور</translation>
-<translation id="8161293209665121583">«حالت خواننده» برای صفحه‌های وب</translation>
 <translation id="8161604891089629425">قلم برون‌خط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
 <translation id="8163152278172770963">سایت‌ها اجازه ندارند به‌طور خودکار به حالت تصویردرتصویر بروند</translation>

@@ -127,7 +127,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1084824384139382525">Adr&amp;esse des Links kopieren</translation>
 <translation id="1085064499066015002">Immer auf allen Websites</translation>
 <translation id="1085697365578766383">Fehler beim Starten der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
-<translation id="1088659085457112967">Lesemodus aktivieren</translation>
 <translation id="1090126737595388931">Es werden keine Apps im Hintergrund ausgeführt.</translation>
 <translation id="1090541560108055381">Prüfe vor dem Koppeln, ob dieser Code auf beiden Geräten übereinstimmt</translation>
 <translation id="1091767800771861448">Drücke die Esc-Taste, um die Aktualisierung zu überspringen (nur inoffizielle Builds).</translation>
@@ -2159,7 +2158,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2587922766792651800">Zeitüberschreitung</translation>
 <translation id="2588636910004461974">Geräte von <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Drive-Dateien nie anzeigen</translation>
-<translation id="25899519884572181">Lesemodus deaktivieren</translation>
 <translation id="2593499352046705383">Erstelle vor der Installation auf jeden Fall ein Back-up deiner Daten. Wenn du <ph name="DEVICE_OS" /> installierst, werden die Daten auf deiner Festplatte überschrieben. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">V8-Sicherheit verwalten</translation>
 <translation id="2594999711683503743">Bei Google suchen oder URL eingeben</translation>
@@ -2460,7 +2458,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
 <translation id="2806891468525657116">Verknüpfung ist bereits vorhanden</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
-<translation id="2809586584051668049">und <ph name="NUMBER_ADDITIONAL_DISABLED" /> weitere</translation>
 <translation id="2811205483104563968">Konten</translation>
 <translation id="2812049959647166806">Thunderbolt wird nicht unterstützt</translation>
 <translation id="2812171980080389735">Gespeicherte Netzwerke und Passwörter, damit du schnell eine Verbindung herstellen kannst</translation>
@@ -3049,7 +3046,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3285465040399788513">Es ist nicht genügend Speicherplatz auf dem Gerät verfügbar, um die Einrichtung abzuschließen. Gib Speicherplatz frei und versuch es noch einmal.</translation>
 <translation id="3285500645985761267">Ähnliche Websites dürfen meine Aktivitäten in der Gruppe sehen</translation>
 <translation id="328571385944182268">Passwörter speichern?</translation>
-<translation id="3288047731229977326">Erweiterungen im Entwicklermodus können auf deinem Computer Schaden anrichten. Wenn du kein Entwickler bist, solltest du diese Erweiterungen im Entwicklermodus deaktivieren, um sicher zu sein.</translation>
 <translation id="3289668031376215426">Automatische Groß-/Kleinschreibung</translation>
 <translation id="3289856944988573801">Verwende Ethernet oder WLAN zur Suche nach Updates.</translation>
 <translation id="3289886661311231677">Du kannst Themen blockieren, die nicht mit Websites geteilt werden sollen. Themen, die älter als 4 Wochen sind, werden von Chrome automatisch gelöscht.</translation>
@@ -3089,7 +3085,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3313622045786997898">Wert für Zertifikatsignatur</translation>
 <translation id="3313950410573257029">Verbindung prüfen</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> ausblenden</translation>
-<translation id="3315442055907669208">Lesemodus aktivieren</translation>
 <translation id="3317459757438853210">Beidseitig</translation>
 <translation id="3317521105713541270">Gruppen erstellen</translation>
 <translation id="3317678681329786349">Kamera und Mikrofon blockiert</translation>
@@ -3494,7 +3489,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> verbleibend</translation>
 <translation id="3636940436873918441">Bevorzugte Sprachen</translation>
 <translation id="3637203148990213388">Zusätzliche Konten</translation>
-<translation id="3639220004740062347">Lesemodus deaktivieren</translation>
 <translation id="3640214691812501263">"<ph name="EXTENSION_NAME" />" für <ph name="USER_NAME" /> hinzufügen?</translation>
 <translation id="3640347231390550691">Passwörter vor Phishing schützen</translation>
 <translation id="3640613767643722554">Assistant beibringen, deine Stimme zu erkennen</translation>
@@ -4137,7 +4131,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
 <translation id="4095507791297118304">Hauptbildschirm</translation>
 <translation id="4096421352214844684">Stelle automatisch eine Verbindung zum Hotspot deines Smartphones her.</translation>
-<translation id="4096508467498758490">Erweiterungen im Entwicklermodus deaktivieren</translation>
 <translation id="4096797685681362305">In der letzten Woche angesehen</translation>
 <translation id="4097406557126260163">Apps und Erweiterungen</translation>
 <translation id="409742781329613461">Tipps für Chrome</translation>
@@ -5468,7 +5461,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5146896637028965135">Systemstimme</translation>
 <translation id="5147097165869384760">Suchst du die Seite für das Betriebssystem? Gehe zu <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Empfehlung</translation>
-<translation id="5147516217412920887">Folge der Anleitung auf deinem Smartphone, um den Code zu bestätigen</translation>
 <translation id="5147992672778369947">Empfohlenes Passwort verwenden</translation>
 <translation id="5148285448107770349">Passwort muss aus mindestens 8 Zeichen bestehen</translation>
 <translation id="5149602533174716626">Videoframe kop&amp;ieren</translation>
@@ -6723,10 +6715,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6143186082490678276">Hilfe</translation>
 <translation id="6143366292569327983">Wähle die Ausgangssprache aus</translation>
 <translation id="6144938890088808325">Bei der Verbesserung von Chromebooks helfen</translation>
-<translation id="6145480071052696715">Richte dein Gerät (<ph name="DEVICE_TYPE" />) ganz einfach über dein Smartphone ein. Du kannst dein WLAN und dein Google-Konto hinzufügen, ohne deine Passwörter manuell eingeben zu müssen.
-    <ph name="BR" />
-    <ph name="BR" />
-    Sichtbar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">Synchronisierung funktioniert nicht. Versuche es noch einmal.</translation>
 <translation id="6147020289383635445">Druckvorschau fehlgeschlagen</translation>
 <translation id="6147253937684562370">Melde dich zum Entsperren des Profils mit der E‑Mail-Adresse deines Hauptkontos an: <ph name="EMAIL" /></translation>
@@ -6840,7 +6828,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6231881193380278751">Abfrageparameter in URL zum automatischen Aktualisieren der Seite hinzufügen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6232116551750539448">Verbindung mit <ph name="NAME" /> wurde unterbrochen.</translation>
-<translation id="623261264391834964">Klicke mit der rechten Maustaste in ein Textfeld, um „Hilfe beim Verfassen“ zu verwenden</translation>
+<translation id="623261264391834964">Klicke mit der rechten Maustaste in ein Textfeld, um „Formuliere für mich“ zu verwenden</translation>
 <translation id="6233154960150021497">Standardmäßig Spracheingabe anstatt Tastatur verwenden</translation>
 <translation id="6234108445915742946">Neue Nutzungsbedingungen für Chrome ab dem 31. März</translation>
 <translation id="6234474535228214774">Installation ausstehend</translation>
@@ -6951,7 +6939,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6310141306111263820">eSIM-Profil konnte nicht installiert werden. Wende dich für Unterstützung an deinen Mobilfunkanbieter.</translation>
 <translation id="6311220991371174222">Chrome kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chrome neu zu starten.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Der Sicherheitscheck wurde vor 1 Tag durchgeführt}other{Der Sicherheitscheck wurde vor {NUM_DAYS} Tagen durchgeführt}}</translation>
-<translation id="6312638141433622592">Anbieten, Artikel im Lesemodus anzuzeigen, falls unterstützt</translation>
 <translation id="6313950457058510656">Instant Tethering ausschalten</translation>
 <translation id="6314819609899340042">Du hast die Debugging-Funktionen auf diesem <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät aktiviert.</translation>
 <translation id="6315170314923504164">Sprache</translation>
@@ -7491,7 +7478,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6758056191028427665">Teile uns mit, wie zufrieden du mit uns bist.</translation>
 <translation id="6759193508432371551">Zurücksetzen auf Werkseinstellungen</translation>
 <translation id="6760354150216532978">Warnung: Website kann vorgenommene Änderungen sehen</translation>
-<translation id="6761209758867628753">Tool: Hilfe beim Verfassen</translation>
+<translation id="6761209758867628753">Tool: Formuliere für mich</translation>
 <translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6761623907967804682">Websitedaten auf dem Gerät nicht zugelassen</translation>
 <translation id="6762833852331690540">An</translation>
@@ -8352,7 +8339,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7423807071740419372"><ph name="APP_NAME" /> benötigt die Berechtigung zur Ausführung</translation>
 <translation id="7424153922653300265">Energiesparmodus aktiviert</translation>
 <translation id="7424818322350938336">Netzwerk hinzugefügt</translation>
-<translation id="7425037327577270384">Hilfe beim Verfassen</translation>
+<translation id="7425037327577270384">Formuliere für mich</translation>
 <translation id="7427315069950454694">Meine Erinnerungen heute</translation>
 <translation id="7427348830195639090">Hintergrundseite: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Mit <ph name="DEVICE_NAME" /> anrufen</translation>
@@ -9363,7 +9350,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8160775796528709999">Aktiviere „Automatische Untertitel“ in den Einstellungen, um deine Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Suche fortsetzen</translation>
-<translation id="8161293209665121583">Lesemodus für Webseiten</translation>
 <translation id="8161604891089629425">Schrift mit Umriss versehen</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
 <translation id="8163152278172770963">Websites dürfen den Bild-im-Bild-Modus nicht automatisch aktivieren</translation>

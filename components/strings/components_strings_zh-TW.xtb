@@ -825,6 +825,7 @@
 <translation id="2526280916094749336">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">信用卡驗證碼位於卡片正面，即卡號右上方的 4 位數字。</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
+<translation id="2533649878691950253">系統已禁止這個網站取得你的精確位置資訊，因為你通常不允許這麼做</translation>
 <translation id="253493526287553278">查看促銷代碼詳情</translation>
 <translation id="2535585790302968248">開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
@@ -3300,6 +3301,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒險遊戲</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>
+<translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 圖碼、投放等功能分享這個分頁</translation>

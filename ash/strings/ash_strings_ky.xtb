@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store колдонмосу</translation>
 <translation id="1225748608451425081">Белгилүү бир себептен улам сиздин Chromebook кулпуланды. Төмөнкү убакыттан кийин кире аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Тандоону токтотуу</translation>
+<translation id="1230853660706736937">Сүрөттөрдүн ичинен текстти издеп, сүрөттөрдү алдын ала көрүңүз</translation>
 <translation id="1235458158152011030">Белгилүү тармактар</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> туташты.</translation>
 <translation id="1240638468526743569">Колдонмо</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">Камерага уруксаты бар колдонмолордун жана вебсайттардын баарына жана <ph name="APP_NAME" /> колдонмосуна камераны пайдалануу мүмкүнчүлүгү берилет. Веб бетти жаңыртуу же колдонмону өчүрүп күйгүзүү керектелиши мүмкүн.</translation>
 <translation id="3826099427150913765">Сырсөзгө которулуу</translation>
 <translation id="383058930331066723">Батареяны үнөмдөгүч режими күйүк</translation>
+<translation id="3831226344927851293">Үйрөткүч көрүнүшүнөн чыгуу</translation>
 <translation id="383629559565718788">Баскычтоптун параметрлерин көрсөтүү</translation>
 <translation id="384082539148746321">Үлгүнү өчүрөсүзбү?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, андан соң <ph name="KEY_ONE" /> же <ph name="KEY_TWO" /> же <ph name="KEY_THREE" /> же <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Бир дагы тармак маалыматы жок</translation>
+<translation id="3848526302597027234">Төмөнкү уруксаттарга мүмкүнчүлүк алуу:</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="385300504083504382">Киришүү</translation>
 <translation id="3859364108019690">Колдонмолорду алып ойнотууга болбойт</translation>
@@ -1291,7 +1294,6 @@
 <translation id="598882571027504733">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="5998374579424866922">Оюндун башкаруу элементтерин өчүрүү</translation>
 <translation id="6000279412553873020">Ачкычтар, баскычтар жана башкалар</translation>
-<translation id="6002122790816966947">Түзмөктөрүңүз</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> барактын ичинен <ph name="SELECTED_PAGE" /> барак</translation>
 <translation id="601304062528754300">Текчедеги кийинки нерсени бөлүп көрсөтүү</translation>
 <translation id="6015573907265691211">Аткарылды деп белгилөө</translation>

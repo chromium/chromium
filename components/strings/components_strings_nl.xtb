@@ -826,6 +826,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2526280916094749336">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres wordt opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">De CVC-code staat voor op je kaart. Het is de 4-cijferige code rechtsboven het kaartnummer.</translation>
 <translation id="2529899080962247600">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Alle andere items worden genegeerd.</translation>
+<translation id="2533649878691950253">Deze site heeft geen toegang tot je exacte locatie omdat je dit gewoonlijk niet toestaat</translation>
 <translation id="253493526287553278">Details van promotiecode bekijken</translation>
 <translation id="2535585790302968248">Een nieuw incognitotabblad openen om privé te browsen</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
@@ -3296,6 +3297,7 @@ Aanvullende informatie:
 <translation id="7392089738299859607">Adres updaten</translation>
 <translation id="7393161616326137353">Avonturengames</translation>
 <translation id="739728382607845710">Icoon van betalingshandler</translation>
+<translation id="7399616692258236448">Locatieverzoeken worden automatisch geblokkeerd voor alle sites, behalve de sites die je toestaat</translation>
 <translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Deel dit tabblad door bijvoorbeeld de link te delen, een QR-code te maken en te casten</translation>

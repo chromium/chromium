@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
 <translation id="3908288065506437185">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="3918378745482005425">일부 기능이 작동하지 않을 수 있습니다. 관련 사이트에서는 계속 서드 파티 쿠키를 사용할 수 있습니다.</translation>
+<translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3974105241379491420">사이트에서 나에 관해 저장된 정보를 사용하도록 요청할 수 있음</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>
+<translation id="8993853206419610596">모든 요청 펼치기</translation>
 <translation id="9002538116239926534">사용 설정하면 사이트에서 기기에 데이터를 저장할 수 있습니다. 사용 중지하면 사이트에서 기기에 데이터를 저장할 수 없습니다.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> 허용됨</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>

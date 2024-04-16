@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">تبدیلیاں مسترد کریں</translation>
 <translation id="5414763847370083940">کسی بھی سائٹ پر قیمت کم ہونے کی صورت میں آپ کو ایک الرٹ حاصل ہو گا۔</translation>
 <translation id="5416022985862681400">گزشتہ 7 دن</translation>
+<translation id="5416455648658732408">ٹیب گروپ پر جائیں</translation>
 <translation id="5423269318075950257">قیمت ٹریک کریں</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
@@ -1272,7 +1273,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7557508262441527045">سائن آؤٹ ہو گئے</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7564917801238348224">...محفوظ کریں</translation>
-<translation id="7569588934989281656">آپ ٹیبز کے درمیان سوئچ کرنے کے لیے ٹیب اسٹرپ کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="7582857256643797524">یہ ترتیب آپ کے آلے پر فعال ہے</translation>
 <translation id="7583004045319035904">اپنے پوشیدگی ٹیبز کو غیر مقفل کرنے کیلئے <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> کا استعمال کریں۔</translation>
 <translation id="7598439272585186139">مزید سیکیورٹی حاصل کریں</translation>
@@ -1332,6 +1332,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7856733331829174190">ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="7859704718976024901">براؤزنگ سرگزشت</translation>
+<translation id="7860900259978879139">گروپ سے ہٹائیں</translation>
 <translation id="7866501058614003444">اس پیکیج سے ٹریک کو کامیابی سے ہٹا دیا گیا ہے۔</translation>
 <translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
 <translation id="7866993391592926595">اس کارڈ کو چھپانے سے پیکیج ٹریکنگ آف ہو جائے گی اور آپ کا سارا ڈیٹا ہٹا دیا جائے گا</translation>
@@ -1419,9 +1420,11 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8273982424131314219">آپ <ph name="URL" /> میں معلومات پر کریں گے</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
+<translation id="8282657446819506217">ٹیب گروپ میں کھولیں</translation>
 <translation id="828291969289324795">{count,plural, =1{نئے گروپ میں ٹیب شامل کریں}other{نئے گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="8283172974887967105">سیٹ کریں…</translation>
 <translation id="8286036467436129157">سائن ان کریں</translation>
+<translation id="8289930144142009940"><ph name="FEATURE_NAME" /> کی اطلاعات آف کر دی گئیں</translation>
 <translation id="8292843446079898078">آپ جو پروڈکٹس ٹریک کرتے ہیں ان کے لیے قیمت میں کمی کے الرٹس وصول کریں۔</translation>
 <translation id="8299417921174340354">پاس ورڈز استعمال کرنے کے ليے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8299613349954694191">ویب کو نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں۔</translation>
@@ -1429,6 +1432,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8313645224014086262">فائل محفوظ کریں</translation>
 <translation id="8319076807703933069">نئی تلاش</translation>
 <translation id="8328777765163860529">تمام بند کریں</translation>
+<translation id="8343286328361420468"><ph name="FEATURE_NAME" /> کیلئے اطلاعات آف کریں</translation>
 <translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
 <translation id="834783239627985533">سب سے زیادہ ملاحظہ کردہ سائٹس</translation>
 <translation id="8358401059263985056">اطلاعات آن کریں</translation>

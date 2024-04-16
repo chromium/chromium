@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">שינוי הזום בכל מקרה</translation>
 <translation id="3908288065506437185">‏חסימת קובצי cookie של צד שלישי במצב פרטי</translation>
 <translation id="3918378745482005425">‏יכול להיות שחלק מהתכונות לא יפעלו. אתרים קשורים עדיין יכולים להשתמש בקובצי cookie של צד שלישי.</translation>
+<translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3974105241379491420">אתרים יכולים לבקש הרשאה להשתמש במידע שנשמר עליך</translation>
@@ -497,6 +498,7 @@
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8990043154272859344">תתבצע יציאה מכל האתרים</translation>
+<translation id="8993853206419610596">הרחבת כל הבקשות</translation>
 <translation id="9002538116239926534">כשהאפשרות מופעלת, אתרים יכולים לשמור נתונים במכשיר. כשהאפשרות מושבתת, אתרים לא יכולים לשמור נתונים במכשיר.</translation>
 <translation id="9011903857143958461">יש הרשאה לאתר <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">מנוהל על-ידי ההורים שלך</translation>

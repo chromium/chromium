@@ -493,6 +493,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3636940436873918441">Preferred languages</translation>
+<translation id="368329460027487650">Signed out. Opens options to sign in.</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>

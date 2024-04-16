@@ -127,7 +127,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1084824384139382525">Copiar &amp;endereço do link</translation>
 <translation id="1085064499066015002">Sempre em todos os sites</translation>
 <translation id="1085697365578766383">Erro ao iniciar a máquina virtual. Tente novamente.</translation>
-<translation id="1088659085457112967">Entrar no modo leitor</translation>
 <translation id="1090126737595388931">Nenhum aplicativo de fundo sendo executado</translation>
 <translation id="1090541560108055381">Antes de parear, confira se é mostrado o mesmo código nos dois dispositivos</translation>
 <translation id="1091767800771861448">Pressione ESC para pular (versões não-oficiais apenas).</translation>
@@ -2178,7 +2177,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2587922766792651800">Tempo expirado</translation>
 <translation id="2588636910004461974">Dispositivos deste fornecedor: <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nunca mostrar arquivos do Drive</translation>
-<translation id="25899519884572181">Sair do modo leitor</translation>
 <translation id="2593499352046705383">Antes de começar, confira se você fez backup dos dados. A instalação do <ph name="DEVICE_OS" /> limpa todo o disco rígido. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gerenciar a segurança do V8</translation>
 <translation id="2594999711683503743">Pesquisar no Google ou digitar o URL</translation>
@@ -2478,7 +2476,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2806372837663997957">O dispositivo não aceitou o compartilhamento</translation>
 <translation id="2806891468525657116">O atalho já existe</translation>
 <translation id="2807517655263062534">Os arquivos baixados aparecem aqui</translation>
-<translation id="2809586584051668049">e mais <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é compatível</translation>
 <translation id="2812171980080389735">Redes e senhas salvas para você se conectar instantaneamente</translation>
@@ -3067,7 +3064,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3285465040399788513">Não há armazenamento suficiente no dispositivo para concluir a configuração. Libere espaço e tente de novo.</translation>
 <translation id="3285500645985761267">Permitir que sites relacionados vejam sua atividade no grupo</translation>
 <translation id="328571385944182268">Salvar senhas?</translation>
-<translation id="3288047731229977326">Extensões executadas no modo de desenvolvedor podem prejudicar o computador. Se você não for desenvolvedor, para sua segurança, desative essas extensões que estão sendo executadas no modo de desenvolvedor.</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
 <translation id="3289886661311231677">Você pode bloquear temas que não quer compartilhar com sites. O Chrome também exclui automaticamente os temas que estão na lista há mais de quatro semanas.</translation>
@@ -3107,7 +3103,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3313622045786997898">Valor da assinatura do certificado</translation>
 <translation id="3313950410573257029">Verificar conexão</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Entrar no modo leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317521105713541270">Criar grupos</translation>
 <translation id="3317678681329786349">Câmera e microfone bloqueados</translation>
@@ -3513,7 +3508,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> restantes</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Contas adicionais</translation>
-<translation id="3639220004740062347">Sair do modo leitor</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Proteja suas senhas contra phishing</translation>
 <translation id="3640613767643722554">Ensine o Assistente a reconhecer sua voz</translation>
@@ -4156,7 +4150,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4095483462103784441">Criar novo grupo de guias</translation>
 <translation id="4095507791297118304">Tela principal</translation>
 <translation id="4096421352214844684">Conectar-se automaticamente ao ponto de acesso do smartphone.</translation>
-<translation id="4096508467498758490">Desativar extensões no modo de desenvolvedor</translation>
 <translation id="4096797685681362305">Visualizado na última semana</translation>
 <translation id="4097406557126260163">Apps e extensões</translation>
 <translation id="409742781329613461">Dicas para o Chrome</translation>
@@ -5488,7 +5481,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5146896637028965135">Voz do sistema</translation>
 <translation id="5147097165869384760">Procurando a página do SO? Acesse <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomendação</translation>
-<translation id="5147516217412920887">Siga as instruções no seu smartphone para verificar o código.</translation>
 <translation id="5147992672778369947">Usar senha recomendada</translation>
 <translation id="5148285448107770349">A senha deve ter pelo menos oito caracteres</translation>
 <translation id="5149602533174716626">Copiar frame do vídeo</translation>
@@ -6747,10 +6739,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6143186082490678276">Receber ajuda</translation>
 <translation id="6143366292569327983">Escolha o idioma da página que você gostaria de traduzir</translation>
 <translation id="6144938890088808325">Ajudar a melhorar os Chromebooks</translation>
-<translation id="6145480071052696715">Configure o <ph name="DEVICE_TYPE" /> de maneira fácil com o smartphone. É possível adicionar o Wi-Fi e a Conta do Google sem precisar inserir senhas manualmente.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visível como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">A sincronização não está funcionando. Tente fazer login novamente.</translation>
 <translation id="6147020289383635445">A visualização de impressão falhou.</translation>
 <translation id="6147253937684562370">Para desbloquear o perfil, faça login com o e-mail da sua conta principal: <ph name="EMAIL" /></translation>
@@ -6975,7 +6963,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6310141306111263820">Não foi possível instalar o perfil do eSIM. Para receber ajuda, entre em contato com a operadora.</translation>
 <translation id="6311220991371174222">Não foi possível iniciar o Chrome porque algo deu errado ao abrir seu perfil. Tente reiniciar o Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{A confirmação de segurança foi executada há 1 dia}one{A confirmação de segurança foi executada há {NUM_DAYS} dia}other{A confirmação de segurança foi executada há {NUM_DAYS} dias}}</translation>
-<translation id="6312638141433622592">Oferecer a opção de mostrar artigos no modo leitor, quando compatível</translation>
 <translation id="6313950457058510656">Desativar tethering instantâneo</translation>
 <translation id="6314819609899340042">Você ativou os recursos de depuração neste dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -9389,7 +9376,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8160775796528709999">Ative o recurso Legenda instantânea nas configurações para exibir legendas para seus áudios e vídeos</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
-<translation id="8161293209665121583">Modo leitor para páginas da Web</translation>
 <translation id="8161604891089629425">Contornar fonte</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover guia para uma nova janela}one{Mover guia para uma nova janela}other{Mover guias para uma nova janela}}</translation>
 <translation id="8163152278172770963">Não permitir que os sites entrem no modo picture-in-picture automaticamente</translation>

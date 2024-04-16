@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">લિંક સર&amp;નામાંની કૉપિ કરો</translation>
 <translation id="1085064499066015002">હંમેશાં બધી સાઇટ માટે પરવાનગી આપો</translation>
 <translation id="1085697365578766383">વર્ચ્યુઅલ મશીન શરૂ કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
-<translation id="1088659085457112967">રીડર મોડમાં દાખલ થાઓ</translation>
 <translation id="1090126737595388931">કોઈપણ બૅકગ્રાઉન્ડ ઍપ ચાલી રહી નથી</translation>
 <translation id="1090541560108055381">જોડાણ બનાવતા પહેલાં, આ કોડ બન્ને ડિવાઇસ પર સમાન હોય એ વાતની ખાતરી કરો</translation>
 <translation id="1091767800771861448">છોડવા માટે ESCAPE દબાવો (ફક્ત બિન-આધિકારીક બિલ્ડ).</translation>
@@ -2160,7 +2159,6 @@
 <translation id="2587922766792651800">સમય સમાપ્ત થયો</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> પાસે ઉપલબ્ધ ડિવાઇસની શ્રેણી</translation>
 <translation id="2589658397149952302">Driveની ફાઇલો ક્યારેય બતાવશો નહીં</translation>
-<translation id="25899519884572181">રીડર મોડમાંથી બહાર નીકળો</translation>
 <translation id="2593499352046705383">શરૂ કરતા પહેલાં, ખાતરી કરો કે તમારી પાસે તમારા ડેટાનું બૅકઅપ ઉપલબ્ધ છે. <ph name="DEVICE_OS" />ને ઇન્સ્ટૉલ કરવાથી, તમારી હાર્ડ ડ્રાઇવ ઓવરરાઇટ થઈ જશે. g.co/flex/InstallGuide પર વધુ જાણો.</translation>
 <translation id="2594832159966169099">V8 સુરક્ષા મેનેજ કરો</translation>
 <translation id="2594999711683503743">Googleમાં શોધો અથવા URL ટાઇપ કરો</translation>
@@ -2461,7 +2459,6 @@
 <translation id="2806372837663997957">તમે જે ડિવાઇસ સાથે શેર કરવાનો પ્રયાસ કરો છો, તેણે વિનંતી સ્વીકારી નથી</translation>
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="2807517655263062534">તમે ડાઉનલોડ કરેલી ફાઇલો અહીં દેખાશે</translation>
-<translation id="2809586584051668049">અને <ph name="NUMBER_ADDITIONAL_DISABLED" /> વધુ</translation>
 <translation id="2811205483104563968">એકાઉન્ટ</translation>
 <translation id="2812049959647166806">Thunderboltની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="2812171980080389735">નેટવર્ક અને પાસવર્ડ સાચવ્યાં જેથી કરીને તમે ઝટપટ કનેક્ટ કરી શકો</translation>
@@ -3050,7 +3047,6 @@
 <translation id="3285465040399788513">સેટઅપ પૂર્ણ કરવા માટે ડિવાઇસમાં પર્યાપ્ત સ્ટોરેજ નથી. સ્પેસ ખાલી કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3285500645985761267">ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોવા માટે સંબંધિત સાઇટને મંજૂરી આપો</translation>
 <translation id="328571385944182268">તમારા પાસવર્ડ સાચવીએ?</translation>
-<translation id="3288047731229977326">ડેવલપર મોડમાં ચાલી રહેલા એક્સટેન્શન તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. જો તમે ડેવલપર નથી, તો તમે સુરક્ષિત રહેવા માટે ડેવલપર મોડમાં ચાલી રહેલા આ એક્સ્ટેન્શનને બંધ કરવા જોઈએ.</translation>
 <translation id="3289668031376215426">ઑટોમૅટિક રીતે કૅપિટલ કરવાની સુવિધા</translation>
 <translation id="3289856944988573801">અપડેટ તપાસવા માટે, કૃપા કરીને ઇથરનેટ અથવા વાઇ-ફાઇનો ઉપયોગ કરો.</translation>
 <translation id="3289886661311231677">અન્ય સાઇટ સાથે શેર કરવા માગતા ન હો એવા વિષયોને તમે બ્લૉક કરી શકો છો. Chrome તમારા 4 અઠવાડિયાથી જૂના વિષયોને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે.</translation>
@@ -3090,7 +3086,6 @@
 <translation id="3313622045786997898">પ્રમાણપત્ર હસ્તાક્ષર મૂલ્ય</translation>
 <translation id="3313950410573257029">કનેક્શન ચેક કરો</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> છુપાવો</translation>
-<translation id="3315442055907669208">રીડર મોડમાં દાખલ થાઓ</translation>
 <translation id="3317459757438853210">બંને બાજુ</translation>
 <translation id="3317521105713541270">ગ્રૂપ બનાવો</translation>
 <translation id="3317678681329786349">કૅમેરા અને માઇક્રોફોન બ્લૉક કર્યા</translation>
@@ -3495,7 +3490,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> બાકી</translation>
 <translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
 <translation id="3637203148990213388">વધારાના એકાઉન્ટ</translation>
-<translation id="3639220004740062347">રીડર મોડમાંથી બહાર નીકળો</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> માટે "<ph name="EXTENSION_NAME" />" ઉમેરીએ?</translation>
 <translation id="3640347231390550691">ફિશિંગ સામે તમારા પાસવર્ડનું રક્ષણ કરો</translation>
 <translation id="3640613767643722554">તમારા Assistantને તમારો અવાજ ઓળખવાનું શીખવો</translation>
@@ -4138,7 +4132,6 @@
 <translation id="4095483462103784441">નવું ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="4095507791297118304">પ્રાથમિક ડિસ્પ્લે</translation>
 <translation id="4096421352214844684">તમારા ફોનના હૉટસ્પૉટ સાથે ઑટોમૅટિક રીતે કનેક્ટ કરી શકો છો.</translation>
-<translation id="4096508467498758490">ડેવલપર મોડ એક્સ્ટેન્શન બંધ કરો</translation>
 <translation id="4096797685681362305">ગયા અઠવાડિયે જોઈ હતી</translation>
 <translation id="4097406557126260163">ઍપ અને એક્સ્ટેંશન</translation>
 <translation id="409742781329613461">Chrome માટે ટિપ</translation>
@@ -5469,7 +5462,6 @@
 <translation id="5146896637028965135">સિસ્ટમ વૉઇસ</translation>
 <translation id="5147097165869384760">OS સિસ્ટમ પેજ શોધી રહ્યાં છો? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />ની મુલાકાત લો.</translation>
 <translation id="5147113439721488265">સુઝાવ</translation>
-<translation id="5147516217412920887">કોડની ચકાસણી કરવા માટે તમારા ફોન પરની સૂચનાઓને અનુસરો</translation>
 <translation id="5147992672778369947">સુઝાવ આપેલા પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5148285448107770349">પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો હોવો જરૂરી છે</translation>
 <translation id="5149602533174716626">વીડિયો ફ્રેમ કૉપિ કરો</translation>
@@ -6729,10 +6721,6 @@ USB ડિવાઇસ</translation>
 <translation id="6143186082490678276">સહાય મેળવો</translation>
 <translation id="6143366292569327983">પેજની જે ભાષામાંથી અનુવાદ કરાવવા ઇચ્છતા હો, તે પસંદ કરો</translation>
 <translation id="6144938890088808325">Chromebooks બહેતર બનાવવામાં અમારી સહાય કરો</translation>
-<translation id="6145480071052696715">તમારા <ph name="DEVICE_TYPE" />નું સેટઅપ તમારા ફોન વડે સરળતાથી કરો. તમે તમારું વાઇ-ફાઇ અને Google એકાઉન્ટ, તમારા કોઈ પાસવર્ડ મેન્યુઅલી દાખલ કર્યા વિના ઉમેરી શકો છો.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> તરીકે જોઈ શકાશે…</translation>
 <translation id="6146409560350811147">સિંક કાર્ય કરી રહ્યું નથી. ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6147020289383635445">પ્રિન્ટ પ્રીવ્યૂ નિષ્ફળ ગયું.</translation>
 <translation id="6147253937684562370">પ્રોફાઇલ અનલૉક કરવા માટે, તમારા મુખ્ય એકાઉન્ટ ઇમેઇલ વડે સાઇન ઇન કરો: <ph name="EMAIL" /></translation>
@@ -6957,7 +6945,6 @@ USB ડિવાઇસ</translation>
 <translation id="6310141306111263820">ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શક્યાં નહીં. સહાય માટે, કૃપા કરીને તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="6311220991371174222">તમારી પ્રોફાઇલ ખોલતી વખતે કોઈ ભૂલ આવાને કારણે Chrome પ્રારંભ કરી શકતાં નથી. Chrome પુનઃપ્રારંભ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{સલામતી માટે તપાસ 1 દિવસ અગાઉ કરવામાં આવી હતી}one{સલામતી માટે તપાસ {NUM_DAYS} દિવસ અગાઉ કરવામાં આવી હતી}other{સલામતી માટે તપાસ {NUM_DAYS} દિવસ અગાઉ કરવામાં આવી હતી}}</translation>
-<translation id="6312638141433622592">જ્યારે સપોર્ટ મળતો હોય, ત્યારે લેખો વાચક મોડમાં બતાવવાની ઑફર કરો</translation>
 <translation id="6313950457058510656">ઝટપટ ઇન્ટરનેટ શેર કરવાની સુવિધા બંધ કરો</translation>
 <translation id="6314819609899340042">આ <ph name="IDS_SHORT_PRODUCT_NAME" /> ઉપકરણ પર તમે સફળતાપૂર્વક ડિબગિંગ સુવિધાઓ સક્ષમ કરેલી છે.</translation>
 <translation id="6315170314923504164">અવાજ</translation>
@@ -9365,7 +9352,6 @@ USB ડિવાઇસ</translation>
 <translation id="8160775796528709999">સેટિંગમાં લાઇવ કૅપ્શન ચાલુ કરીને તમારા ઑડિયો અને વીડિયો માટે કૅપ્શન મેળવો</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">બ્રાઉઝ કરવાનું ફરી શરૂ કરો</translation>
-<translation id="8161293209665121583">વેબપેજ માટે વાચક મોડ</translation>
 <translation id="8161604891089629425">આઉટલાઇન ફૉન્ટ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ટૅબને નવી વિંડોમાં ખસેડો}one{ટૅબને નવી વિંડોમાં ખસેડો}other{ટૅબને નવી વિંડોમાં ખસેડો}}</translation>
 <translation id="8163152278172770963">સાઇટને ચિત્ર-માં-ચિત્ર મોડમાં ઑટોમૅટિક રીતે દાખલ થવાની મંજૂરી આપશો નહીં</translation>

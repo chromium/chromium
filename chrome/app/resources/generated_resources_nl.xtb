@@ -127,7 +127,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1084824384139382525">Linkadr&amp;es kopiëren</translation>
 <translation id="1085064499066015002">Altijd op alle sites</translation>
 <translation id="1085697365578766383">Fout bij starten van virtuele machine. Probeer het opnieuw.</translation>
-<translation id="1088659085457112967">Lezermodus aanzetten</translation>
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
@@ -2162,7 +2161,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2587922766792651800">Time-out</translation>
 <translation id="2588636910004461974">Apparaten van <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Drive-bestanden nooit tonen</translation>
-<translation id="25899519884572181">Lezermodus afsluiten</translation>
 <translation id="2593499352046705383">Check voordat je begint of je een back-up van je gegevens hebt. Als je <ph name="DEVICE_OS" /> installeert, wordt je harde schijf overschreven. Bekijk meer informatie op g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">V8-beveiliging beheren</translation>
 <translation id="2594999711683503743">Zoek op Google of typ een URL</translation>
@@ -2463,7 +2461,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
-<translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
 <translation id="2812171980080389735">Opgeslagen netwerken en wachtwoorden zodat je meteen verbinding kunt maken</translation>
@@ -3052,7 +3049,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3285465040399788513">Er is onvoldoende apparaatopslag om het instellen af te ronden. Maak ruimte vrij en probeer het opnieuw.</translation>
 <translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
 <translation id="328571385944182268">Je wachtwoorden opslaan?</translation>
-<translation id="3288047731229977326">Extensies die worden uitgevoerd in de ontwikkelaarsmodus kunnen je computer beschadigen. Als je geen ontwikkelaar bent, doe je er goed aan deze extensies uit te zetten zodat je beveiligd blijft.</translation>
 <translation id="3289668031376215426">Automatisch hoofdlettergebruik</translation>
 <translation id="3289856944988573801">Gebruik ethernet of wifi om op updates te controleren.</translation>
 <translation id="3289886661311231677">Je kunt onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert ook automatisch onderwerpen die ouder zijn dan 4 weken.</translation>
@@ -3092,7 +3088,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3313622045786997898">Handtekeningwaarde van certificaat</translation>
 <translation id="3313950410573257029">Verbinding checken</translation>
 <translation id="3315158641124845231">Verberg <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Lezermodus aanzetten</translation>
 <translation id="3317459757438853210">Dubbelzijdig</translation>
 <translation id="3317521105713541270">Groepen maken</translation>
 <translation id="3317678681329786349">Camera en microfoon geblokkeerd</translation>
@@ -3497,7 +3492,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> resterend</translation>
 <translation id="3636940436873918441">Voorkeurstalen</translation>
 <translation id="3637203148990213388">Extra accounts</translation>
-<translation id="3639220004740062347">Lezermodus afsluiten</translation>
 <translation id="3640214691812501263">'<ph name="EXTENSION_NAME" />' toevoegen voor <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Bescherm je wachtwoorden tegen phishing</translation>
 <translation id="3640613767643722554">Train de Assistent om je stem te herkennen</translation>
@@ -4140,7 +4134,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4095483462103784441">Nieuwe tabbladgroep maken</translation>
 <translation id="4095507791297118304">Primair scherm</translation>
 <translation id="4096421352214844684">Automatisch verbinding maken met de hotspot van je telefoon.</translation>
-<translation id="4096508467498758490">Extensies van ontwikkelaarsmodus uitzetten</translation>
 <translation id="4096797685681362305">Bekeken in de afgelopen week</translation>
 <translation id="4097406557126260163">Apps en extensies</translation>
 <translation id="409742781329613461">Tips voor Chrome</translation>
@@ -5469,7 +5462,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5146896637028965135">Systeemstem</translation>
 <translation id="5147097165869384760">Zoek je de systeempagina van het OS? Ga naar <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Aanbeveling</translation>
-<translation id="5147516217412920887">Volg de instructies op je telefoon om de code te laten verifiëren</translation>
 <translation id="5147992672778369947">Aanbevolen wachtwoord gebruiken</translation>
 <translation id="5148285448107770349">Wachtwoord moet minstens 8 tekens lang zijn</translation>
 <translation id="5149602533174716626">Videoframe kop&amp;iëren</translation>
@@ -6723,10 +6715,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6143186082490678276">Hulp nodig?</translation>
 <translation id="6143366292569327983">Kies de paginataal die je wilt vertalen</translation>
 <translation id="6144938890088808325">Help ons Chromebooks te verbeteren</translation>
-<translation id="6145480071052696715">Je kunt je <ph name="DEVICE_TYPE" /> makkelijk instellen met je telefoon. Je kunt je wifi- en Google-account toevoegen zonder je wachtwoorden handmatig in te voeren.
-    <ph name="BR" />
-<ph name="BR" />
-Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Synchronisatie werkt niet. Probeer opnieuw in te loggen.</translation>
 <translation id="6147020289383635445">Kan afdrukvoorbeeld niet bekijken.</translation>
 <translation id="6147253937684562370">Als je het profiel wilt ontgrendelen, log je in met het e-mailadres van je primaire account: <ph name="EMAIL" /></translation>
@@ -6951,7 +6939,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6310141306111263820">Kan e-simkaartprofiel niet installeren. Neem contact op met je provider voor hulp.</translation>
 <translation id="6311220991371174222">Kan Chrome niet starten omdat er een fout is opgetreden bij het openen van je profiel. Probeer Chrome opnieuw te starten.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Veiligheidscheck is 1 dag geleden uitgevoerd}other{Veiligheidscheck is {NUM_DAYS} dagen geleden uitgevoerd}}</translation>
-<translation id="6312638141433622592">Aanbieden om artikelen te bekijken in de lezermodus (als die wordt ondersteund)</translation>
 <translation id="6313950457058510656">Instant tethering uitzetten</translation>
 <translation id="6314819609899340042">Je hebt foutopsporingsfuncties aangezet voor dit <ph name="IDS_SHORT_PRODUCT_NAME" />-apparaat.</translation>
 <translation id="6315170314923504164">Spraak</translation>
@@ -9359,7 +9346,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8160775796528709999">Bekijk een ondertiteling voor je audio en video door 'Live ondertiteling' aan te zetten in de instellingen</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Browsen hervatten</translation>
-<translation id="8161293209665121583">Lezermodus voor webpagina's</translation>
 <translation id="8161604891089629425">Lettertype met omtrek</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
 <translation id="8163152278172770963">Niet toestaan dat sites automatisch scherm-in-scherm openen</translation>

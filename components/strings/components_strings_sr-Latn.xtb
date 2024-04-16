@@ -619,7 +619,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2126374524350484896">Aplikacija za pravljenje PDF dokumenata:</translation>
 <translation id="2130448033692577677">Nije moguće primeniti šablone koje ste naveli jer DnsOverHttpsMode smernice nisu podešene.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2132825047782982803">Prikazuju se nasumičnim redosledom. U svakom trenutku možete da promenite podrazumevanu vrednost.</translation>
+<translation id="2132825047782982803">Prikazuju se nasumičnim redosledom. Uvek možete da promenite podrazumevani izbor.</translation>
 <translation id="2137891579555018930">Čeka se dozvola…</translation>
 <translation id="213826338245044447">Mobilni obeleživači</translation>
 <translation id="2141000681034340397">Izmenite unos</translation>
@@ -827,6 +827,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2526280916094749336">Možete da koristite sačuvane adrese u svim Google proizvodima. Ova adresa će biti sačuvana na Google nalogu <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC je na prednjoj strani kartice. To je 4-cifreni kôd u gornjem desnom uglu iznad broja kartice.</translation>
 <translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
+<translation id="2533649878691950253">Ovom sajtu je zabranjen pristup vašoj preciznoj lokaciji jer obično to ne dozvoljavate</translation>
 <translation id="253493526287553278">Prikaži detalje o promotivnom kodu</translation>
 <translation id="2535585790302968248">Otvorite novu karticu bez arhiviranja da biste pregledali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
@@ -3305,6 +3306,7 @@ Dodatni detalji:
 <translation id="7392089738299859607">Ažurirajte adresu</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
+<translation id="7399616692258236448">Zahtevi za lokaciju se automatski blokiraju za sve sajtove osim za one koje omogućite</translation>
 <translation id="7399802613464275309">Bezbednosna provera</translation>
 <translation id="7400418766976504921">URL adresa</translation>
 <translation id="7403392780200267761">Delite ovu karticu deljenjem linka, pravljenjem QR koda, prebacivanjem i na druge načine</translation>

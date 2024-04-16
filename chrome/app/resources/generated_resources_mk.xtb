@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">Копирај адр&amp;еса на врска</translation>
 <translation id="1085064499066015002">Секогаш на сите сајтови</translation>
 <translation id="1085697365578766383">Грешка при стартувањето на виртуелната машина. Обидете се повторно.</translation>
-<translation id="1088659085457112967">Влезете во режим на читач</translation>
 <translation id="1090126737595388931">Нема активни апликации во заднина</translation>
 <translation id="1090541560108055381">Пред спарувањето, проверете дали кодов е ист на двата уреда</translation>
 <translation id="1091767800771861448">Притиснете ESCAPE за да прескокнете (Само неофицијални верзии).</translation>
@@ -2178,7 +2177,6 @@
 <translation id="2587922766792651800">Времето истече</translation>
 <translation id="2588636910004461974">Уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогаш не прикажувај датотеки на Drive</translation>
-<translation id="25899519884572181">Излезете од режим на читач</translation>
 <translation id="2593499352046705383">Пред да започнете, уверете се дека имате направено бекап на вашите податоци. Инсталирањето на <ph name="DEVICE_OS" /> ќе го презапише вашиот хард диск. Дознајте повеќе на g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Управувајте со безбедноста на V8</translation>
 <translation id="2594999711683503743">Пребарајте на Google или внесете URL-адреса</translation>
@@ -2479,7 +2477,6 @@
 <translation id="2806372837663997957">Уредот со којшто сакате да споделите не прифати</translation>
 <translation id="2806891468525657116">Кратенката веќе постои</translation>
 <translation id="2807517655263062534">Датотеките што ги преземате се појавуваат тука</translation>
-<translation id="2809586584051668049">и уште <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Сметки</translation>
 <translation id="2812049959647166806">Thunderbolt не е поддржан</translation>
 <translation id="2812171980080389735">Зачувани мрежи и лозинки за да може веднаш да се поврзете</translation>
@@ -3068,7 +3065,6 @@
 <translation id="3285465040399788513">Нема доволно простор на уредот за да го завршите поставувањето. Ослободете простор и обидете се повторно.</translation>
 <translation id="3285500645985761267">Дозволувај поврзаните сајтови да ја гледаат мојата активност во групата</translation>
 <translation id="328571385944182268">Да се зачуваат лозинките?</translation>
-<translation id="3288047731229977326">Наставки кои работат во режим на програмер може да го оштетат компјутерот. Ако не сте програмер, треба да ги оневозможите наставките кои работат во режим на програмер за да останете безбедни.</translation>
 <translation id="3289668031376215426">Автоматска голема буква</translation>
 <translation id="3289856944988573801">За да се проверат ажурирања, користете Етернет или Wi-Fi.</translation>
 <translation id="3289886661311231677">Можете да ги блокирате темите што не сакате да ги споделите со сајтови. Chrome исто така автоматски ги брише вашите теми постари од 4 седмици.</translation>
@@ -3108,7 +3104,6 @@
 <translation id="3313622045786997898">Вредност на потпис на сертификат</translation>
 <translation id="3313950410573257029">Проверете ја врската</translation>
 <translation id="3315158641124845231">Скриј <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Влезете во режим на читач</translation>
 <translation id="3317459757438853210">Двострано</translation>
 <translation id="3317521105713541270">Создавање групи</translation>
 <translation id="3317678681329786349">Камерата и микрофонот се блокирани</translation>
@@ -3513,7 +3508,6 @@
 <translation id="3636766455281737684">Останати се <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637203148990213388">Дополнителни сметки</translation>
-<translation id="3639220004740062347">Излезете од режим на читач</translation>
 <translation id="3640214691812501263">Да се додаде „<ph name="EXTENSION_NAME" />" за <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Заштитете ги лозинките од фишинг</translation>
 <translation id="3640613767643722554">Научете го вашиот „Помошник“ да ви го препознава гласот</translation>
@@ -4156,7 +4150,6 @@
 <translation id="4095483462103784441">Создајте нова група картички</translation>
 <translation id="4095507791297118304">Примарен приказ</translation>
 <translation id="4096421352214844684">Автоматско поврзување на точката на пристап на телефонот.</translation>
-<translation id="4096508467498758490">Оневозможува наставки во режим на развивач</translation>
 <translation id="4096797685681362305">Прегледано изминатата седмица</translation>
 <translation id="4097406557126260163">Апликации и екстензии</translation>
 <translation id="409742781329613461">Совети за Chrome</translation>
@@ -5488,7 +5481,6 @@
 <translation id="5146896637028965135">Глас на системот</translation>
 <translation id="5147097165869384760">Барате системска страница на OS? Одете на <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Препорака</translation>
-<translation id="5147516217412920887">Следете ги упатствата на телефонот за да го потврдите кодот</translation>
 <translation id="5147992672778369947">Користете ја препорачаната лозинка</translation>
 <translation id="5148285448107770349">Лозинката мора содржи најмалку 8 знаци</translation>
 <translation id="5149602533174716626">Копирај видеокадар</translation>
@@ -6746,10 +6738,6 @@
 <translation id="6143186082490678276">Побарајте помош</translation>
 <translation id="6143366292569327983">Изберете го јазикот на страницата од којшто треба да се преведе</translation>
 <translation id="6144938890088808325">Помогнете ни да ги подобриме Chromebooks</translation>
-<translation id="6145480071052696715">Лесно поставете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. Може да ги додадете вашите Wi-Fi и сметка на Google без рачно внесување на лозинките.
-    <ph name="BR" />
-    <ph name="BR" />
-    Уредот е видлив како <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Синхронизацијата не функционира. Обидете се да се најавите повторно.</translation>
 <translation id="6147020289383635445">Не успеа прегледот за печатење.</translation>
 <translation id="6147253937684562370">За да го отклучите профилот, најавете се со адресата на е-пошта на главната сметка: <ph name="EMAIL" /></translation>
@@ -6974,7 +6962,6 @@
 <translation id="6310141306111263820">Не можеше да се инсталира профилот на eSIM. За помош, контактирајте со операторот.</translation>
 <translation id="6311220991371174222">Chrome не може да се стартува, бидејќи нешто тргна наопаку при отворањето на профилот. Обидете се да го рестартирате Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Безбедносната проверка беше извршена пред 1 ден}one{Безбедносната проверка беше извршена пред {NUM_DAYS} ден}other{Безбедносната проверка беше извршена пред {NUM_DAYS} дена}}</translation>
-<translation id="6312638141433622592">Понуди прикажување статии во режим на читач ако е поддржано</translation>
 <translation id="6313950457058510656">Исклучување инстант врзување</translation>
 <translation id="6314819609899340042">Успешно ги овозможивте функциите за отстранување грешки на овој уред со <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -9386,7 +9373,6 @@
 <translation id="8160775796528709999">Добијте титлови за вашите аудио и видеосодржини со овозможување „Автоматски титлови“ во поставките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Продолжи со прелистување</translation>
-<translation id="8161293209665121583">Режим на читач за веб-страници</translation>
 <translation id="8161604891089629425">Фонт со контури</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместете ја картичката во нов прозорец}one{Преместете ги картичките во нов прозорец}other{Преместете ги картичките во нов прозорец}}</translation>
 <translation id="8163152278172770963">Не дозволувај сајтовите да влегуваат во „Слика во слика“ автоматски</translation>

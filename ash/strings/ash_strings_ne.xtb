@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store एप</translation>
 <translation id="1225748608451425081">कुनै ज्ञात समस्याका कारण तपाईंको Chromebook लक गरिएको छ। तपाईं यति समयपछि साइन इन गर्न सक्नु हुने छ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">पाठ चयन गर्न छाडियोस्</translation>
+<translation id="1230853660706736937">फोटोभित्रका टेक्स्ट खोज्ने र फोटोको प्रिभ्यू हेर्ने</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1240638468526743569">कुनै एप</translation>
@@ -715,11 +716,13 @@
 <translation id="3824784079442479685">तपाईंले यसो गर्नुभयो भने <ph name="APP_NAME" /> र क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="3826099427150913765">पासवर्ड प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="383058930331066723">ब्याट्री सेभर मोड अन छ</translation>
+<translation id="3831226344927851293">ट्युटोरियल भ्यूबाट बाहिरिनुहोस्</translation>
 <translation id="383629559565718788">किबोर्डका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="384082539148746321">टेम्प्लेट मेटाउने हो?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> थिच्नुहोस् अनि <ph name="KEY_ONE" /> वा <ph name="KEY_TWO" /> वा <ph name="KEY_THREE" /> वा <ph name="KEY_FOUR" /> थिच्नुहोस्</translation>
 <translation id="3846559267983630264">५०+९४/५</translation>
 <translation id="3846575436967432996">सञ्जाल जानकारी उपलब्ध छैन</translation>
+<translation id="3848526302597027234">एपलाई निम्न कुराहरू प्रयोग गर्ने अनुमति दिनुहोस्:</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
 <translation id="3859364108019690">एपहरू स्ट्रिम गर्न सकिएन</translation>
@@ -1224,7 +1227,7 @@
 <translation id="571295407079589142">मोबाइल डेटा अफ गरियो</translation>
 <translation id="5727460725221669831">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
 <translation id="5733630091161562207">"स्वागत छ" डायलग भएको नोटिफिकेसन</translation>
-<translation id="573413375004481890">यो यन्त्रले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान विच्छेद गरियो</translation>
+<translation id="573413375004481890">यो यन्त्रले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान डिस्कनेक्ट गरियो</translation>
 <translation id="5740328398383587084">नजिकैका डिभाइससँग सेयर गर्ने सुविधा</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5744083938413354016">ड्र्याग गर्ने विकल्पमा ट्याप गर्नुहोस्</translation>
@@ -1291,7 +1294,6 @@
 <translation id="598882571027504733">अद्यावधिक प्राप्त गर्न, उक्त किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook पुनः सुरु गर्नुहोस्।</translation>
 <translation id="5998374579424866922">गेम कन्ट्रोलहरू अफ गर्नुहोस्</translation>
 <translation id="6000279412553873020">की, बटन र अन्य कुरा</translation>
-<translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="6015573907265691211">पूरा भएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>

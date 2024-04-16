@@ -136,6 +136,7 @@
 <translation id="1243027604378859286">ავტორი:</translation>
 <translation id="1247030632403369975">ალუმინი</translation>
 <translation id="1252209483516427155">გარე ტანსაცმელი</translation>
+<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-ით გადახდა</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (სინქრონიზებული)</translation>
 <translation id="1255086252236620440">საჭმლის მიქსერები</translation>
 <translation id="1256368399071562588">&lt;p&gt;თუ ვებსაიტი, რომლის მონახულებასაც ცდილობთ, არ იხსნება, პირველ რიგში, ცადეთ შემდეგი:&lt;/p&gt;
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">შენახული მისამართების გამოყენება Google-ის სხვადასხვა პროდუქტში შეგიძლიათ. ეს მისამართი შენახულია თქვენს Google ანგარიშში (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">თქვენი ბარათის დადასტურების კოდი (CVC) ბარათის წინა მხარესაა. ეს 4-ნიშნა კოდია ბარათის ნომრის ზედა მარჯვენა მხარეს.</translation>
 <translation id="2529899080962247600">ამ ველში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს. შემდგომი ჩანაწერები იგნორირებული იქნება.</translation>
+<translation id="2533649878691950253">ამ საიტს დაებლოკა წვდომა თქვენი ზუსტი მდებარეობის მონაცემებზე, რადგან, როგორც წესი, ამ პარამეტრს ირჩევთ ხოლმე</translation>
 <translation id="253493526287553278">პრომოკოდის დეტალების ნახვა</translation>
 <translation id="2535585790302968248">ვების კონფიდენციალურად დასათვალიერებლად გახსენით ახალი ინკოგნიტო ჩანართი</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{და 1 სხვა}other{და # სხვა}}</translation>
@@ -1512,6 +1514,7 @@
 <translation id="385489333361351399">ფოტოაპარატები და ფოტოაღჭურვილობა</translation>
 <translation id="3858027520442213535">განახლების თარიღი და დრო</translation>
 <translation id="3858860766373142691">სახელი</translation>
+<translation id="3865339060090354361">აქ იხილეთ <ph name="CREDIT_CARD_NAME" />-ის გამოყენების პირობები</translation>
 <translation id="3872834068356954457">მეცნიერება</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
 <translation id="3880456882942693779">ხელოვნება და გართობა</translation>
@@ -2348,6 +2351,7 @@
 <translation id="553377674408670169">ვაკანსიები განათლების სფეროში</translation>
 <translation id="5536214594743852365">სექციის „<ph name="SECTION" />“ ჩვენება</translation>
 <translation id="553782666181800029">კონვერტი Chou 2</translation>
+<translation id="5538270463355278784">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="5539243836947087108">მთლიანი საძირკველი</translation>
 <translation id="5540224163453853">მოთხოვნილი სტატია ვერ მოიძებნა.</translation>
 <translation id="5540969246441091044">ცხენოსნობა</translation>
@@ -2712,6 +2716,7 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის მეშვეობით ჩამოტვირთული ფაილების სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6254436959401408446">ამ გვერდის გასახსნელად მეხსიერება არასაკმარისია</translation>
 <translation id="625463612687472648">აღარ დაიშვას</translation>
+<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Chrome-ის მეშვეობით რაიმეს შეძენისას ვარიანტებად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">გადალაგების &amp;გამეორება</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> სანიშნე</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
@@ -3302,6 +3307,7 @@
 <translation id="7392089738299859607">მისამართის განახლება</translation>
 <translation id="7393161616326137353">სათავგადასავლო თამაშები</translation>
 <translation id="739728382607845710">გადახდის დამმუშავებლის ხატულა</translation>
+<translation id="7399616692258236448">მდებარეობის მოთხოვნები ავტომატურად დაბლოკილია ყველა საიტისთვის, გარდა თქვენ მიერ დაშვებულისა</translation>
 <translation id="7399802613464275309">უსაფრთხოების შემოწმება</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ამ ჩანართის გაზიარება ისეთი ვარიანტების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა</translation>
@@ -3846,6 +3852,7 @@
 <translation id="8378714024927312812">იმართება თქვენი ორგანიზაციის მიერ</translation>
 <translation id="8380941800586852976">სახიფათო</translation>
 <translation id="8381674639488873545">აღნიშნული გადახდები შეიძლება განხორციელდეს ერთჯერადად ან პერიოდულად და არ იყოს ადვილად შესამჩნევი. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
+<translation id="8382097126743287270">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="838307841291975086">უნივერსალი ფურგონები</translation>
 <translation id="8389532092404711541">როგორც წესი, <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">ინდივიდუალური შეკვეთით დამზადებული და სწრაფი ავტომობილები</translation>

@@ -677,10 +677,6 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google
 <translation id="1557113199339446336">Politika, Doğru değerine ayarlanırsa kayıtlı cihazlar genişletilmiş tespit ve yanıt (XDR) etkinlikleriyle ilgili bilgileri rapor eder.
 
       Politika, Yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa kayıtlı cihazlar genişletilmiş tespit ve yanıt (XDR) etkinlikleriyle ilgili bilgileri rapor etmez.</translation>
-<translation id="1557873444324280490">Kurumsal uzantılar, chrome.enterprise.systemLog API aracılığıyla günlükleri bir sistem günlük dosyasına ekleyebilir.
-
-Politika, Etkin değerine ayarlanırsa günlüklerin sınırlı bir süre boyunca sistem günlük dosyasında saklanmasına izin verilir.
-Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa günlüklerin, sistem günlük dosyasına eklenmesine izin verilmez. Dolayısıyla, günlükler oturumlar arasında saklanmaz.</translation>
 <translation id="1560279917909364275"><ph name="PRODUCT_OS_NAME" /> kilit ekranında izin verilen not alma uygulamalarını izin verilenler listesine ekle</translation>
 <translation id="1561424797596341174">Politika, uzaktan erişim ana makinesinin Hata Ayıklama yapılarını geçersiz kılar</translation>
 <translation id="1561967320164410511">Bağımsız doğrulama için U2F plus uzantıları</translation>
@@ -7223,9 +7219,6 @@ Kullanıcı Aracısı İstemci İpuçları GREASE güncelleme özelliği etkinle
 <translation id="6704515759227307131">Bu politika artık kullanılmamakta olup yerine AdvancedProtectionAllowed politikası getirilmiştir.
 
       Bu politika, Gelişmiş Koruma programına kayıtlı kullanıcıların indirdikleri dosyaları kötü amaçlı yazılıma karşı taranmak üzere Google'a göndermelerine izin verilip verilmeyeceğini kontrol eder. Bu politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı kullanıcılardan dosyalarını ayrıntılı tarama için Google'a göndermeleri istenir. Kullanıcı "Tara" öğesini seçerse indirdiği dosya Google'a gönderilir. Bu politika False (Yanlış) değerine ayarlanırsa kullanıcılardan istekte bulunulmaz ve indirdikleri dosyalar Google'a gönderilmez.</translation>
-<translation id="6704994003174661159">Bu politika, tarayıcıdaki güvenli (HTTPS) sitelere yerleştirilmiş güvenli olmayan formların (HTTP üzerinden gönderilen formlar) işlenme şeklini denetler.
-       Bu politika etkinleştirilir veya ayarlanmazsa güvenli olmayan bir form gönderilirken tam sayfa uyarı gösterilir. Ayrıca imleçle üzerine gelindiği zaman form alanlarının yanında bir uyarı balonu gösterilir ve bu formlarda otomatik doldurma özelliği devre dışı bırakılır.
-       Bu politika devre dışı bırakılırsa güvenli olmayan formlar için uyarı gösterilmez ve otomatik doldurma özelliği normal bir şekilde çalışır.</translation>
 <translation id="670597451099978576">Bu sitelere, giriş ekranında sağlanan tedarikçi ve ürün kimliklerine sahip USB cihazlarına otomatik olarak bağlanma izni verir.</translation>
 <translation id="6706330611356546885">Tüm sitelerin JavaScript JIT çalıştırmasına izin ver</translation>
 <translation id="6706728459859947543">Bu politika, Bil bakalım'a seçilen içeriğe erişme ve sunucuya bilgi gönderme izni verir.

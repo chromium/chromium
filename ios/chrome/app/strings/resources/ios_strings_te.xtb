@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">వినియోగదారు పేరు లేదు</translation>
 <translation id="6366190659675876144">స్టాండర్డ్ రక్షణ</translation>
 <translation id="6366663624406569102">సైన్ అవుట్ చేసి, సింక్‌ను ఆఫ్ చేయండి</translation>
+<translation id="6368038301482806847">లిస్ట్ నుండి సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి.</translation>
 <translation id="6374469231428023295">మళ్లీ ప్రయత్నించు</translation>
 <translation id="6377118281273296434">సైట్ భద్రత</translation>
 <translation id="6383719166112032471">లొకేషన్‌ను తెరవండి…</translation>
@@ -1202,6 +1203,7 @@
 <translation id="7161230316646448869">పరికరాలన్నింటిలో మీ బుక్‌మార్క్‌లను, హిస్టరీని, ఇంకా మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="7162168282402939716">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
+<translation id="7186568385131859684">Google సర్వీస్‌లలో మీ ఇతర డేటాతో పాటు మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో కంట్రోల్ చేయండి</translation>
 <translation id="7189598951263744875">షేర్ చేయండి...</translation>
 <translation id="719133302483559673">మీ ఆసక్తులను, ప్రాధాన్యతలను మేనేజ్ చేసుకోండి.</translation>
 <translation id="7192050974311852563">లాగ్ చేయడం ప్రారంభించండి</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7438481509621345350">మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీకు ఇప్పుడు <ph name="CHANNEL_NAME" /> నుండి స్టోరీలు కనిపిస్తాయి.</translation>
 <translation id="7451023311965289370">{count,plural, =1{బుక్‌మార్క్ "{title}"కి సేవ్ చేయబడింది}other{బుక్‌మార్క్‌లు "{title}"కి సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="7454057999980797137">రాష్ట్రం / దేశం</translation>
+<translation id="7458706065921255639">వ్యక్తిగతీకరణ &amp; లింక్ చేయడం</translation>
 <translation id="745899714366929493">రోజంతా</translation>
 <translation id="7459628154744868585">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="7465351360025415755">మీకు ముఖ్యమైన కంటెంట్‌ను పొందండి</translation>
@@ -1272,7 +1275,6 @@
 <translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7564917801238348224">సేవ్ చేయండి...</translation>
-<translation id="7569588934989281656">మీరు ట్యాబ్‌ల మధ్య మారడానికి ట్యాబ్‌ల బార్‌ను స్వైప్ చేయవచ్చు.</translation>
 <translation id="7582857256643797524">మీ పరికరంలో ఈ సెట్టింగ్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="7583004045319035904">మీ అజ్ఞాత ట్యాబ్‌లను అన్‌లాక్ చేయడానికి <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ను ఉపయోగించండి.</translation>
 <translation id="7598439272585186139">మరింత మెరుగైన సెక్యూరిటీని పొందండి</translation>

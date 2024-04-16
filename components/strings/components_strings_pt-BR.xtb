@@ -826,6 +826,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2526280916094749336">Os endereços salvos podem ser usados em vários produtos do Google. Esse será salvo na sua conta <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O CVC é um código de quatro dígitos que fica no canto superior direito da parte da frente do cartão, logo acima do número dele.</translation>
 <translation id="2529899080962247600">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as entradas futuras serão ignoradas.</translation>
+<translation id="2533649878691950253">Este site foi impedido de saber seu local exato porque você normalmente não permite esse acesso</translation>
 <translation id="253493526287553278">Consulte os detalhes do código promocional</translation>
 <translation id="2535585790302968248">Abra uma nova guia anônima para navegar com privacidade</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}one{e mais #}other{e mais #}}</translation>
@@ -3303,6 +3304,7 @@ Mais detalhes:
 <translation id="7392089738299859607">Atualizar endereço</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
+<translation id="7399616692258236448">As solicitações de localização são bloqueadas automaticamente para todos os sites, exceto os que você permitir</translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>

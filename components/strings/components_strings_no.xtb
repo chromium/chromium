@@ -827,6 +827,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2526280916094749336">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC-koden står på forsiden av kortet. Det er den firesifrede koden øverst til høyre over kortnummeret ditt.</translation>
 <translation id="2529899080962247600">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Eventuelle oppføringer som overskrider dette, ignoreres.</translation>
+<translation id="2533649878691950253">Dette nettstedet er blokkert fra å få vite den nøyaktige posisjonen din, siden du vanligvis ikke tillater dette</translation>
 <translation id="253493526287553278">Se informasjon om kampanjekoder</translation>
 <translation id="2535585790302968248">Åpne en ny inkognitofane for å surfe privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
@@ -2110,6 +2111,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5040262127954254034">Personvern</translation>
 <translation id="5043480802608081735">Linken du kopierte</translation>
 <translation id="5045550434625856497">Feil passord</translation>
+<translation id="5048293684454354469">Annonseemner er bare én av mange måter nettsteder kan levere personlig tilpassede annonser på. Selv uten annonseemner kan nettsteder vise deg annonser, men de er kanskje mindre personlig tilpasset. Finn ut mer om hvordan du <ph name="BEGIN_LINK" />administrerer annonsepersonvernet ditt<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Aktive emner</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{For å sende denne filen med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}other{For å sende disse filene med nærdeling, frigjør plass (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="505757197798929356">Oppgi årsaken til åpningen (obligatorisk)</translation>
@@ -2327,6 +2329,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     <ph name="LINE_BREAK" />
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
+<translation id="5496804587179176046">Lagre sikkerhetskoder – ingen sikkerhetskoder er lagret for øyeblikket</translation>
 <translation id="550365051221576010">Fyll ut alt</translation>
 <translation id="5508443345185481044">Kameraer og videokameraer</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3305,6 +3308,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7392089738299859607">Oppdater adresse</translation>
 <translation id="7393161616326137353">Eventyrspill</translation>
 <translation id="739728382607845710">Ikon for betalingsbehandler</translation>
+<translation id="7399616692258236448">Posisjonsforespørsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
 <translation id="7403392780200267761">Del denne fanen via en link, en QR-kode, casting eller annet</translation>

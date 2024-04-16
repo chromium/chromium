@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Prisilno omogući zumiranje</translation>
 <translation id="3908288065506437185">Blokirajte kolačiće treće strane u anonimnom načinu rada</translation>
 <translation id="3918378745482005425">Moguće je da neke funkcije neće raditi. Povezane web lokacije i dalje mogu koristiti kolačiće treće strane.</translation>
+<translation id="3933121352599513978">Suzi neželjene zahtjeve (preporučeno)</translation>
 <translation id="3955193568934677022">Dozvoljava web lokacijama da reproduciraju zaštićeni sadržaj (preporučeno)</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
 <translation id="3974105241379491420">Web lokacije mogu tražiti da koriste informacije koje su sačuvale o vama</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigacija je nedostupna: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavit ćete se sa svih web lokacija</translation>
+<translation id="8993853206419610596">Proširi sve zahtjeve</translation>
 <translation id="9002538116239926534">Kada je postavka uključena, web lokacije mogu pohranjivati podatke na vaš uređaj. Kada je postavka isključena, web lokacije ne mogu pohranjivati podatke na vaš uređaj.</translation>
 <translation id="9011903857143958461">Web lokacija <ph name="SITE_NAME" /> je dozvoljena</translation>
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>

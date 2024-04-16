@@ -127,7 +127,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1084824384139382525">Copiază adresa linkului</translation>
 <translation id="1085064499066015002">Întotdeauna pe toate site-urile</translation>
 <translation id="1085697365578766383">A apărut o eroare la pornirea mașinii virtuale. Încearcă din nou.</translation>
-<translation id="1088659085457112967">Accesează modul Cititor</translation>
 <translation id="1090126737595388931">Nu rulează aplicații în fundal</translation>
 <translation id="1090541560108055381">Înainte de asociere, asigură-te că apare același cod pe ambele dispozitive</translation>
 <translation id="1091767800771861448">Apăsați pe ESCAPE pentru a ignora (numai versiunile neoficiale).</translation>
@@ -2163,7 +2162,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2587922766792651800">A expirat</translation>
 <translation id="2588636910004461974">Dispozitive de la <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nu mai afișa niciodată fișierele din Drive</translation>
-<translation id="25899519884572181">Ieși din modul Cititor</translation>
 <translation id="2593499352046705383">Înainte de a începe, asigură-te că ai făcut backup pentru date. Instalarea <ph name="DEVICE_OS" /> va înlocui datele de pe hard disk. Află mai multe la g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gestionează securitatea pentru V8</translation>
 <translation id="2594999711683503743">Caută pe Google sau introdu adresa URL</translation>
@@ -2464,7 +2462,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2806372837663997957">Dispozitivul căruia încerci să îi trimiți nu a acceptat</translation>
 <translation id="2806891468525657116">Comanda rapidă există deja</translation>
 <translation id="2807517655263062534">Fișierele pe care le descarci apar aici</translation>
-<translation id="2809586584051668049">și încă <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Conturi</translation>
 <translation id="2812049959647166806">Thunderbolt nu este acceptat</translation>
 <translation id="2812171980080389735">Rețelele și parolele salvate, ca să te poți conecta instantaneu</translation>
@@ -3053,7 +3050,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3285465040399788513">Nu există suficient spațiu pe dispozitiv pentru a finaliza configurarea. Eliberează spațiu și încearcă din nou.</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
 <translation id="328571385944182268">Salvezi parolele?</translation>
-<translation id="3288047731229977326">Extensiile care rulează în modul pentru dezvoltatori pot afecta computerul. Dacă nu sunteți dezvoltator, se recomandă să dezactivați aceste extensii, pentru siguranță.</translation>
 <translation id="3289668031376215426">Scriere automată cu majuscule</translation>
 <translation id="3289856944988573801">Pentru a verifica dacă există actualizări, utilizați Ethernet sau Wi-Fi.</translation>
 <translation id="3289886661311231677">Poți bloca subiectele la care nu vrei să permiți accesul site-urilor. Chrome șterge automat subiectele mai vechi de patru săptămâni.</translation>
@@ -3093,7 +3089,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3313622045786997898">Valoare a semnăturii certificatului</translation>
 <translation id="3313950410573257029">Verifică starea conexiunii</translation>
 <translation id="3315158641124845231">Ascunde <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Accesează modul Cititor</translation>
 <translation id="3317459757438853210">Față-verso</translation>
 <translation id="3317521105713541270">Creează grupuri</translation>
 <translation id="3317678681329786349">Camera foto și microfonul sunt blocate</translation>
@@ -3498,7 +3493,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – Timp rămas: <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Limbi preferate</translation>
 <translation id="3637203148990213388">Conturi suplimentare</translation>
-<translation id="3639220004740062347">Ieși din modul Cititor</translation>
 <translation id="3640214691812501263">Adaugi „<ph name="EXTENSION_NAME" />” pentru <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protejează-ți parolele împotriva phishingului</translation>
 <translation id="3640613767643722554">Învață Asistentul să îți recunoască vocea</translation>
@@ -4141,7 +4135,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4095483462103784441">Creează un nou grup de file</translation>
 <translation id="4095507791297118304">Afișare principală</translation>
 <translation id="4096421352214844684">Conectează-te automat la hotspotul telefonului.</translation>
-<translation id="4096508467498758490">Dezactivați extensiile care rulează în modul pentru dezvoltatori</translation>
 <translation id="4096797685681362305">Afișat în ultima săptămână</translation>
 <translation id="4097406557126260163">Aplicații și extensii</translation>
 <translation id="409742781329613461">Sfaturi pentru Chrome</translation>
@@ -5472,7 +5465,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5146896637028965135">Vocea sistemului</translation>
 <translation id="5147097165869384760">Cauți pagina sistemului de operare? Accesează <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomandare</translation>
-<translation id="5147516217412920887">Urmează instrucțiunile de pe telefon pentru verificarea codului</translation>
 <translation id="5147992672778369947">Folosește parola recomandată</translation>
 <translation id="5148285448107770349">Parola trebuie să aibă cel puțin opt caractere</translation>
 <translation id="5149602533174716626">Copiaz&amp;ă cadrul video</translation>
@@ -6730,10 +6722,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6143186082490678276">Primiți ajutor</translation>
 <translation id="6143366292569327983">Alege limba paginii din care vrei să traduci</translation>
 <translation id="6144938890088808325">Ajută-ne să îmbunătățim Chromebookurile</translation>
-<translation id="6145480071052696715">Configurează cu ușurință <ph name="DEVICE_TYPE" /> cu telefonul. Poți adăuga rețeaua Wi-Fi și Contul Google fără să introduci manual parolele.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vizibil ca <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sincronizarea nu funcționează. Încearcă să te conectezi din nou.</translation>
 <translation id="6147020289383635445">Previzualizarea înainte de printare nu a reușit.</translation>
 <translation id="6147253937684562370">Pentru a debloca profilul, conectează-te cu adresa de e-mail a contului principal, <ph name="EMAIL" /></translation>
@@ -6958,7 +6946,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6310141306111263820">Nu s-a putut instala profilul eSIM. Contactează operatorul pentru ajutor.</translation>
 <translation id="6311220991371174222">Nu se poate porni Chrome, deoarece a apărut o eroare la deschiderea profilului. Repornește Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Verificarea de siguranță a rulat acum o zi}few{Verificarea de siguranță a rulat acum {NUM_DAYS} zile}other{Verificarea de siguranță a rulat acum {NUM_DAYS} de zile}}</translation>
-<translation id="6312638141433622592">Oferă afișarea articolelor în modul Cititor, dacă este acceptat</translation>
 <translation id="6313950457058510656">Dezactivează Tetheringul instantaneu</translation>
 <translation id="6314819609899340042">Ai activat funcțiile de remediere a erorilor pe acest dispozitiv <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voce</translation>
@@ -9372,7 +9359,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8160775796528709999">Afișează subtitrări pentru conținutul audio și video activând Subtitrări live în setări</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reia navigarea</translation>
-<translation id="8161293209665121583">Modul Cititor pentru pagini web</translation>
 <translation id="8161604891089629425">Font de contur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mută fila în fereastră nouă}few{Mută filele în fereastră nouă}other{Mută filele în fereastră nouă}}</translation>
 <translation id="8163152278172770963">Nu permite site-urilor să intre automat în modul picture-in-picture</translation>

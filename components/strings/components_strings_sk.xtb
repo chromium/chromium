@@ -827,6 +827,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2526280916094749336">V službách Googlu môžete používať uložené adresy. Táto adresa bude uložená do vášho účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Overovací kód karty nájdete na jej prednej strane. Ide o štvormiestny kód vpravo hore nad číslom karty.</translation>
 <translation id="2529899080962247600">Toto pole by nemalo mať viac ako tento počet vstupov: <ph name="MAX_ITEMS_LIMIT" />. Všetky ďalšie vstupy budú ignorované.</translation>
+<translation id="2533649878691950253">Vaša presná poloha je pre tento web blokovaná, pretože ju zvyčajne nepovoľujete</translation>
 <translation id="253493526287553278">Zobraziť podrobnosti promo kódov</translation>
 <translation id="2535585790302968248">Otvoriť novú kartu inkognito a prehliadať v súkromí</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 ďalšia}few{a # ďalšie}many{and # more}other{a # ďalších}}</translation>
@@ -3301,6 +3302,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7392089738299859607">Aktualizácia adresy</translation>
 <translation id="7393161616326137353">Dobrodružné hry</translation>
 <translation id="739728382607845710">Ikona obslužného nástroja platieb</translation>
+<translation id="7399616692258236448">Žiadosti o polohu sú automaticky blokované pre všetky weby okrem tých, ktoré povolíte</translation>
 <translation id="7399802613464275309">Kontrola bezpečnosti</translation>
 <translation id="7400418766976504921">Webová adresa</translation>
 <translation id="7403392780200267761">Zdieľajte túto kartu prostredníctvom odkazu, vytvorením QR kódu, prenosom a ďalšími spôsobmi</translation>

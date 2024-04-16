@@ -684,10 +684,6 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1557113199339446336">Se a política for definida como verdadeira, os dispositivos registrados vão enviar relatórios com informações sobre eventos de detecção e resposta estendidas (XDR, na sigla em inglês).
 
       Se a política for definida como falsa ou for deixada sem definição, os dispositivos registrados não vão informar eventos XDR.</translation>
-<translation id="1557873444324280490">As extensões empresariais podem adicionar registros pela API chrome.enterprise.systemLog a um arquivo de registro do sistema.
-
-Se a política for ativada, os registros serão mantidos no arquivo de registro do sistema por tempo limitado.
-Se for desativada ou deixada sem definição, os registros não poderão ser adicionados ao arquivo de registro do sistema. Isso significa que os registros não serão mantidos entre as sessões.</translation>
 <translation id="1560279917909364275">Colocar na lista de permissões os apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1561424797596341174">A política modifica as versões de depuração do host de acesso remoto</translation>
 <translation id="1561967320164410511">U2F e extensões para declaração individual</translation>
@@ -7413,9 +7409,6 @@ Quando ativada, a atualização do recurso de dicas de cliente HTTP do user agen
 <translation id="6704515759227307131">Esta política está obsoleta e foi substituída pela AdvancedProtectionAllowed.
 
       Ela controla se os usuários inscritos no Programa Proteção Avançada têm permissão para enviar os downloads para o Google para verificação de malware. Se esta política for definida como verdadeira ou não for configurada, um aviso aparecerá para os usuários pedindo que enviem os arquivos ao Google para verificação detalhada. Se o usuário selecionar "Verificar", o download será enviado para o Google. Se esta política for definida como falsa, o aviso não aparecerá e os downloads não serão enviados para o Google.</translation>
-<translation id="6704994003174661159">Esta política controla o tratamento de formulários não seguros (enviados por HTTP) incorporados em sites seguros (HTTPS) no navegador.
-       Se ela for ativada ou não for definida, um alerta de página inteira será exibido quando um formulário não seguro for enviado. Além disso, um balão de alerta será exibido ao lado dos campos do formulário quando o cursor do mouse estiver sobre eles, e o preenchimento automático será desativado para esses formulários.
-       Se a política for desativada, os alertas não serão exibidos para formulários não seguros e o preenchimento automático funcionará normalmente.</translation>
 <translation id="670597451099978576">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos USB com determinados IDs de produto e de fornecedor na tela de login.</translation>
 <translation id="6706330611356546885">Permitir que sites executem o JIT do JavaScript</translation>
 <translation id="6706728459859947543">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor.

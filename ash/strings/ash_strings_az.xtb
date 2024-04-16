@@ -68,6 +68,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Market Tətbiqi</translation>
 <translation id="1225748608451425081">Chromebook cihazınız məlum problemə görə kilidlənib. Bu müddətdən sonra daxil ola biləcəksiniz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Seçməyi dayandırın</translation>
+<translation id="1230853660706736937">Şəkil daxilində mətn axtarın və şəkil önizləmələrinə baxın</translation>
 <translation id="1235458158152011030">Tanış şəbəkələr</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> qoşulub.</translation>
 <translation id="1240638468526743569">Tətbiq</translation>
@@ -715,11 +716,13 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3824784079442479685"><ph name="APP_NAME" />, kamera icazəsi olan tətbiq və veb-saytlar üçün kameraya giriş icazəsi verilir. Veb-səhifəni təzələməli, yaxud tətbiqi yenidən başlatmalı ola bilərsiniz.</translation>
 <translation id="3826099427150913765">Parola keçin</translation>
 <translation id="383058930331066723">Enerjiyə qənaət rejimi aktivdir</translation>
+<translation id="3831226344927851293">Təlimat görünüşünü redaktə edin</translation>
 <translation id="383629559565718788">Klaviatura ayarlarını göstərin</translation>
 <translation id="384082539148746321">Şablon silinsin?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, sonra <ph name="KEY_ONE" /> və ya <ph name="KEY_TWO" />, yaxud <ph name="KEY_THREE" />, ya da <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Heç bir şəbəkə məlumatı yoxdur</translation>
+<translation id="3848526302597027234">Aşağıdakı icazələrə giriş:</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlanğıc</translation>
 <translation id="3859364108019690">Tətbiqləri yayımlamaq olmur</translation>
@@ -1291,7 +1294,6 @@ Cihaz qoşulmayıb.</translation>
 <translation id="598882571027504733">Güncəlləməni əldə etmək üçün əlavə edilən klavatura ilə Chromebook'u yenidən başladın.</translation>
 <translation id="5998374579424866922">Oyun nizamlayıcılarını deaktiv edin</translation>
 <translation id="6000279412553873020">Açarlar, düymələr və s.</translation>
-<translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> səhifədən <ph name="SELECTED_PAGE" /> səhifə</translation>
 <translation id="601304062528754300">Rəfdə növbəti elementi vurğulayın</translation>
 <translation id="6015573907265691211">Tamamlanmış kimi işarələyin</translation>

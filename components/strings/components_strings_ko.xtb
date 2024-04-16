@@ -826,6 +826,7 @@
 <translation id="2526280916094749336">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 이 주소는 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
 <translation id="2527451058878391043">CVC는 카드 앞면에 있습니다. 카드 번호 오른쪽 상단의 4자리 코드입니다.</translation>
 <translation id="2529899080962247600">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 이후 항목은 모두 무시됩니다.</translation>
+<translation id="2533649878691950253">내가 일반적으로 이 옵션을 허용하지 않으므로 사이트에서 나의 정확한 위치를 확인하지 못하도록 차단했습니다.</translation>
 <translation id="253493526287553278">프로모션 코드 세부정보 보기</translation>
 <translation id="2535585790302968248">비공개로 탐색하려면 새 시크릿 탭을 여세요.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
@@ -3302,6 +3303,7 @@
 <translation id="7392089738299859607">주소 업데이트</translation>
 <translation id="7393161616326137353">어드벤처 게임</translation>
 <translation id="739728382607845710">결제 핸들러 아이콘</translation>
+<translation id="7399616692258236448">허용한 사이트를 제외한 모든 사이트의 위치 요청이 자동으로 차단됩니다.</translation>
 <translation id="7399802613464275309">안전 확인</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭 공유</translation>

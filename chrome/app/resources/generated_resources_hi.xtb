@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">लिंक का पता कॉपी करें</translation>
 <translation id="1085064499066015002">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="1085697365578766383">वर्चुअल मशीन शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
-<translation id="1088659085457112967">रीडर मोड में जाएं</translation>
 <translation id="1090126737595388931">कोई पृष्ठभूमि ऐप्स  चालू नहीं है</translation>
 <translation id="1090541560108055381">दूसरे डिवाइस के साथ जोड़ने से पहले, पक्का कर लें कि यह कोड दोनों डिवाइसों पर एक जैसा ही हो</translation>
 <translation id="1091767800771861448">छोड़ने के लिए ESCAPE दबाएं (केवल गैर-आधिकारिक बिल्ड).</translation>
@@ -2178,7 +2177,6 @@
 <translation id="2587922766792651800">समय खत्म</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> की ओर से डिवाइस</translation>
 <translation id="2589658397149952302">Drive में मौजूद फ़ाइलें कभी न दिखाएं</translation>
-<translation id="25899519884572181">रीडर मोड से बाहर निकलें</translation>
 <translation id="2593499352046705383">शुरू करने से पहले, पक्का करें कि आपने डेटा का बैक अप ले लिया हो. <ph name="DEVICE_OS" /> इंस्टॉल करने से, आपकी हार्ड ड्राइव पर मौजूद पूरा डेटा मिट जाएगा. ज़्यादा जानने के लिए, g.co/flex/InstallGuide पर जाएं.</translation>
 <translation id="2594832159966169099">V8 की सुरक्षा से जुड़ी सेटिंग मैनेज करना</translation>
 <translation id="2594999711683503743">Google पर खोजें या यूआरएल टाइप करें</translation>
@@ -2479,7 +2477,6 @@
 <translation id="2806372837663997957">आप जिस डिवाइस के साथ फ़ाइल को शेयर करना चाहते हैं उसने इस फ़ाइल को अस्वीकार कर दिया है</translation>
 <translation id="2806891468525657116">शॉर्टकट पहले से मौजूद है</translation>
 <translation id="2807517655263062534">आपकी डाउनलोड की गई फ़ाइलें यहां दिखाई देती हैं</translation>
-<translation id="2809586584051668049">और <ph name="NUMBER_ADDITIONAL_DISABLED" /> और</translation>
 <translation id="2811205483104563968">खाते</translation>
 <translation id="2812049959647166806">Thunderbolt काम नहीं करता</translation>
 <translation id="2812171980080389735">सेव किए गए नेटवर्क और पासवर्ड, ताकि तुरंत कनेक्ट किया जा सके</translation>
@@ -3068,7 +3065,6 @@
 <translation id="3285465040399788513">सेटअप पूरा करने के लिए, डिवाइस में स्टोरेज कम है. जगह खाली करें और फिर से कोशिश करें.</translation>
 <translation id="3285500645985761267">मिलती-जुलती साइटों को ग्रुप में आपकी गतिविधि से जुड़ी जानकारी देखने की अनुमति दें</translation>
 <translation id="328571385944182268">क्या आप पासवर्ड सेव करना चाहते हैं?</translation>
-<translation id="3288047731229977326">डेवलपर मोड में चलने वाले एक्सटेंशन आपके कंप्यूटर को नुकसान पहुंचा सकते हैं. अगर आप डेवलपर नहीं हैं तो, सुरक्षित रहने के लिए आपको डेवलपर मोड मे चलने वाले इन एक्सटेंशन को बंद कर देना चाहिए.</translation>
 <translation id="3289668031376215426">अपने-आप अक्षर बड़े होने की सुविधा चालू करना</translation>
 <translation id="3289856944988573801">अपडेट की जाँच करने के लिए, कृपया Ethernet या वाई-फ़ाई का उपयोग करें.</translation>
 <translation id="3289886661311231677">आपको जिन विषयों को साइटों के साथ शेयर नहीं करना है उन्हें ब्लॉक किया जा सकता है. Chrome आपके चार हफ़्ते से ज़्यादा पुराने विषयों को भी ऑटोमैटिकली मिटा देता है.</translation>
@@ -3108,7 +3104,6 @@
 <translation id="3313622045786997898">प्रमाणपत्र हस्ताक्षर मान</translation>
 <translation id="3313950410573257029">कनेक्शन की जांच करें</translation>
 <translation id="3315158641124845231">छुपाएं<ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">रीडर मोड में जाएं</translation>
 <translation id="3317459757438853210">दोतरफा</translation>
 <translation id="3317521105713541270">ग्रुप बनाएं</translation>
 <translation id="3317678681329786349">कैमरा और माइक्रोफ़ोन ब्लॉक किए गए हैं</translation>
@@ -3513,7 +3508,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> बाकी</translation>
 <translation id="3636940436873918441">पसंदीदा भाषाएं</translation>
 <translation id="3637203148990213388">अतिरिक्त खाते</translation>
-<translation id="3639220004740062347">रीडर मोड से बाहर निकलें</translation>
 <translation id="3640214691812501263"><ph name="USER_NAME" /> के लिए "<ph name="EXTENSION_NAME" />" को जोड़ें?</translation>
 <translation id="3640347231390550691">फ़िशिंग के खतरे से अपने पासवर्ड की सुरक्षा करें</translation>
 <translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
@@ -4155,7 +4149,6 @@
 <translation id="4095483462103784441">नया टैब ग्रुप बनाएं</translation>
 <translation id="4095507791297118304">प्राथमिक डिसप्ले</translation>
 <translation id="4096421352214844684">फ़ोन के हॉटस्पॉट से अपने-आप कनेक्ट करना.</translation>
-<translation id="4096508467498758490">डेवलपर मोड एक्सटेंशन को बंद करें</translation>
 <translation id="4096797685681362305">पिछले हफ़्ते देखा गया</translation>
 <translation id="4097406557126260163">ऐप्लिकेशन और एक्सटेंशन</translation>
 <translation id="409742781329613461">Chrome के लिए सलाहें</translation>
@@ -5487,7 +5480,6 @@
 <translation id="5146896637028965135">सिस्टम की आवाज़</translation>
 <translation id="5147097165869384760">क्या आपको ओएस के सिस्टम पेज जाना है? <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="5147113439721488265">सुझाव</translation>
-<translation id="5147516217412920887">कोड की पुष्टि करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें</translation>
 <translation id="5147992672778369947">सुझाए गए पासवर्ड का इस्तेमाल करें</translation>
 <translation id="5148285448107770349">पासवर्ड कम से कम आठ वर्णों का होना चाहिए</translation>
 <translation id="5149602533174716626">वीडियो फ़्रेम कॉपी करें</translation>
@@ -6745,10 +6737,6 @@
 <translation id="6143186082490678276">सहायता पाएं</translation>
 <translation id="6143366292569327983">वह भाषा चुनें जिसका अनुवाद करना है</translation>
 <translation id="6144938890088808325">Chromebook को बेहतर बनाने में हमारी सहायता करें</translation>
-<translation id="6145480071052696715">अपने फ़ोन की मदद से, <ph name="DEVICE_TYPE" /> को आसानी से सेट अप करें. मैन्युअल तरीके से पासवर्ड डाले बिना, आपका वाई-फ़ाई और Google खाता जोड़ा जा सकता है.
-    <ph name="BR" />
-    <ph name="BR" />
-    <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के रूप में दिखेगा...</translation>
 <translation id="6146409560350811147">सिंक करने की सुविधा काम नहीं कर रही. साइन इन करने की फिर से कोशिश करें.</translation>
 <translation id="6147020289383635445">प्रिंट की झलक नहीं देखी जा सकी.</translation>
 <translation id="6147253937684562370">प्रोफ़ाइल को अनलॉक करने के लिए, अपने मुख्य खाते के ईमेल पते से साइन इन करें: <ph name="EMAIL" /></translation>
@@ -6973,7 +6961,6 @@
 <translation id="6310141306111263820">ई-सिम प्रोफ़ाइल इंस्टॉल नहीं की जा सकी. मदद पाने के लिए, कृपया मोबाइल नेटवर्क सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6311220991371174222">Chrome शुरू नहीं हो पा रहा है क्योंकि आपकी प्रोफ़ाइल खोलते समय कुछ गलत हो गया. Chrome को फिर से शुरू करने की कोशिश करें.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{सुरक्षा जांच 1 दिन पहले हुई है}one{सुरक्षा जांच {NUM_DAYS} दिन पहले हुई है}other{सुरक्षा जांच {NUM_DAYS} दिन पहले हुई है}}</translation>
-<translation id="6312638141433622592">अगर सुविधा उपलब्ध है, तो लेख को रीडर मोड में दिखाने का विकल्प दें</translation>
 <translation id="6313950457058510656">इंस्टैंट टेदरिंग बंद करें</translation>
 <translation id="6314819609899340042">आपने इस <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस पर डीबग करने की सुविधाओं को सफलतापूर्वक सक्षम कर लिया है.</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -9385,7 +9372,6 @@
 <translation id="8160775796528709999">सेटिंग में लाइव कैप्शन की सुविधा चालू करके, अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">ब्राउज़ करना फिर से शुरू करें</translation>
-<translation id="8161293209665121583">वेब पेजों के लिए रीडर मोड</translation>
 <translation id="8161604891089629425">आउटलाइन फ़ॉन्ट</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टैब को नई विंडो पर ले जाएं}one{टैब को नई विंडो पर ले जाएं}other{टैब को नई विंडो पर ले जाएं}}</translation>
 <translation id="8163152278172770963">साइटों को अपने-आप 'पिक्चर में पिक्चर' मोड में जाने की अनुमति न दें</translation>

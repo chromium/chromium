@@ -1043,6 +1043,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6363526231572697780">Nema korisničkog imena</translation>
 <translation id="6366190659675876144">Standardna zaštita</translation>
 <translation id="6366663624406569102">Odjavite se i isključite sinkronizaciju</translation>
+<translation id="6368038301482806847">Odaberite tražilice s popisa.</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6377118281273296434">Sigurnost web-lokacije</translation>
 <translation id="6383719166112032471">Otvori lokaciju…</translation>
@@ -1202,6 +1203,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7161230316646448869">Sinkronizirajte svoje oznake, povijest i drugo na svim uređajima</translation>
 <translation id="7162168282402939716">Otključajte anonimne kartice pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Otvorite Postavke</translation>
+<translation id="7186568385131859684">Upravljajte načinom na koji se povijest pregledavanja upotrebljava s vašim ostalim podacima na Googleovim uslugama</translation>
 <translation id="7189598951263744875">Dijeli...</translation>
 <translation id="719133302483559673">Upravljajte svojim interesima i postavkama.</translation>
 <translation id="7192050974311852563">Započni zapisivanje</translation>
@@ -1245,6 +1247,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7438481509621345350">Prilikom otvaranja nove kartice odsad će se prikazivati članci s web-lokacije <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Oznaka je spremljena u "{title}"}one{Oznake su spremljene u "{title}"}few{Oznake su spremljene u "{title}"}other{Oznake su spremljene u "{title}"}}</translation>
 <translation id="7454057999980797137">Županija</translation>
+<translation id="7458706065921255639">Personalizacija i povezivanje</translation>
 <translation id="745899714366929493">Cijeli dan</translation>
 <translation id="7459628154744868585">Uključena je Poboljšana zaštita</translation>
 <translation id="7465351360025415755">Primajte sadržaj koji vam je važan</translation>
@@ -1272,7 +1275,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7564917801238348224">SPREMANJE...</translation>
-<translation id="7569588934989281656">Možete prijeći prstom po vrpci kartica da biste se prebacivali između kartica.</translation>
 <translation id="7582857256643797524">Ta je postavka omogućena na vašem uređaju</translation>
 <translation id="7583004045319035904">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica.</translation>
 <translation id="7598439272585186139">Dodatna zaštita</translation>

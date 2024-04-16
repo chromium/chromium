@@ -127,7 +127,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1084824384139382525">Kopiraj adr&amp;esu linka</translation>
 <translation id="1085064499066015002">Uvek na svim sajtovima</translation>
 <translation id="1085697365578766383">Greška pri pokretanju virtuelne mašine. Probajte ponovo.</translation>
-<translation id="1088659085457112967">Uključi režim čitača</translation>
 <translation id="1090126737595388931">Nije pokrenuta nijedna pozadinska aplikacija</translation>
 <translation id="1090541560108055381">Pre uparivanja se uverite da je ovaj kôd isti na oba uređaja</translation>
 <translation id="1091767800771861448">Pritisnite ESCAPE da biste preskočili (samo u nezvaničnim verzijama).</translation>
@@ -2164,7 +2163,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2587922766792651800">Ograničenje je isteklo</translation>
 <translation id="2588636910004461974">Uređaji prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne prikazuj nikada fajlove sa Diska</translation>
-<translation id="25899519884572181">Izađi iz režima čitača</translation>
 <translation id="2593499352046705383">Pre nego što počnete, uverite se da ste napravili rezervnu kopiju podataka. Instaliranjem sistema <ph name="DEVICE_OS" /> zameniće se podaci na hard-disku. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Upravljajte bezbednošću V8</translation>
 <translation id="2594999711683503743">Pretražite Google ili unesite URL</translation>
@@ -2465,7 +2463,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2806372837663997957">Uređaj sa kojim pokušavate da delite sadržaj ga nije prihvatio</translation>
 <translation id="2806891468525657116">Prečica već postoji</translation>
 <translation id="2807517655263062534">Datoteke koje preuzmete će se pojaviti ovde</translation>
-<translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Nalozi</translation>
 <translation id="2812049959647166806">Thunderbolt nije podržan</translation>
 <translation id="2812171980080389735">Sačuvane mreže i lozinke koje vam omogućavaju da se odmah povežete</translation>
@@ -3056,7 +3053,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3285465040399788513">Nema dovoljno memorijskog prostora na uređaju da biste dovršili podešavanje. Oslobodite prostor, pa probajte ponovo.</translation>
 <translation id="3285500645985761267">Dozvolite srodnim sajtovima da vide vaše aktivnosti u grupi</translation>
 <translation id="328571385944182268">Želite li da sačuvate lozinke?</translation>
-<translation id="3288047731229977326">Dodaci pokrenuti u režimu programera mogu da naškode računaru. Ako niste programer, trebalo bi da onemogućite ove dodatke pokrenute u režimu programera da biste se zaštitili.</translation>
 <translation id="3289668031376215426">Automatsko pisanje velikih početnih slova</translation>
 <translation id="3289856944988573801">Da biste potražili ažuriranja, koristite eternet ili WiFi.</translation>
 <translation id="3289886661311231677">Možete da blokirate teme koje ne želite da delite sa sajtovima. Chrome takođe automatski briše teme starije od 4 nedelje.</translation>
@@ -3096,7 +3092,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3313622045786997898">Vrednost potpisa sertifikata</translation>
 <translation id="3313950410573257029">Proveri vezu</translation>
 <translation id="3315158641124845231">Sakrij <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Uključi režim čitača</translation>
 <translation id="3317459757438853210">Obostrano</translation>
 <translation id="3317521105713541270">Napravi grupe</translation>
 <translation id="3317678681329786349">Kamera i mikrofon su blokirani</translation>
@@ -3501,7 +3496,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – preostalo je <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3637203148990213388">Dodatni nalozi</translation>
-<translation id="3639220004740062347">Izađi iz režima čitača</translation>
 <translation id="3640214691812501263">Dodaj „<ph name="EXTENSION_NAME" />“ za korisnika <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Zaštitite lozinke od „pecanja“</translation>
 <translation id="3640613767643722554">Naučite Pomoćnik da vam prepozna glas</translation>
@@ -4145,7 +4139,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4095483462103784441">Napravi novu grupu kartica</translation>
 <translation id="4095507791297118304">Glavni prikaz</translation>
 <translation id="4096421352214844684">automatski da se povežete sa hotspotom telefona.</translation>
-<translation id="4096508467498758490">Onemogućite dodatke u režimu programera</translation>
 <translation id="4096797685681362305">Pregledali ste prethodne nedelje</translation>
 <translation id="4097406557126260163">Aplikacije i dodaci</translation>
 <translation id="409742781329613461">Saveti za Chrome</translation>
@@ -5478,7 +5471,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5146896637028965135">Sistemski glas</translation>
 <translation id="5147097165869384760">Tražite sistemsku stranicu za OS? Posetite<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Preporuka</translation>
-<translation id="5147516217412920887">Pratite uputstva na telefonu da biste verifikovali kôd</translation>
 <translation id="5147992672778369947">Koristite preporučenu lozinku</translation>
 <translation id="5148285448107770349">Lozinka mora da sadrži najmanje 8 znakova</translation>
 <translation id="5149602533174716626">Kopiraj&amp; kadar videa</translation>
@@ -6740,10 +6732,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6143186082490678276">Zatražite pomoć</translation>
 <translation id="6143366292569327983">Odaberite jezik stranice sa kog se prevodi</translation>
 <translation id="6144938890088808325">Pomozite nam da poboljšamo Chromebook-ove</translation>
-<translation id="6145480071052696715">Lako podesite <ph name="DEVICE_TYPE" /> pomoću telefona. Možete da dodate WiFi i Google nalog bez ručnog unošenja lozinki.
-    <ph name="BR" />
-    <ph name="BR" />
-    Vidljivo kao <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sinhronizacija ne radi. Probajte ponovo da se prijavite.</translation>
 <translation id="6147020289383635445">Pregled pre štampanja nije uspeo.</translation>
 <translation id="6147253937684562370">Da biste otključali profil, prijavite se pomoću imejla glavnog naloga: <ph name="EMAIL" /></translation>
@@ -6968,7 +6956,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6310141306111263820">Instaliranje eSIM profila nije uspelo. Obratite se mobilnom operateru da biste potražili pomoć.</translation>
 <translation id="6311220991371174222">Ne možemo da pokrenemo Chrome jer je došlo do problema pri otvaranju profila. Probajte ponovo da pokrenete Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Bezbednosna provera je pokrenuta pre 1 dan}one{Bezbednosna provera je pokrenuta pre {NUM_DAYS} dan}few{Bezbednosna provera je pokrenuta pre {NUM_DAYS} dana}other{Bezbednosna provera je pokrenuta pre {NUM_DAYS} dana}}</translation>
-<translation id="6312638141433622592">Nudi prikazivanje članaka u režimu čitača kada je podržan</translation>
 <translation id="6313950457058510656">Isključi trenutno privezivanje</translation>
 <translation id="6314819609899340042">Omogućili ste funkcije za otklanjanje grešaka na ovom <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaju.</translation>
 <translation id="6315170314923504164">Glas</translation>
@@ -9390,7 +9377,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8160775796528709999">Omogućite titl uživo u podešavanjima da biste preuzimali titl za audio i video</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Nastavi pregledanje</translation>
-<translation id="8161293209665121583">Režim čitača za veb-stranice</translation>
 <translation id="8161604891089629425">Font okvira</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premesti karticu u nov prozor}one{Premesti kartice u nov prozor}few{Premesti kartice u nov prozor}other{Premesti kartice u nov prozor}}</translation>
 <translation id="8163152278172770963">Ne dozvoljavajte sajtovima da automatski ulaze u sliku u slici</translation>

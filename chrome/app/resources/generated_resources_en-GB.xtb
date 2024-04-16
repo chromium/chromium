@@ -127,7 +127,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1084824384139382525">Copy link addr&amp;ess</translation>
 <translation id="1085064499066015002">Always on all sites</translation>
 <translation id="1085697365578766383">Error starting the virtual machine. Please try again.</translation>
-<translation id="1088659085457112967">Enter Reader Mode</translation>
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
@@ -2177,7 +2176,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2587922766792651800">Timed out</translation>
 <translation id="2588636910004461974">Devices from <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Never show Drive files</translation>
-<translation id="25899519884572181">Exit reader mode</translation>
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Manage V8 security</translation>
 <translation id="2594999711683503743">Search Google or type URL</translation>
@@ -2478,7 +2476,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2806372837663997957">The device that you’re trying to share with did not accept</translation>
 <translation id="2806891468525657116">Shortcut already exists</translation>
 <translation id="2807517655263062534">Files you download appear here</translation>
-<translation id="2809586584051668049">and <ph name="NUMBER_ADDITIONAL_DISABLED" /> more</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt is not supported</translation>
 <translation id="2812171980080389735">Saved networks and passwords so that you can connect instantly</translation>
@@ -3067,7 +3064,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3285465040399788513">There is not enough available storage to complete setup. Free up space and try again.</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="328571385944182268">Save your passwords?</translation>
-<translation id="3288047731229977326">Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
 <translation id="3289856944988573801">To check for updates, please use Ethernet or Wi-Fi.</translation>
 <translation id="3289886661311231677">You can block topics that you don’t want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks.</translation>
@@ -3107,7 +3103,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Check connection</translation>
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Enter reader mode</translation>
 <translation id="3317459757438853210">Two-sided</translation>
 <translation id="3317521105713541270">Create groups</translation>
 <translation id="3317678681329786349">Camera and microphone blocked</translation>
@@ -3430,6 +3425,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3569682580018832495"><ph name="ORIGIN" /> can view the following files and folders</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3575121482199441727">Allow for this site</translation>
+<translation id="3575224072358507281">Collect IP address and network measurement results for Measurement Lab, according to their privacy policy (measurementlab.net/privacy)</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577487026101678864">File sync on</translation>
 <translation id="3577745545227000795"><ph name="DEVICE_OS" /> hardware data collection</translation>
@@ -3512,7 +3508,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> left</translation>
 <translation id="3636940436873918441">Preferred languages</translation>
 <translation id="3637203148990213388">Additional accounts</translation>
-<translation id="3639220004740062347">Exit Reader Mode</translation>
 <translation id="3640214691812501263">Add "<ph name="EXTENSION_NAME" />" for <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protect your passwords against phishing</translation>
 <translation id="3640613767643722554">Teach your Assistant to recognise your voice</translation>
@@ -4155,7 +4150,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4095483462103784441">Create new tab group</translation>
 <translation id="4095507791297118304">Primary display</translation>
 <translation id="4096421352214844684">Automatically connect to your phone's hotspot.</translation>
-<translation id="4096508467498758490">Disable developer mode extensions</translation>
 <translation id="4096797685681362305">Viewed in the past week</translation>
 <translation id="4097406557126260163">Apps and extensions</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
@@ -5487,7 +5481,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5146896637028965135">System voice</translation>
 <translation id="5147097165869384760">Looking for the OS system page? Visit<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recommendation</translation>
-<translation id="5147516217412920887">Follow instructions on your phone to verify the code</translation>
 <translation id="5147992672778369947">Use recommended password</translation>
 <translation id="5148285448107770349">Password must be at least 8 characters</translation>
 <translation id="5149602533174716626">Copy video frame</translation>
@@ -6745,10 +6738,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6143186082490678276">Get Help</translation>
 <translation id="6143366292569327983">Choose the page language to translate from</translation>
 <translation id="6144938890088808325">Help us improve Chromebooks</translation>
-<translation id="6145480071052696715">Easily set up your <ph name="DEVICE_TYPE" /> with your phone. You can add your Wi-Fi and Google Account without manually entering your passwords.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible as <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">Sync isn't working. Try signing in again.</translation>
 <translation id="6147020289383635445">Print preview failed.</translation>
 <translation id="6147253937684562370">To unlock the profile sign in with your main account email: <ph name="EMAIL" /></translation>
@@ -6973,7 +6962,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6310141306111263820">Couldn't install eSIM profile. For help, please contact your operator.</translation>
 <translation id="6311220991371174222">Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Safety check ran 1 day ago}other{Safety check ran {NUM_DAYS} days ago}}</translation>
-<translation id="6312638141433622592">Offer to show articles in reader mode, when supported</translation>
 <translation id="6313950457058510656">Turn off Instant Tethering</translation>
 <translation id="6314819609899340042">You have successfully enabled debugging features on this <ph name="IDS_SHORT_PRODUCT_NAME" /> device.</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -8056,6 +8044,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7180865173735832675">Customise</translation>
 <translation id="7181117767881540376">Hide bookmarks bar</translation>
 <translation id="7181329571386134105">To allow <ph name="CHILD_NAME" /> to install future extensions without your approval, open the Family Link app on your device and update <ph name="CHILD_NAME" />’s Google Chrome settings.</translation>
+<translation id="7182051712900867547">Use a different account</translation>
 <translation id="7182063559013288142">Instant hotspot</translation>
 <translation id="7182791023900310535">Move your password</translation>
 <translation id="718427252411067142">To stop others from using your password, open the app to change your password</translation>
@@ -8619,6 +8608,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7617263010641145920">Turn on Play Store</translation>
 <translation id="7617648809369507487">Use quieter messaging</translation>
 <translation id="7619937211696316184">Maintenance is done</translation>
+<translation id="7620616707541471029">Choose an account to continue</translation>
 <translation id="7621382409404463535">The system failed to save device configuration.</translation>
 <translation id="7621480263311228380">Not allowed to use info they've saved about you</translation>
 <translation id="7621595347123595643">You will not be able to recover local data if you forget your password or PIN.</translation>
@@ -9385,7 +9375,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8160775796528709999">Get captions for your audio and video by enabling Live Caption in settings</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Resume browsing</translation>
-<translation id="8161293209665121583">Reader mode for web pages</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move Tab to New Window}other{Move Tabs to New Window}}</translation>
 <translation id="8163152278172770963">Don't allow sites to enter picture-in-picture automatically</translation>

@@ -127,7 +127,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1084824384139382525">Copiar dir&amp;ección de enlace</translation>
 <translation id="1085064499066015002">Siempre en todos los sitios</translation>
 <translation id="1085697365578766383">No se ha podido iniciar la máquina virtual. Inténtalo de nuevo.</translation>
-<translation id="1088659085457112967">Activar modo de lectura</translation>
 <translation id="1090126737595388931">No se están ejecutando aplicaciones en segundo plano.</translation>
 <translation id="1090541560108055381">Antes de emparejar los dispositivos, comprueba que este código sea el mismo en ambos</translation>
 <translation id="1091767800771861448">Pulsa Esc para omitir este paso (solo para compilaciones no oficiales).</translation>
@@ -2163,7 +2162,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2587922766792651800">Tiempo de espera agotado</translation>
 <translation id="2588636910004461974">Dispositivos de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Nunca mostrar archivos de Drive</translation>
-<translation id="25899519884572181">Desactivar modo de lectura</translation>
 <translation id="2593499352046705383">Antes de empezar, comprueba que tengas una copia de seguridad de tus datos. Al instalar <ph name="DEVICE_OS" />, se sobrescribirán los datos de tu unidad de disco duro. Consulta más información en g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gestionar la seguridad de V8</translation>
 <translation id="2594999711683503743">Busca en Google o escribe una URL</translation>
@@ -2464,7 +2462,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2806372837663997957">El dispositivo con el que intentas compartir contenido no lo ha aceptado</translation>
 <translation id="2806891468525657116">El acceso directo ya existe</translation>
 <translation id="2807517655263062534">Los archivos que descargues aparecen aquí</translation>
-<translation id="2809586584051668049">y <ph name="NUMBER_ADDITIONAL_DISABLED" /> más</translation>
 <translation id="2811205483104563968">Cuentas</translation>
 <translation id="2812049959647166806">No se admite Thunderbolt</translation>
 <translation id="2812171980080389735">Redes y contraseñas guardadas para que puedas conectarte al instante</translation>
@@ -3053,7 +3050,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3285465040399788513">No hay suficiente almacenamiento en el dispositivo para completar la configuración. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
-<translation id="3288047731229977326">Las extensiones que se ejecutan en modo de desarrollador pueden causar daños en el ordenador. Si no eres desarrollador, debes inhabilitar esas extensiones para mantener protegido tu ordenador.</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
 <translation id="3289856944988573801">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet o Wi-Fi.</translation>
 <translation id="3289886661311231677">Puedes bloquear los temas que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas con una antigüedad superior a 4 semanas.</translation>
@@ -3093,7 +3089,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3313622045786997898">Valor de firma de certificados</translation>
 <translation id="3313950410573257029">Comprobar conexión</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Activar modo de lectura</translation>
 <translation id="3317459757438853210">Doble cara</translation>
 <translation id="3317521105713541270">Crear grupos</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
@@ -3498,7 +3493,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3636766455281737684"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> hasta agotar la batería</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637203148990213388">Cuentas adicionales</translation>
-<translation id="3639220004740062347">Desactivar modo de lectura</translation>
 <translation id="3640214691812501263">¿Añadir <ph name="EXTENSION_NAME" /> para <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Protege tus contraseñas frente al phishing</translation>
 <translation id="3640613767643722554">Enseña al Asistente a reconocer tu voz</translation>
@@ -4140,7 +4134,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
 <translation id="4095507791297118304">Pantalla principal</translation>
 <translation id="4096421352214844684">Conecta automáticamente con el punto de acceso de tu teléfono.</translation>
-<translation id="4096508467498758490">Inhabilitar extensiones en modo de desarrollador</translation>
 <translation id="4096797685681362305">Visto la semana pasada</translation>
 <translation id="4097406557126260163">Aplicaciones y extensiones</translation>
 <translation id="409742781329613461">Consejos para usar Chrome</translation>
@@ -5471,7 +5464,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5146896637028965135">Voz del sistema</translation>
 <translation id="5147097165869384760">¿Buscas la página del sistema operativo? Accede a <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Recomendación</translation>
-<translation id="5147516217412920887">Sigue las instrucciones de tu teléfono para verificar el código</translation>
 <translation id="5147992672778369947">Usa una contraseña recomendada</translation>
 <translation id="5148285448107770349">La contraseña debe tener al menos 8 caracteres</translation>
 <translation id="5149602533174716626">C&amp;opiar fotograma</translation>
@@ -6729,10 +6721,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6143186082490678276">Obtener ayuda</translation>
 <translation id="6143366292569327983">Elige el idioma del que quieras traducir.</translation>
 <translation id="6144938890088808325">Ayúdanos a mejorar los Chromebooks</translation>
-<translation id="6145480071052696715">Configura tu <ph name="DEVICE_TYPE" /> fácilmente con tu teléfono. Puedes añadir tu red Wi-Fi y tu cuenta de Google sin tener que introducir tus contraseñas manualmente.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visible como <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">No funciona la sincronización. Inténtalo de nuevo.</translation>
 <translation id="6147020289383635445">Error al obtener la vista previa de impresión</translation>
 <translation id="6147253937684562370">Para desbloquear el perfil, inicia sesión con la dirección de correo de tu cuenta principal: <ph name="EMAIL" /></translation>
@@ -6957,7 +6945,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6310141306111263820">No se ha podido instalar el perfil de eSIM. Para obtener ayuda, ponte en contacto con tu operador.</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se ha producido un error al abrir el perfil. Prueba a reiniciar el navegador.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{La comprobación de seguridad se realizó hace 1 día}other{La comprobación de seguridad se realizó hace {NUM_DAYS} días}}</translation>
-<translation id="6312638141433622592">Te ofrece mostrar los artículos en modo de lectura (donde esté disponible)</translation>
 <translation id="6313950457058510656">Desactivar conexión compartida instantánea</translation>
 <translation id="6314819609899340042">Has habilitado correctamente funciones de depuración en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -9369,7 +9356,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8160775796528709999">Obtén subtítulos para tu contenido de audio y vídeo habilitando Subtítulos automáticos en los ajustes</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Reanudar navegación</translation>
-<translation id="8161293209665121583">Modo de lectura en páginas web</translation>
 <translation id="8161604891089629425">Fuente de contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestaña a una nueva ventana}other{Mover pestañas a una nueva ventana}}</translation>
 <translation id="8163152278172770963">No permitir que los sitios activen la función de imagen en imagen automáticamente</translation>

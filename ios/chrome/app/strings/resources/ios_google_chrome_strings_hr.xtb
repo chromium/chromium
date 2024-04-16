@@ -125,6 +125,7 @@ Važne napomene:
 <translation id="4633328489441962921">Chrome ne može provjeriti ima li ažuriranja</translation>
 <translation id="4636900170638246267">Prijavite se na ovu web-lokaciju i Chrome.</translation>
 <translation id="4761869838909035636">Pokreni Chromeovu sigurnosnu provjeru</translation>
+<translation id="4798859546468762093">Da biste dobili personalizaciju i druge značajke, uključite Chrome u <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Neki vaši podaci iz Chromea još nisu spremljeni na vaš Google račun.
 
@@ -181,6 +182,7 @@ Važne napomene:
 <translation id="6389317667633680932">Istražite nove značajke koje će vam pomoći da iskoristite sve prednosti Chromea.</translation>
 <translation id="6412673304250309937">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromeu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može poslati URL-ove, uključujući dijelove sadržaja web-stranice, Sigurnom pregledavanju.</translation>
 <translation id="6427126399757991875">Vaša organizacija postavlja Chrome...</translation>
+<translation id="6481963882741794338">Povezivanje Chromea i drugih Googleovih usluga radi personalizacije i u druge svrhe</translation>
 <translation id="6484712497741564393">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i spremali podatke Chromea na svojem Google računu.</translation>

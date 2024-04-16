@@ -1043,6 +1043,7 @@
 <translation id="6363526231572697780">युजरनेम नामक क्षेत्रमा कुनै पनि नाम छैन</translation>
 <translation id="6366190659675876144">मानक सुरक्षा</translation>
 <translation id="6366663624406569102">साइन आउट गर्नुहोस् र सिंक गर्ने सुविधा अफ गर्नुहोस्</translation>
+<translation id="6368038301482806847">सूचीबाट सर्च इन्जिन एप छनौट गर्नुहोस्</translation>
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6377118281273296434">साइटको सुरक्षा</translation>
 <translation id="6383719166112032471">लोकेसन खोल्नुहोस्…</translation>
@@ -1202,6 +1203,7 @@
 <translation id="7161230316646448869">सबै डिभाइसहरूमा आफ्ना बुकमार्क, हिस्ट्री तथा थप कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी इन्कोग्निटो ट्याबहरू अनलक गर्नुहोस्</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
+<translation id="7186568385131859684">Google का विभिन्न सेवाहरूमा रहेका तपाईंका अरू डेटासँग ब्राउजिङ हिस्ट्री प्रयोग गर्ने तरिका नियन्त्रण गर्छ</translation>
 <translation id="7189598951263744875">सेयर गर्नुहोस्...</translation>
 <translation id="719133302483559673">आफ्ना रुचि तथा प्राथमिकताहरू व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="7192050974311852563">लग गर्न सुरु गर्नुहोस्</translation>
@@ -1245,6 +1247,7 @@
 <translation id="7438481509621345350">तपाईंले नयाँ ट्याब खोल्दा अब तपाईंलाई <ph name="CHANNEL_NAME" /> का लेखहरू देखाइने छन्।</translation>
 <translation id="7451023311965289370">{count,plural, =1{बुकमार्क "{title}" मा सेभ गरिएको छ}other{बुकमार्कहरू "{title}" मा सेभ गरिएका छन्}}</translation>
 <translation id="7454057999980797137">राज्य / काउन्टी</translation>
+<translation id="7458706065921255639">पर्सनलाइज र लिंक गर्ने सुविधा</translation>
 <translation id="745899714366929493">दिनभरि</translation>
 <translation id="7459628154744868585">"उन्नत सुरक्षा" अन गरिएको छ</translation>
 <translation id="7465351360025415755">आफूलाई महत्त्वपूर्ण लाग्ने सामग्री प्राप्त गर्नुहोस्</translation>
@@ -1272,7 +1275,6 @@
 <translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7564917801238348224">सेभ गर्नुहोस्...</translation>
-<translation id="7569588934989281656">तपाईं एउटा ट्याबबाट अर्को ट्याबमा जान ट्याब स्ट्रिपमा स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="7582857256643797524">यो सेटिङ तपाईंको डिभाइसमा अन गरिएको छ</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="7598439272585186139">थप सुरक्षा प्राप्त गर्नुहोस्</translation>

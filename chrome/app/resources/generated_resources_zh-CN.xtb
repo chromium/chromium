@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">复制链接地址(&amp;E)</translation>
 <translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
-<translation id="1088659085457112967">进入阅读器模式</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -2154,7 +2153,6 @@
 <translation id="2587922766792651800">已超时</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
 <translation id="2589658397149952302">一律不显示云端硬盘文件</translation>
-<translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594832159966169099">管理 V8 安全性</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
@@ -2455,7 +2453,6 @@
 <translation id="2806372837663997957">目标设备未接受您的文件分享请求</translation>
 <translation id="2806891468525657116">快捷方式已存在</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
-<translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
 <translation id="2811205483104563968">账号</translation>
 <translation id="2812049959647166806">Thunderbolt 不受支持</translation>
 <translation id="2812171980080389735">已保存的网络和密码，方便您立即连接</translation>
@@ -3044,7 +3041,6 @@
 <translation id="3285465040399788513">设备存储空间不足，无法完成设置。请释放一些空间，然后重试。</translation>
 <translation id="3285500645985761267">允许相关网站查看您在该群组中的活动记录</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
-<translation id="3288047731229977326">以开发者模式运行的扩展程序可能会损害您的计算机。如果您不是开发者，那么，为安全起见，应停用以开发者模式运行的扩展程序。</translation>
 <translation id="3289668031376215426">自动大写</translation>
 <translation id="3289856944988573801">要检查是否有更新，请使用以太网或 WLAN。</translation>
 <translation id="3289886661311231677">您可以屏蔽不想与网站分享的主题。Chrome 还会自动删除保留时长超过 4 周的主题。</translation>
@@ -3084,7 +3080,6 @@
 <translation id="3313622045786997898">证书签名值</translation>
 <translation id="3313950410573257029">检查连接状况</translation>
 <translation id="3315158641124845231">隐藏<ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">进入阅读器模式</translation>
 <translation id="3317459757438853210">双面</translation>
 <translation id="3317521105713541270">创建群组</translation>
 <translation id="3317678681329786349">已禁止使用摄像头和麦克风</translation>
@@ -3489,7 +3484,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 还可使用 <ph name="TIME" /></translation>
 <translation id="3636940436873918441">首选语言</translation>
 <translation id="3637203148990213388">其他账号</translation>
-<translation id="3639220004740062347">退出阅读器模式</translation>
 <translation id="3640214691812501263">要为<ph name="USER_NAME" />添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="3640347231390550691">保护您的密码，防范钓鱼式攻击</translation>
 <translation id="3640613767643722554">训练 Google 助理识别您的声音</translation>
@@ -4131,7 +4125,6 @@
 <translation id="4095483462103784441">创建新标签页分组</translation>
 <translation id="4095507791297118304">主显示屏</translation>
 <translation id="4096421352214844684">自动连接到手机的热点。</translation>
-<translation id="4096508467498758490">请停用以开发者模式运行的扩展程序</translation>
 <translation id="4096797685681362305">过去一周内看过</translation>
 <translation id="4097406557126260163">应用和扩展程序</translation>
 <translation id="409742781329613461">Chrome 使用提示</translation>
@@ -5462,7 +5455,6 @@
 <translation id="5146896637028965135">系统语音</translation>
 <translation id="5147097165869384760">想查看操作系统页面？请访问 <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="5147113439721488265">建议</translation>
-<translation id="5147516217412920887">按照手机上的说明验证该码</translation>
 <translation id="5147992672778369947">使用建议的密码</translation>
 <translation id="5148285448107770349">密码必须包含至少 8 个字符。</translation>
 <translation id="5149602533174716626">复制视频帧(&amp;Y)</translation>
@@ -6717,10 +6709,6 @@
 <translation id="6143186082490678276">获取帮助</translation>
 <translation id="6143366292569327983">选择要翻译的网页语言</translation>
 <translation id="6144938890088808325">帮助我们改进 Chromebook</translation>
-<translation id="6145480071052696715">使用手机轻松设置您的 <ph name="DEVICE_TYPE" />。您无需手动输入密码便能添加 WLAN 和 Google 账号。
-    <ph name="BR" />
-    <ph name="BR" />
-    显示为：<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">同步功能无法正常运行。请尝试重新登录。</translation>
 <translation id="6147020289383635445">打印预览失败。</translation>
 <translation id="6147253937684562370">要解锁该个人资料，请使用您的主账号电子邮件地址登录：<ph name="EMAIL" /></translation>
@@ -6945,7 +6933,6 @@
 <translation id="6310141306111263820">无法安装 eSIM 卡配置文件。如需帮助，请与您的运营商联系。</translation>
 <translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前运行过安全检查}other{{NUM_DAYS} 天前运行过安全检查}}</translation>
-<translation id="6312638141433622592">询问是否使用阅读器模式（若支持）显示文章</translation>
 <translation id="6313950457058510656">关闭“即时网络共享”</translation>
 <translation id="6314819609899340042">已在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上成功启用调试功能。</translation>
 <translation id="6315170314923504164">语音</translation>
@@ -9357,7 +9344,6 @@
 <translation id="8160775796528709999">只需在设置中启用“实时字幕”功能，即可为您的音频和视频生成字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">继续浏览</translation>
-<translation id="8161293209665121583">使用阅读器模式显示网页</translation>
 <translation id="8161604891089629425">轮廓字体</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8163152278172770963">不允许网站自动进入画中画模式</translation>

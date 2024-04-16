@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3918378745482005425">某些功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
+<translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3974105241379491420">网站可以请求使用它们保存的与您相关的信息</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>
+<translation id="8993853206419610596">展开所有请求</translation>
 <translation id="9002538116239926534">开启此设置后，网站可以将数据保存在您的设备上。关闭此设置后，网站无法将数据保存在您的设备上。</translation>
 <translation id="9011903857143958461">已为 <ph name="SITE_NAME" /> 启用此权限</translation>
 <translation id="9019902583201351841">由您父母管理</translation>

@@ -826,6 +826,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2526280916094749336">Uložené adresy můžete používat ve službách Google. Tato adresa bude uložena ve vašem účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Váš kód CVC je na přední straně karty. Je to 4místný kód vpravo nahoře nad číslem vaší karty.</translation>
 <translation id="2529899080962247600">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou ignorovány.</translation>
+<translation id="2533649878691950253">Přístup tohoto webu k vaší přesné poloze byl zablokován, protože ho obvykle nepovolujete</translation>
 <translation id="253493526287553278">Zobrazit podrobnosti propagačního kódu</translation>
 <translation id="2535585790302968248">Otevřete novou anonymní kartu a prohlížejte v soukromí</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
@@ -3296,6 +3297,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7392089738299859607">Aktualizovat adresu</translation>
 <translation id="7393161616326137353">Adventury</translation>
 <translation id="739728382607845710">Ikona obslužného nástroje pro platby</translation>
+<translation id="7399616692258236448">Žádosti o informace o poloze jsou automaticky blokovány u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
 <translation id="7400418766976504921">Adresa URL</translation>
 <translation id="7403392780200267761">Sdílet tuto kartu pomocí odkazu či QR kódu, odesláním apod.</translation>

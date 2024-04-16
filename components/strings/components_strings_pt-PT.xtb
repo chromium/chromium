@@ -826,6 +826,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2526280916094749336">Pode usar moradas guardadas em produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">O seu Código de Segurança/CVC encontra-se na parte da frente do cartão. É o código de 4 dígitos no canto superior direito acima do número do cartão.</translation>
 <translation id="2529899080962247600">Este campo não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as restantes entradas serão ignoradas.</translation>
+<translation id="2533649878691950253">Este site foi impedido de saber a sua localização exata porque, normalmente, não concede esta autorização</translation>
 <translation id="253493526287553278">Ver os detalhes do código promocional</translation>
 <translation id="2535585790302968248">Abra um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
@@ -3302,6 +3303,7 @@ Detalhes adicionais:
 <translation id="7392089738299859607">Atualize o endereço</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
 <translation id="739728382607845710">Ícone do controlador de pagamentos</translation>
+<translation id="7399616692258236448">Os pedidos de localização são bloqueados automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Partilhe este separador ao partilhar o link, criar um código QR, transmitir e muito mais</translation>

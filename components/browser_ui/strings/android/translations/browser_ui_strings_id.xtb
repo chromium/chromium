@@ -176,6 +176,7 @@
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
 <translation id="3908288065506437185">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3918378745482005425">Beberapa fitur mungkin tidak berfungsi. Situs terkait masih dapat menggunakan cookie pihak ketiga.</translation>
+<translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
 <translation id="3955193568934677022">Izinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3974105241379491420">Situs dapat meminta untuk menggunakan info tentang Anda yang disimpannya</translation>
@@ -496,6 +497,7 @@
 <translation id="8959122750345127698">Navigasi tidak dapat dijangkau: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Lupakan</translation>
 <translation id="8990043154272859344">Anda akan logout dari semua situs</translation>
+<translation id="8993853206419610596">Luaskan semua permintaan</translation>
 <translation id="9002538116239926534">Jika diaktifkan, situs dapat menyimpan data di perangkat Anda. Jika dinonaktifkan, situs tidak dapat menyimpan data di perangkat Anda.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> diizinkan</translation>
 <translation id="9019902583201351841">Dikelola oleh orang tua Anda</translation>

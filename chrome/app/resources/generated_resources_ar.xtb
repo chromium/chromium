@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">نسخ &amp;عنوان الرّابط</translation>
 <translation id="1085064499066015002">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="1085697365578766383">حدث خطأ أثناء بدء تشغيل الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
-<translation id="1088659085457112967">الدخول إلى وضع القارئ</translation>
 <translation id="1090126737595388931">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="1090541560108055381">يجب أن يكون الرمز متطابقًا على كلا الجهازين قبل الإقران.</translation>
 <translation id="1091767800771861448">‏اضغط على ESCAPE للتخطي (الإصدارات غير الرسمية فقط).</translation>
@@ -2165,7 +2164,6 @@
 <translation id="2587922766792651800">انتهت المهلة</translation>
 <translation id="2588636910004461974">أجهزة من <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏عدم عرض ملفات Drive مطلقًا</translation>
-<translation id="25899519884572181">الخروج من وضع القارئ</translation>
 <translation id="2593499352046705383">‏احرص قبل البدء على الاحتفاظ بنسخة احتياطية من بياناتك. سيؤدي تثبيت نظام التشغيل <ph name="DEVICE_OS" /> إلى استبدال جميع البيانات على محرّك الأقراص الثابتة. تعرّف على مزيد من المعلومات على الرابط g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">‏إدارة أمان V8</translation>
 <translation id="2594999711683503743">‏البحث في Google أو كتابة عنوان URL</translation>
@@ -2465,7 +2463,6 @@
 <translation id="2806372837663997957">رفض الجهاز الذي تحاول تنفيذ المشاركة معه طلبك.</translation>
 <translation id="2806891468525657116">الاختصار موجود من قَبل</translation>
 <translation id="2807517655263062534">هنا تظهر الملفات التي تم تنزيلها</translation>
-<translation id="2809586584051668049">و<ph name="NUMBER_ADDITIONAL_DISABLED" /> من الإضافات الأخرى</translation>
 <translation id="2811205483104563968">الحسابات</translation>
 <translation id="2812049959647166806">‏Thunderbolt غير متوافق.</translation>
 <translation id="2812171980080389735">مزامنة الشبكات وكلمات المرور المحفوظة حتى تتمكّن من الاتصال بالإنترنت على الفور</translation>
@@ -3054,7 +3051,6 @@
 <translation id="3285465040399788513">لا تتوفّر مساحة تخزين كافية على الجهاز لإكمال عملية الإعداد. يُرجى إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="3285500645985761267">السماح للمواقع الإلكترونية ذات الصلة بالاطّلاع على نشاطك في المجموعة</translation>
 <translation id="328571385944182268">هل تريد حفظ كلمات المرور؟</translation>
-<translation id="3288047731229977326">يمكن أن تؤدي الإضافات التي تعمل في وضع مطور البرامج إلى إلحاق الضرر بجهاز الكمبيوتر. إذا لم تكن مطور برامج، فيجب إيقاف هذه الإضافات التي تعمل في وضع مطور البرامج للبقاء في أمان.</translation>
 <translation id="3289668031376215426">الكتابة بالأحرف الكبيرة تلقائيًا</translation>
 <translation id="3289856944988573801">‏للتحقق من وجود تحديثات، يُرجى استخدام شبكة Ethernet أو Wi-Fi.</translation>
 <translation id="3289886661311231677">‏يمكنك حظر المواضيع التي لا تريد مشاركتها مع المواقع الإلكترونية. يحذف Chrome أيضًا تلقائيًا من القائمة المواضيع التي مر عليها أكثر من 4 أسابيع.</translation>
@@ -3093,7 +3089,6 @@
 <translation id="3313622045786997898">قيمة توقيع الشهادة</translation>
 <translation id="3313950410573257029">التحقّق من الاتصال بالإنترنت</translation>
 <translation id="3315158641124845231">إخفاء <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">الدخول إلى وضع القارئ</translation>
 <translation id="3317459757438853210">طباعة على الجانبين</translation>
 <translation id="3317521105713541270">إنشاء المجموعات</translation>
 <translation id="3317678681329786349">تم حظر استخدام الكاميرا والميكروفون</translation>
@@ -3498,7 +3493,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> وقت متبقٍ</translation>
 <translation id="3636940436873918441">اللغات المفضّلة</translation>
 <translation id="3637203148990213388">حسابات إضافية</translation>
-<translation id="3639220004740062347">الخروج من وضع القارئ</translation>
 <translation id="3640214691812501263">هل تريد إضافة "<ph name="EXTENSION_NAME" />" لـ <ph name="USER_NAME" />؟</translation>
 <translation id="3640347231390550691">يمكنك حماية كلمات المرور من التصيّد الاحتيالي.</translation>
 <translation id="3640613767643722554">‏تدريب "مساعد Google" على التعرُّف على صوتك</translation>
@@ -4138,7 +4132,6 @@
 <translation id="4095425503313512126">تصفَّح وابحث بشكل أسرع.</translation>
 <translation id="4095507791297118304">شاشة أساسية</translation>
 <translation id="4096421352214844684">يمكنك الاتصال تلقائيًا بنقطة الاتصال على هاتفك.</translation>
-<translation id="4096508467498758490">إيقاف إضافات وضع مطور البرامج</translation>
 <translation id="4096797685681362305">تم الاطّلاع عليه في الأسبوع الماضي.</translation>
 <translation id="4097406557126260163">التطبيقات والإضافات</translation>
 <translation id="409742781329613461">‏معلومات بشأن استخدام متصفّح Chrome</translation>
@@ -5467,7 +5460,6 @@
 <translation id="5146896637028965135">صوت النظام</translation>
 <translation id="5147097165869384760">هل تبحث عن صفحة نظام التشغيل؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">اقتراح</translation>
-<translation id="5147516217412920887">يُرجى اتّباع التعليمات التي تظهر على هاتفك لتأكيد الرمز.</translation>
 <translation id="5147992672778369947">استخدام كلمة المرور المقترَحة</translation>
 <translation id="5148285448107770349">يجب ألا تقل كلمة المرور عن 8 أحرف.</translation>
 <translation id="5149602533174716626">نس&amp;خ إطار الفيديو</translation>
@@ -6724,10 +6716,6 @@
 <translation id="6143186082490678276">الحصول على مساعدة</translation>
 <translation id="6143366292569327983">اختَر صفحة اللغة التي تريد ترجمتها.</translation>
 <translation id="6144938890088808325">‏ساعدنا في تحسين أجهزة Chromebook</translation>
-<translation id="6145480071052696715">‏يمكنك ضبط إعدادات <ph name="DEVICE_TYPE" /> بسهولة باستخدام هاتفك. ويمكن إضافة شبكة Wi-Fi وحساب Google بدون إدخال كلمات المرور يدويًا.
-    <ph name="BR" />
-    <ph name="BR" />
-    يظهر جهازك باسم <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="6146409560350811147">المزامنة لا تعمل على نحو سليم حاوِل تسجيل الدخول مرة أخرى.</translation>
 <translation id="6147020289383635445">تعذّرت معاينة الطباعة.</translation>
 <translation id="6147253937684562370">لفتح قفل الملف الشخصي، سجِّل الدخول باستخدام عنوان البريد الإلكتروني لحسابك الرئيسي (<ph name="EMAIL" />).</translation>
@@ -6952,7 +6940,6 @@
 <translation id="6310141306111263820">‏تعذّر تثبيت الملف التعريفي لشريحة eSIM. للحصول على المساعدة، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="6311220991371174222">‏تعذّر بدء تشغيل Chrome بسبب حدوث خطأ ما أثناء فتح ملفك الشخصي. حاول إعادة تشغيل Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{تم تفعيل ميزة "التحقّق من الأمان" قبل يوم واحد.}zero{تم تفعيل ميزة "التحقّق من الأمان" قبل {NUM_DAYS} يوم.}two{تم تفعيل ميزة "التحقّق من الأمان" قبل يومَين ({NUM_DAYS}).}few{تم تفعيل ميزة "التحقّق من الأمان" قبل {NUM_DAYS} أيام.}many{تم تفعيل ميزة "التحقّق من الأمان" قبل {NUM_DAYS} يومًا.}other{تم تفعيل ميزة "التحقّق من الأمان" قبل {NUM_DAYS} يوم.}}</translation>
-<translation id="6312638141433622592">اقتراح مشاهدة المقالات في وضع القارئ إذا كان ذلك متاحًا</translation>
 <translation id="6313950457058510656">إيقاف "التوصيل الفوري"</translation>
 <translation id="6314819609899340042">لقد نجحت في تفعيل ميزات تصحيح الأخطاء على هذا الجهاز <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">الصوت</translation>
@@ -9371,7 +9358,6 @@
 <translation id="8160775796528709999">يمكنك الحصول على مقاطع شرح لملفات الصوت والفيديو عن طريق تفعيل ميزة "النسخ النصي التلقائي" من خلال الإعدادات.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">استئناف التصفُّح</translation>
-<translation id="8161293209665121583">وضع القارئ لصفحات الويب</translation>
 <translation id="8161604891089629425">خط المخطط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{نقل علامة تبويب واحدة إلى نافذة جديدة}zero{نقل علامات تبويب إلى نافذة جديدة}two{نقل علامتَي تبويب إلى نافذة جديدة}few{نقل علامات تبويب إلى نافذة جديدة}many{نقل علامات تبويب إلى نافذة جديدة}other{نقل علامات تبويب إلى نافذة جديدة}}</translation>
 <translation id="8163152278172770963">عدم السماح للمواقع الإلكترونية بفتح النوافذ في وضع "نافذة ضمن النافذة" تلقائيًا</translation>

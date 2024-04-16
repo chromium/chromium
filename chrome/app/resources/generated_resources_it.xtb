@@ -127,7 +127,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1084824384139382525">Copia indi&amp;rizzo link</translation>
 <translation id="1085064499066015002">Sempre su tutti i siti</translation>
 <translation id="1085697365578766383">Errore durante l'avvio della macchina virtuale. Riprova.</translation>
-<translation id="1088659085457112967">Avvia modalità Reader</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
 <translation id="1091767800771861448">Premi ESC per saltare (solo build non ufficiali).</translation>
@@ -2162,7 +2161,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2587922766792651800">Timeout</translation>
 <translation id="2588636910004461974">Dispositivi di <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Non mostrare mai i file di Drive</translation>
-<translation id="25899519884572181">Esci dalla modalità Reader</translation>
 <translation id="2593499352046705383">Prima di iniziare, assicurati di avere una copia di backup dei tuoi dati. L'installazione di <ph name="DEVICE_OS" /> comporterà la sovrascrittura del disco rigido. Scopri di più all'indirizzo g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Gestisci la sicurezza di V8</translation>
 <translation id="2594999711683503743">Cerca con Google o digita un URL</translation>
@@ -2463,7 +2461,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
 <translation id="2806891468525657116">Scorciatoia già presente</translation>
 <translation id="2807517655263062534">I file scaricati vengono mostrati qui</translation>
-<translation id="2809586584051668049">e altre <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Account</translation>
 <translation id="2812049959647166806">Thunderbolt non è supportato</translation>
 <translation id="2812171980080389735">Reti e password salvate per connetterti istantaneamente</translation>
@@ -3052,7 +3049,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3285465040399788513">Spazio di archiviazione sul dispositivo insufficiente per completare la configurazione. Libera spazio e riprova.</translation>
 <translation id="3285500645985761267">Consenti ai siti correlati di vedere le tue attività nel gruppo</translation>
 <translation id="328571385944182268">Vuoi salvare le password?</translation>
-<translation id="3288047731229977326">Le estensioni in esecuzione in modalità sviluppatore potrebbero danneggiare il computer. Se non sei uno sviluppatore, dovresti disattivare queste estensioni per la tua sicurezza.</translation>
 <translation id="3289668031376215426">Maiuscole automatiche</translation>
 <translation id="3289856944988573801">Per verificare la disponibilità di aggiornamenti, utilizza una rete Ethernet o Wi-Fi.</translation>
 <translation id="3289886661311231677">Puoi bloccare gli argomenti che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti più vecchi di 4 settimane.</translation>
@@ -3092,7 +3088,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3313622045786997898">Valore firma certificato</translation>
 <translation id="3313950410573257029">Controlla la connessione</translation>
 <translation id="3315158641124845231">Nascondi <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Avvia modalità Reader</translation>
 <translation id="3317459757438853210">Fronte retro</translation>
 <translation id="3317521105713541270">Crea gruppi</translation>
 <translation id="3317678681329786349">Videocamera e microfono bloccati</translation>
@@ -3415,6 +3410,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3569682580018832495"><ph name="ORIGIN" /> può visualizzare i file e le cartelle indicati di seguito</translation>
 <translation id="3571734092741541777">Configura</translation>
 <translation id="3575121482199441727">Consenti per questo sito</translation>
+<translation id="3575224072358507281">Raccogliere i risultati della misurazione di rete e dell'indirizzo IP per Measurement Lab, in base alle norme sulla privacy (measurementlab.net/privacy) di quest'ultimo</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577487026101678864">Sincronizzazione dei file attiva</translation>
 <translation id="3577745545227000795">Raccolta dei dati relativi all'hardware da parte di <ph name="DEVICE_OS" /></translation>
@@ -3497,7 +3493,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> rimanenti</translation>
 <translation id="3636940436873918441">Lingue preferite</translation>
 <translation id="3637203148990213388">Account aggiuntivi</translation>
-<translation id="3639220004740062347">Esci dalla modalità Reader</translation>
 <translation id="3640214691812501263">Aggiungere "<ph name="EXTENSION_NAME" />" per <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Proteggi le tue password dal phishing</translation>
 <translation id="3640613767643722554">Insegna all'assistente a riconoscere la tua voce</translation>
@@ -4140,7 +4135,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4095483462103784441">Crea un nuovo gruppo di schede</translation>
 <translation id="4095507791297118304">Display principale</translation>
 <translation id="4096421352214844684">Collegati automaticamente all'hotspot del tuo smartphone.</translation>
-<translation id="4096508467498758490">Disattiva estensioni in modalità sviluppatore</translation>
 <translation id="4096797685681362305">Visualizzato nell'ultima settimana</translation>
 <translation id="4097406557126260163">App ed estensioni</translation>
 <translation id="409742781329613461">Suggerimenti per Chrome</translation>
@@ -5471,7 +5465,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5146896637028965135">Voce di sistema</translation>
 <translation id="5147097165869384760">Stai cercando la pagina del sistema operativo? Visita<ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Consiglio</translation>
-<translation id="5147516217412920887">Segui le istruzioni sullo smartphone per verificare il codice</translation>
 <translation id="5147992672778369947">Usa password consigliata</translation>
 <translation id="5148285448107770349">La password deve avere almeno 8 caratteri</translation>
 <translation id="5149602533174716626">Copia frame</translation>
@@ -6726,10 +6719,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6143186082490678276">Assistenza</translation>
 <translation id="6143366292569327983">Seleziona la lingua della pagina di origine</translation>
 <translation id="6144938890088808325">Aiutaci a migliorare i Chromebook</translation>
-<translation id="6145480071052696715">Configura facilmente <ph name="DEVICE_TYPE" /> con lo smartphone. Puoi aggiungere la tua rete Wi-Fi e il tuo Account Google senza inserire manualmente le password.
-    <ph name="BR" />
-    <ph name="BR" />
-    Visibile come <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="6146409560350811147">La sincronizzazione non funziona. Prova ad accedere nuovamente.</translation>
 <translation id="6147020289383635445">Anteprima di stampa non riuscita.</translation>
 <translation id="6147253937684562370">Per sbloccare il profilo accedi con l'indirizzo email del tuo account principale: <ph name="EMAIL" /></translation>
@@ -6954,7 +6943,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6310141306111263820">Impossibile installare il profilo eSIM. Per assistenza, contatta il tuo operatore.</translation>
 <translation id="6311220991371174222">Impossibile avviare Chrome perché si è verificato un errore durante l'apertura del profilo. Prova a riavviare il browser.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Il controllo di sicurezza è stato eseguito 1 giorno fa}other{Il controllo di sicurezza è stato eseguito {NUM_DAYS} giorni fa}}</translation>
-<translation id="6312638141433622592">Chiedi di mostrare gli articoli in modalità Reader, se supportata</translation>
 <translation id="6313950457058510656">Disattiva tethering istantaneo</translation>
 <translation id="6314819609899340042">Hai attivato le funzioni di debug su questo dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="6315170314923504164">Voce</translation>
@@ -8037,6 +8025,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7180865173735832675">Personalizza</translation>
 <translation id="7181117767881540376">&amp;Nascondi barra dei preferiti</translation>
 <translation id="7181329571386134105">Per consentire a <ph name="CHILD_NAME" /> di installare estensioni in futuro senza la tua approvazione, apri l'app Family Link sul tuo dispositivo e aggiorna le impostazioni di Google Chrome per <ph name="CHILD_NAME" />.</translation>
+<translation id="7182051712900867547">Utilizza un account diverso</translation>
 <translation id="7182063559013288142">Hotspot istantaneo</translation>
 <translation id="7182791023900310535">Sposta la password</translation>
 <translation id="718427252411067142">Per impedire ad altri di utilizzare la tua password, apri l'app per cambiare la password</translation>
@@ -8600,6 +8589,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7617263010641145920">Attivare il Play Store</translation>
 <translation id="7617648809369507487">Usa messaggi più discreti</translation>
 <translation id="7619937211696316184">La manutenzione è stata completata</translation>
+<translation id="7620616707541471029">Scegli un account per continuare</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
 <translation id="7621480263311228380">Non può usare le informazioni su di te che ha salvato</translation>
 <translation id="7621595347123595643">Non potrai recuperare i dati locali se non ricordi la password o il PIN.</translation>
@@ -9366,7 +9356,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8160775796528709999">Aggiungi sottotitoli ai tuoi contenuti audio e video attivando la funzionalità Sottotitoli in tempo reale nelle impostazioni</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Riprendi la navigazione</translation>
-<translation id="8161293209665121583">Modalità Reader per le pagine web</translation>
 <translation id="8161604891089629425">Carattere contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Sposta scheda in una nuova finestra}other{Sposta schede in una nuova finestra}}</translation>
 <translation id="8163152278172770963">Non consentire ai siti di attivare automaticamente la modalità Picture in picture</translation>

@@ -127,7 +127,6 @@
 <translation id="1084824384139382525">Копировать ад&amp;рес ссылки</translation>
 <translation id="1085064499066015002">Разрешить на всех сайтах</translation>
 <translation id="1085697365578766383">Не удалось запустить виртуальную машину. Повторите попытку.</translation>
-<translation id="1088659085457112967">Включить режим чтения</translation>
 <translation id="1090126737595388931">Нет приложений, работающих в фоновом режиме</translation>
 <translation id="1090541560108055381">Перед подключением убедитесь, что код одинаковый на обоих устройствах.</translation>
 <translation id="1091767800771861448">Чтобы отменить обновление, нажмите Esc (только для неофициальных версий).</translation>
@@ -1857,7 +1856,7 @@
 <translation id="2364498172489649528">Завершено</translation>
 <translation id="2365507699358342471">У этого сайта есть доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
-<translation id="2369058545741334020">Открыть в Режиме чтения</translation>
+<translation id="2369058545741334020">Открыть в режиме чтения</translation>
 <translation id="236939127352773362">Когда устройства поблизости могут обмениваться контентом</translation>
 <translation id="2371076942591664043">Открыть по &amp;завершении</translation>
 <translation id="237336063998926520">Определение местоположения по вашему IP-адресу</translation>
@@ -2162,7 +2161,6 @@
 <translation id="2587922766792651800">Превышено время ожидания</translation>
 <translation id="2588636910004461974">Устройства от поставщика <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогда не показывать файлы Google Диска</translation>
-<translation id="25899519884572181">Выйти из режима чтения</translation>
 <translation id="2593499352046705383">Прежде всего обязательно создайте резервную копию данных. При установке <ph name="DEVICE_OS" /> вся информация на жестком диске будет перезаписана. Подробные сведения приведены на странице g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">Управление безопасностью V8</translation>
 <translation id="2594999711683503743">Введите запрос для поиска в Google или укажите URL</translation>
@@ -2462,7 +2460,6 @@
 <translation id="2806372837663997957">Устройство, с которым вы хотели поделиться файлом, не приняло его.</translation>
 <translation id="2806891468525657116">Ярлык уже добавлен</translation>
 <translation id="2807517655263062534">Скачанные файлы появятся здесь</translation>
-<translation id="2809586584051668049">и ещё <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
 <translation id="2811205483104563968">Аккаунты</translation>
 <translation id="2812049959647166806">Thunderbolt не поддерживается</translation>
 <translation id="2812171980080389735">Сети и пароли сохраняются, чтобы упростить подключение</translation>
@@ -3051,7 +3048,6 @@
 <translation id="3285465040399788513">На устройстве не хватает свободного места для завершения установки. Освободите место и повторите попытку.</translation>
 <translation id="3285500645985761267">Разрешить связанным сайтам отслеживать действия внутри группы</translation>
 <translation id="328571385944182268">Сохранить пароли?</translation>
-<translation id="3288047731229977326">Расширения, запущенные в режиме разработчика, могут причинить вред вашему компьютеру. Если вы не являетесь разработчиком, их следует отключить, чтобы обеспечить безопасность данных.</translation>
 <translation id="3289668031376215426">Автоподстановка заглавных</translation>
 <translation id="3289856944988573801">Чтобы проверить наличие обновлений, подключитесь через сеть Ethernet или Wi-Fi.</translation>
 <translation id="3289886661311231677">Вы можете заблокировать темы, которыми не хотите делиться с сайтами. Кроме того, Chrome автоматически удаляет темы, добавленные более четырех недель назад.</translation>
@@ -3090,7 +3086,6 @@
 <translation id="3313622045786997898">Значение подписи сертификата</translation>
 <translation id="3313950410573257029">Проверить подключение</translation>
 <translation id="3315158641124845231">Скрыть <ph name="PRODUCT_NAME" /></translation>
-<translation id="3315442055907669208">Включить режим чтения</translation>
 <translation id="3317459757438853210">Двусторонняя печать</translation>
 <translation id="3317521105713541270">Создать группу</translation>
 <translation id="3317678681329786349">Доступ к камере и микрофону запрещен</translation>
@@ -3150,7 +3145,7 @@
 <translation id="3371351218553893534">Слишком длинная строка: <ph name="ERROR_LINE" />.</translation>
 <translation id="3372602033006349389">На других устройствах</translation>
 <translation id="337286756654493126">Чтение данных в файлах и каталогах, открытых в приложении</translation>
-<translation id="3373059063088819384">Открыть в Режиме чтения</translation>
+<translation id="3373059063088819384">Открыть в режиме чтения</translation>
 <translation id="3373196968211632036">Сервис Steam для Chromebook (бета) недоступен для детских аккаунтов Google.</translation>
 <translation id="3373701465337594448">Если функция включена, здесь будет показываться список сайтов, которые могут определять ваши интересы.</translation>
 <translation id="3374294321938930390">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена в папку "<ph name="NEW_FOLDER_TITLE" />".</translation>
@@ -3495,7 +3490,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% (ещё <ph name="TIME" />)</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637203148990213388">Дополнительные аккаунты</translation>
-<translation id="3639220004740062347">Выйти из режима чтения</translation>
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Защитите пароли от фишинга.</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
@@ -4137,7 +4131,6 @@
 <translation id="4095425503313512126">Выше скорость работы браузера и поиска.</translation>
 <translation id="4095507791297118304">Основной дисплей</translation>
 <translation id="4096421352214844684">Автоматически подключайтесь к точке доступа на телефоне.</translation>
-<translation id="4096508467498758490">Отключение расширений в режиме разработчика</translation>
 <translation id="4096797685681362305">Просмотрено на прошлой неделе</translation>
 <translation id="4097406557126260163">Приложения и расширения</translation>
 <translation id="409742781329613461">Советы по работе с браузером Chrome</translation>
@@ -5466,7 +5459,6 @@
 <translation id="5146896637028965135">Голос по умолчанию</translation>
 <translation id="5147097165869384760">Ищите информацию об ОС? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="5147113439721488265">Рекомендация</translation>
-<translation id="5147516217412920887">Чтобы подтвердить код, следуйте инструкциям на телефоне.</translation>
 <translation id="5147992672778369947">Используйте рекомендуемый пароль</translation>
 <translation id="5148285448107770349">Длина пароля должна быть не менее 8 символов</translation>
 <translation id="5149602533174716626">&amp;Копировать кадр видео</translation>
@@ -6723,10 +6715,6 @@
 <translation id="6143186082490678276">Справка</translation>
 <translation id="6143366292569327983">Выберите исходный язык страницы</translation>
 <translation id="6144938890088808325">Помогите нам улучшить Chromebook</translation>
-<translation id="6145480071052696715">Подключите устройство <ph name="DEVICE_TYPE" /> к телефону. При добавлении сети Wi-Fi и аккаунта Google вам не придется вводить свои пароли вручную.
-    <ph name="BR" />
-    <ph name="BR" />
-    Устройство показывается как "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="6146409560350811147">Ошибка синхронизации. Повторите попытку.</translation>
 <translation id="6147020289383635445">Произошла ошибка предварительного просмотра печати.</translation>
 <translation id="6147253937684562370">Войдите в аккаунт, используя основной адрес электронной почты: <ph name="EMAIL" />.</translation>
@@ -6951,7 +6939,6 @@
 <translation id="6310141306111263820">Не удалось установить профиль eSIM. Обратитесь за помощью к своему оператору.</translation>
 <translation id="6311220991371174222">Не удалось открыть профиль. Перезапустите Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Проверка безопасности выполнена 1 день назад.}one{Проверка безопасности выполнена {NUM_DAYS} день назад.}few{Проверка безопасности выполнена {NUM_DAYS} дня назад.}many{Проверка безопасности выполнена {NUM_DAYS} дней назад.}other{Проверка безопасности выполнена {NUM_DAYS} дня назад.}}</translation>
-<translation id="6312638141433622592">Предлагать просмотр статей в режиме чтения, если эта функция поддерживается</translation>
 <translation id="6313950457058510656">Отключить мгновенную точку доступа</translation>
 <translation id="6314819609899340042">Функции отладки на устройстве <ph name="IDS_SHORT_PRODUCT_NAME" /> включены.</translation>
 <translation id="6315170314923504164">Микрофон</translation>
@@ -9367,7 +9354,6 @@
 <translation id="8160775796528709999">Включить автоматические субтитры для аудио и видео можно в настройках</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161095570253161196">Продолжить просмотр</translation>
-<translation id="8161293209665121583">Режим чтения веб-страниц</translation>
 <translation id="8161604891089629425">Контурный шрифт</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
 <translation id="8163152278172770963">Запретить сайтам автоматически открывать окна "Картинка в картинке"</translation>

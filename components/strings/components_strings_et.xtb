@@ -826,6 +826,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2526280916094749336">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">CVC asub kaardi esiküljel. See on kaardinumbrist paremal ülal asuv neljakohaline kood.</translation>
 <translation id="2529899080962247600">Sellel väljal ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje. Kõiki järgnevaid kirjeid eiratakse.</translation>
+<translation id="2533649878691950253">Sellele saidile blokeeriti teie täpse asukoha nägemine, kuna tavaliselt te ei luba seda</translation>
 <translation id="253493526287553278">Kuva sooduskoodi üksikasjad</translation>
 <translation id="2535585790302968248">Privaatselt sirvimiseks avage uus inkognito vaheleht</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ja veel 1}other{ja veel #}}</translation>
@@ -3302,6 +3303,7 @@ Lisateave:
 <translation id="7392089738299859607">Värskenda aadressi</translation>
 <translation id="7393161616326137353">Seiklusmängud</translation>
 <translation id="739728382607845710">Maksetöötleja ikoon</translation>
+<translation id="7399616692258236448">Asukohapäringud blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul</translation>
 <translation id="7399802613464275309">Ohutuskontroll</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Selle vahelehe jagamine lingi jagamise, QR-koodi loomise, ülekandmise ja muu abil</translation>
