@@ -110,8 +110,9 @@ TEST_F(BrowsingDataCounterTest, NoResponse) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(1u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 TEST_F(BrowsingDataCounterTest, ImmediateResponse) {
@@ -121,9 +122,9 @@ TEST_F(BrowsingDataCounterTest, ImmediateResponse) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(2u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
-  DCHECK_EQ(BrowsingDataCounter::State::IDLE, state_transitions[1]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED, BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 TEST_F(BrowsingDataCounterTest, ResponseWhileCalculatingIsShown) {
@@ -133,12 +134,12 @@ TEST_F(BrowsingDataCounterTest, ResponseWhileCalculatingIsShown) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(4u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
-  DCHECK_EQ(BrowsingDataCounter::State::SHOW_CALCULATING, state_transitions[1]);
-  DCHECK_EQ(BrowsingDataCounter::State::REPORT_STAGED_RESULT,
-            state_transitions[2]);
-  DCHECK_EQ(BrowsingDataCounter::State::IDLE, state_transitions[3]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED,
+      BrowsingDataCounter::State::SHOW_CALCULATING,
+      BrowsingDataCounter::State::REPORT_STAGED_RESULT,
+      BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 TEST_F(BrowsingDataCounterTest, LateResponse) {
@@ -148,12 +149,12 @@ TEST_F(BrowsingDataCounterTest, LateResponse) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(4u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
-  DCHECK_EQ(BrowsingDataCounter::State::SHOW_CALCULATING, state_transitions[1]);
-  DCHECK_EQ(BrowsingDataCounter::State::READY_TO_REPORT_RESULT,
-            state_transitions[2]);
-  DCHECK_EQ(BrowsingDataCounter::State::IDLE, state_transitions[3]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED,
+      BrowsingDataCounter::State::SHOW_CALCULATING,
+      BrowsingDataCounter::State::READY_TO_REPORT_RESULT,
+      BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 TEST_F(BrowsingDataCounterTest, MultipleRuns) {
@@ -171,12 +172,12 @@ TEST_F(BrowsingDataCounterTest, MultipleRuns) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(4u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
-  DCHECK_EQ(BrowsingDataCounter::State::SHOW_CALCULATING, state_transitions[1]);
-  DCHECK_EQ(BrowsingDataCounter::State::READY_TO_REPORT_RESULT,
-            state_transitions[2]);
-  DCHECK_EQ(BrowsingDataCounter::State::IDLE, state_transitions[3]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED,
+      BrowsingDataCounter::State::SHOW_CALCULATING,
+      BrowsingDataCounter::State::READY_TO_REPORT_RESULT,
+      BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 TEST_F(BrowsingDataCounterTest, RestartingDoesntBreak) {
@@ -188,9 +189,9 @@ TEST_F(BrowsingDataCounterTest, RestartingDoesntBreak) {
 
   const std::vector<BrowsingDataCounter::State>& state_transitions =
       counter()->GetStateTransitionsForTesting();
-  DCHECK_EQ(2u, state_transitions.size());
-  DCHECK_EQ(BrowsingDataCounter::State::RESTARTED, state_transitions[0]);
-  DCHECK_EQ(BrowsingDataCounter::State::IDLE, state_transitions[1]);
+  std::vector<BrowsingDataCounter::State> expected = {
+      BrowsingDataCounter::State::RESTARTED, BrowsingDataCounter::State::IDLE};
+  EXPECT_EQ(expected, state_transitions);
 }
 
 }  // namespace browsing_data
