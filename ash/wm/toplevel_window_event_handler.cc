@@ -130,10 +130,8 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
   ScopedWindowResizer(ToplevelWindowEventHandler* handler,
                       std::unique_ptr<WindowResizer> resizer,
                       bool grab_capture);
-
   ScopedWindowResizer(const ScopedWindowResizer&) = delete;
   ScopedWindowResizer& operator=(const ScopedWindowResizer&) = delete;
-
   ~ScopedWindowResizer() override;
 
   // Returns true if the drag moves the window and does not resize.
@@ -144,10 +142,10 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
 
   WindowResizer* resizer() { return resizer_.get(); }
 
-  // WindowObserver overrides:
+  // WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // WindowStateObserver overrides:
+  // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType type) override;
 
@@ -200,17 +198,17 @@ bool ToplevelWindowEventHandler::ScopedWindowResizer::IsResize() const {
           WindowResizer::kBoundsChange_Resizes) != 0;
 }
 
-void ToplevelWindowEventHandler::ScopedWindowResizer::
-    OnPreWindowStateTypeChange(WindowState* window_state,
-                               chromeos::WindowStateType old) {
-  handler_->CompleteDrag(DragResult::SUCCESS);
-}
-
 void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
     aura::Window* window) {
   DCHECK_EQ(resizer_->GetTarget(), window);
   window_destroying_ = true;
   handler_->ResizerWindowDestroyed();
+}
+
+void ToplevelWindowEventHandler::ScopedWindowResizer::
+    OnPreWindowStateTypeChange(WindowState* window_state,
+                               chromeos::WindowStateType old) {
+  handler_->CompleteDrag(DragResult::SUCCESS);
 }
 
 // -----------------------------------------------------------------------------
@@ -246,6 +244,17 @@ void ToplevelWindowEventHandler::OnDisplayMetricsChanged(
     return;
 
   RevertDrag();
+}
+
+void ToplevelWindowEventHandler::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (!window_resizer_) {
+    return;
+  }
+
+  if (display::IsTabletStateChanging(state)) {
+    RevertDrag();
+  }
 }
 
 void ToplevelWindowEventHandler::OnKeyEvent(ui::KeyEvent* event) {
