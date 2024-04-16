@@ -816,20 +816,12 @@ void LoginDisplayHostWebUI::OnWidgetBoundsChanged(views::Widget* widget,
 void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                    OobeScreenId new_screen) {
   if (current_screen == ash::OOBE_SCREEN_UNKNOWN) {
-    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
-    LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
-                    "NotifyLoginOrLockScreenVisible";
-
     // Notify that the OOBE page is ready and the first screen is shown. It
     // might happen that front-end part isn't fully initialized yet (when
     // `OobeLazyLoading` is enabled), so wait for it to happen before notifying.
     GetOobeUI()->IsJSReady(base::BindOnce(
         &session_manager::SessionManager::NotifyLoginOrLockScreenVisible,
         base::Unretained(session_manager::SessionManager::Get())));
-  } else {
-    // TODO(crbug.com/1305245) - Remove once the issue is fixed.
-    LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() Not "
-                    "notifying LoginOrLockScreenVisible.";
   }
 }
 
