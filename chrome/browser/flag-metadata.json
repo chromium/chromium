@@ -585,7 +585,7 @@
   },
   {
     "name": "audio-selection-improvement",
-    "owners": [ "zhangwneyu@google.com", "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
     "expiry_milestone": 135
   },
   {
