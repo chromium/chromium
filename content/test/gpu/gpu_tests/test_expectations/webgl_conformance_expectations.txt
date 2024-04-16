@@ -729,6 +729,8 @@ crbug.com/1448573 [ android angle-disabled no-passthrough qualcomm renderer-skia
 crbug.com/1448573 [ android-pie android-shield-android-tv angle-disabled no-clang-coverage no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/oes-texture-float.html [ Failure ]
 crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 
+crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
+
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
 #################################################################
