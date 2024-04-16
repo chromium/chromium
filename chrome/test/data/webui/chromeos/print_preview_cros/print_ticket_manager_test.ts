@@ -7,7 +7,8 @@ import 'chrome://os-print/js/data/print_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {PrintTicket} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -193,5 +194,21 @@ suite('PrintTicketManager', () => {
         assertTrue(
             instance.isSessionInitialized(),
             'After initializeSession, instance should be initialized');
+      });
+
+  // Verify print ticket created when session initialized using SessionContext.
+  test(
+      'initializeSession creates print ticket based on session context',
+      () => {
+        const instance = PrintTicketManager.getInstance();
+        let expectedTicket: PrintTicket|null = null;
+        assertEquals(expectedTicket, instance.getPrintTicketForTesting());
+
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+
+        expectedTicket = {
+          printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
+        } as PrintTicket;
+        assertDeepEquals(expectedTicket, instance.getPrintTicketForTesting());
       });
 });

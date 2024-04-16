@@ -25,6 +25,16 @@ export interface PrintRequestOutcome {
   error?: string;
 }
 
+// PrintTicket represents the data required to start print job. Ticket will be
+// used to create a settings dictionary with fields matching the existing Chrome
+// preview print settings for reusability.
+// TODO(b/323421684): Add missing required settings to start print job.
+export interface PrintTicket {
+  // ID used to map a CrOS preview session to the responsible PrintViewManager
+  // and related web contents.
+  printPreviewId: UnguessableToken;
+}
+
 // Immutable session configuration details for the current CrOS preview request.
 export interface SessionContext {
   // ID used to map a CrOS preview session to the responsible PrintViewManager

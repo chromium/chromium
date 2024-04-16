@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type PrintPreviewPageHandler, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -39,6 +39,7 @@ export class PrintTicketManager extends EventTarget {
   // Non-static properties:
   private printPreviewPageHandler: PrintPreviewPageHandler|null;
   private printRequestInProgress = false;
+  private printTicket: PrintTicket|null = null;
   private sessionContext: SessionContext;
 
   // Prevent additional initialization.
@@ -57,6 +58,10 @@ export class PrintTicketManager extends EventTarget {
     this.sessionContext = sessionContext;
     // TODO(b/323421684): Uses session context to configure ticket properties
     // and validating ticket matches policy requirements.
+    this.printTicket = {
+      printPreviewId: this.sessionContext.printPreviewId,
+    } as PrintTicket;
+
     this.dispatchEvent(
         createCustomEvent(PRINT_TICKET_MANAGER_SESSION_INITIALIZED));
   }
@@ -99,6 +104,10 @@ export class PrintTicketManager extends EventTarget {
   // with a valid `SessionContext`.
   isSessionInitialized(): boolean {
     return !!this.sessionContext;
+  }
+
+  getPrintTicketForTesting(): PrintTicket|null {
+    return this.printTicket;
   }
 }
 
