@@ -36,7 +36,8 @@ typedef enum {
 - (void)insertTextWhileEditing:(NSString*)text;
 
 // Returns the text that is displayed in the field, including any inline
-// autocomplete text that may be present.
+// autocomplete text that may be present. This does not include the additional
+// text.
 - (NSString*)displayedText;
 
 // Returns self.text without the autocomplete part, if it's available.
