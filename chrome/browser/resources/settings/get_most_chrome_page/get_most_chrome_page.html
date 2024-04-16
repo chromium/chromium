@@ -121,7 +121,45 @@ ul {
   <div>$i18n{getTheMostOutOfChromeBeyondCookies}</div>
 </cr-expand-button>
 <iron-collapse opened="[[expandedThird_]]">
-  <div class="cr-row">
-    <div class="cr-padded-text">&nbsp;</div>
+  <div class="get-most-chrome">
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesOnceYouFindASite}
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesDependingOnSitePermissions}
+    </div>
+    <div class="cr-padded-text tip-section">
+      <iron-icon icon="settings20:lightbulb_tips"></iron-icon>
+      <div>
+        $i18nRaw{getTheMostOutOfChromeBeyondCookiesReviewPermissions}
+      </div>
+    </div>
+    <h3>
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesCookiesCanEnrich}
+    </h3>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesImagineYouHaveFavoriteCafe}
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesCookiesAllowSameLevelCustomization}
+    </div>
+    <div class="centered-picture">
+      <picture>
+        <source
+            srcset="./images/gtmooc_diagram_cookie_dark.svg"
+            media="(prefers-color-scheme: dark)">
+        <img id="banner" alt=""
+            src="./images/gtmooc_diagram_cookie.svg">
+      </picture>
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies}
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesWhatAreThirdPartyCookies}
+    </div>
+    <div class="cr-padded-text">
+      $i18nRaw{getTheMostOutOfChromeBeyondCookiesChromePartOfEffort}
+    </div>
   </div>
 </iron-collapse>

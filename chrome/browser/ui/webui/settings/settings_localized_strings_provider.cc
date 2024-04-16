@@ -599,6 +599,20 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_BROWSING_HISTORY},
       {"getTheMostOutOfChromeYourDataWhenYouSearch",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_SEARCH},
+
+      // Beyond cookies section.
+      {"getTheMostOutOfChromeBeyondCookiesOnceYouFindASite",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_ONCE_YOU_FIND_ASITE},
+      {"getTheMostOutOfChromeBeyondCookiesDependingOnSitePermissions",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_DEPENDING_ON_SITE_PERMISSIONS},
+      {"getTheMostOutOfChromeBeyondCookiesCookiesCanEnrich",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_CAN_ENRICH},
+      {"getTheMostOutOfChromeBeyondCookiesImagineYouHaveFavoriteCafe",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_IMAGINE_YOU_HAVE_FAVORITE_CAFE},
+      {"getTheMostOutOfChromeBeyondCookiesCookiesAllowSameLevelCustomization",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_ALLOW_SAME_LEVEL_CUSTOMIZATION},
+      {"getTheMostOutOfChromeBeyondCookiesWhatAreThirdPartyCookies",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_WHAT_ARE_THIRD_PARTY_COOKIES},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -614,6 +628,21 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_SEARCH_HISTORY,
           chrome::kSearchHistoryUrlInGetTheMostOutOfChrome));
+  html_source->AddString(
+      "getTheMostOutOfChromeBeyondCookiesReviewPermissions",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS,
+          base::ASCIIToUTF16(chrome::kChromeUIContentSettingsURL)));
+  html_source->AddString(
+      "getTheMostOutOfChromeBeyondCookiesSomesSitesMisuseCookies",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES,
+          chrome::kUKCMAPrivacySandboxURL));
+  html_source->AddString(
+      "getTheMostOutOfChromeBeyondCookiesChromePartOfEffort",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_CHROME_PART_OF_EFFORT,
+          chrome::kPrivacySandboxURL));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

@@ -148,6 +148,39 @@
         &lt;li&gt;You have Web &amp; App Activity turned on&lt;/li&gt;
       &lt;/ul&gt;
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_ONCE_YOU_FIND_ASITE" desc="A paragraph followed by 3 bullets. The paragraph introduces the term &quot;permissions&quot; and defines it as giving a site the ability to use certain features.  Examples in the bullets include 1) classic permissions, like Camera and Location, 2) site data, including cookies, and 3) notifications. The 2 refers to cookies notices. When a user agrees to cookies on a site, they're granting the site permission to save site data (this is explained to the user in the next paragraph).">
+      Once you find a site you want to explore, you decide (using site permissions) if a site can use certain features, for example:
+      &lt;ul&gt;
+        &lt;li&gt;Use your device’s Camera, Location, and Microphone&lt;/li&gt;
+        &lt;li&gt;Store data on your device&lt;/li&gt;
+        &lt;li&gt;Provide site features, like Notifications&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_DEPENDING_ON_SITE_PERMISSIONS" desc="A self-standing paragraph that frames &quot;cookies&quot; as a permisison.">
+      Depending on site permissions, cookies are one way that allow sites to store information about your online activity.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS" desc="A paragraph that links to the section of settings where the user can configure site permissions.">
+        Review site permissions at <ph name="BEGIN_LINK_PERMISSIONS">&lt;a target="_blank" href="$1"&gt;</ph><ph name="PERMISSIONS">$1<ex>chrome://settings/content</ex></ph><ph name="END_LINK_PERMISSIONS">&lt;/a&gt;</ph>
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_CAN_ENRICH" desc="A self-standing paragraph.">
+      Cookies can enrich your online experience, allowing sites to offer you useful features.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_IMAGINE_YOU_HAVE_FAVORITE_CAFE" desc="A self-standing paragraph.">
+      Imagine you have a favorite cafe you visit for your morning coffee. Maybe you’re such a frequent customer that the shop owner knows you by name and can bring you your order, a double espresso with a single sugar, right when you walk in the door.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_COOKIES_ALLOW_SAME_LEVEL_CUSTOMIZATION" desc="A self-standing paragraph.">
+      Cookies allow for this same level of preference customization on the web. When you visit a site, the site can save a cookie in your device’s browser storage to remember your site preferences, such as the language you speak or items that you want saved in a shopping cart. Later, if you visit the site again using the same browser, that site can read the cookie it set and you can start up where you left off. These types of cookies are often referred to as first-party cookies, because they’re set by the site you visit.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_SOMES_SITES_MISUSE_COOKIES" desc="* Link &lt;UK's competition and Markets Authority (CMA)&gt; goes to https://www.gov.uk/cma-cases/investigation-into-googles-privacy-sandbox-browser-changes">
+        &lt;em&gt;Sometimes sites use cookies in ways they weren’t initially intended&lt;/em&gt;, which is why Chrome is planning to phase out the use of “third-party” cookies once we’ve addressed any remaining competition concerns of the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>UK’s Competition and Markets Authority (CMA)<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_WHAT_ARE_THIRD_PARTY_COOKIES" desc="A self-standing paragraph.
+      &quot;third-party&quot; is important because not all cookies are the same. When you visit a site, that site might use a cookie to save information about you. We call that a &quot;first-party cookie&quot; because it's set by the site you visit. Most in the industry consider first-party cookies a reasonable means of site storage that can enhance the user's experience.">
+      What are third-party cookies? A site you visit can embed content from other sites or services, for example images, ads, social media content, and text. When any of these other sites use cookies to save info about you, we call that a third-party cookie. If you visit several sites that embed content from the same source, like an ad network, third-party cookies can be used for advertising purposes and to track you as you browse.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_CHROME_PART_OF_EFFORT" desc="* Link &lt;collaborative effort&gt; goes to https://www.privacysandbox.com/">
+      Chrome is part of a <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1"&gt;</ph>collaborative effort<ph name="LINK_END">&lt;/a&gt;</ph> to reduce cross-site tracking and phase out the use of third-party cookies. But we’re trying to do it responsibly because many sites rely on third-party cookies to work as designed. For example, many sites use third-party cookies to simplify signing in, to support embedded chat and comment systems, and for payment services. And advertisers often use third-party cookies to better personalize ads. That matters because sites often count on ads to help pay expenses and keep their online content free of charge.
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">

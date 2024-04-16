@@ -428,6 +428,12 @@ inline constexpr char kPrivacySandboxAdTopicsURL[] =
 inline constexpr char kPrivacySandboxManageTopicsURL[] =
     "chrome://settings/adPrivacy/interests/manage";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// The Privacy Sandbox homepage.
+inline constexpr char16_t kPrivacySandboxURL[] =
+    u"https://www.privacysandbox.com/";
+#endif
+
 // The URL for the Learn More link of the non-CWS bubble.
 inline constexpr char kRemoveNonCWSExtensionURL[] =
     "https://support.google.com/chrome?p=ui_remove_non_cws_extensions";
@@ -523,6 +529,13 @@ inline constexpr char kSyncTrustedVaultLearnMoreURL[] =
 // The URL for the Help Center page about Tracking Protection settings.
 inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
     u"https://support.google.com/chrome?p=tracking_protection";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// The UK CMA's landing page about its investigation into the Privacy Sandbox.
+inline constexpr char16_t kUKCMAPrivacySandboxURL[] =
+    u"https://www.gov.uk/cma-cases/"
+    u"investigation-into-googles-privacy-sandbox-browser-changes";
+#endif
 
 // The URL for the Help Center page about User Bypass.
 inline constexpr char16_t kUserBypassHelpCenterURL[] =

@@ -272,6 +272,8 @@ build_webui("build") {
       "images/gtmooc_computer.svg",
       "images/gtmooc_cookie_dark.svg",
       "images/gtmooc_cookie.svg",
+      "images/gtmooc_diagram_cookie_dark.svg",
+      "images/gtmooc_diagram_cookie.svg",
       "images/gtmooc_diagram_history_dark.svg",
       "images/gtmooc_diagram_history.svg",
       "images/gtmooc_diagram_search_dark.svg",
