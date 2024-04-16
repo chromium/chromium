@@ -352,8 +352,6 @@ cq_build_perf_builder(
         category = "cros",
         short_name = "siso",
     ),
-    # TODO: b/329399631#comment39 - Enable remote-exec-link after resolving the Segmentation fault issue.
-    siso_configs = ["builder", "remote-library-link"],
 )
 
 cq_build_perf_builder(
