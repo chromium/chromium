@@ -4,8 +4,9 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {type PrintPreviewPageHandler, type PrintRequestOutcome} from '../utils/print_preview_cros_app_types.js';
+import {type PrintPreviewPageHandler, type PrintRequestOutcome, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -25,12 +26,17 @@ export const FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR:
     };
 
 const CANCEL_METHOD = 'cancel';
+const START_SESSION_METHOD = 'startSession';
+export const FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL: SessionContext = {
+  printPreviewId: new UnguessableToken(),
+};
 
 // Fake implementation of the PrintPreviewPageHandler for tests and UI.
 export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private callCount: Map<string, number> = new Map<string, number>();
   private testDelayMs = 0;
+
   constructor() {
     this.registerMethods();
   }
@@ -41,6 +47,10 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.callCount.set(PRINT_METHOD, 0);
     this.methods.register(CANCEL_METHOD);
     this.callCount.set(CANCEL_METHOD, 0);
+    this.methods.register(START_SESSION_METHOD);
+    this.methods.setResult(
+        START_SESSION_METHOD, FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    this.callCount.set(START_SESSION_METHOD, 0);
   }
 
   // Handles restoring state of fake to initial state.
@@ -55,11 +65,23 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.methods.setResult(PRINT_METHOD, result);
   }
 
+  // Incrementing call count of tracked method.
+  private incrementCallCount(methodName: string): void {
+    const prevCallCount = this.callCount.get(methodName) ?? 0;
+    this.callCount.set(methodName, prevCallCount + 1);
+  }
+
   // Mock implementation of print.
   print(): Promise<PrintRequestOutcome> {
-    const prevCallCount = this.callCount.get(PRINT_METHOD) ?? 0;
-    this.callCount.set(PRINT_METHOD, prevCallCount + 1);
+    this.incrementCallCount(PRINT_METHOD);
     return this.methods.resolveMethodWithDelay(PRINT_METHOD, this.testDelayMs);
+  }
+
+  // Mock implementation of startSession.
+  startSession(): Promise<SessionContext> {
+    this.incrementCallCount(START_SESSION_METHOD);
+    return this.methods.resolveMethodWithDelay(
+        START_SESSION_METHOD, this.testDelayMs);
   }
 
   getCallCount(method: string): number {
@@ -68,8 +90,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
 
   // Mock implementation of cancel.
   cancel(): void {
-    const prevCallCount = this.callCount.get(CANCEL_METHOD) ?? 0;
-    this.callCount.set(CANCEL_METHOD, prevCallCount + 1);
+    this.incrementCallCount(CANCEL_METHOD);
   }
 
   setTestDelay(delay: number): void {

@@ -4,12 +4,12 @@
 
 import 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 
-import {FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR, FAKE_PRINT_REQUEST_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR, FAKE_PRINT_REQUEST_SUCCESSFUL, FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 
-suite('PrintPreviewCrosApp', () => {
+suite('FakePrintPreviewPageHandler', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
 
   setup(() => {
@@ -21,6 +21,7 @@ suite('PrintPreviewCrosApp', () => {
   test('call count zero', () => {
     assertEquals(0, printPreviewPageHandler.getCallCount('print'));
     assertEquals(0, printPreviewPageHandler.getCallCount('cancel'));
+    assertEquals(0, printPreviewPageHandler.getCallCount('startSession'));
   });
 
   // Verify the fake PrintPreviewPageHandler returns a successful response by
@@ -80,4 +81,11 @@ suite('PrintPreviewCrosApp', () => {
         mockController.verifyMocks();
         mockController.reset();
       });
+
+  // Verify the fake PrintPreviewHandler returns a successful SessionContext by
+  // default.
+  test('start session returns SessionContext', async () => {
+    const result = await printPreviewPageHandler.startSession();
+    assertEquals(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, result);
+  });
 });

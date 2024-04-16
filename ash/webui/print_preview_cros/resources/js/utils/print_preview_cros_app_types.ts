@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+
 /**
  * @fileoverview
  * 'print_preview_cros_app_types' contains app specific and mojo placeholder
@@ -23,8 +25,20 @@ export interface PrintRequestOutcome {
   error?: string;
 }
 
+// Immutable session configuration details for the current CrOS preview request.
+export interface SessionContext {
+  // ID used to map a CrOS preview session to the responsible PrintViewManager
+  // and related web contents.
+  printPreviewId: UnguessableToken;
+}
+
 // Placeholder for PrintPreviewPageHandler mojo interface.
 export interface PrintPreviewPageHandler {
+  // Completes initialization on the backend and provides immutable
+  // configuration details for the current CrOS preview request in the form of
+  // a SessionContext.
+  startSession(): Promise<SessionContext>;
+
   // Start the print job and close the window. Needs to wait for result to
   // display error messaging if starting the print job fails.
   print(): Promise<PrintRequestOutcome>;
