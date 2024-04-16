@@ -27,8 +27,6 @@
 
 using TokenError = content::IdentityCredentialTokenError;
 
-class AccountImageView;
-
 namespace content {
 struct IdentityRequestAccount;
 }  // namespace content
@@ -39,9 +37,6 @@ inline constexpr int kButtonRadius = 16;
 inline constexpr int kBubbleWidth = 375;
 // The desired size of the avatars of user accounts.
 inline constexpr int kDesiredAvatarSize = 30;
-// The desired size of the avatar of user accounts when the button has three
-// lines of text.
-inline constexpr int kLargerAvatarSize = 40;
 // The desired size of the IDP icon used as badge for the user account avatar
 // when there are multiple IDPs.
 inline constexpr int kLargeAvatarBadgeSize = 16;
@@ -72,6 +67,8 @@ inline constexpr int kModalIdpIconSize = 32;
 inline constexpr int kModalAvatarSize = 36;
 // The size of the horizontal padding for most elements in the modal.
 inline constexpr int kModalHorizontalSpacing = 8;
+// Size of the IDP icon offset when badging the IDP icon in the account button.
+inline constexpr int kIdpBadgeOffset = 4;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -146,7 +143,8 @@ class BrandIconImageView : public views::ImageView {
   BrandIconImageView(
       base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
       int image_size,
-      bool should_circle_crop = true);
+      bool should_circle_crop,
+      std::optional<SkColor> background_color = std::nullopt);
   BrandIconImageView(const BrandIconImageView&) = delete;
   BrandIconImageView& operator=(const BrandIconImageView&) = delete;
   ~BrandIconImageView() override;
@@ -154,6 +152,8 @@ class BrandIconImageView : public views::ImageView {
   // Fetch image and set it on BrandIconImageView.
   void FetchImage(const GURL& icon_url,
                   image_fetcher::ImageFetcher& image_fetcher);
+
+  void CropAndSetImage(const gfx::ImageSkia& original_image);
 
  private:
   void OnImageFetched(const GURL& image_url,
@@ -163,6 +163,10 @@ class BrandIconImageView : public views::ImageView {
   base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image_;
   int image_size_;
   bool should_circle_crop_;
+  // The color of a background circle used to encapsulate the brand icon. Set
+  // when this object is used as a badge for an account icon. When set, this
+  // should be the background color of the dialog.
+  std::optional<SkColor> background_color_;
 
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };
@@ -333,14 +337,7 @@ class AccountSelectionViewBase {
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
-                               const GURL& brand_icon_url,
-                               int image_size = kDesiredIdpIconSize,
-                               bool should_circle_crop = true);
-
-  // Sets the badge of the AccountImageView, if available, or initiates the
-  // fetch otherwise.
-  void ConfigureBadgeIdp(AccountImageView& account_image_view,
-                         const GURL& brand_icon_url);
+                               const GURL& brand_icon_url);
 
   // Sends an accessibility event to make an announcement of the passed in
   // `announcement` if available, otherwise the text in the currently focused

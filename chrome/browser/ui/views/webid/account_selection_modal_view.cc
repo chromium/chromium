@@ -366,9 +366,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data_list[0].idp_metadata.brand_icon_url,
-                          kModalIdpIconSize,
-                          /*should_circle_crop=*/false);
+                          idp_display_data_list[0].idp_metadata.brand_icon_url);
   account_chooser_ =
       AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
 
@@ -487,9 +485,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url,
-                          kModalIdpIconSize,
-                          /*should_circle_crop=*/false);
+                          idp_display_data.idp_metadata.brand_icon_url);
   account_chooser_ =
       AddChildView(CreateSingleAccountChooser(idp_display_data, account,
                                               /*should_hover=*/true,
@@ -547,9 +543,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
   RemoveNonHeaderChildViews();
 
   ConfigureBrandImageView(brand_icon_,
-                          idp_display_data.idp_metadata.brand_icon_url,
-                          kModalIdpIconSize,
-                          /*should_circle_crop=*/false);
+                          idp_display_data.idp_metadata.brand_icon_url);
   account_chooser_ = AddChildView(CreateSingleAccountChooser(
       idp_display_data, account,
       /*should_hover=*/false,
@@ -596,9 +590,7 @@ AccountSelectionModalView::CreateBrandIconImageView(
   brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   if (brand_icon_url.is_valid()) {
-    ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url,
-                            kModalIdpIconSize,
-                            /*should_circle_crop=*/false);
+    ConfigureBrandImageView(brand_icon_image_view.get(), brand_icon_url);
   } else {
     brand_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
         kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));

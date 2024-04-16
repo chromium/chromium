@@ -620,7 +620,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
     auto image_view = std::make_unique<BrandIconImageView>(
         base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                        weak_ptr_factory_.GetWeakPtr()),
-        kDesiredIdpIconSize);
+        kDesiredIdpIconSize, /*should_circle_crop=*/true);
     image_view->SetImageSize(
         gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
@@ -820,7 +820,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   auto image_view = std::make_unique<BrandIconImageView>(
       base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                      weak_ptr_factory_.GetWeakPtr()),
-      kDesiredIdpIconSize);
+      kDesiredIdpIconSize, /*should_circle_crop=*/true);
   image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));

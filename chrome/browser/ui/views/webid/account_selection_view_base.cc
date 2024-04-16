@@ -113,10 +113,12 @@ void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
 BrandIconImageView::BrandIconImageView(
     base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_image,
     int image_size,
-    bool should_circle_crop)
+    bool should_circle_crop,
+    std::optional<SkColor> background_color)
     : add_image_(std::move(add_image)),
       image_size_(image_size),
-      should_circle_crop_(should_circle_crop) {}
+      should_circle_crop_(should_circle_crop),
+      background_color_(background_color) {}
 
 BrandIconImageView::~BrandIconImageView() = default;
 
@@ -132,6 +134,21 @@ void BrandIconImageView::FetchImage(
       std::move(params));
 }
 
+void BrandIconImageView::CropAndSetImage(const gfx::ImageSkia& original_image) {
+  constexpr int kBorderRadius = 10;
+  gfx::ImageSkia cropped_image =
+      should_circle_crop_
+          ? CreateCircleCroppedImage(original_image, image_size_)
+          : gfx::ImageSkiaOperations::CreateResizedImage(
+                original_image, skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(image_size_, image_size_));
+  if (background_color_) {
+    cropped_image = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+        kBorderRadius, *background_color_, cropped_image);
+  }
+  SetImage(ui::ImageModel::FromImageSkia(cropped_image));
+}
+
 void BrandIconImageView::OnImageFetched(
     const GURL& image_url,
     const gfx::Image& image,
@@ -141,12 +158,8 @@ void BrandIconImageView::OnImageFetched(
     return;
   }
   gfx::ImageSkia skia_image = image.AsImageSkia();
-  gfx::ImageSkia cropped_image =
-      should_circle_crop_ ? CreateCircleCroppedImage(skia_image, image_size_)
-                          : gfx::ImageSkiaOperations::CreateResizedImage(
-                                skia_image, skia::ImageOperations::RESIZE_BEST,
-                                gfx::Size(image_size_, image_size_));
-  SetImage(ui::ImageModel::FromImageSkia(cropped_image));
+  CropAndSetImage(skia_image);
+
   // TODO(crbug.com/327509202): This stops the crashes but should fix to prevent
   // this from crashing in the first place.
   if (!add_image_) {
@@ -178,41 +191,20 @@ class AccountImageView : public views::ImageView {
     // OnImageFetched() is a member of AccountImageView so that the callback
     // is cancelled in the case that AccountImageView is destroyed prior to
     // the callback returning.
-    image_fetcher.FetchImage(
-        account.picture,
-        base::BindOnce(&AccountImageView::OnAccountImageFetched,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::UTF8ToUTF16(account.name), &image_fetcher,
-                       image_size),
-        std::move(params));
-  }
-
-  void SetBadgeImage(std::unique_ptr<gfx::ImageSkia> idp_image) {
-    idp_image_ = std::move(idp_image);
-  }
-
-  void FetchBadgeImage(
-      const GURL& brand_icon_url,
-      image_fetcher::ImageFetcher& image_fetcher,
-      base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)>
-          add_idp_image) {
-    // Fetch the IDP image to use as badge for the account image.
-    image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                             kImageFetcherUmaClient);
-    add_idp_image_ = std::move(add_idp_image);
-    image_fetcher.FetchImage(
-        brand_icon_url,
-        base::BindOnce(&AccountImageView::OnIdpImageFetched,
-                       weak_ptr_factory_.GetWeakPtr(), brand_icon_url),
-        std::move(params));
+    image_fetcher.FetchImage(account.picture,
+                             base::BindOnce(&AccountImageView::OnImageFetched,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            base::UTF8ToUTF16(account.name),
+                                            &image_fetcher, image_size),
+                             std::move(params));
   }
 
  private:
-  void OnAccountImageFetched(const std::u16string& account_name,
-                             image_fetcher::ImageFetcher* image_fetcher,
-                             int image_size,
-                             const gfx::Image& image,
-                             const image_fetcher::RequestMetadata& metadata) {
+  void OnImageFetched(const std::u16string& account_name,
+                      image_fetcher::ImageFetcher* image_fetcher,
+                      int image_size,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata) {
     gfx::ImageSkia avatar;
     if (image.IsEmpty()) {
       std::u16string letter = account_name;
@@ -226,56 +218,9 @@ class AccountImageView : public views::ImageView {
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
               image.AsImageSkia(), std::nullopt, image_size);
     }
-    if (idp_image_) {
-      SetBadgedImage(avatar, *idp_image_);
-      return;
-    }
-    // If we are not waiting for an IDP image, set the image right away.
-    // Otherwise, store the account image so the badged image can be set when
-    // the IDP image is fetched.
-    if (add_idp_image_.is_null()) {
-      SetImage(avatar);
-      return;
-    }
-    account_image_ = std::make_unique<gfx::ImageSkia>(avatar);
+    SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
 
-  void OnIdpImageFetched(const GURL& url,
-                         const gfx::Image& image,
-                         const image_fetcher::RequestMetadata& metadata) {
-    if (image.Width() != image.Height() ||
-        image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
-      if (account_image_) {
-        SetImage(ui::ImageModel::FromImageSkia(*account_image_));
-      }
-      add_idp_image_.Reset();
-      return;
-    }
-    gfx::ImageSkia skia_image = image.AsImageSkia();
-    std::move(add_idp_image_).Run(url, skia_image);
-    // If we stored the account image, set the badged image. Otherwise, store
-    // the IDP image so the badged image can be set when the account image is
-    // fetched.
-    if (account_image_) {
-      SetBadgedImage(*account_image_, skia_image);
-    } else {
-      idp_image_ = std::make_unique<gfx::ImageSkia>(skia_image);
-    }
-  }
-
-  void SetBadgedImage(const gfx::ImageSkia& account_image,
-                      const gfx::ImageSkia& idp_image) {
-    gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
-        account_image,
-        CreateCircleCroppedImage(idp_image, kLargeAvatarBadgeSize));
-    SetImage(ui::ImageModel::FromImageSkia(badged_image));
-  }
-
-  // The already cropped and circled account image.
-  std::unique_ptr<gfx::ImageSkia> account_image_;
-  // The original IDP image.
-  std::unique_ptr<gfx::ImageSkia> idp_image_;
-  base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_idp_image_;
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
@@ -374,18 +319,57 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
       is_modal_dialog ? views::style::STYLE_BODY_5
                       : views::style::STYLE_SECONDARY;
 
+  std::unique_ptr<views::View> avatar_view;
   auto account_image_view = std::make_unique<AccountImageView>();
   account_image_view->SetImageSize({avatar_size, avatar_size});
   CHECK(should_hover || !should_include_idp);
   if (should_hover) {
     if (should_include_idp) {
-      account_image_view->SetImageSize({kLargerAvatarSize, kLargerAvatarSize});
-      ConfigureBadgeIdp(*account_image_view,
-                        idp_display_data.idp_metadata.brand_icon_url);
-    }
-    account_image_view->FetchAccountImage(account, *image_fetcher_,
-                                          avatar_size);
+      account_image_view->FetchAccountImage(account, *image_fetcher_,
+                                            avatar_size);
+      // Introduce a border so that the IDP image is a bit past the account
+      // image.
+      account_image_view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/kIdpBadgeOffset,
+                            /*right=*/kIdpBadgeOffset)));
+      // Put `account_image_view` into a FillLayout `background_container`.
+      std::unique_ptr<views::View> background_container =
+          std::make_unique<views::View>();
+      background_container->SetUseDefaultFillLayout(true);
+      background_container->AddChildView(std::move(account_image_view));
 
+      // Put brand icon image view into a BoxLayout container.
+      std::unique_ptr<views::BoxLayoutView> icon_container =
+          std::make_unique<views::BoxLayoutView>();
+      icon_container->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+      icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
+
+      // `web_contents_` may be nullptr in tests.
+      SkColor background_color =
+          web_contents_ ? web_contents_->GetColorProvider().GetColor(
+                              ui::kColorDialogBackground)
+                        : SK_ColorWHITE;
+      std::unique_ptr<BrandIconImageView> brand_icon_image_view =
+          std::make_unique<BrandIconImageView>(
+              base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                             weak_ptr_factory_.GetWeakPtr()),
+              kLargeAvatarBadgeSize, /*should_circle_crop=*/true,
+              background_color);
+      ConfigureBrandImageView(brand_icon_image_view.get(),
+                              idp_display_data.idp_metadata.brand_icon_url);
+
+      icon_container->AddChildView(std::move(brand_icon_image_view));
+
+      // Put BoxLayout container into FillLayout container to stack the views.
+      // This stacks the IDP icon on top of the background image.
+      background_container->AddChildView(std::move(icon_container));
+
+      avatar_view = std::move(background_container);
+    } else {
+      account_image_view->FetchAccountImage(account, *image_fetcher_,
+                                            avatar_size);
+      avatar_view = std::move(account_image_view);
+    }
     std::unique_ptr<views::ImageView> arrow_icon_view = nullptr;
     if (is_modal_dialog) {
       constexpr int kArrowIconSize = 8;
@@ -407,7 +391,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
             &AccountSelectionViewBase::Observer::OnAccountSelected,
             base::Unretained(observer_), std::cref(account),
             std::cref(idp_display_data)),
-        std::move(account_image_view),
+        std::move(avatar_view),
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
         /*secondary_view=*/std::move(arrow_icon_view),
@@ -462,9 +446,7 @@ void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
 
 void AccountSelectionViewBase::ConfigureBrandImageView(
     BrandIconImageView* image_view,
-    const GURL& brand_icon_url,
-    int image_size,
-    bool should_circle_crop) {
+    const GURL& brand_icon_url) {
   // Show placeholder brand icon prior to brand icon being fetched so that
   // header text wrapping does not change when brand icon is fetched.
   bool has_icon = brand_icon_url.is_valid();
@@ -475,35 +457,11 @@ void AccountSelectionViewBase::ConfigureBrandImageView(
 
   auto it = brand_icon_images_.find(brand_icon_url);
   if (it != brand_icon_images_.end()) {
-    gfx::ImageSkia cropped_image =
-        should_circle_crop ? CreateCircleCroppedImage(it->second, image_size)
-                           : gfx::ImageSkiaOperations::CreateResizedImage(
-                                 it->second, skia::ImageOperations::RESIZE_BEST,
-                                 gfx::Size(image_size, image_size));
-    image_view->SetImage(ui::ImageModel::FromImageSkia(cropped_image));
+    image_view->CropAndSetImage(it->second);
     return;
   }
 
   image_view->FetchImage(brand_icon_url, *image_fetcher_);
-}
-
-void AccountSelectionViewBase::ConfigureBadgeIdp(
-    AccountImageView& account_image_view,
-    const GURL& brand_icon_url) {
-  if (!brand_icon_url.is_valid()) {
-    return;
-  }
-  auto it = brand_icon_images_.find(brand_icon_url);
-  if (it != brand_icon_images_.end()) {
-    account_image_view.SetBadgeImage(
-        std::make_unique<gfx::ImageSkia>(it->second));
-    return;
-  }
-
-  account_image_view.FetchBadgeImage(
-      brand_icon_url, *image_fetcher_,
-      base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<views::StyledLabel>
