@@ -96,7 +96,7 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
 }
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
-    const ui::AXLocationChangeNotificationDetails& details) {
+    const ui::AXLocationChanges& details) {
   if (remote_router_) {
     remote_router_->DispatchAccessibilityLocationChange(details);
     return;

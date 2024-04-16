@@ -50,7 +50,7 @@ class Size;
 
 namespace ui {
 struct AXUpdatesAndEvents;
-struct AXLocationChangeNotificationDetails;
+struct AXLocationChanges;
 namespace mojom {
 enum class VirtualKeyboardMode;
 }  // namespace mojom
@@ -772,7 +772,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
+      const std::vector<ui::AXLocationChanges>& details) {}
 
   // Invoked when theme color is changed.
   virtual void DidChangeThemeColor() {}

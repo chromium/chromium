@@ -62,7 +62,7 @@ class MockAutomationEventRouter
                                    std::vector<ui::AXEvent> events) override {}
 
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChangeNotificationDetails& details) override {}
+      const ui::AXLocationChanges& details) override {}
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 

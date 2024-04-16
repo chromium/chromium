@@ -5126,7 +5126,7 @@ void WebContentsImpl::AccessibilityEventReceived(
 }
 
 void WebContentsImpl::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChangeNotificationDetails>& details) {
+    const std::vector<ui::AXLocationChanges>& details) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::AccessibilityLocationChangesReceived");
   observers_.NotifyObservers(

@@ -100,7 +100,7 @@ class SharedDictionaryAccessDetails;
 namespace ui {
 class ClipboardFormatType;
 struct AXUpdatesAndEvents;
-struct AXLocationChangeNotificationDetails;
+struct AXLocationChanges;
 }
 
 namespace content {
@@ -302,7 +302,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void AccessibilityEventReceived(
       const ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
+      const std::vector<ui::AXLocationChanges>& details) {}
 
   // Indicates an unrecoverable error in accessibility. Gracefully turns off
   // accessibility in all frames.

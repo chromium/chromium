@@ -8,18 +8,15 @@
 
 namespace ui {
 
-AXUpdatesAndEvents::AXUpdatesAndEvents()
-    : ax_tree_id(ui::AXTreeIDUnknown()) {}
+AXUpdatesAndEvents::AXUpdatesAndEvents() : ax_tree_id(ui::AXTreeIDUnknown()) {}
 
 AXUpdatesAndEvents::~AXUpdatesAndEvents() {}
 
-AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails()
+AXLocationChanges::AXLocationChanges()
     : id(-1), ax_tree_id(ui::AXTreeIDUnknown()) {}
 
-AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails(
-    const AXLocationChangeNotificationDetails& other) = default;
+AXLocationChanges::AXLocationChanges(const AXLocationChanges& other) = default;
 
-AXLocationChangeNotificationDetails::~AXLocationChangeNotificationDetails() {}
-
+AXLocationChanges::~AXLocationChanges() {}
 
 }  // namespace ui

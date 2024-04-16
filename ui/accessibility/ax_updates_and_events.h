@@ -36,12 +36,12 @@ struct AX_BASE_EXPORT AXUpdatesAndEvents {
   std::vector<ui::AXEvent> events;
 };
 
-struct AX_BASE_EXPORT AXLocationChangeNotificationDetails {
+struct AX_BASE_EXPORT AXLocationChanges {
  public:
-  AXLocationChangeNotificationDetails();
-  AXLocationChangeNotificationDetails(
-      const AXLocationChangeNotificationDetails& other);
-  ~AXLocationChangeNotificationDetails();
+  AXLocationChanges();
+  AXLocationChanges(
+      const AXLocationChanges& other);
+  ~AXLocationChanges();
 
   int id;
   ui::AXTreeID ax_tree_id;

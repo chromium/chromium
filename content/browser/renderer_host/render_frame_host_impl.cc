@@ -9815,10 +9815,10 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     manager->OnLocationChanges(changes);
 
   // Send the updates to the automation extension API.
-  std::vector<ui::AXLocationChangeNotificationDetails> details;
+  std::vector<ui::AXLocationChanges> details;
   details.reserve(changes.size());
   for (auto& change : changes) {
-    ui::AXLocationChangeNotificationDetails detail;
+    ui::AXLocationChanges detail;
     detail.id = change->id;
     detail.ax_tree_id = GetAXTreeID();
     detail.new_location = change->new_location;
