@@ -193,4 +193,11 @@ public interface ProcessScopeDependencyProvider {
     default ColorProvider getColorProvider() {
         return null;
     }
+
+    /**
+     * @return True if it is connected to the Internet.
+     */
+    default boolean isNetworkOnline() {
+        return true;
+    }
 }
