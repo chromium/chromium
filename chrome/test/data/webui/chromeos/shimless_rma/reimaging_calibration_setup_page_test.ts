@@ -2,104 +2,102 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://shimless-rma/shimless_rma.js';
+
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationSetupPage} from 'chrome://shimless-rma/reimaging_calibration_setup_page.js';
-import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {CalibrationComponentStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {CalibrationSetupInstruction, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('reimagingCalibrationSetupPageTest', function() {
-  /** @type {?ReimagingCalibrationSetupPage} */
-  let component = null;
+  let component: ReimagingCalibrationSetupPage|null = null;
 
-  /** @type {?FakeShimlessRmaService} */
-  let service = null;
+  const service: FakeShimlessRmaService = new FakeShimlessRmaService();
+
+  const instructionsSelector = '#instructions';
 
   setup(() => {
-    document.body.innerHTML = trustedTypes.emptyHTML;
-    service = new FakeShimlessRmaService();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     setShimlessRmaServiceForTesting(service);
   });
 
   teardown(() => {
-    component.remove();
+    component?.remove();
     component = null;
-    service.reset();
   });
 
-  /**
-   * @param {!CalibrationSetupInstruction} instructions
-   * @return {!Promise}
-   */
-  function initializeCalibrationPage(instructions) {
-    assertFalse(!!component);
+  function initializeCalibrationPage(instructions: CalibrationSetupInstruction):
+      Promise<void> {
     service.setGetCalibrationSetupInstructionsResult(instructions);
 
-    component = /** @type {!ReimagingCalibrationSetupPage} */ (
-        document.createElement('reimaging-calibration-setup-page'));
-    assertTrue(!!component);
+    assert(!component);
+    component = document.createElement(ReimagingCalibrationSetupPage.is);
+    assert(component);
     document.body.appendChild(component);
 
     return flushTasks();
   }
 
+  // Verify the page initializes.
   test('Initializes', async () => {
     await initializeCalibrationPage(
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceBaseOnFlatSurface);
-    const instructions = component.shadowRoot.querySelector('#instructions');
-    assertFalse(instructions.hidden);
+
+    assert(component);
+    assertFalse(
+        strictQuery(instructionsSelector, component.shadowRoot, HTMLElement)
+            .hidden);
   });
 
+  // Verify clicking the next button triggers run calibration..
   test('NextButtonTriggersRunCalibrationStep', async () => {
-    const resolver = new PromiseResolver();
     await initializeCalibrationPage(
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceBaseOnFlatSurface);
-    let runCalibrationCalls = 0;
-    service.runCalibrationStep = () => {
-      runCalibrationCalls++;
-      return resolver.promise;
-    };
 
-    const expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+    const expectedPromise = new PromiseResolver<{stateResult: StateResult}>();
+    service.runCalibrationStep = () => expectedPromise.promise;
 
-    assertEquals(1, runCalibrationCalls);
-    assertDeepEquals(savedResult, expectedResult);
+    assert(component);
+    assertEquals(expectedPromise.promise, component.onNextButtonClick());
   });
 
+  // Verify the correct text is shown when calibrating from the base.
   test('CalibrationBase', async () => {
     await initializeCalibrationPage(
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceBaseOnFlatSurface);
 
+    assert(component);
     assertEquals(
         loadTimeData.getString('calibrateBaseInstructionsText'),
-        component.shadowRoot.querySelector('#instructions').textContent.trim());
+        strictQuery(instructionsSelector, component.shadowRoot, HTMLElement)
+            .textContent!.trim());
     assertEquals(
         'chrome://shimless-rma/illustrations/base_on_flat_surface.svg',
-        component.shadowRoot.querySelector('img').src);
+        strictQuery('img', component.shadowRoot, HTMLImageElement).src);
   });
 
+  // Verify the correct text is shown when calibrating from the lid.
   test('CalibrationLid', async () => {
     await initializeCalibrationPage(
         CalibrationSetupInstruction
             .kCalibrationInstructionPlaceLidOnFlatSurface);
 
+    assert(component);
     assertEquals(
         loadTimeData.getString('calibrateLidInstructionsText'),
-        component.shadowRoot.querySelector('#instructions').textContent.trim());
+        strictQuery(instructionsSelector, component.shadowRoot, HTMLElement)
+            .textContent!.trim());
     assertEquals(
         'chrome://shimless-rma/illustrations/lid_on_flat_surface.svg',
-        component.shadowRoot.querySelector('img').src);
+        strictQuery('img', component.shadowRoot, HTMLImageElement).src);
   });
 });
