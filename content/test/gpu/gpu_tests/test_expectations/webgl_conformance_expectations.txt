@@ -630,8 +630,6 @@ crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/renderi
 crbug.com/1495573 [ android-pixel-6 arm passthrough ] conformance/extensions/oes-texture-half-float-with-image.html [ RetryOnFailure ]
 crbug.com/1495573 [ android-pixel-6 arm passthrough ] conformance/extensions/oes-vertex-array-object.html [ RetryOnFailure ]
 
-crbug.com/333443447 [ android android-pixel-6 passthrough ] conformance/extensions/ext-blend-minmax.html [ Failure ]
-
 ## Misc failures ##
 
 # Failing webgl passthrough test on nexus 5x.
