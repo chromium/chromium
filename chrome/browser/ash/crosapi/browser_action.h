@@ -11,7 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "ui/base/ui_base_types.h"
 

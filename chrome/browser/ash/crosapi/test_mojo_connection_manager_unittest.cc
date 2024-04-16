@@ -63,9 +63,7 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   }
 
   void REMOVED_0() override { NOTIMPLEMENTED(); }
-  void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
-    NOTIMPLEMENTED();
-  }
+  void REMOVED_2() override { NOTIMPLEMENTED(); }
   void REMOVED_7(bool should_trigger_session_restore,
                  base::OnceClosure callback) override {
     NOTIMPLEMENTED();

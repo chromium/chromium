@@ -11,7 +11,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "chromeos/lacros/lacros_paths.h"
 
 namespace chrome {

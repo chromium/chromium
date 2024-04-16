@@ -199,7 +199,7 @@ void BrowserServiceLacros::REMOVED_0() {
   NOTIMPLEMENTED();
 }
 
-void BrowserServiceLacros::REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) {
+void BrowserServiceLacros::REMOVED_2() {
   NOTIMPLEMENTED();
 }
 

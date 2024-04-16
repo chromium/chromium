@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -210,8 +210,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OpenUrl(
       const GURL& url,
       crosapi::mojom::OpenUrlFrom from,
-      // TODO(crbug.com/329182208): use inner enum again.
-      crosapi::mojom::OpenUrlParams_WindowOpenDisposition disposition,
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
       NavigateParams::PathBehavior path_behavior = NavigateParams::RESPECT);
 
   // Opens the captive portal signin window in lacros-chrome.
@@ -658,8 +657,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Shared implementation of OpenUrl and SwitchToTab.
   void OpenUrlImpl(
       const GURL& url,
-      // TODO(crbug.com/329182208): use inner enum again.
-      crosapi::mojom::OpenUrlParams_WindowOpenDisposition disposition,
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
       crosapi::mojom::OpenUrlFrom from,
       NavigateParams::PathBehavior path_behavior);
 

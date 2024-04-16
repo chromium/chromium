@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/process/process.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/startup.h"
 
 namespace chromeos {

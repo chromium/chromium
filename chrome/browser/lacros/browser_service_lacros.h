@@ -11,7 +11,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "components/policy/core/common/values_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,7 +32,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
 
   // crosapi::mojom::BrowserService:
   void REMOVED_0() override;
-  void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
+  void REMOVED_2() override;
   void REMOVED_7(bool should_trigger_session_restore,
                  base::OnceClosure callback) override;
   void REMOVED_16(base::flat_map<policy::PolicyNamespace, std::vector<uint8_t>>

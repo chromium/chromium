@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/browser/policy_conversions.h"
