@@ -2059,7 +2059,7 @@
   },
   {
     "name": "display-alignment-assistance",
-    "owners": [ "cros-peripherals@google.com" ],
+    "owners": [ "zhangwenyu@google.com", "cros-peripherals@google.com" ],
     "expiry_milestone": 130
   },
   {
