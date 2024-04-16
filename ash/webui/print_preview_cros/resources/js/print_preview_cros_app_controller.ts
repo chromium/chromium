@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DestinationManager} from './data/destination_manager.js';
 import {getPrintPreviewPageHandler} from './utils/mojo_data_providers.js';
 import {SessionContext} from './utils/print_preview_cros_app_types.js';
 
@@ -16,6 +17,7 @@ import {SessionContext} from './utils/print_preview_cros_app_types.js';
 export class PrintPreviewCrosAppController extends EventTarget {
   private printPreviewPageHandler = getPrintPreviewPageHandler();
   private sessionContext: SessionContext;
+  private destinationManager = DestinationManager.getInstance();
 
   constructor() {
     super();
@@ -23,6 +25,7 @@ export class PrintPreviewCrosAppController extends EventTarget {
     this.printPreviewPageHandler.startSession().then(
         (sessionContext: SessionContext): void => {
           this.sessionContext = sessionContext;
+          this.destinationManager.initializeSession(this.sessionContext);
         });
   }
 }

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Destination, DestinationProvider} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProvider, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
 
@@ -28,6 +30,8 @@ export enum DestinationManagerState {
 
 export const DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED =
     'destination-manager.active-destination-changed';
+export const DESTINATION_MANAGER_SESSION_INITIALIZED =
+    'destination-manager.session-initialized';
 export const DESTINATION_MANAGER_STATE_CHANGED =
     'destination-manager.state-changed';
 
@@ -56,6 +60,25 @@ export class DestinationManager extends EventTarget {
   private activeDestinationId: string = '';
   private initialDestinationsLoaded = false;
   private state = DestinationManagerState.NOT_LOADED;
+  private sessionContext: SessionContext;
+
+  // `initializeSession` is only intended to be called once from the
+  // `PrintPreviewCrosAppController`.
+  // TODO(b/323421684): Uses session context to configure destination manager
+  // with session immutable state such as policy information and primary user.
+  initializeSession(sessionContext: SessionContext): void {
+    assert(
+        !this.sessionContext, 'SessionContext should only be configured once');
+    this.sessionContext = sessionContext;
+    this.dispatchEvent(
+        createCustomEvent(DESTINATION_MANAGER_SESSION_INITIALIZED));
+  }
+
+  // Returns true only after the initializeSession function has been called with
+  // a valid SessionContext.
+  isSessionInitialized(): boolean {
+    return !!this.sessionContext;
+  }
 
   // Private to prevent additional initialization.
   private constructor() {
@@ -129,6 +152,7 @@ export class DestinationManager extends EventTarget {
 declare global {
   interface HTMLElementEventMap {
     [DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED]: CustomEvent<void>;
+    [DESTINATION_MANAGER_SESSION_INITIALIZED]: CustomEvent<void>;
     [DESTINATION_MANAGER_STATE_CHANGED]: CustomEvent<void>;
   }
 }

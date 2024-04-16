@@ -5,11 +5,12 @@
 import 'chrome://os-print/js/data/destination_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
 import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -119,5 +120,28 @@ suite('DestinationManager', () => {
         assertDeepEquals(
             PDF_DESTINATION, instance.getActiveDestination(),
             `Fallback destination is ${PDF_DESTINATION.displayName}`);
+      });
+
+  // Verify `isSessionInitialized` returns true and triggers
+  // `DESTINATION_MANAGER_SESSION_INITIALIZED` event after `initializeSession`
+  // called.
+  test(
+      'initializeSession updates isSessionInitialized and triggers ' +
+          DESTINATION_MANAGER_SESSION_INITIALIZED,
+      async () => {
+        const instance = DestinationManager.getInstance();
+        assertFalse(
+            instance.isSessionInitialized(),
+            'Before initializeSession, instance should not be initialized');
+
+        // Set initial context.
+        const sessionInit =
+            eventToPromise(DESTINATION_MANAGER_SESSION_INITIALIZED, instance);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        await sessionInit;
+
+        assertTrue(
+            instance.isSessionInitialized(),
+            'After initializeSession, instance should be initialized');
       });
 });
