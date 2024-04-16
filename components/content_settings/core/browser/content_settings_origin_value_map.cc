@@ -35,9 +35,9 @@ class RuleIteratorImpl : public RuleIterator {
                    const Iterator& rule_end,
                    std::unique_ptr<base::AutoLock> auto_lock,
                    base::AutoReset<bool> iterating)
-      : current_rule_(current_rule),
+      : auto_lock_(std::move(auto_lock)),
+        current_rule_(current_rule),
         rule_end_(rule_end),
-        auto_lock_(std::move(auto_lock)),
         iterating_(std::move(iterating)) {}
   ~RuleIteratorImpl() override = default;
 
@@ -54,9 +54,9 @@ class RuleIteratorImpl : public RuleIterator {
   }
 
  private:
+  std::unique_ptr<base::AutoLock> auto_lock_;
   Iterator current_rule_;
   Iterator rule_end_;
-  std::unique_ptr<base::AutoLock> auto_lock_;
   base::AutoReset<bool> iterating_;
 };
 
