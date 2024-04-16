@@ -117,10 +117,9 @@ class AutofillPopupControllerImpl
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 
-  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) {
-    view_ = std::move(view);
-    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
-  }
+  base::WeakPtr<AutofillPopupControllerImpl> GetWeakPtr();
+
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
  protected:
   AutofillPopupControllerImpl(
@@ -133,7 +132,8 @@ class AutofillPopupControllerImpl
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
           show_pwd_migration_warning_callback,
-      std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent);
+      std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent =
+          std::nullopt);
   ~AutofillPopupControllerImpl() override;
 
   gfx::NativeView container_view() const override;
@@ -147,8 +147,6 @@ class AutofillPopupControllerImpl
   // Set the Autofill entry values. Exposed to allow tests to set these values
   // without showing the popup.
   void SetSuggestions(std::vector<Suggestion> suggestions);
-
-  base::WeakPtr<AutofillPopupControllerImpl> GetWeakPtr();
 
   // Raise an accessibility event to indicate the controls relation of the
   // form control of the popup and popup itself has changed based on the popup's
@@ -168,11 +166,6 @@ class AutofillPopupControllerImpl
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
-
-  // Returns true iff the focused frame has a pointer lock, which may be used to
-  // trick the user into accepting some suggestion (crbug.com/1239496). In such
-  // a case, we should hide the popup.
-  bool IsPointerLocked() const;
 
   // ExpandablePopupParentControllerImpl:
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(

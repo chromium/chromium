@@ -38,6 +38,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -332,7 +333,15 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
       show_pwd_migration_warning_callback_;
 };
 
-class AutofillPopupControllerForPopupTest : public AutofillPopupControllerImpl {
+using AutofillPopupControllerForPopupTestBase =
+#if BUILDFLAG(IS_ANDROID)
+    AutofillKeyboardAccessoryControllerImpl;
+#else
+    AutofillPopupControllerImpl;
+#endif
+
+class AutofillPopupControllerForPopupTest
+    : public AutofillPopupControllerForPopupTestBase {
  public:
   AutofillPopupControllerForPopupTest(
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
@@ -342,27 +351,24 @@ class AutofillPopupControllerForPopupTest : public AutofillPopupControllerImpl {
           gfx::NativeWindow,
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          show_pwd_migration_warning_callback,
-      std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent =
-          std::nullopt);
+          show_pwd_migration_warning_callback);
   ~AutofillPopupControllerForPopupTest() override;
 
   // Making protected functions public for testing
-  using AutofillPopupControllerImpl::AcceptSuggestion;
-  using AutofillPopupControllerImpl::element_bounds;
-  using AutofillPopupControllerImpl::FireControlsChangedEvent;
-  using AutofillPopupControllerImpl::GetLineCount;
-  using AutofillPopupControllerImpl::GetSuggestionAt;
-  using AutofillPopupControllerImpl::GetSuggestionLabelsAt;
-  using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
-  using AutofillPopupControllerImpl::GetWeakPtr;
-  using AutofillPopupControllerImpl::PerformButtonActionForSuggestion;
-  using AutofillPopupControllerImpl::RemoveSuggestion;
-  using AutofillPopupControllerImpl::SelectSuggestion;
+  using AutofillPopupControllerForPopupTestBase::AcceptSuggestion;
+  using AutofillPopupControllerForPopupTestBase::element_bounds;
+  using AutofillPopupControllerForPopupTestBase::GetLineCount;
+  using AutofillPopupControllerForPopupTestBase::GetSuggestionAt;
+  using AutofillPopupControllerForPopupTestBase::GetSuggestionLabelsAt;
+  using AutofillPopupControllerForPopupTestBase::GetSuggestionMainTextAt;
+  using AutofillPopupControllerForPopupTestBase::
+      PerformButtonActionForSuggestion;
+  using AutofillPopupControllerForPopupTestBase::RemoveSuggestion;
+  using AutofillPopupControllerForPopupTestBase::SelectSuggestion;
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
 
   void DoHide(PopupHidingReason reason = PopupHidingReason::kTabGone) {
-    AutofillPopupControllerImpl::Hide(reason);
+    AutofillPopupControllerForPopupTestBase::Hide(reason);
   }
 };
 

@@ -132,6 +132,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void DisableThresholdForTesting(bool disable_threshold) override;
   void KeepPopupOpenForTesting() override;
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 

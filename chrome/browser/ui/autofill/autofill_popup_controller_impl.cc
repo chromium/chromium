@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,11 +22,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -38,9 +36,6 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/config.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -68,54 +63,17 @@ using FillingSource = ManualFillingController::FillingSource;
 #include "components/compose/core/browser/compose_features.h"
 #endif
 
-using base::WeakPtr;
-
 namespace autofill {
 
-namespace {
-
-// Returns true if the given id refers to an element that can be accepted.
-bool CanAccept(PopupItemId id) {
-  return id != PopupItemId::kSeparator &&
-         id != PopupItemId::kInsecureContextPaymentDisabledMessage &&
-         id != PopupItemId::kMixedFormMessage && id != PopupItemId::kTitle;
-}
-
-content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate) {
-  return absl::visit(
-      base::Overloaded{
-          [](AutofillDriver* driver) {
-            return static_cast<ContentAutofillDriver*>(driver)
-                ->render_frame_host();
-          },
-          [](password_manager::PasswordManagerDriver* driver) {
-            return static_cast<password_manager::ContentPasswordManagerDriver*>(
-                       driver)
-                ->render_frame_host();
-          }},
-      delegate.GetDriver());
-}
-
-bool IsAncestorOf(content::RenderFrameHost* ancestor,
-                  content::RenderFrameHost* descendant) {
-  for (auto* rfh = descendant; rfh; rfh = rfh->GetParent()) {
-    if (rfh == ancestor) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
-
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 // static
-WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
-    WeakPtr<AutofillPopupController> previous,
-    WeakPtr<AutofillPopupDelegate> delegate,
+base::WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
+    base::WeakPtr<AutofillPopupController> previous,
+    base::WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id) {
+  // All controllers on Desktop derive from `AutofillPopupControllerImpl`.
   if (AutofillPopupControllerImpl* previous_impl =
           static_cast<AutofillPopupControllerImpl*>(previous.get());
       previous_impl && previous_impl->delegate_.get() == delegate.get() &&
@@ -132,16 +90,9 @@ WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
   if (previous) {
     previous->Hide(PopupHidingReason::kViewDestroyed);
   }
-#if BUILDFLAG(IS_ANDROID)
-  auto* controller = new AutofillPopupControllerImpl(
-      delegate, web_contents, std::move(controller_common), form_control_ax_id,
-      base::BindRepeating(&local_password_migration::ShowWarning),
-      /*parent=*/std::nullopt);
-#else
   auto* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, std::move(controller_common), form_control_ax_id,
       base::DoNothing(), /*parent=*/std::nullopt);
-#endif
   return controller->GetWeakPtr();
 }
 #endif
@@ -195,7 +146,7 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
-  if (IsPointerLocked()) {
+  if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
@@ -307,47 +258,12 @@ bool AutofillPopupControllerImpl::
 
 void AutofillPopupControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  // Remove all the old data list values, which should always be at the top of
-  // the list if they are present.
-  while (!suggestions_.empty() &&
-         suggestions_[0].popup_item_id == PopupItemId::kDatalistEntry) {
-    suggestions_.erase(suggestions_.begin());
+  UpdateSuggestionsFromDataList(options, suggestions_);
+  if (HasSuggestions()) {
+    OnSuggestionsChanged();
+  } else {
+    Hide(PopupHidingReason::kNoSuggestions);
   }
-
-  // If there are no new data list values, exit (clearing the separator if there
-  // is one).
-  if (options.empty()) {
-    if (!suggestions_.empty() &&
-        suggestions_[0].popup_item_id == PopupItemId::kSeparator) {
-      suggestions_.erase(suggestions_.begin());
-    }
-
-    // The popup contents have changed, so either update the bounds or hide it.
-    if (HasSuggestions())
-      OnSuggestionsChanged();
-    else
-      Hide(PopupHidingReason::kNoSuggestions);
-
-    return;
-  }
-
-  // Add a separator if there are any other values.
-  if (!suggestions_.empty() &&
-      suggestions_[0].popup_item_id != PopupItemId::kSeparator) {
-    suggestions_.insert(suggestions_.begin(),
-                        Suggestion(PopupItemId::kSeparator));
-  }
-
-  // Prepend the parameters to the suggestions we already have.
-  suggestions_.insert(suggestions_.begin(), options.size(), Suggestion());
-  for (size_t i = 0; i < options.size(); i++) {
-    suggestions_[i].main_text =
-        Suggestion::Text(options[i].value, Suggestion::Text::IsPrimary(true));
-    suggestions_[i].labels = {{Suggestion::Text(options[i].content)}};
-    suggestions_[i].popup_item_id = PopupItemId::kDatalistEntry;
-  }
-
-  OnSuggestionsChanged();
 }
 
 void AutofillPopupControllerImpl::PinView() {
@@ -453,7 +369,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (IsPointerLocked()) {
+  if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
@@ -480,29 +396,10 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 #endif
 
-  if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
-    std::string event_name =
-        suggestion.feature_for_iph ==
-                &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature
-            ? "autofill_virtual_card_cvc_suggestion_accepted"
-            : "autofill_virtual_card_suggestion_accepted";
-    feature_engagement::TrackerFactory::GetForBrowserContext(
-        web_contents_->GetBrowserContext())
-        ->NotifyEvent(event_name);
-  }
-
-  if (suggestion.feature_for_iph ==
-      &feature_engagement::
-          kIPHAutofillExternalAccountProfileSuggestionFeature) {
-    feature_engagement::TrackerFactory::GetForBrowserContext(
-        web_contents_->GetBrowserContext())
-        ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
-  }
-
-  std::optional<std::u16string> announcement =
-      suggestion.acceptance_a11y_announcement;
-  if (announcement && view_) {
-    view_->AxAnnounce(*announcement);
+  NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
+                                   suggestion);
+  if (suggestion.acceptance_a11y_announcement && view_) {
+    view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
 
   delegate_->DidAcceptSuggestion(
@@ -607,6 +504,7 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
     int list_index,
     std::u16string* title,
     std::u16string* body) {
+  // TODO(crbug.com/333316034): Remove - this is not relevant on Desktop.
   const std::u16string& value = suggestions_[list_index].main_text.value;
   const PopupItemId popup_item_id = suggestions_[list_index].popup_item_id;
   const Suggestion::BackendId backend_id =
@@ -669,7 +567,7 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
 bool AutofillPopupControllerImpl::RemoveSuggestion(
     int list_index,
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
-  if (IsPointerLocked()) {
+  if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
     return false;
   }
@@ -739,14 +637,15 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 }
 
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
+  CHECK_GE(index, 0);
   CHECK_LT(index, static_cast<int>(suggestions_.size()));
 
-  if (IsPointerLocked()) {
+  if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
 
-  if (!CanAccept(GetSuggestionAt(index).popup_item_id)) {
+  if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
     UnselectSuggestion();
     return;
   }
@@ -782,7 +681,8 @@ void AutofillPopupControllerImpl::SetSuggestions(
   suggestions_ = std::move(suggestions);
 }
 
-WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetWeakPtr() {
+base::WeakPtr<AutofillPopupControllerImpl>
+AutofillPopupControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -828,18 +728,11 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](WeakPtr<AutofillPopupControllerImpl> weak_this) {
+                     [](base::WeakPtr<AutofillPopupControllerImpl> weak_this) {
                        if (weak_this)
                          delete weak_this.get();
                      },
                      self_deletion_weak_ptr_factory_.GetWeakPtr()));
-}
-
-bool AutofillPopupControllerImpl::IsPointerLocked() const {
-  content::RenderFrameHost* rfh;
-  content::RenderWidgetHostView* rwhv;
-  return web_contents_ && (rfh = web_contents_->GetFocusedFrame()) &&
-         (rwhv = rfh->GetView()) && rwhv->IsPointerLocked();
 }
 
 base::WeakPtr<AutofillPopupView>
@@ -946,6 +839,12 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
   }
   rfh_ = {};
   handler_ = content::RenderWidgetHost::KeyPressEventCallback();
+}
+
+void AutofillPopupControllerImpl::SetViewForTesting(
+    base::WeakPtr<AutofillPopupView> view) {
+  view_ = std::move(view);
+  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 }
 
 }  // namespace autofill

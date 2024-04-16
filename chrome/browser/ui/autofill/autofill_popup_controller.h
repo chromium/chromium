@@ -24,6 +24,7 @@ class WebContents;
 
 namespace autofill {
 
+class AutofillPopupView;
 struct PopupControllerCommon;
 
 // This interface provides data to an AutofillPopupView.
@@ -137,7 +138,10 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // set during tests that cannot mock time (e.g. the autofill interactive
   // browsertests).
   virtual void DisableThresholdForTesting(bool disable_threshold) = 0;
+
   virtual void KeepPopupOpenForTesting() = 0;
+
+  virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;
 
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;

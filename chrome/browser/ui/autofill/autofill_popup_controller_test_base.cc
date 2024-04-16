@@ -25,17 +25,18 @@ AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
         void(gfx::NativeWindow,
              Profile*,
              password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        show_pwd_migration_warning_callback,
-    std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
-    : AutofillPopupControllerImpl(
+        show_pwd_migration_warning_callback)
+    : AutofillPopupControllerForPopupTestBase(
           external_delegate,
           web_contents,
           PopupControllerCommon(element_bounds,
                                 base::i18n::UNKNOWN_DIRECTION,
                                 nullptr),
+#if !BUILDFLAG(IS_ANDROID)
           /*form_control_ax_id=*/0,
-          std::move(show_pwd_migration_warning_callback),
-          parent) {}
+#endif
+          std::move(show_pwd_migration_warning_callback)) {
+}
 
 AutofillPopupControllerForPopupTest::~AutofillPopupControllerForPopupTest() =
     default;

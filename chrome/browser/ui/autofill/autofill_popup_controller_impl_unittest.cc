@@ -31,10 +31,10 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::Matcher;
+using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-#if !BUILDFLAG(IS_ANDROID)
 Matcher<const AutofillPopupDelegate::SuggestionPosition&>
 EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
   return AllOf(
@@ -42,13 +42,11 @@ EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
       Field(&AutofillPopupDelegate::SuggestionPosition::sub_popup_level,
             position.sub_popup_level));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
 using AutofillPopupControllerImplTest = AutofillPopupControllerTestBase<>;
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillPopupController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
@@ -115,7 +113,6 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(/*index=*/0);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
@@ -126,6 +123,74 @@ TEST_F(AutofillPopupControllerImplTest,
   // external_delegate thinks is being shown in the process, since we are just
   // testing the popup here.
   test::GenerateTestAutofillPopup(&manager().external_delegate());
+
+  EXPECT_TRUE(client()
+                  .popup_controller(manager())
+                  .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+}
+
+// Tests that the popup controller queries the view for its screen location.
+TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
+  ShowSuggestions(manager(), {PopupItemId::kCompose});
+
+  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
+  constexpr gfx::Rect kSampleRect = gfx::Rect(123, 234);
+  EXPECT_CALL(client().popup_view(), GetPopupScreenLocation)
+      .WillOnce(Return(PopupScreenLocation{.bounds = kSampleRect}));
+  EXPECT_THAT(client().popup_controller(manager()).GetPopupScreenLocation(),
+              Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
+}
+
+// Tests that a change to a text field hides a popup with a Compose suggestion.
+TEST_F(AutofillPopupControllerImplTest, HidesOnFieldChangeForComposeEntries) {
+  ShowSuggestions(manager(), {PopupItemId::kCompose});
+  EXPECT_CALL(client().popup_controller(manager()),
+              Hide(PopupHidingReason::kFieldValueChanged));
+  manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeTextFieldDidChange, FormGlobalId(),
+      FieldGlobalId());
+}
+
+// Tests that Compose saved state notification popup gets hidden after 2
+// seconds, but not after 1 second.
+TEST_F(AutofillPopupControllerImplTest,
+       TimedHideComposeSavedStateNotification) {
+  ShowSuggestions(manager(), {PopupItemId::kComposeSavedStateNotification});
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+  ::testing::MockFunction<void()> check;
+  {
+    ::testing::InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(client().popup_controller(manager()),
+                Hide(PopupHidingReason::kFadeTimerExpired));
+  }
+  task_environment()->FastForwardBy(base::Seconds(1));
+  check.Call();
+  task_environment()->FastForwardBy(base::Seconds(1));
+  Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
+  ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry,
+                              PopupItemId::kAutocompleteEntry});
+
+  // Generate a popup, so it can be hidden later. It doesn't matter what the
+  // external_delegate thinks is being shown in the process, since we are just
+  // testing the popup here.
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
+
+  EXPECT_CALL(manager().external_delegate(),
+              RemoveSuggestion(Field(&Suggestion::popup_item_id,
+                                     PopupItemId::kAutocompleteEntry)))
+      .WillOnce(Return(true));
+  // Remove the first entry. The popup should be redrawn since its size has
+  // changed.
+  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
+  Mock::VerifyAndClearExpectations(&client().popup_view());
 
   EXPECT_TRUE(client()
                   .popup_controller(manager())
@@ -152,6 +217,7 @@ class AutofillPopupControllerForPopupAxTest
   using AutofillPopupControllerForPopupTest::
       AutofillPopupControllerForPopupTest;
 
+  using AutofillPopupControllerForPopupTest::FireControlsChangedEvent;
   MOCK_METHOD(ui::AXPlatformNode*,
               GetRootAXPlatformNodeForWebContents,
               (),

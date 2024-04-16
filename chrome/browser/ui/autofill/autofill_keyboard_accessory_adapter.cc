@@ -251,6 +251,11 @@ void AutofillKeyboardAccessoryAdapter::KeepPopupOpenForTesting() {
   NOTREACHED();
 }
 
+void AutofillKeyboardAccessoryAdapter::SetViewForTesting(
+    base::WeakPtr<AutofillPopupView> view) {
+  NOTREACHED();
+}
+
 void AutofillKeyboardAccessoryAdapter::UpdateDataListValues(
     base::span<const SelectOption> options) {
   NOTREACHED();
