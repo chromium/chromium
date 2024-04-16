@@ -49,7 +49,7 @@ class Size;
 }  // namespace gfx
 
 namespace ui {
-struct AXEventNotificationDetails;
+struct AXUpdatesAndEvents;
 struct AXLocationChangeNotificationDetails;
 namespace mojom {
 enum class VirtualKeyboardMode;
@@ -770,7 +770,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // from a render frame, but only when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
   virtual void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details) {}
+      const ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
       const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
 

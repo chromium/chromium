@@ -99,7 +99,7 @@ class SharedDictionaryAccessDetails;
 
 namespace ui {
 class ClipboardFormatType;
-struct AXEventNotificationDetails;
+struct AXUpdatesAndEvents;
 struct AXLocationChangeNotificationDetails;
 }
 
@@ -300,7 +300,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // from a render frame, when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
   virtual void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details) {}
+      const ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
       const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
 

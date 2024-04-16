@@ -13,7 +13,7 @@
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 using testing::_;
 using testing::FloatNear;

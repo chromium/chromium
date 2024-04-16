@@ -5118,7 +5118,7 @@ void WebContentsImpl::AXTreeIDForMainFrameHasChanged() {
 }
 
 void WebContentsImpl::AccessibilityEventReceived(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::AccessibilityEventReceived");
   observers_.NotifyObservers(&WebContentsObserver::AccessibilityEventReceived,

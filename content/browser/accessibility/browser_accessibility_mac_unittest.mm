@@ -18,8 +18,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #import "ui/base/test/cocoa_helper.h"
 
 namespace content {
@@ -113,7 +113,7 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     if (!manager_)
       return;
     root_.SetValue(value);
-    ui::AXEventNotificationDetails event_bundle;
+    ui::AXUpdatesAndEvents event_bundle;
     event_bundle.updates.resize(1);
     event_bundle.updates[0].nodes.push_back(root_);
     ASSERT_TRUE(manager_->OnAccessibilityEvents(event_bundle));

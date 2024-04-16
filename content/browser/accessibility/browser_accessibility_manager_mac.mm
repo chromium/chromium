@@ -477,7 +477,7 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
 }
 
 bool BrowserAccessibilityManagerMac::OnAccessibilityEvents(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   text_edits_.clear();
   return BrowserAccessibilityManager::OnAccessibilityEvents(details);
 }

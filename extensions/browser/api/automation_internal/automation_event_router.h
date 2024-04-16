@@ -27,8 +27,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 class BrowserContext;

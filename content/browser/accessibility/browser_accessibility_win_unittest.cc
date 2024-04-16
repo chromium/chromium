@@ -239,7 +239,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
   text2.id = 2;
   text2.role = ax::mojom::Role::kStaticText;
   text2.SetName("new text");
-  ui::AXEventNotificationDetails event_bundle;
+  ui::AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(text2);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
@@ -302,7 +302,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChangeNoLeaks) {
   // Notify the BrowserAccessibilityManager that the div node and its children
   // were removed and ensure that only one BrowserAccessibility instance exists.
   root.child_ids.clear();
-  ui::AXEventNotificationDetails event_bundle;
+  ui::AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(root);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));
@@ -1034,7 +1034,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   tree1_2.AddStringAttribute(ax::mojom::StringAttribute::kInputType, "text");
 
   // Process a load complete.
-  ui::AXEventNotificationDetails event_bundle;
+  ui::AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].node_id_to_clear = root->GetId();
   event_bundle.updates[0].root_id = tree1_1.id;
@@ -3285,7 +3285,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   std::vector<int32_t> labelledby_ids = {3};
   child1.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
-  ui::AXEventNotificationDetails event_bundle;
+  ui::AXUpdatesAndEvents event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(child1);
   ASSERT_TRUE(manager->OnAccessibilityEvents(event_bundle));

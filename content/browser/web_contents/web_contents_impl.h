@@ -116,7 +116,7 @@ class InterfaceProvider;
 }  // namespace service_manager
 
 namespace ui {
-struct AXEventNotificationDetails;
+struct AXUpdatesAndEvents;
 }
 
 namespace content {
@@ -680,7 +680,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ResetAccessibility() override;
   void AXTreeIDForMainFrameHasChanged() override;
   void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details) override;
+      const ui::AXUpdatesAndEvents& details) override;
   void AccessibilityLocationChangesReceived(
       const std::vector<ui::AXLocationChangeNotificationDetails>& details)
       override;

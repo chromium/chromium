@@ -11,7 +11,7 @@
 
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 class BrowserContext;

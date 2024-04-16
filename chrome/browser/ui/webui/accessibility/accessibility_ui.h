@@ -22,7 +22,7 @@
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 namespace ui {
-struct AXEventNotificationDetails;
+struct AXUpdatesAndEvents;
 }
 
 namespace content {
@@ -60,7 +60,7 @@ class AccessibilityUIObserver : public content::WebContentsObserver {
   ~AccessibilityUIObserver() override;
 
   void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details) override;
+      const ui::AXUpdatesAndEvents& details) override;
 
  private:
   raw_ptr<std::vector<std::string>> event_logs_;

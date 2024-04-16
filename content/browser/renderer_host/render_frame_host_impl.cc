@@ -282,8 +282,8 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
@@ -7271,7 +7271,7 @@ bool RenderFrameHostImpl::Reload() {
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   if (!browser_accessibility_manager_) {
     return;
   }
@@ -9726,7 +9726,7 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   GetOrCreateBrowserAccessibilityManager();
 
-  ui::AXEventNotificationDetails details;
+  ui::AXUpdatesAndEvents details;
   details.ax_tree_id = tree_id;
   details.events = std::move(updates_and_events->events);
   details.updates = std::move(updates_and_events->updates);
@@ -11447,7 +11447,7 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
     return;
   }
 
-  ui::AXEventNotificationDetails detail;
+  ui::AXUpdatesAndEvents detail;
   detail.ax_tree_id = GetAXTreeID();
   detail.updates.resize(1);
   detail.updates[0].has_tree_data = true;

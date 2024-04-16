@@ -14,9 +14,9 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 

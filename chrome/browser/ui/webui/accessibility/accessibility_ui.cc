@@ -44,7 +44,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
@@ -427,7 +427,7 @@ AccessibilityUIObserver::AccessibilityUIObserver(
 AccessibilityUIObserver::~AccessibilityUIObserver() = default;
 
 void AccessibilityUIObserver::AccessibilityEventReceived(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   for (const ui::AXEvent& event : details.events) {
     event_logs_->push_back(event.ToString());
   }

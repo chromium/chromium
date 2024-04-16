@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 #include "ui/accessibility/ax_event.h"
 
 namespace ui {
 
-AXEventNotificationDetails::AXEventNotificationDetails()
+AXUpdatesAndEvents::AXUpdatesAndEvents()
     : ax_tree_id(ui::AXTreeIDUnknown()) {}
 
-AXEventNotificationDetails::~AXEventNotificationDetails() {}
+AXUpdatesAndEvents::~AXUpdatesAndEvents() {}
 
 AXLocationChangeNotificationDetails::AXLocationChangeNotificationDetails()
     : id(-1), ax_tree_id(ui::AXTreeIDUnknown()) {}

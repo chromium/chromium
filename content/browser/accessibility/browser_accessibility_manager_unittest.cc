@@ -18,8 +18,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/test_ax_tree_update.h"
 
@@ -131,7 +131,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestErrorOnUpdate) {
   node4.child_ids.push_back(5);
   ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(node4, node5);
   update.tree_data.tree_id = manager->GetTreeID();
-  ui::AXEventNotificationDetails events;
+  ui::AXUpdatesAndEvents events;
   events.updates = {update};
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -1161,7 +1161,7 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash) {
   update2.tree_data.tree_id = initial_state.tree_data.tree_id;
   update2.node_id_to_clear = root.id;
   update2.root_id = root2.id;
-  ui::AXEventNotificationDetails events2;
+  ui::AXUpdatesAndEvents events2;
   events2.updates = {update2};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events2));
 
@@ -1212,7 +1212,7 @@ TEST_F(BrowserAccessibilityManagerTest, DeletingFocusedNodeDoesNotCrash2) {
   update2.tree_data.tree_id = initial_state.tree_data.tree_id;
   update2.node_id_to_clear = root.id;
   update2.root_id = root2.id;
-  ui::AXEventNotificationDetails events2;
+  ui::AXUpdatesAndEvents events2;
   events2.updates = {update2};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events2));
 
@@ -1250,7 +1250,7 @@ TEST_F(BrowserAccessibilityManagerTest, IsIgnoredChangedDueToFocusChange) {
   tree_data.focus_id = button.id;
   update.has_tree_data = true;
   update.tree_data = tree_data;
-  ui::AXEventNotificationDetails events;
+  ui::AXUpdatesAndEvents events;
   events.updates = {update};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events));
 
@@ -1282,7 +1282,7 @@ TEST_F(BrowserAccessibilityManagerTest, TreeUpdatesAreMergedWhenPossible) {
   manager->ax_tree()->AddObserver(&observer);
 
   // Update each of the children using separate AXTreeUpdates.
-  ui::AXEventNotificationDetails events;
+  ui::AXUpdatesAndEvents events;
   events.updates.resize(3);
   for (int i = 0; i < 3; i++) {
     ui::AXTreeUpdate update;
@@ -1435,7 +1435,7 @@ TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   popup_button.child_ids = {};
   ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(popup_button);
   update.tree_data.tree_id = manager->GetTreeID();
-  ui::AXEventNotificationDetails events;
+  ui::AXUpdatesAndEvents events;
   events.updates = {update};
   ASSERT_TRUE(manager->OnAccessibilityEvents(events));
 

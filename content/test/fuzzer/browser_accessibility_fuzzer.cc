@@ -200,7 +200,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   update.nodes[1].role = GetInterestingRole(fdp);
   AddStates(fdp, &update.nodes[1]);
 
-  ui::AXEventNotificationDetails notification;
+  ui::AXUpdatesAndEvents notification;
   notification.updates.resize(1);
   notification.updates[0] = update;
 

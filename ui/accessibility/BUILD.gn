@@ -72,8 +72,6 @@ component("ax_base") {
     "ax_event.h",
     "ax_event_intent.cc",
     "ax_event_intent.h",
-    "ax_event_notification_details.cc",
-    "ax_event_notification_details.h",
     "ax_mode.cc",
     "ax_mode.h",
     "ax_mode_histogram_logger.cc",
@@ -97,6 +95,8 @@ component("ax_base") {
     "ax_tree_update.cc",
     "ax_tree_update.h",
     "ax_tree_update_forward.h",
+    "ax_updates_and_events.cc",
+    "ax_updates_and_events.h",
   ]
 
   if (!is_chromeos) {

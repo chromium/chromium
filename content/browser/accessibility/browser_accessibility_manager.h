@@ -24,7 +24,6 @@
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
-#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -35,6 +34,7 @@
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
@@ -258,8 +258,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy
   // the manager.
-  virtual bool OnAccessibilityEvents(
-      const ui::AXEventNotificationDetails& details);
+  virtual bool OnAccessibilityEvents(const ui::AXUpdatesAndEvents& details);
 
   // Allows derived classes to do event pre-processing
   virtual void BeforeAccessibilityEvents();

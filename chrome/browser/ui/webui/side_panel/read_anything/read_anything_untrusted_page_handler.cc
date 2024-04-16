@@ -191,7 +191,7 @@ ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
 ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() = default;
 
 void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   page_handler_->AccessibilityEventReceived(details);
 }
 
@@ -294,7 +294,7 @@ void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
 }
 
 void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
-    const ui::AXEventNotificationDetails& details) {
+    const ui::AXUpdatesAndEvents& details) {
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
 }

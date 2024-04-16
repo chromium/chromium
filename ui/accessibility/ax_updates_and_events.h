@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_
-#define UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_
+#ifndef UI_ACCESSIBILITY_AX_UPDATES_AND_EVENTS_H_
+#define UI_ACCESSIBILITY_AX_UPDATES_AND_EVENTS_H_
 
 #include <vector>
 
@@ -16,15 +16,15 @@
 
 namespace ui {
 
-struct AX_BASE_EXPORT AXEventNotificationDetails {
+struct AX_BASE_EXPORT AXUpdatesAndEvents {
  public:
-  AXEventNotificationDetails();
+  AXUpdatesAndEvents();
 
-  AXEventNotificationDetails(const AXEventNotificationDetails& other) = delete;
-  AXEventNotificationDetails& operator=(
-      const AXEventNotificationDetails& other) = delete;
+  AXUpdatesAndEvents(const AXUpdatesAndEvents& other) = delete;
+  AXUpdatesAndEvents& operator=(
+      const AXUpdatesAndEvents& other) = delete;
 
-  ~AXEventNotificationDetails();
+  ~AXUpdatesAndEvents();
 
   // The unique ID of the accessibility tree this event bundle applies to.
   ui::AXTreeID ax_tree_id;
@@ -50,4 +50,4 @@ struct AX_BASE_EXPORT AXLocationChangeNotificationDetails {
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_
+#endif  // UI_ACCESSIBILITY_AX_UPDATES_AND_EVENTS_H_

@@ -43,7 +43,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -340,7 +340,7 @@ class AutomationWebContentsObserver
 
   // content::WebContentsObserver overrides.
   void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& content_event_bundle) override {
+      const ui::AXUpdatesAndEvents& content_event_bundle) override {
     gfx::Point mouse_location;
 #if defined(USE_AURA)
     mouse_location = aura::Env::GetInstance()->last_mouse_location();
@@ -368,7 +368,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    ui::AXEventNotificationDetails content_event_bundle;
+    ui::AXUpdatesAndEvents content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -385,7 +385,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    ui::AXEventNotificationDetails content_event_bundle;
+    ui::AXUpdatesAndEvents content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -453,7 +453,7 @@ class AutomationWebContentsObserver
         return;
       }
 
-      ui::AXEventNotificationDetails content_event_bundle;
+      ui::AXUpdatesAndEvents content_event_bundle;
       content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
       content_event_bundle.events.resize(1);
       content_event_bundle.events[0].event_type =

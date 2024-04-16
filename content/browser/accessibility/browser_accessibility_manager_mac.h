@@ -15,7 +15,7 @@
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace ui {
 class AXPlatformTreeManagerDelegate;
@@ -57,8 +57,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
       ax::mojom::AriaNotificationInterrupt interrupt_property,
       ax::mojom::AriaNotificationPriority priority_property) override;
 
-  bool OnAccessibilityEvents(
-      const ui::AXEventNotificationDetails& details) override;
+  bool OnAccessibilityEvents(const ui::AXUpdatesAndEvents& details) override;
 
   id GetParentView();
   id GetWindow();

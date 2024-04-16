@@ -7,7 +7,7 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 
@@ -257,7 +257,7 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void, AXTreeIDForMainFrameHasChanged, (), (override));
   MOCK_METHOD(void,
               AccessibilityEventReceived,
-              (const ui::AXEventNotificationDetails& details),
+              (const ui::AXUpdatesAndEvents& details),
               (override));
   MOCK_METHOD(
       void,

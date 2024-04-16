@@ -353,7 +353,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   // Set focus to node 1, and check that the focus was updated from null to
   // node 1.
   {
-    ui::AXEventNotificationDetails event;
+    ui::AXUpdatesAndEvents event;
     ui::AXTreeUpdate updated_state;
     updated_state.tree_data.tree_id = tree_id;
     updated_state.has_tree_data = true;
@@ -378,7 +378,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   // Set focus to node 2, and check that focus was updated from node 1 to node
   // 2.
   {
-    ui::AXEventNotificationDetails event;
+    ui::AXUpdatesAndEvents event;
     ui::AXTreeUpdate updated_state;
     updated_state.tree_data.tree_id = tree_id;
     updated_state.has_tree_data = true;

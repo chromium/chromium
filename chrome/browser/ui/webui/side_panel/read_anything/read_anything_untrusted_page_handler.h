@@ -25,7 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_event_notification_details.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 class ScopedAccessibilityMode;
@@ -53,7 +53,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details) override;
+      const ui::AXUpdatesAndEvents& details) override;
   void PrimaryPageChanged(content::Page& page) override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
@@ -95,8 +95,7 @@ class ReadAnythingUntrustedPageHandler
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
 
-  void AccessibilityEventReceived(
-      const ui::AXEventNotificationDetails& details);
+  void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void PrimaryPageChanged();
 
  private:

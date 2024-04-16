@@ -613,8 +613,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsInactiveAndDisallowActivationForAXEvents(
       const std::vector<ui::AXEvent>& events);
 
-  void SendAccessibilityEventsToManager(
-      const ui::AXEventNotificationDetails& details);
+  void SendAccessibilityEventsToManager(const ui::AXUpdatesAndEvents& details);
 
   // Evict the RenderFrameHostImpl with |reason| that causes the eviction. This
   // constructs a flattened list of NotRestoredReasons and calls
