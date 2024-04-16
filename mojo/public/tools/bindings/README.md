@@ -583,6 +583,13 @@ interesting attributes supported today.
   selectively – only for frequently-called methods with large payloads
   that may trigger many allocations.
 
+* **`[DispatchDebugAlias]`**:
+  The `DispatchDebugAlias` attribute can be used on an interface to opt into
+  having every dispatched message retain an aliased copy of the message ID on
+  the stack for the duration of the dispatch. This can aid in crash debugging
+  if other factors such as inlining or code folding end up obscuring the message
+  information. This generates extra code, so it is not the default behavior.
+
 ## Generated Code For Target Languages
 
 When the bindings generator successfully processes an input Mojom file, it emits

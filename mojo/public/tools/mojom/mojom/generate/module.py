@@ -389,6 +389,7 @@ PRIMITIVES = (
 
 ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_DEFAULT = 'Default'
+ATTRIBUTE_DISPATCH_DEBUG_ALIAS = 'DispatchDebugAlias'
 ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
@@ -1186,6 +1187,11 @@ class Interface(ReferenceKind):
                        'Expected standard RFC 4122 string representation of '
                        'a UUID.'.format(self.mojom_name))
     return (int(u.hex[:16], 16), int(u.hex[16:], 16))
+
+  @property
+  def dispatch_debug_alias(self):
+    return self.attributes.get(ATTRIBUTE_DISPATCH_DEBUG_ALIAS) \
+           if self.attributes else None
 
   def __hash__(self):
     return id(self)

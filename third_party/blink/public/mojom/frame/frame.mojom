@@ -1214,6 +1214,9 @@ interface LocalMainFrame {
 
 // Implemented in Browser, this interface defines local-main-frame-specific
 // methods that will be invoked from the renderer process (e.g. WebViewImpl).
+//
+// TODO(https://crbug.com/334100817): Remove this attribute.
+[DispatchDebugAlias]
 interface LocalMainFrameHost {
   // Indicates the scale of the view has changed.
   ScaleFactorChanged(float scale);

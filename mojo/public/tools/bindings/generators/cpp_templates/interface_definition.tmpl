@@ -494,6 +494,14 @@ bool {{class_name}}StubDispatch::Accept(
     {{interface.name}}* impl,
     mojo::Message* message) {
 {%- if interface.methods %}
+{%-   if interface.dispatch_debug_alias %}
+  const uint64_t kDebugAliasSentinel0 = 0xC0FFEE42;
+  const uint64_t kMessageName = message->header()->name;
+  const uint64_t kDebugAliasSentinel1 = 0xDECAFBAD;
+  base::debug::Alias(&kDebugAliasSentinel0);
+  base::debug::Alias(&kMessageName);
+  base::debug::Alias(&kDebugAliasSentinel1);
+{%-   endif %}
   switch (static_cast<messages::{{class_name}}>(message->header()->name)) {
 {%-   for method in interface.methods %}
     case messages::{{class_name}}::k{{method.name}}: {
