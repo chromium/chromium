@@ -77,6 +77,11 @@ class AddressFieldParser : public FormFieldParser {
   // admin level 2 or none of those.
   bool ParseAddressField(ParsingContext& context, AutofillScanner* scanner);
 
+  // Parses the current field pointed to by |scanner|, if it exists, and tries
+  // to match house_number_and_apt field type.
+  bool ParseFieldSpecificsForHouseNumberAndApt(ParsingContext& context,
+                                               AutofillScanner* scanner);
+
   // Like ParseFieldSpecifics(), but applies |pattern| against the name and
   // label of the current field separately. If the return value is
   // RESULT_MATCH_NAME_LABEL, then |scanner| advances and |match| is filled if
@@ -167,6 +172,7 @@ class AddressFieldParser : public FormFieldParser {
   raw_ptr<AutofillField> between_streets_or_landmark_ = nullptr;
   raw_ptr<AutofillField> overflow_and_landmark_ = nullptr;
   raw_ptr<AutofillField> overflow_ = nullptr;
+  raw_ptr<AutofillField> house_number_and_apt_ = nullptr;
 };
 
 }  // namespace autofill

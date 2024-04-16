@@ -102,6 +102,9 @@ constexpr MatchParams kOverflowMatchType =
 constexpr MatchParams kOverflowAndLandmarkMatchType =
     kDefaultMatchParamsWith<FormControlType::kTextArea,
                             FormControlType::kInputSearch>;
+constexpr MatchParams kHouseNumberAndAptMatchType =
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 }  // namespace
 
@@ -205,7 +208,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
       address_field->between_streets_line_2_ || address_field->admin_level2_ ||
       address_field->between_streets_or_landmark_ ||
       address_field->overflow_and_landmark_ || address_field->overflow_ ||
-      address_field->street_location_) {
+      address_field->street_location_ || address_field->house_number_and_apt_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
@@ -299,6 +302,8 @@ void AddressFieldParser::AddClassifications(
                     kBaseAddressParserScore, field_candidates);
   AddClassification(overflow_, ADDRESS_HOME_OVERFLOW, kBaseAddressParserScore,
                     field_candidates);
+  AddClassification(house_number_and_apt_, ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                    kBaseAddressParserScore, field_candidates);
 }
 
 bool AddressFieldParser::ParseCompany(ParsingContext& context,
@@ -448,6 +453,10 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
                                                        country_code) &&
         ParseFieldSpecifics(context, scanner, kOverflowRe, kOverflowMatchType,
                             overflow_patterns, &overflow_, "kOverflowRe")) {
+      continue;
+    }
+
+    if (ParseFieldSpecificsForHouseNumberAndApt(context, scanner)) {
       continue;
     }
 
@@ -1219,6 +1228,25 @@ AddressFieldParser::ParseNameAndLabelForAdminLevel2(ParsingContext& context,
       admin_level2_patterns, &admin_level2_, "kAdminLevel2Re");
 }
 
+bool AddressFieldParser::ParseFieldSpecificsForHouseNumberAndApt(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (house_number_and_apt_ || house_number_ || apartment_number_ ||
+      !i18n_model_definition::IsTypeEnabledForCountry(
+          ADDRESS_HOME_HOUSE_NUMBER_AND_APT, country_code)) {
+    return RESULT_MATCH_NONE;
+  }
+
+  base::span<const MatchPatternRef> house_number_and_apt_patterns =
+      GetMatchPatterns("ADDRESS_HOME_HOUSE_NUMBER_AND_APT", context);
+  auto result = ParseFieldSpecifics(
+      context, scanner, kHouseNumberAndAptRe, kHouseNumberAndAptMatchType,
+      house_number_and_apt_patterns, &house_number_and_apt_,
+      "kHouseNumberAndAptRe");
+  return result;
+}
+
 bool AddressFieldParser::PossiblyAStructuredAddressForm() const {
   // Record success if the house number and at least one of the other
   // fields were found because that indicates a structured address form.
@@ -1226,6 +1254,10 @@ bool AddressFieldParser::PossiblyAStructuredAddressForm() const {
       (street_name_ || zip_ || overflow_ || overflow_and_landmark_ ||
        between_streets_or_landmark_ || apartment_number_ || between_streets_ ||
        between_streets_line_1_ || between_streets_line_2_)) {
+    return true;
+  }
+
+  if (street_name_ && house_number_and_apt_) {
     return true;
   }
 

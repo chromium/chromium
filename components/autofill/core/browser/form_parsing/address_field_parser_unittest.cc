@@ -22,7 +22,8 @@ class AddressFieldParserTest
   AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {
     default_features.InitWithFeatures({features::kAutofillUseI18nAddressModel,
                                        features::kAutofillUseBRAddressModel,
-                                       features::kAutofillUseINAddressModel},
+                                       features::kAutofillUseINAddressModel,
+                                       features::kAutofillUsePLAddressModel},
                                       {});
   }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
@@ -73,6 +74,54 @@ TEST_P(AddressFieldParserTest, ParseStreetAddressFromTextArea) {
   AddFormFieldData(FormControlType::kTextArea, "address", "Address",
                    ADDRESS_HOME_STREET_ADDRESS);
   ClassifyAndVerify();
+}
+
+// Tests that fields are classified as |ADDRESS_HOME_LINE1|
+TEST_P(AddressFieldParserTest, ParseOneLineAddressPL) {
+  const std::vector<std::string> line1_examples{
+      "nazwa ulicy, numer budynku / numer lokalu", "ulica i nr domu"};
+
+  for (const std::string& line1 : line1_examples) {
+    SCOPED_TRACE(line1);
+    ClearFieldsAndExpectations();
+    AddTextFormFieldData("street", line1, ADDRESS_HOME_LINE1);
+    ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
+                      LanguageCode("pl"));
+  }
+}
+
+// Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and
+// |ADDRESS_HOME_HOUSE_NUMBER_AND_APT| when they are labeled accordingly and
+// both are present.
+TEST_P(AddressFieldParserTest, ParseStreetNameAndHouseNumberAptPL) {
+  AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
+  AddTextFormFieldData("house-number", "Nr domu / lokalu",
+                       ADDRESS_HOME_HOUSE_NUMBER_AND_APT);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
+                    LanguageCode("pl"));
+}
+
+// Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and
+// |ADDRESS_HOME_HOUSE_NUMBER| when they are labeled accordingly and
+// both are present.
+TEST_P(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
+  AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
+  AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
+                    LanguageCode("pl"));
+}
+
+// Tests that fields are classified as |ADDRESS_HOME_STREET_NAME|,
+// |ADDRESS_HOME_HOUSE_NUMBER| and |ADDRESS_HOME_APT_NUM|  when they are labeled
+// accordingly and both are present.
+TEST_P(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
+  base::test::ScopedFeatureList enabled{
+      features::kAutofillEnableSupportForApartmentNumbers};
+  AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
+  AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
+  AddTextFormFieldData("house-number", "Nr lokalu", ADDRESS_HOME_APT_NUM);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("PL"),
+                    LanguageCode("pl"));
 }
 
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME| and

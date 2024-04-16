@@ -36,7 +36,8 @@ inline constexpr char16_t kStreetNameRe[] =
     u"|((?<!do |de )endere[çc]o)"  // pt-BR
     u"|logradouro"                 // pt-BR
     u"|dirección"                  // es-MX
-    u"|calle";                     // es-MX
+    u"|calle"                      // es-MX
+    u"|ulica|ulicy";               // pl
 inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"        // en
     u"|(haus.?|^)(nummer|nr)"                      // de
@@ -50,8 +51,11 @@ inline constexpr char16_t kApartmentNumberRe[] =
     u"|(?:(?<!teléfo)no|n[úu]m(?:ero)?)\\.?\\s*(int\\b|interno)"  // es-MX
     u"|n(u|ú)mero.*app?art(a|e)ment"                              // es,fr,it
     u"|wohnung"                                                   // de
-    u"|(?:nr|numer)?[.\\s]*(?:lokalu|(?<!za)mieszkani[ae])"                  // pl
+    u"|(?:nr|numer)?[.\\s]*(?:lokalu|(?<!za)mieszkani[ae])"       // pl
     u"|квартир";                                                  // ru
+inline constexpr char16_t kHouseNumberAndAptRe[] =
+    u"(?:domu|budynku)(?:[.,\\s/]|nr|numer)*(?:lokalu|mieszkani[ae])";  // pl
+
 inline constexpr char16_t kAddressLine1Re[] =
     u"^address$|address[_-]?line(one)?|address1|addr1|street"
     u"|(?:shipping|billing)address$"
@@ -66,7 +70,8 @@ inline constexpr char16_t kAddressLine1Re[] =
     u"|地址"                                   // zh-CN
     u"|(\\b|_)adres(?! tarifi)(\\b|_)"         // tr
     u"|^주소.?$|주소.?1"                       // ko-KR
-    u"|^alamat";                               // id
+    u"|^alamat"                                // id
+    u"|ulica|ulicy";                           // pl
 inline constexpr char16_t kAddressLine1LabelRe[] =
     u"(^\\W*address)"
     u"|(address\\W*$)"

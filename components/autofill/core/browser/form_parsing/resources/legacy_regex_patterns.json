@@ -62,6 +62,15 @@
         "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
       }
     ],
+    "pl" : [
+      {
+        "positive_pattern": "ulica|ulicy",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
+      }
+    ],
     "pt" : [
       {
         "positive_pattern": "rua|avenida|endere[çc]o|logradouro|dirección",
@@ -141,6 +150,17 @@
         "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
       }
 	]
+  },
+  "ADDRESS_HOME_HOUSE_NUMBER_AND_APT": {
+    "pl": [
+      {
+        "positive_pattern": "(?:domu|budynku)(?:[.,\\s/]|nr|numer)*(?:lokalu|mieszkani[ae])",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
+      }
+  ]
   },
   "ADDRESS_HOME_HOUSE_NUMBER":{
     "en": [
@@ -469,6 +489,15 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
+      }
+    ],
+    "pl": [
+      {
+        "positive_pattern": "ulica|ulicy",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
         "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
       }
     ],
