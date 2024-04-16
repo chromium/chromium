@@ -42,13 +42,7 @@ parser.add_argument('--asan-build', help='Use ASan-related libraries',
 parser.set_defaults(asan_build=False)
 parser.add_argument('--version', help='Get the version of current browser app.',
     action='store_true')
-parser.add_argument('--enable-chrome-logs', action='store_true',
-    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
-parser.add_argument('--verbose', action='store_true',
-    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
-parser.add_argument('--log-path',
-    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
-args=parser.parse_args()
+args, _ = parser.parse_known_args()
 
 test_app = os.path.join(
     args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
