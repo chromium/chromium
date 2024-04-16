@@ -109,8 +109,6 @@ gpu/gpu_export.h
 ipc/ipc_channel_proxy_unittest_messages.h
 ipc/ipc_message_null_macros.h
 media/audio/audio_logging.h
-media/base/routing_token_callback.h
-media/base/video_renderer_sink.h
 media/cast/common/mod_util.h
 media/cast/net/rtcp/rtcp_session.h
 media/filters/ffmpeg_aac_bitstream_converter.h
