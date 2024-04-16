@@ -50,7 +50,9 @@ class QuickStartMetrics {
                                   // account on phone.
     kQSCreatingAccount = 20,      // Quick Start UI attempting to login with
                                   // transferred account details.
-    kMaxValue = kQSCreatingAccount
+    kQSFallbackURL = 21,  // Quick Start screen when when a signin challenge
+                          // must be completed on the target device.
+    kMaxValue = kQSFallbackURL
   };
 
   // This enum is tied directly to a UMA enum defined in

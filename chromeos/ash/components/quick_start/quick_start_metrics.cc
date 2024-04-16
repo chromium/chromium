@@ -124,6 +124,8 @@ constexpr const char kScreenClosedQSGettingGoogleAccountInfo[] =
     "QuickStart.ScreenClosed.QSGettingGoogleAccountInfo";
 constexpr const char kScreenClosedQSCreatingAccount[] =
     "QuickStart.ScreenClosed.QSCreatingAccount";
+constexpr const char kScreenClosedQSFallbackURL[] =
+    "QuickStart.ScreenClosed.QSFallbackURL";
 
 std::string MapMessageTypeToMetric(
     QuickStartMetrics::MessageType message_type) {
@@ -190,6 +192,8 @@ std::string MapScreenNameToMetric(QuickStartMetrics::ScreenName screen_name) {
       return kScreenClosedQSSelectGoogleAccount;
     case QuickStartMetrics::ScreenName::kQSCreatingAccount:
       return kScreenClosedQSCreatingAccount;
+    case QuickStartMetrics::ScreenName::kQSFallbackURL:
+      return kScreenClosedQSFallbackURL;
     case QuickStartMetrics::ScreenName::kOther:
       [[fallthrough]];
     default:
@@ -530,6 +534,9 @@ std::ostream& operator<<(
       break;
     case QuickStartMetrics::ScreenName::kQSCreatingAccount:
       stream << "[QS creating account]";
+      break;
+    case QuickStartMetrics::ScreenName::kQSFallbackURL:
+      stream << "[QS fallback URL]";
       break;
   }
 

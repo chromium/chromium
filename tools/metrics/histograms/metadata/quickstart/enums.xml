@@ -128,6 +128,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="QS Screen: Wi-Fi Credentials Received"/>
   <int value="19" label="QS Screen: Account Picker"/>
   <int value="20" label="QS Screen: Creating Account"/>
+  <int value="21" label="QS Screen: Fallback URL"/>
 </enum>
 
 <enum name="QuickStartWifiTransferResultFailureReason">

@@ -368,6 +368,7 @@ chromium-metrics-reviews@google.com.
     <variant name="QSComplete"/>
     <variant name="QSConnectingToWifi"/>
     <variant name="QSCreatingAccount"/>
+    <variant name="QSFallbackURL"/>
     <variant name="QSGettingGoogleAccountInfo"/>
     <variant name="QSResumingConnectionAfterUpdate"/>
     <variant name="QSSelectGoogleAccount"/>
@@ -402,6 +403,7 @@ chromium-metrics-reviews@google.com.
     <variant name="QSComplete"/>
     <variant name="QSConnectingToWifi"/>
     <variant name="QSCreatingAccount"/>
+    <variant name="QSFallbackURL"/>
     <variant name="QSGettingGoogleAccountInfo"/>
     <variant name="QSResumingConnectionAfterUpdate"/>
     <variant name="QSSelectGoogleAccount"/>

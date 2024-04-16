@@ -131,13 +131,13 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
       return QuickStartMetrics::ScreenName::kQSCreatingAccount;
     case QuickStartController::UiState::SETUP_COMPLETE:
       return QuickStartMetrics::ScreenName::kQSComplete;
+    case QuickStartController::UiState::FALLBACK_URL_FLOW:
+      return QuickStartMetrics::ScreenName::kQSFallbackURL;
     case QuickStartController::UiState::CONNECTING_TO_PHONE:
       if (controller_state == QuickStartController::ControllerState::
                                   WAITING_TO_RESUME_AFTER_UPDATE) {
         return QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate;
       }
-      [[fallthrough]];
-    case QuickStartController::UiState::FALLBACK_URL_FLOW:
       [[fallthrough]];
     case QuickStartController::UiState::EXIT_SCREEN:
       [[fallthrough]];
