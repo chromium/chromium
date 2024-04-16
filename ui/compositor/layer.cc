@@ -1488,7 +1488,6 @@ void Layer::SetDidScrollCallback(
 
 void Layer::SetScrollable(const gfx::Size& container_bounds) {
   cc_layer_->SetScrollable(container_bounds);
-  cc_layer_->SetUserScrollable(true, true);
 }
 
 gfx::PointF Layer::CurrentScrollOffset() const {

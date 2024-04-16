@@ -625,9 +625,7 @@ void VisualViewport::CreateLayers() {
 
   needs_paint_property_update_ = true;
 
-  // TODO(crbug.com/1015625): Avoid scroll_layer_.
   scroll_layer_ = cc::Layer::Create();
-  scroll_layer_->SetScrollable(size_);
   scroll_layer_->SetBounds(ContentsSize());
   scroll_layer_->SetElementId(GetScrollElementId());
 

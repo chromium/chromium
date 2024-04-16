@@ -465,20 +465,23 @@ TEST_F(ScrollbarLayerTest, ScrollOffsetSynchronization) {
 
 TEST_F(ScrollbarLayerTest, UpdatePropertiesOfScrollBarWhenThumbRemoved) {
   scoped_refptr<Layer> root_layer = Layer::Create();
+  scoped_refptr<Layer> scroll_layer = Layer::Create();
   scoped_refptr<Layer> content_layer = Layer::Create();
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_layer =
-      FakePaintedScrollbarLayer::Create(false, true, root_layer->element_id());
+      FakePaintedScrollbarLayer::Create(false, true,
+                                        scroll_layer->element_id());
 
   // Give the root layer a size that will result in MaxScrollOffset = (80, 0).
-  root_layer->SetScrollable(gfx::Size(20, 50));
-  root_layer->SetBounds(gfx::Size(100, 50));
+  scroll_layer->SetScrollable(gfx::Size(20, 50));
+  scroll_layer->SetBounds(gfx::Size(100, 50));
   content_layer->SetBounds(gfx::Size(100, 50));
 
   layer_tree_host_->SetRootLayer(root_layer);
-  root_layer->AddChild(content_layer);
-  root_layer->AddChild(scrollbar_layer);
+  root_layer->AddChild(scroll_layer);
+  scroll_layer->AddChild(content_layer);
+  scroll_layer->AddChild(scrollbar_layer);
 
-  root_layer->SetScrollOffset(gfx::PointF(0, 0));
+  scroll_layer->SetScrollOffset(gfx::PointF(0, 0));
   scrollbar_layer->SetBounds(gfx::Size(70, 10));
 
   // The track_rect should be relative to the scrollbar's origin.
@@ -502,21 +505,24 @@ TEST_F(ScrollbarLayerTest, UpdatePropertiesOfScrollBarWhenThumbRemoved) {
 
 TEST_F(ScrollbarLayerTest, ThumbRect) {
   scoped_refptr<Layer> root_layer = Layer::Create();
-  root_layer->SetElementId(LayerIdToElementIdForTesting(root_layer->id()));
+  scoped_refptr<Layer> scroll_layer = Layer::Create();
+  scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
   scoped_refptr<Layer> content_layer = Layer::Create();
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_layer =
-      FakePaintedScrollbarLayer::Create(false, true, root_layer->element_id());
+      FakePaintedScrollbarLayer::Create(false, true,
+                                        scroll_layer->element_id());
 
-  // Give the root layer a size that will result in MaxScrollOffset = (80, 0).
-  root_layer->SetScrollable(gfx::Size(20, 50));
-  root_layer->SetBounds(gfx::Size(100, 50));
+  // Give the scroll layer a size that will result in MaxScrollOffset = (80, 0).
+  scroll_layer->SetScrollable(gfx::Size(20, 50));
+  scroll_layer->SetBounds(gfx::Size(100, 50));
   content_layer->SetBounds(gfx::Size(100, 50));
 
   layer_tree_host_->SetRootLayer(root_layer);
-  root_layer->AddChild(content_layer);
-  root_layer->AddChild(scrollbar_layer);
+  root_layer->AddChild(scroll_layer);
+  scroll_layer->AddChild(content_layer);
+  scroll_layer->AddChild(scrollbar_layer);
 
-  root_layer->SetScrollOffset(gfx::PointF(0, 0));
+  scroll_layer->SetScrollOffset(gfx::PointF(0, 0));
   scrollbar_layer->SetBounds(gfx::Size(70, 10));
 
   // The track_rect should be relative to the scrollbar's origin.
@@ -535,14 +541,14 @@ TEST_F(ScrollbarLayerTest, ThumbRect) {
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Under-scroll (thumb position should clamp and be unchanged).
-  root_layer->SetScrollOffset(gfx::PointF(-5, 0));
+  scroll_layer->SetScrollOffset(gfx::PointF(-5, 0));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
   EXPECT_EQ(gfx::Rect(10, 0, 4, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Over-scroll (thumb position should clamp on the far side).
-  root_layer->SetScrollOffset(gfx::PointF(85, 0));
+  scroll_layer->SetScrollOffset(gfx::PointF(85, 0));
   layer_tree_host_->UpdateLayers();
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
@@ -576,18 +582,20 @@ TEST_F(ScrollbarLayerTest, ThumbRect) {
 
 TEST_F(ScrollbarLayerTest, ThumbRectForOverlayLeftSideVerticalScrollbar) {
   scoped_refptr<Layer> root_layer = Layer::Create();
+  scoped_refptr<Layer> scroll_layer = Layer::Create();
   // Create an overlay left side vertical scrollbar.
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_layer =
       FakePaintedScrollbarLayer::Create(false, true,
                                         ScrollbarOrientation::kVertical, true,
-                                        true, root_layer->element_id());
-  root_layer->SetScrollable(gfx::Size(20, 50));
-  root_layer->SetBounds(gfx::Size(50, 100));
+                                        true, scroll_layer->element_id());
+  scroll_layer->SetScrollable(gfx::Size(20, 50));
+  scroll_layer->SetBounds(gfx::Size(50, 100));
 
   layer_tree_host_->SetRootLayer(root_layer);
-  root_layer->AddChild(scrollbar_layer);
+  root_layer->AddChild(scroll_layer);
+  scroll_layer->AddChild(scrollbar_layer);
 
-  root_layer->SetScrollOffset(gfx::PointF(0, 0));
+  scroll_layer->SetScrollOffset(gfx::PointF(0, 0));
   scrollbar_layer->SetBounds(gfx::Size(10, 20));
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 10, 20));
   scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(10, 4));
@@ -913,7 +921,8 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
   SetupViewport(impl.root_layer(), gfx::Size(), gfx::Size(900, 900));
 
   auto* scroll_layer = impl.OuterViewportScrollLayer();
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->scrollable);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_horizontal);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_vertical);
 
   const int kTrackStart = 0;
   const int kThumbThickness = 10;
@@ -929,14 +938,15 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
   GetScrollNode(scroll_layer)->container_bounds = gfx::Size(900, 900);
   scroll_layer->SetBounds(gfx::Size(900, 900));
   scroll_layer->UpdateScrollable();
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->scrollable);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_horizontal);
+  EXPECT_FALSE(GetScrollNode(scroll_layer)->user_scrollable_vertical);
   // If the scroll layer is not scrollable, the bounds and the container bounds
   // do not affect scrollbar geometries.
   EXPECT_FALSE(
       impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
 
   // Changing scrollable to true should require an update.
-  GetScrollNode(scroll_layer)->scrollable = true;
+  GetScrollNode(scroll_layer)->user_scrollable_horizontal = true;
   scroll_layer->UpdateScrollable();
   EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
   impl.host_impl()->active_tree()->UpdateScrollbarGeometries();
@@ -961,7 +971,7 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
       impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
 
   // Changing scrollable to false should require an update.
-  GetScrollNode(scroll_layer)->scrollable = false;
+  GetScrollNode(scroll_layer)->user_scrollable_horizontal = false;
   scroll_layer->UpdateScrollable();
   EXPECT_TRUE(impl.host_impl()->active_tree()->ScrollbarGeometriesNeedUpdate());
   impl.host_impl()->active_tree()->UpdateScrollbarGeometries();

@@ -153,9 +153,8 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   }
   node->bounds = layer->bounds();
   node->container_bounds = scroll_container_bounds;
-  node->scrollable = !scroll_container_bounds.IsEmpty();
-  node->user_scrollable_horizontal = true;
-  node->user_scrollable_vertical = true;
+  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+      !scroll_container_bounds.IsEmpty();
   node->is_composited = true;
 
   DCHECK(layer->has_transform_node());
@@ -347,9 +346,8 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
 
   node->bounds = bounds;
   node->container_bounds = scroll_container_bounds;
-  node->scrollable = !scroll_container_bounds.IsEmpty();
-  node->user_scrollable_horizontal = true;
-  node->user_scrollable_vertical = true;
+  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+      !scroll_container_bounds.IsEmpty();
   node->is_composited = false;
 
   // Create a matching transform node.

@@ -717,24 +717,21 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 
   bool is_root = !layer->parent();
   bool scrollable = layer->scrollable();
-  bool contains_non_fast_scrollable_region =
-      !layer->non_fast_scrollable_region().IsEmpty();
-
-  bool requires_node =
-      is_root || scrollable || contains_non_fast_scrollable_region;
+  CHECK(layer->non_fast_scrollable_region().IsEmpty());
+  bool requires_node = is_root || scrollable;
 
   int node_id;
   if (!requires_node) {
     node_id = parent_id;
     data_for_children->scroll_tree_parent = node_id;
   } else {
+    CHECK(!is_root || !scrollable);
+    CHECK(!is_root || layer->offset_to_transform_parent().IsZero());
     ScrollNode node;
-    node.scrollable = scrollable;
     node.bounds = layer->bounds();
     node.container_bounds = layer->scroll_container_bounds();
-    node.offset_to_transform_parent = layer->offset_to_transform_parent();
-    node.user_scrollable_horizontal = layer->GetUserScrollableHorizontal();
-    node.user_scrollable_vertical = layer->GetUserScrollableVertical();
+    node.user_scrollable_horizontal = node.user_scrollable_vertical =
+        scrollable;
     node.element_id = layer->element_id();
     node.transform_id = data_for_children->transform_tree_parent;
     node.is_composited = true;
@@ -748,10 +745,8 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
       scroll_tree_->SetElementIdForNodeId(node_id, layer->element_id());
     }
 
-    if (node.scrollable) {
-      scroll_tree_->SetBaseScrollOffset(layer->element_id(),
-                                        layer->scroll_offset());
-    }
+    scroll_tree_->SetBaseScrollOffset(layer->element_id(),
+                                      layer->scroll_offset());
   }
 
   layer->SetScrollTreeIndex(node_id);

@@ -614,8 +614,6 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
   id = scroll_tree_.Insert(cc::ScrollNode(), parent_id);
 
   cc::ScrollNode& compositor_node = *scroll_tree_.Node(id);
-  compositor_node.scrollable = true;
-
   compositor_node.container_bounds = scroll_node.ContainerRect().size();
   compositor_node.bounds = scroll_node.ContentsRect().size();
   compositor_node.user_scrollable_horizontal =

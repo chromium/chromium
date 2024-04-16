@@ -1539,8 +1539,9 @@ gfx::PointF ScrollTree::MaxScrollOffset(int scroll_node_id) const {
   const ScrollNode* scroll_node = Node(scroll_node_id);
   gfx::SizeF scroll_bounds = this->scroll_bounds(scroll_node_id);
 
-  if (!scroll_node->scrollable || scroll_bounds.IsEmpty())
+  if (scroll_bounds.IsEmpty()) {
     return gfx::PointF();
+  }
 
   const TransformTree& transform_tree = property_trees()->transform_tree();
   float scale_factor = 1.f;
@@ -1630,18 +1631,8 @@ void ScrollTree::set_currently_scrolling_node(int scroll_node_id) {
 }
 
 gfx::Transform ScrollTree::ScreenSpaceTransform(int scroll_node_id) const {
-  const ScrollNode* scroll_node = Node(scroll_node_id);
-  const TransformTree& transform_tree = property_trees()->transform_tree();
-  const TransformNode* transform_node =
-      transform_tree.Node(scroll_node->transform_id);
-  gfx::Transform screen_space_transform = gfx::Transform::MakeTranslation(
-      scroll_node->offset_to_transform_parent.x(),
-      scroll_node->offset_to_transform_parent.y());
-  screen_space_transform.PostConcat(
-      transform_tree.ToScreen(transform_node->id));
-  if (scroll_node->should_flatten)
-    screen_space_transform.Flatten();
-  return screen_space_transform;
+  return property_trees()->transform_tree().ToScreen(
+      Node(scroll_node_id)->transform_id);
 }
 
 SyncedScrollOffset* ScrollTree::GetSyncedScrollOffset(ElementId id) {
@@ -1991,7 +1982,6 @@ gfx::Vector2dF ScrollTree::ScrollBy(const ScrollNode& scroll_node,
     adjusted_scroll.set_x(0);
   if (!scroll_node.user_scrollable_vertical)
     adjusted_scroll.set_y(0);
-  DCHECK(scroll_node.scrollable);
   gfx::PointF old_offset = current_scroll_offset(scroll_node.element_id);
   gfx::PointF new_offset =
       ClampScrollOffsetToLimits(old_offset + adjusted_scroll, scroll_node);

@@ -170,7 +170,6 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
                                 ->property_trees()
                                 ->scroll_tree()
                                 .FindNodeFromElementId(scroll_element_id);
-  EXPECT_TRUE(scroll_node->scrollable);
   EXPECT_EQ(scroll_node->container_bounds, gfx::Size(100, 100));
 
   // Ensure a synthetic impl-side scroll offset propagates to the scrollable
@@ -230,7 +229,6 @@ TEST_P(CompositingTest, FrameViewScroll) {
           ->scroll_tree()
           .FindNodeFromElementId(scrollable_area->GetScrollElementId());
   ASSERT_TRUE(scroll_node);
-  EXPECT_TRUE(scroll_node->scrollable);
 
   // Ensure a synthetic impl-side scroll offset propagates to the scrollable
   // area using the DidScroll callback.

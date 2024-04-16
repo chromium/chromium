@@ -1176,13 +1176,12 @@ class LayerTreeHostTestPushElementIdToNodeIdMap : public LayerTreeHostTest {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         child_->SetForceRenderSurfaceForTesting(true);
-        // Add a non-fast region to ensure a scroll node is created.
-        child_->SetNonFastScrollableRegion(Region(gfx::Rect(50, 50, 50, 50)));
+        child_->SetScrollable(gfx::Size(100, 100));
         break;
       case 2:
-        child_->SetForceRenderSurfaceForTesting(false);
-        // Remove the non-fast region to ensure a scroll node is removed.
-        child_->SetNonFastScrollableRegion(Region());
+        child_->RemoveFromParent();
+        child_ = Layer::Create();
+        root_->AddChild(child_);
         break;
     }
   }
@@ -3386,7 +3385,6 @@ class LayerTreeHostTestStartPageScaleAnimation : public LayerTreeHostTest {
 
     scroll_layer_->SetBounds(gfx::Size(2 * root_layer->bounds().width(),
                                        2 * root_layer->bounds().height()));
-    scroll_layer_->SetScrollOffset(gfx::PointF());
 
     SetupViewport(root_layer, scroll_layer_, root_layer->bounds());
 

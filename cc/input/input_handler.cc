@@ -1326,6 +1326,12 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
 }
 
 ScrollNode* InputHandler::GetNodeToScroll(ScrollNode* node) const {
+  // The root and the secondary root are sentinel nodes and don't contribute to
+  // scrolling.
+  if (node->id <= kSecondaryRootPropertyNodeId) {
+    return nullptr;
+  }
+
   // Blink has a notion of a "root scroller", which is the scroller in a page
   // that is considered to host the main content. Typically this will be the
   // document/LayoutView contents; however, in some situations Blink may choose
@@ -1375,22 +1381,9 @@ bool InputHandler::IsInitialScrollHitTestReliable(
     return true;
   }
 
-  ScrollNode* closest_scroll_node = nullptr;
   auto& scroll_tree = GetScrollTree();
-  ScrollNode* scroll_node = scroll_tree.Node(layer_impl->scroll_tree_index());
-  for (; scroll_tree.parent(scroll_node);
-       scroll_node = scroll_tree.parent(scroll_node)) {
-    // TODO(crbug.com/1413877): This is inconsistent with the condition in
-    // LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(), and
-    // may be a reason for kFailedHitTest main thread scrolling. Can we change
-    // FindLayersUpToFirstScrollableOrOpaqueToHitTest() not to return
-    // a non-scrollable scroller, or not to check scrollable here? We may also
-    // need to consider overscroll behavior of a non-scrollable scroller.
-    if (scroll_node->scrollable) {
-      closest_scroll_node = GetNodeToScroll(scroll_node);
-      break;
-    }
-  }
+  ScrollNode* closest_scroll_node =
+      GetNodeToScroll(scroll_tree.Node(layer_impl->scroll_tree_index()));
 
   // If there's a scrolling layer, we should also have a closest scroll node,
   // and vice versa. Otherwise, the hit test is not reliable.
@@ -1766,8 +1759,10 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
       break;
     }
 
-    if (!cur_node->scrollable)
+    if (!cur_node->user_scrollable_horizontal &&
+        !cur_node->user_scrollable_vertical) {
       continue;
+    }
 
     if (!first_scrollable_node) {
       first_scrollable_node = cur_node;
@@ -2024,7 +2019,8 @@ void InputHandler::UpdateScrollSourceInfo(const ScrollState& scroll_state,
 // Return true if scrollable node for 'ancestor' is the same as 'child' or an
 // ancestor along the scroll tree.
 bool InputHandler::IsScrolledBy(LayerImpl* child, ScrollNode* ancestor) {
-  DCHECK(ancestor && ancestor->scrollable);
+  DCHECK(ancestor && (ancestor->user_scrollable_horizontal ||
+                      ancestor->user_scrollable_vertical));
   if (!child)
     return false;
   DCHECK_EQ(child->layer_tree_impl(), &ActiveTree());

@@ -300,7 +300,8 @@ void LayerImpl::UpdateScrollable() {
 
   const auto* scroll_node = GetScrollTree().FindNodeFromElementId(element_id());
   bool was_scrollable = scrollable_;
-  scrollable_ = scroll_node && scroll_node->scrollable;
+  scrollable_ = scroll_node && (scroll_node->user_scrollable_horizontal ||
+                                scroll_node->user_scrollable_vertical);
   if (was_scrollable == scrollable_) {
     if (!scrollable_)
       return;

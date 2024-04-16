@@ -48,22 +48,13 @@ struct CC_EXPORT ScrollNode {
   // Size of the content that is scrolled within the container bounds.
   gfx::Size bounds;
 
-  // This is used for subtrees that should not be scrolled independently. For
-  // example, when there is a layer that is not scrollable itself but is inside
-  // a scrolling layer.
-  bool scrollable : 1 = false;
   bool max_scroll_offset_affected_by_page_scale : 1 = false;
   bool scrolls_inner_viewport : 1 = false;
   bool scrolls_outer_viewport : 1 = false;
   bool prevent_viewport_scrolling_from_inner : 1 = false;
-  bool should_flatten : 1 = false;
   bool user_scrollable_horizontal : 1 = false;
   bool user_scrollable_vertical : 1 = false;
   bool is_composited : 1 = false;
-
-  // This offset is used when |scrollable| is false and there isn't a transform
-  // node already present that covers this offset. For layer tree mode only.
-  gfx::Vector2dF offset_to_transform_parent;
 
   ElementId element_id;
   int transform_id = kRootPropertyNodeId;

@@ -473,20 +473,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   virtual bool IsScrollbarLayerForTesting() const;
 
-  // For layer tree mode only.
-  // Set or get if this layer is able to be scrolled along each axis. These are
-  // independent of the scrollable state, or size of the scrollable area
-  // specified in SetScrollable(), as these may be enabled or disabled
-  // dynamically, while SetScrollable() defines what would be possible if these
-  // are enabled.
-  // When disabled, overscroll elasticity will not be used if the scroll offset
-  // ends up past the maximum range. And when enabled, with overlay scrollbars,
-  // the scrollbars will be shown when the scroll offset changes if these are
-  // set to true.
-  void SetUserScrollable(bool horizontal, bool vertical);
-  bool GetUserScrollableHorizontal() const;
-  bool GetUserScrollableVertical() const;
-
+  // For layer list mode only.
   // Set or get an area of this layer within which initiating a scroll can not
   // be done from the compositor thread. Within this area, if the user attempts
   // to start a scroll, the events must be sent to the main thread and processed
@@ -1043,9 +1030,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     // If set, disables this layer's rounded corner from triggering a render
     // surface on itself if possible.
     bool is_fast_rounded_corner : 1 = false;
-
-    bool user_scrollable_horizontal : 1 = true;
-    bool user_scrollable_vertical : 1 = true;
 
     bool trilinear_filtering : 1 = false;
 

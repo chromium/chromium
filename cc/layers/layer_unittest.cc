@@ -1118,8 +1118,6 @@ TEST_F(LayerTest, CheckPropertyChangeCausesCorrectBehavior) {
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
       test_layer->SetScrollable(gfx::Size(1, 1)));
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
-      test_layer->SetUserScrollable(true, false));
-  EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
       test_layer->SetScrollOffset(gfx::PointF(10, 10)));
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
       test_layer->SetNonFastScrollableRegion(Region(gfx::Rect(1, 1, 2, 2))));

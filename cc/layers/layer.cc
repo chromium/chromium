@@ -1114,42 +1114,6 @@ bool Layer::IsScrollbarLayerForTesting() const {
   return false;
 }
 
-void Layer::SetUserScrollable(bool horizontal, bool vertical) {
-  DCHECK(IsPropertyChangeAllowed());
-  auto& inputs = EnsureLayerTreeInputs();
-  if (inputs.user_scrollable_horizontal == horizontal &&
-      inputs.user_scrollable_vertical == vertical)
-    return;
-  inputs.user_scrollable_horizontal = horizontal;
-  inputs.user_scrollable_vertical = vertical;
-  if (!IsAttached())
-    return;
-
-  if (scrollable()) {
-    auto& scroll_tree =
-        layer_tree_host()->property_trees()->scroll_tree_mutable();
-    if (auto* scroll_node = scroll_tree.Node(scroll_tree_index_.Read(*this))) {
-      scroll_node->user_scrollable_horizontal = horizontal;
-      scroll_node->user_scrollable_vertical = vertical;
-    } else {
-      SetPropertyTreesNeedRebuild();
-    }
-  }
-
-  SetNeedsCommit();
-}
-
-bool Layer::GetUserScrollableHorizontal() const {
-  // user_scrollable_horizontal is true by default.
-  return !layer_tree_inputs() ||
-         layer_tree_inputs()->user_scrollable_horizontal;
-}
-
-bool Layer::GetUserScrollableVertical() const {
-  // user_scrollable_vertical is true by default.
-  return !layer_tree_inputs() || layer_tree_inputs()->user_scrollable_vertical;
-}
-
 void Layer::SetNonFastScrollableRegion(const Region& region) {
   DCHECK(IsPropertyChangeAllowed());
   const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
