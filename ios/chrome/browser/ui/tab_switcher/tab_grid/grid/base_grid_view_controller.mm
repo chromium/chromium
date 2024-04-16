@@ -192,7 +192,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)loadView {
   if (IsTabGridCompositionalLayoutEnabled()) {
-    self.gridLayout = [[GridLayout alloc] init];
+    self.gridLayout = [[GridLayout alloc] initWithTabGridMode:_mode];
   } else {
     self.gridLayout = [[LegacyGridLayout alloc] init];
   }
@@ -348,6 +348,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   TabGridMode previousMode = _mode;
   _mode = mode;
+  if (IsTabGridCompositionalLayoutEnabled() && self.gridLayout) {
+    ObjCCastStrict<GridLayout>(self.gridLayout).mode = _mode;
+  }
 
   self.collectionView.dragInteractionEnabled =
       [self shouldEnableDrapAndDropInteraction];
