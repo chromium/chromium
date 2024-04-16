@@ -81,9 +81,8 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, PRE_RestartToApplyFlags) {
         waiter.OnUserSessionStarted(true);
         restart_requested = true;
       }));
-
-  login_manager_.LoginWithDefaultContext(login_manager_.users()[0],
-                                         /*wait_for_profile_prepared=*/false);
+  login_manager_.set_should_wait_for_profile(false);
+  login_manager_.LoginWithDefaultContext(login_manager_.users()[0]);
   waiter.Wait();
   EXPECT_TRUE(restart_requested);
 }

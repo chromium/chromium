@@ -72,11 +72,20 @@ class UserCloudPolicyManagerTest
   }
 
  protected:
+  static const AccountId GetTestAccountId() {
+    if (std::get<1>(GetParam()) == ash::LoggedInUserMixin::LogInType::kChild) {
+      return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                            FakeGaiaMixin::kFakeUserGaiaId);
+    } else {
+      return AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          FakeGaiaMixin::kEnterpriseUser1GaiaId);
+    }
+  }
+
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, std::get<1>(GetParam()) /*type*/, embedded_test_server(),
-      this, true /*should_launch_browser*/,
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      this, true /*should_launch_browser*/, GetTestAccountId(),
       // Initializing the login manager with no user will cause GAIA screen to
       // be shown on start-up.
       false /*include_initial_user*/};

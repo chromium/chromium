@@ -50,6 +50,7 @@ LoggedInUserMixin::LoggedInUserMixin(
                                                FakeGaiaMixin::kFakeUserGaiaId)),
             test::kDefaultAuthSetup,
             ConvertUserType(type)),
+      include_initial_user_(include_initial_user),
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),
                      &fake_gaia_),
@@ -90,7 +91,7 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
         << "wait_for_active_session must be false if skip_post_login_screen is "
            "false as there might not be an active session after a login.";
   }
-
+  login_manager_.set_should_wait_for_profile(wait_for_active_session);
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   if (user_.user_type == user_manager::UserType::kChild) {
@@ -107,14 +108,23 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
     // through login.
     GetUserPolicyMixin()->RequestPolicyUpdate();
   }
-  if (wait_for_active_session) {
-    login_manager_.LoginAndWaitForActiveSession(user_context);
-    // If should_launch_browser was set to true, then ensures
-    // InProcessBrowserTest::browser() doesn't return nullptr.
-    test_base_->SelectFirstBrowser();
+  if (!include_initial_user_) {
+    if (user_.user_type == user_manager::UserType::kChild) {
+      CHECK(user_.account_id.GetUserEmail() == FakeGaiaMixin::kFakeUserEmail);
+      CHECK(user_.account_id.GetGaiaId() == FakeGaiaMixin::kFakeUserGaiaId);
+      login_manager_.LoginAsNewChildUser();
+    } else {
+      login_manager_.LoginAsNewRegularUser(user_context);
+    }
   } else {
     login_manager_.AttemptLoginUsingAuthenticator(
         user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
+  }
+  if (wait_for_active_session) {
+    login_manager_.WaitForActiveSession();
+    // If should_launch_browser was set to true, then ensures
+    // InProcessBrowserTest::browser() doesn't return nullptr.
+    test_base_->SelectFirstBrowser();
   }
 }
 

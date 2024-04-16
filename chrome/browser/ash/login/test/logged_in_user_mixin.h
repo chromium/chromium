@@ -120,6 +120,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
 
  private:
   LoginManagerMixin::TestUserInfo user_;
+  bool include_initial_user_;
   LoginManagerMixin login_manager_;
 
   EmbeddedPolicyTestServerMixin embedded_policy_server_;

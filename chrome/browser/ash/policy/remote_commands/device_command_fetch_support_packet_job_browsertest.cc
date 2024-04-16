@@ -254,8 +254,7 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
   void LoginUserAndSetAffiliation(
       const ash::LoginManagerMixin::TestUserInfo& user,
       bool is_affiliated) {
-    login_manager_mixin_.LoginWithDefaultContext(
-        user, /*wait_for_profile_prepared=*/true);
+    login_manager_mixin_.LoginWithDefaultContext(user);
     login_manager_mixin_.WaitForActiveSession();
     // UserManager is initialized as ash::FakeChromeUserManager by the included
     // mixins so it's safe to cast.

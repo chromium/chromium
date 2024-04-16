@@ -248,15 +248,13 @@ bool LoginManagerMixin::LoginAndWaitForActiveSession(
          active_user->GetAccountId() == user_context.GetAccountId();
 }
 
-void LoginManagerMixin::LoginWithDefaultContext(
-    const TestUserInfo& user_info,
-    bool wait_for_profile_prepared) {
+void LoginManagerMixin::LoginWithDefaultContext(const TestUserInfo& user_info) {
   UserContext user_context = CreateDefaultUserContext(user_info);
   test::ProfilePreparedWaiter profile_prepared(user_info.account_id);
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
 
-  if (wait_for_profile_prepared) {
+  if (wait_for_profile_) {
     profile_prepared.Wait();
   }
 }
@@ -274,7 +272,9 @@ void LoginManagerMixin::LoginAsNewRegularUser(
   test::ProfilePreparedWaiter profile_prepared(user_context->GetAccountId());
   AttemptLoginUsingAuthenticator(
       *user_context, std::make_unique<StubAuthenticatorBuilder>(*user_context));
-  profile_prepared.Wait();
+  if (wait_for_profile_) {
+    profile_prepared.Wait();
+  }
 }
 
 void LoginManagerMixin::LoginAsNewChildUser() {
@@ -294,7 +294,9 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
   AttemptLoginUsingAuthenticator(
       user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
-  profile_prepared.Wait();
+  if (wait_for_profile_) {
+    profile_prepared.Wait();
+  }
 }
 
 void LoginManagerMixin::SkipPostLoginScreens() {
