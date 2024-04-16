@@ -30,6 +30,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
   private var indexPathsOfDeletingItems: [IndexPath] = []
   private var indexPathsOfInsertingItems: [IndexPath] = []
 
+  /// Whether items are currently being collapsed/expanded.
+  private var expandingItems = false
+  private var collapsingItems = false
+
   //// Leading constraint of the `newTabButton`.
   private var newTabButtonLeadingConstraint: NSLayoutConstraint?
 
@@ -120,10 +124,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     indexPathsOfInsertingItems = []
     for item in updateItems {
       switch item.updateAction {
-      case .insert:
+      case .insert where !expandingItems:
         indexPathsOfInsertingItems.append(item.indexPathAfterUpdate!)
         break
-      case .delete:
+      case .delete where !collapsingItems:
         indexPathsOfDeletingItems.append(item.indexPathBeforeUpdate!)
         break
       default:
@@ -142,17 +146,18 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
+      let collectionView = collectionView,
       let attributes: UICollectionViewLayoutAttributes = super
         .initialLayoutAttributesForAppearingItem(at: itemIndexPath),
       let itemIdentifier = dataSource?.itemIdentifier(for: itemIndexPath)
     else { return nil }
     switch itemIdentifier.item {
-    case .tab(let tabSwitcherItem):
-      return initialLayoutAttributesForAppearingTabSwitcherItem(
-        tabSwitcherItem, at: itemIndexPath, attributes: attributes)
-    case .group(let tabGroupItem):
-      return initialLayoutAttributesForAppearingTabGroupItem(
-        tabGroupItem, at: itemIndexPath, attributes: attributes)
+    case .tab(_):
+      return initialLayoutAttributesForAppearingTabCell(
+        at: itemIndexPath, attributes: attributes, collectionView: collectionView)
+    case .group(_):
+      return initialLayoutAttributesForAppearingGroupCell(
+        at: itemIndexPath, attributes: attributes, collectionView: collectionView)
     }
   }
 
@@ -160,18 +165,21 @@ class TabStripLayout: UICollectionViewFlowLayout {
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      let itemIdentifier = dataSource?.itemIdentifier(for: itemIndexPath),
+      let collectionView = collectionView,
+      let cell = collectionView.cellForItem(at: itemIndexPath),
       let attributes: UICollectionViewLayoutAttributes =
         super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
     else { return nil }
 
-    switch itemIdentifier.item {
-    case .tab(let tabSwitcherItem):
-      return finalLayoutAttributesForDisappearingTabSwitcherItem(
-        tabSwitcherItem, at: itemIndexPath, attributes: attributes)
-    case .group(let tabGroupItem):
-      return finalLayoutAttributesForDisappearingTabGroupItem(
-        tabGroupItem, at: itemIndexPath, attributes: attributes)
+    switch cell {
+    case let tabCell as TabStripTabCell:
+      return finalLayoutAttributesForDisappearingTabCell(
+        tabCell, at: itemIndexPath, attributes: attributes, collectionView: collectionView)
+    case let groupCell as TabStripGroupCell:
+      return finalLayoutAttributesForDisappearingGroupCell(
+        groupCell, at: itemIndexPath, attributes: attributes, collectionView: collectionView)
+    default:
+      return nil
     }
   }
 
@@ -183,35 +191,35 @@ class TabStripLayout: UICollectionViewFlowLayout {
       let layoutAttributes = super.layoutAttributesForItem(at: indexPath),
       let collectionView = collectionView
     else { return nil }
-
+    let cell = collectionView.cellForItem(at: indexPath)
     switch itemIdentifier.item {
-    case .tab(let tabSwitcherItem):
-      return layoutAttributesForTabSwitcherItem(
-        tabSwitcherItem, at: indexPath, layoutAttributes: layoutAttributes,
+    case .tab(_):
+      let tabCell = cell as? TabStripTabCell
+      return layoutAttributesForTabCell(
+        tabCell, at: indexPath, layoutAttributes: layoutAttributes,
         collectionView: collectionView)
-    case .group(let tabGroupItem):
-      return layoutAttributesForTabGroupItem(
-        tabGroupItem, at: indexPath, layoutAttributes: layoutAttributes,
+    case .group(_):
+      let groupCell = cell as? TabStripGroupCell
+      return layoutAttributesForGroupCell(
+        groupCell, at: indexPath, layoutAttributes: layoutAttributes,
         collectionView: collectionView)
     }
   }
 
-  private func layoutAttributesForTabSwitcherItem(
-    _ tabSwitcherItem: TabSwitcherItem, at indexPath: IndexPath,
+  private func layoutAttributesForTabCell(
+    _ cell: TabStripTabCell?, at indexPath: IndexPath,
     layoutAttributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
   {
     /// Early return the updated `selectedAttributes` if the cell is selected.
-    if let selectedAttributes = self.layoutAttributesForSelectedCell(
-      layoutAttributes: layoutAttributes)
+    if let selectedAttributes = self.layoutAttributesForSelectedTabCell(
+      cell, at: indexPath, layoutAttributes: layoutAttributes, collectionView: collectionView)
     {
       return selectedAttributes
     }
 
-    guard
-      let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell
-    else { return layoutAttributes }
+    guard let cell = cell else { return layoutAttributes }
 
     let contentOffset = collectionView.contentOffset
     var frame = layoutAttributes.frame
@@ -336,8 +344,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return layoutAttributes
   }
 
-  private func layoutAttributesForTabGroupItem(
-    _ tabGroupItem: TabGroupItem, at indexPath: IndexPath,
+  private func layoutAttributesForGroupCell(
+    _ groupCell: TabStripGroupCell?, at indexPath: IndexPath,
     layoutAttributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
@@ -376,47 +384,51 @@ class TabStripLayout: UICollectionViewFlowLayout {
     newTabButton?.superview?.layoutIfNeeded()
   }
 
-  /// Returns the initial layout attributes for an appearing `TabSwitcherItem`.
-  private func initialLayoutAttributesForAppearingTabSwitcherItem(
-    _ tabSwitcherItem: TabSwitcherItem, at itemIndexPath: IndexPath,
-    attributes: UICollectionViewLayoutAttributes
+  /// Returns the initial layout attributes for an appearing `tabCell`.
+  private func initialLayoutAttributesForAppearingTabCell(
+    at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
   {
+    let tabCell = collectionView.cellForItem(at: itemIndexPath) as? TabStripTabCell
     guard
-      let selectedAttributes: UICollectionViewLayoutAttributes = layoutAttributesForSelectedCell(
-        layoutAttributes: attributes)
+      let selectedAttributes: UICollectionViewLayoutAttributes =
+        self.layoutAttributesForSelectedTabCell(
+          tabCell, at: itemIndexPath, layoutAttributes: attributes, collectionView: collectionView)
     else { return nil }
 
-    // Animate the appearing item by starting it with zero opacity and
-    // translated down by its height.
-    selectedAttributes.alpha = 0
-    selectedAttributes.transform = CGAffineTransform(
-      translationX: 0,
-      y: attributes.frame.size.height)
+    if indexPathsOfInsertingItems.contains(itemIndexPath) {
+      // Animate the appearing item by starting it with zero opacity and
+      // translated down by its height.
+      selectedAttributes.alpha = 0
+      selectedAttributes.transform = CGAffineTransform(
+        translationX: 0,
+        y: attributes.frame.size.height)
+    }
     return selectedAttributes
   }
 
-  /// Returns the initial layout attributes for an appearing `TabGroupItem`.
-  private func initialLayoutAttributesForAppearingTabGroupItem(
-    _ tabGroupItem: TabGroupItem, at itemIndexPath: IndexPath,
-    attributes: UICollectionViewLayoutAttributes
+  /// Returns the initial layout attributes for an appearing `groupCell`.
+  private func initialLayoutAttributesForAppearingGroupCell(
+    at itemIndexPath: IndexPath, attributes: UICollectionViewLayoutAttributes,
+    collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
   {
     return attributes
   }
 
-  /// Updates and returns the given `layoutAttributes` if the cell is selected.
+  /// Updates and returns the given `attributes` if the cell is selected.
   /// Inserted items are considered as selected.
-  private func layoutAttributesForSelectedCell(layoutAttributes: UICollectionViewLayoutAttributes)
+  private func layoutAttributesForSelectedTabCell(
+    _ cell: TabStripTabCell?, at indexPath: IndexPath,
+    layoutAttributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
+  )
     -> UICollectionViewLayoutAttributes?
   {
-    guard let collectionView = collectionView
-    else { return nil }
     // The selected cell should remain on top of other cells within collection
     // view's bounds.
-    let indexPath = layoutAttributes.indexPath
     guard
       indexPath == selectedIndexPath || indexPathsOfInsertingItems.contains(indexPath)
     else {
@@ -425,7 +437,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     /// `cellAnimatediOS16` is always `false` above iOS 16.
     var cellAnimated = cellAnimatediOS16
-    let cell = collectionView.cellForItem(at: indexPath) as? TabStripTabCell
     if let animationKeys = cell?.layer.animationKeys() {
       cellAnimated = !animationKeys.isEmpty || cellAnimatediOS16
     }
@@ -505,17 +516,17 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return layoutAttributes
   }
 
-  /// Returns the final layout attributes for an disappearing `TabSwitcherItem`.
-  private func finalLayoutAttributesForDisappearingTabSwitcherItem(
-    _ tabSwitcherItem: TabSwitcherItem, at itemIndexPath: IndexPath,
-    attributes: UICollectionViewLayoutAttributes
+  /// Returns the final layout attributes for andisappearing `tabCell`.
+  private func finalLayoutAttributesForDisappearingTabCell(
+    _ tabCell: TabStripTabCell?, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
   {
     var attributes = attributes
     /// Update `attributes` if the disappearing cell is selected.
-    if let selectedAttributes = self.layoutAttributesForSelectedCell(
-      layoutAttributes: attributes)
+    if let selectedAttributes = self.layoutAttributesForSelectedTabCell(
+      tabCell, at: itemIndexPath, layoutAttributes: attributes, collectionView: collectionView)
     {
       attributes = selectedAttributes
     }
@@ -532,10 +543,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return attributes
   }
 
-  /// Returns the final layout attributes for an disappearing `TabGroupItem`.
-  private func finalLayoutAttributesForDisappearingTabGroupItem(
-    _ tabGroupItem: TabGroupItem, at itemIndexPath: IndexPath,
-    attributes: UICollectionViewLayoutAttributes
+  /// Returns the final layout attributes for a disappearing `groupCell`.
+  private func finalLayoutAttributesForDisappearingGroupCell(
+    _ groupCell: TabStripGroupCell?, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
   )
     -> UICollectionViewLayoutAttributes?
   {
@@ -628,4 +639,23 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return CGSize(width: width, height: TabStripConstants.GroupItem.height)
   }
 
+  /// Prepares the layout for collection view updates resulting from expanding items.
+  public func prepareForItemsExpanding() {
+    self.expandingItems = true
+  }
+
+  /// Finalizes collection view updates resulting from expanding items.
+  public func finalizeItemsExpanding() {
+    self.expandingItems = false
+  }
+
+  /// Prepares the layout for collection view updates resulting from collapsing items.
+  public func prepareForItemsCollapsing() {
+    self.collapsingItems = true
+  }
+
+  /// Finalizes collection view updates resulting from collapsing items.
+  public func finalizeItemsCollapsing() {
+    self.collapsingItems = false
+  }
 }

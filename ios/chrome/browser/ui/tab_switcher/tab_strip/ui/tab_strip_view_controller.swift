@@ -396,17 +396,21 @@ class TabStripViewController: UIViewController,
   func collapseGroup(_ group: TabGroupItem) {
     var snapshot = dataSource.snapshot(for: .tabs)
     snapshot.collapse([TabStripItemIdentifier(group)])
+    layout.prepareForItemsCollapsing()
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot, animatingDifferences: true,
       numberOfVisibleItemsChanged: true)
+    layout.finalizeItemsCollapsing()
   }
 
   func expandGroup(_ group: TabGroupItem) {
     var snapshot = dataSource.snapshot(for: .tabs)
     snapshot.expand([TabStripItemIdentifier(group)])
+    layout.prepareForItemsExpanding()
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot, animatingDifferences: true,
       numberOfVisibleItemsChanged: true)
+    layout.finalizeItemsExpanding()
   }
 
   // MARK: - Public

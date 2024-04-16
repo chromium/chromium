@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -14,6 +15,7 @@ namespace {
 constexpr CGFloat kTitleContainerVerticalPadding = 4;
 constexpr CGFloat kTitleContainerCenterYOffset = -2;
 constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
+constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
 
 }  // namespace
 
@@ -70,7 +72,7 @@ constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
 }
 
 - (void)setGroupStrokeColor:(UIColor*)color {
-  if (_groupStrokeView.backgroundColor == color) {
+  if ([_groupStrokeView.backgroundColor isEqual:color]) {
     return;
   }
   _groupStrokeView.backgroundColor = color;
@@ -82,7 +84,16 @@ constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
     return;
   }
   _collapsed = collapsed;
-  [self updateGroupStroke];
+  if (!collapsed) {
+    [self updateGroupStroke];
+  } else {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf updateGroupStroke];
+        }),
+        base::Seconds(kCollapseUpdateGroupStrokeDelaySeconds));
+  }
 }
 
 #pragma mark - View creation helpers
