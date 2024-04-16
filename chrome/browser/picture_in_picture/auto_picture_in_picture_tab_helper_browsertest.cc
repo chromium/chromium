@@ -783,7 +783,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
   WaitForMeetsVisibilityThreshold(web_contents);
-  OpenNewTab(browser());
+
+  {
+    // Open and switch to a new tab.
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
 
   // Make sure that the overlay view is shown.
   EXPECT_TRUE(GetOverlayViewFromVideoPipWindow());
