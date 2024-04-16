@@ -70,6 +70,12 @@ void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
   autofill_error_dialog_context_ = std::move(context);
 }
 
+void TestPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  show_otp_input_dialog_ = true;
+}
+
 PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
   if (!payments_window_manager_) {
     payments_window_manager_ =

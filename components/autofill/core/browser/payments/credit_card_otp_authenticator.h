@@ -158,6 +158,9 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // Whether there is a SelectChallengeOption request ongoing.
   bool selected_challenge_option_request_ongoing_ = false;
 
+  // Whether user clicked the link to request a new OTP code.
+  bool new_otp_requested_ = false;
+
   // AutofillClient that owns `this`.
   const raw_ref<AutofillClient> autofill_client_;
 

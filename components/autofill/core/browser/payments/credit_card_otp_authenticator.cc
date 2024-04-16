@@ -92,6 +92,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(bool user_closed_dialog) {
 }
 
 void CreditCardOtpAuthenticator::OnNewOtpRequested() {
+  new_otp_requested_ = true;
   if (!selected_challenge_option_request_ongoing_)
     SendSelectChallengeOptionRequest();
 }
@@ -187,8 +188,12 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     CHECK(!context_token.empty());
     // Update the |context_token_| with the new one.
     context_token_ = context_token;
-    // Display the OTP dialog.
-    ShowOtpDialog();
+
+    if (!new_otp_requested_) {
+      // Display the OTP dialog only if the dialog is not shown yet.
+      ShowOtpDialog();
+    }
+    new_otp_requested_ = false;
     return;
   }
 
@@ -406,6 +411,7 @@ void CreditCardOtpAuthenticator::Reset() {
   unmask_request_.reset();
   select_challenge_option_request_timestamp_ = std::nullopt;
   unmask_card_request_timestamp_ = std::nullopt;
+  new_otp_requested_ = false;
 }
 
 }  // namespace autofill

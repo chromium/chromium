@@ -46,6 +46,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       bool show_confirmation_before_closing,
       base::OnceClosure no_user_perceived_authentication_callback) override;
   void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
+  void ShowCardUnmaskOtpInputDialog(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   PaymentsWindowManager* GetPaymentsWindowManager() override;
 
   void set_migration_card_selections(
@@ -64,6 +67,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
   bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
+  bool show_otp_input_dialog() { return show_otp_input_dialog_; }
+  void ResetShowOtpInputDialog() { show_otp_input_dialog_ = false; }
 
   const AutofillErrorDialogContext& autofill_error_dialog_context() {
     return autofill_error_dialog_context_;
@@ -82,6 +87,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool autofill_progress_dialog_shown_ = false;
 
   bool autofill_error_dialog_shown_ = false;
+
+  bool show_otp_input_dialog_ = false;
 
   // Context parameters that are used to display an error dialog during card
   // number retrieval. This context will have information that the autofill

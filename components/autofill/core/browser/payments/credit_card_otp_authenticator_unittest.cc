@@ -311,7 +311,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
     EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
     EXPECT_NE(OtpAuthenticatorContextToken(),
               "context_token_from_previous_unmask_response");
-    // TODO(crbug.com/1243475): Verify the otp dialog is shown.
+    EXPECT_TRUE(
+        autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
 
     // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
     // TestPaymentsNetworkInterface just stores the unmask request detail, won't
@@ -371,7 +372,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
   EXPECT_NE(OtpAuthenticatorContextToken(),
             "context_token_from_previous_unmask_response");
-  // TODO(crbug.com/1243475): Verify the otp dialog is shown.
+  EXPECT_TRUE(
+      autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
   // TestPaymentsNetworkInterface just stores the unmask request detail, won't
@@ -418,7 +420,9 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
   EXPECT_NE(OtpAuthenticatorContextToken(),
             "context_token_from_previous_unmask_response");
-  // TODO(crbug.com/1243475): Verify the otp dialog is shown.
+  EXPECT_TRUE(
+      autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
+  autofill_client_.GetPaymentsAutofillClient()->ResetShowOtpInputDialog();
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
   // TestPaymentsNetworkInterface just stores the unmask request detail, won't
@@ -442,8 +446,6 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
       /*context_token=*/"context_token_from_incorrect_otp");
   // Verify the context token is updated with unmask response.
   EXPECT_EQ(OtpAuthenticatorContextToken(), "context_token_from_incorrect_otp");
-  // TODO(crbug.com/1243475): Verify the otp dialog is updated with the mismatch
-  // info.
 
   // Simulate user types in another otp and click 'Confirm' again.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"333333");
@@ -461,6 +463,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
+  EXPECT_FALSE(
+      autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -497,7 +501,9 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
   EXPECT_FALSE(OtpAuthenticatorContextToken().empty());
   EXPECT_NE(OtpAuthenticatorContextToken(),
             "context_token_from_previous_unmask_response");
-  // TODO(crbug.com/1243475): Verify the otp dialog is shown.
+  EXPECT_TRUE(
+      autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
+  autofill_client_.GetPaymentsAutofillClient()->ResetShowOtpInputDialog();
 
   // Simulate user provides the OTP and clicks 'Confirm' in the OTP dialog.
   // TestPaymentsNetworkInterface just stores the unmask request detail, won't
@@ -521,18 +527,18 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
       /*context_token=*/"context_token_from_expired_otp");
   // Verify the context token is updated with unmask response.
   EXPECT_EQ(OtpAuthenticatorContextToken(), "context_token_from_expired_otp");
-  // TODO(crbug.com/1243475): Verify the otp dialog is updated with the otp
-  // expired info.
 
   // Simulate user clicks "Get new code" from the UI, which calls
   // SendSelectChallengeOptionRequest() again. This will send the same selected
   // challenge option with the new context token.
-  authenticator_->SendSelectChallengeOptionRequest();
+  authenticator_->OnNewOtpRequested();
   // Verify the second SelectChallengeRequest is correctly set, the only
   // difference from the previous call is the context_token.
   verifySelectChallengeOptionRequest(
       /*context_token=*/"context_token_from_expired_otp",
       kTestBillingCustomerNumber);
+  EXPECT_FALSE(
+      autofill_client_.GetPaymentsAutofillClient()->show_otp_input_dialog());
 
   // Simulate user receives the new otp and types in the new otp.
   authenticator_->OnUnmaskPromptAccepted(/*otp=*/u"555555");
