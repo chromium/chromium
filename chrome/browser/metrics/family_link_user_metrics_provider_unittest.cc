@@ -61,9 +61,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, IdentityTestEnvironmentProfileAdaptor::
                           GetIdentityTestEnvironmentFactories());
-
-    EnableAccountCapabilitiesFetches(
-        IdentityManagerFactory::GetForProfile(profile));
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), test_email,
         signin::ConsentLevel::kSignin);
@@ -103,8 +100,6 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   Profile* profile = test_profile_manager()->CreateTestingProfile(
       kTestProfile, IdentityTestEnvironmentProfileAdaptor::
                         GetIdentityTestEnvironmentFactories());
-  EnableAccountCapabilitiesFetches(
-      IdentityManagerFactory::GetForProfile(profile));
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile), kTestEmail,
       signin::ConsentLevel::kSignin);

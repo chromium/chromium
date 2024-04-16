@@ -494,7 +494,6 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
-  EnableAccountCapabilitiesFetches(identity_manager());
 
   // Test primary adult account.
   {

@@ -652,11 +652,6 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {
       ->set_max_authorization_token_fetch_retries_for_testing(0);
 }
 
-void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager) {
-  identity_manager->GetAccountFetcherService()
-      ->EnableAccountCapabilitiesFetcherForTest(true);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void SetUpMockAccountManagerFacade(bool useFakeImpl) {
   Java_AccountManagerFacadeUtil_setUpMockFacade(

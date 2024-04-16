@@ -23,7 +23,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -82,7 +81,6 @@ class UserCloudPolicyStatusProviderTest
   MOCK_METHOD0(GetDeviceAffiliationIds, base::flat_set<std::string>());
 
   void SetPrimaryAccountAsFlex() {
-    EnableAccountCapabilitiesFetches(identity_manager());
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
         kTestUsername, signin::ConsentLevel::kSignin);
 
