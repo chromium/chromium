@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_POLICY_BROKER_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_POLICY_BROKER_H_
 
+#include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_extension_tracker.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
@@ -17,11 +22,19 @@
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/extensions/external_loader.h"
+#include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
+
+namespace chromeos {
+class DeviceLocalAccountExternalPolicyLoader;
+}  // namespace chromeos
 
 namespace policy {
 
@@ -67,9 +80,7 @@ class DeviceLocalAccountPolicyBroker
   const std::string& account_id() const { return account_id_; }
   const std::string& user_id() const { return user_id_; }
 
-  scoped_refptr<extensions::ExternalLoader> extension_loader() const {
-    return external_cache_->GetExtensionLoader();
-  }
+  scoped_refptr<extensions::ExternalLoader> extension_loader() const;
 
   CloudPolicyCore* core() { return &core_; }
   const CloudPolicyCore* core() const { return &core_; }
@@ -132,6 +143,8 @@ class DeviceLocalAccountPolicyBroker
   const std::unique_ptr<DeviceLocalAccountPolicyStore> store_;
   std::unique_ptr<DeviceLocalAccountExtensionTracker> extension_tracker_;
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
+  scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader>
+      extension_loader_;
   std::unique_ptr<chromeos::DeviceLocalAccountExternalCache> external_cache_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;

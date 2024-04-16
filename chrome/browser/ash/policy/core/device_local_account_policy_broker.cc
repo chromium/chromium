@@ -3,26 +3,49 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
+
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_paths.h"
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 #include "chrome/browser/ash/policy/core/file_util.h"
+#include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "components/policy/core/common/chrome_schema.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_value_map.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/network_service_instance.h"
-#include "extensions/browser/pref_names.h"
+#include "device_local_account_extension_tracker.h"
+#include "device_local_account_policy_store.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -68,6 +91,26 @@ base::Value::Dict GetPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   return policy_handler.GetPolicyDict(policy_map);
 }
 
+void SendExtensionsToAsh(
+    scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader> loader,
+    const std::string& user_id,
+    base::Value::Dict cached_extensions) {
+  loader->OnExtensionListsUpdated(cached_extensions);
+}
+
+void SendExtensionsToLacros(const std::string& user_id,
+                            base::Value::Dict cached_extensions) {
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->device_local_account_extension_service()
+        ->SetForceInstallExtensionsFromCache(user_id,
+                                             std::move(cached_extensions));
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
 }  // namespace
 
 DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
@@ -85,6 +128,8 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
       component_policy_cache_path_(component_policy_cache_path),
       store_(std::move(store)),
       external_data_manager_(external_data_manager),
+      extension_loader_(base::MakeRefCounted<
+                        chromeos::DeviceLocalAccountExternalPolicyLoader>()),
       core_(dm_protocol::kChromePublicAccountPolicyType,
             store_->account_id(),
             store_.get(),
@@ -98,7 +143,9 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
         account, store_.get(), &schema_registry_);
   }
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
-      user_id_,
+      /*ash_loader=*/base::BindRepeating(SendExtensionsToAsh,
+                                         extension_loader_),
+      /*lacros_loader=*/base::BindRepeating(SendExtensionsToLacros), user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
@@ -122,6 +169,11 @@ void DeviceLocalAccountPolicyBroker::Initialize() {
 
 void DeviceLocalAccountPolicyBroker::LoadImmediately() {
   store_->LoadImmediately();
+}
+
+scoped_refptr<extensions::ExternalLoader>
+DeviceLocalAccountPolicyBroker::extension_loader() const {
+  return extension_loader_;
 }
 
 bool DeviceLocalAccountPolicyBroker::HasInvalidatorForTest() const {
