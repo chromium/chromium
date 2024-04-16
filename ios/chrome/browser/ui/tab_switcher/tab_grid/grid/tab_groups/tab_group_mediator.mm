@@ -138,6 +138,19 @@
 }
 
 // Overrides the parent as there is only tab cells.
+- (void)insertItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex {
+  GridItemIdentifier* nextItemIdentifier;
+  if (nextWebStateIndex < _tabGroup->range().range_end()) {
+    nextItemIdentifier = [GridItemIdentifier
+        tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
+  }
+  [self.consumer insertItem:item
+                beforeItemID:nextItemIdentifier
+      selectedItemIdentifier:[self activeIdentifier]];
+}
+
+// Overrides the parent as there is only tab cells.
 - (void)moveItem:(GridItemIdentifier*)item
     beforeWebStateIndex:(int)nextWebStateIndex {
   GridItemIdentifier* nextItem;
@@ -177,6 +190,8 @@
                                     DragItemOrigin::kOtherBrwoser);
       destinationWebStateIndex += destinationIndex;
       MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
+      self.webStateList->MoveToGroup({destinationWebStateIndex},
+                                     _tabGroup.get());
     } else {
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
