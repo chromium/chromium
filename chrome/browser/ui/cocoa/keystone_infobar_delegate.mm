@@ -41,10 +41,11 @@ class SkBitmap;
 // static
 void KeystonePromotionInfoBarDelegate::Create(
     content::WebContents* webContents) {
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(webContents);
-  infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+  if (!webContents) {
+    return;
+  }
+  infobars::ContentInfoBarManager::FromWebContents(webContents)
+      ->AddInfoBar(CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new KeystonePromotionInfoBarDelegate(
               Profile::FromBrowserContext(webContents->GetBrowserContext())
                   ->GetPrefs()))));
@@ -98,31 +99,21 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
   return true;
 }
 
-// static
-void KeystoneInfoBar::PromotionInfoBar(Profile* profile) {
-  // If this is the first run, the user clicked the "don't ask again" button
-  // at some point in the past, or if the "don't ask about the default
-  // browser" command-line switch is present, bail out.  That command-line
-  // switch is recycled here because it's likely that the set of users that
-  // don't want to be nagged about the default browser also don't want to be
-  // nagged about the update check.  (Automated testers, I'm thinking of
-  // you...)
+void ShowUpdaterPromotionInfoBar() {
+  // If the user clicked the "don't ask again" button at some point in the
+  // past, or if the "don't ask about the default browser" command-line switch
+  // is present, bail out.  That command-line switch is recycled here because
+  // it's likely that the set of users that don't want to be nagged about the
+  // default browser also don't want to be nagged about the update check.
+  // (Automated testers, I'm thinking of you...)
+  Browser* browser = chrome::FindLastActive();
   base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
-  if (first_run::IsChromeFirstRun() ||
-      !profile->GetPrefs()->GetBoolean(prefs::kShowUpdatePromotionInfoBar) ||
+  if (!browser || !browser->profile() ||
+      !browser->profile()->GetPrefs()->GetBoolean(
+          prefs::kShowUpdatePromotionInfoBar) ||
       commandLine->HasSwitch(switches::kNoDefaultBrowserCheck)) {
     return;
   }
-
-  EnsureUpdater(base::BindOnce([]() {
-                  Browser* browser = chrome::FindLastActive();
-                  if (browser) {
-                    content::WebContents* webContents =
-                        browser->tab_strip_model()->GetActiveWebContents();
-                    if (webContents) {
-                      KeystonePromotionInfoBarDelegate::Create(webContents);
-                    }
-                  }
-                }),
-                base::DoNothing());
+  KeystonePromotionInfoBarDelegate::Create(
+      browser->tab_strip_model()->GetActiveWebContents());
 }
