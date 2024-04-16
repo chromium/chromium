@@ -23,9 +23,6 @@ class WaylandClientPerfTests : public exo::WaylandClientTest {
 };
 
 WaylandClientPerfTests::WaylandClientPerfTests() {
-  // TODO(crbug.com/40249908): Figure out the missing/misordered
-  // PresentationFeedback when using this feature.
-  scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
 }
 
 constexpr char kMetricPrefixWaylandClient[] = "WaylandClient.";
