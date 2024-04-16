@@ -10,23 +10,29 @@
 
 namespace content {
 
+namespace {
+void InitOnDeviceModelService(
+    mojo::Remote<on_device_model::mojom::OnDeviceModelService>&
+        service_remote) {
+  auto receiver = service_remote.BindNewPipeAndPassReceiver();
+  service_remote.reset_on_disconnect();
+  ServiceProcessHost::Launch<on_device_model::mojom::OnDeviceModelService>(
+      std::move(receiver), ServiceProcessHost::Options()
+                               .WithDisplayName("On-Device Model Service")
+                               .Pass());
+}
+}  // namespace
+
 // static
 const mojo::Remote<on_device_model::mojom::OnDeviceModelService>&
 GetRemoteOnDeviceModelService() {
   static base::NoDestructor<
       mojo::Remote<on_device_model::mojom::OnDeviceModelService>>
-      service_remote([]() {
-        mojo::Remote<on_device_model::mojom::OnDeviceModelService>
-            service_remote;
-        auto receiver = service_remote.BindNewPipeAndPassReceiver();
-        service_remote.reset_on_disconnect();
-        ServiceProcessHost::Launch<
-            on_device_model::mojom::OnDeviceModelService>(
-            std::move(receiver), ServiceProcessHost::Options()
-                                     .WithDisplayName("On-Device Model Service")
-                                     .Pass());
-        return service_remote;
-      }());
+      service_remote;
+
+  if (!*service_remote) {
+    InitOnDeviceModelService(*service_remote);
+  }
 
   return *service_remote;
 }
