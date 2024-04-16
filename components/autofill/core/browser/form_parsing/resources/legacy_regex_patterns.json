@@ -152,6 +152,15 @@
         "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
       }
     ],
+    "pl": [
+      {
+        "positive_pattern": "(?:nr|numer)[.\\s]*(?:domu|budynku)",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
+      }
+    ],
     "pt": [
       {
         "positive_pattern": "^\\*?.?número(.?\\*?$| da residência)",
@@ -1054,6 +1063,15 @@
     "ja": [
       {
         "positive_pattern": "市区町村",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+      }
+    ],
+    "pl": [
+      {
+        "positive_pattern": "miasto|miejscowość",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

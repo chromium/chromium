@@ -42,6 +42,7 @@ inline constexpr char16_t kHouseNumberRe[] =
     u"|(haus.?|^)(nummer|nr)"                      // de
     u"|^\\*?.?número(.?\\*?$| da residência)"      // pt-BR, pt-PT
     u"|exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext"  // es
+    u"|(?:nr|numer)[.\\s]*(?:domu|budynku)"        // pl
     u"|дом|номер.?дома";                           // ru
 inline constexpr char16_t kApartmentNumberRe[] =
     u"apartment"                                                  // en
@@ -157,6 +158,7 @@ inline constexpr char16_t kCityRe[] =
     u"|localita"                                         // it-IT
     u"|市区町村"                                         // ja-JP
     u"|cidade"                                           // pt-BR
+    u"|miasto|miejscowość"                               // pl
     u"|Город|Насел(е|ё)нный.?пункт"                      // ru
     u"|市"                                               // zh-CN
     u"|分區"                                             // zh-TW
