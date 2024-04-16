@@ -315,7 +315,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
   // initialize for every browser state.
   ChromeBrowserState* last_used_browser_state =
-      browser_state_manager->GetLastUsedBrowserState();
+      browser_state_manager->GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.

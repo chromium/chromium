@@ -117,7 +117,8 @@ ChromeBrowserStateManagerImpl::ChromeBrowserStateManagerImpl() {}
 
 ChromeBrowserStateManagerImpl::~ChromeBrowserStateManagerImpl() {}
 
-ChromeBrowserState* ChromeBrowserStateManagerImpl::GetLastUsedBrowserState() {
+ChromeBrowserState*
+ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDeprecatedDoNotUse() {
   return GetBrowserState(GetLastUsedBrowserStateDir(GetUserDataDir()));
 }
 

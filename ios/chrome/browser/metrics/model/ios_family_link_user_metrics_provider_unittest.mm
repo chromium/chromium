@@ -42,7 +42,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     return &metrics_provider_;
   }
 
-  ios::ChromeBrowserStateManager* browser_state_manager() {
+  TestChromeBrowserStateManager* browser_state_manager() {
     return browser_state_manager_.get();
   }
 
@@ -72,7 +72,7 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   void SignIn(const std::string& email,
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
-    SignIn(browser_state_manager()->GetLastUsedBrowserState(), email,
+    SignIn(browser_state_manager()->GetLastUsedBrowserStateForTesting(), email,
            is_subject_to_parental_controls,
            is_opted_in_to_parental_supervision);
   }
@@ -115,7 +115,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForBrowserState(
-          browser_state_manager()->GetLastUsedBrowserState()),
+          browser_state_manager()->GetLastUsedBrowserStateForTesting()),
       kTestEmail, signin::ConsentLevel::kSignin);
   // Does not set account capabilities, default is unknown.
 
@@ -270,7 +270,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
   RestrictAllSitesForSupervisedUser(
-      browser_state_manager()->GetLastUsedBrowserState());
+      browser_state_manager()->GetLastUsedBrowserStateForTesting());
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();
@@ -293,7 +293,7 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
          /*is_subject_to_parental_controls=*/true,
          /*is_opted_in_to_parental_supervision=*/true);
   AllowUnsafeSitesForSupervisedUser(
-      browser_state_manager()->GetLastUsedBrowserState());
+      browser_state_manager()->GetLastUsedBrowserStateForTesting());
 
   base::HistogramTester histogram_tester;
   metrics_provider()->OnDidCreateMetricsLog();

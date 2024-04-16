@@ -27,7 +27,7 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
   ~ChromeBrowserStateManagerImpl() override;
 
   // ChromeBrowserStateManager:
-  ChromeBrowserState* GetLastUsedBrowserState() override;
+  ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserState(const base::FilePath& path) override;
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;

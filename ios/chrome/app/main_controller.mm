@@ -482,14 +482,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[PreviousSessionInfo sharedInstance] beginRecordingFieldTrials];
 
   // TODO(crbug.com/324417250): Remove mainBrowserState from appState.
-  self.appState.mainBrowserState = GetApplicationContext()
-                                       ->GetChromeBrowserStateManager()
-                                       ->GetLastUsedBrowserState();
+  self.appState.mainBrowserState =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
 
   std::vector<ChromeBrowserState*> loadedBrowserStates =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
+  CHECK(!loadedBrowserStates.empty());
+
   // Initialize and set all loaded browser states.
   for (ChromeBrowserState* chromeBrowserState : loadedBrowserStates) {
     [self initializeBrowserState:chromeBrowserState];

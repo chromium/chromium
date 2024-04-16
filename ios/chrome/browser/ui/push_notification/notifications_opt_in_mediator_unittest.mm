@@ -36,17 +36,18 @@ using set_up_list_prefs::SetUpListItemState;
 class NotificationsOptInMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_state_ = BuildChromeBrowserState();
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(
-        std::move(browser_state_));
+        BuildChromeBrowserState());
+    ChromeBrowserState* browser_state =
+        test_manager_->GetLastUsedBrowserStateForTesting();
+
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         test_manager_.get());
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        test_manager_->GetLastUsedBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
-        test_manager_->GetLastUsedBrowserState());
-    prefs_ = test_manager_->GetLastUsedBrowserState()->GetPrefs();
+        browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
+    auth_service_ =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+    prefs_ = browser_state->GetPrefs();
     local_state_ = TestingApplicationContext::GetGlobal()->GetLocalState();
     scoped_feature_list_.InitWithFeatures(
         {kIOSTipsNotifications, kContentPushNotifications}, {});
@@ -86,8 +87,7 @@ class NotificationsOptInMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<PrefService> local_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
+  std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   NotificationsOptInMediator* mediator_;
   id consumer_;

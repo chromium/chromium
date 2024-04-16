@@ -35,8 +35,9 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
 
 TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {}
 
-ChromeBrowserState* TestChromeBrowserStateManager::GetLastUsedBrowserState() {
-  return browser_states_[last_used_browser_state_path_].get();
+ChromeBrowserState*
+TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {
+  return GetLastUsedBrowserStateForTesting();
 }
 
 ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserState(
@@ -68,3 +69,8 @@ TestChromeBrowserStateManager::GetLoadedBrowserStates() {
 }
 
 void TestChromeBrowserStateManager::LoadBrowserStates() {}
+
+ChromeBrowserState*
+TestChromeBrowserStateManager::GetLastUsedBrowserStateForTesting() {
+  return browser_states_[last_used_browser_state_path_].get();
+}

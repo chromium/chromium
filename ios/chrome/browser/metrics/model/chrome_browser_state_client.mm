@@ -35,7 +35,7 @@ syncer::SyncService* ChromeBrowserStateClient::GetSyncService() {
   return SyncServiceFactory::GetForBrowserState(
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
-          ->GetLastUsedBrowserState()
+          ->GetLastUsedBrowserStateDeprecatedDoNotUse()
           ->GetOriginalChromeBrowserState());
 }
 
@@ -48,7 +48,7 @@ PrefService* ChromeBrowserStateClient::GetProfilePrefs() {
   // a new BrowserState if no BrowserState exists.
   return GetApplicationContext()
       ->GetChromeBrowserStateManager()
-      ->GetLastUsedBrowserState()
+      ->GetLastUsedBrowserStateDeprecatedDoNotUse()
       ->GetOriginalChromeBrowserState()
       ->GetPrefs();
 }

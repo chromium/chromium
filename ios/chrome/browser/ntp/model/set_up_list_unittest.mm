@@ -67,7 +67,7 @@ class SetUpListTest : public PlatformTest {
 
   // Get the test BrowserState.
   ChromeBrowserState* GetBrowserState() {
-    return test_manager_->GetLastUsedBrowserState();
+    return test_manager_->GetLastUsedBrowserStateForTesting();
   }
 
   // Get the LocalState prefs.
@@ -175,7 +175,7 @@ class SetUpListTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<PrefService> prefs_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> test_manager_;
+  std::unique_ptr<TestChromeBrowserStateManager> test_manager_;
   raw_ptr<AuthenticationService> auth_service_;
   SetUpList* set_up_list_;
 };

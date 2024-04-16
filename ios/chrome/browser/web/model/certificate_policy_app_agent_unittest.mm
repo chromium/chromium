@@ -60,7 +60,8 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
 
-    chrome_browser_state_ = browser_state_manager_->GetLastUsedBrowserState();
+    chrome_browser_state_ =
+        browser_state_manager_->GetLastUsedBrowserStateForTesting();
 
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());

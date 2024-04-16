@@ -213,7 +213,8 @@ class AppStateTest : public BlockCleanupTest {
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
 
-    browser_state_ = browser_state_manager_->GetLastUsedBrowserState();
+    browser_state_ =
+        browser_state_manager_->GetLastUsedBrowserStateForTesting();
   }
 
   void TearDown() override {

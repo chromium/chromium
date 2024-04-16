@@ -44,12 +44,13 @@ class TipsNotificationClientTest : public PlatformTest {
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
     BrowserList* list = BrowserListFactory::GetForBrowserState(
-        browser_state_manager_->GetLastUsedBrowserState());
+        browser_state_manager_->GetLastUsedBrowserStateForTesting());
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_manager_->GetLastUsedBrowserState(), mock_scene_state_);
+        browser_state_manager_->GetLastUsedBrowserStateForTesting(),
+        mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<TipsNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
