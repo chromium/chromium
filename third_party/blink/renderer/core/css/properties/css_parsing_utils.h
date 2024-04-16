@@ -61,7 +61,7 @@ enum class TrackListType {
 };
 enum class UnitlessQuirk { kAllow, kForbid };
 enum class AllowCalcSize { kAllowWithAuto, kAllowWithoutAuto, kForbid };
-enum class AllowedColorKeywords { kAllowSystemColor, kNoSystemColor };
+enum class AllowedColors { kAll, kAbsolute };
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 
 using ConsumeAnimationItemValue = CSSValue* (*)(CSSPropertyID,
