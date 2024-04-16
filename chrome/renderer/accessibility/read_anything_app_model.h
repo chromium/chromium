@@ -96,6 +96,11 @@ class ReadAnythingAppModel {
     // Because GetCurrentText returns a vector of node ids to be used by
     // TypeScript also store the node ids as a vector for easier retrieval.
     std::vector<ui::AXNodeID> node_ids;
+
+    // The human readable text represented by this segment of node ids. This
+    // is stored separately for easier retrieval for non-sentence granularity
+    // highlighting.
+    std::u16string text;
   };
 
   bool requires_distillation() { return requires_distillation_; }

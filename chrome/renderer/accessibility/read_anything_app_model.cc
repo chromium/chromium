@@ -1201,8 +1201,6 @@ ReadAnythingAppModel::GetNextNodes() {
     return current_granularity;
   }
 
-  std::u16string current_text;
-
   // Loop through the tree in order to group nodes together into the same
   // granularity segment until there are no more pieces that can be added
   // to the current segment or we've reached the end of the tree.
@@ -1257,7 +1255,8 @@ ReadAnythingAppModel::GetNextNodes() {
       // Look at the text of the items we've already added to the
       // current sentence (current_text) combined with the text of the next
       // node (base_text).
-      const std::u16string& combined_text = current_text + base_text;
+      const std::u16string& combined_text =
+          current_granularity.text + base_text;
       // Get the index of the next sentence if we're looking at the combined
       // previous and current node text.
       int combined_sentence_index = GetNextSentence(combined_text);
@@ -1280,7 +1279,8 @@ ReadAnythingAppModel::GetNextNodes() {
       // TODO(crbug.com/1474951): See if it's possible to fix the code
       // in FindAccessibleTextBoundary instead so that this workaround isn't
       // needed.
-      if (combined_sentence_index == (int)current_text.length() + 1) {
+      if (combined_sentence_index ==
+          (int)current_granularity.text.length() + 1) {
         char c = combined_text[combined_sentence_index - 1];
         is_opening_punctuation = IsOpeningPunctuation(c);
       }
@@ -1302,11 +1302,12 @@ ReadAnythingAppModel::GetNextNodes() {
       //    The current text length is 6, and the next sentence index of
       //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
       //    be added to the current sentence.
-      if (((int)current_text.length() < combined_sentence_index) &&
+      if (((int)current_granularity.text.length() < combined_sentence_index) &&
           !is_opening_punctuation) {
         anchor_node = GetNodeFromCurrentPosition();
         // Calculate the new sentence index.
-        int index_in_new_node = combined_sentence_index - current_text.length();
+        int index_in_new_node =
+            combined_sentence_index - current_granularity.text.length();
         // Add the current node to the list of nodes to be returned, with a
         // text range from 0 to the start of the next sentence
         // (index_in_new_node);
@@ -1315,7 +1316,7 @@ ReadAnythingAppModel::GetNextNodes() {
         segment.text_start = 0;
         segment.text_end = index_in_new_node;
         current_granularity.AddSegment(segment);
-        current_text +=
+        current_granularity.text +=
             anchor_node->GetTextContentUTF16().substr(0, index_in_new_node);
         current_text_index_ = index_in_new_node;
         if (current_text_index_ != (int)base_text.length()) {
@@ -1354,7 +1355,7 @@ ReadAnythingAppModel::GetNextNodes() {
     segment.text_start = start_index;
     segment.text_end = new_current_text_index;
     current_granularity.AddSegment(segment);
-    current_text += anchor_node->GetTextContentUTF16().substr(
+    current_granularity.text += anchor_node->GetTextContentUTF16().substr(
         start_index, current_text_index_ - start_index);
 
     // After adding the most recent granularity segment, if we're not at the
