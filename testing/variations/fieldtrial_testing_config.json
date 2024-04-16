@@ -16450,7 +16450,6 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
@@ -16526,6 +16525,20 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "SafeBrowsingHashPrefixRealTimeLookups"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingAsyncRealTimeCheck",
                         "SafeBrowsingHashPrefixRealTimeLookups"
                     ]
                 }
