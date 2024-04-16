@@ -7,6 +7,7 @@
 #include <gio/gio.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -137,6 +138,24 @@ uint32_t GetDotClockForModeInfo() {
   return 60 * 1e6;
 }
 
+// Gets current layout with context information from a list of monitors.
+std::vector<remoting::DesktopLayoutWithContext> GetLayoutWithContext(
+    std::vector<x11::RandR::MonitorInfo>& monitors) {
+  std::vector<remoting::DesktopLayoutWithContext> current_displays;
+  for (auto& monitor : monitors) {
+    // This implementation only supports resizing synthesized Monitors which
+    // automatically track their Outputs.
+    // TODO(crbug.com/1326339): Maybe support resizing manually-created
+    // monitors?
+    if (monitor.automatic) {
+      current_displays.push_back(
+          {.layout = remoting::ToVideoTrackLayout(monitor),
+           .context = &monitor});
+    }
+  }
+  return current_displays;
+}
+
 }  // namespace
 
 namespace remoting {
@@ -253,18 +272,14 @@ void X11DesktopResizer::SetResolution(const DesktopResolution& resolution,
   // that the display configuration doesn't change under our feet.
   ScopedXGrabServer grabber(connection_);
 
-  if (!resources_.Refresh(randr_, root_)) {
-    return;
-  }
-
   // RANDR does not allow fetching information on a particular monitor. So
   // fetch all of them and try to find the requested monitor.
-  auto reply = randr_->GetMonitors({root_}).Sync();
-  if (!reply) {
+  std::vector<x11::RandR::MonitorInfo> monitors;
+  if (!TryGetCurrentMonitors(monitors)) {
     return;
   }
 
-  for (const auto& monitor : reply->monitors) {
+  for (const auto& monitor : monitors) {
     if (static_cast<DesktopScreenId>(monitor.name) != screen_id) {
       continue;
     }
@@ -301,38 +316,32 @@ void X11DesktopResizer::RestoreResolution(const DesktopResolution& original,
   SetResolution(original, screen_id);
 }
 
-std::vector<DesktopLayoutWithContext>
-X11DesktopResizer::GetLayoutWithContext() {
+bool X11DesktopResizer::TryGetCurrentMonitors(
+    std::vector<x11::RandR::MonitorInfo>& list) {
   if (!has_randr_ || !is_virtual_session_) {
-    return std::vector<DesktopLayoutWithContext>();
+    return false;
   }
 
   if (!resources_.Refresh(randr_, root_)) {
-    return std::vector<DesktopLayoutWithContext>();
+    return false;
   }
 
   auto reply = randr_->GetMonitors({root_}).Sync();
   if (!reply) {
-    return std::vector<DesktopLayoutWithContext>();
+    return false;
   }
-
-  std::vector<DesktopLayoutWithContext> current_displays;
-  for (auto& monitor : reply->monitors) {
-    // This implementation only supports resizing synthesized Monitors which
-    // automatically track their Outputs.
-    // TODO(crbug.com/1326339): Maybe support resizing manually-created
-    // monitors?
-    if (monitor.automatic) {
-      current_displays.push_back(
-          {.layout = ToVideoTrackLayout(monitor), .context = &monitor});
-    }
-  }
-  return current_displays;
+  std::copy(reply->monitors.begin(), reply->monitors.end(),
+            std::back_inserter(list));
+  return true;
 }
 
 DesktopLayoutSet X11DesktopResizer::GetLayout() {
   DesktopLayoutSet result;
-  for (const auto& layout : GetLayoutWithContext()) {
+  std::vector<x11::RandR::MonitorInfo> monitors;
+  if (!TryGetCurrentMonitors(monitors)) {
+    return DesktopLayoutSet();
+  }
+  for (const auto& layout : GetLayoutWithContext(monitors)) {
     result.layouts.emplace_back(layout.layout);
   }
   return result;
@@ -346,9 +355,12 @@ void X11DesktopResizer::SetVideoLayout(const DesktopLayoutSet& layout) {
   // that the display configuration doesn't change under our feet.
   ScopedXGrabServer grabber(connection_);
 
-  std::vector<x11::RandR::MonitorInfo> monitor_infos;
+  std::vector<x11::RandR::MonitorInfo> monitors;
+  if (!TryGetCurrentMonitors(monitors)) {
+    return;
+  }
   std::vector<DesktopLayoutWithContext> current_displays =
-      GetLayoutWithContext();
+      GetLayoutWithContext(monitors);
 
   // TODO(yuweih): Verify that the layout is valid, e.g. no overlaps or gaps
   // between displays.

@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "remoting/host/desktop_display_layout_util.h"
 #include "remoting/host/desktop_geometry.h"
-#include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/scoped_glib.h"
 #include "ui/gfx/geometry/point.h"
@@ -87,8 +86,10 @@ class X11DesktopResizer {
   // Gets a list of outputs that are not connected to any CRTCs.
   OutputInfoList GetDisabledOutputs();
 
-  // Gets current layout with context information.
-  std::vector<DesktopLayoutWithContext> GetLayoutWithContext();
+  // Attempts to get the current list of XRandR monitors from the current
+  // connection. Returns true on success in which case `list` is populated with
+  // the monitors. Returns false otherwise.
+  bool TryGetCurrentMonitors(std::vector<x11::RandR::MonitorInfo>& list);
 
   void RequestGnomeDisplayConfig();
   void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
