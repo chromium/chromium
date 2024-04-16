@@ -121,7 +121,7 @@ let appTitle: string|undefined;
 
 /**
  * The current sort order.
- * TODO(crbug/414789): Match the file manager order when launched that way.
+ * TODO(crbug.com/40384768): Match the file manager order when launched that way.
  * Note currently this is reassigned in tests.
  */
 // eslint-disable-next-line prefer-const

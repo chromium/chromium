@@ -345,7 +345,7 @@ void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           base::NumberToString16(last_search_result_count_), query);
     }
   } else {
-    // TODO(crbug.com/1204551): New(?) accessibility announcement. We used to
+    // TODO(crbug.com/40180065): New(?) accessibility announcement. We used to
     // have a zero state A11Y announcement but zero state is removed for the
     // bubble launcher.
     value = std::u16string();

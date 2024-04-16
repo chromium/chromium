@@ -40,7 +40,7 @@ namespace ash {
 namespace {
 
 // The following distances are copied from tablet_mode_window_drag_delegate.cc.
-// TODO(https://crbug.com/1069869): share these constants.
+// TODO(crbug.com/40126106): share these constants.
 
 // Items dragged to within |kDistanceFromEdgeDp| of the screen will get snapped
 // even if they have not moved by |kMinimumDragToSnapDistanceDp|.

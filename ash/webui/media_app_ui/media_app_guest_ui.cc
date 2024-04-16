@@ -176,7 +176,7 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // so allow resources in the guest to be loaded cross-origin.
   source->OverrideCrossOriginResourcePolicy("cross-origin");
 
-  // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
+  // TODO(crbug.com/40137141): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
   return source;
 }

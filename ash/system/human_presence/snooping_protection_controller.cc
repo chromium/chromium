@@ -74,7 +74,7 @@ SnoopingProtectionController::SnoopingProtectionController()
 
 SnoopingProtectionController::~SnoopingProtectionController() {
   // This is a no-op if the service isn't available or isn't enabled.
-  // TODO(crbug.com/1241704): only disable if the service is enabled.
+  // TODO(crbug.com/40194784): only disable if the service is enabled.
   //
   // Might not exist in unit tests.
   if (HumanPresenceDBusClient::Get())

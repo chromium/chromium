@@ -108,7 +108,7 @@ export const CrScrollableBehavior = {
           ironList.notifyResize();
         }
 
-        // TODO(crbug.com/1121679): Add UI Test for this behavior.
+        // TODO(crbug.com/40146300): Add UI Test for this behavior.
         if (scrollHeight <= 1 &&
             window.getComputedStyle(node.parentNode).display !== 'none') {
           checkAgain.push({

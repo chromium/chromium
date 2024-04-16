@@ -1634,7 +1634,7 @@ TEST_F(TabletModeControllerTest, TabletModeTransitionHistogramsNotLogged) {
   histogram_tester.ExpectTotalCount(kExitHistogram, 0);
 }
 
-// TODO(crbug.com/1382272): Flaky on Linux Chromium OS ASan LSan Tests.
+// TODO(crbug.com/40877227): Flaky on Linux Chromium OS ASan LSan Tests.
 TEST_F(TabletModeControllerTest,
        DISABLED_TabletModeTransitionHistogramsLogged) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(

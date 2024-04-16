@@ -516,7 +516,7 @@ ASH_PUBLIC_EXPORT std::string GetAppListControlCategoryName(
 
 struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
-  // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
+  // TODO(crbug.com/40191300): Make the search backend explicitly set the shape
   // for all icons by removing the two-argument version of the constructor.
   SearchResultIconInfo(ui::ImageModel icon, int dimension);
   SearchResultIconInfo(ui::ImageModel icon,
@@ -861,7 +861,7 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.
-  // TODO(crbug.com/1225161): Remove this and replace it with |icon| and an
+  // TODO(crbug.com/40188285): Remove this and replace it with |icon| and an
   // appropriately set |icon_dimension|.
   gfx::ImageSkia chip_icon;
 

@@ -4306,7 +4306,7 @@ TEST_F(AppListPresenterHomeLauncherTest, HomeButtonDismissesSearchResults) {
 
   // Enable accessibility feature that forces home button to be shown even with
   // kHideShelfControlsInTabletMode enabled.
-  // TODO(https://crbug.com/1050544) Use the a11y feature specific to showing
+  // TODO(crbug.com/40673209) Use the a11y feature specific to showing
   // navigation buttons in tablet mode once it lands.
   Shell::Get()->accessibility_controller()->autoclick().SetEnabled(true);
 

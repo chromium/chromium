@@ -432,7 +432,7 @@ int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
     }
   }
 
-  // TODO(crbug.com/1134390): Convert back to DCHECK when the issue is fixed.
+  // TODO(crbug.com/40151430): Convert back to DCHECK when the issue is fixed.
   CHECK_GE(index, 0);
   CHECK_LT(index, static_cast<int>(DesksController::Get()->desks().size()));
   return index;

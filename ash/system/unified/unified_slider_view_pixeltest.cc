@@ -77,7 +77,7 @@ TEST_F(UnifiedSliderViewPixelTest, DefaultSlider) {
       /*revision_number=*/0, widget_.get()));
 }
 
-// TODO(crbug.com/1486954): Flaky.
+// TODO(crbug.com/40283113): Flaky.
 TEST_F(UnifiedSliderViewPixelTest, DISABLED_DefaultSliderMuted) {
   // Creates a `UnifiedVolumeView` that's on the main page. This slider is in
   // `QuickSettingsSlider::Style::kDefault` style.

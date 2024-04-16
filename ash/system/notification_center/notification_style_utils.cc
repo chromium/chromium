@@ -40,7 +40,7 @@ gfx::ImageSkia CreateNotificationAppIcon(
       cros_tokens::kCrosSysOnPrimary);
   SkColor icon_background_color = CalculateIconBackgroundColor(notification);
 
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // TODO(crbug.com/40541732): figure out if this has a performance impact and
   // cache images if so.
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
       kNotificationAppIconImageSize, icon_color, icon_background_color,

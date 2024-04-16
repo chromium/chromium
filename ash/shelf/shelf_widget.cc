@@ -996,7 +996,7 @@ void ShelfWidget::OnSessionStateChanged(session_manager::SessionState state) {
     // be painted over the hotseat/navigation buttons/status area). Make sure
     // the shelf widget is restacked at the bottom of the shelf container when
     // the session state changes.
-    // TODO(https://crbug.com/1057207): Ideally, the shelf widget position at
+    // TODO(crbug.com/40120650): Ideally, the shelf widget position at
     // the bottom of window stack would be maintained using a "stacked at
     // bottom" window property - switch to that approach once it's ready for
     // usage.

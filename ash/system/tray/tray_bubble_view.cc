@@ -319,7 +319,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
                                              : gfx::Insets());
 
   if (init_params.translucent) {
-    // TODO(crbug/1313073): In the dark light mode feature, remove layer
+    // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
     // creation in children views of this view to improve performance.
     SetPaintToLayer(ui::LAYER_TEXTURED);
     layer()->SetFillsBoundsOpaquely(false);

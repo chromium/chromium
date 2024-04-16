@@ -713,7 +713,7 @@ TEST_F(LockOnSuspendUsageTest, LockOnSuspendUsage) {
               1)));
 }
 
-// TODO(crbug.com/1425006): Test is failing on "Linux ChromiumOS MSan Tests".
+// TODO(crbug.com/40898491): Test is failing on "Linux ChromiumOS MSan Tests".
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_No_ShouldLockScreenAutomatically \
   DISABLED_No_ShouldLockScreenAutomatically

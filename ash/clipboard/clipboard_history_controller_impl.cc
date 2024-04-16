@@ -1125,7 +1125,7 @@ gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
 
   // Some web apps render the caret in an IFrame, and we will not get the
   // bounds in that case.
-  // TODO(https://crbug.com/1099930): Show the menu in the middle of the
+  // TODO(crbug.com/40137728): Show the menu in the middle of the
   // webview if the bounds are empty.
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();

@@ -271,7 +271,7 @@ TEST_F(ArcNotificationViewTest, SlideOut) {
   EXPECT_TRUE(IsPopupRemovedAfterIdle(notification_id));
 }
 
-// TODO(crbug.com/1410724): Flaky on MSAN bots.
+// TODO(crbug.com/40889858): Flaky on MSAN bots.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_SlideOutNested DISABLED_SlideOutNested
 #else

@@ -238,7 +238,7 @@ void KeyboardUIController::DisableKeyboard() {
   if (model_.state() != KeyboardUIState::kInitial)
     ChangeState(KeyboardUIState::kInitial);
 
-  // TODO(https://crbug.com/731537): Move KeyboardUIController members into a
+  // TODO(crbug.com/40524972): Move KeyboardUIController members into a
   // subobject so we can just put this code into the subobject destructor.
   queued_display_change_.reset();
   queued_container_type_.reset();

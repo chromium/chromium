@@ -357,7 +357,7 @@ std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
   DCHECK_EQ(copy_layer->size(),
             GetScreenRotationContainer(root_window_)->layer()->size());
 
-  // TODO(crbug.com/1040279): This is a workaround and should be removed once
+  // TODO(crbug.com/40113966): This is a workaround and should be removed once
   // the issue is fixed.
   copy_layer->SetFillsBoundsOpaquely(false);
   return std::make_unique<ui::LayerTreeOwner>(std::move(copy_layer));

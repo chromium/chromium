@@ -2298,7 +2298,7 @@ TEST_P(WallpaperControllerTest, LoadsSeaPenWallpaperWithInvalidUserFilePath) {
       /*max_deviation=*/1));
 }
 
-// TODO(https://crbug.com/1511896): Flaky on linux-chromeos-rel.
+// TODO(crbug.com/41484478): Flaky on linux-chromeos-rel.
 TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
   SimulateUserLogin(kAccountId1);
   TestWallpaperControllerObserver observer(controller_);

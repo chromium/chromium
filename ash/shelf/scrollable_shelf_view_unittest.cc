@@ -308,7 +308,7 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
   EXPECT_FALSE(scrollable_shelf_view_->ShouldAdjustForTest());
 }
 
-// TODO(crbug.com/1366645): Enable when the bug is fixed.
+// TODO(crbug.com/40867071): Enable when the bug is fixed.
 // Verifies that the display rotation from the long side to the short side
 // should not break the scrollable shelf's UI behavior
 // (https://crbug.com/1000764).

@@ -90,7 +90,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
       overview_widget3));
 }
 
-// TODO(crbug.com/1479278): Test is flaky.
+// TODO(crbug.com/40929874): Test is flaky.
 TEST_F(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
   UpdateDisplay("1600x1000");
 

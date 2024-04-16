@@ -1329,7 +1329,7 @@ gfx::Rect SearchResultView::GetIconBadgeViewBounds(
 }
 
 void SearchResultView::Layout(PassKey) {
-  // TODO(crbug/1311101) add test coverage for search result view layout.
+  // TODO(crbug.com/40220083) add test coverage for search result view layout.
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;

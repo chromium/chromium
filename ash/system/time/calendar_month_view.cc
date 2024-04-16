@@ -456,7 +456,7 @@ CalendarMonthView::CalendarMonthView(
   const bool should_fetch_calendar_data =
       calendar_utils::ShouldFetchCalendarData();
 
-  // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
+  // TODO(crbug.com/40192677): Extract the following 3 parts (while
   // loops) into a method.
   int column = 0;
   int safe_index = 0;

@@ -131,7 +131,7 @@ class ConnectionHolderImpl {
     if (!instance_ || !host_)
       return;
     // When both the instance and host are ready, start connection.
-    // TODO(crbug.com/750563): Fix the race issue.
+    // TODO(crbug.com/40532557): Fix the race issue.
     auto receiver = std::make_unique<mojo::Receiver<HostType>>(host_);
     mojo::PendingRemote<HostType> host_proxy;
     receiver->Bind(host_proxy.InitWithNewPipeAndPassReceiver());

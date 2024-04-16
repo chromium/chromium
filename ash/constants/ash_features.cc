@@ -1270,7 +1270,7 @@ BASE_FEATURE(kFullscreenAfterUnlockAllowed,
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
-// TODO(https://crbug.com/1107185): Remove this after the feature is launched.
+// TODO(crbug.com/40140761): Remove this after the feature is launched.
 BASE_FEATURE(kFullscreenAlertBubble,
              "EnableFullscreenBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2266,8 +2266,8 @@ BASE_FEATURE(kPasswordlessGaiaForConsumers,
 
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
-// TODO(crbug/1254930): Revisit this flag when there is a way to query billboard
-// devices correctly.
+// TODO(crbug.com/40199811): Revisit this flag when there is a way to query
+// billboard devices correctly.
 BASE_FEATURE(kPcieBillboardNotification,
              "PcieBillboardNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -142,7 +142,7 @@ TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
       date_tray));
 }
 
-// TODO(https://crbug.com/1487311): Disaled due to flakiness.
+// TODO(crbug.com/40934062): Disaled due to flakiness.
 TEST_P(StatusAreaParameterizedPixelTest,
        DISABLED_NotificationTrayCounterWithSingleCount) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
@@ -173,7 +173,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          StatusAreaParamerterizedAlignmentPixelTest,
                          testing::ValuesIn(kShelfAlignments));
 
-// TODO(https://crbug.com/1487336): Disabled due to excessive flakiness.
+// TODO(crbug.com/40934073): Disabled due to excessive flakiness.
 TEST_P(StatusAreaParamerterizedAlignmentPixelTest, DISABLED_OverflowTray) {
   UpdateDisplay("500x600");
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());

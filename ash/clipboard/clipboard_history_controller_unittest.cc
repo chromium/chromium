@@ -635,7 +635,7 @@ TEST_F(ClipboardHistoryControllerObserverTest,
   WriteTextToClipboardAndConfirm(u"A");
 }
 
-// TODO(crbug.com/1459385): Re-enable this test
+// TODO(crbug.com/40274291): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ChangeSessionStateWithNonEmptyHistory \
   DISABLED_ChangeSessionStateWithNonEmptyHistory

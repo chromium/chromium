@@ -1065,7 +1065,7 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   params_with_bounds.display_id = display.id();
   params_with_bounds.device_scale_factor = display.device_scale_factor();
 
-  // TODO(crbug/1261776): Temporarily increase compositor memory limit for
+  // TODO(crbug.com/40799092): Temporarily increase compositor memory limit for
   // 4K+ displays to avoid rendering corruption.
   // Check both width and height in case of rotated display.
   if (std::max(display.GetSizeInPixel().width(),

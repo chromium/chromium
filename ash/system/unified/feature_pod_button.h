@@ -22,7 +22,7 @@ namespace ash {
 
 class FeaturePodControllerBase;
 
-// TODO(crbug/1276545): Remove FeaturePodIconButton after the migration.
+// TODO(crbug.com/40808951): Remove FeaturePodIconButton after the migration.
 // A toggle button with an icon used by feature pods and in other places.
 class ASH_EXPORT FeaturePodIconButton : public IconButton {
   METADATA_HEADER(FeaturePodIconButton, IconButton)

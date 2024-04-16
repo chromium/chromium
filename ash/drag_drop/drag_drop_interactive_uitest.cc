@@ -106,7 +106,7 @@ using DragDropTest = AshInteractiveUITestBase;
 
 // Test if the mouse gets moved properly to another display
 // during drag & drop operation.
-// TODO(https://crbug.com/1491759): Consistently failing on Chrome OS builds.
+// TODO(crbug.com/40935905): Consistently failing on Chrome OS builds.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragDropAcrossMultiDisplay DISABLED_DragDropAcrossMultiDisplay
 #else

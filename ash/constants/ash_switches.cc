@@ -473,7 +473,7 @@ const char kDisableRollbackOption[] = "disable-rollback-option";
 
 // Disables client certificate authentication on the sign-in frame on the Chrome
 // OS sign-in profile.
-// TODO(https://crbug.com/844022): Remove this flag when reaching endpoints that
+// TODO(crbug.com/41389560): Remove this flag when reaching endpoints that
 // request client certs does not hang anymore when there is no system token yet.
 const char kDisableSigninFrameClientCerts[] =
     "disable-signin-frame-client-certs";
@@ -1042,7 +1042,7 @@ const char kRmaNotAllowed[] = "rma-not-allowed";
 const char kSafeMode[] = "safe-mode";
 
 // Password change url for SAML users.
-// TODO(941489): Remove when the bug is fixed.
+// TODO(crbug.com/40618074): Remove when the bug is fixed.
 const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 
 // New modular design for the shelf with apps separated into a hotseat UI and

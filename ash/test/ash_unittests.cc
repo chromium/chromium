@@ -12,7 +12,7 @@ namespace ash {
 
 // A significant number of ash_unittests are overriding the feature list after
 // the GPU thread is started so allowlist the whole test binary.
-// TODO(crbug.com/1241161): Fix racy tests and remove this.
+// TODO(crbug.com/40785850): Fix racy tests and remove this.
 class AshScopedAllowRacyFeatureListOverrides {
  private:
   viz::TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides

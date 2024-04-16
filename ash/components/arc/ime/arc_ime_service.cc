@@ -615,7 +615,7 @@ gfx::Range ArcImeService::GetAutocorrectRange() const {
 }
 
 gfx::Rect ArcImeService::GetAutocorrectCharacterBounds() const {
-  // TODO(https://crbug.com/952757): Implement this method.
+  // TODO(crbug.com/40623107): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }

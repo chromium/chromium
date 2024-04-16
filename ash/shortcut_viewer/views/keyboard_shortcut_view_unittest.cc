@@ -329,7 +329,7 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
-// TODO(https://crbug.com/1439747): Flaky on ASAN and chromeos, probably due to
+// TODO(crbug.com/40909012): Flaky on ASAN and chromeos, probably due to
 // hard-coded timeout.
 #if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
     BUILDFLAG(IS_CHROMEOS)

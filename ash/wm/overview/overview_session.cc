@@ -1393,7 +1393,7 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // mode, when we snap an overview window to one side of the screen and then
   // open the app list to select an app to snap to the other side), in this case
   // we let the app list to handle the key event.
-  // TODO(crbug.com/952315): Explore better ways to handle this splitview +
+  // TODO(crbug.com/40622922): Explore better ways to handle this splitview +
   // overview + applist case.
   if (!display::Screen::GetScreen()->InTabletMode() &&
       Shell::Get()->app_list_controller()->IsVisible()) {

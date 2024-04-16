@@ -66,7 +66,7 @@ class ArcAudioBridge : public KeyedService,
   bool muted_ = false;
 
   // Avoids sending requests when the instance is unavailable.
-  // TODO(crbug.com/549195): Remove once the root cause is fixed.
+  // TODO(crbug.com/41213400): Remove once the root cause is fixed.
   bool available_ = false;
 };
 

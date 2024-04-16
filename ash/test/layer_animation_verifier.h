@@ -23,7 +23,7 @@ namespace ash {
 
 // The helper class to verify a layer animation on the following things:
 // (1) The observed view should not go back and forth during the animation.
-// (2) TODO(https://crbug.com/1209000): The animation should progress to the end
+// (2) TODO(crbug.com/40181947): The animation should progress to the end
 // rather than get interrupted.
 // (3) TODO(https://crbug.com/1209001): The observed view should move smoothly
 // during the animation. In other words, the view should not move in a janky

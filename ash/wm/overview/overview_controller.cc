@@ -117,7 +117,7 @@ OverviewController::OverviewController()
     : occlusion_pause_duration_for_start_(kOcclusionPauseDurationForStart),
       occlusion_pause_duration_for_end_(kOcclusionPauseDurationForEnd),
       delayed_animation_task_delay_(kTransition),
-      // TODO(crbug.com/1278648): Lacros windows now have a snapshot, but their
+      // TODO(crbug.com/40208263): Lacros windows now have a snapshot, but their
       // behavior may be a bit worse than ash windows. Keep this snapshot code
       // until we confirm it is fine to show lacros snapshotted windows all the
       // time.

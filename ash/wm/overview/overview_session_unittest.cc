@@ -1058,7 +1058,7 @@ TEST_P(OverviewSessionTest, DISABLED_TabletModeHistograms) {
 // Tests that entering overview when a fullscreen window is active in maximized
 // mode correctly applies the transformations to the window and correctly
 // updates the window bounds on exiting overview mode: http://crbug.com/401664.
-// TODO(crbug.com/1523918): Fix flaky test.
+// TODO(crbug.com/41496866): Fix flaky test.
 TEST_P(OverviewSessionTest, DISABLED_FullscreenWindowTabletMode) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
@@ -5143,7 +5143,7 @@ TEST_P(OverviewRasterScaleTest,
 }
 
 // Tests raster scale changes work in tablet mode.
-// TODO(crbug.com/1508655): Fix flaky test.
+// TODO(crbug.com/40949385): Fix flaky test.
 TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
   EnterTabletMode();
 

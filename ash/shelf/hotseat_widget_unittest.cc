@@ -2843,7 +2843,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, HotseatWidgetRTLTest, testing::Bool());
 
 // The test to verify the hotseat transition animation from the extended state
 // to the home launcher state.
-// TODO(https://crbug.com/1210530): Disable this test due to flakiness.
+// TODO(crbug.com/40182469): Disable this test due to flakiness.
 TEST_P(HotseatWidgetRTLTest,
        DISABLED_VerifyTransitionFromExtendedModeToHomeLauncher) {
   TabletModeControllerTestApi().EnterTabletMode();
@@ -2860,7 +2860,7 @@ TEST_P(HotseatWidgetRTLTest,
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 
   // Animation should be long enough in order to collect sufficient data.
-  // TODO(https://crbug.com/1208651): remove this line when we solve that issue.
+  // TODO(crbug.com/40181827): remove this line when we solve that issue.
   ui::ScopedAnimationDurationScaleMode animation_duration(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 

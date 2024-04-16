@@ -18,7 +18,7 @@
 
 namespace ash {
 
-// TODO(crbug.com/1189945): Rename and move to more generic location.
+// TODO(crbug.com/40173943): Rename and move to more generic location.
 // A wrapper around a `gfx::ImageSkia` that supports dynamic updates.
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
  public:

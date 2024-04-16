@@ -55,7 +55,7 @@ SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
   // cursor_color_. Do not recolor pure white or tinted portions of the image,
   // this ensures we do not impact the colored portions of cursors or the
   // transition between the colored portion and white outline.
-  // TODO(crbug.com/1085442): Programmatically find a way to recolor the white
+  // TODO(crbug.com/40693635): Programmatically find a way to recolor the white
   // parts in order to draw a black outline, but without impacting cursors
   // like noDrop which contained tinted portions. Or, add new assets with
   // black and white inverted for easier re-coloring.

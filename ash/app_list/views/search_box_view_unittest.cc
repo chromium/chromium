@@ -307,7 +307,7 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleInZeroStateSearchBox) {
   EXPECT_FALSE(view()->filter_and_close_button_container()->GetVisible());
 }
 
-// TODO(crbug.com/1446550): Re-enable this test
+// TODO(crbug.com/40913066): Re-enable this test
 TEST_F(SearchBoxViewTest,
        DISABLED_AccessibilityHintRemovedWhenSearchBoxActive) {
   EXPECT_TRUE(IsValidSearchBoxAccessibilityHint(
@@ -935,7 +935,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
 
-// TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase.
+// TODO(crbug.com/40184650): Refactor the above tests to use AshTestBase.
 class SearchBoxViewAppListBubbleTest : public AshTestBase {
  public:
   SearchBoxViewAppListBubbleTest() = default;

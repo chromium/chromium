@@ -681,7 +681,7 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
     // animation can interfere with WindowTransformToHomeScreenAnimation
     // visuals.
     //
-    // TODO(https://crbug.com/1019531): This can be removed once transitions
+    // TODO(crbug.com/40656009): This can be removed once transitions
     // between in-app state and home do not cause work area updates.
     std::vector<std::unique_ptr<wm::ScopedAnimationDisabler>>
         animation_disablers;
@@ -1775,7 +1775,7 @@ void AppListControllerImpl::ResetHomeLauncherIfShown() {
   fullscreen_presenter_->GetView()->CloseOpenedPage();
 
   // Refresh the suggestion chips with empty query.
-  // TODO(crbug.com/1269115): Switch to client_->StartZeroStateSearch()?
+  // TODO(crbug.com/40204937): Switch to client_->StartZeroStateSearch()?
   StartSearch(std::u16string());
 }
 

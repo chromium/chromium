@@ -31,7 +31,7 @@ class ASH_EXPORT ShelfContainerView : public views::View {
   gfx::Size CalculateIdealSize(int button_size) const;
 
   // Translate |shelf_view_| by |offset|.
-  // TODO(https://crbug.com/973481): now we implement ShelfView scrolling
+  // TODO(crbug.com/40631809): now we implement ShelfView scrolling
   // through view translation, which is not as efficient as ScrollView. Redesign
   // this class with ScrollView.
   virtual void TranslateShelfView(const gfx::Vector2dF& offset);

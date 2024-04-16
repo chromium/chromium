@@ -26,7 +26,7 @@ bool RoundedWindowTargeter::EventLocationInsideBounds(
   gfx::Point point = ConvertEventLocationToWindowCoordinates(target, event);
   // Assumes a rectangle with height and width one is a point. This may match
   // 1px off at the bottom-right corner.
-  // TODO(crbug/1220713): Expose SkRRect::ContainsPoint() instead.
+  // TODO(crbug.com/40773093): Expose SkRRect::ContainsPoint() instead.
   gfx::RectF rectf_point(point.x(), point.y(), 1, 1);
   return rrectf_.Contains(rectf_point);
 }

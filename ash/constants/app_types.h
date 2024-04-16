@@ -18,7 +18,7 @@ enum class AppType {
   ARC_APP,
   CROSTINI_APP,
   SYSTEM_APP,
-  // TODO(crbug.com/1090663): Migrate this into BROWSER.
+  // TODO(crbug.com/40133859): Migrate this into BROWSER.
   LACROS,
 
   kMaxValue = LACROS,

@@ -22,7 +22,7 @@ class SystemNudge;
 // and out after a short period of time. While nudge behavior is covered by this
 // abstract class, Subclasses must implement CreateSystemNudge() in order to
 // create a custom label and icon for their nudge's UI.
-// TODO(crbug.com/1232525): Duration and positioning should be configurable.
+// TODO(crbug.com/40780307): Duration and positioning should be configurable.
 class ASH_EXPORT SystemNudgeController
     : public SystemNudgePauseManagerImpl::Observer {
  public:

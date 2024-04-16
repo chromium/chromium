@@ -28,7 +28,7 @@ class ASH_EXPORT MultiCaptureServiceClient
     // Event to inform about a started multi capture. The `label` is a unique
     // identifier that can be used to connect started / stopped events.
     // The `origin` is the capturer's origin.
-    // TODO(crbug.com/1325750): Consider transferred tracks by either adding
+    // TODO(crbug.com/40225619): Consider transferred tracks by either adding
     // a MultiCaptureTransferred event or by making sure the label remains
     // constant throughout the lifetime of the capture.
     virtual void MultiCaptureStarted(const std::string& label,

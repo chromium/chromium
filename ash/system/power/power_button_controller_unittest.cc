@@ -1180,7 +1180,7 @@ class PowerButtonControllerWithPositionTest
   PowerButtonPosition power_button_position_;
 };
 
-// TODO(crbug.com/1010194).
+// TODO(crbug.com/40101364).
 TEST_P(PowerButtonControllerWithPositionTest,
        DISABLED_MenuNextToPowerButtonInTabletMode) {
   std::string display =

@@ -358,7 +358,7 @@ TEST_P(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
 
 // Verifies that closing notification by gesture should not dismiss the AppList.
 // (see https://crbug.com/948344)
-// TODO(crbug.com/1120501): Test is flaky on ASAN builds.
+// TODO(crbug.com/40714854): Test is flaky on ASAN builds.
 TEST_P(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
 

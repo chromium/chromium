@@ -87,8 +87,8 @@ std::unique_ptr<views::Widget> CreateWidget() {
       kShellWindowId_OverlayContainer);
   widget->Init(std::move(params));
 
-  // TODO(crbug.com/1009005): Get the bounds of the display that should show the
-  // nudge, which may based on the conditions to show the nudge.
+  // TODO(crbug.com/40100889): Get the bounds of the display that should show
+  // the nudge, which may based on the conditions to show the nudge.
   const gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   gfx::Rect widget_bounds;

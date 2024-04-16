@@ -2303,7 +2303,7 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {
-  // TODO(crbug.com/1275282): The button should be updated whenever the
+  // TODO(crbug.com/40207000): The button should be updated whenever the
   // overview grid changes, i.e. switches between active desks and/or the
   // saved desk grid. This will be needed when we make it so that switching
   // desks keeps us in overview mode.

@@ -892,7 +892,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
 
     auto transition = std::make_unique<PinKeyboardAnimation>(
         current_state.has_pinpad /*grow*/, pin_view_->height(),
-        // TODO(https://crbug.com/955119): Implement proper animation.
+        // TODO(crbug.com/41454201): Implement proper animation.
         base::Milliseconds(login::kChangeUserAnimationDurationMs / 2.0f),
         gfx::Tween::FAST_OUT_SLOW_IN);
     auto* sequence = new ui::LayerAnimationSequence(std::move(transition));

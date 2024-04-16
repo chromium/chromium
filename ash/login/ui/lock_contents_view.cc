@@ -1099,9 +1099,9 @@ void LockContentsView::OnSystemInfoChanged(
 
   LayoutTopHeader();
 
-  // TODO(crbug.com/1141348): Separate ADB sideloading from system info changed.
-  // Note that if ADB is enabled and the device is enrolled, only the ADB
-  // warning message will be displayed.
+  // TODO(crbug.com/40727114): Separate ADB sideloading from system info
+  // changed. Note that if ADB is enabled and the device is enrolled, only the
+  // ADB warning message will be displayed.
   if (adb_sideloading_enabled) {
     ShowAdbEnabled();
   }

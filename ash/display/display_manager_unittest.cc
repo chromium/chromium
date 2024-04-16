@@ -1956,7 +1956,7 @@ TEST_F(DisplayManagerTest, TestNativeDisplaysChangedNoInternal) {
       Shell::GetPrimaryRootWindow()->GetHost()->GetBoundsInPixels().size());
 }
 
-// TODO(crbug.com/1431416): Fix the test flakiness on MSan.
+// TODO(crbug.com/40902297): Fix the test flakiness on MSan.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_NativeDisplaysChangedAfterPrimaryChange \
   DISABLED_NativeDisplaysChangedAfterPrimaryChange

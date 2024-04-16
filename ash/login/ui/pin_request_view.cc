@@ -157,7 +157,7 @@ PinRequestViewState PinRequestView::TestApi::state() const {
   return view_->state_;
 }
 
-// TODO(crbug.com/1061008): Make dialog look good on small screens with high
+// TODO(crbug.com/40679369): Make dialog look good on small screens with high
 // zoom factor.
 PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
     : delegate_(delegate),

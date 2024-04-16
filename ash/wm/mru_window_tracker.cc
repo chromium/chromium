@@ -39,7 +39,7 @@ using WindowList = MruWindowTracker::WindowList;
 // A class that observes a window that should not be destroyed inside a certain
 // scope. This class is added to investigate crbug.com/937381 to see if it's
 // possible that a window is destroyed while building up the mru window list.
-// TODO(crbug.com/937381): Remove this class once we figure out the reason.
+// TODO(crbug.com/41444457): Remove this class once we figure out the reason.
 class ScopedWindowClosingObserver : public aura::WindowObserver {
  public:
   explicit ScopedWindowClosingObserver(aura::Window* window) : window_(window) {

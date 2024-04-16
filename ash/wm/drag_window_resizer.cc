@@ -128,7 +128,7 @@ void DragWindowResizer::EndDragImpl() {
   // Adjust the size and position so that it doesn't exceed the size of work
   // area.
   display::Display dst_display;
-  // TODO(crbug.com/1131071): It's possible that |dst_display_id| returned from
+  // TODO(crbug.com/40721205): It's possible that |dst_display_id| returned from
   // CursorManager::GetDisplay().id() is an invalid display id thus
   // |dst_display| may be invalid as well. This may cause crash later. To avoid
   // crash, we early return here. However, |dst_display_id| should never be

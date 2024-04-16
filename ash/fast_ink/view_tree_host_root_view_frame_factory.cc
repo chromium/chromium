@@ -177,7 +177,7 @@ ViewTreeHostRootViewFrameFactory::CreateCompositorFrame(
   frame->metadata.begin_frame_ack.has_damage = true;
   frame->metadata.device_scale_factor = device_scale_factor;
 
-  // TODO(crbug.com/1131623): Should this be ceil? Why do we choose floor?
+  // TODO(crbug.com/40150287): Should this be ceil? Why do we choose floor?
   gfx::Size size_in_pixel = gfx::ToFlooredSize(
       gfx::ConvertSizeToPixels(content_rect.size(), device_scale_factor));
 

@@ -646,7 +646,7 @@ bool IsLayoutHorizontal(const display::Display& display) {
     return IsCurrentScreenOrientationLandscape();
   }
 
-  // TODO(crbug.com/1233192): add DCHECK to avoid square size display.
+  // TODO(crbug.com/40191408): add DCHECK to avoid square size display.
   DCHECK(display.is_valid());
   return chromeos::IsLandscapeOrientation(GetSnapDisplayOrientation(display));
 }

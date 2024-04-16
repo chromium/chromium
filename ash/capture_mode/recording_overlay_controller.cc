@@ -53,7 +53,7 @@ namespace {
 //     |
 //     + Projector bar widget
 //
-// TODO(https://crbug.com/1253011): Revise this parenting and z-ordering once
+// TODO(crbug.com/40199022): Revise this parenting and z-ordering once
 // the deprecated Projector toolbar is removed and replaced by the shelf-pod
 // based new tools.
 aura::Window* GetWidgetParent(aura::Window* window_being_recorded) {

@@ -447,7 +447,7 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
 
   // Return a dummy value if the item specified by `id` does not exist in the
   // shelf model.
-  // TODO(https://crbug.com/1270498): it is a quick fixing. We should
+  // TODO(crbug.com/40057927): it is a quick fixing. We should
   // investigate the root cause.
   if (item_index_in_model < 0)
     return gfx::Rect();

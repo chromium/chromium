@@ -120,7 +120,7 @@ TEST_F(SystemComponentsTest, PillButtonTooltip) {
   EXPECT_EQ(pill_button->GetTooltipText(gfx::Point()), u"Tooltip");
 }
 
-// TODO(crbug/1384370): Disable for constant failure.
+// TODO(crbug.com/40878458): Disable for constant failure.
 TEST_F(SystemComponentsTest,
        DISABLED_IconButtonWithBackgroundColorIdDoesNotCrash) {
   // Create an IconButton with an explicit background color ID.

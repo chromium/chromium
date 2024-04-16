@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(https://crbug.com/1271537): add assert(is_chromeos_ash) when fixed.
+# TODO(crbug.com/40805620): add assert(is_chromeos_ash) when fixed.
 assert(is_chromeos, "Projector App is Chrome OS only")
 
 source_set("cpp") {
