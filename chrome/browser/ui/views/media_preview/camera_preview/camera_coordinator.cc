@@ -20,7 +20,7 @@ CameraCoordinator::CameraCoordinator(
     const std::vector<std::string>& eligible_camera_ids,
     PrefService& prefs,
     bool allow_device_selection,
-    media_preview_metrics::Context metrics_context)
+    const media_preview_metrics::Context& metrics_context)
     : camera_mediator_(
           prefs,
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
@@ -29,15 +29,14 @@ CameraCoordinator::CameraCoordinator(
       eligible_camera_ids_(eligible_camera_ids),
       prefs_(&prefs),
       allow_device_selection_(allow_device_selection),
-      metrics_context_(metrics_context) {
+      metrics_context_(metrics_context.ui_location,
+                       media_preview_metrics::PreviewType::kCamera) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_tracker_`.
   camera_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &CameraCoordinator::ResetViewController, base::Unretained(this)));
-
-  metrics_context_.preview_type = media_preview_metrics::PreviewType::kCamera;
 
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_controller_`.

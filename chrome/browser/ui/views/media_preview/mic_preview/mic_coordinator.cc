@@ -18,12 +18,13 @@
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-MicCoordinator::MicCoordinator(views::View& parent_view,
-                               bool needs_borders,
-                               const std::vector<std::string>& eligible_mic_ids,
-                               PrefService& prefs,
-                               bool allow_device_selection,
-                               media_preview_metrics::Context metrics_context)
+MicCoordinator::MicCoordinator(
+    views::View& parent_view,
+    bool needs_borders,
+    const std::vector<std::string>& eligible_mic_ids,
+    PrefService& prefs,
+    bool allow_device_selection,
+    const media_preview_metrics::Context& metrics_context)
     : mic_mediator_(
           prefs,
           base::BindRepeating(&MicCoordinator::OnAudioSourceInfosReceived,
@@ -32,15 +33,14 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
       eligible_mic_ids_(eligible_mic_ids),
       prefs_(&prefs),
       allow_device_selection_(allow_device_selection),
-      metrics_context_(metrics_context) {
+      metrics_context_(metrics_context.ui_location,
+                       media_preview_metrics::PreviewType::kMic) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_tracker_`.
   mic_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &MicCoordinator::ResetViewController, base::Unretained(this)));
-
-  metrics_context_.preview_type = media_preview_metrics::PreviewType::kMic;
 
   // Safe to use base::Unretained() because `this` owns / outlives
   // `mic_view_controller_`.

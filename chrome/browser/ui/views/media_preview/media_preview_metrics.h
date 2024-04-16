@@ -10,15 +10,14 @@
 namespace media_preview_metrics {
 
 enum class UiLocation { kPermissionPrompt, kPageInfo };
-enum class PreviewType { kUnknown, kCamera, kMic, kCameraAndMic };
+enum class PreviewType { kCamera, kMic, kCameraAndMic };
 
 struct Context {
-  explicit Context(UiLocation ui_location);
   Context(UiLocation ui_location, PreviewType preview_type);
   ~Context();
 
   const UiLocation ui_location;
-  PreviewType preview_type = PreviewType::kUnknown;
+  const PreviewType preview_type;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -32,17 +31,20 @@ enum class MediaPreviewDeviceSelectionUserAction {
   kMaxValue = kSelection,
 };
 
-void RecordPageInfoCameraNumInUseDevices(int devices);
-void RecordPageInfoMicNumInUseDevices(int devices);
-void RecordDeviceSelectionTotalDevices(Context context, int devices);
+void RecordPageInfoNumInUseDevices(const Context& context, int devices);
+void RecordMediaPreviewDuration(const Context& context,
+                                const base::TimeDelta& delta);
+
+void RecordDeviceSelectionTotalDevices(const Context& context, int devices);
 void RecordDeviceSelectionAction(
-    Context context,
+    const Context& context,
     MediaPreviewDeviceSelectionUserAction user_action);
-void RecordPreviewCameraPixelHeight(Context context, int pixel_height);
-void RecordPreviewVideoExpectedFPS(Context context, int expected_fps);
-void RecordPreviewVideoActualFPS(Context context, int actual_fps);
-void RecordMediaPreviewDuration(Context context, const base::TimeDelta& delta);
-void RecordPreviewVideoFramesRenderedPercent(Context context, float percent);
+
+void RecordPreviewCameraPixelHeight(const Context& context, int pixel_height);
+void RecordPreviewVideoExpectedFPS(const Context& context, int expected_fps);
+void RecordPreviewVideoActualFPS(const Context& context, int actual_fps);
+void RecordPreviewVideoFramesRenderedPercent(const Context& context,
+                                             float percent);
 
 }  // namespace media_preview_metrics
 

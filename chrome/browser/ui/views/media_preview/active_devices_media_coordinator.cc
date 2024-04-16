@@ -101,13 +101,8 @@ void ActiveDevicesMediaCoordinator::UpdateMediaCoordinatorList() {
 
 void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(
     std::vector<std::string> active_device_ids) {
-  if (view_type_ == MediaCoordinator::ViewType::kCameraOnly) {
-    media_preview_metrics::RecordPageInfoCameraNumInUseDevices(
-        active_device_ids.size());
-  } else {
-    media_preview_metrics::RecordPageInfoMicNumInUseDevices(
-        active_device_ids.size());
-  }
+  media_preview_metrics::RecordPageInfoNumInUseDevices(
+      media_preview_metrics_context_, active_device_ids.size());
 
   if (active_device_ids.empty()) {
     if (media_coordinators_.contains(kMutableCoordinatorId)) {

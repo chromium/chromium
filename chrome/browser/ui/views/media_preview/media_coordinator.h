@@ -43,7 +43,7 @@ class MediaCoordinator {
                    EligibleDevices eligible_devices,
                    PrefService& prefs,
                    bool allow_device_selection,
-                   media_preview_metrics::Context metrics_context);
+                   const media_preview_metrics::Context& metrics_context);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();

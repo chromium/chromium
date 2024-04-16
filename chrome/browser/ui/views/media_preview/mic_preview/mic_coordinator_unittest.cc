@@ -36,6 +36,13 @@ constexpr char kDeviceId2[] = "device_id_2";
 constexpr char kDeviceName2[] = "device_name_2";
 constexpr char kGroupId2[] = "group_id2";
 
+media_preview_metrics::Context GetMetricsContext() {
+  // Mic coordinator is expected to narrow preview type to kMic.
+  // This is verified in ExpectHistogramTotalDevices() below.
+  return {media_preview_metrics::UiLocation::kPermissionPrompt,
+          media_preview_metrics::PreviewType::kCameraAndMic};
+}
+
 }  // namespace
 
 class MicCoordinatorTest : public TestWithBrowserView {
@@ -65,12 +72,10 @@ class MicCoordinatorTest : public TestWithBrowserView {
         replied_with_device_descriptions_future.GetCallback());
 
     CHECK(profile()->GetPrefs());
-    coordinator_.emplace(
-        *parent_view_,
-        /*needs_borders=*/true, eligible_mic_ids, *profile()->GetPrefs(),
-        /*allow_device_selection=*/true,
-        media_preview_metrics::Context(
-            media_preview_metrics::UiLocation::kPermissionPrompt));
+    coordinator_.emplace(*parent_view_,
+                         /*needs_borders=*/true, eligible_mic_ids,
+                         *profile()->GetPrefs(),
+                         /*allow_device_selection=*/true, GetMetricsContext());
 
     ASSERT_TRUE(replied_with_device_descriptions_future.WaitAndClear());
   }

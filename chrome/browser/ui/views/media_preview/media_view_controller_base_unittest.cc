@@ -38,10 +38,8 @@ std::u16string GetDeviceName(size_t index) {
 }
 
 media_preview_metrics::Context GetMetricsContext() {
-  media_preview_metrics::Context metrics_context(
-      media_preview_metrics::UiLocation::kPermissionPrompt);
-  metrics_context.preview_type = media_preview_metrics::PreviewType::kCamera;
-  return metrics_context;
+  return {media_preview_metrics::UiLocation::kPermissionPrompt,
+          media_preview_metrics::PreviewType::kCamera};
 }
 
 #if !BUILDFLAG(IS_MAC)

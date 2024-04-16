@@ -31,7 +31,7 @@ MediaCoordinator::MediaCoordinator(
     EligibleDevices eligible_devices,
     PrefService& prefs,
     bool allow_device_selection,
-    media_preview_metrics::Context metrics_context) {
+    const media_preview_metrics::Context& metrics_context) {
   media_view_ =
       parent_view.AddChildView(std::make_unique<MediaView>(is_subsection));
   media_view_->SetBetweenChildSpacing(
