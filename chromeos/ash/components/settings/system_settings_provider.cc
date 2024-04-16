@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace ash {

@@ -12,7 +12,6 @@ component("settings") {
     "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/ash/components/login/login_state",
     "//components/user_manager:common",
     "//google_apis",
     "//third_party/icu",

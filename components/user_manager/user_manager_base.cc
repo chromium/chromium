@@ -30,6 +30,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -133,6 +135,31 @@ void UserManagerBase::Shutdown() {
 const UserList& UserManagerBase::GetUsers() const {
   const_cast<UserManagerBase*>(this)->EnsureUsersLoaded();
   return users_;
+}
+
+UserList UserManagerBase::FindLoginAllowedUsersFrom(
+    const UserList& users) const {
+  bool show_users_on_signin;
+  cros_settings_->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
+                             &show_users_on_signin);
+  UserList found_users;
+  for (User* user : users) {
+    // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
+    // kiosk UI) is currently disabled and it gets the apps directly from
+    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
+    if (user->IsKioskType()) {
+      continue;
+    }
+    const bool meets_allowlist_requirements =
+        !user->HasGaiaAccount() || IsGaiaUserAllowed(*user);
+    // Public session accounts are always shown on login screen.
+    const bool meets_show_users_requirements =
+        show_users_on_signin || user->GetType() == UserType::kPublicAccount;
+    if (meets_allowlist_requirements && meets_show_users_requirements) {
+      found_users.push_back(user);
+    }
+  }
+  return found_users;
 }
 
 const UserList& UserManagerBase::GetLoggedInUsers() const {

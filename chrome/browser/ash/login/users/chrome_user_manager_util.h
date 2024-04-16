@@ -29,10 +29,6 @@ bool IsUserAllowed(const user_manager::User& user,
 // user has logged in).
 bool IsManagedGuestSessionOrEphemeralLogin();
 
-// Returns users allowed on login screen.
-user_manager::UserList FindLoginAllowedUsers(
-    const user_manager::UserList& users);
-
 }  // namespace ash::chrome_user_manager_util
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_UTIL_H_

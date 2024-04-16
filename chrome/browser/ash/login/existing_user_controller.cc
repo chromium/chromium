@@ -438,7 +438,8 @@ void ExistingUserController::UpdateLoginDisplay(
   }
 
   if (LoginDisplayHostMojo::Get()) {
-    auto login_users = chrome_user_manager_util::FindLoginAllowedUsers(users);
+    auto login_users =
+        user_manager::UserManager::Get()->FindLoginAllowedUsersFrom(users);
     LoginDisplayHostMojo::Get()->SetUsers(login_users);
   }
 }

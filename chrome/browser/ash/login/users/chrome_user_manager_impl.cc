@@ -443,7 +443,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   }
 
   // Extract out users that are allowed on login screen.
-  return chrome_user_manager_util::FindLoginAllowedUsers(result);
+  return FindLoginAllowedUsersFrom(result);
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {

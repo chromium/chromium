@@ -184,6 +184,9 @@ class USER_MANAGER_EXPORT UserManager {
   // has a policy that prohibits it to be part of multi-profile session.
   virtual UserList GetUsersAllowedForMultiProfile() const = 0;
 
+  // Returns users allowed on login screen in the given `users` list.
+  virtual UserList FindLoginAllowedUsersFrom(const UserList& users) const = 0;
+
   // Returns a list of users who are currently logged in.
   virtual const UserList& GetLoggedInUsers() const = 0;
 
