@@ -25,7 +25,7 @@ class GetExpectationFileForSuiteUnittest(unittest.TestCase):
         gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
         'pixel_expectations.txt')
     actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'pixel_integration_test', tuple(['webgl-version-2']))
+        'pixel_integration_test', tuple())
     self.assertEqual(actual_filepath, expected_filepath)
 
   def testOverrideExpectationFile(self) -> None:
@@ -34,25 +34,7 @@ class GetExpectationFileForSuiteUnittest(unittest.TestCase):
         gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
         'info_collection_expectations.txt')
     actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'info_collection_test', tuple(['webgl-version-2']))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl1Conformance(self) -> None:
-    """Tests that a WebGL 1 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl_conformance_expectations.txt')
-    actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple([]))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl2Conformance(self) -> None:
-    """Tests that a WebGL 2 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl2_conformance_expectations.txt')
-    actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple(['webgl-version-2']))
+        'info_collection_test', tuple())
     self.assertEqual(actual_filepath, expected_filepath)
 
 

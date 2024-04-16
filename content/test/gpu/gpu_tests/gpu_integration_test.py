@@ -1083,13 +1083,6 @@ class GpuIntegrationTest(
         'cros-chrome',  # ChromeOS
         'web-engine-shell',  # Fuchsia
         'cast-streaming-shell',  # Syonymous with cast_streaming suite
-        # WebGL version is already handled by having expectations in separate
-        # files.
-        # TODO(crbug.com/1140283): Remove these tags once we're sure that
-        # all relevant data has aged out. Should be safe to do so at the end of
-        # August 2023.
-        'webgl-version-1',
-        'webgl-version-2',
         # GPU tests are always run in remote mode on the bots, and it shouldn't
         # make a difference to these tests anyways.
         'chromeos-local',
