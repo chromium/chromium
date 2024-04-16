@@ -820,7 +820,8 @@ to prevent the updater from starting if enrollment fails, set
 `EnrollmentMandatory` to `1` (Windows only).
 
 After the updater sets itself up, the `FetchPolicies` RPC is invoked on the
-updater server to register with device management and fetch policies.
+updater server to register with device management and fetch policies. Concurrent
+calls of `FetchPolicies` will result in only a single policy fetch.
 
 The updater also checks for policy updates when the `RunPeriodicTasks` RPC is
 invoked at periodic intervals.
@@ -829,12 +830,12 @@ The maximum size of the token is 4K (Windows only).
 
 #### Windows
 The enrollment token is searched in the order:
-* The `EnrollmentToken` REG_BINARY value from
+* The `EnrollmentToken` `REG_BINARY` value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
-* The `CloudManagementEnrollmentToken` REG_BINARY value from
+* The `CloudManagementEnrollmentToken` `REG_BINARY` value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
 
-The `EnrollmentMandatory` REG_DWORD value is also read from
+The `EnrollmentMandatory` `REG_DWORD` value is also read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
 
 #### macOS
@@ -1684,6 +1685,12 @@ The updater uninstaller removes all updater files, registry keys, RPC hooks,
 scheduled tasks, and so forth from the system, except that:
 *   it leaves a small log file in its data directory.
 *   it leaves the Clients registry key in Windows registry.
+
+Inactive instances of the updater uninstall themselves (but not the updater
+overall) once the active version of the updater is higher than the inactive
+instance's version. Additionally, as part of its periodic tasks, the active
+updater will trigger the uninstallation of old instances of the updater and
+clean up any files they leak.
 
 ## Associated Tools
 

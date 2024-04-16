@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -29,8 +30,7 @@ namespace updater {
 
 namespace {
 
-// Versions up to this version will be uninstalled.
-constexpr char kCleanupVersionMax[] = "117.0.5859.0";
+constexpr int kMilestoneDeletionThreshold = 8;
 
 void CleanupGoogleUpdate(UpdaterScope scope) {
 #if BUILDFLAG(IS_WIN)
@@ -42,18 +42,18 @@ void CleanupGoogleUpdate(UpdaterScope scope) {
 }
 
 void CleanupOldUpdaterVersions(UpdaterScope scope) {
-  CHECK(base::Version(kCleanupVersionMax).IsValid());
-  CHECK(base::Version(kUpdaterVersion)
-            .CompareTo(base::Version(kCleanupVersionMax)) > 0);
+  base::Version cleanup_max =
+      base::Version({base::Version(kUpdaterVersion).components()[0] -
+                     kMilestoneDeletionThreshold});
+  CHECK_GT(base::Version(kUpdaterVersion), cleanup_max);
   std::optional<base::FilePath> dir = GetInstallDirectory(scope);
   if (!dir) {
     return;
   }
   base::FileEnumerator(*dir, false, base::FileEnumerator::DIRECTORIES)
-      .ForEach([&scope](const base::FilePath& item) {
+      .ForEach([&scope, &cleanup_max](const base::FilePath& item) {
         base::Version version(item.BaseName().MaybeAsASCII());
-        if (!version.IsValid() ||
-            version.CompareTo(base::Version(kCleanupVersionMax)) > 0) {
+        if (!version.IsValid() || version.CompareTo(cleanup_max) > 0) {
           return;
         }
         VLOG(1) << __func__ << " cleaning up " << item;

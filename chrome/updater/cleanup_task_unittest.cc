@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,12 @@
 
 namespace updater {
 
-class CleanupTaskTest : public testing::Test {};
+class CleanupTaskTest : public testing::Test {
+ protected:
+  void TearDown() override {
+    base::DeletePathRecursively(*GetInstallDirectory(GetTestScope()));
+  }
+};
 
 TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   base::test::TaskEnvironment task_environment;
@@ -46,6 +52,11 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
       GetVersionedInstallDirectory(GetTestScope(), base::Version("100"));
   ASSERT_TRUE(folder_path);
   ASSERT_TRUE(base::CreateDirectory(*folder_path));
+  std::optional<base::FilePath> folder_path_current =
+      GetVersionedInstallDirectory(GetTestScope(),
+                                   base::Version(kUpdaterVersion));
+  ASSERT_TRUE(folder_path_current);
+  ASSERT_TRUE(base::CreateDirectory(*folder_path_current));
 
   auto cleanup_task = base::MakeRefCounted<CleanupTask>(GetTestScope());
   base::RunLoop run_loop;
@@ -53,6 +64,7 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   run_loop.Run();
 
   ASSERT_FALSE(base::PathExists(*folder_path));
+  ASSERT_TRUE(base::PathExists(*folder_path_current));
 
 #if BUILDFLAG(IS_WIN)
   // Expect only a single file `GoogleUpdate.exe` and nothing else under
