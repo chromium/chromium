@@ -122,6 +122,11 @@ found in the LICENSE file.
     /* border: dashed; */
   }
 
+  #qrPlaceholder {
+    width: 100%;
+    height: auto;
+  }
+
   #qrCodeCanvas {
     position: absolute;
     width: 100%;
@@ -153,9 +158,9 @@ found in the LICENSE file.
   </h1>
   <div slot="subtitle">
     <div inner-h-t-m-l="[[getVerificationSubtitle(
-        locale, 
-        discoverableName, 
-        usePinInsteadOfQrForVerification, 
+        locale,
+        discoverableName,
+        usePinInsteadOfQrForVerification,
         willRequestWiFi)]]">
     </div>
   </div>
@@ -165,8 +170,10 @@ found in the LICENSE file.
       <iron-icon id="qrDeco" icon="oobe-illos:quickstart-qr">
       </iron-icon>
       <div id="qrHolder">
-        <canvas id="qrCodeCanvas">
+        <canvas id="qrCodeCanvas" hidden="[[!qrCodeAvailable]]">
         </canvas>
+        <iron-icon id="qrPlaceholder" hidden="[[qrCodeAvailable]]" icon="oobe-illos:quickstart-qr-placeholder">
+        </iron-icon>
       </div>
       </div>
       <quick-start-pin id="pinWrapper" pin="[[pin]]"
@@ -187,7 +194,8 @@ found in the LICENSE file.
               class="content-icon">
           </iron-icon>
           <div class="footer-content-text">
-            [[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructions')]]
+            <div hidden="[[!usePinInsteadOfQrForVerification]]">[[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructionsPin')]]</div>
+            <div hidden="[[usePinInsteadOfQrForVerification]]">[[i18nDynamic(locale, 'quickStartSetupContentFooterFollowInstructionsQr')]]</div>
           </div>
         </div>
       </div>

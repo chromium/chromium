@@ -96,6 +96,11 @@ export class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: false,
       },
+      // Set once a QR code is set. Until then, a placeholder is shown.
+      qrCodeAvailable: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -107,6 +112,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   private userAvatarUrl: string;
   private canCancelSignin: boolean;
   private willRequestWiFi: boolean;
+  private qrCodeAvailable: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
   private didTransferWiFi: boolean;
 
@@ -228,6 +234,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
     flush();
 
     this.qrCodeCanvas?.setData(qrCode);
+    this.qrCodeAvailable = true;
   }
 
   setPin(pin: string): void {

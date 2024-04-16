@@ -96,8 +96,12 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_ACCOUNT_ONLY);
   builder->Add("quickStartSetupContentFooterTurnOnWifi",
                IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT);
-  builder->Add("quickStartSetupContentFooterFollowInstructions",
-               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS);
+  builder->Add(
+      "quickStartSetupContentFooterFollowInstructionsQr",
+      IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_QR);
+  builder->Add(
+      "quickStartSetupContentFooterFollowInstructionsPin",
+      IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_PIN);
   builder->Add("quickStartWifiTransferTitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("quickStartWifiTransferSubtitle",

@@ -1529,7 +1529,10 @@
   <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT" desc="A message telling the user to turn on their phone's Bluetooth and WiFi when setting up their Chromebook using an Android phone.">
     Turn on your phone’s Bluetooth and Wi-Fi
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS" desc="A message telling the user to follow instructions on their phone when setting up when setting up their Chromebook using an Android phone.">
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_PIN" desc="A message telling the user to follow instructions on their phone when setting up when setting up their Chromebook using an Android phone.">
+    Follow instructions on your phone to verify the code
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_QR" desc="A message telling the user to follow instructions on their phone when setting up when setting up their Chromebook using an Android phone.">
     Follow instructions on your phone or use the camera app
   </message>
   <message name="IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE" desc="A title used on OOBE's Quick Start screen when WiFi credentials are being transferred to the Chromebook from the Android device.">
