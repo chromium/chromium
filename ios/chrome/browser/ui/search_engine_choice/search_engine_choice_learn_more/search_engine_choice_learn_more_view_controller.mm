@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -132,8 +133,10 @@ UITextView* SecondParagraph() {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  UIView* view = self.view;
+
   // Navigation.
-  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.navigationItem.title =
       l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE_IOS);
   UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
@@ -144,7 +147,7 @@ UITextView* SecondParagraph() {
 
   // Scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
-  [self.view addSubview:scrollView];
+  [view addSubview:scrollView];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Scrollable content.
@@ -182,16 +185,19 @@ UITextView* SecondParagraph() {
   secondParagraphTextView.delegate = self;
   [scrollContentView addSubview:secondParagraphTextView];
 
+  // Create a layout guide to constrain the width of the content, while still
+  // allowing the scroll view to take the full screen width.
+  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
   [NSLayoutConstraint activateConstraints:@[
     // Frame layout.
     [scrollView.frameLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor],
+        constraintEqualToAnchor:view.topAnchor],
     [scrollView.frameLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
+        constraintEqualToAnchor:view.bottomAnchor],
     [scrollView.frameLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
+        constraintEqualToAnchor:view.leadingAnchor],
     [scrollView.frameLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:view.trailingAnchor],
 
     // Content layout.
     [scrollView.contentLayoutGuide.trailingAnchor
@@ -206,12 +212,10 @@ UITextView* SecondParagraph() {
     [scrollContentView.bottomAnchor
         constraintEqualToAnchor:scrollView.contentLayoutGuide.bottomAnchor
                        constant:-kTableViewVerticalSpacing],
-    [scrollContentView.leadingAnchor
-        constraintEqualToAnchor:scrollView.contentLayoutGuide.leadingAnchor
-                       constant:kTableViewHorizontalSpacing],
-    [scrollContentView.trailingAnchor
-        constraintEqualToAnchor:scrollView.contentLayoutGuide.trailingAnchor
-                       constant:-kTableViewHorizontalSpacing],
+    [scrollContentView.widthAnchor
+        constraintEqualToAnchor:widthLayoutGuide.widthAnchor],
+    [scrollContentView.centerXAnchor
+        constraintEqualToAnchor:widthLayoutGuide.centerXAnchor],
 
     // first paragraph.
     [firstParagraphTextView.topAnchor
