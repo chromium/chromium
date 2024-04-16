@@ -194,7 +194,7 @@ class CheckedContiguousIterator {
     CHECK_EQ(end_, other.end_);
   }
 
-  // RAW_PTR_EXCLUSION: T can be a STACK_ALLOCATED class.
+  // RAW_PTR_EXCLUSION: The embedding class is stack-scoped.
   RAW_PTR_EXCLUSION const T* start_ = nullptr;
   RAW_PTR_EXCLUSION T* current_ = nullptr;
   RAW_PTR_EXCLUSION const T* end_ = nullptr;
