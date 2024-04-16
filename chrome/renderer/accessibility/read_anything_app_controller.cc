@@ -558,6 +558,15 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   model_.UnserializePendingUpdates(tree_id);
   if (model_.requires_distillation()) {
     Distill();
+  } else {
+    // Request a screenshot of the active page when no more distillations are
+    // required.
+    if (model_.page_finished_loading_for_data_collection()) {
+      // Send a snapshot request to its browser controller using `PaintPreview`
+      // to take a whole-page snapshot of the active web contents.
+      page_handler_->OnSnapshotRequested();
+      model_.set_page_finished_loading_for_data_collection(false);
+    }
   }
 }
 

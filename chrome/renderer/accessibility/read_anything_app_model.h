@@ -147,14 +147,15 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  bool page_finished_loading_for_data_collection() const {
+  bool page_finished_loading_for_data_collection() {
     return page_finished_loading_for_data_collection_;
   }
-
-  bool page_finished_loading() const {
+  void set_page_finished_loading_for_data_collection(bool value) {
+    page_finished_loading_for_data_collection_ = value;
+  }
+  bool page_finished_loading() {
     return page_finished_loading_;
   }
-
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
   }

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_snapshotter.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -134,6 +135,7 @@ class ReadAnythingUntrustedPageHandler
                          ui::AXNodeID focus_node_id,
                          int focus_offset) override;
   void OnCollapseSelection() override;
+  void OnSnapshotRequested() override;
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(
@@ -212,6 +214,10 @@ class ReadAnythingUntrustedPageHandler
   // (iframe) of the main web contents since that is where the pdf contents is
   // contained.
   std::unique_ptr<ReadAnythingWebContentsObserver> pdf_observer_;
+
+  // `web_snapshotter_` is used to capture a screenshot of the main web
+  // contents requested.
+  std::unique_ptr<ReadAnythingSnapshotter> web_snapshotter_;
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;

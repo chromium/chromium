@@ -6,5 +6,11 @@ specific_include_rules = {
   "read_anything_untrusted_page_handler\.*": [
     "+chrome/browser/ui/views/side_panel/read_anything",
     "+chrome/browser/ui/views/frame/browser_view.h",
+    "+components/paint_preview/common/recording_map.h",
+    "+components/paint_preview/public/paint_preview_compositor_service.h",
+  ],
+  "read_anything_snapshotter\.*": [
+    "+components/paint_preview/common/recording_map.h",
+    "+components/paint_preview/public/paint_preview_compositor_service.h",
   ],
 }

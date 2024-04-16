@@ -269,6 +269,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   TabStripModelObserver::StopObservingAll(this);
   translate_observation_.Reset();
+  web_snapshotter_.reset();
   main_observer_.reset();
   pdf_observer_.reset();
   LogTextStyle();
@@ -467,6 +468,22 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
   if (main_observer_ && main_observer_->web_contents()) {
     main_observer_->web_contents()->CollapseSelection();
   }
+}
+
+void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
+  if (!features::IsDataCollectionModeForScreen2xEnabled()) {
+    return;
+  }
+  if (!main_observer_ || !main_observer_->web_contents()) {
+    VLOG(2) << "The main observer didn't observe the main web contents";
+    return;
+  }
+
+  if (!web_snapshotter_) {
+    web_snapshotter_ = std::make_unique<ReadAnythingSnapshotter>();
+  }
+  VLOG(2) << "Requesting a snapshot for the main web contents";
+  web_snapshotter_->RequestSnapshot(main_observer_->web_contents());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

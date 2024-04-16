@@ -56,6 +56,7 @@ class MockReadAnythingUntrustedPageHandler
                int focus_offset),
               (override));
   MOCK_METHOD(void, OnCollapseSelection, (), (override));
+  MOCK_METHOD(void, OnSnapshotRequested, (), (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
               OnLineSpaceChange,

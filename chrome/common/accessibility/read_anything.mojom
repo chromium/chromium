@@ -175,6 +175,9 @@ interface UntrustedPageHandler {
 
   // Informs the browser to collapse the selection made in the WebUI.
   OnCollapseSelection();
+
+  // Requests the browser to take a snapshot of the active web contents.
+  OnSnapshotRequested();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.
