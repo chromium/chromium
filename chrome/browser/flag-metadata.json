@@ -2218,11 +2218,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "edit-context",
-    "owners": [ "shihken@microsoft.com", "snianu@microsoft.com", "yosin@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "elastic-overscroll",
     "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150
