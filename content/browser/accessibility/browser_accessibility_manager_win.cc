@@ -388,9 +388,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LANGUAGE_CHANGED:
       FireUiaPropertyChangedEvent(UIA_CulturePropertyId, wrapper);
       break;
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-      FireUiaAccessibilityEvent(UIA_LiveRegionChangedEventId, wrapper);
-      break;
     case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
       // This event is redundant with the IA2_EVENT_TEXT_INSERTED events;
       // however, JAWS 2018 and earlier do not process the text inserted
@@ -556,6 +553,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::FOCUS_CHANGED:
+    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
