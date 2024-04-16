@@ -11,6 +11,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 #include <zircon/types.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 
@@ -93,7 +93,7 @@ class WebInstanceHost {
       fuchsia::web::CreateContextParams params,
       fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
       base::CommandLine extra_args,
-      base::StringPiece instance_component_url,
+      std::string_view instance_component_url,
       std::vector<std::string> services_to_offer);
 
  private:

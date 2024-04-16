@@ -8,11 +8,11 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -36,8 +36,8 @@ const char kCookieValue2[] = "Cookies";
 const char kCookieValue3[] = "Nyom nyom nyom";
 
 // Creates a CanonicalCookie with |name| and |value|, for kTestCookieUrl.
-std::unique_ptr<net::CanonicalCookie> CreateCookie(base::StringPiece name,
-                                                   base::StringPiece value) {
+std::unique_ptr<net::CanonicalCookie> CreateCookie(std::string_view name,
+                                                   std::string_view value) {
   return net::CanonicalCookie::CreateSanitizedCookie(
       GURL(kTestCookieUrl), std::string(name), std::string(value),
       /*domain=*/"",
@@ -80,8 +80,7 @@ class CookieManagerImplTest : public testing::Test {
   }
 
   // Adds the specified cookie under kTestCookieUrl.
-  void CreateAndSetCookieAsync(base::StringPiece name,
-                               base::StringPiece value) {
+  void CreateAndSetCookieAsync(std::string_view name, std::string_view value) {
     EnsureMojoCookieManager();
 
     net::CookieOptions options;
@@ -93,7 +92,7 @@ class CookieManagerImplTest : public testing::Test {
   }
 
   // Removes the specified cookie from under kTestCookieUrl.
-  void DeleteCookieAsync(base::StringPiece name, base::StringPiece value) {
+  void DeleteCookieAsync(std::string_view name, std::string_view value) {
     EnsureMojoCookieManager();
 
     mojo_cookie_manager_->DeleteCanonicalCookie(
@@ -160,22 +159,22 @@ class GetNextCookiesIteratorResult {
 
   ~GetNextCookiesIteratorResult() = default;
 
-  void ExpectSingleCookie(base::StringPiece name,
-                          std::optional<base::StringPiece> value) {
+  void ExpectSingleCookie(std::string_view name,
+                          std::optional<std::string_view> value) {
     ExpectCookieUpdates({{name, value}});
   }
 
-  void ExpectDeleteSingleCookie(base::StringPiece name) {
+  void ExpectDeleteSingleCookie(std::string_view name) {
     ExpectCookieUpdates({{name, std::nullopt}});
   }
 
   // Specifies the cookie name/value pairs expected in the GetNext() results.
   // Deletions expectations are specified by using std::nullopt as the value.
   void ExpectCookieUpdates(
-      std::map<base::StringPiece, std::optional<base::StringPiece>> expected) {
+      std::map<std::string_view, std::optional<std::string_view>> expected) {
     ASSERT_TRUE(result_.Wait());
     ASSERT_EQ(result_.Get().size(), expected.size());
-    std::map<base::StringPiece, base::StringPiece> result_updates;
+    std::map<std::string_view, std::string_view> result_updates;
     for (const auto& cookie_update : result_.Get()) {
       ASSERT_TRUE(cookie_update.has_id());
       ASSERT_TRUE(cookie_update.id().has_name());

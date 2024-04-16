@@ -10,10 +10,10 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/fuchsia/filtered_service_directory.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -92,17 +92,17 @@ class WebEngineIntegrationTestBase : public testing::Test {
                                        const GURL& url);
 
   void LoadUrlAndExpectResponse(
-      base::StringPiece url,
+      std::string_view url,
       fuchsia::web::LoadUrlParams load_url_params = {});
 
   void GrantPermission(fuchsia::web::PermissionType type,
                        const std::string& origin);
 
-  std::string ExecuteJavaScriptWithStringResult(base::StringPiece script);
+  std::string ExecuteJavaScriptWithStringResult(std::string_view script);
 
-  double ExecuteJavaScriptWithDoubleResult(base::StringPiece script);
+  double ExecuteJavaScriptWithDoubleResult(std::string_view script);
 
-  bool ExecuteJavaScriptWithBoolResult(base::StringPiece script);
+  bool ExecuteJavaScriptWithBoolResult(std::string_view script);
 
  protected:
   const base::test::TaskEnvironment task_environment_;

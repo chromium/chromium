@@ -19,7 +19,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/strings/string_piece.h"
 
 namespace {
 

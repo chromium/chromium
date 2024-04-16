@@ -6,14 +6,14 @@
 #define FUCHSIA_WEB_COMMON_STRING_UTIL_H_
 
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 
 // Creates a byte vector from a string.
-std::vector<uint8_t> StringToBytes(base::StringPiece str);
+std::vector<uint8_t> StringToBytes(std::string_view str);
 
 // Creates a string from a byte vector.
-base::StringPiece BytesAsString(const std::vector<uint8_t>& bytes);
+std::string_view BytesAsString(const std::vector<uint8_t>& bytes);
 
 #endif  // FUCHSIA_WEB_COMMON_STRING_UTIL_H_

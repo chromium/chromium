@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -70,7 +71,7 @@ class CastComponent final
   // `is_headless` must match the headless setting of the specified `runner`, to
   //   have CreateView() operations trigger enabling & disabling of off-screen
   //   rendering.
-  CastComponent(base::StringPiece debug_name,
+  CastComponent(std::string_view debug_name,
                 WebContentRunner* runner,
                 Params params,
                 bool is_headless);

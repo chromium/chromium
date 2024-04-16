@@ -4,8 +4,9 @@
 
 #include "fuchsia_web/webengine/common/cast_streaming.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "url/gurl.h"
 
@@ -24,12 +25,12 @@ bool IsCastStreamingEnabled() {
   return is_cast_streaming_enabled;
 }
 
-bool IsCastStreamingAppOrigin(base::StringPiece origin) {
+bool IsCastStreamingAppOrigin(std::string_view origin) {
   return origin == kCastStreamingMessagePortOrigin ||
          IsCastStreamingVideoOnlyAppOrigin(origin);
 }
 
-bool IsCastStreamingVideoOnlyAppOrigin(base::StringPiece origin) {
+bool IsCastStreamingVideoOnlyAppOrigin(std::string_view origin) {
   return origin == kCastStreamingVideoOnlyMessagePortOrigin;
 }
 

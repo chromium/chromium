@@ -8,28 +8,27 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <optional>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 // Utility functions to create a fuchsia.web.UrlRequestRewrite in one line.
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
-    base::StringPiece header_name,
-    base::StringPiece header_value);
+    std::string_view header_name,
+    std::string_view header_value);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
-    std::optional<base::StringPiece> query_pattern,
-    base::StringPiece header_name);
+    std::optional<std::string_view> query_pattern,
+    std::string_view header_name);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(
-    base::StringPiece pattern,
-    base::StringPiece substitution);
+    std::string_view pattern,
+    std::string_view substitution);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
-    base::StringPiece url_ends_with,
-    base::StringPiece new_url);
+    std::string_view url_ends_with,
+    std::string_view new_url);
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAppendToQuery(
-    base::StringPiece query);
+    std::string_view query);
 
 #endif  // FUCHSIA_WEB_COMMON_TEST_URL_REQUEST_REWRITE_TEST_UTIL_H_

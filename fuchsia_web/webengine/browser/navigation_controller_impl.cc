@@ -7,11 +7,12 @@
 #include <fuchsia/mem/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 
+#include <string_view>
+
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -305,8 +306,8 @@ void NavigationControllerImpl::LoadUrl(std::string url,
     std::vector<std::string> extra_headers;
     extra_headers.reserve(params.headers().size());
     for (const auto& header : params.headers()) {
-      base::StringPiece header_name = BytesAsString(header.name);
-      base::StringPiece header_value = BytesAsString(header.value);
+      std::string_view header_name = BytesAsString(header.name);
+      std::string_view header_value = BytesAsString(header.value);
       if (!net::HttpUtil::IsValidHeaderName(header_name) ||
           !net::HttpUtil::IsValidHeaderValue(header_value)) {
         callback(fpromise::error(

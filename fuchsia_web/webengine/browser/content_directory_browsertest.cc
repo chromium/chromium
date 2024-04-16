@@ -7,8 +7,7 @@
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/vmo_file.h>
 
-#include "base/strings/string_piece.h"
-#include "fuchsia_web/webengine/test/web_engine_browser_test.h"
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -24,13 +23,14 @@
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
 #include "fuchsia_web/webengine/switches.h"
+#include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
 namespace {
 
 // Adds an in-memory file containing |data| to |dir| at the location |path|.
-void AddFileToPseudoDir(base::StringPiece data,
+void AddFileToPseudoDir(std::string_view data,
                         const base::FilePath& path,
                         vfs::PseudoDir* dir) {
   zx::vmo contents_vmo;
@@ -49,10 +49,10 @@ void AddFileToPseudoDir(base::StringPiece data,
 // Sets the specified directory as a ContentDirectory under the path |name|.
 class ScopedBindContentDirectory {
  public:
-  ScopedBindContentDirectory(base::StringPiece name, vfs::PseudoDir* pseudo_dir)
+  ScopedBindContentDirectory(std::string_view name, vfs::PseudoDir* pseudo_dir)
       : ScopedBindContentDirectory(name, ServePseudoDir(pseudo_dir)) {}
   ScopedBindContentDirectory(
-      base::StringPiece name,
+      std::string_view name,
       fidl::InterfaceHandle<fuchsia::io::Directory> directory_channel)
       : path_(base::FilePath(
                   ContentDirectoryLoaderFactory::kContentDirectoriesPath)

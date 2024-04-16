@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -63,7 +63,7 @@ std::string GetAbsoluteWebEnginePackageUrl(bool with_webui) {
 // than the production `web_engine` package.
 std::string MakeWebInstanceComponentUrl(bool use_relative_url,
                                         bool with_webui,
-                                        base::StringPiece component_name) {
+                                        std::string_view component_name) {
   return base::StrCat(
       {(use_relative_url ? "" : GetAbsoluteWebEnginePackageUrl(with_webui)),
        "#meta/", component_name});
@@ -156,7 +156,7 @@ class InstanceBuilder {
   // `fuchsia.web/Debug` will be published in `outgoing_services_request` if
   // `SetDebugRequest()` has been called.
   Instance Build(
-      base::StringPiece instance_component_url,
+      std::string_view instance_component_url,
       fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request);
 
  private:
@@ -205,7 +205,7 @@ class InstanceBuilder {
   }
 
   // Returns the capability and directory name for `directory`.
-  static base::StringPiece GetDirectoryName(OptionalDirectory directory);
+  static std::string_view GetDirectoryName(OptionalDirectory directory);
 
   // Serves `fs_directory` as `directory`. `fs_directory` may be specific to
   // this instance (e.g., persistent data storage) or required only in
@@ -222,7 +222,7 @@ class InstanceBuilder {
 
   // Serves the directory `name` as `offer` in the instance's subtree as a
   // read-only or a read-write (if `writeable`) directory.
-  void ServeDirectory(base::StringPiece name,
+  void ServeDirectory(std::string_view name,
                       std::unique_ptr<vfs::internal::Directory> fs_directory,
                       fuchsia::io::Operations rights);
 
@@ -363,7 +363,7 @@ void InstanceBuilder::SetDebugRequest(
 }
 
 Instance InstanceBuilder::Build(
-    base::StringPiece instance_component_url,
+    std::string_view instance_component_url,
     fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request) {
   ServeCommandLine();
 
@@ -450,10 +450,10 @@ void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
 }
 
 // static
-base::StringPiece InstanceBuilder::GetDirectoryName(
+std::string_view InstanceBuilder::GetDirectoryName(
     OptionalDirectory directory) {
   static constexpr auto kNames =
-      base::MakeFixedFlatMap<OptionalDirectory, base::StringPiece>({
+      base::MakeFixedFlatMap<OptionalDirectory, std::string_view>({
           {OptionalDirectory::kCdmData, "cdm_data"},
           {OptionalDirectory::kCommandLineConfig, "command-line-config"},
           {OptionalDirectory::kContentDirectories, "content-directories"},
@@ -490,7 +490,7 @@ void InstanceBuilder::OfferOptionalDirectoryFromVoid(
 }
 
 void InstanceBuilder::ServeDirectory(
-    base::StringPiece name,
+    std::string_view name,
     std::unique_ptr<vfs::internal::Directory> fs_directory,
     fuchsia::io::Operations rights) {
   DCHECK(instance_dir_);
@@ -579,7 +579,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgsAndUrl(
     fuchsia::web::CreateContextParams params,
     fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_services_request,
     base::CommandLine extra_args,
-    base::StringPiece component_name,
+    std::string_view component_name,
     std::vector<std::string> services_to_offer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/webengine/common/cors_exempt_headers.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/lazy_instance.h"
@@ -24,7 +26,7 @@ void SetCorsExemptHeaders(const std::vector<std::string>& headers) {
     cors_exempt_headers->insert(base::ToLowerASCII(header));
 }
 
-bool IsHeaderCorsExempt(base::StringPiece header_name) {
+bool IsHeaderCorsExempt(std::string_view header_name) {
   DCHECK(g_cors_exempt_headers_lowercase.IsCreated());
 
   const auto& cors_exempt_headers_set = g_cors_exempt_headers_lowercase.Get();

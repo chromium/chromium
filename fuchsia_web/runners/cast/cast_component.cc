@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -70,7 +71,7 @@ bool CastComponent::Params::AreComplete() const {
   return true;
 }
 
-CastComponent::CastComponent(base::StringPiece debug_name,
+CastComponent::CastComponent(std::string_view debug_name,
                              WebContentRunner* runner,
                              CastComponent::Params params,
                              bool is_headless)

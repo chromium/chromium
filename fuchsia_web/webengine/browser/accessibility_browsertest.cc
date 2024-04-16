@@ -5,6 +5,8 @@
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <zircon/types.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/scoped_service_binding.h"
@@ -135,7 +137,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
     WebEngineBrowserTest::TearDownOnMainThread();
   }
 
-  void LoadPage(base::StringPiece url, base::StringPiece page_title) {
+  void LoadPage(std::string_view url, std::string_view page_title) {
     GURL page_url(embedded_test_server()->GetURL(std::string(url)));
     ASSERT_TRUE(LoadUrlAndExpectResponse(frame_.GetNavigationController(),
                                          fuchsia::web::LoadUrlParams(),

@@ -18,6 +18,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -596,7 +597,7 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::WriteFile(profile_temp_dir.GetPath().AppendASCII(kTestDataFileIn),
-                      base::StringPiece()));
+                      std::string_view()));
 
   fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
   fidl::InterfaceRequest<fuchsia::web::Context> context_request;
@@ -633,7 +634,7 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
 
   // Make sure that the mapped dir can be written to.
   ASSERT_TRUE(base::WriteFile(data_dir.AppendASCII(kTestDataFileOut),
-                              base::StringPiece()));
+                              std::string_view()));
   ASSERT_PRED1(base::PathExists,
                profile_temp_dir.GetPath().AppendASCII(kTestDataFileOut));
 }

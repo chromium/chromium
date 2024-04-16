@@ -9,8 +9,8 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 // Uses |navigation_controller| to load |url| with |load_url_params|. Returns
@@ -19,16 +19,16 @@
 bool LoadUrlAndExpectResponse(
     fuchsia::web::NavigationController* navigation_controller,
     fuchsia::web::LoadUrlParams load_url_params,
-    base::StringPiece url);
+    std::string_view url);
 bool LoadUrlAndExpectResponse(
     const fuchsia::web::NavigationControllerPtr& navigation_controller,
     fuchsia::web::LoadUrlParams load_url_params,
-    base::StringPiece url);
+    std::string_view url);
 
 // Executes |script| in the context of |frame|'s top-level document.
 // Returns an un-set |std::optional<>| on failure.
 std::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
-                                             base::StringPiece script);
+                                             std::string_view script);
 
 // Creates and returns a LoadUrlParams with was_user_activated set to true.
 // This allows user actions to propagate to the frame, allowing features such as

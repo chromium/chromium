@@ -8,6 +8,7 @@
 #include <lib/trace-provider/provider.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
 #include "build/chromecast_buildflags.h"
@@ -48,7 +48,7 @@ constexpr char kHeadlessConfigKey[] = "headless";
 constexpr char kDisableCodeGenConfigKey[] = "disable-codegen";
 
 // Returns the value of |config_key| or false if it is not set.
-bool GetConfigBool(base::StringPiece config_key) {
+bool GetConfigBool(std::string_view config_key) {
   const std::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (config)
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
 
-  static constexpr base::StringPiece kComponentUrl(
+  static constexpr std::string_view kComponentUrl(
       "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm");
   fuchsia_component_support::RegisterProductDataForCrashReporting(
       kComponentUrl, "FuchsiaCastRunner");

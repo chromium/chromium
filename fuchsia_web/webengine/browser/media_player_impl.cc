@@ -6,9 +6,10 @@
 
 #include <lib/async/default.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/public/browser/media_session.h"
@@ -66,8 +67,8 @@ fuchsia_media_sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
   }
 }
 
-void AddMetadata(base::StringPiece label,
-                 base::StringPiece16 value,
+void AddMetadata(std::string_view label,
+                 std::u16string_view value,
                  fuchsia_media::Metadata* metadata) {
   fuchsia_media::Property property{
       {.label{label}, .value{base::UTF16ToUTF8(value)}}};

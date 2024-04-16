@@ -6,10 +6,10 @@
 
 #include <cstring>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/fuchsia/test_log_listener_safe.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/webengine/test/context_provider_for_test.h"
@@ -30,7 +30,7 @@ constexpr char kNormalizedPortNumber[] = "678";
 // Replaces the line number in frame_impl.cc with kNormalizedLineNumber and
 // the port with kNormalizedPortNumber to enable reliable comparison of
 // console log messages.
-std::string NormalizeConsoleLogMessage(base::StringPiece original) {
+std::string NormalizeConsoleLogMessage(std::string_view original) {
   const char kSchemePortColon[] = "http://127.0.0.1:";
   size_t port_begin =
       original.find(kSchemePortColon) + strlen(kSchemePortColon);

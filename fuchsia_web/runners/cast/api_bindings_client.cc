@@ -4,11 +4,11 @@
 
 #include "fuchsia_web/runners/cast/api_bindings_client.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
@@ -100,7 +100,7 @@ bool ApiBindingsClient::HasBindings() const {
 }
 
 bool ApiBindingsClient::OnPortConnected(
-    base::StringPiece port_name,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   if (!bindings_service_)
     return false;

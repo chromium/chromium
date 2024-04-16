@@ -4,11 +4,12 @@
 
 #include "fuchsia_web/common/init_logging.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/version_info/version_info.h"
 
@@ -45,7 +46,7 @@ bool InitLoggingFromCommandLineDefaultingToStderrForTest(
   return InitLoggingFromCommandLine(*command_line);
 }
 
-void LogComponentStartWithVersion(base::StringPiece component_name) {
+void LogComponentStartWithVersion(std::string_view component_name) {
   std::string version_string = base::StringPrintf(
       "Starting %.*s %s", base::saturated_cast<int>(component_name.length()),
       component_name.data(), version_info::GetVersionNumber().data());

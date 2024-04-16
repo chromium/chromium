@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/webengine/common/web_engine_content_client.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -22,7 +24,7 @@ std::u16string WebEngineContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::StringPiece WebEngineContentClient::GetDataResource(
+std::string_view WebEngineContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

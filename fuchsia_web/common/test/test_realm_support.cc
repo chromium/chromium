@@ -62,7 +62,7 @@ void AppendCommandLineArgumentsToProgram(
 }  // namespace
 
 void AppendCommandLineArguments(RealmBuilder& realm_builder,
-                                base::StringPiece child_name,
+                                std::string_view child_name,
                                 const base::CommandLine& command_line) {
   const std::string child_name_str(child_name);
   auto child_component_decl = realm_builder.GetComponentDecl(child_name_str);
@@ -81,8 +81,8 @@ void AppendCommandLineArgumentsForRealm(
 }
 
 void AddRouteFromParent(RealmBuilder& realm_builder,
-                        base::StringPiece child_name,
-                        base::StringPiece protocol_name) {
+                        std::string_view child_name,
+                        std::string_view protocol_name) {
   ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
   realm_builder.AddRoute(Route{.capabilities = {Protocol{protocol_name}},
                                .source = ParentRef{},
@@ -90,12 +90,12 @@ void AddRouteFromParent(RealmBuilder& realm_builder,
 }
 
 void AddSyslogRoutesFromParent(RealmBuilder& realm_builder,
-                               base::StringPiece child_name) {
+                               std::string_view child_name) {
   AddRouteFromParent(realm_builder, child_name, "fuchsia.logger.LogSink");
 }
 
 void AddVulkanRoutesFromParent(RealmBuilder& realm_builder,
-                               base::StringPiece child_name) {
+                               std::string_view child_name) {
   ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
   realm_builder.AddRoute(
       Route{.capabilities = {Protocol{"fuchsia.sysmem.Allocator"},
@@ -105,7 +105,7 @@ void AddVulkanRoutesFromParent(RealmBuilder& realm_builder,
             .targets = {std::move(child_ref)}});
 }
 
-void AddFontService(RealmBuilder& realm_builder, base::StringPiece child_name) {
+void AddFontService(RealmBuilder& realm_builder, std::string_view child_name) {
   static constexpr char kFontsService[] = "isolated_fonts";
   static constexpr char kFontsUrl[] =
       "fuchsia-pkg://fuchsia.com/fonts_hermetic_for_test"
@@ -125,7 +125,7 @@ void AddFontService(RealmBuilder& realm_builder, base::StringPiece child_name) {
                       .targets = {std::move(child_ref)}});
 }
 
-void AddTestUiStack(RealmBuilder& realm_builder, base::StringPiece child_name) {
+void AddTestUiStack(RealmBuilder& realm_builder, std::string_view child_name) {
   static constexpr char kTestUiStackService[] = "test_ui_stack";
   static constexpr char kTestUiStackUrl[] =
       "fuchsia-pkg://fuchsia.com/flatland-scene-manager-test-ui-stack#meta/"

@@ -7,13 +7,14 @@
 #include <lib/fdio/directory.h>
 #include <zircon/status.h>
 
+#include <string_view>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 
@@ -149,7 +150,7 @@ void WebEngineIntegrationTestBase::CreateContextAndFrameAndLoadUrl(
 }
 
 void WebEngineIntegrationTestBase::LoadUrlAndExpectResponse(
-    base::StringPiece url,
+    std::string_view url,
     fuchsia::web::LoadUrlParams load_url_params) {
   // Connect a new NavigationController to ensure that LoadUrl() is processed
   // after all other messages previously sent to the frame.
@@ -171,19 +172,19 @@ void WebEngineIntegrationTestBase::GrantPermission(
 }
 
 std::string WebEngineIntegrationTestBase::ExecuteJavaScriptWithStringResult(
-    base::StringPiece script) {
+    std::string_view script) {
   std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetString() : std::string();
 }
 
 double WebEngineIntegrationTestBase::ExecuteJavaScriptWithDoubleResult(
-    base::StringPiece script) {
+    std::string_view script) {
   std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetDouble() : 0.0;
 }
 
 bool WebEngineIntegrationTestBase::ExecuteJavaScriptWithBoolResult(
-    base::StringPiece script) {
+    std::string_view script) {
   std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetBool() : false;
 }

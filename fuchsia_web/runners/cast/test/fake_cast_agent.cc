@@ -7,6 +7,7 @@
 #include <lib/vfs/cpp/service.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -21,7 +22,7 @@ FakeCastAgent::FakeCastAgent() = default;
 
 FakeCastAgent::~FakeCastAgent() = default;
 
-void FakeCastAgent::RegisterOnConnectClosure(base::StringPiece service,
+void FakeCastAgent::RegisterOnConnectClosure(std::string_view service,
                                              base::RepeatingClosure callback) {
   DCHECK(!is_started_);
 

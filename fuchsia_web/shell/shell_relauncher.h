@@ -6,8 +6,7 @@
 #define FUCHSIA_WEB_SHELL_SHELL_RELAUNCHER_H_
 
 #include <optional>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace base {
 class CommandLine;
@@ -19,7 +18,7 @@ class CommandLine;
 // (which includes `--no-relaunch` on its command line) with the contents of
 // this process's command line.
 std::optional<int> RelaunchForWebInstanceHostIfParent(
-    base::StringPiece relative_component_url,
+    std::string_view relative_component_url,
     const base::CommandLine& command_line);
 
 #endif  // FUCHSIA_WEB_SHELL_SHELL_RELAUNCHER_H_

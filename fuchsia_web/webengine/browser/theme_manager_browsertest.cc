@@ -5,11 +5,11 @@
 #include <fuchsia/settings/cpp/fidl_test_base.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -86,7 +86,7 @@ class ThemeManagerTest : public WebEngineBrowserTest,
   }
 
   // Returns the name of the color scheme selected by the CSS feature matcher.
-  base::StringPiece QueryThemeFromCssFeature() {
+  std::string_view QueryThemeFromCssFeature() {
     content::WebContents* web_contents =
         context_impl()
             ->GetFrameImplForTest(&frame_.ptr())

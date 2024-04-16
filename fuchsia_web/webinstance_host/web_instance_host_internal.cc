@@ -6,6 +6,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -14,7 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -55,8 +55,8 @@ bool IsFuchsiaCdmSupported() {
 // The switch is assumed to consist of comma-separated values. If |switch_name|
 // is already set in |command_line| then a comma will be appended, followed by
 // |value|, otherwise the switch will be set to |value|.
-void AppendToSwitch(base::StringPiece switch_name,
-                    base::StringPiece value,
+void AppendToSwitch(std::string_view switch_name,
+                    std::string_view value,
                     base::CommandLine& command_line) {
   if (!command_line.HasSwitch(switch_name)) {
     command_line.AppendSwitchNative(switch_name, value);
@@ -162,7 +162,7 @@ void HandleCorsExemptHeadersParam(fuchsia::web::CreateContextParams& params,
     return;
   }
 
-  std::vector<base::StringPiece> cors_exempt_headers;
+  std::vector<std::string_view> cors_exempt_headers;
   cors_exempt_headers.reserve(params.cors_exempt_headers().size());
   for (const auto& header : params.cors_exempt_headers()) {
     cors_exempt_headers.push_back(BytesAsString(header));
@@ -197,7 +197,7 @@ void HandleDisableCodeGenerationParam(
 
 }  // namespace
 
-void RegisterWebInstanceProductData(base::StringPiece absolute_component_url) {
+void RegisterWebInstanceProductData(std::string_view absolute_component_url) {
   // LINT.IfChange(web_engine_crash_product_name)
   static constexpr char kCrashProductName[] = "FuchsiaWebEngine";
   // LINT.ThenChange(//fuchsia_web/webengine/context_provider_main.cc:web_engine_crash_product_name)
@@ -211,10 +211,10 @@ void RegisterWebInstanceProductData(base::StringPiece absolute_component_url) {
       kFeedbackAnnotationsNamespace);
 }
 
-bool IsValidContentDirectoryName(base::StringPiece file_name) {
+bool IsValidContentDirectoryName(std::string_view file_name) {
   if (file_name.find_first_of(base::FilePath::kSeparators, 0,
                               base::FilePath::kSeparatorsLength - 1) !=
-      base::StringPiece::npos) {
+      std::string_view::npos) {
     return false;
   }
   if (file_name == base::FilePath::kCurrentDirectory ||
@@ -424,7 +424,7 @@ void AppendDynamicServices(fuchsia::web::ContextFeatureFlags features,
   static constexpr struct {
     ContextFeatureFlags flag;
     ContextFeatureFlags value;
-    base::StringPiece service;
+    std::string_view service;
   } kServices[] = {
     {ContextFeatureFlags::NETWORK, ContextFeatureFlags::NETWORK,
      "fuchsia.net.interfaces.State"},

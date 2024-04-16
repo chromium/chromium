@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/webengine/browser/web_engine_config.h"
 
+#include <string_view>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -47,8 +49,8 @@ bool IsProtectedMemorySupported() {
 // The switch is assumed to consist of comma-separated values. If `switch_name`
 // is already set in `command_line` then a comma will be appended, followed by
 // `value`, otherwise the switch will be set to `value`.
-void AppendToSwitch(base::StringPiece switch_name,
-                    base::StringPiece value,
+void AppendToSwitch(std::string_view switch_name,
+                    std::string_view value,
                     base::CommandLine* command_line) {
   if (!command_line->HasSwitch(switch_name)) {
     command_line->AppendSwitchNative(switch_name, value);
@@ -68,7 +70,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
     return true;
   }
 
-  static const base::StringPiece kAllowedArgs[] = {
+  static const std::string_view kAllowedArgs[] = {
       blink::switches::kSharedArrayBufferAllowedOrigins,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,

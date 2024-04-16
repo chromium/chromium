@@ -13,6 +13,7 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/eventpair.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -62,7 +62,7 @@ constexpr char kBlankAppUrl[] = "/defaultresponse";
 constexpr char kEchoHeaderPath[] = "/echoheader?Test";
 
 chromium::cast::ApplicationConfig CreateAppConfigWithTestData(
-    base::StringPiece app_id,
+    std::string_view app_id,
     GURL url) {
   fuchsia::web::ContentDirectoryProvider provider;
   provider.set_name("testdata");
@@ -200,7 +200,7 @@ class TestCastComponent {
   // the `ExecuteJavaScript()` API (see below).
   // Note that this function will not return until the activity has actually
   // launched.
-  void StartCastComponentWithQueryApi(base::StringPiece app_id = kTestAppId) {
+  void StartCastComponentWithQueryApi(std::string_view app_id = kTestAppId) {
     auto component_url = base::StrCat({"cast:", app_id});
     InjectQueryApi();
     StartCastComponent(component_url);
@@ -212,7 +212,7 @@ class TestCastComponent {
   // the activity has actually started (e.g. to interact with its
   // `ApplicationController`, etc), should normally use the
   // `StartCastComponentWithQueryApi()` call instead.
-  void StartCastComponent(base::StringPiece component_url) {
+  void StartCastComponent(std::string_view component_url) {
     ASSERT_FALSE(component_) << "Component may only be started once";
 
     fidl::InterfaceHandle<fuchsia::io::Directory> services;
@@ -426,7 +426,7 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   // testing::Test overrides.
   void SetUp() override {
-    static constexpr base::StringPiece kTestServerRoot(
+    static constexpr std::string_view kTestServerRoot(
         "fuchsia_web/runners/cast/testdata");
     test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
     net::test_server::RegisterDefaultHandlers(&test_server_);

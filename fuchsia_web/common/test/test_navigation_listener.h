@@ -8,10 +8,10 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 class GURL;
 
@@ -47,22 +47,21 @@ class TestNavigationListener final
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_title| and the normal page type.
-  void RunUntilTitleEquals(const base::StringPiece expected_title);
+  void RunUntilTitleEquals(const std::string_view expected_title);
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // |expected_url|, |expected_title|, and the normal page type.
   void RunUntilUrlAndTitleEquals(const GURL& expected_url,
-                                 base::StringPiece expected_title);
+                                 std::string_view expected_title);
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // the error page type, |expected_title|, and the main document loaded.
-  void RunUntilErrorPageIsLoadedAndTitleEquals(
-      base::StringPiece expected_title);
+  void RunUntilErrorPageIsLoadedAndTitleEquals(std::string_view expected_title);
 
   // Calls RunUntilNavigationStateMatches with a NavigationState that has
   // all the expected fields and the normal page type.
   void RunUntilUrlTitleBackForwardEquals(const GURL& expected_url,
-                                         base::StringPiece expected_title,
+                                         std::string_view expected_title,
                                          bool expected_can_go_back,
                                          bool expected_can_go_forward);
 
