@@ -127,16 +127,14 @@
               </div>
             </div>
           </div>
-          <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
-            <div id="durationPlaceholder">
-              <div class="ambient-toggle-row">
-                <h3 class="ambient-subpage-element-title" aria-hidden="true">
-                  $i18n{ambientModeDurationTitle}
-                </h3>
-                <div class="ambient-secondary-text-placeholder placeholder"></div>
-              </div>
+          <div id="durationPlaceholder">
+            <div class="ambient-toggle-row">
+              <h3 class="ambient-subpage-element-title" aria-hidden="true">
+                $i18n{ambientModeDurationTitle}
+              </h3>
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
             </div>
-          </template>
+          </div>
           <div id="ambientThemePlaceholder">
             <h3 id="ambientThemeTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
@@ -179,10 +177,8 @@
         <template is="dom-if" if="[[!loading_]]">
           <toggle-row id="ambientToggleRow"></toggle-row>
           <template is="dom-if" if="[[ambientModeEnabled_]]">
-            <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
-              <ambient-duration duration="[[duration_]]">
-              </ambient-duration>
-            </template>
+            <ambient-duration duration="[[duration_]]">
+            </ambient-duration>
             <ambient-theme-list
                 selected-ambient-theme="[[ambientTheme_]]">
             </ambient-theme-list>

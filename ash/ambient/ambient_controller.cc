@@ -302,9 +302,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       if (IsChargerConnected()) {
         // Requires wake lock to prevent display from sleeping.
         AcquireWakeLock();
-        if (ash::features::IsScreenSaverDurationEnabled()) {
-          StartTimerToReleaseWakeLock();
-        }
+        StartTimerToReleaseWakeLock();
       }
       // Observes the |PowerStatus| on the battery charging status change for
       // the current ambient session.
@@ -510,20 +508,11 @@ void AmbientController::OnPowerStatusChanged() {
     return;
   }
 
-  if (ash::features::IsScreenSaverDurationEnabled()) {
-    // TODO(b/300158227): There is a pending decision of whether we should
-    // reacquire wake lock when the power is reconnected before screen saver
-    // goes off. We make this change only to make sure that wake lock should
-    // never be acquired while on battery.
-    if (!IsChargerConnected()) {
-      ReleaseWakeLock();
-    }
-    return;
-  }
-
-  if (IsChargerConnected()) {
-    AcquireWakeLock();
-  } else {
+  // TODO(b/300158227): There is a pending decision of whether we should
+  // reacquire wake lock when the power is reconnected before screen saver
+  // goes off. We make this change only to make sure that wake lock should
+  // never be acquired while on battery.
+  if (!IsChargerConnected()) {
     ReleaseWakeLock();
   }
 }
@@ -751,7 +740,6 @@ void AmbientController::SetScreenSaverDuration(int minutes) {
 }
 
 void AmbientController::StartTimerToReleaseWakeLock() {
-  CHECK(ash::features::IsScreenSaverDurationEnabled());
   CHECK(!screensaver_running_timer_.IsRunning());
 
   auto* pref_service = GetPrimaryUserPrefService();

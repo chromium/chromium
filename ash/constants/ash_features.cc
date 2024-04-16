@@ -2562,11 +2562,6 @@ BASE_FEATURE(kScalableIphClientConfig,
              "ScalableIphClientConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables screensaver customized running time.
-BASE_FEATURE(kScreenSaverDuration,
-             "ScreenSaverDuration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,
@@ -3771,10 +3766,6 @@ bool IsHotspotEnabled() {
 
 bool IsInstantHotspotRebrandEnabled() {
   return base::FeatureList::IsEnabled(kInstantHotspotRebrand);
-}
-
-bool IsScreenSaverDurationEnabled() {
-  return base::FeatureList::IsEnabled(kScreenSaverDuration);
 }
 
 bool IsSnoopingProtectionEnabled() {

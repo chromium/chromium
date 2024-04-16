@@ -27,10 +27,6 @@ export function isRgbKeyboardSupported() {
   return loadTimeData.getBoolean('isRgbKeyboardSupported');
 }
 
-export function isScreenSaverDurationEnabled() {
-  return loadTimeData.getBoolean('isScreenSaverDurationEnabled');
-}
-
 export function isPersonalizationJellyEnabled() {
   return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
 }

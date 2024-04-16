@@ -2363,7 +2363,6 @@ class AmbientControllerDurationTest : public AmbientAshTestBase {
   ~AmbientControllerDurationTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kScreenSaverDuration);
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
   }
@@ -2373,8 +2372,6 @@ class AmbientControllerDurationTest : public AmbientAshTestBase {
 };
 
 TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {
-  EXPECT_TRUE(ash::features::IsScreenSaverDurationEnabled());
-
   // Duration is default to forever.
   SetAmbientModeEnabled(true);
   EXPECT_EQ(0, GetScreenSaverDuration());

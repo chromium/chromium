@@ -190,9 +190,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   OnAmbientUiSettingsChanged();
 
   // Call it once to get the current ambient duration settings.
-  if (ash::features::IsScreenSaverDurationEnabled()) {
-    OnScreenSaverDurationChanged();
-  }
+  OnScreenSaverDurationChanged();
 
   ResetLocalSettings();
 }
