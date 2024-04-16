@@ -377,6 +377,26 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       WebStateList::InsertionParams::AtIndex(index).Activate());
 }
 
+- (void)insertItem:(GridItemIdentifier*)item
+    beforeWebStateIndex:(int)nextWebStateIndex {
+  WebStateList* webStateList = self.webStateList;
+  GridItemIdentifier* nextItemIdentifier;
+  if (webStateList->ContainsIndex(nextWebStateIndex)) {
+    const TabGroup* group =
+        webStateList->GetGroupOfWebStateAt(nextWebStateIndex);
+    if (group) {
+      nextItemIdentifier = [GridItemIdentifier groupIdentifier:group
+                                              withWebStateList:webStateList];
+    } else {
+      nextItemIdentifier = [GridItemIdentifier
+          tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
+    }
+  }
+  [self.consumer insertItem:item
+                beforeItemID:nextItemIdentifier
+      selectedItemIdentifier:[self activeIdentifier]];
+}
+
 - (void)moveItem:(GridItemIdentifier*)item
     beforeWebStateIndex:(int)nextWebStateIndex {
   GridItemIdentifier* nextItem = nil;
@@ -1548,27 +1568,6 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
     WebStateList* groupWebStateList = browser->GetWebStateList();
     groupWebStateList->DeleteGroup(group);
   }
-}
-
-// Inserts `item` before the WebState at `nextWebStateIndex`.
-- (void)insertItem:(GridItemIdentifier*)item
-    beforeWebStateIndex:(int)nextWebStateIndex {
-  GridItemIdentifier* nextItemIdentifier;
-  if (self.webStateList->ContainsIndex(nextWebStateIndex)) {
-    const TabGroup* group =
-        self.webStateList->GetGroupOfWebStateAt(nextWebStateIndex);
-    if (group) {
-      nextItemIdentifier =
-          [GridItemIdentifier groupIdentifier:group
-                             withWebStateList:self.webStateList];
-    } else {
-      nextItemIdentifier = [GridItemIdentifier
-          tabIdentifier:self.webStateList->GetWebStateAt(nextWebStateIndex)];
-    }
-  }
-  [self.consumer insertItem:item
-                beforeItemID:nextItemIdentifier
-      selectedItemIdentifier:[self activeIdentifier]];
 }
 
 // Updates the cell of the given `group`.

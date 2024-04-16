@@ -231,6 +231,37 @@
   }
 
   switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly: {
+      const WebStateListChangeStatusOnly& selectionOnlyChange =
+          change.As<WebStateListChangeStatusOnly>();
+      const TabGroup* oldGroup = selectionOnlyChange.old_group();
+      const TabGroup* newGroup = selectionOnlyChange.new_group();
+
+      if (oldGroup != newGroup) {
+        // There is a change of group.
+        if (oldGroup == _tabGroup.get()) {
+          web::WebState* currentWebState =
+              self.webStateList->GetWebStateAt(selectionOnlyChange.index());
+
+          GridItemIdentifier* tabIdentifierToAddToGroup =
+              [GridItemIdentifier tabIdentifier:currentWebState];
+
+          [self.consumer removeItemWithIdentifier:tabIdentifierToAddToGroup
+                           selectedItemIdentifier:[self activeIdentifier]];
+        }
+
+        if (newGroup == _tabGroup.get()) {
+          int webStateIndex = selectionOnlyChange.index();
+          web::WebState* currentWebState =
+              self.webStateList->GetWebStateAt(webStateIndex);
+
+          [self insertItem:[GridItemIdentifier tabIdentifier:currentWebState]
+              beforeWebStateIndex:webStateIndex + 1];
+        }
+        break;
+      }
+      break;
+    }
     case WebStateListChange::Type::kGroupVisualDataUpdate: {
       const WebStateListChangeGroupVisualDataUpdate& visualDataChange =
           change.As<WebStateListChangeGroupVisualDataUpdate>();
@@ -297,8 +328,13 @@
       [super didChangeWebStateList:webStateList change:change status:status];
       break;
   }
-  // Update the title in case the number of tabs changed.
-  [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
+  if (_tabGroup) {
+    // Update the title in case the number of tabs changed.
+    [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
+  }
+  if (status.active_web_state_change()) {
+    [self.consumer selectItemWithIdentifier:[self activeIdentifier]];
+  }
 }
 
 #pragma mark - Private
