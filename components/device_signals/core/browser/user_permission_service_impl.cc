@@ -55,7 +55,8 @@ UserPermissionServiceImpl::GetWeakPtr() {
 }
 
 bool UserPermissionServiceImpl::HasUserConsented() const {
-  return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived);
+  return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived) ||
+         user_prefs_->GetBoolean(prefs::kDeviceSignalsPermanentConsentReceived);
 }
 
 bool UserPermissionServiceImpl::ShouldCollectConsent() const {

@@ -20,6 +20,7 @@ struct DeviceTrustManagementLevel {
 struct DeviceTrustConnectorState {
   bool affiliated = false;
   bool consent_given = false;
+  bool permanent_consent_given = false;
 
   DeviceTrustManagementLevel cloud_user_management_level{};
   DeviceTrustManagementLevel cloud_machine_management_level{};
@@ -66,6 +67,7 @@ class DeviceTrustManagementMixin : public InProcessBrowserTestMixin {
 
   // Update the user consent based on `consent_given`.
   void SetConsentGiven(bool consent_given);
+  void SetPermanentConsentGiven(bool permanent_consent_given);
 
  protected:
   // InProcessBrowserTestMixin:

@@ -110,6 +110,14 @@ void DeviceTrustManagementMixin::SetConsentGiven(bool consent_given) {
       device_signals::prefs::kDeviceSignalsConsentReceived, consent_given);
 }
 
+void DeviceTrustManagementMixin::SetPermanentConsentGiven(
+    bool permanent_consent_given) {
+  device_trust_state_.permanent_consent_given = permanent_consent_given;
+  test_base_->browser()->profile()->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived,
+      permanent_consent_given);
+}
+
 void DeviceTrustManagementMixin::SetUpOnMainThread() {
   if (device_trust_state_.cloud_machine_management_level
           .is_inline_policy_enabled) {
@@ -122,6 +130,7 @@ void DeviceTrustManagementMixin::SetUpOnMainThread() {
   }
 
   SetConsentGiven(device_trust_state_.consent_given);
+  SetPermanentConsentGiven(device_trust_state_.permanent_consent_given);
 }
 
 void DeviceTrustManagementMixin::SetMachineInlinePolicy(

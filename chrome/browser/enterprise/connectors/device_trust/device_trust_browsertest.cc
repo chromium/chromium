@@ -515,7 +515,7 @@ class DeviceTrustBrowserTestWithConsent
   bool is_device_inline_flow_enabled() { return testing::get<4>(GetParam()); }
   bool is_consent_policy_enabled() { return testing::get<5>(GetParam()); }
 
-  bool ShouldTriggerConsent() {
+  virtual bool ShouldTriggerConsent() {
     if ((is_device_managed() && is_affiliated()) || !is_profile_managed()) {
       return false;
     }
@@ -619,6 +619,86 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedUserAndUnmanagedDevice,
     DeviceTrustBrowserTestWithConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(false),
+                     /*is_user_inline_flow_enabled=*/testing::Values(false),
+                     /*is_device_managed=*/testing::Values(false),
+                     /*is_device_inline_flow_enabled=*/testing::Values(false),
+                     /*is_consent_policy_enabled=*/testing::Values(false)));
+
+class DeviceTrustBrowserTestWithPermanentConsent
+    : public DeviceTrustBrowserTestWithConsent {
+ protected:
+  DeviceTrustBrowserTestWithPermanentConsent() = default;
+
+  void SetUpOnMainThread() override {
+    DeviceTrustBrowserTestWithConsent::SetUpOnMainThread();
+    device_trust_mixin_->SetPermanentConsentGiven(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestWithPermanentConsent,
+                       ConsentDialogWithPolicyAndAttestation) {
+  NavigateWithUserGesture();
+
+  DTAttestationResult success_result =
+      is_device_inline_flow_enabled()
+          ? DTAttestationResult::kSuccess
+          : DTAttestationResult::kSuccessNoSignature;
+
+  std::optional<enterprise_connectors::DTAttestationPolicyLevel> policy_level =
+      GetExpectedAttestationPolicyLevel();
+
+  RunTestSequence(EnsureNotPresent(kDeviceSignalsConsentOkButtonElementId));
+  WaitForNavigation();
+
+  policy_level ? VerifyAttestationFlowSuccessful(success_result, policy_level)
+               : VerifyNoInlineFlowOccurred();
+
+  // Test case where the user becomes managed with DTC enabled.
+  if (!is_profile_managed() && !is_device_managed()) {
+    device_trust_mixin_->ManageCloudUser();
+    device_trust_mixin_->EnableUserInlinePolicy();
+
+    NavigateWithUserGesture();
+    WaitForNavigation();
+    VerifyAttestationFlowSuccessful(success_result, policy_level);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndUnmanagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(true),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(false),
+                     /*is_device_inline_flow_enabled=*/testing::Values(false),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndManagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Bool(),
+                     /*is_profile_managed=*/testing::Values(true),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(true),
+                     /*is_device_inline_flow_enabled=*/testing::Bool(),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    UnmanagedUserAndManagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(false),
+                     /*is_user_inline_flow_enabled=*/testing::Values(false),
+                     /*is_device_managed=*/testing::Values(true),
+                     /*is_device_inline_flow_enabled=*/testing::Bool(),
+                     /*is_consent_policy_enabled=*/testing::Values(false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    UnmanagedUserAndUnmanagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
     testing::Combine(/*is_affiliated=*/testing::Values(true),
                      /*is_profile_managed=*/testing::Values(false),
                      /*is_user_inline_flow_enabled=*/testing::Values(false),
