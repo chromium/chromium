@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -119,12 +120,21 @@ void ManifestManagerHost::OnRequestManifestResponse(
   } else if (!blink::IsEmptyManifest(manifest)) {
     // `start_url`, `id`, and `scope` MUST be populated if the manifest is not
     // empty.
-    if (!manifest->start_url.is_valid() || !manifest->id.is_valid() ||
-        !manifest->scope.is_valid()) {
+    bool start_url_valid = manifest->start_url.is_valid();
+    bool id_valid = manifest->id.is_valid();
+    bool scope_valid = manifest->scope.is_valid();
+    if (!start_url_valid || !id_valid || !scope_valid) {
       manifest = blink::mojom::Manifest::New();
+      constexpr auto valid_to_string = [](bool b) -> std::string_view {
+        return b ? "valid" : "invalid";
+      };
       mojo::ReportBadMessage(
-          "RequestManifest's manifest must either be empty or populate the "
-          "the start_url, id, and scope.");
+          base::StrCat({"RequestManifest's manifest must "
+                        "either be empty or populate the "
+                        "the start_url (",
+                        valid_to_string(start_url_valid), "), id(",
+                        valid_to_string(id_valid), "), and scope (",
+                        valid_to_string(scope_valid), ")."}));
     }
   }
   std::move(callback).Run(url, std::move(manifest));
