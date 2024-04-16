@@ -586,9 +586,34 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_CRITICAL},
       {"getTheMostOutOfChromeBetterWebAdsAlsoSupport",
        IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT},
+
+      // Your data section.
+      {"getTheMostOutOfChromeYourDataWhenYouBrowse",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_BROWSE},
+      {"getTheMostOutOfChromeYourDataThisInformationUseful",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_THIS_INFORMATION_USEFUL},
+      {"getTheMostOutOfChromeYourDataSubTitleWhatsDifferenceBrowsingSearchHisto"
+       "ry",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_SUB_TITLE_WHATS_DIFFERENCE_BROWSING_SEARCH_HISTORY},
+      {"getTheMostOutOfChromeYourDataBrowsingHistory",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_BROWSING_HISTORY},
+      {"getTheMostOutOfChromeYourDataWhenYouSearch",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_SEARCH},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "getTheMostOutOfChromeYourDataVisitChromeHistory",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_CHROME_HISTORY,
+          base::ASCIIToUTF16(chrome::kChromeUIHistoryURL),
+          chrome::kClearBrowsingDataHelpCenterURL));
+  html_source->AddString(
+      "getTheMostOutOfChromeYourDataVisitSearchHistory",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_SEARCH_HISTORY,
+          chrome::kSearchHistoryUrlInGetTheMostOutOfChrome));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

@@ -191,6 +191,12 @@ inline constexpr char kChromeUIUntrustedNewTabPageUrl[] =
 // The URL for the Chromium project used in the About dialog.
 inline constexpr char16_t kChromiumProjectURL[] = u"https://www.chromium.org/";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// The URL for the "Clear browsing data in Chrome" help center article.
+inline constexpr char16_t kClearBrowsingDataHelpCenterURL[] =
+    u"https://support.google.com/chrome?p=delete_browsing_data";
+#endif
+
 inline constexpr char16_t kContentSettingsExceptionsLearnMoreURL[] =
     u"https://support.google.com/chrome?p=settings_manage_exceptions";
 
@@ -458,6 +464,13 @@ inline constexpr char kSafetyTipHelpCenterURL[] =
 // history in their Google account.
 inline constexpr char16_t kSearchHistoryUrlInClearBrowsingData[] =
     u"https://myactivity.google.com/product/search?utm_source=chrome_cbd";
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Google search history URL that leads users from the "Get the most out of
+// Chrome" to their search history in their Google account.
+inline constexpr char16_t kSearchHistoryUrlInGetTheMostOutOfChrome[] =
+    u"https://myactivity.google.com/product/search?utm_source=chrome_gtmooc";
+#endif
 
 // The URL for the "See more security tips" with advices how to create a strong
 // password.

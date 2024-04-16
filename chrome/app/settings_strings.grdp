@@ -108,6 +108,46 @@
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_WEB_ADS_ALSO_SUPPORT" desc="A paragraph that explains how ads support the expense of many Google services, like Chrome, Gmail, maps, and YouTube.">
       Ads revenue also supports Google’s many free products and services, like Chrome, Gmail, Maps, and YouTube.
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_BROWSE" desc="A single-sentence paragraph that introduces the topic of &quot;Your data as you browse&quot;.">
+      When you browse the web you generate data - for example, the words you search for, the sites you visit, and the browser and device you use.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_THIS_INFORMATION_USEFUL" desc="Explains how data can be helpful.
+      (Data and information are used as synonyms for these articles. If you have terms for both in your language, you should use both terms to help the user understand that they're synonyms.
+      There is one example in the intro paragraph. It's there because Chrome used saved data for some things, like understanding how quickly pages load, irrespective of settings. The examples in the bullets are affected by the user's settings.
+      * Bullet 1: This describes autocomplete, though we don't want to use that name in the interface. As further explanation, if you search for things around a weekend activity near your home, Chrome can save those searches. As you continue to plan for your weekend, your previous searches can help autocomplete new searches. If you previously looked for &quot;Disneyland&quot;, typing &quot;Di&quot; might cause the Search box to suggest &quot;Disneyland&quot;.
+      * Bullet 2: If sites can remember your preferences, they can improve your experience.
+      * Bullet 3: Depending on the user's settings, data is also used by advertisers to show ads.">
+      This information can be useful. For example, it can help Chrome improve by understanding how quickly pages load in different conditions. And based on your settings, it can also:
+      &lt;ul&gt;
+        &lt;li&gt;Help you browse faster. For example, your past Google searches can help Chrome prompt you with predictions for your future ones.&lt;/li&gt;
+        &lt;li&gt;Allow sites to optimize your experience for your device. For example, a site can streamline its content for your mobile phone and remember your preferences, like your preferred language. &lt;/li&gt;
+        &lt;li&gt;Help advertisers, including Google, show more relevant ads.&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_SUB_TITLE_WHATS_DIFFERENCE_BROWSING_SEARCH_HISTORY" desc="A sub title that introduces the topic of distinguishing between Browsing and Search history.">
+      What’s the difference between your browsing history in Chrome and your search history?
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_BROWSING_HISTORY" desc="A self-standing sentence that describes Chrome browsing history.">
+      Your Chrome browsing history is all the sites you’ve visited in Chrome over a period of time.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_CHROME_HISTORY" desc="A paragraph that links to the user's browsing history and to help-center content.
+      * Link &lt;your browsing data in Chrome and how to manage it&gt; goes to https://support.google.com/chrome?p=delete_browsing_data.">
+      Visit <ph name="BEGIN_LINK_HISTORY">&lt;a target="_blank" href="$1"&gt;</ph><ph name="HISTORY">$1<ex>chrome://history</ex></ph><ph name="END_LINK_HISTORY">&lt;/a&gt;</ph> to review and manage your browsing history. Learn more about <ph name="BEGIN_LINK_HELPCENTER">&lt;a target="_blank" href="$2"&gt;</ph>your browsing data in Chrome and how to manage it<ph name="END_LINK_HELPCENTER">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_WHEN_YOU_SEARCH" desc="A paragraph that describes search history.
+
+      &quot;Default search engine&quot; is important. Don't use &quot;Search&quot; or &quot;Google search&quot; because the user may have configured the Chrome search both with a search engine other than Google Seach.">
+      When you search for something in Chrome’s address bar, your default search engine receives your request and responds by showing relevant results. Your search history includes things you’ve searched for over a period of time.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_SEARCH_HISTORY" desc="A paragraph with bullets that helps the reader find more information about search history.
+      * Link &lt;My Activity&gt; goes to https://myactivity.google.com/product/search">
+      You can review your search history and settings in <ph name="BEGIN_LINK"> &lt;a target="_blank" href="$1"&gt;</ph>My Activity<ph name="END_LINK">&lt;/a&gt;</ph>, if:
+      &lt;ul&gt;
+        &lt;li&gt;You use Google Search&lt;/li&gt;
+        &lt;li&gt;You’re signed in to your Google account&lt;/li&gt;
+        &lt;li&gt;You have Web &amp; App Activity turned on&lt;/li&gt;
+      &lt;/ul&gt;
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">
