@@ -29,7 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   BrowserSupport& operator=(const BrowserSupport&) = delete;
 
   // Initializes the global instance of BrowserSupport for the Primary User.
-  static void InitializeForPrimaryUser(const policy::PolicyMap& policy_map);
+  static void InitializeForPrimaryUser(const policy::PolicyMap& policy_map,
+                                       bool is_new_profile,
+                                       bool is_regular_profile);
 
   // Destroys the global instance of BrowserSupport.
   static void Shutdown();

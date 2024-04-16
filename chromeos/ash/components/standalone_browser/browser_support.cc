@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/version_info/version_info.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -142,7 +143,9 @@ BrowserSupport::~BrowserSupport() {
 
 // static
 void BrowserSupport::InitializeForPrimaryUser(
-    const policy::PolicyMap& policy_map) {
+    const policy::PolicyMap& policy_map,
+    bool is_new_profile,
+    bool is_regular_profile) {
   // Currently, some tests rely on initializing ProfileManager a second time.
   // That causes this method to be called twice. Here, we take care of that
   // case by deallocating the old instance and allocating a new one.
@@ -153,10 +156,38 @@ void BrowserSupport::InitializeForPrimaryUser(
     Shutdown();
   }
 
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(primary_user);
+  auto* user_manager = user_manager::UserManager::Get();
 
+  auto* primary_user = user_manager->GetPrimaryUser();
+  CHECK(primary_user);
   auto lacros_availability = GetLacrosAvailability(primary_user, policy_map);
+
+  // TODO(hidehiko, ythjkt): Replace these conditions by UserManager's
+  // IsCurrentUserNew() and primary User's GetType().
+  if (is_new_profile && is_regular_profile) {
+    // If the user is a new user, mark profile migration to Lacros as completed.
+    // Just before checking whether or not enabled, tweak the status for
+    // new session. This is the timing we need to and can check.
+    // - The check requires LacrosAvailability policy.
+    // - The check needs to be done before checking whether Lacros is enabled
+    //   for the primary user.
+    // Otherwise the value of `IsLacrosEnabled()` can change after these
+    // services are initialized.
+    if (IsEnabledInternal(primary_user, lacros_availability,
+                          /*check_migration_status=*/false)) {
+      // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
+      // this log message.
+      LOG(WARNING) << "Setting migration as completed since it is a new user.";
+      const std::string user_id_hash = primary_user->username_hash();
+      PrefService* local_state = user_manager->GetLocalState();
+      migrator_util::RecordDataVer(local_state, user_id_hash,
+                                   version_info::GetVersion());
+      migrator_util::SetProfileMigrationCompletedForUser(
+          local_state, user_id_hash,
+          migrator_util::MigrationMode::kSkipForNewUser);
+    }
+  }
+
   auto is_allowed = IsAllowedInternal(primary_user, lacros_availability);
 
   // Calls the constructor, which in turn takes care of tracking the newly

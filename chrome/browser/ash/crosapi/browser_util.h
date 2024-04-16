@@ -246,12 +246,6 @@ bool IsLacrosWindow(const aura::Window* window);
 // account_manager logic.
 bool DoesMetadataSupportNewAccountManager(base::Value* metadata);
 
-// DEPRECATED. Going to be removed soon.
-// Please use ash::standalone_browser::migrator_util::RecordDataVer(), instead.
-void RecordDataVer(PrefService* local_state,
-                   const std::string& user_id_hash,
-                   const base::Version& version);
-
 // Gets the version of the rootfs lacros-chrome. By reading the metadata json
 // file in the correct format.
 base::Version GetRootfsLacrosVersionMayBlock(

@@ -73,7 +73,8 @@ class ScopedLacrosAvailabilityCache {
             IsInitializedForPrimaryUser()) {
       ash::standalone_browser::BrowserSupport::Shutdown();
     }
-    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(policy);
+    ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
+        policy, false, false);
   }
 };
 
@@ -136,7 +137,7 @@ class BrowserUtilTest : public testing::Test {
                                        /*browser_restart=*/false,
                                        /*is_child=*/false);
       ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-          policy::PolicyMap());
+          policy::PolicyMap(), false, false);
     }
     return user;
   }
@@ -886,7 +887,7 @@ TEST_F(BrowserUtilTest, HidingLacrosFlagsForAllGuestUsers) {
                                    /*browser_restart=*/false,
                                    /*is_child=*/false);
   ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
-      policy::PolicyMap());
+      policy::PolicyMap(), false, false);
   EXPECT_FALSE(browser_util::IsLacrosOnlyFlagAllowed());
 }
 

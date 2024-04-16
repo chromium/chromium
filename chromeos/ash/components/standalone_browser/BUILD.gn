@@ -24,6 +24,7 @@ component("standalone_browser") {
   deps = [
     "//ash/constants:constants",
     "//base",
+    "//base/version_info",
     "//components/account_id",
     "//components/policy:generated",
     "//components/policy/core/common",

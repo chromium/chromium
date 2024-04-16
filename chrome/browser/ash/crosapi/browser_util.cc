@@ -413,13 +413,6 @@ bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
   return major_version >= 1000 && minor_version >= 0;
 }
 
-void RecordDataVer(PrefService* local_state,
-                   const std::string& user_id_hash,
-                   const base::Version& version) {
-  ash::standalone_browser::migrator_util::RecordDataVer(local_state,
-                                                        user_id_hash, version);
-}
-
 base::Version GetRootfsLacrosVersionMayBlock(
     const base::FilePath& version_file_path) {
   if (!base::PathExists(version_file_path)) {
