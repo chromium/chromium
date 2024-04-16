@@ -318,10 +318,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
 
-  // Finds the rect of the element referenced by the `position-fallback-bounds`
-  // property, or nullopt if there's no such element.
-  std::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
-
  private:
   const LogicalAnchorQuery* AnchorQuery() const;
   const LogicalAnchorReference* ResolveAnchorReference(

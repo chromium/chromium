@@ -61,14 +61,8 @@ bool CalculateNonOverflowingRangeInOneAxis(
     LayoutUnit inset_area_end,
     bool has_non_auto_inset_start,
     bool has_non_auto_inset_end,
-    const std::optional<LayoutUnit>& additional_bounds_start,
-    const std::optional<LayoutUnit>& additional_bounds_end,
     std::optional<LayoutUnit>* out_scroll_min,
-    std::optional<LayoutUnit>* out_scroll_max,
-    std::optional<LayoutUnit>* out_additional_scroll_min,
-    std::optional<LayoutUnit>* out_additional_scroll_max) {
-  CHECK_EQ(additional_bounds_start.has_value(),
-           additional_bounds_end.has_value());
+    std::optional<LayoutUnit>* out_scroll_max) {
   const LayoutUnit start_available_space = margin_box_start - imcb_inset_start;
   if (has_non_auto_inset_start) {
     // If the start inset is non-auto, then the start edges of both the
@@ -97,18 +91,6 @@ bool CalculateNonOverflowingRangeInOneAxis(
   if (*out_scroll_min && *out_scroll_max &&
       out_scroll_min->value() > out_scroll_max->value()) {
     return false;
-  }
-
-  if (additional_bounds_start) {
-    // Note that the margin box is adjusted by the anchor's scroll offset, while
-    // the additional fallback-bounds rect is adjusted by the
-    // `position-fallback-bounds` element's scroll offset. The scroll
-    // range calculated here is for the difference between the two offsets.
-    *out_additional_scroll_min = margin_box_end - *additional_bounds_end;
-    *out_additional_scroll_max = margin_box_start - *additional_bounds_start;
-    if (*out_additional_scroll_min > *out_additional_scroll_max) {
-      return false;
-    }
   }
   return true;
 }
@@ -1828,12 +1810,10 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
     const LogicalAnchorQueryMap* anchor_queries) {
   gfx::Vector2dF anchor_offset;
-  gfx::Vector2dF additional_bounds_offset;
   if (Element* element = DynamicTo<Element>(node_info.node.GetDOMNode())) {
     if (const AnchorPositionScrollData* data =
             element->GetAnchorPositionScrollData()) {
       anchor_offset = data->TotalOffset();
-      additional_bounds_offset = data->AdditionalBoundsOffset();
     }
   }
 
@@ -1880,8 +1860,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     if (offset_info) {
       if (try_fit_available_space) {
         non_overflowing_scroll_ranges.push_back(non_overflowing_range);
-        if (!non_overflowing_range.Contains(anchor_offset,
-                                            additional_bounds_offset)) {
+        if (!non_overflowing_range.Contains(anchor_offset)) {
           continue;
         }
       }
@@ -2118,11 +2097,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       node_info.node, candidate_style, space, imcb, alignment, border_padding,
       replaced_size, container_writing_direction, &node_dimensions);
 
-  const std::optional<LogicalRect> additional_fallback_bounds =
-      try_fit_available_space
-          ? anchor_evaluator->GetAdditionalFallbackBoundsRect()
-          : std::nullopt;
-
   PhysicalToLogicalGetter has_non_auto_inset(
       candidate_writing_direction, candidate_style,
       &ComputedStyle::IsTopInsetNonAuto, &ComputedStyle::IsRightInsetNonAuto,
@@ -2132,8 +2106,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   std::optional<InsetModifiedContainingBlock> imcb_for_position_fallback;
   std::optional<LayoutUnit> inline_scroll_min;
   std::optional<LayoutUnit> inline_scroll_max;
-  std::optional<LayoutUnit> additional_inline_scroll_min;
-  std::optional<LayoutUnit> additional_inline_scroll_max;
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
         space.AvailableSize(), alignment, insets, static_position,
@@ -2147,16 +2119,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             imcb_for_position_fallback->InlineEndOffset(),
             inset_area_offsets.inline_start, inset_area_offsets.inline_end,
             has_non_auto_inset.InlineStart(), has_non_auto_inset.InlineEnd(),
-            additional_fallback_bounds.has_value()
-                ? std::make_optional(
-                      additional_fallback_bounds->offset.inline_offset)
-                : std::nullopt,
-            additional_fallback_bounds.has_value()
-                ? std::make_optional(
-                      additional_fallback_bounds->InlineEndOffset())
-                : std::nullopt,
-            &inline_scroll_min, &inline_scroll_max,
-            &additional_inline_scroll_min, &additional_inline_scroll_max)) {
+            &inline_scroll_min, &inline_scroll_max)) {
       return std::nullopt;
     }
   }
@@ -2172,8 +2135,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   // Calculate the block scroll offset range where the block dimension fits.
   std::optional<LayoutUnit> block_scroll_min;
   std::optional<LayoutUnit> block_scroll_max;
-  std::optional<LayoutUnit> additional_block_scroll_min;
-  std::optional<LayoutUnit> additional_block_scroll_max;
   if (try_fit_available_space) {
     if (!CalculateNonOverflowingRangeInOneAxis(
             node_dimensions.MarginBoxBlockStart(),
@@ -2182,16 +2143,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             imcb_for_position_fallback->BlockEndOffset(),
             inset_area_offsets.block_start, inset_area_offsets.block_end,
             has_non_auto_inset.BlockStart(), has_non_auto_inset.BlockEnd(),
-            additional_fallback_bounds.has_value()
-                ? std::make_optional(
-                      additional_fallback_bounds->offset.block_offset)
-                : std::nullopt,
-            additional_fallback_bounds.has_value()
-                ? std::make_optional(
-                      additional_fallback_bounds->BlockEndOffset())
-                : std::nullopt,
-            &block_scroll_min, &block_scroll_max, &additional_block_scroll_min,
-            &additional_block_scroll_max)) {
+            &block_scroll_min, &block_scroll_max)) {
       return std::nullopt;
     }
   }
@@ -2234,13 +2186,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
         LogicalScrollRange{inline_scroll_min, inline_scroll_max,
                            block_scroll_min, block_scroll_max}
             .ToPhysical(candidate_writing_direction);
-    if (additional_fallback_bounds) {
-      out_non_overflowing_range->additional_bounds_range =
-          LogicalScrollRange{
-              additional_inline_scroll_min, additional_inline_scroll_max,
-              additional_block_scroll_min, additional_block_scroll_max}
-              .ToPhysical(candidate_writing_direction);
-    }
   }
 
   bool anchor_center_x = anchor_center_position.inline_offset.has_value();

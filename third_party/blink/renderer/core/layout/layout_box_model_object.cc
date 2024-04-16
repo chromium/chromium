@@ -78,9 +78,8 @@ bool NeedsAnchorPositionScrollData(Element& element,
   if (!style.HasOutOfFlowPosition()) {
     return false;
   }
-  // There's an explicitly set default anchor or additional fallback-bounds rect
-  // to track.
-  if (style.PositionAnchor() || style.PositionFallbackBounds()) {
+  // There's an explicitly set default anchor.
+  if (style.PositionAnchor()) {
     return true;
   }
   // Now we have `position-anchor: implicit`. We need `AnchorPositionScrollData`

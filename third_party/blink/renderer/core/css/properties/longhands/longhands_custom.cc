@@ -6951,31 +6951,6 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.PositionInternal());
 }
 
-const CSSValue* PositionFallbackBounds::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  if (CSSValue* value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(range)) {
-    return value;
-  }
-  if (CSSValue* value = css_parsing_utils::ConsumeDashedIdent(range, context)) {
-    return value;
-  }
-  return nullptr;
-}
-const CSSValue* PositionFallbackBounds::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  if (!style.PositionFallbackBounds()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNormal);
-  }
-  return MakeGarbageCollected<CSSCustomIdentValue>(
-      *style.PositionFallbackBounds());
-}
-
 const CSSValue* PositionTryOptions::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

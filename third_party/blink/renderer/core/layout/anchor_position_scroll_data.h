@@ -25,13 +25,12 @@ class LayoutObject;
 // https://drafts.csswg.org/css-anchor-position-1/#scroll
 //
 // To adjust the location of the anchor-positioned element based on scroll,
-// sticky and anchor-positioning offsets between this element and the anchor
-// (the default anchor and the target of the `position-fallback-bounds`
-// property, respectively), this class stores a snapshot of all the scroll
-// adjustment containers [1] of the anchor up to the containing block
-// (exclusively) of the anchor-positioned element, along the containing block
-// hierarchy. Note that "containing block" is in the spec meaning, which
-// corresponds to LayoutObject::Container() instead of ContainingBlock().
+// sticky and anchor-positioning offsets between this element and the anchor,
+// this class stores a snapshot of all the scroll adjustment containers [1] of
+// the anchor up to the containing block (exclusively) of the anchor-positioned
+// element, along the containing block hierarchy. Note that "containing block"
+// is in the spec meaning, which corresponds to LayoutObject::Container()
+// instead of ContainingBlock().
 //
 // [1] An element is a scroll adjustment container if it is a scroll container,
 // has sticky position, or is anchor-positioned.
@@ -81,9 +80,6 @@ class AnchorPositionScrollData
   const Vector<CompositorElementId>& AdjustmentContainerIds() const {
     return default_anchor_adjustment_data_.adjustment_container_ids;
   }
-  gfx::Vector2dF AdditionalBoundsOffset() const {
-    return additional_bounds_offset_;
-  }
 
   // Returns true if the snapshotted scroll offset is affected by viewport's
   // scroll offset.
@@ -132,9 +128,9 @@ class AnchorPositionScrollData
     DISALLOW_NEW();
 
     // Compositor element ids of the ancestor scroll adjustment containers
-    // (see the class documentation) of some element (anchor or
-    // position-fallback-bounds), up to the containing block of
-    // `anchored_element_` (exclusively), along the containing block hierarchy.
+    // (see the class documentation) of some element (anchor), up to the
+    // containing block of `anchored_element_` (exclusively), along the
+    // containing block hierarchy.
     Vector<CompositorElementId> adjustment_container_ids;
 
     // Sum of the adjustment offsets of the above containers. This includes
@@ -166,16 +162,14 @@ class AnchorPositionScrollData
   };
 
   AdjustmentData ComputeAdjustmentContainersData(
-      const LayoutObject& anchor_or_bounds) const;
+      const LayoutObject& anchor) const;
   AdjustmentData ComputeDefaultAnchorAdjustmentData() const;
-  gfx::Vector2dF ComputeAdditionalBoundsOffset() const;
   // Takes an up-to-date snapshot, and compares it with the existing one.
   // If `update` is true, also rewrites the existing snapshot.
   SnapshotDiff TakeAndCompareSnapshot(bool update);
   bool IsFallbackPositionValid(
       const gfx::Vector2dF& new_accumulated_adjustment,
-      const gfx::Vector2dF& new_anchored_element_container_scroll_offset,
-      const gfx::Vector2dF& new_additional_bounds_offset) const;
+      const gfx::Vector2dF& new_anchored_element_container_scroll_offset) const;
 
   void InvalidateLayoutAndPaint();
   void InvalidatePaint();
@@ -188,9 +182,6 @@ class AnchorPositionScrollData
   Member<Element> anchored_element_;
 
   AdjustmentData default_anchor_adjustment_data_;
-
-  // The accumulated adjustment applied to the additional fallback-bounds rect.
-  gfx::Vector2dF additional_bounds_offset_;
 
   Member<AnchorPositionVisibilityObserver> position_visibility_observer_;
 };

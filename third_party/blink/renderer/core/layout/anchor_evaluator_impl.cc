@@ -522,29 +522,6 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
                                      self_writing_direction_.GetWritingMode());
 }
 
-std::optional<LogicalRect>
-AnchorEvaluatorImpl::GetAdditionalFallbackBoundsRect() const {
-  if (!query_object_) {
-    return std::nullopt;
-  }
-  const ScopedCSSName* position_fallback_bounds =
-      query_object_->StyleRef().PositionFallbackBounds();
-  if (!position_fallback_bounds || !AnchorQuery()) {
-    return std::nullopt;
-  }
-  const LogicalAnchorReference* reference =
-      AnchorQuery()->AnchorReference(*query_object_, position_fallback_bounds);
-  if (!reference) {
-    return std::nullopt;
-  }
-  // `reference->rect` is in container's writing direction. Convert it to self
-  // writing direction, but the offset is still relative to container.
-  WritingModeConverter self_converter(self_writing_direction_,
-                                      container_converter_.OuterSize());
-  return self_converter.ToLogical(
-      container_converter_.ToPhysical(reference->rect));
-}
-
 std::optional<PhysicalOffset> AnchorEvaluatorImpl::ComputeAnchorCenterOffsets(
     const ComputedStyleBuilder& builder) {
   // Parameter `percentage` is unused for any non-percentage anchor value.
