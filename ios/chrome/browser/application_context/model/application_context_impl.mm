@@ -312,8 +312,6 @@ ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!chrome_browser_state_manager_) {
     chrome_browser_state_manager_.reset(new ChromeBrowserStateManagerImpl());
-    // Load last active browserStates.
-    chrome_browser_state_manager_->LoadBrowserStates();
   }
   return chrome_browser_state_manager_.get();
 }
