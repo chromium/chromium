@@ -340,6 +340,19 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       break;
   }
 
+  static const bool exclude_non_parser_inserted =
+      features::kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam
+          .Get();
+  if (exclude_non_parser_inserted && !parser_inserted()) {
+    return false;
+  }
+
+  static const bool exclude_scripts_via_document_write =
+      features::kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam.Get();
+  if (exclude_scripts_via_document_write && is_in_document_write()) {
+    return false;
+  }
+
   static const bool opt_out_low =
       features::kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam
           .Get();

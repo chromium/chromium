@@ -123,6 +123,14 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
     scheduling_type_ = scheduling_type;
   }
 
+  void SetParserInserted(bool parser_inserted) {
+    parser_inserted_ = parser_inserted;
+  }
+
+  void SetIsInDocumentWrite(bool is_in_document_write) {
+    is_in_document_write_ = is_in_document_write;
+  }
+
   bool WasCreatedDuringDocumentWrite() {
     return created_during_document_write_;
   }
@@ -162,6 +170,10 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   bool IsDisposed() const { return !element_; }
 
+  bool parser_inserted() const { return parser_inserted_; }
+
+  bool is_in_document_write() const { return is_in_document_write_; }
+
  private:
   static void ExecuteScriptBlockInternal(
       Script*,
@@ -183,6 +195,8 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   base::TimeTicks parser_blocking_load_start_time_;
 
   ScriptSchedulingType scheduling_type_ = ScriptSchedulingType::kNotSet;
+  bool parser_inserted_ = false;
+  bool is_in_document_write_ = false;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
   Member<PendingScriptClient> client_;

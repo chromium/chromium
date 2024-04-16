@@ -1162,6 +1162,9 @@ PendingScript* ScriptLoader::PrepareScript(
     }
   }
 
+  prepared_pending_script_->SetParserInserted(parser_inserted_);
+  prepared_pending_script_->SetIsInDocumentWrite(is_in_document_write);
+
   ScriptSchedulingType script_scheduling_type = GetScriptSchedulingTypePerSpec(
       element_document, parser_blocking_inline_option);
 

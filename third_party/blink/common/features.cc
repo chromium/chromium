@@ -1580,6 +1580,18 @@ const base::FeatureParam<AsyncScriptExperimentalSchedulingTarget>
         &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_target",
         AsyncScriptExperimentalSchedulingTarget::kBoth,
         &async_script_experimental_scheduling_targets};
+// If true, kLowPriorityAsyncScriptExecution will not change the script
+// evaluation timing for the non parser inserted script.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_exclude_non_parser_inserted", false};
+// If true, kLowPriorityAsyncScriptExecution will not change the script
+// evaluation timing for the scripts that were added via document.write().
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_exclude_document_write", false};
 
 // kLowPriorityAsyncScriptExecution will be opted-out when FetchPriorityHint is
 // low.
