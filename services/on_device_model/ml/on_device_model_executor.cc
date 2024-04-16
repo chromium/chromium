@@ -58,14 +58,7 @@ const base::FeatureParam<bool> kUseLowPower{
 
 const base::FeatureParam<bool> kAllowFp16{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_allow_fp16",
-// TODO(b/333406033): Fix Linux fp16 issues.
-#if BUILDFLAG(IS_LINUX)
-    false
-#else
-    true
-#endif
-};
+    "on_device_model_allow_fp16", true};
 
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
