@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -69,6 +70,32 @@ public class RemoteTabGroupMutationHelper {
         mTabGroupSyncService.updateVisualData(groupId, title, color);
     }
 
+    /**
+     * Removes a tab group from sync.
+     *
+     * @param groupId The local tab group ID.
+     */
+    public void removeGroup(int groupId) {
+        mTabGroupSyncService.removeGroup(groupId);
+    }
+
+    /**
+     * Updates the tab group ID mapping when the root ID of the group changes.
+     *
+     * @param oldGroupId The old local tab group ID.
+     * @param newGroupId The new local tab group ID.
+     */
+    public void onLocalGroupIdChanged(int oldGroupId, int newGroupId) {
+        // Delete the old mapping from shared prefs.
+        mTabGroupModelFilter.setTabGroupSyncId(oldGroupId, null);
+        SavedTabGroup group = mTabGroupSyncService.getGroup(oldGroupId);
+        if (group == null) return;
+
+        // Store the new mapping in-memory in the service and in shared prefs.
+        mTabGroupSyncService.updateLocalTabGroupMapping(group.syncId, newGroupId);
+        mTabGroupModelFilter.setTabGroupSyncId(newGroupId, group.syncId);
+    }
+
     public void addTab(int tabGroupId, Tab tab, int position) {
         mTabGroupSyncService.addTab(
                 tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
@@ -81,5 +108,28 @@ public class RemoteTabGroupMutationHelper {
 
     public void removeTab(int tabGroupId, int tabId) {
         mTabGroupSyncService.removeTab(tabGroupId, tabId);
+    }
+
+    /**
+     * Updates ID mappings for the tab group ID and optionally tab IDs for a particular group in
+     * {@link TabGroupSyncService}. Doesn't update the mapping in the prefs as it's already stored.
+     *
+     * @param syncGroupId The sync ID of the tab group.
+     * @param localGroupId The local ID of the tab group.
+     * @param updateTabIds Whether or not the tab IDs should also be updated.
+     */
+    public void updateIdMappingForGroupOnStartup(
+            String syncGroupId, int localGroupId, boolean updateTabIds) {
+        // Update tab group ID mapping.
+        mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
+        if (!updateTabIds) return;
+
+        // Update tab ID mapping for tabs in the group.
+        SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
+        List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(localGroupId);
+        for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
+            SavedTabGroupTab savedTab = group.savedTabs.get(i);
+            mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));
+        }
     }
 }

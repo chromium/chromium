@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -122,6 +123,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        // TODO(b/331466817): Set expectation after implementing close.
     }
 
     @Test
@@ -176,5 +178,26 @@ public class TabGroupSyncLocalObserverUnitTest {
                 .didChangeTabGroupColor(mTab1.getRootId(), TabGroupColorId.RED);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(mTab1.getRootId()), any(), anyInt());
+    }
+
+    @Test
+    public void testDidRemoveGroup() {
+        mTabGroupModelFilterObserverCaptor.getValue().didRemoveTabGroup(3);
+        verify(mTabGroupModelFilter).setTabGroupSyncId(eq(3), eq(null));
+        verify(mTabGroupSyncService, times(1)).removeGroup(eq(3));
+    }
+
+    @Test
+    public void testDidChangeGroupId() {
+        int oldGroupId = 3;
+        int newGroupId = 4;
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.localId = oldGroupId;
+        when(mTabGroupSyncService.getGroup(oldGroupId)).thenReturn(savedTabGroup);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeGroupRootId(oldGroupId, newGroupId);
+        verify(mTabGroupSyncService, times(1))
+                .updateLocalTabGroupMapping(eq(savedTabGroup.syncId), eq(newGroupId));
+        verify(mTabGroupModelFilter).setTabGroupSyncId(eq(oldGroupId), eq(null));
+        verify(mTabGroupModelFilter).setTabGroupSyncId(eq(newGroupId), eq(savedTabGroup.syncId));
     }
 }

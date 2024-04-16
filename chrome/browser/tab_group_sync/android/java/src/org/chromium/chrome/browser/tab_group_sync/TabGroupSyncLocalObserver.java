@@ -129,6 +129,8 @@ public final class TabGroupSyncLocalObserver {
             @Override
             public void didMoveWithinGroup(
                     Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                if (!mIsObserving) return;
+
                 // The tab position was changed. Update sync.
                 int positionInGroup = mTabGroupModelFilter.getIndexOfTabInGroup(movedTab);
                 mRemoteTabGroupMutationHelper.updateTab(
@@ -151,6 +153,20 @@ public final class TabGroupSyncLocalObserver {
                 if (groupExistsInSync(destinationTab.getRootId())) return;
 
                 mRemoteTabGroupMutationHelper.createRemoteTabGroup(destinationTab.getRootId());
+            }
+
+            @Override
+            public void didRemoveTabGroup(int oldRootId) {
+                mTabGroupModelFilter.setTabGroupSyncId(oldRootId, null);
+                if (!mIsObserving) return;
+
+                mRemoteTabGroupMutationHelper.removeGroup(oldRootId);
+            }
+
+            @Override
+            public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                // We update the mapping regardless of whether observers are enabled or not.
+                mRemoteTabGroupMutationHelper.onLocalGroupIdChanged(oldRootId, newRootId);
             }
         };
     }

@@ -57,7 +57,7 @@ public class StartupHelper {
         Map<String, Integer> idMappingsFromPref = readTabGroupIdMappingsFromPref();
 
         // Notify TabGroupSyncService about all the relevant local tab group IDs.
-        notifyServiceOfIdMapping(idMappingsFromPref);
+        updateIdMappingsForAllGroups(idMappingsFromPref);
 
         // Do a one-time migration to local groups not in sync. Though unusual, it can happen
         // because of one of the following:
@@ -92,13 +92,14 @@ public class StartupHelper {
      * For each group that has synced before, updates the local ID in the mapping held by {@link
      * TabGroupSyncService}.
      */
-    private void notifyServiceOfIdMapping(Map<String, Integer> idMappingsFromPref) {
+    private void updateIdMappingsForAllGroups(Map<String, Integer> idMappingsFromPref) {
         String[] syncGroupIds = mTabGroupSyncService.getAllGroupIds();
         for (String syncGroupId : syncGroupIds) {
             Integer localGroupId = idMappingsFromPref.get(syncGroupId);
             if (localGroupId == null) continue;
 
-            mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
+            mRemoteTabGroupMutationHelper.updateIdMappingForGroupOnStartup(
+                    syncGroupId, localGroupId, /* updateTabIds= */ true);
         }
     }
 

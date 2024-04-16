@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -27,16 +29,18 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for the {@link StartupHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class StartupHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private static final String SYNC_ID_1 = "SYNC_ID_1";
-
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
@@ -71,14 +75,21 @@ public class StartupHelperUnitTest {
     }
 
     @Test
-    public void testNotifiesSyncOfIdMapingOnStartup() {
+    public void testNotifiesSyncOfIdMappingOnStartup() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        String syncId = savedTabGroup.syncId;
         when(mTab1.getTabGroupId()).thenReturn(new Token(2, 3));
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
-        when(mTabGroupModelFilter.getTabGroupSyncId(1)).thenReturn(SYNC_ID_1);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID_1});
+        when(mTabGroupModelFilter.getTabGroupSyncId(1)).thenReturn(syncId);
+        List<Integer> tabIds = new ArrayList<>();
+        tabIds.add(mTab1.getId());
+        when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(tabIds);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
+        when(mTabGroupSyncService.getGroup(anyInt())).thenReturn(savedTabGroup);
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService).updateLocalTabGroupMapping(eq(SYNC_ID_1), eq(1));
+        verify(mTabGroupSyncService).updateLocalTabGroupMapping(eq(syncId), eq(1));
+        verify(mTabGroupSyncService).updateLocalTabId(anyInt(), anyString(), anyInt());
     }
 
     @Test

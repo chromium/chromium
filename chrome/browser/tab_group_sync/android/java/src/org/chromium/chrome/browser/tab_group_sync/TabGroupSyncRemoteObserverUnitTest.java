@@ -33,9 +33,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCrea
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -80,7 +78,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
     @Test
     public void testTabGroupAdded() {
-        SavedTabGroup savedTabGroup = createSavedTabGroup();
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
@@ -94,7 +92,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
     @Test
     public void testTabGroupVisualsUpdated() {
-        SavedTabGroup savedTabGroup = createSavedTabGroup();
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         int rootId = 1;
         mTabModel.addTab(1);
         List<Tab> tabs = new ArrayList<>();
@@ -109,7 +107,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
     @Test
     public void testTabAdded() {
-        SavedTabGroup savedTabGroup = createSavedTabGroup();
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         int rootId = 1;
         mTabModel.addTab(1);
         List<Tab> tabs = new ArrayList<>();
@@ -131,32 +129,6 @@ public class TabGroupSyncRemoteObserverUnitTest {
         mTabModel.addTab(1);
         mRemoteObserver.onTabGroupRemoved(rootId);
         verify(mTabModel).closeMultipleTabs(anyList(), anyBoolean());
-    }
-
-    private SavedTabGroup createSavedTabGroup() {
-        SavedTabGroup group = new SavedTabGroup();
-        group.syncId = "Group_1";
-        group.title = "Group 1";
-        group.color = TabGroupColorId.GREEN;
-        SavedTabGroupTab tab1 =
-                createSavedTabGroupTab("Tab_1", group.syncId, "Tab 1", "https://foo1.com", 0);
-        group.savedTabs.add(tab1);
-
-        SavedTabGroupTab tab2 =
-                createSavedTabGroupTab("Tab_2", group.syncId, "Tab 2", "https://foo2.com", 1);
-        group.savedTabs.add(tab2);
-        return group;
-    }
-
-    private SavedTabGroupTab createSavedTabGroupTab(
-            String syncId, String syncGroupId, String title, String url, int position) {
-        SavedTabGroupTab tab = new SavedTabGroupTab();
-        tab.syncId = syncId;
-        tab.syncGroupId = syncGroupId;
-        tab.title = title;
-        tab.url = new GURL(url);
-        tab.position = position;
-        return tab;
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {
