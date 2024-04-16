@@ -447,7 +447,7 @@ class Generator(generator.Generator):
   def _GetSpecType(self, kind):
     def get_spec(kind):
       if self._IsPrimitiveKind(kind):
-        return _kind_to_lite_js_type[kind]
+        return _kind_to_lite_js_type[mojom.EnsureUnnullable(kind)]
       if mojom.IsArrayKind(kind):
         return "mojo.internal.Array(%s, %s)" % (get_spec(
             kind.kind), "true" if mojom.IsNullableKind(kind.kind) else "false")
