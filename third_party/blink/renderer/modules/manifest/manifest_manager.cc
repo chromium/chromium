@@ -194,6 +194,7 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
 void ManifestManager::ParseManifestFromPage(const KURL& document_url,
                                             std::optional<KURL> manifest_url,
                                             const String& data) {
+  CHECK(document_url.IsValid());
   // We are using the document as our FeatureContext for checking origin trials.
   // Note that any origin trials delivered in the manifest HTTP headers will be
   // ignored, only ones associated with the page will be used.
