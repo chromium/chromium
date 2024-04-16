@@ -10,7 +10,7 @@ import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/hi
 import {PageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import type {SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -26,6 +26,7 @@ suite('cr-history-embeddings', () => {
       urlForDisplay: 'google.com',
       relativeTime: '2 hours ago',
       sourcePassage: 'Google description',
+      lastUrlVisitTimestamp: 1000,
     },
     {
       title: 'Youtube',
@@ -33,6 +34,7 @@ suite('cr-history-embeddings', () => {
       urlForDisplay: 'youtube.com',
       relativeTime: '4 hours ago',
       sourcePassage: 'Youtube description',
+      lastUrlVisitTimestamp: 2000,
     },
   ];
 
@@ -43,7 +45,7 @@ suite('cr-history-embeddings', () => {
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(handler));
     handler.setResultFor(
-        'search', Promise.resolve({result: {items: mockResults}}));
+        'search', Promise.resolve({result: {items: [...mockResults]}}));
 
     element = document.createElement('cr-history-embeddings');
     document.body.appendChild(element);
@@ -93,10 +95,65 @@ suite('cr-history-embeddings', () => {
     const moreActionsIconButtons =
         element.shadowRoot!.querySelectorAll<HTMLElement>(
             'cr-url-list-item cr-icon-button');
-    const moreActionsClickEventPromise =
-        eventToPromise('more-actions-click', element);
     moreActionsIconButtons[0]!.click();
-    const moreActionsClickEvent = await moreActionsClickEventPromise;
-    assertEquals(mockResults[0], moreActionsClickEvent.detail);
+    await flushTasks();
+
+    // Clicking on the more actions button for the first item should load
+    // the cr-action-menu and open it.
+    const moreActionsMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!moreActionsMenu);
+    assertTrue(moreActionsMenu.open);
+
+    const actionMenuItems = moreActionsMenu.querySelectorAll('button');
+    assertEquals(2, actionMenuItems.length);
+
+    // Clicking on the first button should fire the 'more-from-site-click' event
+    // with the first item's model, and then close the menu.
+    const moreFromSiteEventPromise =
+        eventToPromise('more-from-site-click', element);
+    const moreFromSiteItem =
+        moreActionsMenu.querySelector<HTMLElement>('#moreFromSiteOption')!;
+    moreFromSiteItem.click();
+    const moreFromSiteEvent = await moreFromSiteEventPromise;
+    assertEquals(mockResults[0], moreFromSiteEvent.detail);
+    assertFalse(moreActionsMenu.open);
+
+    // Clicking on the second button should fire the 'remove-item-click' event
+    // with the second item's model, and then close the menu.
+    moreActionsIconButtons[1]!.click();
+    assertTrue(moreActionsMenu.open);
+    const removeItemEventPromise = eventToPromise('remove-item-click', element);
+    const removeItemItem =
+        moreActionsMenu.querySelector<HTMLElement>('#removeFromHistoryOption')!;
+    removeItemItem.click();
+    const removeItemEvent = await removeItemEventPromise;
+    assertEquals(mockResults[1], removeItemEvent.detail);
+    assertFalse(moreActionsMenu.open);
+  });
+
+  test('RemovesItemsFromFrontend', async () => {
+    const moreActionsIconButtons =
+        element.shadowRoot!.querySelectorAll<HTMLElement>(
+            'cr-url-list-item cr-icon-button');
+
+    // Open the 'more actions' menu for the first result and remove it.
+    moreActionsIconButtons[0]!.click();
+    element.shadowRoot!.querySelector<HTMLElement>(
+                           '#removeFromHistoryOption')!.click();
+    await flushTasks();
+
+    // There is still 1 result left so it should still be visible.
+    assertFalse(element.hidden);
+    assertEquals(
+        1, element.shadowRoot!.querySelectorAll('cr-url-list-item').length);
+
+    // Open the 'more actions' menu for the last result and remove it.
+    moreActionsIconButtons[0]!.click();
+    element.shadowRoot!.querySelector<HTMLElement>(
+                           '#removeFromHistoryOption')!.click();
+    await flushTasks();
+
+    // No results left.
+    assertTrue(element.hidden);
   });
 });

@@ -10,6 +10,7 @@ export {MetricsProxy, MetricsProxyImpl} from 'chrome://resources/cr_components/h
 export {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+export {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from './app.js';

@@ -19,6 +19,7 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
+import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -662,6 +663,23 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   private onSelectedSuggestionChanged_(e: CustomEvent<{value: Suggestion}>) {
     this.timeRangeStart_ = e.detail.value?.timeRangeStart;
+  }
+
+  private onHistoryEmbeddingsItemMoreFromSiteClick_(
+      e: HistoryEmbeddingsMoreActionsClickEvent) {
+    const historyEmbeddingsItem = e.detail;
+    this.fire_(
+        'change-query',
+        {search: 'host:' + new URL(historyEmbeddingsItem.url.url).hostname});
+  }
+
+  private onHistoryEmbeddingsItemRemoveClick_(
+      e: HistoryEmbeddingsMoreActionsClickEvent) {
+    const historyEmbeddingsItem = e.detail;
+    this.browserService_.removeVisits([{
+      url: historyEmbeddingsItem.url.url,
+      timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
+    }]);
   }
 }
 

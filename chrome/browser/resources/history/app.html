@@ -143,7 +143,9 @@
                     if="[[shouldShowHistoryEmbeddings_(queryState_.searchTerm)]]">
                   <cr-history-embeddings
                       search-query="[[queryState_.searchTerm]]"
-                      time-range-start="[[timeRangeStart_]]">
+                      time-range-start="[[timeRangeStart_]]"
+                      on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
+                      on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_">
                   </cr-history-embeddings>
                 </template>
               </div>

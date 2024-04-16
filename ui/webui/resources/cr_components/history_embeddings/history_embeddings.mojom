@@ -22,6 +22,11 @@ struct SearchResultItem {
   // A localized string for the last visit time for the above URL, from history.
   string relative_time;
 
+  // The last visit time for the above URL, from history. Used for removing
+  // history item.
+  // TODO(crbug.com/335282446): BrowsingHistoryService requires a double here.
+  double last_url_visit_timestamp;
+
   // The full source passage that was used to recall this item.
   string source_passage;
 };

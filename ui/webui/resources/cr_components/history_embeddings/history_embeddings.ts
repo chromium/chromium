@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,7 +33,18 @@ function jsDateToMojoDate(date: Date): Time {
 export interface HistoryEmbeddingsElement {
   $: {
     heading: HTMLElement,
+    sharedMenu: CrLazyRenderElement<CrActionMenuElement>,
   };
+}
+
+export type HistoryEmbeddingsMoreActionsClickEvent =
+    CustomEvent<SearchResultItem>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'more-from-site-click': HistoryEmbeddingsMoreActionsClickEvent;
+    'remove-item-click': HistoryEmbeddingsMoreActionsClickEvent;
+  }
 }
 
 const HistoryEmbeddingsElementBase = I18nMixin(PolymerElement);
@@ -45,8 +61,15 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   static get properties() {
     return {
       loading_: Boolean,
+      searchResult_: Object,
       searchQuery: String,
       timeRangeStart: Object,
+      hidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: true,
+        computed: 'computeIsHidden_(loading_, searchResult_.items.length)',
+      },
     };
   }
 
@@ -56,11 +79,16 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     ];
   }
 
+  private actionMenuItem_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private loading_ = false;
   private searchResult_: SearchResult;
   searchQuery: string;
   timeRangeStart?: Date;
+
+  private computeIsHidden_(): boolean {
+    return !this.loading_ && this.searchResult_?.items.length === 0;
+  }
 
   private getHeadingText_(): string {
     if (this.loading_) {
@@ -70,8 +98,29 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
-    this.dispatchEvent(
-        new CustomEvent('more-actions-click', {detail: e.model.item}));
+    const target = e.target as HTMLElement;
+    const item = e.model.item;
+    this.actionMenuItem_ = item;
+    this.$.sharedMenu.get().showAt(target);
+  }
+
+  private onMoreFromSiteClick_() {
+    assert(this.actionMenuItem_);
+    this.dispatchEvent(new CustomEvent(
+        'more-from-site-click',
+        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.$.sharedMenu.get().close();
+  }
+
+  private onRemoveFromHistoryClick_() {
+    assert(this.actionMenuItem_);
+    this.splice(
+        'searchResult_.items',
+        this.searchResult_.items.indexOf(this.actionMenuItem_), 1);
+    this.dispatchEvent(new CustomEvent(
+        'remove-item-click',
+        {detail: this.actionMenuItem_, bubbles: true, composed: true}));
+    this.$.sharedMenu.get().close();
   }
 
   private onResultClick_(e: DomRepeatEvent<SearchResultItem>) {

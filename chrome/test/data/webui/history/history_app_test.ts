@@ -8,15 +8,18 @@ import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 
 suite('HistoryAppTest', function() {
   let element: HistoryAppElement;
+  let browserService: TestBrowserService;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserServiceImpl.setInstance(new TestBrowserService());
+    browserService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(browserService);
     element = document.createElement('history-app');
     document.body.appendChild(element);
     return flushTasks();
@@ -59,5 +62,55 @@ suite('HistoryAppTest', function() {
         {bubbles: true, composed: true, detail: {search: 'one'}}));
     await flushTasks();
     assertFalse(!!element.shadowRoot!.querySelector('cr-history-embeddings'));
+  });
+
+  test('QueriesMoreFromSiteFromHistoryEmbeddings', async () => {
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'two words'}}));
+    await flushTasks();
+    const historyEmbeddings =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddings);
+
+    const changeQueryEventPromise = eventToPromise('change-query', element);
+    historyEmbeddings.dispatchEvent(new CustomEvent('more-from-site-click', {
+      detail: {
+        title: 'Google',
+        url: {url: 'http://google.com'},
+        urlForDisplay: 'google.com',
+        relativeTime: '2 hours ago',
+        sourcePassage: 'Google description',
+        lastUrlVisitTimestamp: 1000,
+      },
+    }));
+    const changeQueryEvent = await changeQueryEventPromise;
+    assertEquals('host:google.com', changeQueryEvent.detail.search);
+  });
+
+  test('RemovesItemFromHistoryEmbeddings', async () => {
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'two words'}}));
+    await flushTasks();
+    const historyEmbeddings =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddings);
+
+    historyEmbeddings.dispatchEvent(new CustomEvent('remove-item-click', {
+      detail: {
+        title: 'Google',
+        url: {url: 'http://google.com'},
+        urlForDisplay: 'google.com',
+        relativeTime: '2 hours ago',
+        sourcePassage: 'Google description',
+        lastUrlVisitTimestamp: 1000,
+      },
+    }));
+    const removeVisitsArg = await browserService.whenCalled('removeVisits');
+    assertEquals(1, removeVisitsArg.length);
+    assertEquals('http://google.com', removeVisitsArg[0].url);
+    assertEquals(1, removeVisitsArg[0].timestamps.length);
+    assertEquals(1000, removeVisitsArg[0].timestamps[0]);
   });
 });

@@ -118,3 +118,18 @@ a {
     </div>
   </div>
 </div>
+
+<cr-lazy-render id="sharedMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{actionMenuDescription}">
+      <button id="moreFromSiteOption" class="dropdown-item"
+          on-click="onMoreFromSiteClick_">
+        $i18n{moreFromSite}
+      </button>
+      <button id="removeFromHistoryOption"
+          class="dropdown-item" on-click="onRemoveFromHistoryClick_">
+        $i18n{removeFromHistory}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

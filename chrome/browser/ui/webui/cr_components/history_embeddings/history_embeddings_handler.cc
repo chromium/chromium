@@ -27,6 +27,8 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
     item->relative_time = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
         base::Time::Now() - scored_url_row.row.last_visit()));
+    item->last_url_visit_timestamp =
+        scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch();
 
     url_formatter::FormatUrlTypes format_types =
         url_formatter::kFormatUrlOmitDefaults |
