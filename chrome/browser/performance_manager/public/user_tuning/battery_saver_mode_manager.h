@@ -55,6 +55,13 @@ class BatterySaverModeManager {
     virtual ~RenderTuningDelegate() = default;
   };
 
+  class FreezingDelegate {
+   public:
+    virtual void ToggleFreezingOnBatterySaverMode(bool is_enabled) = 0;
+
+    virtual ~FreezingDelegate() = default;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Raised when the browser level battery saver mode is enabled or disabled.
@@ -167,7 +174,8 @@ class BatterySaverModeManager {
       PrefService* local_state,
       std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
           nullptr,
-      std::unique_ptr<RenderTuningDelegate> render_tuning_delegate = nullptr);
+      std::unique_ptr<RenderTuningDelegate> render_tuning_delegate = nullptr,
+      std::unique_ptr<FreezingDelegate> freezing_delegate = nullptr);
 
   void Start();
 
@@ -181,6 +189,7 @@ class BatterySaverModeManager {
 
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
   std::unique_ptr<RenderTuningDelegate> render_tuning_delegate_;
+  std::unique_ptr<FreezingDelegate> freezing_delegate_;
   std::unique_ptr<BatterySaverProvider> battery_saver_provider_;
 
   PrefChangeRegistrar pref_change_registrar_;

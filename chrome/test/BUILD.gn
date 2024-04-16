@@ -634,6 +634,8 @@ static_library("test_support") {
       "../browser/download/download_browsertest_utils.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
+      "../browser/performance_manager/test_support/fake_freezing_delegate.cc",
+      "../browser/performance_manager/test_support/fake_freezing_delegate.h",
       "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.cc",
       "../browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h",
       "../browser/performance_manager/test_support/fake_power_monitor_source.cc",

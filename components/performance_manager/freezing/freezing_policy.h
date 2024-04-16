@@ -55,6 +55,9 @@ class FreezingPolicy : public GraphObserver,
     freezer_ = std::move(freezer);
   }
 
+  // Invoked freezing on battery saver is enabled or disabled.
+  void ToggleFreezingOnBatterySaverMode(bool is_enabled);
+
   // Add or remove a freezing vote for `page_node`. A browsing instance is
   // frozen if all its pages have a freezing vote and none have a
   // `CannotFreezeReason`.

@@ -12,6 +12,7 @@
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -83,6 +84,15 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 FreezingPolicy::FreezingPolicy() : freezer_(std::make_unique<Freezer>()) {}
 
 FreezingPolicy::~FreezingPolicy() = default;
+
+void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
+  if (!base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
+    return;
+  }
+
+  // TODO(crbug.com/325954772): Monitor CPU usage of background tabs and freeze
+  // those that cross a threshold when freezing on battery saver is enabled.
+}
 
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
   int prev_num_freeze_votes =

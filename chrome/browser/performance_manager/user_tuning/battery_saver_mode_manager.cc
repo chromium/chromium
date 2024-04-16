@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,8 @@
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
+#include "components/performance_manager/freezing/freezing_policy.h"
+#include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -134,6 +137,23 @@ class RenderTuningDelegateImpl
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       observed_render_process_hosts_{this};
+};
+
+class FreezingDelegateImpl : public BatterySaverModeManager::FreezingDelegate {
+ public:
+  FreezingDelegateImpl() = default;
+  ~FreezingDelegateImpl() override = default;
+
+  void ToggleFreezingOnBatterySaverMode(bool is_enabled) final {
+    PerformanceManagerImpl::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(
+            [](bool is_enabled, performance_manager::Graph* graph) {
+              CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
+                  .ToggleFreezingOnBatterySaverMode(is_enabled);
+            },
+            is_enabled));
+  }
 };
 
 }  // namespace
@@ -519,7 +539,8 @@ bool BatterySaverModeManager::IsBatterySaverModeDisabledForSession() const {
 BatterySaverModeManager::BatterySaverModeManager(
     PrefService* local_state,
     std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
-    std::unique_ptr<RenderTuningDelegate> render_tuning_delegate)
+    std::unique_ptr<RenderTuningDelegate> render_tuning_delegate,
+    std::unique_ptr<FreezingDelegate> freezing_delegate)
     : frame_throttling_delegate_(
           frame_throttling_delegate
               ? std::move(frame_throttling_delegate)
@@ -527,7 +548,10 @@ BatterySaverModeManager::BatterySaverModeManager(
       render_tuning_delegate_(
           render_tuning_delegate
               ? std::move(render_tuning_delegate)
-              : std::make_unique<RenderTuningDelegateImpl>()) {
+              : std::make_unique<RenderTuningDelegateImpl>()),
+      freezing_delegate_(freezing_delegate
+                             ? std::move(freezing_delegate)
+                             : std::make_unique<FreezingDelegateImpl>()) {
   DCHECK(!g_battery_saver_mode_manager);
   g_battery_saver_mode_manager = this;
 
@@ -571,6 +595,9 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
       render_tuning_delegate_->DisableRenderBatterySaverMode();
     }
   }
+
+  freezing_delegate_->ToggleFreezingOnBatterySaverMode(
+      battery_saver_mode_active);
 
   for (auto& obs : observers_) {
     obs.OnBatterySaverActiveChanged(battery_saver_mode_active);
