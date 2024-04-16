@@ -427,6 +427,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_UPDATE_CARD_MESSAGE_LINK" desc="Text explaining the user they can update their credit card expiration date if they received a new card after the old one expired. The text also contains a link that when tapped displays the form to update the expiration date.">
       New card? <ph name="BEGIN_LINK">BEGIN_LINK</ph>Enter Card Details<ph name="END_LINK">END_LINK</ph>
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_LINK" desc="Text explaining the user they can request another OTP if they didn't received the previous one. The text also contains a link that when tapped sends a request to server for a new OTP.">
+      Didn't receive your code? <ph name="BEGIN_LINK">BEGIN_LINK</ph>Get new code<ph name="END_LINK">END_LINK</ph>
+  </message>
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRATION_DATE_FIELD_TITLE" desc="The name of the field for the expiration date of the credit card in the card unmasking dialog.">
       Expiration Date
     </message>

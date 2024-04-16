@@ -45,6 +45,7 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
   void DidTapConfirmButton(const std::u16string& input_value) override;
   void DidTapCancelButton() override;
   void OnOtpInputChanges(const std::u16string& input_value) override;
+  void DidTapNewCodeLink() override;
 
   void SetConsumer(id<OtpInputDialogConsumer> consumer);
 

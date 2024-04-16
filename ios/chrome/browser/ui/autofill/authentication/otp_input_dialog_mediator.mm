@@ -81,6 +81,12 @@ void OtpInputDialogMediator::OnOtpInputChanges(
   }
 }
 
+void OtpInputDialogMediator::DidTapNewCodeLink() {
+  if (model_controller_) {
+    model_controller_->OnNewCodeLinkClicked();
+  }
+}
+
 void OtpInputDialogMediator::SetConsumer(id<OtpInputDialogConsumer> consumer) {
   consumer_ = consumer;
   if (!model_controller_) {

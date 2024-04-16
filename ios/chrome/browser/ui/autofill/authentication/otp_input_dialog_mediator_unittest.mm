@@ -125,3 +125,9 @@ TEST_F(OtpInputDialogMediatorTest, Dismiss) {
   mediator_->Dismiss(/*show_confirmation_before_closing=*/false,
                      /*user_closed_dialog=*/true);
 }
+
+TEST_F(OtpInputDialogMediatorTest, NewCodeRequested) {
+  EXPECT_CALL(unmask_delegate_, OnNewOtpRequested());
+
+  [mediator_->AsMutator() didTapNewCodeLink];
+}
