@@ -27,20 +27,22 @@ permission:granted {
 }
 
 permission::-internal-permission-text {
-  display: inherit;
-  font-family: Arial, Helvetica, sans-serif !important;
+  align-items: center;
+  display: flex;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: inherit;
   font-style: inherit;
   font-weight: inherit;
   height: 100%;
-  hyphenate-character: auto !important;
-  line-height: inherit;
+  hyphenate-character: auto;
+  line-height: normal;
+  margin: auto;
   min-height: inherit;
   outline: none;
-  user-select:none !important;
+  user-select:none;
   vertical-align: inherit;
-  white-space:nowrap !important;
-  width: fit-content !important;
-  word-wrap: normal !important;
+  white-space:nowrap;
+  width: fit-content;
+  word-wrap: normal;
   word-spacing: inherit;
 }
