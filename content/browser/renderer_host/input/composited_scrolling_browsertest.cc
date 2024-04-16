@@ -307,7 +307,15 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest, BlockingEventHandlers) {
 // Tests the composited vs main thread scrolling histogram in the presence of
 // passive event handlers. These should behave the same as the case without any
 // event handlers at all.
-IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest, PassiveEventHandlers) {
+
+// TODO(crbug.com/335028963): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PassiveEventHandlers DISABLED_PassiveEventHandlers
+#else
+#define MAYBE_PassiveEventHandlers PassiveEventHandlers
+#endif
+IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
+                       MAYBE_PassiveEventHandlers) {
   LoadURL(R"HTML(
     data:text/html;charset=utf-8,
     <!DOCTYPE html>
