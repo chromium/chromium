@@ -132,7 +132,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest,
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/0,
+      /*revision_number=*/1,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
@@ -164,7 +164,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"video_capture_notification_popup_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/3, notification_popup_view));
+      /*revision_number=*/4, notification_popup_view));
 
   test_api()->ToggleBubble();
   auto* notification_view =
@@ -172,7 +172,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"video_capture_notification_view_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/3, notification_view));
+      /*revision_number=*/4, notification_view));
 }
 
 }  // namespace ash

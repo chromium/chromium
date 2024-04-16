@@ -1150,7 +1150,7 @@ BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
 // Enable the new notifications for downloaded files and screen captures.
 BASE_FEATURE(kFileNotificationRevamp,
              "kFileNotificationRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables experimental UI features in Files app.
 BASE_FEATURE(kFilesAppExperimental,
