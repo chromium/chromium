@@ -1558,6 +1558,10 @@
       status: "test",
     },
     {
+      // crbug.com/333630754
+      name: "FasterMinContent",
+    },
+    {
       name: "FastPositionIterator",
       // Not enabled due to a RTL issue. crbug.com/1421016.
     },
