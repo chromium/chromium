@@ -87,6 +87,10 @@ class LayoutTreeBuilder {
     auto* const parent = next->Parent();
     if (!IsAnonymousInline(parent))
       return next;
+    // Should return a normal result for display:ruby though it can be
+    // an anonymous inline.
+    if (UNLIKELY(parent->IsInlineRuby()))
+      return next;
     if (!LIKELY(parent->IsLayoutTextCombine())) {
       return parent;
     }
