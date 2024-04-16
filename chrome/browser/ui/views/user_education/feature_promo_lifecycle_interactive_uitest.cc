@@ -415,8 +415,9 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
             user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                 &kFeaturePromoLifecycleTestPromo,
                 kToolbarAppMenuButtonElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO)
-                .SetPromoSubtype(user_education::FeaturePromoSpecification::
-                                     PromoSubtype::kKeyedNotice)));
+                .set_promo_subtype_for_testing(
+                    user_education::FeaturePromoSpecification::PromoSubtype::
+                        kKeyedNotice)));
   }
 };
 

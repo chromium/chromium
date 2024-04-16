@@ -50,6 +50,20 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
   return false;
 }
 
+bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
+  // Add the text names of allowlisted keyed notices here:
+  static const char* const kAllowedPromoNames[] = {
+      "IPH_DesktopPWAsLinkCapturingLaunch",
+      "IPH_SignoutWebIntercept",
+  };
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (!strcmp(promo_feature.name, promo_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
   // NOTE: LEGACY PROMOS ARE DEPRECATED.
   // NO NEW ITEMS SHOULD BE ADDED TO THIS LIST, EVER.
@@ -318,6 +332,10 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
       CHECK_EQ(promo_type_, PromoType::kCustomAction);
       CHECK(feature_);
       CHECK(IsAllowedActionableAlert(*feature_));
+      break;
+    case PromoSubtype::kKeyedNotice:
+      CHECK(feature_);
+      CHECK(IsAllowedKeyedNotice(*feature_));
       break;
     default:
       break;
