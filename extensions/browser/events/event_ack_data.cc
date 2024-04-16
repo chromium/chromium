@@ -17,8 +17,57 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 
 namespace extensions {
+
+namespace {
+
+// static
+// Emit metrics helpful in determining causes of `unacked_events_` that are not
+// acked within the timeout.
+void EmitLateAckedEventTaskMetrics(const EventAckData::EventInfo& event_info) {
+  base::UmaHistogramEnumeration(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      event_info.histogram_value, events::ENUM_BOUNDARY);
+
+  base::UmaHistogramBoolean(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      event_info.start_ok);
+  if (!event_info.start_ok) {
+    base::UmaHistogramEnumeration(
+        "Extensions.Events.ServiceWorkerDispatchFailed."
+        "StartExternalRequestResult",
+        event_info.external_request_result);
+  }
+
+  // TODO(crbug.com/40909770): Implement service worker running status as a late
+  // acked event metric when it can be more accurately determined. For example,
+  // it could be useful to determine if the late acked events are for already
+  // shut down workers and therefore wouldn't be "late".
+}
+
+}  // namespace
+
+EventAckData::EventInfo::EventInfo(
+    const base::Uuid& request_uuid,
+    int render_process_id,
+    bool start_ok,
+    content::ServiceWorkerExternalRequestResult external_request_result,
+    base::TimeTicks dispatch_start_time,
+    EventDispatchSource dispatch_source,
+    bool lazy_background_active_on_dispatch,
+    const events::HistogramValue histogram_value)
+    : request_uuid(request_uuid),
+      render_process_id(render_process_id),
+      start_ok(start_ok),
+      external_request_result(external_request_result),
+      dispatch_start_time(dispatch_start_time),
+      dispatch_source(dispatch_source),
+      lazy_background_active_on_dispatch(lazy_background_active_on_dispatch),
+      histogram_value(histogram_value) {}
+
+EventAckData::EventInfo::EventInfo(EventInfo&& other) = default;
 
 EventAckData::EventAckData() = default;
 
@@ -31,29 +80,33 @@ void EventAckData::IncrementInflightEvent(
     int event_id,
     base::TimeTicks dispatch_start_time,
     EventDispatchSource dispatch_source,
-    bool lazy_background_active_on_dispatch) {
+    bool lazy_background_active_on_dispatch,
+    events::HistogramValue histogram_value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
   bool start_ok = true;
 
-  content::ServiceWorkerExternalRequestResult result =
+  content::ServiceWorkerExternalRequestResult external_request_result =
       context->StartingExternalRequest(
           version_id,
           content::ServiceWorkerExternalRequestTimeoutType::kDefault,
           request_uuid);
   base::UmaHistogramEnumeration(
       "Extensions.ServiceWorkerBackground.StartingExternalRequest_Result",
-      result);
-  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
-    LOG(ERROR) << "StartExternalRequest failed: " << static_cast<int>(result);
+      external_request_result);
+  if (external_request_result !=
+      content::ServiceWorkerExternalRequestResult::kOk) {
+    LOG(ERROR) << "StartExternalRequest failed: "
+               << static_cast<int>(external_request_result);
     start_ok = false;
   }
 
   auto insert_result = unacked_events_.try_emplace(
       event_id,
-      EventInfo{request_uuid, render_process_id, start_ok, dispatch_start_time,
-                dispatch_source, lazy_background_active_on_dispatch});
+      EventInfo{request_uuid, render_process_id, start_ok,
+                external_request_result, dispatch_start_time, dispatch_source,
+                lazy_background_active_on_dispatch, histogram_value});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 
   if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
@@ -68,10 +121,11 @@ void EventAckData::IncrementInflightEvent(
 void EventAckData::EmitLateAckedEventTask(int event_id) {
   // If the event is still present then we haven't received the ack yet in
   // `EventAckData::DecrementInflightEvent()`.
-  if (unacked_events_.contains(event_id)) {
+  if (auto* value = base::FindOrNull(unacked_events_, event_id)) {
     base::UmaHistogramBoolean(
         "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
         false);
+    EmitLateAckedEventTaskMetrics(*value);
   }
 }
 

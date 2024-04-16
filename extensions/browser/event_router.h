@@ -488,7 +488,8 @@ class EventRouter : public KeyedService,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
                                EventDispatchSource dispatch_source,
-                               bool lazy_background_active_on_dispatch);
+                               bool lazy_background_active_on_dispatch,
+                               events::HistogramValue histogram_value);
   void DecrementInFlightEventsForServiceWorker(
       const WorkerId& worker_id,
       int event_id,

@@ -271,12 +271,14 @@ void EventRouter::DispatchEventToSender(
 
   IncrementInFlightEvents(
       browser_context, rph, extension, event_id, event_name,
-      // Currently this arg is not used for metrics recording since we do not
-      // include events from EventDispatchSource::kDispatchEventToSender.
+      // Currently `dispatch_start_time`, `lazy_background_active_on_dispatch`,
+      // and `histogram_value` args are not used for metrics recording since we
+      // do not include events from EventDispatchSource::kDispatchEventToSender.
       /*dispatch_start_time=*/base::TimeTicks::Now(), service_worker_version_id,
       EventDispatchSource::kDispatchEventToSender,
       // Background script is active/started at this point.
-      /*lazy_background_active_on_dispatch=*/true);
+      /*lazy_background_active_on_dispatch=*/true,
+      events::HistogramValue::UNKNOWN);
   ReportEvent(histogram_value, extension,
               /*did_enqueue=*/false);
   mojom::EventDispatcher::DispatchEventCallback callback;
@@ -1230,11 +1232,11 @@ void EventRouter::DispatchEventToProcess(
   if (extension) {
     ReportEvent(event.histogram_value, extension, did_enqueue);
 
-    IncrementInFlightEvents(listener_context, process, extension, event_id,
-                            event.event_name, event.dispatch_start_time,
-                            service_worker_version_id,
-                            EventDispatchSource::kDispatchEventToProcess,
-                            event.lazy_background_active_on_dispatch);
+    IncrementInFlightEvents(
+        listener_context, process, extension, event_id, event.event_name,
+        event.dispatch_start_time, service_worker_version_id,
+        EventDispatchSource::kDispatchEventToProcess,
+        event.lazy_background_active_on_dispatch, event.histogram_value);
   }
 }
 
@@ -1298,7 +1300,8 @@ void EventRouter::IncrementInFlightEvents(
     base::TimeTicks dispatch_start_time,
     int64_t service_worker_version_id,
     EventDispatchSource dispatch_source,
-    bool lazy_background_active_on_dispatch) {
+    bool lazy_background_active_on_dispatch,
+    events::HistogramValue histogram_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (BackgroundInfo::HasBackgroundPage(extension)) {
@@ -1326,7 +1329,7 @@ void EventRouter::IncrementInFlightEvents(
       event_ack_data_.IncrementInflightEvent(
           service_worker_context, process->GetID(), service_worker_version_id,
           event_id, dispatch_start_time, dispatch_source,
-          lazy_background_active_on_dispatch);
+          lazy_background_active_on_dispatch, histogram_value);
     }
   }
 }

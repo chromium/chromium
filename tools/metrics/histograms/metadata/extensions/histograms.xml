@@ -1646,6 +1646,40 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
+<histogram name="Extensions.Events.ServiceWorkerDispatchFailed.Event"
+    enum="ExtensionEvents" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emits the event type that failed when
+    Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2 == false.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk"
+    enum="Boolean" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emits whether the ServiceWorkerContext::StartingExternalRequest() succeeded
+    or failed when
+    Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2 == false.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestResult"
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-10-01">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emits the ServiceWorkerExternalRequestResult when
+    Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk ==
+    false.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
     enum="ExtensionUpdateCheckDataKey" expires_after="2024-08-11">
   <owner>anunoy@chromium.org</owner>
