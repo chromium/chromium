@@ -109,7 +109,6 @@ def _DoSpawn(args):
 
     if args.ios_sim_version and args.ios_sim_platform:
       # simulator test runner and trigger args
-      runner_args.append('--xcodebuild-sim-runner')
       runner_args.append(f'--version={args.ios_sim_version}')
       runner_args.extend(['--platform', args.ios_sim_platform])
 
@@ -119,8 +118,7 @@ def _DoSpawn(args):
           f'=Runtime-ios-{args.ios_sim_version}'
       ])
     elif args.ios_device:
-      # device test runner and trigger args
-      runner_args.append('--xcodebuild-device-runner')
+      # device trigger args
       trigger_args.extend(['-d', f'device={args.ios_device}'])
       trigger_args.extend(['-d', 'device_status=available'])
     else:
