@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -82,6 +85,11 @@ export class ObjectLayerElement extends PolymerElement {
       renderedObjects: {
         type: Array,
         value: () => [],
+      },
+      debugMode: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableDebuggingMode'),
+        reflectToAttribute: true,
       },
     };
   }

@@ -33,6 +33,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
           chrome::kChromeUILensUntrustedURL);
   html_source->AddLocalizedString("close", IDS_CLOSE);
 
+  // Add finch flags
+  html_source->AddBoolean("enableDebuggingMode",
+                          lens::features::IsLensOverlayDebuggingEnabled());
+
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
       GURL(lens::features::GetLensOverlayResultsSearchURL());

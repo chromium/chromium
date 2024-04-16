@@ -4,6 +4,11 @@
     pointer-events: all;
     position: absolute;
   }
+
+  :host([debug-mode]) .object {
+    border: 2px solid green;
+    opacity: 50%;
+  }
 </style>
 <template id="objectsContainer" is="dom-repeat" items="[[renderedObjects]]">
   <div style$="[[getObjectStyle(item)]]" class="object"></div>

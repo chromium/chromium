@@ -61,6 +61,8 @@ const base::FeatureParam<int> kLensOverlayImageMaxHeight{
     &kLensOverlay, "image-dimensions-max-height", 1000};
 const base::FeatureParam<int> kLensOverlayImageMaxWidth{
     &kLensOverlay, "image-dimensions-max-width", 1000};
+const base::FeatureParam<bool> kLensOverlayDebuggingMode{
+    &kLensOverlay, "debugging-mode", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -227,6 +229,10 @@ int GetLensOverlayImageMaxWidth() {
 
 std::string GetLensOverlayEndpointURL() {
   return kLensOverlayEndpointUrl.Get();
+}
+
+bool IsLensOverlayDebuggingEnabled() {
+  return kLensOverlayDebuggingMode.Get();
 }
 
 }  // namespace lens::features
