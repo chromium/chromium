@@ -956,8 +956,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // Aloud play / pause or via a preference change, rehighlight the nodes
       // after a pause.
       if (!container.querySelector('.' + currentReadHighlightClass)) {
-        // TODO(crbug.com/1474951): Investigate adding a mock voice in tests
-        // to make this testable.
         this.highlightNodes(chrome.readingMode.getCurrentText());
       }
 

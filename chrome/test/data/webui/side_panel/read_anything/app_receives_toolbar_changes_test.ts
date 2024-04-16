@@ -255,9 +255,7 @@ suite('AppReceivesToolbarChanges', () => {
 
       test('starts speech', () => {
         assertFalse(app.speechPlayingState.paused);
-        // TODO: b/323960128 - Since this test browser doesn't have any
-        // voices, speechStarted doesn't get set to true. Find a way to add a
-        // mock voice to this browser, and test that app.speechStarted is true.
+        assertTrue(app.speechPlayingState.speechStarted);
       });
     });
 
@@ -269,6 +267,7 @@ suite('AppReceivesToolbarChanges', () => {
 
       test('stops speech', () => {
         assertTrue(app.speechPlayingState.paused);
+        assertTrue(app.speechPlayingState.speechStarted);
       });
     });
 

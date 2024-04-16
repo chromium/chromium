@@ -7,7 +7,7 @@ import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/c
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_toolbar.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
 
@@ -86,6 +86,12 @@ suite('LinksToggledIntegration', () => {
     test('container has links', () => {
       assertContainerHasLinks(true);
     });
+
+    test('container has no highlight', () => {
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertFalse(!!currentHighlight);
+    });
   });
 
   suite('without speech', () => {
@@ -107,6 +113,12 @@ suite('LinksToggledIntegration', () => {
 
     test('container does not have links', () => {
       assertContainerHasLinks(false);
+    });
+
+    test('container has highlight', () => {
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(!!currentHighlight);
     });
 
     suite('and after speech finishes', () => {
@@ -131,6 +143,12 @@ suite('LinksToggledIntegration', () => {
     test('container has links again', () => {
       assertContainerHasLinks(true);
     });
+
+    test('container still has highlight', () => {
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(!!currentHighlight);
+    });
   });
 
   suite('with links toggled off', () => {
@@ -154,6 +172,12 @@ suite('LinksToggledIntegration', () => {
       test('container does not have links', () => {
         assertContainerHasLinks(false);
       });
+
+      test('container has highlight', () => {
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertTrue(!!currentHighlight);
+      });
     });
 
     suite('after speech pauses', () => {
@@ -164,6 +188,12 @@ suite('LinksToggledIntegration', () => {
 
       test('container does not have links', () => {
         assertContainerHasLinks(false);
+      });
+
+      test('container still has highlight', () => {
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertTrue(!!currentHighlight);
       });
     });
   });
