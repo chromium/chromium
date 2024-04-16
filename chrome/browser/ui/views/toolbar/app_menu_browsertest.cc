@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -226,6 +227,14 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_main) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly,
+                       InvokeUi_main_upgrade_available) {
+  UpgradeDetector::GetInstance()->set_upgrade_notification_stage_for_testing(
+      UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL);
+  UpgradeDetector::GetInstance()->NotifyUpgradeForTesting();
   ShowAndVerifyUi();
 }
 

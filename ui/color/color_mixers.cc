@@ -24,11 +24,7 @@ void AddColorMixers(ColorProvider* provider, const ColorProviderKey& key) {
   AddCoreDefaultColorMixer(provider, key);
   AddNativeCoreColorMixer(provider, key);
   AddUiColorMixer(provider, key);
-  if (features::IsChromeRefresh2023()) {
-    // This must come after the UI and native UI mixers to ensure leaf node
-    // colors are overridden with GM3 recipes when the refresh flag is enabled.
-    AddMaterialUiColorMixer(provider, key);
-  }
+  AddMaterialUiColorMixer(provider, key);
   if (IsFluentScrollbarEnabled()) {
     // This must come after the UI and before the native UI mixers to ensure
     // leaf node colors are overridden with the Fluent recipes but that high

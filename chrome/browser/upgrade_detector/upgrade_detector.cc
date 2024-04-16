@@ -164,6 +164,10 @@ void UpgradeDetector::NotifyOutdatedInstallNoAutoUpdate() {
     observer.OnOutdatedInstallNoAutoUpdate();
 }
 
+void UpgradeDetector::NotifyUpgradeForTesting() {
+  NotifyUpgrade();
+}
+
 UpgradeDetector::UpgradeDetector(const base::Clock* clock,
                                  const base::TickClock* tick_clock)
     : clock_(clock),

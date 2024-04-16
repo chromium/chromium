@@ -26,13 +26,14 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorAvatarIconIncognito] = {kColorSysOnSurfaceVariant};
-  mixer[kColorAppMenuProfileRowBackground] = {kColorSysSurface4};
-  mixer[kColorAppMenuProfileRowBackgroundHovered] = {
-      kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuProfileRowBackground] = {kColorSysSurface5};
+
   mixer[kColorAppMenuProfileRowChipBackground] = {kColorSysTonalContainer};
   mixer[kColorAppMenuProfileRowChipHovered] = {
-      ui::GetResultingPaintColor(kColorAppMenuProfileRowBackgroundHovered,
+      ui::GetResultingPaintColor(kColorAppMenuRowBackgroundHovered,
                                  kColorAppMenuProfileRowChipBackground)};
+  mixer[kColorAppMenuRowBackgroundHovered] = {kColorSysStateHoverOnSubtle};
+  mixer[kColorAppMenuUpgradeRowBackground] = {kColorSysTonalContainer};
   mixer[kColorAvatarIconGuest] = {kColorSysOnSurfaceSecondary};
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};

@@ -901,19 +901,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
       </if>
 
-      <if expr="is_win or is_macosx or is_linux">
-        <if expr="use_titlecase">
-          <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
-            Relaunch to Update - Your tabs will reopen
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
-            Relaunch to update - your tabs will reopen
-          </message>
-        </if>
-      </if>
-
       <if expr="is_macosx">
         <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome." translateable="false">
           Chrome

@@ -168,22 +168,29 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
 
 namespace {
 
-// Conditionally return the update app menu item title based on upgrade detector
-// state.
-std::u16string GetUpgradeDialogMenuItemName() {
+struct MenuItemStrings {
+  std::u16string title_text;
+  std::u16string minor_text;
+};
+
+// Conditionally return the update app menu item title and minor text based on
+// upgrade detector state.
+MenuItemStrings GetUpgradeDialogTitleAndMinorText() {
   if (UpgradeDetector::GetInstance()->is_outdated_install() ||
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
-    return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
+    return {.title_text =
+                l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM)};
   } else {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
-    return l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(features::kUpdateTextOptions)
-            ? IDS_RELAUNCH_TO_UPDATE_ALT
-            : IDS_RELAUNCH_TO_UPDATE);
-#else
-    return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+    if (base::FeatureList::IsEnabled(features::kUpdateTextOptions)) {
+      return {
+          .title_text = l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT),
+          .minor_text =
+              l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT)};
+    }
 #endif
+    return {.title_text = l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE)};
   }
 }
 
@@ -1636,9 +1643,12 @@ void AppMenuModel::Build() {
                   kBrowserToolsUpdateIcon,
                   app_menu_icon_controller_->GetIconColor(std::nullopt));
     if (browser_defaults::kShowUpgradeMenuItem) {
-      AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName(),
+      const MenuItemStrings upgrade_strings =
+          GetUpgradeDialogTitleAndMinorText();
+      AddItemWithIcon(IDC_UPGRADE_DIALOG, upgrade_strings.title_text,
                       update_icon);
-      need_separator = true;
+      SetMinorText(GetIndexOfCommandId(IDC_UPGRADE_DIALOG).value(),
+                   upgrade_strings.minor_text);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     AddItemWithIcon(IDC_LACROS_DATA_MIGRATION,

@@ -1233,6 +1233,14 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="The text label of the passwords and autofill menu item">
             Passwords and &amp;autofill
           </message>
+        <if expr="is_win or is_macosx or is_linux">
+          <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
+            Relaunch to update
+          </message>
+          <message name="IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT" desc="Minor text for the alternate text label of the relaunch to update Chrome menu item">
+            Your tabs will reopen
+          </message>
+        </if>
           <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
             New &amp;tab
           </message>
@@ -1376,6 +1384,14 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_PASSWORDS_AND_AUTOFILL_MENU" desc="In Title Case: The text label of the passwords and autofill menu item">
             Passwords and &amp;Autofill
           </message>
+          <if expr="is_win or is_macosx or is_linux">
+              <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="In Title Case: Alternate text label of the relaunch to update Chrome menu item">
+                Relaunch to Update
+              </message>
+            <message name="IDS_RELAUNCH_TO_UPDATE_ALT_MINOR_TEXT" desc="In Title Case: Minor text for the alternate text label of the relaunch to update Chrome menu item">
+              Your tabs will reopen
+            </message>
+          </if>
           <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
             New &amp;Tab
           </message>

@@ -98,6 +98,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -1323,19 +1324,24 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
     if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
     }
+
+    // Helper method that adds a background to a menu item.
+    auto add_menu_row_background = [item](int vertical_margin,
+                                          ui::ColorId background_color) {
+      constexpr int kBackgroundCornerRadius = 12;
+      item->set_vertical_margin(vertical_margin);
+      item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
+          background_color, kBackgroundCornerRadius));
+      item->SetSelectedColorId(ui::kColorAppMenuRowBackgroundHovered);
+    };
+
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
         if (features::IsChromeRefresh2023()) {
-          constexpr int background_corner_radii = 12;
-          // Profile row margins are different from the menu config item
-          // margins.
-          item->set_vertical_margin(
+          add_menu_row_background(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTENT_LIST_VERTICAL_MULTI));
-          item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
-              ui::kColorAppMenuProfileRowBackground, background_corner_radii));
-          item->SetSelectedColorId(
-              ui::kColorAppMenuProfileRowBackgroundHovered);
+                  DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
+              ui::kColorAppMenuProfileRowBackground);
           ProfileAttributesEntry* profile_attributes =
               GetProfileAttributesFromProfile(browser_->profile());
           if (profile_attributes &&
@@ -1347,6 +1353,13 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
                 profile_menu_item_selected_subscription_list_);
           }
         }
+        break;
+      }
+      case IDC_UPGRADE_DIALOG: {
+        add_menu_row_background(
+            views::LayoutProvider::Get()->GetDistanceMetric(
+                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+            ui::kColorAppMenuUpgradeRowBackground);
         break;
       }
       case IDC_EDIT_MENU: {

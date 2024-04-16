@@ -185,6 +185,13 @@ class UpgradeDetector {
   // disabled. No details are expected.
   void NotifyOutdatedInstallNoAutoUpdate();
 
+  void set_upgrade_notification_stage_for_testing(
+      UpgradeNotificationAnnoyanceLevel stage) {
+    set_upgrade_notification_stage(stage);
+  }
+
+  void NotifyUpgradeForTesting();
+
  protected:
   enum UpgradeAvailable {
     // If no update is available and current install is recent enough.
