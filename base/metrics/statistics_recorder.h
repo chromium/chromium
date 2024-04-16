@@ -83,7 +83,8 @@ class BASE_EXPORT StatisticsRecorder {
   // name and the callback to be invoked. The class starts observing on
   // construction and removes itself from the observer list on destruction. The
   // clients are always notified on the same sequence in which they were
-  // registered.
+  // registered. This will not get a notification if created while sending out
+  // that notification.
   class BASE_EXPORT ScopedHistogramSampleObserver {
    public:
     // Constructor. Called with the desired histogram name and the callback to
@@ -333,9 +334,10 @@ class BASE_EXPORT StatisticsRecorder {
                                              std::string_view name) const
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
-  // Adds an observer to be notified when a new sample is recorded on the
-  // histogram referred to by |histogram_name|. Can be called before or after
-  // the histogram is created.
+  // Adds an observer to be notified when a new sample is recorded on
+  // the histogram referred to by |histogram_name|. Observers added
+  // while sending out notification are not notified. Can be called
+  // before or after the histogram is created.
   //
   // This method is thread safe.
   static void AddHistogramSampleObserver(

@@ -356,7 +356,8 @@ void StatisticsRecorder::AddHistogramSampleObserver(
   auto iter = top_->observers_.find(hash);
   if (iter == top_->observers_.end()) {
     top_->observers_.insert(
-        {hash, base::MakeRefCounted<HistogramSampleObserverList>()});
+        {hash, base::MakeRefCounted<HistogramSampleObserverList>(
+                   ObserverListPolicy::EXISTING_ONLY)});
   }
 
   top_->observers_[hash]->AddObserver(observer);
