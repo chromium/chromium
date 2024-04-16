@@ -96,7 +96,6 @@ if (include_js2gtest_tests) {
       "../nearby_share/shared/nearby_shared_v3_browsertest.js",
       "diagnostics/diagnostics_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
-      "print_management/print_management_browsertest.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }

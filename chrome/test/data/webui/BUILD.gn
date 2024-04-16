@@ -111,6 +111,7 @@ source_set("browser_tests") {
       "chromeos/parent_access/parent_access_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
       "chromeos/personalization_app/personalization_app_sea_pen_browsertest.cc",
+      "chromeos/print_management/print_management_browsertest.cc",
       "chromeos/print_preview_cros/print_preview_cros_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
       "chromeos/shimless_rma/shimless_rma_browsertest.cc",

@@ -10,9 +10,9 @@ static_library("print_management") {
   sources = [
     "print_management_ui.cc",
     "print_management_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
+
+  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash/constants:constants",
@@ -27,5 +27,14 @@ static_library("print_management") {
     "//ui/base",
     "//ui/resources",
     "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }
