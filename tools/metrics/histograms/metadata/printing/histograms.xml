@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2" units="printers"
-    expires_after="2024-05-26">
+    expires_after="2024-11-26">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount2.SettingsOpened"
-    units="printers" expires_after="2024-05-26">
+    units="printers" expires_after="2024-11-26">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
