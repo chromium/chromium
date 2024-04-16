@@ -19,8 +19,6 @@ BASE_DECLARE_FEATURE(kAndroidAutofillPrefillRequestsForLoginForms);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillUsePwmPredictionsForOverrides);
 
-BASE_DECLARE_FEATURE(kAndroidAutofillSupportVisibilityChanges);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillPrefillRequestsForChangePassword);
 
 }  // namespace autofill::features

@@ -403,10 +403,6 @@ TEST_F(AutofillProviderAndroidTest, OnAskForValuesToFillFindsCorrectFieldId) {
 // Tests that Java is informed about visibility changes of form fields connected
 // to the current Autofill session if they are detected in focus change events.
 TEST_F(AutofillProviderAndroidTest, NotifyAboutVisibilityChangeOnFocus) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAndroidAutofillSupportVisibilityChanges);
-
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   // For Android Autofill, focusability is the same as visibility.

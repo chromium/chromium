@@ -212,10 +212,6 @@ public final class ProductionSupportedFlagList {
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
                 "When enabled, prefill requests are supported for login forms."),
         Flag.baseFeature(
-                AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_VISIBILITY_CHANGES_NAME,
-                "Enables communicating visibility changes of form fields of a form in an "
-                        + "ongoing Autofill session to Android AutofillManager."),
-        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME,
                 "When enabled, the comparison between the cached form and the currently focused"
                         + " form that is used to decide whether to show a bottom sheet is performed"
@@ -976,8 +972,7 @@ public final class ProductionSupportedFlagList {
                 "UseMoveNotCopyInMergeTreeUpdate",
                 "Enables moves instead of copies of snapshot tree data when merging udpates."),
         Flag.baseFeature(
-                "EnableHangWatcher",
-                "Controls whether hooks for hang detection are active"),
+                "EnableHangWatcher", "Controls whether hooks for hang detection are active"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

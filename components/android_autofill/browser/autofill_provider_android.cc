@@ -513,9 +513,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
 void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
     AndroidAutofillManager* manager,
     const FormData& form) {
-  if (!IsLinkedForm(form) ||
-      !base::FeatureList::IsEnabled(
-          features::kAndroidAutofillSupportVisibilityChanges)) {
+  if (!IsLinkedForm(form)) {
     return;
   }
 
