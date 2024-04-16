@@ -56,6 +56,7 @@ class AutofillI18nApiTest : public testing::Test {
             features::kAutofillUseDEAddressModel,
             features::kAutofillUseINAddressModel,
             features::kAutofillUseMXAddressModel,
+            features::kAutofillUsePLAddressModel,
         },
         {});
   }

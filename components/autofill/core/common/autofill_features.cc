@@ -375,6 +375,11 @@ BASE_FEATURE(kAutofillUseMXAddressModel,
              "AutofillUseMXAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using a custom address model for Poland, overriding the legacy one.
+BASE_FEATURE(kAutofillUsePLAddressModel,
+             "AutofillUsePLAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on
 // fields where the content matches a valid email format.
 BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
