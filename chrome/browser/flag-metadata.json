@@ -8486,11 +8486,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "user-bypass-ui",
-    "owners": [ "olesiamarukhno@google.com", "kartoffel-core-eng@google.com" ],
-    "expiry_milestone": 124
-  },
-  {
     "name": "user-education-experience-v2",
     "owners": [ "dfried@chromium.org", "mickeyburks@chromium.org", "kayceh@chromium.org", "estalin@chromium.org" ],
     "expiry_milestone": 130
