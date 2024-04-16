@@ -18,8 +18,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -155,7 +155,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
     return controller()->GetSuggestionAt(i);
   }
 
-  AutofillPopupController* adapter_as_controller() {
+  AutofillSuggestionController* adapter_as_controller() {
     return autofill_accessory_adapter_.get();
   }
 

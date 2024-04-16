@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#import "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"

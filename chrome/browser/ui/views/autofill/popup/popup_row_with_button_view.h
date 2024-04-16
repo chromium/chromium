@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_ROW_WITH_BUTTON_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
@@ -24,6 +24,9 @@ class ImageButton;
 }  // namespace views
 
 namespace autofill {
+
+class AutofillPopupController;
+class PopupRowContentView;
 
 // Receives notifications of mouse enter/exit events of the button.
 class ButtonDelegate {

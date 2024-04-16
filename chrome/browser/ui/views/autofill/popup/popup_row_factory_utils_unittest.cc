@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
-#include "base/check_op.h"
-#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
-#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"

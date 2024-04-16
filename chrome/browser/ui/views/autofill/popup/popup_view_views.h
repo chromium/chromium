@@ -33,6 +33,7 @@ class ScrollView;
 namespace autofill {
 
 class AutofillPopupController;
+class AutofillSuggestionController;
 class PopupSeparatorView;
 class PopupTitleView;
 class PopupWarningView;
@@ -103,7 +104,7 @@ class PopupViewViews : public PopupBaseView,
   std::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillPopupController> controller) override;
+      base::WeakPtr<AutofillSuggestionController> controller) override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;

@@ -30,7 +30,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -385,8 +385,8 @@ class AutofillCapturedSitesInteractiveTest
       auto* client =
           ChromeAutofillClient::FromWebContentsForTesting(web_contents);
       CHECK_NE(client, nullptr);
-      if (base::WeakPtr<AutofillPopupController> controller =
-              client->popup_controller_for_testing()) {
+      if (base::WeakPtr<AutofillSuggestionController> controller =
+              client->suggestion_controller_for_testing()) {
         controller->DisableThresholdForTesting(true);
       }
     };

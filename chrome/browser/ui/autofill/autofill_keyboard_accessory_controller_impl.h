@@ -60,7 +60,7 @@ class AutofillKeyboardAccessoryControllerImpl
   const gfx::RectF& element_bounds() const override;
   base::i18n::TextDirection GetElementTextDirection() const override;
 
-  // AutofillPopupController:
+  // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
@@ -81,7 +81,7 @@ class AutofillKeyboardAccessoryControllerImpl
                                   std::u16string* body) override;
   FillingProduct GetMainFillingProduct() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  base::WeakPtr<AutofillPopupController> OpenSubPopup(
+  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions,
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
@@ -100,7 +100,7 @@ class AutofillKeyboardAccessoryControllerImpl
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr();
 
  private:
-  friend class AutofillPopupController;
+  friend class AutofillSuggestionController;
 
   // Returns true if the popup has entries that are not "Manage ...".
   bool HasSuggestions() const;

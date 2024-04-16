@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -208,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
 
   auto* client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
-  AutofillPopupController* controller =
-      client->popup_controller_for_testing().get();
+  base::WeakPtr<AutofillSuggestionController> controller =
+      client->suggestion_controller_for_testing();
   ASSERT_TRUE(controller);
 
   // Push some suggestions and select the line #3.

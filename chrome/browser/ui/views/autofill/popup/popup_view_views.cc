@@ -112,11 +112,11 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
              : IsFooterPopupItemId(popup_item_id);
 }
 
-bool CanShowRootPopup(base::WeakPtr<AutofillPopupController> controller) {
+bool CanShowRootPopup(AutofillSuggestionController& controller) {
 #if BUILDFLAG(IS_MAC)
   // It's possible for the container_view to not be in a window. In that case,
   // cancel the popup since we can't fully set it up.
-  if (!platform_util::GetTopLevel(controller->container_view())) {
+  if (!platform_util::GetTopLevel(controller.container_view())) {
     return false;
   }
 #else
@@ -124,7 +124,7 @@ bool CanShowRootPopup(base::WeakPtr<AutofillPopupController> controller) {
   // fully set it up. On Mac Cocoa browser, |observing_widget| is null
   // because the parent is not a views::Widget.
   if (!views::Widget::GetTopLevelWidgetForNativeView(
-          controller->container_view())) {
+          controller.container_view())) {
     return false;
   }
 #endif
@@ -543,10 +543,11 @@ void PopupViewViews::AxAnnounce(const std::u16string& text) {
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
-    base::WeakPtr<AutofillPopupController> controller) {
-  if (GetWidget()) {
-    return (new PopupViewViews(controller, weak_ptr_factory_.GetWeakPtr(),
-                               GetWidget()))
+    base::WeakPtr<AutofillSuggestionController> controller) {
+  if (GetWidget() && controller) {
+    return (new PopupViewViews(
+                static_cast<AutofillPopupController&>(*controller).GetWeakPtr(),
+                weak_ptr_factory_.GetWeakPtr(), GetWidget()))
         ->GetWeakPtr();
   }
   return nullptr;
@@ -1083,12 +1084,15 @@ END_METADATA
 
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
-    base::WeakPtr<AutofillPopupController> controller) {
-  if (!CanShowRootPopup(controller)) {
+    base::WeakPtr<AutofillSuggestionController> controller) {
+  if (!controller || !CanShowRootPopup(*controller)) {
     return nullptr;
   }
 
-  return (new PopupViewViews(controller))->GetWeakPtr();
+  // On Desktop, all controllers are `AutofillPopupController`s.
+  return (new PopupViewViews(
+              static_cast<AutofillPopupController&>(*controller).GetWeakPtr()))
+      ->GetWeakPtr();
 }
 
 }  // namespace autofill

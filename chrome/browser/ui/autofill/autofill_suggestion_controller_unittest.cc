@@ -20,7 +20,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_test_base.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -127,9 +127,9 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
 
 }  // namespace
 
-using AutofillPopupControllerTest = AutofillPopupControllerTestBase<>;
+using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<>;
 
-TEST_F(AutofillPopupControllerTest, RemoveSuggestion) {
+TEST_F(AutofillSuggestionControllerTest, RemoveSuggestion) {
   ShowSuggestions(manager(),
                   {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
                    PopupItemId::kAutofillOptions});
@@ -160,14 +160,14 @@ TEST_F(AutofillPopupControllerTest, RemoveSuggestion) {
 
 // Regression test for (crbug.com/1513574): Showing an Autofill Compose
 // suggestion twice does not crash.
-TEST_F(AutofillPopupControllerTest, ShowTwice) {
+TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
   ShowSuggestions(manager(),
                   {Suggestion(u"Help me write", PopupItemId::kCompose)});
   ShowSuggestions(manager(),
                   {Suggestion(u"Help me write", PopupItemId::kCompose)});
 }
 
-TEST_F(AutofillPopupControllerTest, RemoveAutocompleteSuggestion_AnnounceText) {
+TEST_F(AutofillSuggestionControllerTest, RemoveAutocompleteSuggestion_AnnounceText) {
   ShowSuggestions(manager(),
                   {Suggestion(u"main text", PopupItemId::kAutocompleteEntry)});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
@@ -182,7 +182,7 @@ TEST_F(AutofillPopupControllerTest, RemoveAutocompleteSuggestion_AnnounceText) {
       0, GetDefaultRemovalMethod()));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        RemoveAutocompleteSuggestion_NoMetricsEmittedOnFail) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
@@ -202,7 +202,7 @@ TEST_F(AutofillPopupControllerTest,
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        RemoveAutocompleteSuggestion_MetricsEmittedOnSuccess) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
@@ -227,7 +227,7 @@ TEST_F(AutofillPopupControllerTest,
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        RemoveAddressSuggestion_NoMetricsEmittedOnFail) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
@@ -245,7 +245,7 @@ TEST_F(AutofillPopupControllerTest,
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        RemoveAddressSuggestion_MetricsEmittedOnSuccess) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
@@ -276,7 +276,7 @@ TEST_F(AutofillPopupControllerTest,
       AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        RemoveCreditCardSuggestion_NoMetricsEmitted) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kCreditCardEntry});
@@ -300,7 +300,7 @@ TEST_F(AutofillPopupControllerTest,
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
-TEST_F(AutofillPopupControllerTest, UpdateDataListValues) {
+TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   std::vector<SelectOption> options = {
       {.value = u"data list value 1", .content = u"data list label 1"}};
@@ -393,7 +393,7 @@ TEST_F(AutofillPopupControllerTest, UpdateDataListValues) {
       client().popup_controller(manager()).GetSuggestionAt(0).popup_item_id);
 }
 
-TEST_F(AutofillPopupControllerTest, PopupsWithOnlyDataLists) {
+TEST_F(AutofillSuggestionControllerTest, PopupsWithOnlyDataLists) {
   // Create the popup with a single datalist element.
   ShowSuggestions(manager(), {PopupItemId::kDatalistEntry});
 
@@ -431,16 +431,16 @@ TEST_F(AutofillPopupControllerTest, PopupsWithOnlyDataLists) {
   client().popup_controller(manager()).UpdateDataListValues(options);
 }
 
-TEST_F(AutofillPopupControllerTest, GetOrCreate) {
+TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   auto create_controller = [&](gfx::RectF bounds) {
-    return AutofillPopupController::GetOrCreate(
+    return AutofillSuggestionController::GetOrCreate(
         client().popup_controller(manager()).GetWeakPtr(),
         manager().external_delegate().GetWeakPtrForTest(), nullptr,
         PopupControllerCommon(std::move(bounds), base::i18n::UNKNOWN_DIRECTION,
                               nullptr),
         /*form_control_ax_id=*/0);
   };
-  WeakPtr<AutofillPopupController> controller = create_controller(gfx::RectF());
+  WeakPtr<AutofillSuggestionController> controller = create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
   controller->Hide(PopupHidingReason::kViewDestroyed);
@@ -449,7 +449,7 @@ TEST_F(AutofillPopupControllerTest, GetOrCreate) {
   controller = create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
-  WeakPtr<AutofillPopupController> controller2 =
+  WeakPtr<AutofillSuggestionController> controller2 =
       create_controller(gfx::RectF());
   EXPECT_EQ(controller.get(), controller2.get());
 
@@ -460,32 +460,32 @@ TEST_F(AutofillPopupControllerTest, GetOrCreate) {
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kViewDestroyed));
   gfx::RectF bounds(0.f, 0.f, 1.f, 2.f);
-  base::WeakPtr<AutofillPopupController> controller3 =
+  base::WeakPtr<AutofillSuggestionController> controller3 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller3.get());
-  EXPECT_EQ(bounds, static_cast<AutofillPopupController*>(controller3.get())
+  EXPECT_EQ(bounds, static_cast<AutofillSuggestionController*>(controller3.get())
                         ->element_bounds());
   controller3->Hide(PopupHidingReason::kViewDestroyed);
 
   client().popup_controller(manager()).DoHide();
 
-  const base::WeakPtr<AutofillPopupController> controller4 =
+  const base::WeakPtr<AutofillSuggestionController> controller4 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller4.get());
   EXPECT_EQ(bounds,
-            static_cast<const AutofillPopupController*>(controller4.get())
+            static_cast<const AutofillSuggestionController*>(controller4.get())
                 ->element_bounds());
 
   client().popup_controller(manager()).DoHide();
 }
 
-TEST_F(AutofillPopupControllerTest, ProperlyResetController) {
+TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry,
                               PopupItemId::kAutocompleteEntry});
 
   // Now show a new popup with the same controller, but with fewer items.
-  base::WeakPtr<AutofillPopupController> controller =
-      AutofillPopupController::GetOrCreate(
+  base::WeakPtr<AutofillSuggestionController> controller =
+      AutofillSuggestionController::GetOrCreate(
           client().popup_controller(manager()).GetWeakPtr(),
           manager().external_delegate().GetWeakPtrForTest(), nullptr,
           PopupControllerCommon(gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
@@ -494,18 +494,18 @@ TEST_F(AutofillPopupControllerTest, ProperlyResetController) {
   EXPECT_EQ(0, controller->GetLineCount());
 }
 
-TEST_F(AutofillPopupControllerTest, UnselectingClearsPreview) {
+TEST_F(AutofillSuggestionControllerTest, UnselectingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
   client().popup_controller(manager()).UnselectSuggestion();
 }
 
-TEST_F(AutofillPopupControllerTest, HidingClearsPreview) {
+TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
   EXPECT_CALL(manager().external_delegate(), OnPopupHidden());
   client().popup_controller(manager()).DoHide();
 }
 
-TEST_F(AutofillPopupControllerTest, DontHideWhenWaitingForData) {
+TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
   EXPECT_CALL(client().popup_view(), Hide).Times(0);
   client().popup_controller(manager()).PinView();
 
@@ -518,7 +518,7 @@ TEST_F(AutofillPopupControllerTest, DontHideWhenWaitingForData) {
   Mock::VerifyAndClearExpectations(&client().popup_view());
 }
 
-TEST_F(AutofillPopupControllerTest, ShouldReportHidingPopupReason) {
+TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
   base::HistogramTester histogram_tester;
   client().popup_controller(manager()).DoHide(PopupHidingReason::kTabGone);
   histogram_tester.ExpectTotalCount("Autofill.PopupHidingReason", 1);
@@ -528,7 +528,7 @@ TEST_F(AutofillPopupControllerTest, ShouldReportHidingPopupReason) {
 
 // This is a regression test for crbug.com/521133 to ensure that we don't crash
 // when suggestions updates race with user selections.
-TEST_F(AutofillPopupControllerTest, SelectInvalidSuggestion) {
+TEST_F(AutofillSuggestionControllerTest, SelectInvalidSuggestion) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
@@ -538,7 +538,7 @@ TEST_F(AutofillPopupControllerTest, SelectInvalidSuggestion) {
       /*index=*/1);  // Out of bounds!
 }
 
-TEST_F(AutofillPopupControllerTest, AcceptSuggestionRespectsTimeout) {
+TEST_F(AutofillSuggestionControllerTest, AcceptSuggestionRespectsTimeout) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
 
@@ -556,7 +556,7 @@ TEST_F(AutofillPopupControllerTest, AcceptSuggestionRespectsTimeout) {
       "Autofill.Popup.AcceptanceDelayThresholdNotMet", 2);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        AcceptSuggestionTimeoutIsUpdatedOnPopupMove) {
   base::HistogramTester histogram_tester;
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
@@ -590,7 +590,7 @@ TEST_F(AutofillPopupControllerTest,
 // Tests that when a picture-in-picture window is initialized, there is a call
 // to the popup view to check if the autofill popup bounds overlap with the
 // picture-in-picture window.
-TEST_F(AutofillPopupControllerTest, CheckBoundsOverlapWithPictureInPicture) {
+TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
@@ -598,7 +598,7 @@ TEST_F(AutofillPopupControllerTest, CheckBoundsOverlapWithPictureInPicture) {
   picture_in_picture_window_manager->NotifyObserversOnEnterPictureInPicture();
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_UnrelatedPopupItemId) {
   std::u16string title;
   std::u16string body;
@@ -610,7 +610,7 @@ TEST_F(AutofillPopupControllerTest,
       0, &title, &body));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_InvalidUniqueId) {
   std::u16string title;
   std::u16string body;
@@ -622,7 +622,7 @@ TEST_F(AutofillPopupControllerTest,
       0, &title, &body));
 }
 
-TEST_F(AutofillPopupControllerTest, GetRemovalConfirmationText_Autocomplete) {
+TEST_F(AutofillSuggestionControllerTest, GetRemovalConfirmationText_Autocomplete) {
   std::u16string title;
   std::u16string body;
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
@@ -636,7 +636,7 @@ TEST_F(AutofillPopupControllerTest, GetRemovalConfirmationText_Autocomplete) {
                 IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_LocalCreditCard) {
   CreditCard local_card = test::GetCreditCard();
   personal_data().AddCreditCard(local_card);
@@ -656,7 +656,7 @@ TEST_F(AutofillPopupControllerTest,
                 IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_ServerCreditCard) {
   CreditCard server_card = test::GetMaskedServerCard();
   personal_data().AddServerCreditCard(server_card);
@@ -672,7 +672,7 @@ TEST_F(AutofillPopupControllerTest,
       0, &title, &body));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_CompleteAutofillProfile) {
   AutofillProfile complete_profile = test::GetFullProfile();
   personal_data().AddProfile(complete_profile);
@@ -692,7 +692,7 @@ TEST_F(AutofillPopupControllerTest,
                 IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_AutofillProfile_EmptyCity) {
   AutofillProfile profile = test::GetFullProfile();
   profile.ClearFields({ADDRESS_HOME_CITY});
@@ -714,7 +714,7 @@ TEST_F(AutofillPopupControllerTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillPopupControllerTest, AcceptPwdSuggestionInvokesWarningAndroid) {
+TEST_F(AutofillSuggestionControllerTest, AcceptPwdSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
@@ -730,7 +730,7 @@ TEST_F(AutofillPopupControllerTest, AcceptPwdSuggestionInvokesWarningAndroid) {
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        AcceptUsernameSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
@@ -744,7 +744,7 @@ TEST_F(AutofillPopupControllerTest,
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        AcceptPwdSuggestionNoWarningIfDisabledAndroid) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -759,7 +759,7 @@ TEST_F(AutofillPopupControllerTest,
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
 
-TEST_F(AutofillPopupControllerTest, AcceptAddressNoPwdWarningAndroid) {
+TEST_F(AutofillSuggestionControllerTest, AcceptAddressNoPwdWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
@@ -776,7 +776,7 @@ TEST_F(AutofillPopupControllerTest, AcceptAddressNoPwdWarningAndroid) {
 // `delegate->DidAcceptSuggestion()`. On Android, some code is still being
 // executed after hiding. This test makes sure no use-after-free, null pointer
 // dereferencing or other memory violations occur.
-TEST_F(AutofillPopupControllerTest, AcceptSuggestionIsMemorySafe) {
+TEST_F(AutofillSuggestionControllerTest, AcceptSuggestionIsMemorySafe) {
   ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
@@ -792,7 +792,7 @@ TEST_F(AutofillPopupControllerTest, AcceptSuggestionIsMemorySafe) {
 
 // Tests that a change to a text field does not hide a popup with an
 // Autocomplete suggestion.
-TEST_F(AutofillPopupControllerTest,
+TEST_F(AutofillSuggestionControllerTest,
        DoeNotHideOnFieldChangeForNonComposeEntries) {
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
   EXPECT_CALL(client().popup_controller(manager()), Hide).Times(0);
@@ -802,11 +802,11 @@ TEST_F(AutofillPopupControllerTest,
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
 }
 
-class AutofillPopupControllerTestHidingLogic
-    : public AutofillPopupControllerTest {
+class AutofillSuggestionControllerTestHidingLogic
+    : public AutofillSuggestionControllerTest {
  public:
   void SetUp() override {
-    AutofillPopupControllerTest::SetUp();
+    AutofillSuggestionControllerTest::SetUp();
     sub_frame_ = CreateAndNavigateChildFrame(
                      main_frame(), GURL("https://bar.com"), "sub_frame")
                      ->GetWeakDocumentPtr();
@@ -824,7 +824,7 @@ class AutofillPopupControllerTestHidingLogic
 
 // Tests that if the popup is shown in the *main frame*, destruction of the
 // *sub frame* does not hide the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic,
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
        KeepOpenInMainFrameOnSubFrameDestruction) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
@@ -836,7 +836,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 
 // Tests that if the popup is shown in the *main frame*, a navigation in the
 // *sub frame* does not hide the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic,
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
        KeepOpenInMainFrameOnSubFrameNavigation) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
@@ -848,7 +848,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 
 // Tests that if the popup is shown, destruction of the WebContents hides the
 // popup.
-TEST_F(AutofillPopupControllerTestHidingLogic, HideOnWebContentsDestroyed) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic, HideOnWebContentsDestroyed) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -858,7 +858,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic, HideOnWebContentsDestroyed) {
 
 // Tests that if the popup is shown in the *main frame*, destruction of the
 // *main frame* hides the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic, HideInMainFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnDestruction) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -867,7 +867,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic, HideInMainFrameOnDestruction) {
 
 // Tests that if the popup is shown in the *sub frame*, destruction of the
 // *sub frame* hides the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic, HideInSubFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInSubFrameOnDestruction) {
   ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
   EXPECT_CALL(client().popup_controller(sub_manager()),
@@ -879,7 +879,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic, HideInSubFrameOnDestruction) {
 
 // Tests that if the popup is shown in the *main frame*, a navigation in the
 // *main frame* hides the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic,
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInMainFrameOnMainFrameNavigation) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
@@ -892,7 +892,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 
 // Tests that if the popup is shown in the *sub frame*, a navigation in the
 // *sub frame* hides the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic,
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnSubFrameNavigation) {
   ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
@@ -916,7 +916,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 // the navigation doesn't destroy the `sub_frame()` and thus we wouldn't hide
 // the popup. What hides the popup in reality is
 // AutofillExternalDelegate::DidEndTextFieldEditing().
-TEST_F(AutofillPopupControllerTestHidingLogic,
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInSubFrameOnMainFrameNavigation) {
   ShowSuggestions(sub_manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
@@ -928,7 +928,7 @@ TEST_F(AutofillPopupControllerTestHidingLogic,
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that if the popup is shown in the *main frame*, changing the zoom hides
 // the popup.
-TEST_F(AutofillPopupControllerTestHidingLogic, HideInMainFrameOnZoomChange) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnZoomChange) {
   zoom::ZoomController::CreateForWebContents(web_contents());
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());

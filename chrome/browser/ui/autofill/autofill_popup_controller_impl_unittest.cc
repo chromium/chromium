@@ -8,7 +8,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_test_base.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_active_popup.h"
@@ -45,10 +45,10 @@ EqualsSuggestionPosition(AutofillPopupDelegate::SuggestionPosition position) {
 
 }  // namespace
 
-using AutofillPopupControllerImplTest = AutofillPopupControllerTestBase<>;
+using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<>;
 
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
-  base::WeakPtr<AutofillPopupController> sub_controller =
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
   EXPECT_TRUE(sub_controller);
@@ -57,7 +57,7 @@ TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
 TEST_F(AutofillPopupControllerImplTest,
        DelegateMethodsAreCalledOnlyByRootPopup) {
   EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
-  base::WeakPtr<AutofillPopupController> sub_controller =
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
@@ -70,7 +70,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
   EXPECT_CALL(manager().external_delegate(), OnPopupShown()).Times(0);
-  base::WeakPtr<AutofillPopupController> sub_controller =
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {}, AutoselectFirstSuggestion(false));
 
@@ -98,7 +98,7 @@ TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
 // The second popup is also the second "sub_popup_level". This test asserts that
 // the information regarding the popup level is passed on to the delegate.
 TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
-  base::WeakPtr<AutofillPopupController> sub_controller =
+  base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
           {0, 0, 10, 10}, {Suggestion(PopupItemId::kAddressEntry)},
           AutoselectFirstSuggestion(false));
@@ -212,12 +212,12 @@ class MockAutofillDriver : public ContentAutofillDriver {
 };
 
 class AutofillPopupControllerForPopupAxTest
-    : public AutofillPopupControllerForPopupTest {
+    : public AutofillSuggestionControllerForTest {
  public:
-  using AutofillPopupControllerForPopupTest::
-      AutofillPopupControllerForPopupTest;
+  using AutofillSuggestionControllerForTest::
+      AutofillSuggestionControllerForTest;
 
-  using AutofillPopupControllerForPopupTest::FireControlsChangedEvent;
+  using AutofillSuggestionControllerForTest::FireControlsChangedEvent;
   MOCK_METHOD(ui::AXPlatformNode*,
               GetRootAXPlatformNodeForWebContents,
               (),
@@ -276,7 +276,7 @@ class MockAxPlatformNode : public ui::AXPlatformNodeBase {
 }  // namespace
 
 using AutofillPopupControllerImplTestAccessibilityBase =
-    AutofillPopupControllerTestBase<
+    AutofillSuggestionControllerTestBase<
         NiceMock<AutofillPopupControllerForPopupAxTest>,
         NiceMock<MockAutofillDriver>>;
 class AutofillPopupControllerImplTestAccessibility

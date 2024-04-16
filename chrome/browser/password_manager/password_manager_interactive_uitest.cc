@@ -17,7 +17,7 @@
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -362,11 +362,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  autofill::AutofillPopupController* controller = nullptr;
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+  autofill::AutofillSuggestionController* controller = nullptr;
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller = autofill_client->popup_controller_for_testing().get();
+    return controller =
+               autofill_client->suggestion_controller_for_testing().get();
   })) << "Creating `AutofillPopupController` timed out.";
   // Two credentials, a separator line and "Manage passwords" should be
   // displayed.
@@ -382,16 +383,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return controller = autofill_client->popup_controller_for_testing().get();
+    return controller =
+               autofill_client->suggestion_controller_for_testing().get();
   })) << "Creating `AutofillPopupController` timed out.";
   EXPECT_EQ(3, controller->GetLineCount());
   EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
@@ -405,16 +407,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown won't work because there is nothing to suggest.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
   // Showing the Autofill Popup is an asynchronous task.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
 
   WaitForElementValue("username_field", "");
 }

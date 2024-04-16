@@ -191,6 +191,8 @@ static_library("test_support") {
     "../browser/tpcd/experiment/mock_experiment_manager.h",
     "../browser/tpcd/support/trial_test_utils.cc",
     "../browser/tpcd/support/trial_test_utils.h",
+    "../browser/ui/autofill/mock_autofill_popup_controller.cc",
+    "../browser/ui/autofill/mock_autofill_popup_controller.h",
     "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
@@ -6494,7 +6496,7 @@ test("unit_tests") {
     "../browser/translate/translate_service_unittest.cc",
     "../browser/trusted_vault/trusted_vault_encryption_keys_tab_helper_unittest.cc",
     "../browser/ui/autofill/autofill_client_provider_unittest.cc",
-    "../browser/ui/autofill/autofill_popup_controller_unittest.cc",
+    "../browser/ui/autofill/autofill_suggestion_controller_unittest.cc",
     "../browser/ui/autofill/chrome_autofill_client_unittest.cc",
     "../browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl_unittest.cc",
     "../browser/ui/autofill/payments/chrome_payments_autofill_client_unittest.cc",
@@ -10367,8 +10369,8 @@ test("unit_tests") {
 static_library("test_support_unit") {
   testonly = true
   sources = [
-    "../browser/ui/autofill/autofill_popup_controller_test_base.cc",
-    "../browser/ui/autofill/autofill_popup_controller_test_base.h",
+    "../browser/ui/autofill/autofill_suggestion_controller_test_base.cc",
+    "../browser/ui/autofill/autofill_suggestion_controller_test_base.h",
     "../browser/ui/autofill/mock_autofill_popup_view.cc",
     "../browser/ui/autofill/mock_autofill_popup_view.h",
     "base/run_all_unittests.cc",

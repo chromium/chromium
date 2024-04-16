@@ -17,8 +17,8 @@ using base::WeakPtr;
 namespace autofill {
 
 // static
-WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
-    WeakPtr<AutofillPopupController> previous,
+WeakPtr<AutofillSuggestionController> AutofillSuggestionController::GetOrCreate(
+    WeakPtr<AutofillSuggestionController> previous,
     WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,

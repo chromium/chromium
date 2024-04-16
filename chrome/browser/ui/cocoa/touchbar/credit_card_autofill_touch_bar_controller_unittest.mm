@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include <optional>
@@ -12,10 +14,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
-#import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"

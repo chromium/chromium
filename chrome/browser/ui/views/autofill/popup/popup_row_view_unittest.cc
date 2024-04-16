@@ -11,7 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"

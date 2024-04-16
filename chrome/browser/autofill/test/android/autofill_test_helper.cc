@@ -6,7 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/test/jni_headers/AutofillTestHelper_jni.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 
 namespace autofill {
@@ -16,10 +16,10 @@ void JNI_AutofillTestHelper_DisableThresholdForCurrentlyShownAutofillPopup(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  if (base::WeakPtr<AutofillPopupController> popup_controller =
+  if (base::WeakPtr<AutofillSuggestionController> controller =
           ChromeAutofillClient::FromWebContentsForTesting(web_contents)
-              ->popup_controller_for_testing()) {
-    popup_controller->DisableThresholdForTesting(/*disable_threshold=*/true);
+              ->suggestion_controller_for_testing()) {
+    controller->DisableThresholdForTesting(/*disable_threshold=*/true);
   }
 }
 

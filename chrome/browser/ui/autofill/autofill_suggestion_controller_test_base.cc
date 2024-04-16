@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_popup_controller_test_base.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 
 #include <memory>
 #include <optional>
@@ -17,7 +17,7 @@ AutofillExternalDelegateForPopupTest::AutofillExternalDelegateForPopupTest(
 AutofillExternalDelegateForPopupTest::~AutofillExternalDelegateForPopupTest() =
     default;
 
-AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
+AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
     base::WeakPtr<AutofillExternalDelegate> external_delegate,
     content::WebContents* web_contents,
     const gfx::RectF& element_bounds
@@ -26,7 +26,7 @@ AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
     ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
 #endif
     )
-    : AutofillPopupControllerForPopupTestBase(
+    : AutofillSuggestionControllerForTestBase(
           external_delegate,
           web_contents,
           PopupControllerCommon(element_bounds,
@@ -40,7 +40,7 @@ AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
       ) {
 }
 
-AutofillPopupControllerForPopupTest::~AutofillPopupControllerForPopupTest() =
+AutofillSuggestionControllerForTest::~AutofillSuggestionControllerForTest() =
     default;
 
 }  // namespace autofill

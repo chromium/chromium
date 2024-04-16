@@ -17,7 +17,7 @@
 
 namespace autofill {
 
-class AutofillPopupController;
+class AutofillSuggestionController;
 
 // The interface for creating and controlling a platform-dependent
 // AutofillPopupView.
@@ -25,7 +25,7 @@ class AutofillPopupView {
  public:
   // Factory function for creating the view.
   static base::WeakPtr<AutofillPopupView> Create(
-      base::WeakPtr<AutofillPopupController> controller);
+      base::WeakPtr<AutofillSuggestionController> controller);
 
   // Attempts to display the Autofill popup and fills it with data from the
   // controller. Returns whether the popup was shown.
@@ -59,7 +59,7 @@ class AutofillPopupView {
   // The child's lifetime depends on its parent, i.e. when the parent dies
   // the child dies also.
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillPopupController> sub_controller) = 0;
+      base::WeakPtr<AutofillSuggestionController> sub_controller) = 0;
 
   virtual std::optional<AutofillClient::PopupScreenLocation>
   GetPopupScreenLocation() const = 0;

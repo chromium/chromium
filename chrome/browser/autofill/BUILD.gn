@@ -121,8 +121,6 @@ static_library("test_support") {
     "autofill_uitest_util.h",
     "mock_autofill_agent.cc",
     "mock_autofill_agent.h",
-    "mock_autofill_popup_controller.cc",
-    "mock_autofill_popup_controller.h",
   ]
 
   deps = [

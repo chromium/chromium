@@ -5,7 +5,7 @@
 #import "chrome/browser/ui/cocoa/touchbar/web_textfield_touch_bar_controller.h"
 
 #include "base/debug/stack_trace.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_mac.h"

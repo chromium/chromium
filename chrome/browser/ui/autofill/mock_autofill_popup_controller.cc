@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "ui/gfx/font_list.h"
 
 namespace autofill {

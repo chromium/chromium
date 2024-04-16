@@ -14,8 +14,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace content {
@@ -25,15 +25,15 @@ class WebContents;
 
 namespace autofill {
 
-// This adapter allows the AutofillPopupController to treat the keyboard
+// This adapter allows the AutofillSuggestionController to treat the keyboard
 // accessory like any other implementation of AutofillPopupView.
 // From the controller's perspective, this behaves like a real AutofillPopupView
-// and for the view, it behaves like the real AutofillPopupController.
+// and for the view, it behaves like the real AutofillSuggestionController.
 class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
-                                         public AutofillPopupController {
+                                         public AutofillSuggestionController {
  public:
   explicit AutofillKeyboardAccessoryAdapter(
-      base::WeakPtr<AutofillPopupController> controller);
+      base::WeakPtr<AutofillSuggestionController> controller);
 
   AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
       delete;
@@ -91,9 +91,9 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void AxAnnounce(const std::u16string& text) override;
   std::optional<int32_t> GetAxUniqueId() override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillPopupController> controller) override;
+      base::WeakPtr<AutofillSuggestionController> controller) override;
 
-  // AutofillPopupController:
+  // AutofillSuggestionController:
   // Hidden: void OnSuggestionsChanged() override;
   void AcceptSuggestion(int index) override;
   void PerformButtonActionForSuggestion(int index) override;
@@ -113,7 +113,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void UnselectSuggestion() override;
   FillingProduct GetMainFillingProduct() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  base::WeakPtr<AutofillPopupController> OpenSubPopup(
+  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions,
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
@@ -143,7 +143,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   // `element_index` is the position of an element as returned by `controller_`.
   int OffsetIndexFor(int element_index) const;
 
-  base::WeakPtr<AutofillPopupController> controller_;
+  base::WeakPtr<AutofillSuggestionController> controller_;
   std::unique_ptr<AutofillKeyboardAccessoryAdapter::AccessoryView> view_;
 
   // The labels to be used for the input chips.

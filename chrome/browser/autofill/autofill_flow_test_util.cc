@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/translate/translate_test_utils.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
@@ -314,10 +314,10 @@ struct AutofillSuggestionParams {
   // All attempts to accept Autofill suggestions using keyboard "ENTER"
   // keystrokes will be ignored for the first 500ms after the popup is first
   // shown. This overrides this threshold.
-  if (base::WeakPtr<AutofillPopupController> controller =
+  if (base::WeakPtr<AutofillSuggestionController> controller =
           ChromeAutofillClient::FromWebContentsForTesting(
               test->GetWebContents())
-              ->popup_controller_for_testing()) {
+              ->suggestion_controller_for_testing()) {
     controller->DisableThresholdForTesting(true);
   }
 

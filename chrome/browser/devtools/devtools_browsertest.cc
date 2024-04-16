@@ -61,7 +61,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -2218,10 +2218,10 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   void DidShowSuggestions() override {
     // Set an override for the minimum 500 ms threshold before enter key strokes
     // are accepted.
-    if (base::WeakPtr<autofill::AutofillPopupController> controller =
+    if (base::WeakPtr<autofill::AutofillSuggestionController> controller =
             autofill::ChromeAutofillClient::FromWebContentsForTesting(
                 inspected_contents_.get())
-                ->popup_controller_for_testing()) {
+                ->suggestion_controller_for_testing()) {
       controller->DisableThresholdForTesting(true);
     }
     ASSERT_TRUE(content::ExecJs(inspected_contents_,

@@ -35,8 +35,9 @@ namespace autofill {
 using FillingSource = ManualFillingController::FillingSource;
 
 // static
-base::WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
-    base::WeakPtr<AutofillPopupController> previous,
+base::WeakPtr<AutofillSuggestionController>
+AutofillSuggestionController::GetOrCreate(
+    base::WeakPtr<AutofillSuggestionController> previous,
     base::WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
@@ -437,7 +438,7 @@ bool AutofillKeyboardAccessoryControllerImpl::
   return false;
 }
 
-base::WeakPtr<AutofillPopupController>
+base::WeakPtr<AutofillSuggestionController>
 AutofillKeyboardAccessoryControllerImpl::OpenSubPopup(
     const gfx::RectF& anchor_bounds,
     std::vector<Suggestion> suggestions,

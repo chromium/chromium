@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"

@@ -17,7 +17,7 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -259,14 +259,15 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
     // information, and waiting for the UI to render.
-    base::WeakPtr<autofill::AutofillPopupController> popup_controller;
-    while (!popup_controller) {
+    base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
+    while (!suggestion_controller) {
       content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-      popup_controller = autofill_client->popup_controller_for_testing();
+      suggestion_controller =
+          autofill_client->suggestion_controller_for_testing();
     }
 
     // Find the webauthn credential on the suggestions list.
-    auto suggestions = popup_controller->GetSuggestions();
+    auto suggestions = suggestion_controller->GetSuggestions();
     size_t suggestion_index = 0;
     size_t webauthn_entry_count = 0;
     autofill::Suggestion webauthn_entry;
@@ -286,8 +287,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
     // Click the credential.
-    popup_controller->DisableThresholdForTesting(true);
-    popup_controller->AcceptSuggestion(suggestion_index);
+    suggestion_controller->DisableThresholdForTesting(true);
+    suggestion_controller->AcceptSuggestion(suggestion_index);
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -308,14 +309,15 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Interact with the username field until the popup shows up. This has the
     // effect of waiting for the browser to send the renderer the password
     // information, and waiting for the UI to render.
-    base::WeakPtr<autofill::AutofillPopupController> popup_controller;
-    while (!popup_controller) {
+    base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
+    while (!suggestion_controller) {
       content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-      popup_controller = autofill_client->popup_controller_for_testing();
+      suggestion_controller =
+          autofill_client->suggestion_controller_for_testing();
     }
 
     // Find the webauthn credential on the suggestions list.
-    auto suggestions = popup_controller->GetSuggestions();
+    auto suggestions = suggestion_controller->GetSuggestions();
     size_t suggestion_index;
     autofill::Suggestion webauthn_entry;
     for (suggestion_index = 0; suggestion_index < suggestions.size();
@@ -340,17 +342,18 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     EXPECT_EQ(result, "\"error AbortError: signal is aborted without reason\"");
 
     // The popup may have gone away while waiting. If not, make sure it's gone.
-    if (popup_controller) {
-      popup_controller->Hide(autofill::PopupHidingReason::kUserAborted);
+    if (suggestion_controller) {
+      suggestion_controller->Hide(autofill::PopupHidingReason::kUserAborted);
     }
 
     // Interact with the username field. Since there is still a saved password,
     // the popup should eventually show up.
-    while (!popup_controller) {
+    while (!suggestion_controller) {
       content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-      popup_controller = autofill_client->popup_controller_for_testing();
+      suggestion_controller =
+          autofill_client->suggestion_controller_for_testing();
     }
-    for (const auto& suggestion : popup_controller->GetSuggestions()) {
+    for (const auto& suggestion : suggestion_controller->GetSuggestions()) {
       EXPECT_NE(suggestion.popup_item_id,
                 autofill::PopupItemId::kWebauthnCredential);
       EXPECT_NE(suggestion.popup_item_id,
@@ -461,14 +464,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   // Interact with the username field until the popup shows up. This has the
   // effect of waiting for the browser to send the renderer the password
   // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillPopupController> popup_controller;
-  while (!popup_controller) {
+  base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
+  while (!suggestion_controller) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    popup_controller = autofill_client->popup_controller_for_testing();
+    suggestion_controller =
+        autofill_client->suggestion_controller_for_testing();
   }
 
   // Find the webauthn credential on the suggestions list.
-  auto suggestions = popup_controller->GetSuggestions();
+  auto suggestions = suggestion_controller->GetSuggestions();
   size_t suggestion_index = 0;
   size_t webauthn_entry_count = 0;
   autofill::Suggestion webauthn_entry;
@@ -489,8 +493,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
-  popup_controller->DisableThresholdForTesting(true);
-  popup_controller->AcceptSuggestion(suggestion_index);
+  suggestion_controller->DisableThresholdForTesting(true);
+  suggestion_controller->AcceptSuggestion(suggestion_index);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -525,14 +529,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   // Interact with the username field until the popup shows up. This has the
   // effect of waiting for the browser to send the renderer the password
   // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillPopupController> popup_controller;
-  while (!popup_controller) {
+  base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
+  while (!suggestion_controller) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    popup_controller = autofill_client->popup_controller_for_testing();
+    suggestion_controller =
+        autofill_client->suggestion_controller_for_testing();
   }
 
   // There should be no webauthn suggestions.
-  auto suggestions = popup_controller->GetSuggestions();
+  auto suggestions = suggestion_controller->GetSuggestions();
   for (const auto& suggestion : suggestions) {
     ASSERT_NE(suggestion.popup_item_id,
               autofill::PopupItemId::kWebauthnCredential);
@@ -555,8 +560,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   size_t suggestion_index;
   while (!webauthn_entry) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    popup_controller = autofill_client->popup_controller_for_testing();
-    suggestions = popup_controller->GetSuggestions();
+    suggestion_controller =
+        autofill_client->suggestion_controller_for_testing();
+    suggestions = suggestion_controller->GetSuggestions();
     for (size_t i = 0; i < suggestions.size(); ++i) {
       if (suggestions[i].popup_item_id ==
           autofill::PopupItemId::kWebauthnCredential) {
@@ -572,8 +578,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   EXPECT_EQ(webauthn_entry->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
-  popup_controller->DisableThresholdForTesting(true);
-  popup_controller->AcceptSuggestion(suggestion_index);
+  suggestion_controller->DisableThresholdForTesting(true);
+  suggestion_controller->AcceptSuggestion(suggestion_index);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

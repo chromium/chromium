@@ -15,7 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -47,7 +47,7 @@ std::u16string CreateLabel(const Suggestion& suggestion) {
 }  // namespace
 
 AutofillKeyboardAccessoryAdapter::AutofillKeyboardAccessoryAdapter(
-    base::WeakPtr<AutofillPopupController> controller)
+    base::WeakPtr<AutofillSuggestionController> controller)
     : controller_(controller) {}
 
 AutofillKeyboardAccessoryAdapter::~AutofillKeyboardAccessoryAdapter() = default;
@@ -124,12 +124,12 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 
 base::WeakPtr<AutofillPopupView>
 AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
-    base::WeakPtr<AutofillPopupController> controller) {
+    base::WeakPtr<AutofillSuggestionController> controller) {
   NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
   return nullptr;
 }
 
-// AutofillPopupController implementation.
+// AutofillSuggestionController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
   if (controller_) {
@@ -184,7 +184,7 @@ bool AutofillKeyboardAccessoryAdapter::
   return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
 }
 
-base::WeakPtr<AutofillPopupController>
+base::WeakPtr<AutofillSuggestionController>
 AutofillKeyboardAccessoryAdapter::OpenSubPopup(
     const gfx::RectF& anchor_bounds,
     std::vector<Suggestion> suggestions,

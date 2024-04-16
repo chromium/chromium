@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 
-#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
 namespace autofill {
 
-class AutofillKeyboardAccessoryController : public AutofillPopupController {
+class AutofillKeyboardAccessoryController
+    : public AutofillSuggestionController {
  public:
 };
 

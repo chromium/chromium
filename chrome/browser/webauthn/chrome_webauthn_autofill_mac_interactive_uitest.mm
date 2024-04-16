@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -114,13 +114,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   // Interact with the username field until the popup shows up. This has the
   // effect of waiting for the browser to send the renderer the password
   // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillPopupController> popup_controller;
-  while (!popup_controller) {
+  base::WeakPtr<autofill::AutofillSuggestionController> controller;
+  while (!controller) {
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    popup_controller = autofill_client->popup_controller_for_testing();
+    controller = autofill_client->suggestion_controller_for_testing();
   }
 
-  auto suggestions = popup_controller->GetSuggestions();
+  auto suggestions = controller->GetSuggestions();
   size_t suggestion_index;
   autofill::Suggestion webauthn_entry;
   for (suggestion_index = 0; suggestion_index < suggestions.size();
@@ -139,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
-  popup_controller->DisableThresholdForTesting(true);
-  popup_controller->AcceptSuggestion(suggestion_index);
+  controller->DisableThresholdForTesting(true);
+  controller->AcceptSuggestion(suggestion_index);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

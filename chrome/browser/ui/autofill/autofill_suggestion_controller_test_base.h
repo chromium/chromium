@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_TEST_BASE_H_
-#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SUGGESTION_CONTROLLER_TEST_BASE_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SUGGESTION_CONTROLLER_TEST_BASE_H_
 
 #include <concepts>
 #include <memory>
@@ -43,7 +43,7 @@
 
 namespace autofill {
 
-class AutofillPopupControllerForPopupTest;
+class AutofillSuggestionControllerForTest;
 
 namespace internal {
 
@@ -56,7 +56,7 @@ concept DerivedFromClassOrMock =
 
 template <typename Controller, typename Driver>
 concept ControllerAndDriver =
-    DerivedFromClassOrMock<Controller, AutofillPopupControllerForPopupTest> &&
+    DerivedFromClassOrMock<Controller, AutofillSuggestionControllerForTest> &&
     DerivedFromClassOrMock<Driver, ContentAutofillDriver>;
 
 }  // namespace internal
@@ -65,22 +65,22 @@ concept ControllerAndDriver =
 // controller, which controls the Autofill popup on Desktop and the Keyboard
 // Accessory on Clank. It has two template parameters that allow customizing the
 // test fixture's behavior:
-// - The class of the `AutofillPopupController` to test. The use of this
+// - The class of the `AutofillSuggestionController` to test. The use of this
 //   parameter is to be able to test different implementations of the
-//   `AutofillPopupController` interface.
+//   `AutofillSuggestionController` interface.
 // - The class of the `AutofillDriver` to inject, used, e.g., in a11y-specific
 //   tests.
 //
 // The main reason for the complexity of the test fixture is that there is
-// little value in testing an `AutofillPopupController` just by itself: Most of
-// its behavior depends on interactions with the `WebContents`, the
+// little value in testing an `AutofillSuggestionController` just by itself:
+// Most of its behavior depends on interactions with the `WebContents`, the
 // `AutofillClient`, or the `AutofillPopupView`. This test fixture sets these up
 // in a way that allows for controller testing.
 //
 // Once setup, the test fixture should allow writing popup controller unit tests
 // that closely mirror the production setup. Example:
 //
-// using SampleTest = AutofillPopupControllerTestBase<>;
+// using SampleTest = AutofillSuggestionControllerTestBase<>;
 //
 // TEST_F(SampleTest, AcceptSuggestionWorksAfter500Ms) {
 //   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
@@ -89,15 +89,16 @@ concept ControllerAndDriver =
 //   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 // }
 template <typename Controller =
-              ::testing::NiceMock<AutofillPopupControllerForPopupTest>,
+              ::testing::NiceMock<AutofillSuggestionControllerForTest>,
           typename Driver = ContentAutofillDriver>
   requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillPopupControllerTestBase : public ChromeRenderViewHostTestHarness {
+class AutofillSuggestionControllerTestBase :
+public ChromeRenderViewHostTestHarness {
  public:
-  AutofillPopupControllerTestBase()
+  AutofillSuggestionControllerTestBase()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~AutofillPopupControllerTestBase() override = default;
+  ~AutofillSuggestionControllerTestBase() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -201,7 +202,7 @@ class AutofillPopupControllerTestBase : public ChromeRenderViewHostTestHarness {
 };
 
 // Below are test versions of `AutofillClient`, `BrowserAutofillManager`,
-// `AutofillExternalDelegate` and `AutofillPopupController` that are used in the
+// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used in the
 // fixture above.
 
 class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
@@ -231,7 +232,7 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
 // allows verifying interactions with the popup.
 template <typename Controller, typename Driver>
   requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillPopupControllerTestBase<Controller, Driver>::TestManager
+class AutofillSuggestionControllerTestBase<Controller, Driver>::TestManager
     : public BrowserAutofillManager {
  public:
   explicit TestManager(AutofillDriver* driver)
@@ -254,7 +255,7 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestManager
 // of the controller lifetime.
 template <typename Controller, typename Driver>
   requires(internal::ControllerAndDriver<Controller, Driver>)
-class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
+class AutofillSuggestionControllerTestBase<Controller, Driver>::TestClient
     : public TestContentAutofillClient {
  public:
   explicit TestClient(content::WebContents* web_contents)
@@ -320,7 +321,7 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
     return static_cast<Controller&>(*popup_controller_);
   }
 
-  base::WeakPtr<AutofillPopupController> popup_controller_;
+  base::WeakPtr<AutofillSuggestionController> popup_controller_;
   base::WeakPtr<AutofillManager> manager_of_last_controller_;
 
   std::unique_ptr<MockAutofillPopupView> popup_view_ =
@@ -333,17 +334,17 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
 #endif
 };
 
-using AutofillPopupControllerForPopupTestBase =
+using AutofillSuggestionControllerForTestBase =
 #if BUILDFLAG(IS_ANDROID)
     AutofillKeyboardAccessoryControllerImpl;
 #else
     AutofillPopupControllerImpl;
 #endif
 
-class AutofillPopupControllerForPopupTest
-    : public AutofillPopupControllerForPopupTestBase {
+class AutofillSuggestionControllerForTest
+    : public AutofillSuggestionControllerForTestBase {
  public:
-  AutofillPopupControllerForPopupTest(
+  AutofillSuggestionControllerForTest(
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
       const gfx::RectF& element_bounds
@@ -352,26 +353,26 @@ class AutofillPopupControllerForPopupTest
       ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
 #endif
   );
-  ~AutofillPopupControllerForPopupTest() override;
+  ~AutofillSuggestionControllerForTest() override;
 
   // Making protected functions public for testing
-  using AutofillPopupControllerForPopupTestBase::AcceptSuggestion;
-  using AutofillPopupControllerForPopupTestBase::element_bounds;
-  using AutofillPopupControllerForPopupTestBase::GetLineCount;
-  using AutofillPopupControllerForPopupTestBase::GetSuggestionAt;
-  using AutofillPopupControllerForPopupTestBase::GetSuggestionLabelsAt;
-  using AutofillPopupControllerForPopupTestBase::GetSuggestionMainTextAt;
-  using AutofillPopupControllerForPopupTestBase::
+  using AutofillSuggestionControllerForTestBase::AcceptSuggestion;
+  using AutofillSuggestionControllerForTestBase::element_bounds;
+  using AutofillSuggestionControllerForTestBase::GetLineCount;
+  using AutofillSuggestionControllerForTestBase::GetSuggestionAt;
+  using AutofillSuggestionControllerForTestBase::GetSuggestionLabelsAt;
+  using AutofillSuggestionControllerForTestBase::GetSuggestionMainTextAt;
+  using AutofillSuggestionControllerForTestBase::
       PerformButtonActionForSuggestion;
-  using AutofillPopupControllerForPopupTestBase::RemoveSuggestion;
-  using AutofillPopupControllerForPopupTestBase::SelectSuggestion;
+  using AutofillSuggestionControllerForTestBase::RemoveSuggestion;
+  using AutofillSuggestionControllerForTestBase::SelectSuggestion;
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
 
   void DoHide(PopupHidingReason reason = PopupHidingReason::kTabGone) {
-    AutofillPopupControllerForPopupTestBase::Hide(reason);
+    AutofillSuggestionControllerForTestBase::Hide(reason);
   }
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SUGGESTION_CONTROLLER_TEST_BASE_H_

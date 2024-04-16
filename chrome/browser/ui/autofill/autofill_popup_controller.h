@@ -1,158 +1,18 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 
-#include <optional>
-#include <string>
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/aliases.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
 namespace autofill {
 
-class AutofillPopupView;
-struct PopupControllerCommon;
-
-// This interface provides data to an AutofillPopupView.
-class AutofillPopupController : public AutofillPopupViewDelegate {
+class AutofillPopupController : public AutofillSuggestionController {
  public:
-  // Acts as a factory method to create a new `AutofillPopupController`, or
-  // reuse `previous` if the construction arguments are the same. `previous` may
-  // be invalidated by this call. The controller will listen for keyboard input
-  // routed to `web_contents` while the popup is showing, unless `web_contents`
-  // is null.
-  static base::WeakPtr<AutofillPopupController> GetOrCreate(
-      base::WeakPtr<AutofillPopupController> previous,
-      base::WeakPtr<AutofillPopupDelegate> delegate,
-      content::WebContents* web_contents,
-      PopupControllerCommon controller_common,
-      int32_t form_control_ax_id);
-
-  // Recalculates the height and width of the popup and triggers a redraw when
-  // suggestions change.
-  virtual void OnSuggestionsChanged() = 0;
-
-  // Selects the suggestion with `index`. For fillable items, this will trigger
-  // preview. For other items, it does not do anything.
-  virtual void SelectSuggestion(int index) = 0;
-
-  // Unselect currently selected suggestion, noop if nothing is selected.
-  virtual void UnselectSuggestion() = 0;
-
-  // Accepts the suggestion at `index`. The suggestion will only be accepted if
-  // the popup has been shown for at least `kIgnoreEarlyClicksOnPopupDuration`
-  // to allow ruling out accidental popup interactions (crbug.com/1279268).
-  static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
-      base::Milliseconds(500);
-  virtual void AcceptSuggestion(int index) = 0;
-
-  // Executes the action associated with the button that is displayed in the
-  // suggestion at `index`. Button actions depend on the type of the suggestion.
-  virtual void PerformButtonActionForSuggestion(int index) = 0;
-
-  // Removes the suggestion at the given `index`. `removal_method`specifies the
-  // UI entry point for removal, e.g. clicking on a delete button.
-  virtual bool RemoveSuggestion(
-      int index,
-      AutofillMetrics::SingleEntryRemovalMethod removal_method) = 0;
-
-  // Returns the number of lines of data that there are.
-  virtual int GetLineCount() const = 0;
-
-  // Returns the full set of autofill suggestions, if applicable.
-  virtual std::vector<Suggestion> GetSuggestions() const = 0;
-
-  // Returns the suggestion at the given `row` index. The `Suggestion` is the
-  // data model including information that is to be shown in the UI.
-  virtual const Suggestion& GetSuggestionAt(int row) const = 0;
-
-  // Returns the suggestion main text string at the given `row` index. The main
-  // text is shown in primary or secondary text style, serving as the title of
-  // the suggestion.
-  virtual std::u16string GetSuggestionMainTextAt(int row) const = 0;
-
-  // Returns the suggestion minor text string at the given `row` index. The
-  // minor text is shown in secondary text style, serving as the sub-title of
-  // the suggestion item.
-  virtual std::u16string GetSuggestionMinorTextAt(int row) const = 0;
-
-  // Returns all the labels of the suggestion at the given `row` index. The
-  // labels are presented as a N*M matrix, and the position of the text in the
-  // matrix decides where the text will be shown on the UI. (e.g. The text
-  // labels[1][2] will be shown on the second line, third column in the grid
-  // view of label).
-  virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
-      int row) const = 0;
-
-  // Returns whether the item at `list_index` can be removed. If so, fills
-  // out `title` and `body` (when non-null) with relevant user-facing text.
-  virtual bool GetRemovalConfirmationText(int index,
-                                          std::u16string* title,
-                                          std::u16string* body) = 0;
-
-  // Returns the main filling product corresponding to the controller.
-  virtual FillingProduct GetMainFillingProduct() const = 0;
-
-  // Returns whether the popup should ignore the check that the mouse was
-  // observed out of bounds - see PopupCellView for more detail.
-  virtual bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const = 0;
-
-  // Creates and shows a sub-popup adjacent to `anchor_bounds`. The sub-popup
-  // represents another level of `suggestions` which must be semantically
-  // connected to a parent level suggestion, e.g. an address suggestion
-  // break down providing more granular fillings.
-  // The popup created via this method and this popup instance are linked
-  // as child-parent. The child's lifetime depends on its parent, i.e. when
-  // the parent dies the child dies also.
-  virtual base::WeakPtr<AutofillPopupController> OpenSubPopup(
-      const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions,
-      AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
-
-  // Hides open by `OpenSubPopup()` popup, noop if there is no open sub-popup.
-  virtual void HideSubPopup() = 0;
-
-  virtual std::optional<AutofillClient::PopupScreenLocation>
-  GetPopupScreenLocation() const = 0;
-
-  // Shows the popup, or updates the existing popup with the given values.
-  virtual void Show(std::vector<Suggestion> suggestions,
-                    AutofillSuggestionTriggerSource trigger_source,
-                    AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
-
-  // Determines whether to suppress minimum show thresholds. It should only be
-  // set during tests that cannot mock time (e.g. the autofill interactive
-  // browsertests).
-  virtual void DisableThresholdForTesting(bool disable_threshold) = 0;
-
-  virtual void KeepPopupOpenForTesting() = 0;
-
-  virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;
-
-  // Updates the data list values currently shown with the popup.
-  virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
-
-  // Informs the controller that the popup may not be hidden by stale data or
-  // interactions with native Chrome UI. This state remains active until the
-  // view is destroyed.
-  virtual void PinView() = 0;
-
- protected:
-  ~AutofillPopupController() override = default;
+  virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill

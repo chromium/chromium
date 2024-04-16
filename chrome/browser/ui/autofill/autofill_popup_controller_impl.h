@@ -76,7 +76,7 @@ class AutofillPopupControllerImpl
   // process it).
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
-  // AutofillPopupController:
+  // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
@@ -97,7 +97,7 @@ class AutofillPopupControllerImpl
                                   std::u16string* body) override;
   FillingProduct GetMainFillingProduct() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  base::WeakPtr<AutofillPopupController> OpenSubPopup(
+  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions,
       AutoselectFirstSuggestion autoselect_first_suggestion) override;
@@ -113,10 +113,10 @@ class AutofillPopupControllerImpl
   void KeepPopupOpenForTesting() override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
-
-  base::WeakPtr<AutofillPopupControllerImpl> GetWeakPtr();
-
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
+
+  // AutofillPopupController:
+  base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
 
  protected:
   AutofillPopupControllerImpl(
@@ -153,7 +153,7 @@ class AutofillPopupControllerImpl
   virtual void HideViewAndDie();
 
  private:
-  friend class AutofillPopupController;
+  friend class AutofillSuggestionController;
 
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.

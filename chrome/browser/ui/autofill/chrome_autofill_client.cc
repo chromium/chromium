@@ -45,7 +45,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
@@ -210,7 +210,7 @@ ChromeAutofillClient::~ChromeAutofillClient() {
   // requires that the WebContents instance still be valid and it is not at
   // this point (in particular, the WebContentsImpl destructor has already
   // finished running and we are now in the base class destructor).
-  DCHECK(!popup_controller_);
+  DCHECK(!suggestion_controller_);
 }
 
 version_info::Channel ChromeAutofillClient::GetChannel() const {
@@ -938,24 +938,26 @@ void ChromeAutofillClient::ShowAutofillPopup(
 
 void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
     base::span<const SelectOption> options) {
-  if (popup_controller_.get())
-    popup_controller_->UpdateDataListValues(options);
+  if (suggestion_controller_.get()) {
+    suggestion_controller_->UpdateDataListValues(options);
+  }
 }
 
 std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
-  return popup_controller_ ? popup_controller_->GetSuggestions()
-                           : std::vector<Suggestion>();
+  return suggestion_controller_ ? suggestion_controller_->GetSuggestions()
+                                : std::vector<Suggestion>();
 }
 
 void ChromeAutofillClient::PinPopupView() {
-  if (popup_controller_.get())
-    popup_controller_->PinView();
+  if (suggestion_controller_.get()) {
+    suggestion_controller_->PinView();
+  }
 }
 
 std::optional<AutofillClient::PopupScreenLocation>
 ChromeAutofillClient::GetPopupScreenLocation() const {
-  return popup_controller_
-             ? popup_controller_->GetPopupScreenLocation()
+  return suggestion_controller_
+             ? suggestion_controller_->GetPopupScreenLocation()
              : std::make_optional<AutofillClient::PopupScreenLocation>();
 }
 
@@ -963,29 +965,28 @@ void ChromeAutofillClient::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!popup_controller_.get())
+  if (!suggestion_controller_.get()) {
     return;  // Update only if there is a popup.
+  }
 
-  // When a form changes dynamically, |popup_controller_| may hold a delegate of
-  // the wrong type, so updating the popup would call into the wrong delegate.
-  // Hence, just close the existing popup (crbug/1113241). The cast is needed to
-  // access AutofillPopupController::GetMainFillingProduct().
+  // When a form changes dynamically, |suggestion_controller_| may hold a
+  // delegate of the wrong type, so updating the popup would call into the wrong
+  // delegate. Hence, just close the existing popup (crbug/1113241).
   if (main_filling_product !=
-      static_cast<const AutofillPopupController*>(popup_controller_.get())
-          ->GetMainFillingProduct()) {
-    popup_controller_->Hide(PopupHidingReason::kStaleData);
+      suggestion_controller_.get()->GetMainFillingProduct()) {
+    suggestion_controller_->Hide(PopupHidingReason::kStaleData);
     return;
   }
 
   // Calling show will reuse the existing view automatically.
-  popup_controller_->Show(
+  suggestion_controller_->Show(
       suggestions, trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
-  if (popup_controller_.get()) {
-    popup_controller_->Hide(reason);
+  if (suggestion_controller_.get()) {
+    suggestion_controller_->Hide(reason);
   }
 }
 
@@ -1254,15 +1255,15 @@ void ChromeAutofillClient::ShowAutofillPopupImpl(
   const gfx::RectF element_bounds_in_screen_space =
       open_args.element_bounds + client_area.OffsetFromOrigin();
 
-  // Deletes or reuses the old `popup_controller_`.
-  popup_controller_ = AutofillPopupControllerImpl::GetOrCreate(
-      popup_controller_, delegate, web_contents(),
+  // Deletes or reuses the old `suggestion_controller_`.
+  suggestion_controller_ = AutofillSuggestionController::GetOrCreate(
+      suggestion_controller_, delegate, web_contents(),
       PopupControllerCommon(element_bounds_in_screen_space,
                             open_args.text_direction,
                             web_contents()->GetNativeView()),
       open_args.form_control_ax_id);
 
-  popup_controller_->Show(
+  suggestion_controller_->Show(
       open_args.suggestions, open_args.trigger_source,
       ShouldAutofillPopupAutoselectFirstSuggestion(open_args.trigger_source));
 
@@ -1270,8 +1271,8 @@ void ChromeAutofillClient::ShowAutofillPopupImpl(
   // - An external browser frame resize that is extraneous to our testing goals.
   // - Too many fields get focus one after another (for example, multiple
   // password fields being autofilled by default on Desktop).
-  if (keep_popup_open_for_testing_ && popup_controller_.get()) {
-    popup_controller_->KeepPopupOpenForTesting();
+  if (keep_popup_open_for_testing_ && suggestion_controller_.get()) {
+    suggestion_controller_->KeepPopupOpenForTesting();
   }
 }
 

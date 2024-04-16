@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
-#define CHROME_BROWSER_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -52,7 +52,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               (),
               (const override));
 
-  // AutofillPopupController:
+  // AutofillSuggestionController:
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(void, AcceptSuggestion, (int), (override));
   MOCK_METHOD(void, PerformButtonActionForSuggestion, (int), (override));
@@ -83,7 +83,7 @@ class MockAutofillPopupController : public AutofillPopupController {
     return suggestions_[row].labels;
   }
 
-  base::WeakPtr<MockAutofillPopupController> GetWeakPtr() {
+  base::WeakPtr<AutofillPopupController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -98,7 +98,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void, SelectSuggestion, (int), (override));
   MOCK_METHOD(void, UnselectSuggestion, (), (override));
   MOCK_METHOD(FillingProduct, GetMainFillingProduct, (), (const override));
-  MOCK_METHOD(base::WeakPtr<AutofillPopupController>,
+  MOCK_METHOD(base::WeakPtr<AutofillSuggestionController>,
               OpenSubPopup,
               (const gfx::RectF& anchor_bounds,
                std::vector<Suggestion> suggestions,
@@ -151,4 +151,4 @@ class MockAutofillPopupController : public AutofillPopupController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_

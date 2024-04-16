@@ -58,8 +58,9 @@ namespace autofill {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 // static
-base::WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
-    base::WeakPtr<AutofillPopupController> previous,
+base::WeakPtr<AutofillSuggestionController>
+AutofillSuggestionController::GetOrCreate(
+    base::WeakPtr<AutofillSuggestionController> previous,
     base::WeakPtr<AutofillPopupDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
@@ -152,7 +153,7 @@ void AutofillPopupControllerImpl::Show(
             return controller && controller->view_ &&
                    controller->view_->OverlapsWithPictureInPictureWindow();
           },
-          GetWeakPtr());
+          weak_ptr_factory_.GetWeakPtr());
   popup_hide_helper_.emplace(
       web_contents_.get(), rfh->GetGlobalId(), std::move(hiding_params),
       std::move(hiding_callback), std::move(pip_detection_callback));
@@ -207,7 +208,7 @@ void AutofillPopupControllerImpl::Show(
       fading_popup_timer_.Start(
           FROM_HERE,
           base::Milliseconds(config.saved_state_timeout_milliseconds),
-          base::BindOnce(&AutofillPopupControllerImpl::Hide, GetWeakPtr(),
+          base::BindOnce(&AutofillSuggestionController::Hide, GetWeakPtr(),
                          PopupHidingReason::kFadeTimerExpired));
     }
 
@@ -384,7 +385,7 @@ std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
   return suggestions_;
 }
 
-base::WeakPtr<AutofillPopupController>
+base::WeakPtr<AutofillSuggestionController>
 AutofillPopupControllerImpl::OpenSubPopup(
     const gfx::RectF& anchor_bounds,
     std::vector<Suggestion> suggestions,
@@ -394,11 +395,11 @@ AutofillPopupControllerImpl::OpenSubPopup(
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate_, web_contents_.get(), std::move(new_controller_common),
       /*form_control_ax_id=*/form_control_ax_id_,
-      /*parent=*/GetWeakPtr());
+      /*parent=*/weak_ptr_factory_.GetWeakPtr());
 
   // Show() can fail and cause controller deletion. Therefore store the weak
   // pointer before, so that this method returns null when that happens.
-  sub_popup_controller_ = controller->GetWeakPtr();
+  sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
   controller->Show(std::move(suggestions), trigger_source_,
                    autoselect_first_suggestion);
   return sub_popup_controller_;
@@ -620,7 +621,7 @@ void AutofillPopupControllerImpl::SetSuggestions(
   suggestions_ = std::move(suggestions);
 }
 
-base::WeakPtr<AutofillPopupControllerImpl>
+base::WeakPtr<AutofillPopupController>
 AutofillPopupControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -754,7 +755,7 @@ void AutofillPopupControllerImpl::KeyPressObserver::Observe(
          const content::NativeWebKeyboardEvent& event) {
         return weak_this && weak_this->HandleKeyPressEvent(event);
       },
-      observer_->GetWeakPtr());
+      observer_->weak_ptr_factory_.GetWeakPtr());
   rfh->GetRenderWidgetHost()->AddKeyPressEventCallback(handler_);
 }
 

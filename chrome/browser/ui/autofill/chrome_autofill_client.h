@@ -48,7 +48,7 @@
 namespace autofill {
 
 class AutofillOptimizationGuide;
-class AutofillPopupController;
+class AutofillSuggestionController;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
@@ -254,8 +254,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void NotifyAutofillManualFallbackUsed() override;
 
   // TODO(b/320634151): Create a test API.
-  base::WeakPtr<AutofillPopupController> popup_controller_for_testing() {
-    return popup_controller_;
+  base::WeakPtr<AutofillSuggestionController>
+  suggestion_controller_for_testing() {
+    return suggestion_controller_;
   }
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
@@ -311,7 +312,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       payments_mandatory_reauth_manager_;
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
 
-  base::WeakPtr<AutofillPopupController> popup_controller_;
+  base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   FormInteractionsFlowId flow_id_;
   base::Time flow_id_date_;
   // If set to true, the popup will stay open regardless of external changes on

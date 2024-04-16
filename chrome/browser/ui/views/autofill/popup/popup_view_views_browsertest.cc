@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/test/base/in_process_browser_test.h"
