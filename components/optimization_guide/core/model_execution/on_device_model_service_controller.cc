@@ -56,25 +56,6 @@ class ScopedEligibilityReasonLogger {
       OnDeviceModelEligibilityReason::kUnknown;
 };
 
-class ScopedTextSafetyModelMetadataValidityLogger {
- public:
-  ScopedTextSafetyModelMetadataValidityLogger() = default;
-  ~ScopedTextSafetyModelMetadataValidityLogger() {
-    CHECK_NE(TextSafetyModelMetadataValidity::kUnknown, validity_);
-    base::UmaHistogramEnumeration(
-        "OptimizationGuide.ModelExecution."
-        "OnDeviceTextSafetyModelMetadataValidity",
-        validity_);
-  }
-
-  void set_validity(TextSafetyModelMetadataValidity validity) {
-    validity_ = validity;
-  }
-
-  TextSafetyModelMetadataValidity validity_ =
-      TextSafetyModelMetadataValidity::kUnknown;
-};
-
 OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
     on_device_model::mojom::LoadModelResult result) {
   switch (result) {
@@ -85,11 +66,6 @@ OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
     case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
       return OnDeviceModelLoadResult::kFailedToLoadLibrary;
   }
-}
-
-bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
-  return model_info.GetAdditionalFileWithBaseName(kTsDataFile) &&
-         model_info.GetAdditionalFileWithBaseName(kTsSpModelFile);
 }
 
 }  // namespace
@@ -332,44 +308,6 @@ void OnDeviceModelServiceController::StateChanged(
   }
 }
 
-std::unique_ptr<OnDeviceModelServiceController::SafetyModelInfo>
-OnDeviceModelServiceController::SafetyModelInfo::Load(
-    base::optional_ref<const ModelInfo> opt_model_info) {
-  if (!opt_model_info.has_value() || !HasRequiredSafetyFiles(*opt_model_info)) {
-    return nullptr;
-  }
-  const ModelInfo& model_info = *opt_model_info;
-  ScopedTextSafetyModelMetadataValidityLogger logger;
-
-  if (!model_info.GetModelMetadata()) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kNoMetadata);
-    return nullptr;
-  }
-
-  std::optional<proto::TextSafetyModelMetadata> model_metadata =
-      ParsedAnyMetadata<proto::TextSafetyModelMetadata>(
-          *model_info.GetModelMetadata());
-  if (!model_metadata) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kMetadataWrongType);
-    return nullptr;
-  }
-
-  logger.set_validity(TextSafetyModelMetadataValidity::kNoFeatureConfigs);
-
-  base::flat_map<proto::ModelExecutionFeature,
-                 proto::FeatureTextSafetyConfiguration>
-      feature_configs;
-  for (const auto& feature_config :
-       model_metadata->feature_text_safety_configurations()) {
-    logger.set_validity(TextSafetyModelMetadataValidity::kValid);
-    feature_configs[feature_config.feature()] = feature_config;
-  }
-
-  return base::WrapUnique(
-      new SafetyModelInfo(model_info, model_metadata->num_output_categories(),
-                          std::move(feature_configs)));
-}
-
 void OnDeviceModelServiceController::OnLoadModelResult(
     on_device_model::mojom::LoadModelResult result) {
   base::UmaHistogramEnumeration(
@@ -449,41 +387,5 @@ void OnDeviceModelServiceController::OnDeviceModelClient::OnSessionTimedOut() {
     controller_->access_controller_->OnSessionTimedOut();
   }
 }
-
-std::optional<proto::FeatureTextSafetyConfiguration>
-OnDeviceModelServiceController::SafetyModelInfo::GetConfig(
-    proto::ModelExecutionFeature feature) const {
-  auto it = feature_configs_.find(feature);
-  if (it == feature_configs_.end()) {
-    return std::nullopt;
-  }
-
-  return it->second;
-}
-
-base::FilePath OnDeviceModelServiceController::SafetyModelInfo::GetDataPath()
-    const {
-  return *model_info_.GetAdditionalFileWithBaseName(kTsDataFile);
-}
-
-base::FilePath OnDeviceModelServiceController::SafetyModelInfo::GetSpModelPath()
-    const {
-  return *model_info_.GetAdditionalFileWithBaseName(kTsSpModelFile);
-}
-
-int64_t OnDeviceModelServiceController::SafetyModelInfo::GetVersion() const {
-  return model_info_.GetVersion();
-}
-
-OnDeviceModelServiceController::SafetyModelInfo::SafetyModelInfo(
-    const ModelInfo& model_info,
-    uint32_t num_output_categories,
-    base::flat_map<proto::ModelExecutionFeature,
-                   proto::FeatureTextSafetyConfiguration> feature_configs)
-    : model_info_(model_info),
-      num_output_categories_(num_output_categories),
-      feature_configs_(std::move(feature_configs)) {}
-
-OnDeviceModelServiceController::SafetyModelInfo::~SafetyModelInfo() = default;
 
 }  // namespace optimization_guide

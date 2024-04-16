@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/safety_model_info.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -141,33 +142,6 @@ class OnDeviceModelServiceController
   friend class ChromeOnDeviceModelServiceController;
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
-
-  class SafetyModelInfo {
-   public:
-    ~SafetyModelInfo();
-
-    static std::unique_ptr<SafetyModelInfo> Load(
-        base::optional_ref<const ModelInfo> model_info);
-    std::optional<proto::FeatureTextSafetyConfiguration> GetConfig(
-        proto::ModelExecutionFeature feature) const;
-    base::FilePath GetDataPath() const;
-    base::FilePath GetSpModelPath() const;
-    int64_t GetVersion() const;
-    uint32_t num_output_categories() const { return num_output_categories_; }
-
-   private:
-    SafetyModelInfo(
-        const ModelInfo& model_info,
-        uint32_t num_output_categories,
-        base::flat_map<proto::ModelExecutionFeature,
-                       proto::FeatureTextSafetyConfiguration> feature_configs);
-
-    const ModelInfo model_info_;
-    const uint32_t num_output_categories_;
-    base::flat_map<proto::ModelExecutionFeature,
-                   proto::FeatureTextSafetyConfiguration>
-        feature_configs_;
-  };
 
   // Sets the base model directory and initializes the on-device model
   // controller with the parameters, to be ready to load models and execute.
