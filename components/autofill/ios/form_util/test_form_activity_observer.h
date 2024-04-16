@@ -56,6 +56,10 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   // Arguments passed to |FormRemoved|.
   TestFormRemovalInfo* form_removal_info();
 
+  // How many times |DocumentSubmitted|, |FormActivityRegistered| and
+  // |FormRemoved| were called.
+  int number_of_events_received();
+
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const std::string& form_name,
@@ -75,6 +79,7 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   std::unique_ptr<TestSubmitDocumentInfo> submit_document_info_;
   std::unique_ptr<TestFormActivityInfo> form_activity_info_;
   std::unique_ptr<TestFormRemovalInfo> form_removal_info_;
+  int number_of_events_received_ = 0;
 };
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_IOS_FORM_UTIL_TEST_FORM_ACTIVITY_OBSERVER_H_

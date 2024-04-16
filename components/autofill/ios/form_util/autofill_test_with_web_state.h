@@ -12,6 +12,11 @@ class WebClient;
 class WebFrame;
 }  // namespace web
 
+namespace autofill::test {
+// Test delay used for throttling form mutation messages.
+inline constexpr int kTrackFormMutationsDelayInMs = 10;
+}  // namespace autofill::test
+
 // A fixture to set up testing of Autofill methods.
 class AutofillTestWithWebState : public web::WebTestWithWebState {
  protected:

@@ -12,12 +12,9 @@
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
 
+using autofill::test::kTrackFormMutationsDelayInMs;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-
-namespace {
-const int kTrackFormMutationsDelayInMs = 10;
-}
 
 AutofillTestWithWebState::AutofillTestWithWebState(
     std::unique_ptr<web::WebClient> web_client)
