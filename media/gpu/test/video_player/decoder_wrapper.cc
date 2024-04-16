@@ -369,9 +369,7 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
   // should (naively moving this task there doesn't work because it prevents the
   // V4L2VideoDecoder backend from polling the device driver).
 #if BUILDFLAG(USE_V4L2_CODEC)
-  delay = base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)
-              ? base::Milliseconds(5)
-              : base::Milliseconds(1);
+  delay = base::Milliseconds(1);
   static bool log_delay_message = true;
   if (log_delay_message) {
     LOG(INFO) << "Using a delay of " << delay
