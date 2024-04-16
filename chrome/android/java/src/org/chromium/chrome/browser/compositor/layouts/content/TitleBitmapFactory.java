@@ -190,7 +190,8 @@ public class TitleBitmapFactory {
                                 ? SMALLER_MAX_NUM_TITLE_CHAR
                                 : MAX_NUM_TITLE_CHAR;
                 RecordHistogram.recordCount100Histogram(
-                        "Android.TabStrip.TitleBitmapFactory.TitleLength", title.length());
+                        "Android.TabStrip.TitleBitmapFactory.getTitleBitmap.Length",
+                        title.length());
                 c.drawText(
                         title,
                         0,
