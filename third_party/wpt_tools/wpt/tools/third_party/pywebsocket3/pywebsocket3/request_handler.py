@@ -34,12 +34,14 @@ import os
 from six.moves import CGIHTTPServer
 from six.moves import http_client
 
-from mod_pywebsocket import common
-from mod_pywebsocket import dispatch
-from mod_pywebsocket import handshake
-from mod_pywebsocket import http_header_util
-from mod_pywebsocket import memorizingfile
-from mod_pywebsocket import util
+from pywebsocket3 import (
+    common,
+    dispatch,
+    handshake,
+    http_header_util,
+    memorizingfile,
+    util
+)
 
 # 1024 is practically large enough to contain WebSocket handshake lines.
 _MAX_MEMORIZED_LINES = 1024

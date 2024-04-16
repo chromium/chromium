@@ -38,7 +38,7 @@ BASIC USAGE
 
 Go to the src directory and run
 
-  $ python mod_pywebsocket/standalone.py [-p <ws_port>]
+  $ python pywebsocket3/standalone.py [-p <ws_port>]
                                          [-w <websock_handlers>]
                                          [-d <document_root>]
 
@@ -48,11 +48,11 @@ Go to the src directory and run
 
 <websock_handlers> is the path to the root directory of WebSocket handlers.
 If not specified, <document_root> will be used. See __init__.py (or
-run $ pydoc mod_pywebsocket) for how to write WebSocket handlers.
+run $ pydoc pywebsocket3) for how to write WebSocket handlers.
 
 For more detail and other options, run
 
-  $ python mod_pywebsocket/standalone.py --help
+  $ python pywebsocket3/standalone.py --help
 
 or see _build_option_parser method below.
 
@@ -66,7 +66,7 @@ Go to the src directory and run standalone.py with -d option to set the
 document root to the directory containing example HTMLs and handlers like this:
 
   $ cd src
-  $ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example
+  $ PYTHONPATH=. python pywebsocket3/standalone.py -d example
 
 to launch pywebsocket with the sample handler and html on port 80. Open
 http://localhost/console.html, click the connect button, type something into
@@ -85,7 +85,7 @@ TLS connection silently fails while pyOpenSSL fails on startup.
 
 Example:
 
-  $ PYTHONPATH=. python mod_pywebsocket/standalone.py \
+  $ PYTHONPATH=. python pywebsocket3/standalone.py \
         -d example \
         -p 10443 \
         -t \
@@ -105,7 +105,7 @@ TLS support.
 
 Example:
 
-  $ PYTHONPATH=. python mod_pywebsocket/standalone.py -d example -p 10443 -t \
+  $ PYTHONPATH=. python pywebsocket3/standalone.py -d example -p 10443 -t \
         -c ../test/cert/cert.pem -k ../test/cert/key.pem \
         --tls-client-auth \
         --tls-client-ca=../test/cert/cacert.pem
@@ -154,19 +154,20 @@ used outside a firewall.
 """
 
 from __future__ import absolute_import
-from six.moves import configparser
+
+import argparse
 import base64
 import logging
-import argparse
 import os
-import six
 import sys
 import traceback
 
-from mod_pywebsocket import common
-from mod_pywebsocket import util
-from mod_pywebsocket import server_util
-from mod_pywebsocket.websocket_server import WebSocketServer
+import six
+from six.moves import configparser
+
+from pywebsocket3 import common, server_util, util
+from pywebsocket3.websocket_server import WebSocketServer
+
 
 _DEFAULT_LOG_MAX_BYTES = 1024 * 256
 _DEFAULT_LOG_BACKUP_COUNT = 5
@@ -480,8 +481,8 @@ def _main(args=None):
         server = WebSocketServer(options)
         server.serve_forever()
     except Exception as e:
-        logging.critical('mod_pywebsocket: %s' % e)
-        logging.critical('mod_pywebsocket: %s' % traceback.format_exc())
+        logging.critical('pywebsocket3: %s' % e)
+        logging.critical('pywebsocket3: %s' % traceback.format_exc())
         sys.exit(1)
 
 

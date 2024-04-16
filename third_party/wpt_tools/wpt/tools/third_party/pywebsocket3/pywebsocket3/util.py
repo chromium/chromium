@@ -29,20 +29,18 @@
 """WebSocket utilities."""
 
 from __future__ import absolute_import
-import array
-import errno
+
 import logging
 import os
 import re
-import six
-from six.moves import map
-from six.moves import range
-import socket
 import struct
 import zlib
 
+import six
+from six.moves import map, range
+
 try:
-    from mod_pywebsocket import fast_masking
+    from pywebsocket3 import fast_masking
 except ImportError:
     pass
 

@@ -34,6 +34,7 @@ A memorizing file wraps a file and memorizes lines read by readline.
 """
 
 from __future__ import absolute_import
+
 import sys
 
 
@@ -61,7 +62,7 @@ class MemorizingFile(object):
 
     def __getattribute__(self, name):
         """Return a file attribute.
-        
+
         Returns the value overridden by this class for some attributes,
         and forwards the call to _file for the other attributes.
         """

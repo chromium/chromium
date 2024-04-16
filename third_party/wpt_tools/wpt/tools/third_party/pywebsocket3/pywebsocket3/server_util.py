@@ -33,8 +33,7 @@ import logging.handlers
 import threading
 import time
 
-from mod_pywebsocket import common
-from mod_pywebsocket import util
+from pywebsocket3 import common, util
 
 
 def _get_logger_from_class(c):

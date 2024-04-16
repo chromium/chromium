@@ -32,15 +32,12 @@ processors.
 
 from __future__ import absolute_import
 
-from mod_pywebsocket import common
-from mod_pywebsocket import http_header_util
-from mod_pywebsocket.extensions import get_extension_processor
-from mod_pywebsocket.stream import StreamOptions
-from mod_pywebsocket.stream import Stream
-from mod_pywebsocket import util
+from pywebsocket3 import common, http_header_util, util
+from pywebsocket3.extensions import get_extension_processor
+from pywebsocket3.stream import Stream, StreamOptions
 
-from six.moves import map
-from six.moves import range
+from six.moves import map, range
+
 
 # Defining aliases for values used frequently.
 _VERSION_LATEST = common.VERSION_HYBI_LATEST

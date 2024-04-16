@@ -28,7 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """ A Standalone WebSocket Server for testing purposes
 
-mod_pywebsocket is an API that provides WebSocket functionalities with
+pywebsocket3 is an API that provides WebSocket functionalities with
 a standalone WebSocket server. It is intended for testing or
 experimental purposes.
 
@@ -37,7 +37,7 @@ Installation
 1. Follow standalone server documentation to start running the
 standalone server. It can be read by running the following command:
 
-    $ pydoc mod_pywebsocket.standalone
+    $ pydoc pywebsocket3.standalone
 
 2. Once the standalone server is launched verify it by accessing
 http://localhost[:port]/console.html. Include the port number when
@@ -96,7 +96,7 @@ Data Transfer
 
 web_socket_transfer_data is called after the handshake completed
 successfully. A handler can receive/send messages from/to the client
-using request. mod_pywebsocket.msgutil module provides utilities
+using request. pywebsocket3.msgutil module provides utilities
 for data transfer.
 
 You can receive a message by the following statement.

@@ -34,8 +34,7 @@ to use standalone.py, since it is intended to act as a skeleton of this module.
 """
 
 from __future__ import absolute_import
-from six.moves import BaseHTTPServer
-from six.moves import socketserver
+
 import logging
 import re
 import select
@@ -44,9 +43,10 @@ import ssl
 import threading
 import traceback
 
-from mod_pywebsocket import dispatch
-from mod_pywebsocket import util
-from mod_pywebsocket.request_handler import WebSocketRequestHandler
+from six.moves import BaseHTTPServer, socketserver
+
+from pywebsocket3 import dispatch, util
+from pywebsocket3.request_handler import WebSocketRequestHandler
 
 
 def _alias_handlers(dispatcher, websock_handlers_map_file):

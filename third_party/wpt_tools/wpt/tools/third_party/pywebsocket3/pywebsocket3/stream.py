@@ -33,21 +33,22 @@ Specification:
 http://tools.ietf.org/html/rfc6455
 """
 
-from collections import deque
 import logging
 import os
 import struct
 import time
-import socket
+from collections import deque
+
 import six
 
-from mod_pywebsocket import common
-from mod_pywebsocket import util
-from mod_pywebsocket._stream_exceptions import BadOperationException
-from mod_pywebsocket._stream_exceptions import ConnectionTerminatedException
-from mod_pywebsocket._stream_exceptions import InvalidFrameException
-from mod_pywebsocket._stream_exceptions import InvalidUTF8Exception
-from mod_pywebsocket._stream_exceptions import UnsupportedFrameException
+from pywebsocket3 import common, util
+from pywebsocket3._stream_exceptions import (
+    BadOperationException,
+    ConnectionTerminatedException,
+    InvalidFrameException,
+    InvalidUTF8Exception,
+    UnsupportedFrameException
+)
 
 _NOOP_MASKER = util.NoopMasker()
 

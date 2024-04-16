@@ -36,14 +36,18 @@ bytes writing/reading.
 """
 
 from __future__ import absolute_import
-import six.moves.queue
+
 import threading
 
+import six.moves.queue
+
 # Export Exception symbols from msgutil for backward compatibility
-from mod_pywebsocket._stream_exceptions import ConnectionTerminatedException
-from mod_pywebsocket._stream_exceptions import InvalidFrameException
-from mod_pywebsocket._stream_exceptions import BadOperationException
-from mod_pywebsocket._stream_exceptions import UnsupportedFrameException
+from pywebsocket3._stream_exceptions import (
+    ConnectionTerminatedException,
+    InvalidFrameException,
+    BadOperationException,
+    UnsupportedFrameException
+)
 
 
 # An API for handler to send/receive WebSocket messages.

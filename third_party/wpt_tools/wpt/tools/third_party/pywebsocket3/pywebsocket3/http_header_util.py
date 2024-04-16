@@ -31,7 +31,9 @@ in HTTP RFC http://www.ietf.org/rfc/rfc2616.txt.
 """
 
 from __future__ import absolute_import
+
 import six.moves.urllib.parse
+
 
 _SEPARATORS = '()<>@,;:\\"/[]?={} \t'
 

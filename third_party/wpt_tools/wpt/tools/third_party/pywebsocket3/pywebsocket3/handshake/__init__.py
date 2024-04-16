@@ -32,15 +32,19 @@ successfully established.
 """
 
 from __future__ import absolute_import
+
 import logging
 
-from mod_pywebsocket import common
-from mod_pywebsocket.handshake import hybi
+from pywebsocket3 import common
+from pywebsocket3.handshake import hybi
 # Export AbortedByUserException, HandshakeException, and VersionException
 # symbol from this module.
-from mod_pywebsocket.handshake.base import AbortedByUserException
-from mod_pywebsocket.handshake.base import HandshakeException
-from mod_pywebsocket.handshake.base import VersionException
+from pywebsocket3.handshake.base import (
+    AbortedByUserException,
+    HandshakeException,
+    VersionException
+)
+
 
 _LOGGER = logging.getLogger(__name__)
 

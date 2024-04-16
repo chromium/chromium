@@ -34,17 +34,20 @@ http://tools.ietf.org/html/rfc6455
 """
 
 from __future__ import absolute_import
+
 import base64
 import re
 from hashlib import sha1
 
-from mod_pywebsocket import common
-from mod_pywebsocket.handshake.base import get_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakeException
-from mod_pywebsocket.handshake.base import parse_token_list
-from mod_pywebsocket.handshake.base import validate_mandatory_header
-from mod_pywebsocket.handshake.base import HandshakerBase
-from mod_pywebsocket import util
+from pywebsocket3 import common, util
+from pywebsocket3.handshake.base import (
+    get_mandatory_header,
+    HandshakeException,
+    parse_token_list,
+    validate_mandatory_header,
+    HandshakerBase
+)
+
 
 # Used to validate the value in the Sec-WebSocket-Key header strictly. RFC 4648
 # disallows non-zero padding, so the character right before == must be any of

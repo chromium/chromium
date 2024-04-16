@@ -30,17 +30,19 @@
 """
 
 from __future__ import absolute_import
+
 import io
-import logging
 import os
 import re
 import traceback
 
-from mod_pywebsocket import common
-from mod_pywebsocket import handshake
-from mod_pywebsocket import msgutil
-from mod_pywebsocket import stream
-from mod_pywebsocket import util
+from pywebsocket3 import (
+    common,
+    handshake,
+    msgutil,
+    stream,
+    util
+)
 
 _SOURCE_PATH_PATTERN = re.compile(r'(?i)_wsh\.py$')
 _SOURCE_SUFFIX = '_wsh.py'

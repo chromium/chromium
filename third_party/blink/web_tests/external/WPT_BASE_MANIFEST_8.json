@@ -224,6 +224,13 @@
        {}
       ]
      ],
+     "detached-line.html": [
+      "a6a7520c0d1ef4e90d4e7edb8aaaf9257e4bb23d",
+      [
+       null,
+       {}
+      ]
+     ],
      "display-table-column.html": [
       "6f34f27fa7efd3e22edc6c76ac9f343487f8b7d6",
       [
@@ -346350,7 +346357,7 @@
       []
      ],
      "pywebsocket3.rst": [
-      "af768d6b354600b32ed1d01463bd1724520c1fc8",
+      "3f742958b3aab511873f8a6dc3be46fcd74a25a4",
       []
      ]
     },
@@ -354035,7 +354042,7 @@
        []
       ],
       "trusted-bidding-signals.py": [
-       "f9ca9031f1cee643e9e914aa5147ea8b0703ebfe",
+       "955a7c0bdfadbbcb315dfc7902dd26a109970680",
        []
       ],
       "trusted-scoring-signals.py": [
@@ -397970,23 +397977,23 @@
     },
     "handlers": {
      "basic_auth_wsh.py": [
-      "72e920a1d82c7ef78907d17810912128598b6ca2",
+      "84f42711b209005bd29f06e667c7520e190bc1da",
       []
      ],
      "delayed-passive-close_wsh.py": [
-      "7d55b88ecc6db7fd9d3fb7a9722e030d926c807d",
+      "5da09fd059edc7f522ded06d89a06d2235892e8b",
       []
      ],
      "echo-cookie_wsh.py": [
-      "98620b65524dfcf56914f45db0d2809ef5fd66b5",
+      "746eafd2cd8c06e976dcf0088662f0ebd49b4cca",
       []
      ],
      "echo-query_v13_wsh.py": [
-      "d670e6e66053f155e8fd6153bf91ddddee076d68",
+      "7fb4cfe593cd31b5e894ac20c0c5cca760ac44de",
       []
      ],
      "echo-query_wsh.py": [
-      "39219134952272f34518a2458a0bb5c902c7cd4a",
+      "88696175d239ea45d3166623c3221bc5b0649ee3",
       []
      ],
      "echo_close_data_wsh.py": [
@@ -397998,15 +398005,15 @@
       []
      ],
      "echo_raw_wsh.py": [
-      "e1fc26608ff6544f8d73c91697c911b2ca25178f",
+      "5b434cf26659ee67906003d76a1cd2d56cf71f12",
       []
      ],
      "echo_wsh.py": [
-      "7367b70af16769e8b2a9c070d628ea29bc5ecaa7",
+      "35a0a6f6ea2d4ae1d82ca8125de8e247c90711bc",
       []
      ],
      "empty-message_wsh.py": [
-      "0eb107f0b12b8b66ad7e35162d447b93ac7a3e91",
+      "f791ee1842e502c335c41f3df5df59ce257e4459",
       []
      ],
      "handshake_no_extensions_wsh.py": [
@@ -398030,23 +398037,23 @@
       []
      ],
      "msg_channel_wsh.py": [
-      "7a66646f2bcbc2860f6f3aff1bf74ba93cb1db9e",
+      "a45dd99164017f52673d33c50f1a97ab4db5f40b",
       []
      ],
      "origin_wsh.py": [
-      "ce5f3a7f6ae7a7f816471e869584ab2eb01632e5",
+      "b833db6381482fe335748b9eab6c21d8c8c5eb00",
       []
      ],
      "passive-close-abort_wsh.py": [
-      "ac3f67c8db17f2cfe796431249525bfdf5c435f0",
+      "6f8a3d1bf17dd0af69741c54a27f24b2d9a09e23",
       []
      ],
      "protocol_array_wsh.py": [
-      "be24ee01fd9aabd0722b7a498289a26eeb532037",
+      "d8e1229cdb1a5090fea70688f1e2b67d1fa47eef",
       []
      ],
      "protocol_wsh.py": [
-      "10bdf33205b5b759264f038d8b3c7dcf25f47453",
+      "3a6aeb400bbbc61f717a0621558f6adc175645f6",
       []
      ],
      "receive-backpressure_wsh.py": [
@@ -398058,11 +398065,11 @@
       []
      ],
      "referrer_wsh.py": [
-      "9df652dc3cbf12f6364462839e340848dec8e08f",
+      "2d183d55869ed13e1ed0c41a114f8afffd8f5ec6",
       []
      ],
      "remote-close_wsh.py": [
-      "aadd99ea950d0d8414c432356443d5f3ce3e444e",
+      "c94870ad87cbcb62b4c99376cf0fdadb997c829f",
       []
      ],
      "send-backpressure_wsh.py": [
@@ -398086,19 +398093,19 @@
       []
      ],
      "simple_handshake_wsh.py": [
-      "ad466877fe045be36bfebdcfb30026f2245deae9",
+      "23893c95f1c9fe343a5c89aae24e01eb6aab3c9c",
       []
      ],
      "sleep_10_v13_wsh.py": [
-      "bdef2f2afdd63d9a655ece424b10dec08bbe6314",
+      "4faa42aa4524723406b8bbe6ce7b60e715ab6a20",
       []
      ],
      "stash_responder_blocking_wsh.py": [
-      "10ecdfe0da94cfdefed4b4516626c5bde48c1640",
+      "968156868ae69739b19f975ce408eab1c3e682c0",
       []
      ],
      "stash_responder_wsh.py": [
-      "d18ad3bc967e7d8fb19cecc916408b5d303594c1",
+      "b401997480fe2ef4eaff588e48f29ddde699f766",
       []
      ],
      "wrong_accept_key_wsh.py": [
@@ -526881,7 +526888,7 @@
       ]
      ],
      "trusted-bidding-signals.https.window.js": [
-      "d0b9a8208632df959ec5b964c5d9bb4dd0d3ee1b",
+      "905abf8381eaeaee800be38c25d44e5704be0247",
       [
        "fledge/tentative/trusted-bidding-signals.https.window.html?1-5",
        {
@@ -526964,7 +526971,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527052,7 +527063,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527140,7 +527155,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527228,7 +527247,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527316,7 +527339,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527404,7 +527431,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527492,7 +527523,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527580,7 +527615,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527668,7 +527707,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527756,7 +527799,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527844,7 +527891,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -527932,7 +527983,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -528020,7 +528075,11 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -528108,14 +528167,18 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/trusted-bidding-signals.https.window.html?71-last",
+       "fledge/tentative/trusted-bidding-signals.https.window.html?71-75",
        {
         "script_metadata": [
          [
@@ -528196,7 +528259,103 @@
          ],
          [
           "variant",
-          "?71-last"
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/trusted-bidding-signals.https.window.html?76-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-35"
+         ],
+         [
+          "variant",
+          "?36-40"
+         ],
+         [
+          "variant",
+          "?41-45"
+         ],
+         [
+          "variant",
+          "?46-50"
+         ],
+         [
+          "variant",
+          "?51-55"
+         ],
+         [
+          "variant",
+          "?56-60"
+         ],
+         [
+          "variant",
+          "?61-65"
+         ],
+         [
+          "variant",
+          "?66-70"
+         ],
+         [
+          "variant",
+          "?71-75"
+         ],
+         [
+          "variant",
+          "?76-last"
          ]
         ],
         "timeout": "long"
@@ -664652,7 +664811,7 @@
      ]
     ],
     "audio-encoder-config.https.any.js": [
-     "559ff3203b5151e05a778f08c82c30551ff08f98",
+     "a70bf28f80c9ab576a569d9a9798d727133150d5",
      [
       "webcodecs/audio-encoder-config.https.any.html",
       {
@@ -675852,7 +676011,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "44d5f14b0402c975df322fea53734f8f41609f73",
+      "ffc9c2c65dff541da38886067febd4c4850ec9d8",
       [
        "webnn/validation_tests/conv2d.https.any.html",
        {
