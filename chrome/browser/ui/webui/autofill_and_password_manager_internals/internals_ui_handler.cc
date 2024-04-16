@@ -137,9 +137,8 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
 #if BUILDFLAG(IS_ANDROID)
   auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
 
-  FireWebUIListener(
-      "enable-reset-upm-eviction-button",
-      base::Value(password_manager_upm_eviction::IsCurrentUserEvicted(prefs)));
+  FireWebUIListener("enable-reset-upm-eviction-button",
+                    password_manager_upm_eviction::IsCurrentUserEvicted(prefs));
 #endif
 }
 
@@ -159,8 +158,15 @@ void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
 #if BUILDFLAG(IS_ANDROID)
 void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
   auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  password_manager_upm_eviction::ReenrollCurrentUser(prefs);
-  FireWebUIListener("enable-reset-upm-eviction-button", base::Value(false));
+  bool is_user_unenrolled =
+      password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
+  if (is_user_unenrolled) {
+    password_manager_upm_eviction::ReenrollCurrentUser(prefs);
+  } else {
+    password_manager_upm_eviction::EvictCurrentUser(-1, prefs);
+  }
+  FireWebUIListener("enable-reset-upm-eviction-button",
+                    base::Value(!is_user_unenrolled));
 }
 #endif
 

@@ -261,8 +261,12 @@ function setUpPasswordManagerInternals() {
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
+  // <if expr="is_android">
+  document.getElementById('reset-upm-eviction-fake-button').style.display =
+      'inline';
   addWebUiListener(
       'enable-reset-upm-eviction-button', enableResetUpmEvictionButton);
+  // </if>
 }
 
 function enableResetCacheButton() {
@@ -270,8 +274,8 @@ function enableResetCacheButton() {
 }
 
 function enableResetUpmEvictionButton(isEnabled) {
-  document.getElementById('reset-upm-eviction-fake-button').style.display =
-      isEnabled ? 'inline' : 'none';
+  document.getElementById('reset-upm-eviction-fake-button').innerText =
+      isEnabled ? 'Reset UPM eviction' : 'Evict from UPM';
 }
 
 function notifyAboutIncognito(isIncognito) {
@@ -436,6 +440,5 @@ document.addEventListener('DOMContentLoaded', function(event) {
       document.getElementById('reset-upm-eviction-fake-button');
   resetUpmEvictionButton.addEventListener('click', () => {
     chrome.send('resetUpmEviction');
-    showModalDialog('UPM re-enabled. Please, restart Chrome.');
   });
 });
