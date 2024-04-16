@@ -2861,7 +2861,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.PushNotification.Provisional.EnabledPermissisons"
     enum="PushNotificationPermissionProvisionalStatus"
-    expires_after="2024-05-24">
+    expires_after="2024-11-24">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
