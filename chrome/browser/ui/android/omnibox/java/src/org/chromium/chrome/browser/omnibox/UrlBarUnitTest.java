@@ -52,10 +52,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -76,8 +74,8 @@ public class UrlBarUnitTest {
     // char, so there will be 20 visible characters.
     private static final int NUMBER_OF_VISIBLE_CHARACTERS = 20;
 
-    // Separately declare a constant same as UrlBar.MIN_LENGTH_FOR_TRUNCATION_V2 so that one of
-    // these tests will fail if it's accidentally changed.
+    // Separately declare a constant same as UrlBar.MIN_LENGTH_FOR_TRUNCATION so that one of these
+    // tests will fail if it's accidentally changed.
     private static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
     private UrlBar mUrlBar;
@@ -225,7 +223,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongUrl() {
         doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
@@ -236,7 +233,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_ShortUrl() {
         // Test with a url one character shorter than the minimum length for truncation so that this
         // test fails when the UrlBar.MIN_LENGTH_FOR_TRUCATION_V2 is changed to something smaller.
@@ -248,7 +244,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToTld() {
         doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
@@ -259,7 +254,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToBeginning() {
         doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
@@ -270,7 +264,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_NoTruncationForWrapContent() {
         measureAndLayoutUrlBar();
         LayoutParams previousLayoutParams = mUrlBar.getLayoutParams();
@@ -286,7 +279,6 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_NoTruncationWhileFocused() {
         mUrlBar.onFocusChanged(true, 0, null);
 
@@ -302,33 +294,6 @@ public class UrlBarUnitTest {
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
         mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
         verify(mUrlBarDelegate).onTouchAfterFocus();
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
-    public void testSetLengthHistogram_noTruncation() {
-        measureAndLayoutUrlBar();
-        String url = mShortDomain + mLongPath;
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Omnibox.SetText.TextLength", url.length());
-        mUrlBar.setText(mShortDomain + mLongPath);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
-    public void testSetLengthHistogram_withTruncation() {
-        doReturn(mLayout).when(mUrlBar).getLayout();
-
-        measureAndLayoutUrlBar();
-        String url = mShortDomain + mLongPath;
-
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.SetText.TextLength", NUMBER_OF_VISIBLE_CHARACTERS);
-        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
-        histogramWatcher.assertExpected();
     }
 
     @Test

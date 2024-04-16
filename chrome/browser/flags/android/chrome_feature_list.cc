@@ -162,7 +162,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutter,
     &kAndroidTabGroupStableIds,
     &kAndroidToolbarScrollAblation,
-    &kAndroidVisibleUrlTruncationV2,
     &kAnimatedImageDragShadow,
     &kAppSpecificHistory,
     &kArchiveTabService,
@@ -449,10 +448,6 @@ BASE_FEATURE(kAndroidTabGroupStableIds,
 BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidVisibleUrlTruncationV2,
-             "AndroidVisibleUrlTruncationV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",

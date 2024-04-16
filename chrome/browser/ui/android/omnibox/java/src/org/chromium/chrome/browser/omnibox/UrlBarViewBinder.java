@@ -16,8 +16,6 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -59,26 +57,10 @@ class UrlBarViewBinder {
         } else if (UrlBarProperties.TEXT_STATE.equals(propertyKey)) {
             UrlBarTextState state = model.get(UrlBarProperties.TEXT_STATE);
             view.setIgnoreTextChangesForAutocomplete(true);
-
-            try (TraceEvent te1 = TraceEvent.scoped("UrlBarViewBinder.setText")) {
-                try (TimingMetric t = TimingMetric.shortUptime("Omnibox.SetText.Duration")) {
-                    if (OmniboxFeatures.shouldTruncateVisibleUrlV2()) {
-                        view.setTextWithTruncation(
-                                state.text, state.scrollType, state.scrollToIndex);
-                    } else {
-                        view.setText(state.text);
-                    }
-                }
-            }
-
+            view.setTextWithTruncation(state.text, state.scrollType, state.scrollToIndex);
             view.setTextForAutofillServices(state.textForAutofillServices);
-
-            try (TraceEvent te2 = TraceEvent.scoped("UrlBarViewBinder.setScrollState")) {
-                view.setScrollState(state.scrollType, state.scrollToIndex);
-            }
-
+            view.setScrollState(state.scrollType, state.scrollToIndex);
             view.setIgnoreTextChangesForAutocomplete(false);
-
             if (view.hasFocus()) {
                 if (state.selectionState == UrlBarCoordinator.SelectionState.SELECT_ALL) {
                     view.selectAll();

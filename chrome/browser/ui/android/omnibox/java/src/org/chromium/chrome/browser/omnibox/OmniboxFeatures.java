@@ -100,11 +100,6 @@ public class OmniboxFeatures {
                 DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
     }
 
-    /** Returns whether the visible url in the url bar should be truncated. */
-    public static boolean shouldTruncateVisibleUrlV2() {
-        return ChromeFeatureList.sVisibleUrlTruncationV2.isEnabled();
-    }
-
     /**
      * Returns if we should omit calculating the visible hint if the TLD is different than the
      * previous call to setText().

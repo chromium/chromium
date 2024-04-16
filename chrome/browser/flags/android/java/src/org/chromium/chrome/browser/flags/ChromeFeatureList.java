@@ -163,7 +163,6 @@ public abstract class ChromeFeatureList {
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_GROUP_STABLE_IDS = "AndroidTabGroupStableIds";
-    public static final String ANDROID_VISIBLE_URL_TRUNCATION_V2 = "AndroidVisibleUrlTruncationV2";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String ANIMATE_SUGGESTIONS_LIST_APPEARANCE =
             "AnimateSuggestionsListAppearance";
@@ -825,8 +824,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TOTALLY_EDGE_TO_EDGE, false);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
-    public static final MutableFlagWithSafeDefault sVisibleUrlTruncationV2 =
-            newMutableFlagWithSafeDefault(ANDROID_VISIBLE_URL_TRUNCATION_V2, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
