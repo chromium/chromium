@@ -6,6 +6,7 @@ import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/ios/ios_sdk.gni")
+import("//build/config/zip.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
@@ -1153,37 +1154,15 @@ template("bundle_data_xcassets") {
   assert(defined(invoker.catalog), "catalog must be defined for $target_name")
 
   _target_name = target_name
-  _target_copy = target_name + "_copy"
+  _target_zip = target_name + "_zip"
 
-  action(_target_copy) {
-    forward_variables_from(invoker,
-                           [
-                             "sources",
-                             "testonly",
-                             "deps",
-                             "public_deps",
-                           ])
-
+  zip(_target_zip) {
     _catalog_name = get_path_info(invoker.catalog, "file")
     _catalog_path = get_path_info(invoker.catalog, "dir")
 
-    assert(get_path_info(_catalog_name, "extension") == "xcassets",
-           "catalog must point to .xcassets bundle for $_target_name")
-
-    visibility = [ ":$_target_name" ]
-    script = "//build/config/ios/hardlink.py"
-
-    outputs = [ "$target_out_dir/$_catalog_name" ]
-    foreach(_source, sources) {
-      outputs += [ "$target_out_dir/" + rebase_path(_source, _catalog_path) ]
-    }
-
-    args = [
-             "--output-dir",
-             rebase_path(target_out_dir, root_build_dir),
-             "--relative-to",
-             rebase_path(_catalog_path, root_build_dir),
-           ] + rebase_path(sources, root_build_dir)
+    inputs = invoker.sources
+    output = "$target_out_dir/$target_name/$_catalog_name"
+    base_dir = _catalog_path
   }
 
   bundle_data(_target_name) {
@@ -1195,8 +1174,8 @@ template("bundle_data_xcassets") {
                              "public_deps",
                            ])
 
-    public_deps = [ ":$_target_copy" ]
-    sources = get_target_outputs(":$_target_copy")
+    public_deps = [ ":$_target_zip" ]
+    sources = get_target_outputs(":$_target_zip")
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
