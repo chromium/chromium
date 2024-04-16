@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <dimen name="google_bottom_bar_height">64dp</dimen>
+</resources>

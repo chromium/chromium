@@ -65,6 +65,11 @@ public class GoogleBottomBarCoordinator {
         return mGoogleBottomBarViewCreator.createGoogleBottomBarView();
     }
 
+    /** Returns the height of the Google Bottom bar in pixels. */
+    public static int getBottomBarHeightInPx(Context context) {
+        return context.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
+    }
+
     private BottomBarConfig getButtonConfig(GoogleBottomBarIntentParams intentParams) {
         // Encoded button list provided in intent from embedder
         if (intentParams.getEncodedButtonCount() != 0) {

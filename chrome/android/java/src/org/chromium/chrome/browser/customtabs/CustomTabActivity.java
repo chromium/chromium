@@ -198,7 +198,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             View googleBottomBarView = googleBottomBarCoordinator.createGoogleBottomBarView();
             getComponent()
                     .resolveBottomBarDelegate()
-                    .setBottomBarHeight(googleBottomBarView.getHeight());
+                    .setBottomBarHeight(GoogleBottomBarCoordinator.getBottomBarHeightInPx(this));
             getComponent().resolveBottomBarDelegate().setBottomBarContentView(googleBottomBarView);
         }
 

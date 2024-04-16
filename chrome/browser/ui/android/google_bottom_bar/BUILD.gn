@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
   ]
   deps = [
+    ":java_resources",
     ":proto_java",
     "//base:base_java",
     "//chrome/browser/android/browserservices/intents:java",
@@ -21,6 +22,10 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.google_bottom_bar"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/values/dimens.xml" ]
 }
 
 robolectric_library("junit") {

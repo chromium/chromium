@@ -33,7 +33,9 @@ public class GoogleBottomBarViewCreator {
 
         parent.setLayoutParams(
                 new LinearLayout.LayoutParams(
-                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                        LayoutParams.MATCH_PARENT,
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.google_bottom_bar_height)));
         parent.setOrientation(LinearLayout.HORIZONTAL);
         return parent;
     }
