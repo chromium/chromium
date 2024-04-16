@@ -105,7 +105,7 @@ void MessagePumpForUI::ScheduleWork() {
   // |bound_thread_|.
 
   if (g_ui_pump_improvements_win &&
-      nested_state_ != NestedState::kNestedNativeLoopAnnounced) {
+      !in_nested_native_loop_with_application_tasks_) {
     // The pump is running using `event_` as its chrome-side synchronization
     // variable. In this case, no deduplication is done, since the event has its
     // own state.
@@ -160,7 +160,7 @@ void MessagePumpForUI::ScheduleDelayedWork(
   // See MessageLoopTest.PostDelayedTaskFromSystemPump for an example.
   // TODO(gab): This could potentially be replaced by a ForegroundIdleProc hook
   // if Windows ends up being the only platform requiring ScheduleDelayedWork().
-  if (nested_state_ == NestedState::kNestedNativeLoopAnnounced &&
+  if (in_nested_native_loop_with_application_tasks_ &&
       !native_msg_scheduled_.load(std::memory_order_relaxed)) {
     ScheduleNativeTimer(next_work_info);
   }
@@ -168,16 +168,13 @@ void MessagePumpForUI::ScheduleDelayedWork(
 
 bool MessagePumpForUI::HandleNestedNativeLoopWithApplicationTasks(
     bool application_tasks_desired) {
+  // It is here assumed that we will be in a native loop until either
+  // DoRunLoop() gets control back, or this is called with `false`, and thus the
+  // Windows event queue is to be used for synchronization. This is to prevent
+  // being unable to wake up for application tasks in the case of a nested loop.
+  in_nested_native_loop_with_application_tasks_ = application_tasks_desired;
   if (application_tasks_desired) {
-    // It is here assumed that we will be in a native loop until either
-    // DoRunLoop() gets control back, or this is called with `false`, and thus
-    // must `use_windows_event_queue_for_synchronization_`. This is to prevent
-    // being unable to wake up for application tasks in the case of a nested
-    // loop.
-    nested_state_ = NestedState::kNestedNativeLoopAnnounced;
     ScheduleWork();
-  } else {
-    nested_state_ = NestedState::kNone;
   }
   return true;
 }
@@ -237,7 +234,7 @@ void MessagePumpForUI::DoRunLoop() {
     // work, then it is a good time to consider sleeping (waiting) for more
     // work.
 
-    nested_state_ = NestedState::kNone;
+    in_nested_native_loop_with_application_tasks_ = false;
     bool more_work_is_plausible = false;
 
     if (!g_ui_pump_improvements_win ||
@@ -246,14 +243,16 @@ void MessagePumpForUI::DoRunLoop() {
       // We can end up in native loops which allow application tasks outside of
       // DoWork() when Windows calls back a Win32 message window owned by some
       // Chromium code.
-      nested_state_ = NestedState::kNone;
+      in_nested_native_loop_with_application_tasks_ = false;
       if (run_state_->should_quit) {
         break;
       }
     }
 
     Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
-    nested_state_ = NestedState::kNone;
+    // Since nested native loops with application tasks are initiated by a
+    // scoper, they should always be cleared before exiting DoWork().
+    DCHECK(!in_nested_native_loop_with_application_tasks_);
     wakeup_state_ = WakeupState::kRunning;
     more_work_is_plausible |= next_work_info.is_immediate();
 
@@ -276,7 +275,7 @@ void MessagePumpForUI::DoRunLoop() {
     // DoIdleWork() shouldn't end up in native nested loops, nor should it
     // permit native nested loops, and thus shouldn't have any chance of
     // reinstalling a native timer.
-    DCHECK_EQ(nested_state_, NestedState::kNone);
+    DCHECK(!in_nested_native_loop_with_application_tasks_);
     DCHECK(!installed_native_timer_);
     if (run_state_->should_quit) {
       break;
@@ -388,12 +387,6 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
 void MessagePumpForUI::HandleWorkMessage() {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  if (nested_state_ != NestedState::kNestedNativeLoopAnnounced) {
-    // The kMsgHaveWork message was consumed by a native loop, we must assume
-    // we're in one until DoRunLoop() gets control back.
-    nested_state_ = NestedState::kNestedNativeLoopDetected;
-  }
-
   // If we are being called outside of the context of Run, then don't try to do
   // any work.  This could correspond to a MessageBox call or something of that
   // sort.
@@ -452,8 +445,10 @@ void MessagePumpForUI::HandleTimerMessage() {
 void MessagePumpForUI::ScheduleNativeTimer(
     Delegate::NextWorkInfo next_work_info) {
   DCHECK(!next_work_info.is_immediate());
-  // Ensure we are nested in some way.
-  DCHECK_NE(nested_state_, NestedState::kNone);
+  // We should only ScheduleNativeTimer() under the new pump implementation
+  // while nested with application tasks.
+  DCHECK(!g_ui_pump_improvements_win ||
+         in_nested_native_loop_with_application_tasks_);
 
   // Do not redundantly set the same native timer again if it was already set.
   // This can happen when a nested native loop goes idle with pending delayed

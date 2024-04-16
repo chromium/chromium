@@ -183,26 +183,19 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // is enabled.
   WaitableEvent event_{WaitableEvent::ResetPolicy::AUTOMATIC};
 
-  enum class NestedState {
-    // There are no nested message loops running.
-    kNone,
-    // kMsgHaveWork was pumped from a native queue. The state will return to
-    // `kNormal` whenever DoRunLoop() regains control.
-    //
-    // It is reset to `kNone` when DoRunLoop() gets control back after
-    // ProcessNextWindowsMessage() or DoWork().
-    kNestedNativeLoopDetected,
-    // HandleNestedNativeLoopWithApplicationTasks(true) was called (when a
-    // `ScopedAllowApplicationTasksInNativeNestedLoop` is instantiated). When
-    // running with `event_`, switches to pumping `kMsgHaveWork` MSGs when there
-    // are application tasks to be done during native runloops. In this state,
-    // ScheduleDelayedWork() will start a native timer.
-    //
-    // It is reset to `kNone` when:
-    //   - DoRunLoop() gets control back after ProcessNextWindowsMessage().
-    //   - HandleNestedNativeLoopWithApplicationTasks(false) is called.
-    kNestedNativeLoopAnnounced
-  } nested_state_ = NestedState::kNone;
+  // This is set when HandleNestedNativeLoopWithApplicationTasks(true) was
+  // called (when a `ScopedAllowApplicationTasksInNativeNestedLoop` is
+  // instantiated).
+  //
+  // When running with `event_`, switches to pumping
+  // `kMsgHaveWork` MSGs when there are application tasks to be done during
+  // native runloops. In this state, ScheduleDelayedWork() will start a native
+  // timer.
+  //
+  // It is reset when:
+  //   - DoRunLoop() gets control back after ProcessNextWindowsMessage().
+  //   - HandleNestedNativeLoopWithApplicationTasks(false) is called.
+  bool in_nested_native_loop_with_application_tasks_ = false;
 
   enum class WakeupState {
     kApplicationTask,
