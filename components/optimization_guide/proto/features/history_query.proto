@@ -20,20 +20,48 @@ message HistoryQueryRequest {
 
 message HistoryQueryResponse {
   // The embedding of the history search query.
+  Embedding query_embedding = 1;
+  // The version of the embedding model used to compute this query's embedding.
+  int64 embedding_model_version = 2;
+}
+
+message PassageData {
+  // The embedding for this passage.
   Embedding embedding = 1;
+  // The text of the passage.
+  string text = 2;
+  // How the passage was scored against the query.
+  float score = 3;
 }
 
 message DocumentShown {
-  // The embedding of the document shown to the user.
-  repeated Embedding embeddings = 1;
+  reserved 1;
+
   // The full URL of the document shown to the user.
   string url = 2;
+  repeated PassageData passages = 3;
+  // Whether the user clicked the shown document.
+  bool was_clicked = 4;
+}
+
+enum UiSurface {
+  UI_SURFACE_UNSPECIFIED = 0;
+  UI_SURFACE_HISTORY_PAGE = 1;
+  UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
 }
 
 message HistoryQueryQuality {
-  // The documents shown to the user after their query. Uses the same order they
-  // were shown to the user.
-  repeated DocumentShown documents_shown = 1;
+  // The top N (N=3 as of 2024-03-28) documents shown to the user after their
+  // query. Uses the same order they were shown to the user.
+  repeated DocumentShown top_documents_shown = 1;
+
+  // The number of characters the user entered during this UI interaction.
+  // This should be the length of the query plus the number of characters that
+  // were edited.
+  uint32 num_entered_characters = 2;
+
+  // The UI surface the user was on when making this query.
+  UiSurface ui_surface = 3;
 }
 
 // HistoryQueryLoggingData is the wrapper containing of ModelExecution
