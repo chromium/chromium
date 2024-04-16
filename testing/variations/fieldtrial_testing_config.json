@@ -18482,21 +18482,6 @@
             ]
         }
     ],
-    "SmallerTabStripTitleLimit": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240122",
-                    "enable_features": [
-                        "SmallerTabStripTitleLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartZoom": [
         {
             "platforms": [

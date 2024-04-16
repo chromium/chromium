@@ -624,7 +624,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sShowNtpAtStartupAndroid =
             newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
-            newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, false);
+            newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceAndroid =
             newCachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceReturnTime =
