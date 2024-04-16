@@ -183,9 +183,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   }
 
   view_->GetAccessibleNodeData(data);
-  if (override_data_.role != ax::mojom::Role::kUnknown) {
-    data->role = override_data_.role;
-  }
+
+  // TODO(accessibility): This next check should be added to SetRole.
   if (data->role == ax::mojom::Role::kAlertDialog) {
     // When an alert dialog is used, indicate this with xml-roles. This helps
     // JAWS understand that it's a dialog and not just an ordinary alert, even
@@ -196,77 +195,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
   }
 
-  std::string name;
-  if (override_data_.GetStringAttribute(ax::mojom::StringAttribute::kName,
-                                        &name)) {
-    if (!name.empty())
-      data->SetNameChecked(name);
-    else
-      data->SetNameExplicitlyEmpty();
-  }
-
-  std::string description;
-  if (override_data_.GetStringAttribute(
-          ax::mojom::StringAttribute::kDescription, &description)) {
-    if (!description.empty())
-      data->SetDescription(description);
-    else
-      data->SetDescriptionExplicitlyEmpty();
-  }
-
-  if (override_data_.GetHasPopup() != ax::mojom::HasPopup::kFalse) {
-    data->SetHasPopup(override_data_.GetHasPopup());
-  }
-
-  static constexpr ax::mojom::IntAttribute kOverridableIntAttributes[]{
-      ax::mojom::IntAttribute::kDescriptionFrom,
-      ax::mojom::IntAttribute::kNameFrom,
-      ax::mojom::IntAttribute::kPosInSet,
-      ax::mojom::IntAttribute::kSetSize,
-  };
-  for (auto attribute : kOverridableIntAttributes) {
-    if (override_data_.HasIntAttribute(attribute)) {
-      data->AddIntAttribute(attribute,
-                            override_data_.GetIntAttribute(attribute));
-    }
-  }
-
-  static constexpr ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
-      ax::mojom::IntListAttribute::kLabelledbyIds,
-      ax::mojom::IntListAttribute::kDescribedbyIds,
-      ax::mojom::IntListAttribute::kCharacterOffsets,
-      ax::mojom::IntListAttribute::kWordStarts,
-      ax::mojom::IntListAttribute::kWordEnds,
-  };
-  for (auto attribute : kOverridableIntListAttributes) {
-    if (override_data_.HasIntListAttribute(attribute)) {
-      data->AddIntListAttribute(attribute,
-                                override_data_.GetIntListAttribute(attribute));
-    }
-  }
-
-  if (override_data_.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
-    data->AddBoolAttribute(
-        ax::mojom::BoolAttribute::kSelected,
-        override_data_.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  }
-
   data->relative_bounds.bounds = gfx::RectF(view_->GetBoundsInScreen());
-  if (!override_data_.relative_bounds.bounds.IsEmpty()) {
-    data->relative_bounds.bounds = override_data_.relative_bounds.bounds;
-  }
-
-  // We need to add the ignored state to all ignored Views, similar to how Blink
-  // exposes ignored DOM nodes. Calling AXNodeData::IsIgnored() would also check
-  // if the role is in the list of roles that are inherently ignored.
-  // Furthermore, we add the ignored state if this View is a descendant of a
-  // leaf View. We call this class's "IsChildOfLeaf" method instead of the one
-  // in our platform specific subclass because subclasses determine if a node is
-  // a leaf by (among other things) counting the number of unignored children,
-  // which would create a circular definition of the ignored state.
-  if (data->IsIgnored() || ViewAccessibility::IsChildOfLeaf()) {
-    data->AddState(ax::mojom::State::kIgnored);
-  }
 
   if (ViewAccessibility::IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);

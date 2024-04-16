@@ -390,10 +390,6 @@ class VIEWS_EXPORT ViewAccessibility {
 
   const ui::AXUniqueId unique_id_;
 
-  // Contains data set explicitly via OverrideRole etc. that
-  // overrides anything provided by GetAccessibleNodeData().
-  ui::AXNodeData override_data_;
-
   // Contains data that is populated by the setters in this class.
   // This member is tied to the ViewsAX project. Which is introducing a new
   // system to set accessible properties in a "push" fashion (instead of pull).
