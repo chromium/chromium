@@ -2168,6 +2168,11 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     Document* owner_document) {
   scoped_refptr<SecurityOrigin> origin;
   StringBuilder debug_info_builder;
+  // Whether the origin is newly created within this call, instead of copied
+  // from an existing document's origin or from `origin_to_commit_`. If this is
+  // true, we won't try to compare the nonce of this origin (if it's opaque) to
+  // the browser-calculated origin later on.
+  bool origin_is_newly_created = false;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
     // and used directly. It is currently supplied only for failed navigations
@@ -2244,6 +2249,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // initiator origin as the precursor.
     origin = SecurityOrigin::CreateWithReferenceOrigin(url_,
                                                        requestor_origin_.get());
+    origin_is_newly_created = true;
   }
 
   if ((policy_container_->GetPolicies().sandbox_flags &
@@ -2291,6 +2297,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       }
     }
     origin = sandbox_origin;
+    origin_is_newly_created = true;
   }
 
   if (commit_reason_ == CommitReason::kInitialization &&
@@ -2335,7 +2342,14 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       debug_info_builder.Append(", is_potentially_trustworthy");
     }
   }
-
+  if (origin_is_newly_created) {
+    // This information will be used by the browser side to figure out if it can
+    // do browser vs renderer calculated origin equality check. Note that this
+    // information must be the last part of the debug info string.
+    // TODO(https://crbug.com/888079): Consider adding a separate boolean that
+    // tracks this instead of piggybacking `origin_calculation_debug_info_`.
+    debug_info_builder.Append(", is_newly_created");
+  }
   origin_calculation_debug_info_ = debug_info_builder.ToAtomicString();
   return origin;
 }

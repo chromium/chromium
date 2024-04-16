@@ -756,7 +756,7 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   const url::Origin& renderer_side_origin = params.origin;
   std::pair<std::optional<url::Origin>, std::string>
       browser_side_origin_and_debug_info =
-          navigation_request->GetOriginToCommitWithDebugInfo();
+          navigation_request->browser_side_origin_to_commit_with_debug_info();
   if (renderer_side_origin.scheme() == url::kContentScheme &&
       browser_side_origin_and_debug_info.first->opaque()) {
     return;
@@ -767,10 +767,21 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   bool origins_match = (browser_side_origin_and_debug_info.first.value() ==
                         renderer_side_origin);
 
-  // For opaque origins, we say the browser and renderer calculated origins
-  // match if their precursor origins match (their nonces might not match).
+  // For opaque origins, we can check for equality if the opaque origin is not
+  // newly created in the renderer. If the opaque origin can be known by the
+  // browser,  e.g. if the opaque origin is inherited/copied from another
+  // document, or is from the browser-sent `origin_to_commit`, then the browser
+  // calculated origin must match the one used by the renderer in the end. On
+  // the other hand, if the opaque origin is newly created, e.g. a new sandboxed
+  // opaque origin, we can only match the precursor origin. The renderer will
+  // tell us if the origin is newly created in the renderer or not through
+  // appending "is_newly_created" in the end of `origin_calculation_debug_info`.
+  // See also `DocumentLoader::CalculateOrigin()`.
+  // TODO(https://crbug.com/888079): Consider adding a separate boolean that
+  // tracks this instead of piggybacking `origin_calculation_debug_info`.
   if (renderer_side_origin.opaque() &&
-      browser_side_origin_and_debug_info.first->opaque()) {
+      browser_side_origin_and_debug_info.first->opaque() &&
+      params.origin_calculation_debug_info.ends_with("is_newly_created")) {
     origins_match = (renderer_side_origin.GetTupleOrPrecursorTupleIfOpaque() ==
                      browser_side_origin_and_debug_info.first
                          ->GetTupleOrPrecursorTupleIfOpaque());
@@ -14108,8 +14119,12 @@ void RenderFrameHostImpl::SendCommitNavigation(
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   // `origin_to_commit` is currently only set only on failed navigations or
   // data: URL navigations.
-  DCHECK(!commit_params->origin_to_commit ||
-         common_params->url.SchemeIs(url::kDataScheme));
+  if (commit_params->origin_to_commit) {
+    DCHECK(common_params->url.SchemeIs(url::kDataScheme));
+    CHECK_EQ(commit_params->origin_to_commit.value(),
+             navigation_request->browser_side_origin_to_commit_with_debug_info()
+                 .first.value());
+  }
   IncreaseCommitNavigationCounter();
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -14274,6 +14289,9 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     blink::mojom::PolicyContainerPtr policy_container) {
   // `origin_to_commit` must be set on failed navigations.
   DCHECK(commit_params->origin_to_commit);
+  CHECK_EQ(commit_params->origin_to_commit.value(),
+           navigation_request->browser_side_origin_to_commit_with_debug_info()
+               .first.value());
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
