@@ -7,43 +7,47 @@
 #
 # More information:
 # https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
-python_version: "3.8"
+python_version: "3.11"
 
+# The default set of platforms vpython checks for does not yet include mac-arm64.
+# Setting `verify_pep425_tag` to the list of platforms we explicitly must support
+# allows us to ensure that vpython specs stay mac-arm64-friendly
 verify_pep425_tag: [
-    {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
-    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+    {python: "cp311", abi: "cp311", platform: "manylinux1_x86_64"},
+    {python: "cp311", abi: "cp311", platform: "linux_arm64"},
 
-    {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
-    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
+    {python: "cp311", abi: "cp311", platform: "macosx_10_10_intel"},
+    {python: "cp311", abi: "cp311", platform: "macosx_11_0_arm64"},
 
-    {python: "cp38", abi: "cp38", platform: "win32"},
-    {python: "cp38", abi: "cp38", platform: "win_amd64"}
+    {python: "cp311", abi: "cp311", platform: "win32"},
+    {python: "cp311", abi: "cp311", platform: "win_amd64"}
 ]
 
 wheel: <
   name: "infra/celab/celab/windows-amd64"
-  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8750922101336036641
-  version: "EOOjjcFkcpSYVHrlcfgxHwBEhIAqwWKNgwX20BvUB8YC"
+  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8750569502072854417
+  version: "j16S6jSsbiySxDfowruIiMXN-3WZ8GB80b8uEys-KpwC"
 >
 
 # googleapiclient
 wheel: <
-  name: "infra/python/wheels/google-api-python-client-py2_py3"
-  version: "version:1.12.8"
+  name: "infra/python/wheels/google-api-python-client-py3"
+  version: "version:2.111.0"
 >
 
 # googleapiclient's dependencies
 wheel: <
-  name: "infra/python/wheels/cachetools-py2_py3"
-  version: "version:2.0.1"
+  name: "infra/python/wheels/cachetools-py3"
+  version: "version:5.3.2"
 >
+
 wheel: <
   name: "infra/python/wheels/google-api-core-py3"
-  version: "version:1.31.5"
+  version: "version:2.14.0"
 >
 wheel: <
   name: "infra/python/wheels/google-auth-py2_py3"
-  version: "version:1.35.0"
+  version: "version:2.23.4"
 >
 wheel: <
   name: "infra/python/wheels/google-auth-httplib2-py2_py3"
@@ -51,7 +55,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/httplib2-py3"
-  version: "version:0.19.1"
+  version: "version:0.22.0"
 >
 wheel: <
   name: "infra/python/wheels/oauth2client-py2_py3"
@@ -106,8 +110,13 @@ wheel: <
   version: "version:1.16.0"
 >
 wheel: <
-  name: "infra/python/wheels/uritemplate-py2_py3"
-  version: "version:3.0.0"
+  name: "infra/python/wheels/uritemplate-py3"
+  version: "version:4.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio-status-py3"
+  version: "version:1.57.0"
 >
 
 # google.cloud pubsub
@@ -138,8 +147,8 @@ wheel: <
 
 # google.protobuf
 wheel: <
-  name: "infra/python/wheels/protobuf-py2_py3"
-  version: "version:3.18.1"
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.25.1"
 >
 
 # iam.admin.v1
@@ -156,12 +165,12 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.52.0"
+  version: "version:1.61.0"
 >
 
 wheel: <
   name: "infra/python/wheels/grpcio/${vpython_platform}"
-  version: "version:1.44.0"
+  version: "version:1.57.0"
 >
 
 wheel: <
@@ -175,8 +184,8 @@ wheel: <
 >
 
 wheel: <
-  name: "infra/python/wheels/absl-py-py2_py3"
-  version: "version:0.7.1"
+  name: "infra/python/wheels/absl-py-py3"
+  version: "version:0.11.0"
 >
 
 wheel: <
@@ -191,6 +200,6 @@ wheel: <
 
 # attrs for simple dataclass
 wheel: <
-  name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:21.4.0"
+  name: "infra/python/wheels/attrs-py3"
+  version: "version:23.1.0"
 >
