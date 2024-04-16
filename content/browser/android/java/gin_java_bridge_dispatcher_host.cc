@@ -443,7 +443,7 @@ void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
       }
       ++iter;
     } else {
-      objects_.erase(iter++);
+      iter = objects_.erase(iter);
     }
   }
 }
