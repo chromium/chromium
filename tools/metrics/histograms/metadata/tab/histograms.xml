@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Storage.Exists.File"
-    enum="BooleanSuccess" expires_after="2024-05-17">
+    enum="BooleanSuccess" expires_after="2025-04-12">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -1330,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount"
-    units="keys" expires_after="2024-05-22">
+    units="keys" expires_after="2025-04-12">
   <owner>davidjm@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
@@ -2295,7 +2295,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2024-05-14">
+<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2025-04-12">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
