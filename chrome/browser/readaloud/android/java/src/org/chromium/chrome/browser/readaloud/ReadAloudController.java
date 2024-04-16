@@ -10,10 +10,13 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPP
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.LruCache;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import com.google.common.hash.Hashing;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -61,7 +64,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,13 +84,15 @@ public class ReadAloudController
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
-    private final Map<String, String> mSanitizedToFullUrlMap = new HashMap<>();
-    private final Map<String, Boolean> mReadabilityMap = new HashMap<>();
-    // the key is url, the value is time it was added to the map
-    private final Map<String, Long> mReadabilityRequestTimeMap = new HashMap<>();
+    private static final int MAX_URL_ENTRIES = 2000;
+    private final LruCache<Integer, Boolean> mReadabilityMap = new LruCache<>(MAX_URL_ENTRIES);
+    // the key is the url hash, the value is time it was added to the map
+    private final LruCache<Integer, Long> mReadabilityRequestTimeMap =
+            new LruCache<>(MAX_URL_ENTRIES);
 
-    private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
-    private final HashSet<String> mPendingRequests = new HashSet<>();
+    private final LruCache<Integer, Boolean> mTimepointsSupportedMap =
+            new LruCache<>(MAX_URL_ENTRIES);
+    private final HashSet<Integer> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
@@ -365,11 +369,11 @@ public class ReadAloudController
 
                     // isPlaybackEnabled() should only be checked if isReadable == true.
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
-
-                    mReadabilityMap.put(url, isReadable);
-                    mReadabilityRequestTimeMap.put(url, sClock.currentTimeMillis());
-                    mTimepointsSupportedMap.put(url, timepointsSupported);
-                    mPendingRequests.remove(url);
+                    int urlHash = urlToHash(url);
+                    mReadabilityMap.put(urlHash, isReadable);
+                    mReadabilityRequestTimeMap.put(urlHash, sClock.currentTimeMillis());
+                    mTimepointsSupportedMap.put(urlHash, timepointsSupported);
+                    mPendingRequests.remove(urlHash);
                     notifyReadabilityMayHaveChanged();
                 }
 
@@ -377,7 +381,7 @@ public class ReadAloudController
                 public void onFailure(String url, Throwable t) {
                     Log.d(TAG, "onFailure called for %s because %s", url, t);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(false);
-                    mPendingRequests.remove(url);
+                    mPendingRequests.remove(urlToHash(url));
                 }
             };
 
@@ -615,27 +619,26 @@ public class ReadAloudController
             return;
         }
         String urlSpec = stripUserData(url).getSpec();
-        // TODO: 2 different URLs can have the same sanitized URL
-        mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
-        if (mPendingRequests.contains(urlSpec)) {
+        int urlSpecHash = urlToHash(urlSpec);
+        if (mPendingRequests.contains(urlSpecHash)) {
             return;
         }
-        if (hasUnexpiredReadabilityInfo(urlSpec)) {
-            ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpec));
+        if (hasUnexpiredReadabilityInfo(urlSpecHash)) {
+            ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpecHash));
             return;
         }
-        mPendingRequests.add(urlSpec);
+        mPendingRequests.add(urlSpecHash);
         mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
     }
 
-    private boolean hasUnexpiredReadabilityInfo(String sanitizedUrl) {
-        if (mReadabilityMap.containsKey(sanitizedUrl)) {
-            Long retrievalDate = mReadabilityRequestTimeMap.get(sanitizedUrl);
+    private boolean hasUnexpiredReadabilityInfo(int sanitizedUrlHash) {
+        if (mReadabilityMap.get(sanitizedUrlHash) != null) {
+            Long retrievalDate = mReadabilityRequestTimeMap.get(sanitizedUrlHash);
             if (retrievalDate != null && sClock.currentTimeMillis() - retrievalDate <= HOUR_TO_MS) {
                 return true;
             }
-            mReadabilityMap.remove(sanitizedUrl);
-            mReadabilityRequestTimeMap.remove(sanitizedUrl);
+            mReadabilityMap.remove(sanitizedUrlHash);
+            mReadabilityRequestTimeMap.remove(sanitizedUrlHash);
         }
         return false;
     }
@@ -682,9 +685,9 @@ public class ReadAloudController
         }
 
         if (isTabLanguageSupported(tab) && isAvailable() && tab.getUrl().isValid()) {
-            String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
-            if (hasUnexpiredReadabilityInfo(sanitizedUrl)) {
-                Boolean isReadable = mReadabilityMap.get(sanitizedUrl);
+            int sanitizedUrlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
+            if (hasUnexpiredReadabilityInfo(sanitizedUrlHash)) {
+                Boolean isReadable = mReadabilityMap.get(sanitizedUrlHash);
                 return isReadable == null ? false : isReadable;
             }
             maybeCheckReadability(tab.getUrl());
@@ -822,6 +825,7 @@ public class ReadAloudController
         }
 
         final String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
+        final int sanitizedUrlHash = urlToHash(sanitizedUrl);
         PlaybackArgs args =
                 new PlaybackArgs(
                         sanitizedUrl,
@@ -848,8 +852,9 @@ public class ReadAloudController
                     Log.e(TAG, exception.getMessage());
                     if (exception instanceof ReadAloudUnsupportedException) {
                         Log.e(TAG, "Attempting to play a non readable website");
-                        mReadabilityMap.put(sanitizedUrl, false);
-                        mReadabilityRequestTimeMap.put(sanitizedUrl, sClock.currentTimeMillis());
+                        mReadabilityMap.put(sanitizedUrlHash, false);
+                        mReadabilityRequestTimeMap.put(
+                                sanitizedUrlHash, sClock.currentTimeMillis());
                         notifyReadabilityMayHaveChanged();
                     }
 
@@ -865,13 +870,13 @@ public class ReadAloudController
     }
 
     /**
-     * Whether or not timepoints are supported for the tab's content.
-     * Timepoints are needed for word highlighting.
+     * Whether or not timepoints are supported for the tab's content. Timepoints are needed for word
+     * highlighting.
      */
     public boolean timepointsSupported(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
-            Boolean timepointsSuported =
-                    mTimepointsSupportedMap.get(stripUserData(tab.getUrl()).getSpec());
+            int urlHash = urlToHash(stripUserData(tab.getUrl()).getSpec());
+            Boolean timepointsSuported = mTimepointsSupportedMap.get(urlHash);
             return timepointsSuported == null ? false : timepointsSuported;
         }
         return false;
@@ -1405,7 +1410,7 @@ public class ReadAloudController
     }
 
     public void setTimepointsSupportedForTest(String url, boolean supported) {
-        mTimepointsSupportedMap.put(url, supported);
+        mTimepointsSupportedMap.put(urlToHash(url), supported);
     }
 
     public TabModelTabObserver getTabModelTabObserverforTests() {
@@ -1422,6 +1427,10 @@ public class ReadAloudController
 
     public TranslationObserver getCurrentTabTranslationObserverForTest() {
         return mCurrentTabTranslationObserver;
+    }
+
+    private int urlToHash(String url) {
+        return Hashing.murmur3_32().hashUnencodedChars(url).asInt();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
