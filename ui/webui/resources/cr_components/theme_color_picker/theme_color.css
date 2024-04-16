@@ -9,9 +9,6 @@
 
 :host {
   --cr-theme-color-border-radius: 50%;
-  --cr-theme-color-check-mark-end: -1px;
-  --cr-theme-color-check-mark-size: 16px;
-  --cr-theme-color-check-mark-top: 0;
   box-sizing: border-box;
   cursor: pointer;
   display: block;
@@ -29,18 +26,6 @@ svg {
   box-sizing: border-box;
   display: block;
   width: 100%;
-}
-
-cr-theme-color-check-mark-wrapper {
-  --cr-theme-color-check-mark-wrapper-background: var(
-      --color-theme-color-picker-checkmark-background,
-      var(--cr-fallback-color-on-surface));
-  --cr-theme-color-check-mark-wrapper-color: var(
-      --color-theme-color-picker-checkmark-foreground,
-      var(--cr-fallback-color-inverse-on-surface));
-  --cr-theme-color-check-mark-wrapper-end: var(--cr-theme-color-check-mark-end);
-  --cr-theme-color-check-mark-wrapper-size: var(--cr-theme-color-check-mark-size);
-  --cr-theme-color-check-mark-wrapper-top: var(--cr-theme-color-check-mark-top);
 }
 
 #background {

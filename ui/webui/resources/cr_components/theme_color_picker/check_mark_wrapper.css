@@ -8,20 +8,17 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-theme-color-check-mark-wrapper-background: var(--google-blue-600);
-  --cr-theme-color-check-mark-wrapper-color: white;
-  --cr-theme-color-check-mark-wrapper-end: 0px;
-  --cr-theme-color-check-mark-wrapper-size: 16px;
-  --cr-theme-color-check-mark-wrapper-top: 0px;
+  --cr-theme-color-check-mark-wrapper-background: var(
+      --color-theme-color-picker-checkmark-background,
+      var(--cr-fallback-color-primary));
+  --cr-theme-color-check-mark-wrapper-color: var(
+      --color-theme-color-picker-checkmark-foreground,
+      var(--cr-fallback-color-on-primary));
+  --cr-theme-color-check-mark-wrapper-end: -3px;
+  --cr-theme-color-check-mark-wrapper-size: 20px;
+  --cr-theme-color-check-mark-wrapper-top: -3px;
   display: block;
   position: relative;
-}
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --cr-theme-color-check-mark-wrapper-background: var(--google-blue-300);
-    --cr-theme-color-check-mark-wrapper-color: var(--google-grey-900);
-  }
 }
 
 svg {

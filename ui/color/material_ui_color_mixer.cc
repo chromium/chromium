@@ -158,9 +158,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       kColorTextfieldForegroundPlaceholderInvalid};
   mixer[kColorTextfieldSelectionBackground] = {kColorTextSelectionBackground};
   mixer[kColorTextSelectionBackground] = {kColorSysTonalContainer};
-  mixer[kColorThemeColorPickerCheckmarkBackground] = {kColorSysOnSurface};
-  mixer[kColorThemeColorPickerCheckmarkForeground] = {
-      kColorSysInverseOnSurface};
+  mixer[kColorThemeColorPickerCheckmarkBackground] = {kColorSysPrimary};
+  mixer[kColorThemeColorPickerCheckmarkForeground] = {kColorSysOnPrimary};
   mixer[kColorThemeColorPickerCustomColorIconBackground] = {
       kColorSysOnSurfaceSubtle};
   mixer[kColorThemeColorPickerHueSliderDialogBackground] = {kColorSysSurface};
