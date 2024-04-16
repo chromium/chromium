@@ -27,15 +27,12 @@ BREAK_INDENTATION = ' ' * 4
 TAG_SPECIALIZATIONS = {
     'OS_TAGS': {
         'android': [
-            'android-lollipop',
-            'android-marshmallow',
-            'android-nougat',
             'android-oreo',
             'android-pie',
             'android-r',
             'android-s',
             'android-t',
-            'android-u',
+            'android-14',
         ],
         'chromeos': [],
         'fuchsia': [],

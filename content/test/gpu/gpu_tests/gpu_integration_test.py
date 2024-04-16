@@ -1103,6 +1103,17 @@ class GpuIntegrationTest(
         'unknown-gpu',
         'unknown-gpu-0x8c',
         'unknown-gpu-',
+        # Android versions prior to Android 14 use the letter corresponding to
+        # the code name, e.g. O for Oreo. 14 and later uses the numerical
+        # version. See crbug.com/333795261 for context on why this is
+        # necessary.
+        'android-8',  # Android O
+        'android-9',  # Android P
+        'android-10',  # Android Q
+        'android-11',  # Android R
+        'android-12',  # Android S
+        'android-13',  # Android T
+        'android-a',  # Android 14+ releases in 2024
     ]
 
   @classmethod
