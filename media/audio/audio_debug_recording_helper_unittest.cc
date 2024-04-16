@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -248,12 +249,12 @@ TEST_F(AudioDebugRecordingHelperTest, OnData) {
   // Setup some data.
   const int number_of_samples = number_of_frames * params.channels();
   const float step = std::numeric_limits<int16_t>::max() / number_of_frames;
-  std::unique_ptr<float[]> source_data(new float[number_of_samples]);
+  auto source_data = base::HeapArray<float>::Uninit(number_of_samples);
   for (float i = 0; i < number_of_samples; ++i) {
     source_data[i] = i * step;
   }
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(params);
-  audio_bus->FromInterleaved<Float32SampleTypeTraits>(source_data.get(),
+  audio_bus->FromInterleaved<Float32SampleTypeTraits>(source_data.data(),
                                                       number_of_frames);
 
   std::unique_ptr<AudioDebugRecordingHelper> recording_helper =

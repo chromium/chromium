@@ -15,6 +15,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
@@ -273,9 +274,9 @@ static bool GetDeviceTotalChannelCount(AudioDeviceID device,
     return false;
   }
 
-  std::unique_ptr<uint8_t[]> list_storage(new uint8_t[size]);
+  auto list_storage = base::HeapArray<uint8_t>::Uninit(size);
   AudioBufferList* buffer_list =
-      reinterpret_cast<AudioBufferList*>(list_storage.get());
+      reinterpret_cast<AudioBufferList*>(list_storage.data());
 
   result = AudioObjectGetPropertyData(device, &pa, 0, 0, &size, buffer_list);
   if (result != noErr) {

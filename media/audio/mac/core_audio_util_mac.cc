@@ -4,20 +4,20 @@
 
 #include "media/audio/mac/core_audio_util_mac.h"
 
-#include "build/build_config.h"
+#include <IOKit/audio/IOAudioTypes.h>
 
 #include <utility>
 
 #include "base/apple/osstatus_logging.h"
+#include "base/containers/heap_array.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
-
-#include <IOKit/audio/IOAudioTypes.h>
 
 namespace media {
 namespace core_audio_mac {
@@ -417,9 +417,9 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   result = AudioObjectGetPropertyDataSize(device_id, &property_address, 0,
                                           nullptr, &size);
   if (result == noErr && size >= sizeof(AudioStreamID)) {
-    std::unique_ptr<uint8_t[]> stream_id_storage(new uint8_t[size]);
+    auto stream_id_storage = base::HeapArray<uint8_t>::Uninit(size);
     AudioStreamID* stream_ids =
-        reinterpret_cast<AudioStreamID*>(stream_id_storage.get());
+        reinterpret_cast<AudioStreamID*>(stream_id_storage.data());
     result = AudioObjectGetPropertyData(device_id, &property_address, 0,
                                         nullptr, &size, stream_ids);
     if (result == noErr) {
