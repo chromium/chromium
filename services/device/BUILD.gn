@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -204,7 +205,7 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos || is_mac) {
+  if (os_level_geolocation_permission_supported) {
     sources += [ "public/cpp/geolocation/geolocation_system_permission_manager_unittest.cc" ]
   }
 

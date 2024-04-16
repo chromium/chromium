@@ -26,9 +26,9 @@
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "components/permissions/contexts/geolocation_permission_context_system.h"
-#endif
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 namespace embedder_support {
 
@@ -78,7 +78,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate),
           is_regular_profile);
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#elif BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextSystem>(
           browser_context,
@@ -88,7 +88,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
       std::make_unique<permissions::GeolocationPermissionContext>(
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate));
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::KEYBOARD_LOCK] =
       std::make_unique<permissions::KeyboardLockPermissionContext>(
           browser_context);

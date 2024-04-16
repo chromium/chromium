@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 
 component("device_features") {
   public = [ "device_features.h" ]
@@ -75,7 +76,7 @@ source_set("test_support") {
     "//url",
   ]
 
-  if (is_apple || is_chromeos) {
+  if (os_level_geolocation_permission_supported || is_ios) {
     sources += [
       "test/fake_geolocation_system_permission_manager.cc",
       "test/fake_geolocation_system_permission_manager.h",

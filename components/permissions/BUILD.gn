@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//device/vr/buildflags/buildflags.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 
 source_set("permissions_common") {
   sources = [
@@ -148,7 +149,7 @@ source_set("permissions") {
   if (enable_vr) {
     deps += [ "//device/vr/public/cpp" ]
   }
-  if (is_mac || is_chromeos) {
+  if (os_level_geolocation_permission_supported) {
     sources += [
       "contexts/geolocation_permission_context_system.cc",
       "contexts/geolocation_permission_context_system.h",

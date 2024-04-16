@@ -37,11 +37,10 @@ component("geolocation") {
   }
 
   public_deps = [
+    ":buildflags",
     "//base",
     "//services/device/public/mojom",
     "//services/device/public/mojom:geolocation_internals",
     "//third_party/abseil-cpp:absl",
   ]
-
-  deps = [ ":buildflags" ]
 }
