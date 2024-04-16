@@ -6,7 +6,6 @@
 
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
@@ -40,9 +39,6 @@ ChromeNavigationUIData::ChromeNavigationUIData(
           web_contents);
   if (no_state_prefetch_contents) {
     is_no_state_prefetching_ = true;
-    prerender_histogram_prefix_ =
-        prerender::PrerenderHistograms::GetHistogramPrefix(
-            no_state_prefetch_contents->origin());
   }
 }
 
@@ -97,7 +93,6 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 #endif
 
   copy->is_no_state_prefetching_ = is_no_state_prefetching_;
-  copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
   copy->bookmark_id_ = bookmark_id_;
 
   return std::move(copy);

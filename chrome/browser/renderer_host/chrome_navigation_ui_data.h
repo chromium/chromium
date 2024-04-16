@@ -77,9 +77,6 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 #endif
   WindowOpenDisposition window_open_disposition() const { return disposition_; }
   bool is_no_state_prefetching() const { return is_no_state_prefetching_; }
-  const std::string& prerender_histogram_prefix() {
-    return prerender_histogram_prefix_;
-  }
   bool is_using_https_as_default_scheme() const {
     return is_using_https_as_default_scheme_;
   }
@@ -104,7 +101,7 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 
   WindowOpenDisposition disposition_;
   bool is_no_state_prefetching_ = false;
-  std::string prerender_histogram_prefix_;
+
   // True if the navigation was initiated by typing in the omnibox but the typed
   // text didn't have a scheme such as http or https (e.g. google.com), and
   // https was used as the default scheme for the navigation. This is used by
