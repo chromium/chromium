@@ -2379,5 +2379,100 @@ TEST_F(DCLayerOverlayDelegatedCompositingTest,
   result.ExpectDelegationFailure();
 }
 
+// Check that the various ways we can set |will_backing_be_read_by_viz| work as
+// expected.
+TEST_F(DCLayerOverlayDelegatedCompositingTest, BackingWillBeReadInViz) {
+  AggregatedRenderPassList pass_list;
+
+  AggregatedRenderPassId::Generator id_generator;
+  base::flat_map<AggregatedRenderPassId, const char*> pass_names;
+  base::flat_set<AggregatedRenderPassId> passes_to_embed_in_root;
+
+  auto CreateNamedPass =
+      [&](const char* name, bool embed_in_root,
+          base::OnceCallback<void(AggregatedRenderPass*)> update_pass) {
+        AggregatedRenderPassId pass_id = id_generator.GenerateNextId();
+        pass_names.insert({pass_id, name});
+        if (embed_in_root) {
+          passes_to_embed_in_root.insert(pass_id);
+        }
+
+        std::unique_ptr<AggregatedRenderPass> pass = CreateRenderPass(pass_id);
+        std::move(update_pass).Run(pass.get());
+        pass_list.push_back(std::move(pass));
+
+        return pass_id;
+      };
+
+  CreateNamedPass("video capture enabled", true,
+                  base::BindOnce([](AggregatedRenderPass* pass) {
+                    pass->video_capture_enabled = true;
+                  }));
+
+  CreateNamedPass("filters", true,
+                  base::BindOnce([](AggregatedRenderPass* pass) {
+                    pass->filters = cc::FilterOperations({
+                        cc::FilterOperation::CreateGrayscaleFilter(1.0f),
+                    });
+                  }));
+
+  CreateNamedPass("generate mipmaps", true,
+                  base::BindOnce([](AggregatedRenderPass* pass) {
+                    pass->generate_mipmap = true;
+                  }));
+
+  auto non_overlay_embeddee_id = CreateNamedPass(
+      "normal pass with non-overlay embedder", true, base::DoNothing());
+  CreateNamedPass("non-overlay embedder", false,
+                  base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
+                    CreateRenderPassDrawQuadAt(
+                        pass, pass->CreateAndAppendSharedQuadState(),
+                        pass->output_rect, non_overlay_embeddee_id);
+                  }));
+
+  auto complex_mask_embeddee_id = CreateNamedPass(
+      "normal pass with gradient mask embedder", true, base::DoNothing());
+  CreateNamedPass("gradient mask embedder", false,
+                  base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
+                    auto* sqs = pass->CreateAndAppendSharedQuadState();
+                    CreateRenderPassDrawQuadAt(pass, sqs, pass->output_rect,
+                                               complex_mask_embeddee_id);
+
+                    // We can delegated rounded corners fine, so set a complex
+                    // mask filter that we will handle with an intermediate
+                    // surface in |SkiaRenderer|.
+                    gfx::LinearGradient gradient;
+                    gradient.AddStep(0.f, 0);
+                    gradient.AddStep(1.f, 0xff);
+                    sqs->mask_filter_info = gfx::MaskFilterInfo(
+                        gfx::RRectF(gfx::RectF(pass->output_rect)), gradient);
+                  }));
+
+  CreateNamedPass("root pass", false,
+                  base::BindLambdaForTesting([&](AggregatedRenderPass* pass) {
+                    for (auto id : passes_to_embed_in_root) {
+                      CreateRenderPassDrawQuadAt(
+                          pass, pass->CreateAndAppendSharedQuadState(),
+                          pass->output_rect, id);
+                    }
+                  }));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  // In this test, we expect every pass except the root pass to be read by viz.
+  // Passes that are not composited as overlays are assumed to be read by viz
+  // e.g. for copy output requests, etc.
+  for (size_t i = 0u; i < pass_list.size(); i++) {
+    SCOPED_TRACE(base::StringPrintf("pass_list[%zu]: %s", i,
+                                    pass_names[pass_list[i]->id]));
+    if (pass_list[i] == pass_list.back()) {
+      EXPECT_FALSE(pass_list[i]->will_backing_be_read_by_viz);
+    } else {
+      EXPECT_TRUE(pass_list[i]->will_backing_be_read_by_viz);
+    }
+  }
+}
+
 }  // namespace
 }  // namespace viz

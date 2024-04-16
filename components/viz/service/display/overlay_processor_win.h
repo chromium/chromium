@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_WIN_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -131,15 +132,54 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       AggregatedRenderPass* root_render_pass,
       const gfx::Rect& damage_rect);
 
+  // This struct holds information about the RPDQ overlays promoted during
+  // delegated compositing. It references objects in the current frame and is
+  // only valid while the render pass list's pointers are valid.
+  // TODO(crbug.com/324460866): Used for partially delegated compositing.
+  struct PromotedRenderPassesInfo {
+    PromotedRenderPassesInfo();
+    ~PromotedRenderPassesInfo();
+
+    PromotedRenderPassesInfo(PromotedRenderPassesInfo&&);
+    PromotedRenderPassesInfo& operator=(PromotedRenderPassesInfo&&);
+
+    // List of render passes that were embedded by a promoted RPDQ overlay.
+    base::flat_set<raw_ref<AggregatedRenderPass>> promoted_render_passes;
+    // List of RPDQs that were promoted to overlay.
+    std::vector<raw_ref<const AggregatedRenderPassDrawQuad>> promoted_rpdqs;
+  };
+
+  // Result of attempting delegated compositing.
+  struct DelegatedCompositingResult {
+    DelegatedCompositingResult();
+    ~DelegatedCompositingResult();
+
+    DelegatedCompositingResult(DelegatedCompositingResult&&);
+    DelegatedCompositingResult& operator=(DelegatedCompositingResult&&);
+
+    OverlayCandidateList candidates;
+    PromotedRenderPassesInfo promoted_render_passes_info;
+  };
+
   // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
   // be placed in |out_candidates| in front-to-back order. Returns true if all
   // quads were successfully promoted.
-  std::optional<OverlayCandidateList> TryDelegatedCompositing(
+  std::optional<DelegatedCompositingResult> TryDelegatedCompositing(
+      const bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const OverlayCandidateFactory& factory,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider) const;
+
+  // Modifies the properties of |promoted_render_passes| for passes that are
+  // referenced by RPDQ overlays. This gives |SkiaRenderer| enough information
+  // to decide whether or not a RPDQ overlay can skip the copy in
+  // |PrepareRenderPassOverlay|.
+  // TODO(crbug.com/324460866): Used for partially delegated compositing.
+  static void UpdatePromotedRenderPassProperties(
+      const AggregatedRenderPassList& render_passes,
+      const PromotedRenderPassesInfo& promoted_render_passes_info);
 
   const raw_ptr<OutputSurface> output_surface_;
 

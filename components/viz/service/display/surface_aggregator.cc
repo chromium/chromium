@@ -451,12 +451,15 @@ SurfaceAggregator::SurfaceAggregator(
     DisplayResourceProvider* provider,
     bool aggregate_only_damaged,
     bool needs_surface_damage_rect_list,
-    ExtraPassForReadbackOption extra_pass_option)
+    ExtraPassForReadbackOption extra_pass_option,
+    bool prevent_merging_surfaces_to_root_pass)
     : manager_(manager),
       provider_(provider),
       aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
-      extra_pass_for_readback_option_(extra_pass_option) {
+      extra_pass_for_readback_option_(extra_pass_option),
+      prevent_merging_surfaces_to_root_pass_(
+          prevent_merging_surfaces_to_root_pass) {
   DCHECK(manager_);
   DCHECK(provider_);
   manager_->AddObserver(this);
@@ -960,7 +963,8 @@ void SurfaceAggregator::EmitSurfaceContent(
       CanPotentiallyMergePass(*surface_quad) && !reflected_and_scaled &&
       combined_transform.Preserves2dAxisAlignment() &&
       mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back(),
-                                              combined_transform);
+                                              combined_transform) &&
+      !resolved_frame.GetRootRenderPassData().aggregation().prevent_merge;
 
   // When a surface has video capture enabled, but no copy requests, we do not
   // require an intermediate surface. However, video capture being enabled is a
@@ -1021,6 +1025,8 @@ void SurfaceAggregator::EmitSurfaceContent(
         root_content_color_usage_, source.has_transparent_background,
         source.cache_render_pass, resolved_pass.aggregation().has_damage,
         source.generate_mipmap);
+
+    copy_pass->is_from_surface_root_pass = resolved_pass.is_root();
 
     UpdatePersistentPassDataMergeState(resolved_pass, copy_pass.get(),
                                        /*is_merged_pass=*/false);
@@ -1919,6 +1925,18 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           result.page_fullscreen_mode = true;
         }
       }
+
+#if BUILDFLAG(IS_WIN)
+      // Force the root passes of surfaces referenced by the root pass of the
+      // root surface to be embedded instead of merged. This supports the
+      // feature |kDelegatedCompositingLimitToUi|.
+      if (prevent_merging_surfaces_to_root_pass_ && child_resolved_frame &&
+          resolved_pass.is_root() && IsRootSurface(resolved_frame.surface())) {
+        child_resolved_frame->GetRootRenderPassData()
+            .aggregation()
+            .prevent_merge = true;
+      }
+#endif
     } else if (auto* render_pass_quad =
                    quad->DynamicCast<CompositorRenderPassDrawQuad>()) {
       CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;

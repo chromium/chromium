@@ -65,6 +65,17 @@ BASE_FEATURE(kDelegatedCompositing,
 #endif
 );
 
+#if BUILDFLAG(IS_WIN)
+// Enable partially delegated compositing. In this mode, the web contents will
+// be forced into its own render pass instead of merging into the root pass.
+// This effectively makes it so only the browser UI quads get delegated
+// compositing.
+// TODO(crbug.com/324460866): Consider removing partially delegated compositing.
+BASE_FEATURE(kDelegatedCompositingLimitToUi,
+             "DelegatedCompositingLimitToUi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

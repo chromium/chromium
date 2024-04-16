@@ -784,31 +784,49 @@ bool DirectRenderer::CanSkipRenderPass(
 DirectRenderer::RenderPassRequirements
 DirectRenderer::CalculateRenderPassRequirements(
     const AggregatedRenderPass* render_pass) const {
-  bool is_root = render_pass == current_frame()->root_render_pass;
+  const bool is_root = render_pass == current_frame()->root_render_pass;
 
   RenderPassRequirements requirements;
 
+#if BUILDFLAG(IS_WIN)
+  // All root render pass backings allocated by the renderer needs to eventually
+  // go into some composition tree. Other things that own/allocate the root pass
+  // backing include the output device and buffer queue.
+  // Windows also can support scanout backings for non-root passes to optimize
+  // partially delegated compositing iff they will not be read in Viz.
+  requirements.is_scanout =
+      is_root || (features::IsDelegatedCompositingEnabled() &&
+                  render_pass->is_from_surface_root_pass &&
+                  !render_pass->will_backing_be_read_by_viz);
+
+  requirements.scanout_dcomp_surface =
+      requirements.is_scanout && render_pass->needs_synchronous_dcomp_commit;
+#else
+  // On macOS and Lacros, the root render pass is handled by |BufferQueue| and
+  // RPDQ overlays are handled by |PrepareRenderPassOverlay|.
+  requirements.is_scanout = is_root;
+#endif
+
   if (is_root) {
     requirements.size = surface_size_for_swap_buffers();
+  } else {
+    requirements.size = CalculateTextureSizeForRenderPass(render_pass);
+  }
+
+  if (requirements.is_scanout) {
+    CHECK(!render_pass->generate_mipmap);
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
     requirements.format =
         GetSinglePlaneSharedImageFormat(reshape_buffer_format());
-    requirements.alpha_type = reshape_alpha_type();
-
-    // All root render pass backings allocated by the renderer needs to
-    // eventually go into some composition tree. Other things that own/allocate
-    // the root pass backing include the output device and buffer queue.
-    requirements.is_scanout = true;
-
-#if BUILDFLAG(IS_WIN)
-    requirements.scanout_dcomp_surface =
-        render_pass->needs_synchronous_dcomp_commit;
-#endif
-    CHECK_EQ(requirements.alpha_type == RenderPassAlphaType::kOpaque,
-             !render_pass->has_transparent_background);
+    if (is_root) {
+      requirements.alpha_type = reshape_alpha_type();
+    } else {
+      requirements.alpha_type = render_pass->has_transparent_background
+                                    ? RenderPassAlphaType::kPremul
+                                    : RenderPassAlphaType::kOpaque;
+    }
   } else {
-    requirements.size = CalculateTextureSizeForRenderPass(render_pass);
     requirements.generate_mipmap = render_pass->generate_mipmap;
     requirements.color_space = RenderPassColorSpace(render_pass);
     requirements.format =

@@ -316,6 +316,12 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const AggregatedRenderPassDrawQuad* rpdq,
       RenderPassOverlayParams** output_render_pass_overlay);
 
+  // Returns a |RenderPassBacking| whose mailbox can be scheduled directly as an
+  // overlay.
+  std::optional<SkiaRenderer::RenderPassBacking>
+  GetRenderPassBackingForDirectScanout(
+      const AggregatedRenderPassId& render_pass_id) const;
+
   RenderPassOverlayParams* GetOrCreateRenderPassOverlayBacking(
       AggregatedRenderPassId render_pass_id,
       const AggregatedRenderPassDrawQuad* rpdq,

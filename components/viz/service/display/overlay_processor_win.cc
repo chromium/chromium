@@ -171,26 +171,35 @@ void OverlayProcessorWin::ProcessForOverlays(
   delegation_succeeded_last_frame_ = false;
 
   if (features::IsDelegatedCompositingEnabled() && !disable_delegation()) {
+    const bool is_full_delegated_compositing =
+        !base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+
     OverlayCandidateFactory factory(
         render_passes->back().get(), resource_provider,
         &surface_damage_rect_list_in_root_space, &output_color_matrix,
         gfx::RectF(render_passes->back()->output_rect), &render_pass_filters,
         WindowsDelegatedOverlayContext());
 
-    std::optional<CandidateList> delegation_result = TryDelegatedCompositing(
-        *render_passes, factory, render_pass_backdrop_filters,
-        resource_provider);
+    std::optional<DelegatedCompositingResult> delegation_result =
+        TryDelegatedCompositing(is_full_delegated_compositing, *render_passes,
+                                factory, render_pass_backdrop_filters,
+                                resource_provider);
 
     // TODO(crbug.com/1502717): Add a histogram to emit delegation status,
     // similar to OverlayProcessorDelegated::ProcessForOverlays.
 
     if (delegation_result) {
       OverlayCandidateList delegated_candidates =
-          std::move(delegation_result.value());
+          std::move(delegation_result.value().candidates);
+      PromotedRenderPassesInfo promoted_render_passes_info =
+          std::move(delegation_result.value().promoted_render_passes_info);
 
       DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
                   "delegation success, candidates.size = %zu",
                   delegated_candidates.size());
+
+      UpdatePromotedRenderPassProperties(*render_passes,
+                                         promoted_render_passes_info);
 
       // We are not promoting videos from any render pass so this map should be
       // empty.
@@ -354,8 +363,31 @@ void OverlayProcessorWin::ProcessOnDCLayerOverlayProcessorForTesting(
       render_pass_overlay_data_map);
 }
 
-std::optional<OverlayCandidateList>
+OverlayProcessorWin::PromotedRenderPassesInfo::PromotedRenderPassesInfo() =
+    default;
+OverlayProcessorWin::PromotedRenderPassesInfo::~PromotedRenderPassesInfo() =
+    default;
+
+OverlayProcessorWin::PromotedRenderPassesInfo::PromotedRenderPassesInfo(
+    OverlayProcessorWin::PromotedRenderPassesInfo&&) = default;
+OverlayProcessorWin::PromotedRenderPassesInfo&
+OverlayProcessorWin::PromotedRenderPassesInfo::operator=(
+    OverlayProcessorWin::PromotedRenderPassesInfo&&) = default;
+
+OverlayProcessorWin::DelegatedCompositingResult::DelegatedCompositingResult() =
+    default;
+OverlayProcessorWin::DelegatedCompositingResult::~DelegatedCompositingResult() =
+    default;
+
+OverlayProcessorWin::DelegatedCompositingResult::DelegatedCompositingResult(
+    OverlayProcessorWin::DelegatedCompositingResult&&) = default;
+OverlayProcessorWin::DelegatedCompositingResult&
+OverlayProcessorWin::DelegatedCompositingResult::operator=(
+    OverlayProcessorWin::DelegatedCompositingResult&&) = default;
+
+std::optional<OverlayProcessorWin::DelegatedCompositingResult>
 OverlayProcessorWin::TryDelegatedCompositing(
+    const bool is_full_delegated_compositing,
     const AggregatedRenderPassList& render_passes,
     const OverlayCandidateFactory& factory,
     const OverlayProcessorInterface::FilterOperationsMap&
@@ -383,8 +415,8 @@ OverlayProcessorWin::TryDelegatedCompositing(
     return std::nullopt;
   }
 
-  OverlayCandidateList candidates;
-  candidates.reserve(root_render_pass->quad_list.size());
+  DelegatedCompositingResult result;
+  result.candidates.reserve(root_render_pass->quad_list.size());
 
   // Try to promote all the quads in the root pass to overlay.
   for (auto it = root_render_pass->quad_list.begin();
@@ -392,12 +424,17 @@ OverlayProcessorWin::TryDelegatedCompositing(
     const DrawQuad* quad = *it;
 
     std::optional<OverlayCandidate> dc_layer;
-    // Try to promote videos like DCLayerOverlay does first, then fall back to
-    // OverlayCandidateFactory. This is because Windows has some specific
-    // details on how it promotes e.g. protected videos that we want to
-    // preserve.
-    dc_layer = dc_layer_overlay_processor_->FromTextureOrYuvQuad(
-        resource_provider, root_render_pass, it, is_page_fullscreen_mode_);
+    if (is_full_delegated_compositing) {
+      // Try to promote videos like DCLayerOverlay does first, then fall back to
+      // OverlayCandidateFactory. This is because Windows has some specific
+      // details on how it promotes e.g. protected videos that we want to
+      // preserve.
+      dc_layer = dc_layer_overlay_processor_->FromTextureOrYuvQuad(
+          resource_provider, root_render_pass, it, is_page_fullscreen_mode_);
+    } else {
+      // In the partial delegated compositing case, we don't expect
+      // video/canvas/etc content in the UI.
+    }
 
     if (!dc_layer.has_value()) {
       OverlayCandidate overlay;
@@ -426,10 +463,123 @@ OverlayProcessorWin::TryDelegatedCompositing(
       return std::nullopt;
     }
 
-    candidates.push_back(std::move(dc_layer).value());
+    // Store metadata on RPDQ overlays for post-processing in
+    // |UpdatePromotedRenderPassProperties| to support partially delegated
+    // compositing.
+    if (dc_layer->rpdq) {
+      auto render_pass_it =
+          base::ranges::find(render_passes, dc_layer->rpdq->render_pass_id,
+                             &AggregatedRenderPass::id);
+      CHECK(render_pass_it != render_passes.end());
+
+      result.promoted_render_passes_info.promoted_render_passes.insert(
+          raw_ref<AggregatedRenderPass>::from_ptr(render_pass_it->get()));
+      result.promoted_render_passes_info.promoted_rpdqs.push_back(
+          raw_ref<const AggregatedRenderPassDrawQuad>::from_ptr(
+              dc_layer->rpdq));
+    }
+
+    result.candidates.push_back(std::move(dc_layer).value());
   }
 
-  return std::make_optional(std::move(candidates));
+  return std::make_optional(std::move(result));
+}
+
+// static
+void OverlayProcessorWin::UpdatePromotedRenderPassProperties(
+    const AggregatedRenderPassList& render_passes,
+    const PromotedRenderPassesInfo& promoted_render_passes_info) {
+  struct Embedder {
+    raw_ptr<const AggregatedRenderPassDrawQuad> rpdq = nullptr;
+    bool is_overlay = false;
+  };
+
+  // Returns true if the |render_pass| or a RPDQ that embeds it will require viz
+  // to read the render pass' backing to compose the frame.
+  const auto BackingWillBeReadInViz =
+      [](const AggregatedRenderPass& render_pass,
+         const std::vector<Embedder>& embedders) {
+        if (render_pass.HasCapture()) {
+          return true;
+        }
+
+        // Filters require an intermediate surface to be applied.
+        if (!render_pass.filters.IsEmpty() ||
+            !render_pass.backdrop_filters.IsEmpty()) {
+          return true;
+        }
+
+        // Resolving mipmaps requires reading the backing.
+        if (render_pass.generate_mipmap) {
+          return true;
+        }
+
+        // Check if any embedders need to read the backing.
+        if (base::ranges::any_of(embedders, [](const auto& embedder) {
+              if (!embedder.is_overlay) {
+                // Non-overlay embedders need to be read in viz
+                return true;
+              }
+
+              if (!embedder.rpdq->mask_resource_id().is_null() ||
+                  embedder.rpdq->shared_quad_state->mask_filter_info
+                      .HasGradientMask()) {
+                return true;
+              }
+
+              return false;
+            })) {
+          return true;
+        }
+
+        return false;
+      };
+
+  // The root render pass will never have embedders, but may e.g. have a copy
+  // request that requires it to be read.
+  render_passes.back()->will_backing_be_read_by_viz =
+      BackingWillBeReadInViz(*render_passes.back().get(), {});
+
+  if (promoted_render_passes_info.promoted_render_passes.empty()) {
+    return;
+  }
+
+  // A map that give us backwards pointers from a render pass overlay to its
+  // embedders.
+  base::flat_map<AggregatedRenderPassId, std::vector<Embedder>> embedders;
+  for (const auto& pass : render_passes) {
+    if (pass == render_passes.front()) {
+      // The first pass cannot embed other render passes.
+      continue;
+    }
+
+    for (const auto* quad : pass->quad_list) {
+      if (const auto* rpdq =
+              quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+        auto it = base::ranges::find(
+            promoted_render_passes_info.promoted_render_passes,
+            rpdq->render_pass_id, &AggregatedRenderPass ::id);
+        if (it == promoted_render_passes_info.promoted_render_passes.end()) {
+          // We don't need to track embedders of render passes that are not
+          // going to overlay since we can assume those will be read by viz.
+          continue;
+        }
+
+        embedders[(*it)->id].push_back(Embedder{
+            .rpdq = rpdq,
+            .is_overlay = base::ranges::find(
+                              promoted_render_passes_info.promoted_rpdqs, rpdq,
+                              [](const auto& rpdq) { return &rpdq.get(); }) !=
+                          promoted_render_passes_info.promoted_rpdqs.end(),
+        });
+      }
+    }
+  }
+
+  for (auto render_pass : promoted_render_passes_info.promoted_render_passes) {
+    render_pass->will_backing_be_read_by_viz =
+        BackingWillBeReadInViz(render_pass.get(), embedders[render_pass->id]);
+  }
 }
 
 }  // namespace viz

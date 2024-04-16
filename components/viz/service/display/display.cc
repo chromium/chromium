@@ -493,9 +493,17 @@ void Display::InitializeRenderer(bool enable_shared_images) {
             : SurfaceAggregator::ExtraPassForReadbackOption::
                   kAddPassForReadback;
   }
+#if BUILDFLAG(IS_WIN)
+  const bool prevent_merging_surfaces_to_root_pass =
+      features::IsDelegatedCompositingEnabled() &&
+      base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+#else
+  const bool prevent_merging_surfaces_to_root_pass = false;
+#endif
   aggregator_ = std::make_unique<SurfaceAggregator>(
       surface_manager_, resource_provider_.get(), output_partial_list,
-      overlay_processor_->NeedsSurfaceDamageRectList(), extra_pass_option);
+      overlay_processor_->NeedsSurfaceDamageRectList(), extra_pass_option,
+      prevent_merging_surfaces_to_root_pass);
 
   aggregator_->set_output_is_secure(output_is_secure_);
   aggregator_->SetDisplayColorSpaces(display_color_spaces_);

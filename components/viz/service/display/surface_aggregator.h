@@ -68,7 +68,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
                     bool aggregate_only_damaged,
                     bool needs_surface_damage_rect_list,
                     ExtraPassForReadbackOption extra_pass_option =
-                        ExtraPassForReadbackOption::kNone);
+                        ExtraPassForReadbackOption::kNone,
+                    bool prevent_merging_surfaces_to_root_pass = false);
 
   SurfaceAggregator(const SurfaceAggregator&) = delete;
   SurfaceAggregator& operator=(const SurfaceAggregator&) = delete;
@@ -353,6 +354,13 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   const bool needs_surface_damage_rect_list_;
 
   const ExtraPassForReadbackOption extra_pass_for_readback_option_;
+
+  // If true, don't merge surfaces in the root render pass. This means renderer
+  // frames get put into their own RPDQ overlay. Note that if delegated
+  // compositing on the UI quads fails, we will end up with an unnecessary
+  // render pass backing since we can't re-merge these surfaces after overlay
+  // processing.
+  const bool prevent_merging_surfaces_to_root_pass_ = false;
 
   // Will be true for duration of Aggregate() function.
   bool is_inside_aggregate_ = false;

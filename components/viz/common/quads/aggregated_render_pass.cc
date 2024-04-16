@@ -229,9 +229,13 @@ void AggregatedRenderPass::AsValueInto(
 
   value->SetInteger("content_color_usage",
                     base::to_underlying(content_color_usage));
-
   value->SetBoolean("is_color_conversion_pass", is_color_conversion_pass);
-
+  value->SetBoolean("is_from_surface_root_pass", is_from_surface_root_pass);
+#if BUILDFLAG(IS_WIN)
+  value->SetBoolean("will_backing_be_read_by_viz", will_backing_be_read_by_viz);
+  value->SetBoolean("needs_synchronous_dcomp_commit",
+                    needs_synchronous_dcomp_commit);
+#endif
   value->SetBoolean("video_capture_enabled", video_capture_enabled);
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(

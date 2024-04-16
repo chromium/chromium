@@ -3042,10 +3042,46 @@ void SkiaRenderer::ScheduleOverlays() {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
     if (overlay.rpdq) {
-      PrepareRenderPassOverlay(&overlay);
-      if (!overlay.mailbox.IsZero()) {
-        locks.emplace_back(this, overlay.mailbox);
+      // Try and use the render pass backing image directly as an overlay.
+      if (auto backing = GetRenderPassBackingForDirectScanout(
+              overlay.rpdq->render_pass_id);
+          backing) {
+        DBG_LOG("delegated.overlays.log",
+                "Pass %" PRIu64 ": RPDQ overlay can scanout directly",
+                overlay.rpdq->render_pass_id.value());
+
+        // SkiaRenderer might've allocated a larger backing than our render
+        // pass' requested size.
+        overlay.uv_rect =
+            gfx::MapRect(overlay.rpdq->tex_coord_rect,
+                         gfx::RectF(backing->size), gfx::RectF(1, 1));
+
+        if (overlay.rpdq->visible_rect != overlay.rpdq->rect) {
+          // The overlay's |display_rect| is the quad's |visible_rect|, so we
+          // need to adjust our |uv_rect| to account for that.
+          overlay.uv_rect =
+              gfx::MapRect(gfx::RectF(overlay.rpdq->visible_rect),
+                           gfx::RectF(overlay.rpdq->rect), overlay.uv_rect);
+        }
+
+        overlay.mailbox = backing->mailbox;
+        overlay.resource_size_in_pixels = backing->size;
+
+        // We do not add the overlay mailbox to |locks| since we're using a
+        // backing from |render_pass_backings_| directly. We can expect the
+        // synchronization to be handled externally.
+      } else {
+        PrepareRenderPassOverlay(&overlay);
+
+        if (!overlay.mailbox.IsZero()) {
+          locks.emplace_back(this, overlay.mailbox);
+        }
       }
+
+      // The overlay will be sent to GPU the thread, so set rpdq to nullptr to
+      // avoid being accessed on the GPU thread.
+      overlay.rpdq = nullptr;
+
       continue;
     }
 #else
@@ -3729,6 +3765,36 @@ bool SkiaRenderer::CanSkipRenderPassOverlay(
   }
 }
 
+std::optional<SkiaRenderer::RenderPassBacking>
+SkiaRenderer::GetRenderPassBackingForDirectScanout(
+    const AggregatedRenderPassId& render_pass_id) const {
+#if BUILDFLAG(IS_WIN)
+  if (auto backing_it = render_pass_backings_.find(render_pass_id);
+      backing_it != render_pass_backings_.end()) {
+    if (backing_it->second.is_scanout) {
+      if (DCHECK_IS_ON()) {
+        auto pass_it =
+            base::ranges::find(*current_frame()->render_passes_in_draw_order,
+                               backing_it->first, &AggregatedRenderPass::id);
+        CHECK(pass_it != current_frame()->render_passes_in_draw_order->end());
+
+        DCHECK(!pass_it->get()->generate_mipmap);
+        DCHECK(pass_it->get()->filters.IsEmpty());
+        DCHECK(pass_it->get()->backdrop_filters.IsEmpty());
+        DCHECK(!(pass_it->get()->will_backing_be_read_by_viz &&
+                 backing_it->second.scanout_dcomp_surface));
+      }
+
+      return std::make_optional(backing_it->second);
+    }
+  }
+#else
+  // Non-Win backends need BufferQueue support on render pass backings.
+#endif
+
+  return std::nullopt;
+}
+
 SkiaRenderer::RenderPassOverlayParams*
 SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     AggregatedRenderPassId render_pass_id,
@@ -3815,10 +3881,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   DCHECK(overlay->rpdq);
 
   auto* const quad = overlay->rpdq;
-
-  // The overlay will be sent to GPU the thread, so set rpdq to nullptr to avoid
-  // being accessed on the GPU thread.
-  overlay->rpdq = nullptr;
 
   // The |current_render_pass| could be used for calculating destination
   // color space or clipping rect for backdrop filters. However
