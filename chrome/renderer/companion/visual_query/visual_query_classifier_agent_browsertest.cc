@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -17,8 +20,8 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/common/companion/visual_query.mojom.h"
 #include "chrome/common/companion/visual_query/features.h"
-#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/test/base/chrome_render_view_test.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,7 +92,7 @@ class FakeModelProvider : mojom::VisualSuggestionsModelProvider {
   // mojom::VisualSuggestionsModelProvider implementation:
   void GetModelWithMetadata(GetModelWithMetadataCallback callback) override {
     base::File model_file = LoadModelFile(model_file_path());
-    std::move(callback).Run(model_file.Duplicate(), "");
+    std::move(callback).Run(model_file.Duplicate(), std::nullopt);
   }
 
   void BindHandle(mojo::ScopedMessagePipeHandle handle) {
@@ -175,7 +178,7 @@ class VisualQueryClassifierAgentTest : public ChromeRenderViewTest {
 TEST_F(VisualQueryClassifierAgentTest,
        StartClassification_SingleImageNonShoppy) {
   LoadHtmlWithSingleImage();
-  agent_->StartVisualClassification(model_file_.Duplicate(), "",
+  agent_->StartVisualClassification(model_file_.Duplicate(), std::nullopt,
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();
   // TODO(b/287637476) - Remove the file valid check.
@@ -208,7 +211,7 @@ TEST_F(VisualQueryClassifierAgentTest,
 TEST_F(VisualQueryClassifierAgentTest, StartClassification_NoImages) {
   std::string html = "<html><body>dummy</body></html>";
   LoadHTML(html.c_str());
-  agent_->StartVisualClassification(model_file_.Duplicate(), "",
+  agent_->StartVisualClassification(model_file_.Duplicate(), std::nullopt,
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();
 
@@ -227,7 +230,7 @@ TEST_F(VisualQueryClassifierAgentTest, StartClassification_NoImages) {
 TEST_F(VisualQueryClassifierAgentTest, StartClassification_InvalidModel) {
   base::File file;
   LoadHtmlWithSingleImage();
-  agent_->StartVisualClassification(file.Duplicate(), "",
+  agent_->StartVisualClassification(file.Duplicate(), std::nullopt,
                                     test_handler_.GetRemoteHandler());
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(test_handler_, HandleClassification(_, _)).Times(0);

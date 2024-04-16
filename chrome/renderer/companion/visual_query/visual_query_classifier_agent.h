@@ -14,6 +14,7 @@
 #include "chrome/renderer/companion/visual_query/visual_query_eligibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -46,7 +47,7 @@ class VisualQueryClassifierAgent : public content::RenderFrameObserver,
   // process.
   void StartVisualClassification(
       base::File visual_model,
-      const std::string& config_proto,
+      std::optional<mojo_base::ProtoWrapper> config_proto,
       mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler)
       override;
 
@@ -64,7 +65,8 @@ class VisualQueryClassifierAgent : public content::RenderFrameObserver,
   void OnClassificationDone(ClassificationResultsAndStats results);
 
   // Handler method used when agent request model from browser.
-  void HandleGetModelCallback(base::File file, const std::string& config);
+  void HandleGetModelCallback(base::File file,
+                              std::optional<mojo_base::ProtoWrapper> config);
 
   // Used to track whether there is an ongoing classification task, if so, we
   // drop the incoming request.

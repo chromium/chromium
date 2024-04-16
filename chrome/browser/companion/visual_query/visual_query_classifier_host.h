@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "chrome/common/companion/visual_query.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
@@ -127,7 +130,7 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
       mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
           visual_query,
       base::File file,
-      const std::string& base64_config);
+      std::optional<mojo_base::ProtoWrapper> wrapped_config);
 
   // Pointer to visual query service which we do not own.
   raw_ptr<VisualQuerySuggestionsService> visual_query_service_ = nullptr;

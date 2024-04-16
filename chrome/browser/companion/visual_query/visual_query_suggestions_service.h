@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_
 #define CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/common/companion/visual_query.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -29,7 +32,8 @@ class VisualQuerySuggestionsService
       public optimization_guide::OptimizationTargetModelObserver {
  public:
   using ModelUpdateCallback =
-      base::OnceCallback<void(base::File, const std::string&)>;
+      base::OnceCallback<void(base::File,
+                              std::optional<mojo_base::ProtoWrapper>)>;
 
   VisualQuerySuggestionsService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

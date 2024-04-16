@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -10,6 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "mojo/public/mojom/base/proto_wrapper.mojom.h"
 
 namespace companion::visual_query {
 
@@ -36,12 +38,11 @@ void CloseModelFile(base::File model_file) {
 // Extracts the model string value from the model metadata.
 // The model string is expected to be a serialized string of the
 // |EligibilitySpec| proto.
-std::string GetModelSpec(ModelMetadata& metadata) {
-  std::string model_spec;
+std::optional<mojo_base::ProtoWrapper> GetModelSpec(ModelMetadata& metadata) {
   if (metadata.has_value() && metadata->has_eligibility_spec()) {
-    metadata->eligibility_spec().SerializeToString(&model_spec);
+    return mojo_base::ProtoWrapper(metadata->eligibility_spec());
   }
-  return model_spec;
+  return std::nullopt;
 }
 
 }  // namespace

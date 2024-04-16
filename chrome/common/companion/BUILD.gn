@@ -3,18 +3,21 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 source_set("visual_query") {
   sources = []
 
-  deps = [ ":mojo_bindings" ]
+  deps = [
+    ":mojo_bindings",
+    "//mojo/public/cpp/base:protobuf_support",
+  ]
 }
 
 mojom("mojo_bindings") {
   sources = [ "visual_query.mojom" ]
   public_deps = [
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//skia/public/mojom",
     "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",

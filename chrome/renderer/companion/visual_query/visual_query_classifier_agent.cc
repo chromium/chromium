@@ -19,6 +19,7 @@
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/mojom/base/proto_wrapper.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -37,52 +38,54 @@ using optimization_guide::proto::ThresholdingRule;
 
 using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
 
-EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
+EligibilitySpec CreateEligibilitySpec(
+    std::optional<mojo_base::ProtoWrapper> config_proto) {
   EligibilitySpec eligibility_spec;
 
-  if (!config_proto.empty()) {
-    eligibility_spec.ParseFromString(config_proto);
+  if (config_proto.has_value()) {
+    eligibility_spec = config_proto->As<EligibilitySpec>().value();
     if (!eligibility_spec.has_additional_cheap_pruning_options()) {
       eligibility_spec.mutable_additional_cheap_pruning_options()
           ->set_z_index_overlap_fraction(0.85);
     }
-  } else {
-    // This is the default configuration if a config is not provided.
-    auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
-    new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
-    new_rule->set_normalizing_op(FeatureLibrary::BY_VIEWPORT_AREA);
-    new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(0.01);
-    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
-    new_rule->set_feature_name(FeatureLibrary::IMAGE_FRACTION_VISIBLE);
-    new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(0.45);
-    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
-    new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_WIDTH);
-    new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(100);
-    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
-    new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_HEIGHT);
-    new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(100);
-    new_rule = eligibility_spec.add_post_renormalization_rules()->add_rules();
-    new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
-    new_rule->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
-    new_rule->set_thresholding_op(FeatureLibrary::GT);
-    new_rule->set_threshold(0.5);
-    auto* shopping_rule =
-        eligibility_spec.add_classifier_score_rules()->add_rules();
-    shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-    shopping_rule->set_thresholding_op(FeatureLibrary::GT);
-    shopping_rule->set_threshold(0.5);
-    auto* sensitivity_rule =
-        eligibility_spec.add_classifier_score_rules()->add_rules();
-    sensitivity_rule->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
-    sensitivity_rule->set_thresholding_op(FeatureLibrary::LT);
-    sensitivity_rule->set_threshold(0.5);
-    eligibility_spec.mutable_additional_cheap_pruning_options()
-        ->set_z_index_overlap_fraction(0.85);
+    return eligibility_spec;
   }
+
+  // This is the default configuration if a config is not provided.
+  auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+  new_rule->set_normalizing_op(FeatureLibrary::BY_VIEWPORT_AREA);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(0.01);
+  new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_FRACTION_VISIBLE);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(0.45);
+  new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_WIDTH);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(100);
+  new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_HEIGHT);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(100);
+  new_rule = eligibility_spec.add_post_renormalization_rules()->add_rules();
+  new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+  new_rule->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  new_rule->set_thresholding_op(FeatureLibrary::GT);
+  new_rule->set_threshold(0.5);
+  auto* shopping_rule =
+      eligibility_spec.add_classifier_score_rules()->add_rules();
+  shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+  shopping_rule->set_thresholding_op(FeatureLibrary::GT);
+  shopping_rule->set_threshold(0.5);
+  auto* sensitivity_rule =
+      eligibility_spec.add_classifier_score_rules()->add_rules();
+  sensitivity_rule->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
+  sensitivity_rule->set_thresholding_op(FeatureLibrary::LT);
+  sensitivity_rule->set_threshold(0.5);
+  eligibility_spec.mutable_additional_cheap_pruning_options()
+      ->set_z_index_overlap_fraction(0.85);
 
   return eligibility_spec;
 }
@@ -134,11 +137,11 @@ DOMImageList FindImagesOnPage(content::RenderFrame* render_frame) {
 ClassificationResultsAndStats ClassifyImagesOnBackground(
     DOMImageList images,
     std::string model_data,
-    std::string config_proto,
+    std::optional<mojo_base::ProtoWrapper> config_proto,
     gfx::SizeF viewport_size) {
   ClassificationResultsAndStats results;
   const auto classifier = VisualClassificationAndEligibility::Create(
-      model_data, CreateEligibilitySpec(config_proto));
+      model_data, CreateEligibilitySpec(std::move(config_proto)));
 
   if (classifier == nullptr) {
     LOCAL_HISTOGRAM_BOOLEAN(
@@ -194,7 +197,7 @@ VisualQueryClassifierAgent* VisualQueryClassifierAgent::Create(
 
 void VisualQueryClassifierAgent::StartVisualClassification(
     base::File visual_model,
-    const std::string& config_proto,
+    std::optional<mojo_base::ProtoWrapper> config_proto,
     mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
   DOMImageList dom_images = FindImagesOnPage(render_frame_);
 
@@ -320,12 +323,13 @@ void VisualQueryClassifierAgent::DidFinishLoad() {
 
 void VisualQueryClassifierAgent::HandleGetModelCallback(
     base::File file,
-    const std::string& config) {
+    std::optional<mojo_base::ProtoWrapper> config) {
   // Now that we have the result, we can unbind and reset the receiver pipe.
   model_provider_.reset();
 
   mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler;
-  StartVisualClassification(std::move(file), config, std::move(result_handler));
+  StartVisualClassification(std::move(file), std::move(config),
+                            std::move(result_handler));
 }
 
 void VisualQueryClassifierAgent::OnDestruct() {

@@ -20,6 +20,7 @@ source_set("visual_query") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser:browser",
+    "//mojo/public/cpp/base:protobuf_support",
     "//third_party/blink/public/common:headers",
   ]
 }
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//mojo/public/cpp/base:protobuf_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

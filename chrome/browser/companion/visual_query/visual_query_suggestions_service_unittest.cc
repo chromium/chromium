@@ -4,6 +4,8 @@
 
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,6 +19,7 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,10 +37,11 @@ base::FilePath model_file_path() {
       .AppendASCII("test-model-quantized.tflite");
 }
 
-void GetModelWithMetadataCallback(base::File model,
-                                  const std::string& config_proto) {
+void GetModelWithMetadataCallback(
+    base::File model,
+    std::optional<mojo_base::ProtoWrapper> config_proto) {
   EXPECT_TRUE(model.IsValid());
-  EXPECT_TRUE(config_proto.empty());
+  EXPECT_FALSE(config_proto.has_value());
 }
 }  // namespace
 

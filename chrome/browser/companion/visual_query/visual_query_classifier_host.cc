@@ -14,6 +14,7 @@
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -156,10 +157,9 @@ void VisualQueryClassifierHost::StartClassification(
 }
 
 void VisualQueryClassifierHost::StartClassificationWithModel(
-    mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
-        visual_query,
+    mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_query,
     base::File model,
-    const std::string& base64_config) {
+    std::optional<mojo_base::ProtoWrapper> wrapped_config) {
   base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
                             model.IsValid());
   if (!model.IsValid()) {
@@ -174,7 +174,7 @@ void VisualQueryClassifierHost::StartClassificationWithModel(
 
   if (visual_query.is_bound() && !result_handler_.is_bound()) {
     visual_query->StartVisualClassification(
-        std::move(model), base64_config,
+        std::move(model), std::move(wrapped_config),
         result_handler_.BindNewPipeAndPassRemote());
 
     // Keep track that we sent IPC and waiting on renderer.
