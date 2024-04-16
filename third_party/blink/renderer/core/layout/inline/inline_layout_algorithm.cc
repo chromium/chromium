@@ -435,8 +435,10 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     container_builder_.SetBfcLineOffset(bfc_line_offset);
   }
 
-  // Force an editable empty line to have metrics, so that is has a height.
-  if (UNLIKELY(line_info->HasLineEvenIfEmpty())) {
+  // Force an editable empty line or a line with ruby annotations to have
+  // metrics, so that is has a height.
+  if (UNLIKELY(line_info->HasLineEvenIfEmpty() ||
+               !box_states_->RubyColumnList().empty())) {
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font,
         baseline_type_);
