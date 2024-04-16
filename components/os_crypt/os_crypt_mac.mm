@@ -23,6 +23,9 @@
 #include "crypto/mock_apple_keychain.h"
 #include "crypto/symmetric_key.h"
 
+// [TT-188] until we're not releasing a dev build, we don't encrypt (so the login db won't be used)
+#define RECORD_REPLAY_TT_188_LOGIN_DB_ENABLED false
+
 using crypto::AppleKeychain;
 
 namespace os_crypt {
@@ -31,6 +34,7 @@ class EncryptionKeyCreationUtil;
 
 namespace {
 
+#if RECORD_REPLAY_TT_188_LOGIN_DB_ENABLED
 // Salt for Symmetric key derivation.
 constexpr char kSalt[] = "saltysalt";
 
@@ -39,6 +43,7 @@ constexpr size_t kDerivedKeySizeInBits = 128;
 
 // Constant for Symmetic key derivation.
 constexpr size_t kEncryptionIterations = 1003;
+#endif
 
 // Prefix for cypher text returned by current encryption version.  We prefix
 // the cypher text with this string so that future data migration can detect
@@ -95,6 +100,9 @@ crypto::SymmetricKey* OSCryptImpl::GetEncryptionKey() {
   if (use_mock_keychain_ && use_locked_mock_keychain_)
     return nullptr;
 
+#if !RECORD_REPLAY_TT_188_LOGIN_DB_ENABLED
+  return nullptr;
+#else
   if (key_is_cached_)
     return cached_encryption_key_.get();
 
@@ -125,6 +133,7 @@ crypto::SymmetricKey* OSCryptImpl::GetEncryptionKey() {
           kDerivedKeySizeInBits);
   DCHECK(cached_encryption_key_);
   return cached_encryption_key_.get();
+#endif
 }
 
 std::string OSCryptImpl::GetRawEncryptionKey() {
