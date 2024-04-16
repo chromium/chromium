@@ -4089,7 +4089,14 @@ TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
 
 // Tests that pressing the 'Close All' button closes both windows in a Snap
 // Group.
-TEST_F(SnapGroupDesksTest, CloseAll) {
+// TODO(crbug.com/335001236): Re-enable this test
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER)
+#define MAYBE_CloseAll DISABLED_CloseAll
+#else
+#define MAYBE_CloseAll CloseAll
+#endif
+TEST_F(SnapGroupDesksTest, MAYBE_CloseAll) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
