@@ -4,16 +4,23 @@
 
 #include "chrome/browser/model_execution/model_manager_impl.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/model_execution/model_execution_session.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "content/public/browser/content_browser_client.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom.h"
 
 DOCUMENT_USER_DATA_KEY_IMPL(ModelManagerImpl);
@@ -34,15 +41,63 @@ void ModelManagerImpl::Create(
   model_manager->receiver_.Bind(std::move(receiver));
 }
 
+bool ModelManagerImpl::IsModelPathValid(const std::string& model_path_str) {
+  std::optional<base::FilePath> model_path =
+      optimization_guide::StringToFilePath(model_path_str);
+  if (!model_path) {
+    return false;
+  }
+  return base::PathExists(*model_path);
+}
+
 void ModelManagerImpl::CanCreateGenericSession(
     CanCreateGenericSessionCallback callback) {
-  // TODO(leimy): add the checks after optimization guide component provide more
-  // method to determine if a session could be started.
+  // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
+  // TODO(https://crbug.com/330819915): add the checks after optimization guide
+  // component provide more method to determine if a session could be started.
   content::BrowserContext* browser_context = browser_context_.get();
-  std::move(callback).Run(
-      /*can_create=*/browser_context &&
-      !!OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context)));
+  CHECK(browser_context);
+  if (!OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context))) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Unable to create generic session because the service is not running.");
+    std::move(callback).Run(/*can_create=*/false);
+    return;
+  }
+
+  // If the model path is empty or invalid, return false.
+  auto model_path =
+      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
+  if (!model_path) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Unable to create generic session because the model path is not "
+        "provided.");
+    std::move(callback).Run(/*can_create=*/false);
+    return;
+  }
+
+  // This needs to be done in a task runner with `MayBlock` trait.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ModelManagerImpl::IsModelPathValid,
+                     base::Unretained(this), model_path.value()),
+      base::BindOnce(
+          [](CanCreateGenericSessionCallback callback,
+             content::RenderFrameHost& rfh, const std::string& model_path,
+             bool is_valid_path) {
+            if (!is_valid_path) {
+              rfh.AddMessageToConsole(
+                  blink::mojom::ConsoleMessageLevel::kWarning,
+                  base::StringPrintf("Unable to create generic session because "
+                                     "the model path ('%s') is invalid.",
+                                     model_path.c_str()));
+            }
+            std::move(callback).Run(is_valid_path);
+          },
+          std::move(callback), std::ref(render_frame_host()),
+          model_path.value()));
 }
 
 void ModelManagerImpl::CreateGenericSession(
