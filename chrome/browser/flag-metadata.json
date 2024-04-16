@@ -1628,7 +1628,7 @@
   {
     "name": "cros-labs-continuous-overview-animation",
     "owners": [ "sammiequon@chromium.org", "chromeos-wm-corexp@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 131
   },
   {
     "name": "cros-labs-enable-overview-from-wallpaper",
