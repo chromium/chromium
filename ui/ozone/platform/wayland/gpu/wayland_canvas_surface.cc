@@ -363,10 +363,11 @@ void WaylandCanvasSurface::MaybeProcessUnsubmittedFrames() {
     }
   }
 
+  constexpr bool enable_blend_for_shadow = true;
   buffer_manager_->CommitBuffer(
       widget_, frame->frame_id, frame_buffer->buffer_id(),
-      std::move(frame->data), gfx::Rect(size_), gfx::RoundedCornersF(),
-      viewport_scale_, damage);
+      std::move(frame->data), gfx::Rect(size_), enable_blend_for_shadow,
+      gfx::RoundedCornersF(), viewport_scale_, damage);
 
   submitted_frame_ = std::move((frame));
 }

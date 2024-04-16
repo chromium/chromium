@@ -301,6 +301,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
                                            uint32_t buffer_id,
                                            gfx::FrameData data,
                                            const gfx::Rect& bounds_rect,
+                                           bool enable_blend,
                                            const gfx::RoundedCornersF& corners,
                                            float surface_scale_factor,
                                            const gfx::Rect& damage_region) {
@@ -310,8 +311,9 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
   overlay_configs.emplace_back(
       gfx::OverlayPlaneData(
           INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-          gfx::RectF(bounds_rect), gfx::RectF(1.f, 1.f) /* no crop */, false,
-          damage_region, 1.0f /*opacity*/, gfx::OverlayPriorityHint::kNone,
+          gfx::RectF(bounds_rect), gfx::RectF(1.f, 1.f) /* no crop */,
+          enable_blend, damage_region, 1.0f /*opacity*/,
+          gfx::OverlayPriorityHint::kNone,
           gfx::RRectF(gfx::RectF(bounds_rect), corners), gfx::ColorSpace(),
           std::nullopt),
       nullptr, buffer_id, surface_scale_factor);

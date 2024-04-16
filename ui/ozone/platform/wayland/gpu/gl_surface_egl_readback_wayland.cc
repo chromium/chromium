@@ -118,10 +118,12 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
   ReadPixels(next_buffer->shm_mapping_.memory());
 
   const auto bounds = gfx::Rect(GetSize());
+  constexpr bool enable_blend_for_shadow = true;
   buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_,
                                 /*frame_id*/ next_buffer->buffer_id_, data,
-                                bounds, gfx::RoundedCornersF(),
-                                surface_scale_factor_, bounds);
+                                bounds, enable_blend_for_shadow,
+                                gfx::RoundedCornersF(), surface_scale_factor_,
+                                bounds);
 }
 
 gfx::SurfaceOrigin GLSurfaceEglReadbackWayland::GetOrigin() const {
