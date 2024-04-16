@@ -419,9 +419,7 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
     return;
   }
 
-  if (detachChange.group()) {
-    [self updateCellGroup:detachChange.group()];
-  } else {
+  if (!detachChange.group()) {
     // Get the identifier to remove.
     web::WebState* detachedWebState = detachChange.detached_web_state();
     GridItemIdentifier* identifierToRemove =
@@ -510,10 +508,16 @@ Browser* GetBrowserForGroup(BrowserList* browser_list,
       // The activation is handled after this switch statement.
       break;
     }
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached, as this is already handled in
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      if (detachChange.group()) {
+        [self updateCellGroup:detachChange.group()];
+      }
+      // Do not manage other case scenarios as this is already handled in
       // `-willChangeWebStateList:change:status:` function.
       break;
+    }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
