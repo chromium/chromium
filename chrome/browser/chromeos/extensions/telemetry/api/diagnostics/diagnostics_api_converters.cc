@@ -413,9 +413,9 @@ ConvertRoutineArgumentsUnion(
   if (result) {
     return result;
   }
-  // When extension is newer than the brwowser, extension might pass in a
-  // routine argument that cannot be recognized by the browser. For better
-  // developer experience, don't treat it as an invalid union.
+  // When extension is newer than the browser, extension might pass in a routine
+  // argument that cannot be recognized by the browser. For better developer
+  // experience, don't treat it as an invalid union.
   return crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(
       false);
 }
@@ -436,9 +436,9 @@ ConvertRoutineInquiryReplyUnion(
   if (result) {
     return result;
   }
-  // When extension is newer than the brwowser, extension might pass in a
-  // reply that cannot be recognized by the browser. For better developer
-  // experience, don't treat it as an invalid union.
+  // When extension is newer than the browser, extension might pass in a reply
+  // that cannot be recognized by the browser. For better developer experience,
+  // don't treat it as an invalid union.
   return crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
       false);
 }
