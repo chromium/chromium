@@ -202,7 +202,7 @@ void AXMenuListOption::GetRelativeBounds(
     if (options_bounds.size() && index >= options_bounds.size()) {
       LOG(FATAL) << "Out of bounds option index=" << index
                  << " should be less than " << options_bounds.size()
-                 << "\n* Object = " << ToString(true, true);
+                 << "\n* Object = " << this;
     }
 #endif
     if (ax_menu_list->GetLayoutObject()) {

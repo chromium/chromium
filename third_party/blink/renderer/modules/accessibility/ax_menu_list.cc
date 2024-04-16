@@ -139,10 +139,8 @@ void AXMenuList::AddChildren() {
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
   // ClearChildren() does not clear the menulist popup chld.
   CHECK(children_.empty()) << "Parent still has " << children_.size()
-                           << " children before adding:"
-                           << "\nParent is " << ToString(true, true)
-                           << "\nFirst child is "
-                           << children_[0]->ToString(true, true);
+                           << " children before adding:" << "\nParent is "
+                           << this << "\nFirst child is " << children_[0];
 #endif
 
   CHECK(NeedsToUpdateChildren());

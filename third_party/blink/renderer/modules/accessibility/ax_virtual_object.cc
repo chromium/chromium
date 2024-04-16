@@ -41,9 +41,9 @@ void AXVirtualObject::AddChildren() {
   DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
   DCHECK_EQ(children_.size(), 0U)
-      << "Parent still has " << children_.size() << " children before adding:"
-      << "\nParent is " << ToString(true, true) << "\nFirst child is "
-      << children_[0]->ToString(true, true);
+      << "Parent still has " << children_.size()
+      << " children before adding:" << "\nParent is " << this
+      << "\nFirst child is " << children_[0];
 #endif
   if (!accessible_node_)
     return;

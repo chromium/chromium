@@ -991,7 +991,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
   // their parents and recursion via AddPseudoElementChildrenFromLayoutTree.
   DCHECK(!result->IsMissingParent() || !result->GetNode())
       << "Had AXObject but is missing parent: " << layout_object << " "
-      << result->ToString(true, true);
+      << result;
 
   return result;
 }
@@ -1110,7 +1110,7 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
         DCHECK(IsA<HTMLImageElement>(ax_image->GetNode()))
             << "Expected image AX parent of <map>'s DOM child, got: "
             << ax_image->GetNode() << "\n* Map's DOM child was: " << child
-            << "\n* ax_image: " << ax_image->ToString(true, true);
+            << "\n* ax_image: " << ax_image;
         return ax_image;
       }
     }
@@ -1551,8 +1551,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
   if (AXObject* obj = Get(inline_text_box)) {
 #if DCHECK_IS_ON()
     DCHECK(!obj->IsDetached())
-        << "AXObject for inline text box should not be detached: "
-        << obj->ToString(true, true);
+        << "AXObject for inline text box should not be detached: " << obj;
     // AXInlineTextbox objects can't get a new parent, unlike other types of
     // accessible objects that can get a new parent because they moved or
     // because of aria-owns.
@@ -1562,9 +1561,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
            parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
     DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent)
-        << "Mismatched old and new parent:"
-        << "\n* Old parent: " << obj->CachedParentObject()->ToString(true, true)
-        << "\n* New parent: " << parent->ToString(true, true);
+        << "Mismatched old and new parent:" << "\n* Old parent: "
+        << obj->CachedParentObject() << "\n* New parent: " << parent;
     DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
         << "Unexpected parent of inline text box: " << parent->RoleValue();
 #endif
@@ -2677,10 +2675,10 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
          "serialization, because the ancestor may have already been "
          "visited. Reaching this line indicates that AXObjectCacheImpl did "
          "not handle a signal and call ChildrenChanged() earlier."
-      << "\nChild: " << obj->ToString(true) << "\nParent: "
-      << (obj->CachedParentObject() ? obj->CachedParentObject()->ToString(true)
+      << "\nChild: " << obj->ToString() << "\nParent: "
+      << (obj->CachedParentObject() ? obj->CachedParentObject()->ToString()
                                     : "")
-      << "\nAncestor: " << ax_ancestor->ToString(true);
+      << "\nAncestor: " << ax_ancestor->ToString();
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(AXObject* obj) {
@@ -2750,7 +2748,7 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
   // Return ancestor to fire children changed notification on.
   DCHECK(ancestor->LastKnownIsIncludedInTreeValue())
       << "ChildrenChanged() must only be called on included nodes: "
-      << ancestor->ToString(true, true);
+      << ancestor;
 
   return ancestor;
 }
@@ -2941,28 +2939,24 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
     DCHECK(object->GetDocument());
     DCHECK(object->GetDocument()->GetFrame())
         << "An object in a closed document should have been removed:"
-        << "\n* Object: " << object->ToString(true, true);
+        << "\n* Object: " << object;
     DCHECK(!object->IsMissingParent())
         << "No object should be missing its parent: " << "\n* Object: "
-        << object->ToString(true, true) << "\n* Computed parent: "
-        << (object->ComputeParent()
-                ? object->ComputeParent()->ToString(true, true)
-                : "not found");
+        << object << "\n* Computed parent: " << object->ComputeParent();
     // Check whether cached values need an update before using any getters that
     // will update them.
     DCHECK(!object->NeedsToUpdateCachedValues())
         << "No cached values should require an update: " << "\n* Object: "
-        << object->ToString(true, true);
+        << object;
     DCHECK(!object->ChildrenNeedToUpdateCachedValues())
         << "Cached values for children should not require an update: "
-        << "\n* Object: " << object->ToString(true, true);
+        << "\n* Object: " << object;
     if (object->AccessibilityIsIncludedInTree()) {
       // All cached children must be included.
       for (const auto& child : object->CachedChildrenIncludingIgnored()) {
         CHECK(child->AccessibilityIsIncludedInTree())
             << "Included parent cannot have unincluded child:" << "\n* Parent: "
-            << object->ToString(true, true)
-            << "\n* Child: " << child->ToString(true);
+            << object << "\n* Child: " << child->ToString();
       }
       if (!object->IsRoot()) {
         // Parent must have this child in its cached children.
@@ -2972,8 +2966,8 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
             included_parent->CachedChildrenIncludingIgnored();
         DCHECK(siblings.Contains(object))
             << "Object was not included in its parent: " << "\n* Object: "
-            << object->ToString(true)
-            << "\n* Included parent: " << included_parent->ToString(true);
+            << object->ToString()
+            << "\n* Included parent: " << included_parent->ToString();
       }
     }
     count++;
@@ -3000,7 +2994,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
       }
       DCHECK(!ancestor->HasDirtyDescendants())
           << "No subtrees should be flagged as needing updates at this point:"
-          << "\n* Object: " << ancestor->ToString(true)
+          << "\n* Object: " << ancestor->ToString()
           << "\n* Included parent: " << included_parent->GetAXTreeForThis();
     }
     AXObject* included_parent = object->ParentObjectIncludedInTree();
@@ -3009,8 +3003,8 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
     }
     DCHECK(!object->NeedsToUpdateChildren())
         << "No children in the tree should require an update at this point: "
-        << "\n* Object: " << object->ToString(true)
-        << "\n* Included parent: " << included_parent->ToString(true);
+        << "\n* Object: " << object->ToString()
+        << "\n* Included parent: " << included_parent->ToString();
 
     count++;
   }
@@ -3584,8 +3578,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
     return;
   }
 
-  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
-      << ax_object->ToString(true, true);
+  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent()) << ax_object;
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
@@ -3604,7 +3597,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
 
   // Kept here for convenient debugging:
   // DVLOG(1) << "\n**** Processing tree update:" << "\n* AXObject: "
-  //         << ax_object->ToString(true, true)
+  //         << ax_object
   //         << "\n* Event: " << tree_update->event
   //         << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
 
@@ -4027,8 +4020,7 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
     return;
   }
 
-  CHECK_EQ(obj->GetNode(), &node)
-      << "\nMismatched object and node: " << obj->ToString(true, true);
+  CHECK_EQ(obj->GetNode(), &node) << "\nMismatched object and node: " << obj;
 
   // Process completed relations for new ids. These are relations where
   // the target AXObject didn't exist when the relation was initially cached.
@@ -5337,7 +5329,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
     DCHECK(obj->GetDocument()->GetFrame())
         << "An object in a closed document should have been detached via "
            "Remove(): "
-        << obj->ToString(true, true);
+        << obj;
 
     // Cannot serialize unincluded object.
     // Only included objects are marked dirty, but this can happen if the
@@ -5368,7 +5360,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
       AXID id = node_data.id;
       DCHECK(id);
       // Kept here for convenient debugging:
-      // DVLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString(true);
+      // DVLOG(1) << "*** AX Serialize: " << ObjectFromAXID(id)->ToString();
       already_serialized_ids.insert(node_data.id);
 
       // Now that the bounding box for this node is serialized, we can clear the
@@ -5381,8 +5373,8 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
         << "Did not serialize original node, so it was probably not included "
            "in its parent's children, and should never have been marked dirty "
            "in the first place: "
-        << obj->ToString(true)
-        << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString(true)
+        << obj->ToString()
+        << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString()
         << "\nIndex in parent: "
         << obj->ParentObjectIncludedInTree()
                ->CachedChildrenIncludingIgnored()

@@ -281,7 +281,7 @@ class BLINK_EXPORT WebAXObject {
 
   // Returns a brief description of the object, suitable for debugging. E.g. its
   // role and name.
-  WebString ToString(bool verbose = false) const;
+  WebString ToString(bool verbose = true) const;
 
   void HandleAutofillSuggestionAvailabilityChanged(
       WebAXAutofillSuggestionAvailability suggestion_availability) const;

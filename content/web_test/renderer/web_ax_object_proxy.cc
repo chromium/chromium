@@ -1721,7 +1721,7 @@ int WebAXObjectProxy::ScrollY() {
 
 std::string WebAXObjectProxy::ToString() {
   UpdateLayout();
-  return accessibility_object_.ToString().Utf8();
+  return accessibility_object_.ToString(/*verbose*/ false).Utf8();
 }
 
 float WebAXObjectProxy::BoundsX() {

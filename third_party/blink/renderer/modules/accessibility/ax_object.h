@@ -1450,9 +1450,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PreSerializationConsistencyCheck();
 
   // Returns a string representation of this object.
-  // |cached_values_only| avoids recomputing cached values, and thus can be
-  // used during UpdateCachedValuesIfNecessary() without causing recursion.
-  String ToString(bool verbose = false, bool cached_values_only = false) const;
+  String ToString(bool verbose = true) const;
 
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;

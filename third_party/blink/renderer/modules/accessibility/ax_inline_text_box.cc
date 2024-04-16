@@ -382,7 +382,7 @@ void AXInlineTextBox::Init(AXObject* parent) {
   DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
       << "Unexpected parent of inline text box: " << parent->RoleValue();
   DCHECK(parent->CanHaveChildren())
-      << "Parent cannot have children: " << parent->ToString(true, true);
+      << "Parent cannot have children: " << parent;
   // Don't call SetParent(), which calls SetAncestorsHaveDirtyDescendants(),
   // because once inline textboxes are loaded for the parent text, it's never
   // necessary to again recompute this part of the tree.

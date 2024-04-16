@@ -612,7 +612,7 @@ AXObject::~AXObject() {
 void AXObject::SetHasDirtyDescendants(bool dirty) const {
   CHECK(!dirty || LastKnownIsIncludedInTreeValue())
       << "Only included nodes can be marked as having dirty descendants: "
-      << ToString(true, true);
+      << this;
   has_dirty_descendants_ = dirty;
 }
 
@@ -621,7 +621,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
   CHECK(!AXObjectCache().HasBeenDisposed());
   if (AXObjectCache().IsFrozen()) {
     // TODO(accessibility): Restore as CHECK(), remove early return.
-    DCHECK(false) << "Attempt to update frozen tree: " << ToString(true, true);
+    DCHECK(false) << "Attempt to update frozen tree: " << this;
     return;
   }
   CHECK(!AXObjectCache().UpdatingTree());
@@ -698,7 +698,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
 void AXObject::Init(AXObject* parent) {
   CHECK(!parent_) << "Should not already have a cached parent:"
                   << "\n* Child = " << GetNode() << " / " << GetLayoutObject()
-                  << "\n* Parent = " << parent_->ToString(true, true)
+                  << "\n* Parent = " << parent_
                   << "\n* Equal to passed-in parent? " << (parent == parent_);
   // Every AXObject must have a parent unless it's the root.
   CHECK(parent || IsRoot())
@@ -736,16 +736,14 @@ void AXObject::Init(AXObject* parent) {
 
   // The parent cannot have children. This object must be destroyed.
   DCHECK(!parent_ || parent_->CanHaveChildren())
-      << "Tried to set a parent that cannot have children:"
-      << "\n* Parent = " << parent_->ToString(true, true)
-      << "\n* Child = " << ToString(true, true);
+      << "Tried to set a parent that cannot have children:" << "\n* Parent = "
+      << parent_ << "\n* Child = " << this;
 
   children_dirty_ = true;
 
   UpdateCachedAttributeValuesIfNeeded(false);
 
-  DCHECK(GetDocument()) << "All AXObjects must have a document: "
-                        << ToString(true, true);
+  DCHECK(GetDocument()) << "All AXObjects must have a document: " << this;
 
   // Set the parent again, this time via SetParent(), so that all related checks
   // and calls occur now that we have the role and updated cached values.
@@ -755,8 +753,7 @@ void AXObject::Init(AXObject* parent) {
 void AXObject::Detach() {
 #if DCHECK_IS_ON()
   DCHECK(!is_updating_cached_values_)
-      << "Don't detach in the middle of updating cached values: "
-      << ToString(true, true);
+      << "Don't detach in the middle of updating cached values: " << this;
 #endif
   // Prevents LastKnown*() methods from returning the wrong values.
   cached_is_ignored_ = true;
@@ -776,13 +773,13 @@ void AXObject::Detach() {
       << "Do not detach children while the tree is frozen, in order to avoid "
          "an object detaching itself in the middle of computing its own "
          "accessibility properties.";
-  SANITIZER_CHECK(!is_adding_children_) << ToString(true, true);
+  SANITIZER_CHECK(!is_adding_children_) << this;
 #endif
 
 #if !defined(NDEBUG)
   // Facilitates debugging of detached objects by providing info on what it was.
   if (!ax_object_cache_->HasBeenDisposed()) {
-    detached_object_debug_info_ = ToString(true, true);
+    detached_object_debug_info_ = ToString();
   }
 #endif
 
@@ -812,7 +809,7 @@ void AXObject::SetParent(AXObject* new_parent) const {
   if (!new_parent && !IsRoot()) {
     std::ostringstream message;
     message << "Parent cannot be null, except at the root."
-            << "\nThis: " << ToString(true, true)
+            << "\nThis: " << this
             << "\nDOM parent chain , starting at |this->GetNode()|:";
     int count = 0;
     for (Node* node = GetNode(); node;
@@ -821,7 +818,7 @@ void AXObject::SetParent(AXObject* new_parent) const {
               << (++count) << ". " << node
               << "\n  LayoutObject=" << node->GetLayoutObject();
       if (AXObject* obj = AXObjectCache().Get(node))
-        message << "\n  " << obj->ToString(true, true);
+        message << "\n  " << obj;
       if (!node->isConnected()) {
         break;
       }
@@ -831,9 +828,8 @@ void AXObject::SetParent(AXObject* new_parent) const {
 
   if (new_parent) {
     DCHECK(!new_parent->IsDetached())
-        << "Cannot set parent to a detached object:"
-        << "\n* Child: " << ToString(true, true)
-        << "\n* New parent: " << new_parent->ToString(true, true);
+        << "Cannot set parent to a detached object:" << "\n* Child: " << this
+        << "\n* New parent: " << new_parent;
 
     DCHECK(!IsAXInlineTextBox() ||
            ui::CanHaveInlineTextBoxChildren(new_parent->RoleValue()))
@@ -848,9 +844,8 @@ void AXObject::SetParent(AXObject* new_parent) const {
       !parent_->IsDetached()) {
     for (const auto& child : parent_->ChildrenIncludingIgnored()) {
       DCHECK(child != this) << "Previous parent still has |this| child:\n"
-                            << ToString(true, true) << " should be a child of "
-                            << new_parent->ToString(true, true) << " not of "
-                            << parent_->ToString(true, true);
+                            << this << " should be a child of " << new_parent
+                            << " not of " << parent_;
     }
     // TODO(accessibility) This should not be reached unless this method is
     // called on an AXObject of role kRootWebArea or when the parent's
@@ -881,15 +876,13 @@ bool AXObject::IsMissingParent() const {
     // the tree, and without a parent, for potential later reuse.
     bool is_missing = !IsRoot();
     DUMP_WILL_BE_CHECK(!is_missing || !AXObjectCache().IsFrozen())
-        << "Should not have missing parent in frozen tree: "
-        << ToString(true, true);
+        << "Should not have missing parent in frozen tree: " << this;
     return is_missing;
   }
 
   if (parent_->IsDetached()) {
     CHECK(!AXObjectCache().IsFrozen())
-        << "Should not have detached parent in frozen tree: "
-        << ToString(true, true);
+        << "Should not have detached parent in frozen tree: " << this;
 
     return true;
   }
@@ -908,9 +901,8 @@ AXObject* AXObject::ComputeParent() const {
   AXObject* ax_parent = ComputeParentOrNull();
 
   CHECK(!ax_parent || !ax_parent->IsDetached())
-      << "Computed parent should never be detached:" << "\n* Child: "
-      << ToString(true, true)
-      << "\n* Parent: " << ax_parent->ToString(true, true);
+      << "Computed parent should never be detached:" << "\n* Child: " << this
+      << "\n* Parent: " << ax_parent;
 
   return ax_parent;
 }
@@ -938,9 +930,7 @@ AXObject* AXObject::ComputeParentOrNull() const {
         << "AXInlineTextBox box tried to compute a new parent, but they are "
            "not allowed to exist even temporarily without a parent, as their "
            "existence depends on the parent text object. Parent text = "
-        << (AXObjectCache().Get(GetNode())
-                ? AXObjectCache().Get(GetNode())->ToString(true, true)
-                : "");
+        << AXObjectCache().Get(GetNode());
   } else if (AXObjectCache().IsAriaOwned(this)) {
     ax_parent = AXObjectCache().ValidatedAriaOwner(this);
   } else if (IsVirtualObject()) {
@@ -1539,7 +1529,7 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
     // once fixed, turn into a DCHECK.
     SANITIZER_CHECK(!IsFrame(GetNode()))
         << "If this is an iframe, it should also be a child tree owner: "
-        << ToString(true, true);
+        << this;
     return;
   }
 
@@ -1554,7 +1544,7 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   if (!child_frame) {
     // TODO(crbug.com/1342603) Determine why these are firing in the wild and,
     // once fixed, turn into a DCHECK.
-    SANITIZER_CHECK(IsDisabled()) << ToString(true, true);
+    SANITIZER_CHECK(IsDisabled()) << this;
     return;
   }
 
@@ -1567,10 +1557,10 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
       << "Children won't exist until the trees are stitched together in the "
          "browser process. A failure means that a child node was incorrectly "
          "considered relevant by AXObjectCacheImpl."
-      << "\n* Parent: " << ToString(true)
+      << "\n* Parent: " << this
       << "\n* Frame owner: " << IsA<HTMLFrameOwnerElement>(GetNode())
       << "\n* Element src: " << GetAttribute(html_names::kSrcAttr)
-      << "\n* First child: " << FirstChildIncludingIgnored()->ToString(true);
+      << "\n* First child: " << FirstChildIncludingIgnored();
 
   ui::AXTreeID child_tree_id = ui::AXTreeID::FromToken(child_token.value());
   node_data->AddChildTreeId(child_tree_id);
@@ -1889,7 +1879,7 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
     if (AXObject* parent = ParentObject()) {
       DCHECK(parent->ChooserPopup() == this)
-          << "ChooserPopup missing for: " << parent->ToString(true);
+          << "ChooserPopup missing for: " << parent->ToString();
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPopupForId,
                                  parent->AXObjectID());
     }
@@ -3099,7 +3089,7 @@ bool AXObject::AccessibilityIsIgnored() const {
 #if defined(AX_FAIL_FAST_BUILD)
   if (!cached_is_ignored_ && IsDetached()) {
     NOTREACHED()
-        << "A detached node cannot be ignored: " << ToString(true)
+        << "A detached node cannot be ignored: " << ToString()
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
   }
@@ -3129,7 +3119,7 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
 void AXObject::CheckCanAccessCachedValues() const {
   if (!IsDetached() && AXObjectCache().IsFrozen()) {
     DUMP_WILL_BE_CHECK(!NeedsToUpdateCachedValues())
-        << "Stale values: " << ToString(true, true);
+        << "Stale values: " << this;
   }
 }
 
@@ -3182,8 +3172,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   if (IsMissingParent()) {
     // TODO(accessibility) Address this more proactively and cleanly
     // pruning the a11y tree for layout changes.
-    DUMP_WILL_BE_CHECK(!IsMissingParent())
-        << "Missing parent: " << ToString(true, true);
+    DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
   }
 
   // Mock objects are created by, owned and dependent on their parents.
@@ -3194,7 +3183,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // TODO(accessibility) Can this be fixed by instead invalidating the parent
   // when invalidating the child?
   if (IsMockObject()) {
-    CHECK(parent_) << "Mock object missing parent: " << ToString(true, true);
+    CHECK(parent_) << "Mock object missing parent: " << this;
     parent_->UpdateCachedAttributeValuesIfNeeded();
     if (IsDetached()) {
       // This object can become detached when parents update their values.
@@ -3307,11 +3296,10 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
         SANITIZER_CHECK(!AXObjectCache().IsFrozen())
             << "Objects cannot change their inclusion state during "
                "serialization:\n"
-            << "* Object: " << ToString(true, true)
-            << "\n* Ignored will become " << is_ignored
+            << "* Object: " << this << "\n* Ignored will become " << is_ignored
             << "\n* Included in tree will become "
             << (!is_ignored || is_ignored_but_included_in_tree)
-            << "\n* Parent: " << parent->ToString(true, true);
+            << "\n* Parent: " << parent;
         // Defers a ChildrenChanged() on the first included ancestor.
         // Must defer it, otherwise it can cause reentry into
         // UpdateCachedAttributeValuesIfNeeded() on |this|.
@@ -3427,7 +3415,7 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
   DUMP_WILL_BE_CHECK(!cached_values_need_update_)
       << "Tried to compute ignored value without up-to-date hidden/inert "
          "values on "
-      << ToString(true, true);
+      << this;
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
@@ -4324,7 +4312,7 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
 
   // We should not need style updates at this point.
   CHECK(!elem->NeedsStyleRecalc())
-      << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
+      << "\n* Element: " << elem << "\n* Object: " << this
       << "\n* LayoutObject: " << GetLayoutObject();
 
   // Focusable: element supports focus.
@@ -4338,7 +4326,7 @@ bool AXObject::IsKeyboardFocusable() const {
 
   Element& element = *GetElement();
   CHECK(!element.NeedsStyleRecalc())
-      << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
+      << "\n* Element: " << element << "\n* Object: " << this
       << "\n* LayoutObject: " << GetLayoutObject();
   if (!element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
     return false;
@@ -4852,7 +4840,7 @@ void AXObject::CheckSubtreeIsForLabelOrDescription(const AXObject* obj) const {
       << "This object is being used for a label or description, but isn't "
          "flagged as such, which will cause problems for determining whether "
          "invisible nodes should be included in the tree."
-      << obj->ToString(true, true);
+      << obj;
 
   // Set of all children, whether in included or not.
   HeapHashSet<Member<AXObject>> children;
@@ -5233,9 +5221,8 @@ int AXObject::IndexInParent() const {
   wtf_size_t index = siblings.Find(this);
 
   DCHECK_NE(index, kNotFound)
-      << "Could not find child in parent:"
-      << "\nChild: " << ToString(true)
-      << "\nParent: " << ax_parent_included->ToString(true)
+      << "Could not find child in parent:" << "\nChild: " << ToString()
+      << "\nParent: " << ax_parent_included->ToString()
       << "  #children=" << siblings.size();
   return (index == kNotFound) ? 0 : static_cast<int>(index);
 }
@@ -5605,7 +5592,7 @@ const AXObject::AXObjectVector AXObject::UnignoredChildren() {
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support finding the unignored children of "
                     "objects excluded from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return {};
   }
 
@@ -5693,7 +5680,7 @@ AXObject* AXObject::NextSiblingIncludingIgnored() const {
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
                     "from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
 
@@ -5711,7 +5698,7 @@ AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
                     "from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
 
@@ -5729,7 +5716,7 @@ AXObject* AXObject::CachedPreviousSiblingIncludingIgnored() const {
   if (!LastKnownIsIncludedInTreeValue()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
                     "from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
 
@@ -5757,7 +5744,7 @@ AXObject* AXObject::NextInPreOrderIncludingIgnored(
     DUMP_WILL_BE_NOTREACHED_NORETURN()
         << "We don't support iterating children of objects excluded "
            "from the accessibility tree: "
-        << ToString(true, true);
+        << this;
     return nullptr;
   }
 
@@ -5782,7 +5769,7 @@ AXObject* AXObject::PreviousInPreOrderIncludingIgnored(
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
                     "from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
   if (within == this)
@@ -5802,7 +5789,7 @@ AXObject* AXObject::PreviousInPostOrderIncludingIgnored(
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support iterating children of objects excluded "
                     "from the accessibility tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
 
@@ -5841,7 +5828,7 @@ AXObject* AXObject::UnignoredNextSibling() const {
         << "We don't support finding unignored siblings for ignored "
            "objects because it is not clear whether to search for the "
            "sibling in the unignored tree or in the whole tree: "
-        << ToString(true, true);
+        << this;
     return nullptr;
   }
 
@@ -5883,7 +5870,7 @@ AXObject* AXObject::UnignoredPreviousSibling() const {
     NOTREACHED() << "We don't support finding unignored siblings for ignored "
                     "objects because it is not clear whether to search for the "
                     "sibling in the unignored tree or in the whole tree: "
-                 << ToString(true, true);
+                 << this;
     return nullptr;
   }
 
@@ -5942,8 +5929,7 @@ AXObject* AXObject::ParentObject() const {
     return nullptr;
   }
 
-  DUMP_WILL_BE_CHECK(!IsMissingParent())
-      << "Missing parent: " << ToString(true, true);
+  DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
 
   return parent_.Get();
 }
@@ -6040,7 +6026,7 @@ bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
 
 void AXObject::UpdateChildrenIfNecessary() {
 #if DCHECK_IS_ON()
-  DCHECK(GetDocument()) << ToString(true, true);
+  DCHECK(GetDocument()) << this;
   DCHECK(GetDocument()->IsActive());
   DCHECK(!GetDocument()->IsDetached());
   DCHECK(GetDocument()->GetPage());
@@ -6051,14 +6037,14 @@ void AXObject::UpdateChildrenIfNecessary() {
   if (!NeedsToUpdateChildren()) {
     CHECK(!child_cached_values_need_update_)
         << "This should only be set when also setting children_dirty_ to true: "
-        << ToString(true, true);
+        << this;
     return;
   }
 
   CHECK(!AXObjectCache().IsFrozen())
       << "Object should have already had its children updated in "
          "AXObjectCacheImpl::UpdateTreeIfNeeded(): "
-      << ToString(true, true);
+      << this;
 
   if (!CanHaveChildren()) {
     // Clear any children in case the node previously allowed children.
@@ -6100,8 +6086,8 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
         }
 
         NOTREACHED() << "Cannot find included child in parents children:\n"
-                     << "\n* Child: " << included_child->ToString(true, true)
-                     << "\n* Parent:  " << included_parent->ToString(true, true)
+                     << "\n* Child: " << included_child
+                     << "\n* Parent:  " << included_parent
                      << "\n--------------\n"
                      << included_parent->GetAXTreeForThis();
       }
@@ -6113,16 +6099,13 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
   }
 
   NOTREACHED() << "Did not find included parent path to root:"
-               << "\n* Last found included parent: "
-               << (included_parent ? included_parent->ToString(true, true)
-                                   : "null")
+               << "\n* Last found included parent: " << included_parent
                << "\n* Current object in tree: " << GetAXTreeForThis();
 }
 #endif
 
 void AXObject::SetNeedsToUpdateChildren(bool update) const {
-  CHECK(!IsDetached()) << "Cannot update children on a detached node: "
-                       << ToString(true, true);
+  CHECK(!IsDetached()) << "Cannot update children on a detached node: " << this;
   CHECK(!AXObjectCache().IsFrozen());
   CHECK(!AXObjectCache().HasBeenDisposed());
 
@@ -6134,8 +6117,7 @@ void AXObject::SetNeedsToUpdateChildren(bool update) const {
 
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_)
-      << "Should not invalidate children while adding them: "
-      << ToString(true, true);
+      << "Should not invalidate children while adding them: " << this;
 #endif
 
   if (children_dirty_) {
@@ -6199,7 +6181,7 @@ void AXObject::DetachFromParent() {
     return;
   }
   CHECK(!AXObjectCache().IsFrozen())
-      << "Do not detach parent while tree is frozen: " << ToString(true, true);
+      << "Do not detach parent while tree is frozen: " << this;
   if (ShouldDestroyWhenDetachingFromParent()) {
     AXObjectCache().RemoveIncludedSubtree(this, /* remove_root */ true);
   }
@@ -6234,7 +6216,7 @@ void AXObject::SetChildTree(const ui::AXTreeID& child_tree_id) {
 void AXObject::ClearChildren() const {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().IsFrozen())
-      << "Do not clear children while tree is frozen: " << ToString(true, true);
+      << "Do not clear children while tree is frozen: " << this;
 
   // Detach all weak pointers from immediate children to their parents.
   // First check to make sure the child's parent wasn't already reassigned.
@@ -6254,11 +6236,11 @@ void AXObject::ClearChildren() const {
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_)
       << "Should not attempt to simultaneously add and clear children on: "
-      << ToString(true, true);
+      << this;
   SANITIZER_CHECK(!is_computing_text_from_descendants_)
       << "Should not attempt to simultaneously compute text from descendants "
          "and clear children on: "
-      << ToString(true, true);
+      << this;
 #endif
 
   // Detach included children from their parent (this).
@@ -6332,8 +6314,7 @@ void AXObject::ClearChildren() const {
 }
 
 void AXObject::ChildrenChangedWithCleanLayout() {
-  DCHECK(!IsDetached()) << "Don't call on detached node: "
-                        << ToString(true, true);
+  DCHECK(!IsDetached()) << "Don't call on detached node: " << this;
 
   // When children changed on a <map> that means we need to forward the
   // children changed to the <img> that parents the <area> elements.
@@ -6372,7 +6353,7 @@ void AXObject::ChildrenChangedWithCleanLayout() {
   }
 
   DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
-                        << ToString(true, true);
+                        << this;
 
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
 }
@@ -7830,7 +7811,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kUnknown:
     case ax::mojom::blink::Role::kWebView:
     case ax::mojom::blink::Role::kWindow:
-      NOTREACHED_NORETURN() << "Role shouldn't occur in Blink: " << ToString(true, true);
+      NOTREACHED_NORETURN() << "Role shouldn't occur in Blink: " << this;
   }
 
   return result;
@@ -7957,29 +7938,27 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 
 // Extra checks that only occur during serialization.
 void AXObject::PreSerializationConsistencyCheck() {
-  CHECK(!IsDetached()) << "Do not serialize detached nodes: "
-                       << ToString(true, true);
+  CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues())
-      << "Stale values on: " << ToString(true, true);
+  CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;
   if (!AccessibilityIsIncludedInTree()) {
     AXObject* included_parent = ParentObjectIncludedInTree();
     // TODO(accessibility): Return to CHECK once it has been resolved,
     // so that the message does not bloat stable releases.
     DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Do not serialize unincluded nodes: " << ToString(true)
+        << "Do not serialize unincluded nodes: " << ToString()
         << "\nIncluded parent: "
-        << (included_parent ? included_parent->ToString(true) : "nullptr");
+        << (included_parent ? included_parent->ToString() : "nullptr");
   }
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.
   CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
       << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
-      << ToString(true);
+      << ToString();
 #endif
 }
 
-String AXObject::ToString(bool verbose, bool cached_values_only) const {
+String AXObject::ToString(bool verbose) const {
   // Build a friendly name for debugging the object.
   // If verbose, build a longer name name in the form of:
   // CheckBox axid#28 <input.someClass#cbox1> name="checkbox"
@@ -7994,6 +7973,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   if (IsDetached()) {
     return string_builder + " (detached)";
   }
+
+  bool cached_values_only = !AXObjectCache().IsFrozen();
 
   if (AXObjectCache().HasBeenDisposed()) {
     return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
@@ -8185,7 +8166,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   }
 
   // Append name last, in case it is long.
-  if (!cached_values_only)
+  if (!cached_values_only || !verbose)
     string_builder = string_builder + ComputedName().EncodeForDebugging();
 
   return string_builder;
@@ -8243,13 +8224,13 @@ bool operator>=(const AXObject& first, const AXObject& second) {
 
 std::ostream& operator<<(std::ostream& stream, const AXObject* obj) {
   if (obj)
-    return stream << obj->ToString(true).Utf8();
+    return stream << obj->ToString().Utf8();
   else
     return stream << "<AXObject nullptr>";
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXObject& obj) {
-  return stream << obj.ToString(true).Utf8();
+  return stream << obj.ToString().Utf8();
 }
 
 void AXObject::Trace(Visitor* visitor) const {

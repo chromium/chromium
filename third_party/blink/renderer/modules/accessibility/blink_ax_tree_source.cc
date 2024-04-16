@@ -242,8 +242,8 @@ AXObject* BlinkAXTreeSource::GetFocusedObject() const {
 AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
   AXObject* result = ax_object_cache_->ObjectFromAXID(id);
   if (result && !result->AccessibilityIsIncludedInTree()) {
-    DCHECK(false) << "Should not serialize an unincluded object:"
-                  << "\nChild: " << result->ToString(true).Utf8();
+    DCHECK(false) << "Should not serialize an unincluded object:" << "\nChild: "
+                  << result->ToString().Utf8();
     return nullptr;
   }
   return result;
@@ -272,16 +272,15 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   if (child->IsDetached()) {
     NOTREACHED(base::NotFatalUntil::M127)
         << "Should not try to serialize an invalid child:" << "\nParent: "
-        << node->ToString(true).Utf8()
-        << "\nChild: " << child->ToString(true).Utf8();
+        << node->ToString().Utf8() << "\nChild: " << child->ToString().Utf8();
     return nullptr;
   }
 
   if (!child->AccessibilityIsIncludedInTree()) {
     NOTREACHED(base::NotFatalUntil::M127)
         << "Should not receive unincluded child."
-        << "\nChild: " << child->ToString(true).Utf8()
-        << "\nParent: " << node->ToString(true).Utf8();
+        << "\nChild: " << child->ToString().Utf8()
+        << "\nParent: " << node->ToString().Utf8();
     return nullptr;
   }
 
@@ -328,7 +327,7 @@ AXObject* BlinkAXTreeSource::GetNull() const {
 std::string BlinkAXTreeSource::GetDebugString(AXObject* node) const {
   if (!node || node->IsDetached())
     return "";
-  return node->ToString(true).Utf8();
+  return node->ToString().Utf8();
 }
 
 void BlinkAXTreeSource::SerializeNode(AXObject* src,

@@ -432,7 +432,7 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     std::vector<ui::AXEventIntent> event_intents,
     ax::mojom::Event event_type) {
   DCHECK(obj.AccessibilityIsIncludedInTree())
-      << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
+      << "Cannot serialize unincluded object: " << obj.ToString().Utf8();
 
   obj.AddDirtyObjectToSerializationQueue(event_from, event_from_action,
                                          event_intents);

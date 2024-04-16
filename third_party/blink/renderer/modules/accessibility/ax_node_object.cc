@@ -453,7 +453,7 @@ bool HasLayoutText(const blink::AXObject* obj) {
   // no repro case yet.
   if (obj->GetLayoutObject()->NeedsLayout()) {
     DCHECK(false) << "LayoutText needed layout but was not display locked: "
-                  << obj->ToString(true, true);
+                  << obj;
     return false;
   }
 
@@ -2288,8 +2288,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
 #endif
 
   if (IsDetached()) {
-    NOTREACHED() << "Do not compute role on detached object: "
-                 << ToString(true, true);
+    NOTREACHED() << "Do not compute role on detached object: " << this;
     return ax::mojom::blink::Role::kUnknown;
   }
 
@@ -3246,7 +3245,7 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   // e.g. via <a href="#">.
   DCHECK(ax_target->IsWebArea() || ax_target->GetElement())
       << "The link target is expected to be a document or an element: "
-      << ax_target->ToString(true, true) << "\n* URL fragment = " << fragment;
+      << ax_target << "\n* URL fragment = " << fragment;
 #endif
 
   // Usually won't be ignored, but could be e.g. if aria-hidden.
@@ -4110,9 +4109,8 @@ AXObject* AXNodeObject::ChooserPopup() const {
         DCHECK(!IsA<Document>(child->GetNode()) ||
                !child->ParentObject()->IsVisible())
             << "Chooser popup exists for " << native_role_
-            << "\n* Child: " << child->ToString(true, true)
-            << "\n* Child's immediate parent: "
-            << child->ParentObject()->ToString(true, true);
+            << "\n* Child: " << child
+            << "\n* Child's immediate parent: " << child->ParentObject();
       }
 #endif
       return nullptr;
@@ -4837,7 +4835,7 @@ String AXNodeObject::TextFromDescendants(
     }
     AXObject* child = children[index];
     DCHECK(child);
-    DCHECK(!child->IsDetached()) << child->ToString(true, true);
+    DCHECK(!child->IsDetached()) << child;
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4963,7 +4961,7 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   }
 
 #if DCHECK_IS_ON()
-  DCHECK(!getting_bounds_) << "GetRelativeBounds reentrant: " << ToString(true);
+  DCHECK(!getting_bounds_) << "GetRelativeBounds reentrant: " << ToString();
   base::AutoReset<bool> reentrancy_protector(&getting_bounds_, true);
 #endif
 
@@ -5427,23 +5425,23 @@ void AXNodeObject::AddOwnedChildren() {
 
   DCHECK(owned_children.size() == 0 || AXRelationCache::IsValidOwner(this))
       << "This object is not allowed to use aria-owns, but it is.\n"
-      << ToString(true, true);
+      << this;
 
   // Always include owned children.
   for (const auto& owned_child : owned_children) {
     DCHECK(owned_child->GetNode());
     DCHECK(AXRelationCache::IsValidOwnedChild(*owned_child->GetNode()))
         << "This object is not allowed to be owned, but it is.\n"
-        << owned_child->ToString(true, true);
+        << owned_child;
     AddChildAndCheckIncluded(owned_child, true);
   }
 }
 
 void AXNodeObject::AddChildrenImpl() {
-#define CHECK_ATTACHED()                                                  \
-  if (IsDetached()) {                                                     \
-    NOTREACHED() << "Detached adding children: " << ToString(true, true); \
-    return;                                                               \
+#define CHECK_ATTACHED()                                  \
+  if (IsDetached()) {                                     \
+    NOTREACHED() << "Detached adding children: " << this; \
+    return;                                               \
   }
 
   CHECK(NeedsToUpdateChildren());
@@ -5492,19 +5490,17 @@ void AXNodeObject::AddChildren() {
   // childrenChanged should have been called, which leads to children_dirty_
   // being true, then UpdateChildrenIfNecessary() clears the children before
   // calling AddChildren().
-  DCHECK(children_.empty())
-      << "\nParent still has " << children_.size() << " children before adding:"
-      << "\nParent is " << ToString(true, true) << "\nFirst child is "
-      << children_[0]->ToString(true, true);
+  DCHECK(children_.empty()) << "\nParent still has " << children_.size()
+                            << " children before adding:" << "\nParent is "
+                            << this << "\nFirst child is " << children_[0];
 #endif
 
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_computing_text_from_descendants_)
       << "Should not attempt to simultaneously compute text from descendants "
          "and add children on: "
-      << ToString(true, true);
-  SANITIZER_CHECK(!is_adding_children_)
-      << " Reentering method on " << ToString(true, true);
+      << this;
+  SANITIZER_CHECK(!is_adding_children_) << " Reentering method on " << this;
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
 #endif
 
@@ -5515,8 +5511,7 @@ void AXNodeObject::AddChildren() {
   // All added children must be attached.
   for (const auto& child : children_) {
     DCHECK(!child->IsDetached()) << "A brand new child was detached.\n"
-                                 << child->ToString(true, true)
-                                 << "\n ... of parent " << ToString(true, true);
+                                 << child << "\n ... of parent " << this;
   }
 #endif
 }
@@ -5555,17 +5550,15 @@ void AXNodeObject::AddNodeChild(Node* node) {
   if (did_add_child) {
     DCHECK(!ax_cached_parent || ax_cached_parent->AXObjectID() == AXObjectID())
         << "Newly added child shouldn't have a different preexisting parent:"
-        << "\nChild = " << ax_child->ToString(true, true)
-        << "\nNew parent = " << ToString(true, true)
-        << "\nPreexisting parent = " << ax_cached_parent->ToString(true, true);
+        << "\nChild = " << ax_child << "\nNew parent = " << this
+        << "\nPreexisting parent = " << ax_cached_parent;
   }
 #endif
 }
 
 #if DCHECK_IS_ON()
 void AXNodeObject::CheckValidChild(AXObject* child) {
-  DCHECK(!child->IsDetached()) << "Cannot add a detached child.\n"
-                               << child->ToString(true, true);
+  DCHECK(!child->IsDetached()) << "Cannot add a detached child.\n" << child;
 
   Node* child_node = child->GetNode();
 
@@ -5576,9 +5569,8 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
     while (ancestor && !IsA<HTMLImageElement>(ancestor->GetNode()))
       ancestor = ancestor->CachedParentObject();
     DCHECK(ancestor && IsA<HTMLImageElement>(ancestor->GetNode()))
-        << "Area elements can only be added by image parents: "
-        << child->ToString(true, true) << " had a parent of "
-        << ToString(true, true);
+        << "Area elements can only be added by image parents: " << child
+        << " had a parent of " << this;
   }
 
   // An option or popup for a <select size=1> must only be added via an
@@ -5586,17 +5578,15 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
   // These AXObjects must be added in an overridden AddChildren() method, and
   // that will only occur if AXObjectCacheImpl::UseAXMenuList() returns true.
   DCHECK(!IsA<AXMenuListOption>(child))
-      << "Adding menulist option child in wrong place: "
-      << "\nChild: " << child->ToString(true, true)
-      << "\nParent: " << child->ParentObject()->ToString(true, true)
+      << "Adding menulist option child in wrong place: " << "\nChild: " << child
+      << "\nParent: " << child->ParentObject()
       << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList();
 
   // An popup for a <select size=1> must only be added via an overridden
   // AddChildren() on AXMenuList.
   DCHECK(!IsA<AXMenuListPopup>(child))
-      << "Adding menulist popup in wrong place: "
-      << "\nChild: " << child->ToString(true, true)
-      << "\nParent: " << child->ParentObject()->ToString(true, true)
+      << "Adding menulist popup in wrong place: " << "\nChild: " << child
+      << "\nParent: " << child->ParentObject()
       << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
       << "\nShouldCreateAXMenuListOptionFor()="
       << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child_node);
@@ -5604,8 +5594,7 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
   DCHECK(!IsA<HTMLFrameElementBase>(GetNode()) ||
          IsA<Document>(child->GetNode()))
       << "Cannot have a non-document child of a frame or iframe."
-      << "\nChild: " << child->ToString(true, true)
-      << "\nParent: " << child->ParentObject()->ToString(true, true);
+      << "\nChild: " << child << "\nParent: " << child->ParentObject();
 }
 #endif
 
@@ -5636,8 +5625,7 @@ void AXNodeObject::InsertChild(AXObject* child,
     return;
 
   DCHECK(CanHaveChildren());
-  DCHECK(!child->IsDetached())
-      << "Cannot add a detached child: " << child->ToString(true, true);
+  DCHECK(!child->IsDetached()) << "Cannot add a detached child: " << child;
   // Enforce expected aria-owns status:
   // - Don't add a non-aria-owned child when called from AddOwnedChildren().
   // - Don't add an aria-owned child to its natural parent, because it will
@@ -5660,7 +5648,7 @@ void AXNodeObject::InsertChild(AXObject* child,
 
   if (!child->LastKnownIsIncludedInTreeValue()) {
     DCHECK(!is_from_aria_owns)
-        << "Owned elements must be in tree: " << child->ToString(true, true)
+        << "Owned elements must be in tree: " << child
         << "\nRecompute included in tree: "
         << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
 
@@ -5675,10 +5663,8 @@ void AXNodeObject::InsertChild(AXObject* child,
         // TODO(accessibility) Restore to CHECK().
 #if defined(AX_FAIL_FAST_BUILD)
         SANITIZER_NOTREACHED()
-            << "Cannot add a detached child: "
-            << "\n* Child: " << children[i]->ToString(true, true)
-            << "\n* Parent: " << child->ToString(true, true)
-            << "\n* Grandparent: " << ToString(true, true);
+            << "Cannot add a detached child: " << "\n* Child: " << children[i]
+            << "\n* Parent: " << child << "\n* Grandparent: " << this;
 #endif
         continue;
       }
@@ -5797,8 +5783,8 @@ Element* AXNodeObject::AnchorElement() const {
         // TODO(crbug.com/1524124): Investigate and fix why this gets hit.
         DUMP_WILL_BE_NOTREACHED_NORETURN()
             << "An AXObject* that is a link should always have an element.\n"
-            << ToString(true, true) << "\n"
-            << current->ToString(true, true);
+            << this << "\n"
+            << current;
       }
       return current->GetElement();
     }
@@ -5827,7 +5813,7 @@ Node* AXNodeObject::GetNode() const {
   DCHECK(!GetLayoutObject() || GetLayoutObject()->GetNode() == node_)
       << "If there is an associated layout object, its node should match the "
          "associated node of this accessibility object.\n"
-      << ToString(true, true);
+      << this;
   return node_.Get();
 }
 
