@@ -16,6 +16,7 @@
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/overlay_processor_delegated_support.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -132,6 +133,37 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       AggregatedRenderPass* root_render_pass,
       const gfx::Rect& damage_rect);
 
+  // Promote a subset of quads from the root render pass using
+  // |DCLayerOverlayProcessor| while still intending to schedule the primary
+  // plane as its own overlay. This is the fallback for delegated compositing
+  // that still allows quads to be promoted e.g. for protected content or for
+  // performance reasons.
+  void ProcessOverlaysFromOutputSurfacePlane(
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_passes,
+      const SkM44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
+      OutputSurfaceOverlayPlane* output_surface_plane,
+      CandidateList* candidates,
+      gfx::Rect* root_damage_rect);
+
+  // Try to promote all quads from the root render pass to overlay.
+  // In partially delegated compositing, RPDQs that represent surfaces will have
+  // quads promoted from their render passes using |DCLayerOverlayProcessor|.
+  DelegationStatus ProcessOverlaysForDelegation(
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_passes,
+      const SkM44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
+      CandidateList* candidates,
+      gfx::Rect* root_damage_rect);
+
   // This struct holds information about the RPDQ overlays promoted during
   // delegated compositing. It references objects in the current frame and is
   // only valid while the render pass list's pointers are valid.
@@ -164,7 +196,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
   // be placed in |out_candidates| in front-to-back order. Returns true if all
   // quads were successfully promoted.
-  std::optional<DelegatedCompositingResult> TryDelegatedCompositing(
+  base::expected<DelegatedCompositingResult, DelegationStatus>
+  TryDelegatedCompositing(
       const bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const OverlayCandidateFactory& factory,

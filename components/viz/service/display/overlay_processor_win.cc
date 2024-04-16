@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -22,6 +23,7 @@
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
+#include "components/viz/service/display/overlay_processor_delegated_support.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/gl_switches.h"
 
@@ -113,8 +115,6 @@ OverlayCandidateFactory::OverlayContext WindowsDelegatedOverlayContext() {
   return context;
 }
 
-DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
-
 }  // anonymous namespace
 
 OverlayProcessorWin::OverlayProcessorWin(
@@ -168,69 +168,107 @@ void OverlayProcessorWin::ProcessForOverlays(
     std::vector<gfx::Rect>* content_bounds) {
   TRACE_EVENT0("viz", "OverlayProcessorWin::ProcessForOverlays");
 
-  delegation_succeeded_last_frame_ = false;
+  DebugLogBeforeDelegation(*root_damage_rect,
+                           surface_damage_rect_list_in_root_space);
 
-  if (features::IsDelegatedCompositingEnabled() && !disable_delegation()) {
-    const bool is_full_delegated_compositing =
-        !base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+  DelegationStatus status = ProcessOverlaysForDelegation(
+      resource_provider, render_passes, output_color_matrix,
+      render_pass_filters, render_pass_backdrop_filters,
+      surface_damage_rect_list_in_root_space, candidates, root_damage_rect);
 
-    OverlayCandidateFactory factory(
-        render_passes->back().get(), resource_provider,
-        &surface_damage_rect_list_in_root_space, &output_color_matrix,
-        gfx::RectF(render_passes->back()->output_rect), &render_pass_filters,
-        WindowsDelegatedOverlayContext());
-
-    std::optional<DelegatedCompositingResult> delegation_result =
-        TryDelegatedCompositing(is_full_delegated_compositing, *render_passes,
-                                factory, render_pass_backdrop_filters,
-                                resource_provider);
-
-    // TODO(crbug.com/1502717): Add a histogram to emit delegation status,
-    // similar to OverlayProcessorDelegated::ProcessForOverlays.
-
-    if (delegation_result) {
-      OverlayCandidateList delegated_candidates =
-          std::move(delegation_result.value().candidates);
-      PromotedRenderPassesInfo promoted_render_passes_info =
-          std::move(delegation_result.value().promoted_render_passes_info);
-
-      DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
-                  "delegation success, candidates.size = %zu",
-                  delegated_candidates.size());
-
-      UpdatePromotedRenderPassProperties(*render_passes,
-                                         promoted_render_passes_info);
-
-      // We are not promoting videos from any render pass so this map should be
-      // empty.
-      frames_since_using_dc_layers_map_.clear();
-
-      // Set the z-order of the candidates, noting that |delegated_candidates|
-      // was pushed in front-to-back order.
-      for (size_t i = 0u; i < delegated_candidates.size(); i++) {
-        delegated_candidates[i].plane_z_order = delegated_candidates.size() - i;
-      }
-
-      // Set this to the full output rect unconditionally on success. This is
-      // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
-      // to fully damage the root surface if the next frame fails delegation.
-      // Since delegated compositing succeeded here, the previous frame's
-      // |overlay_damage_rect_| influence on |root_damage_rect| is cleared
-      // below.
-      // In the case of resize, we will be correctly damaged from another
-      // source.
-      overlay_damage_rect_ = render_passes->back()->output_rect;
-
-      delegation_succeeded_last_frame_ = true;
-      *candidates = std::move(delegated_candidates);
-      *root_damage_rect = gfx::Rect();
-      return;
-    }
-
-    DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED,
-                "delegation failed this frame");
+  if (status != DelegationStatus::kFullDelegation) {
+    // Fall back to promoting overlays from the output surface plane.
+    ProcessOverlaysFromOutputSurfacePlane(
+        resource_provider, render_passes, output_color_matrix,
+        render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list_in_root_space, output_surface_plane,
+        candidates, root_damage_rect);
   }
 
+  DebugLogAfterDelegation(status, *candidates, *root_damage_rect);
+
+  delegation_succeeded_last_frame_ =
+      status == DelegationStatus::kFullDelegation;
+}
+
+DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_passes,
+    const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
+    CandidateList* candidates,
+    gfx::Rect* root_damage_rect) {
+  if (!features::IsDelegatedCompositingEnabled() || ForceDisableDelegation()) {
+    return DelegationStatus::kCompositedFeatureDisabled;
+  }
+
+  const bool is_full_delegated_compositing =
+      !base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+
+  OverlayCandidateFactory factory(
+      render_passes->back().get(), resource_provider,
+      &surface_damage_rect_list_in_root_space, &output_color_matrix,
+      gfx::RectF(render_passes->back()->output_rect), &render_pass_filters,
+      WindowsDelegatedOverlayContext());
+
+  base::expected<DelegatedCompositingResult, DelegationStatus>
+      delegation_result = TryDelegatedCompositing(
+          is_full_delegated_compositing, *render_passes, factory,
+          render_pass_backdrop_filters, resource_provider);
+
+  if (delegation_result.has_value()) {
+    OverlayCandidateList delegated_candidates =
+        std::move(delegation_result.value().candidates);
+    PromotedRenderPassesInfo promoted_render_passes_info =
+        std::move(delegation_result.value().promoted_render_passes_info);
+
+    UpdatePromotedRenderPassProperties(*render_passes,
+                                       promoted_render_passes_info);
+
+    // We are not promoting videos from any render pass so this map should be
+    // empty.
+    frames_since_using_dc_layers_map_.clear();
+
+    // Set the z-order of the candidates, noting that |delegated_candidates|
+    // was pushed in front-to-back order.
+    for (size_t i = 0u; i < delegated_candidates.size(); i++) {
+      delegated_candidates[i].plane_z_order = delegated_candidates.size() - i;
+    }
+
+    // Set this to the full output rect unconditionally on success. This is
+    // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
+    // to fully damage the root surface if the next frame fails delegation.
+    // Since delegated compositing succeeded here, the previous frame's
+    // |overlay_damage_rect_| influence on |root_damage_rect| is cleared
+    // below.
+    // In the case of resize, we will be correctly damaged from another
+    // source.
+    overlay_damage_rect_ = render_passes->back()->output_rect;
+
+    delegation_succeeded_last_frame_ = true;
+    *candidates = std::move(delegated_candidates);
+    *root_damage_rect = gfx::Rect();
+
+    return DelegationStatus::kFullDelegation;
+  } else {
+    return delegation_result.error();
+  }
+}
+
+void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_passes,
+    const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
+    OutputSurfaceOverlayPlane* output_surface_plane,
+    CandidateList* candidates,
+    gfx::Rect* root_damage_rect) {
   auto* root_render_pass = render_passes->back().get();
   if (render_passes->back()->is_color_conversion_pass) {
     DCHECK_GT(render_passes->size(), 1u);
@@ -385,7 +423,8 @@ OverlayProcessorWin::DelegatedCompositingResult&
 OverlayProcessorWin::DelegatedCompositingResult::operator=(
     OverlayProcessorWin::DelegatedCompositingResult&&) = default;
 
-std::optional<OverlayProcessorWin::DelegatedCompositingResult>
+base::expected<OverlayProcessorWin::DelegatedCompositingResult,
+               DelegationStatus>
 OverlayProcessorWin::TryDelegatedCompositing(
     const bool is_full_delegated_compositing,
     const AggregatedRenderPassList& render_passes,
@@ -402,17 +441,13 @@ OverlayProcessorWin::TryDelegatedCompositing(
         "= %d",
         root_render_pass->copy_requests.size(),
         root_render_pass->video_capture_enabled);
-    return std::nullopt;
+    return base::unexpected(DelegationStatus::kCompositedCopyRequest);
   }
 
   if (root_render_pass->is_color_conversion_pass) {
-    // DWM cannot blend non-opaque HDR overlays in the extended sRGB color space
-    // that viz uses.
-    // TODO(crbug.com/1524141): Handle color conversion pass during overlay
-    // processing instead of surface aggregation so we can add it to opaque HDR
-    // overlays, e.g. web contents surfaces.
-    DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED, "Frame has HDR content");
-    return std::nullopt;
+    // We don't expect to handle a color conversion pass (e.g. for frames with
+    // HDR content) with delegated compositing. See: crbug.com/41497086
+    return base::unexpected(DelegationStatus::kCompositedOther);
   }
 
   DelegatedCompositingResult result;
@@ -437,30 +472,24 @@ OverlayProcessorWin::TryDelegatedCompositing(
     }
 
     if (!dc_layer.has_value()) {
-      OverlayCandidate overlay;
-      auto res = factory.FromDrawQuad(quad, overlay);
-      if (res == OverlayCandidateFactory::CandidateStatus::kFailVisible) {
-        // These can be safely skipped.
-        continue;
+      if (auto candidate_result =
+              TryPromoteDrawQuadForDelegation(factory, quad);
+          candidate_result.has_value()) {
+        if (auto& candidate = candidate_result.value()) {
+          dc_layer = std::move(candidate);
+        } else {
+          // This quad can be intentionally skipped.
+          continue;
+        }
+      } else {
+        return base::unexpected(candidate_result.error());
       }
-
-      if (res != OverlayCandidateFactory::CandidateStatus::kSuccess) {
-        DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED,
-                    "FromDrawQuad failed with status code = %d",
-                    static_cast<int>(res));
-        return std::nullopt;
-      }
-
-      dc_layer = std::make_optional(std::move(overlay));
     }
 
     if (factory.IsOccludedByFilteredQuad(
             dc_layer.value(), root_render_pass->quad_list.begin(),
             root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
-      DBG_LOG_OPT(
-          "delegated.overlay.log", DBG_OPT_RED,
-          "FromDrawQuad failed because of an occluding backdrop filter");
-      return std::nullopt;
+      return base::unexpected(DelegationStatus::kCompositedBackdropFilter);
     }
 
     // Store metadata on RPDQ overlays for post-processing in
@@ -482,7 +511,7 @@ OverlayProcessorWin::TryDelegatedCompositing(
     result.candidates.push_back(std::move(dc_layer).value());
   }
 
-  return std::make_optional(std::move(result));
+  return base::ok(std::move(result));
 }
 
 // static
