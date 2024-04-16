@@ -729,6 +729,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPCriticalPathPredictorMaxElementLocatorLength;
 
+// If true, LCP critical path predictor mechanism overrides the first N image
+// prioritization when there is LCP hint.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost;
+
 // The type of LCP elements recorded by LCPP.
 enum class LcppRecordedLcpElementTypes {
   kAll,
