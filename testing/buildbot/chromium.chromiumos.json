@@ -3256,7 +3256,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 5
+          "shards": 18
         },
         "test": "ash_unittests",
         "test_id_prefix": "ninja://ash:ash_unittests/"
@@ -5446,7 +5446,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 7
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -5602,7 +5602,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 7
         },
         "test": "lacros_chrome_browsertests",
         "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/"
