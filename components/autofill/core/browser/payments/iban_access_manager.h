@@ -36,11 +36,11 @@ class IbanAccessManager {
   IbanAccessManager& operator=(const IbanAccessManager&) = delete;
   virtual ~IbanAccessManager();
 
-  // Returns the full IBAN value corresponding to the input `suggestion`.
+  // Returns the full IBAN value corresponding to the input `backend_id`.
   // As this may require a network round-trip for server IBANs,
   //`on_iban_fetched` is run once the value is fetched. For local IBANs, value
   // will be filled immediately.
-  virtual void FetchValue(const Suggestion& suggestion,
+  virtual void FetchValue(const Suggestion::BackendId& backend_id,
                           OnIbanFetchedCallback on_iban_fetched);
 
   void OnDeviceAuthenticationResponseForFillingForTesting(

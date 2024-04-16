@@ -1236,18 +1236,19 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       // IBAN, a request to unmask the IBAN will be sent to the GPay server, and
       // the IBAN value will be filled if the request is successful.
       manager_->client().GetIbanAccessManager()->FetchValue(
-          suggestion, base::BindOnce(
-                          [](base::WeakPtr<AutofillExternalDelegate> delegate,
-                             const std::u16string& value) {
-                            if (delegate) {
-                              delegate->manager_->FillOrPreviewField(
-                                  mojom::ActionPersistence::kFill,
-                                  mojom::FieldActionType::kReplaceAll,
-                                  delegate->query_form_, delegate->query_field_,
-                                  value, PopupItemId::kIbanEntry);
-                            }
-                          },
-                          GetWeakPtr()));
+          suggestion.GetPayload<Suggestion::BackendId>(),
+          base::BindOnce(
+              [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                 const std::u16string& value) {
+                if (delegate) {
+                  delegate->manager_->FillOrPreviewField(
+                      mojom::ActionPersistence::kFill,
+                      mojom::FieldActionType::kReplaceAll,
+                      delegate->query_form_, delegate->query_field_, value,
+                      PopupItemId::kIbanEntry);
+                }
+              },
+              GetWeakPtr()));
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
                                                 suggestion.popup_item_id,
                                                 query_form_, query_field_);

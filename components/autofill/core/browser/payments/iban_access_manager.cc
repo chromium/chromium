@@ -21,7 +21,7 @@ IbanAccessManager::IbanAccessManager(AutofillClient* client)
 
 IbanAccessManager::~IbanAccessManager() = default;
 
-void IbanAccessManager::FetchValue(const Suggestion& suggestion,
+void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
                                    OnIbanFetchedCallback on_iban_fetched) {
   if (auto* form_data_importer = client_->GetFormDataImporter()) {
     // Reset the variable in FormDataImporter that denotes if non-interactive
@@ -35,9 +35,8 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
   // If `Guid` has a value then that means that it's a local IBAN suggestion.
   // In this case, retrieving the complete IBAN value requires accessing the
   // saved IBAN from the PersonalDataManager.
-  Suggestion::BackendId backend_id =
-      suggestion.GetPayload<Suggestion::BackendId>();
-  if (Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&backend_id)) {
+  if (const Suggestion::Guid* guid =
+          absl::get_if<Suggestion::Guid>(&backend_id)) {
     const Iban* iban = client_->GetPersonalDataManager()
                            ->payments_data_manager()
                            .GetIbanByGUID(guid->value());

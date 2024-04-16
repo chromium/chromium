@@ -1133,7 +1133,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
                   iban.GetIdentifierStringForAutofillDisplay(),
                   PopupItemId::kIbanEntry));
   ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
-      .WillByDefault([iban](const Suggestion& suggestion,
+      .WillByDefault([iban](const Suggestion::BackendId& backend_id,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
       });
@@ -2379,7 +2379,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                   iban.GetIdentifierStringForAutofillDisplay(),
                   PopupItemId::kIbanEntry));
   ON_CALL(*client().GetMockIbanAccessManager(), FetchValue)
-      .WillByDefault([iban](const Suggestion& suggestion,
+      .WillByDefault([iban](const Suggestion::BackendId& backend_id,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
       });
