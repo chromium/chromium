@@ -550,18 +550,6 @@ bool FrameFetchContext::DoesLCPPHaveAnyHintData() {
   return lcpp->HasAnyHintData();
 }
 
-bool FrameFetchContext::DoesLCPPHaveLcpElementLocatorHintData() {
-  if (GetResourceFetcherProperties().IsDetached()) {
-    return false;
-  }
-
-  LCPCriticalPathPredictor* lcpp = GetFrame()->GetLCPP();
-  if (!lcpp) {
-    return false;
-  }
-  return !lcpp->lcp_element_locators().empty();
-}
-
 void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
   // Set the first party for cookies url if it has not been set yet (new
   // requests). This value will be updated during redirects, consistent with

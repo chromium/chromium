@@ -189,10 +189,6 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // Returns true iff we have LCPP hint data for the fetch context.
   virtual bool DoesLCPPHaveAnyHintData() { return false; }
 
-  // Returns true iff we have LCP element locator hint data for the fetch
-  // context.
-  virtual bool DoesLCPPHaveLcpElementLocatorHintData() { return false; }
-
   // Returns the origin of the top frame in the document or the dedicated
   // worker. This returns nullptr for Shared Workers and Service Workers.
   virtual scoped_refptr<const SecurityOrigin> GetTopFrameOrigin() const {

@@ -666,19 +666,6 @@ ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
     }
   }
 
-  // The following code disables AdjustImagePriority when there is LCPP
-  // LcpElementLocator hint data. The reason why not to early return from this
-  // function is that we want to record UMA with following
-  // MaybeRecordBoostImagePriorityReason() function even when we disables
-  // AdjustImagePriority.
-  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
-      features::kLCPCriticalPathAdjustImageLoadPriority.Get() &&
-      features::kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost
-          .Get() &&
-      context_->DoesLCPPHaveLcpElementLocatorHintData()) {
-    new_priority = priority_so_far;
-  }
-
   // Only records HTTP family URLs (e.g. Exclude data URLs).
   if (resource_request.Url().ProtocolIsInHTTPFamily()) {
     MaybeRecordBoostImagePriorityReason(priority_so_far != new_priority,

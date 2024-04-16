@@ -105,8 +105,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   bool DoesLCPPHaveAnyHintData() override;
 
-  bool DoesLCPPHaveLcpElementLocatorHintData() override;
-
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const std::optional<float> resource_width,
