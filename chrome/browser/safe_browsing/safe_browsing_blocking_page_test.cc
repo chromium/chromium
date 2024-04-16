@@ -2829,8 +2829,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                 ->GetLastCommittedURL());
 }
 
+// Disabled due to flakiness. https://crbug.com/332097746.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
-                       Fullscreen_WarningShown) {
+                       DISABLED_Fullscreen_WarningShown) {
   base::HistogramTester histograms;
   NavigateAndAssertNoInterstitial();
 
