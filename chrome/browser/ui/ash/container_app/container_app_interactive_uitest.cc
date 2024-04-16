@@ -346,7 +346,8 @@ class ContainerAppInteractiveUiTestBase
 
     // Cache install info for the container app.
     container_app_install_info_ =
-        web_app::GetConfigForContainer().app_info_factory.Run();
+        web_app::GetConfigForContainer(/*device_info=*/std::nullopt)
+            .app_info_factory.Run();
   }
 
  private:
@@ -941,7 +942,8 @@ class ContainerAppInteractiveUiIneligibilityTest
     std::unique_ptr<web_app::ScopedTestingPreinstalledAppData> app_data;
     if (GetUserType() == user_manager::UserType::kChild) {
       app_data = std::make_unique<web_app::ScopedTestingPreinstalledAppData>();
-      app_data->apps.emplace_back(web_app::GetConfigForContainer());
+      app_data->apps.emplace_back(
+          web_app::GetConfigForContainer(/*device_info=*/std::nullopt));
     }
 
     ContainerAppInteractiveUiTestBase::SetUpOnMainThread();
