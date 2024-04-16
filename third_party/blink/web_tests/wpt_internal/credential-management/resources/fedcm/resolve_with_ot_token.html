@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!--
+Token generated with:
+generate_token.py https://not-web-platform.test:8444/ FedCmContinueOnBundle --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="A/ffmkhXGcnDAM30fvtHxYrAQ7mbjfsUY6Icx8jaRPRw6nt1ICOHbz9arNEi6QwdYtv2LquKjgANjGWl4jB5PAEAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly9ub3Qtd2ViLXBsYXRmb3JtLnRlc3Q6ODQ0NCIsICJmZWF0dXJlIjogIkZlZENtQ29udGludWVPbkJ1bmRsZSIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<script>
+async function doResolve() {
+  const params = new URLSearchParams(document.location.search);
+  const token = "account=" + params.get("selected");
+  IdentityProvider.resolve(token, {});
+}
+window.onload = doResolve;
+</script>
+
