@@ -27,7 +27,9 @@ const char kMacAddress[] = "AA:BB:CC:DD:EE:FF";
 
 const char kDeviceName[] = "Test's Chromebook";
 const char kAccountName[] = "test.tester@gmail.com";
-const char kProfileUrl[] = "https://example.com";
+const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
+                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
+                                        0x89, 0xab, 0xcd, 0xef};
 const std::vector<uint8_t> kSecretId1 = {0x11, 0x11, 0x11, 0x11, 0x11, 0x11};
 const std::vector<uint8_t> kSecretId2 = {0x22, 0x22, 0x22, 0x22, 0x22, 0x22};
 const std::vector<uint8_t> kSecretId3 = {0x33, 0x33, 0x33, 0x33, 0x33, 0x33};
@@ -39,16 +41,16 @@ const long kSharedCredId3 = 333;
 ash::nearby::presence::mojom::MetadataPtr BuildTestMetadata() {
   ash::nearby::presence::mojom::MetadataPtr metadata =
       ash::nearby::presence::mojom::Metadata::New();
-  metadata->account_name = kAccountName;
   metadata->device_name = kDeviceName;
-  metadata->device_profile_url = kProfileUrl;
+  metadata->device_id = kDeviceId;
   return metadata;
 }
 
-::nearby::internal::Metadata BuildTestPresenceClientMetadata() {
-  ::nearby::internal::Metadata metadata;
-  metadata.set_bluetooth_mac_address(kMacAddress);
+::nearby::internal::DeviceIdentityMetaData BuildTestPresenceClientMetadata() {
+  ::nearby::internal::DeviceIdentityMetaData metadata;
   metadata.set_device_name(kDeviceName);
+  metadata.set_bluetooth_mac_address(kMacAddress);
+  metadata.set_device_id(std::string(kDeviceId.begin(), kDeviceId.end()));
   return metadata;
 }
 
@@ -238,7 +240,8 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceFoundCallback) {
   }
 
   EXPECT_TRUE(was_on_scan_started_called);
-  EXPECT_EQ(last_device_found_name_, device.GetMetadata().device_name());
+  EXPECT_EQ(last_device_found_name_,
+            device.GetDeviceIdentityMetadata().device_name());
   EXPECT_EQ(1, num_devices_found_);
 }
 
@@ -266,7 +269,8 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceChangedCallback) {
   }
 
   EXPECT_TRUE(was_on_scan_started_called);
-  EXPECT_EQ(last_device_changed_name_, device.GetMetadata().device_name());
+  EXPECT_EQ(last_device_changed_name_,
+            device.GetDeviceIdentityMetadata().device_name());
   EXPECT_EQ(1, num_devices_changed_);
 }
 
@@ -294,18 +298,19 @@ TEST_F(NearbyPresenceTest, RunStartScan_DeviceLostCallback) {
   }
 
   EXPECT_TRUE(was_on_scan_started_called);
-  EXPECT_EQ(last_device_lost_name_, device.GetMetadata().device_name());
+  EXPECT_EQ(last_device_lost_name_,
+            device.GetDeviceIdentityMetadata().device_name());
   EXPECT_EQ(1, num_devices_lost_);
 }
 
 TEST_F(NearbyPresenceTest, RunUpdateLocalDeviceMetadata) {
   nearby_presence_->UpdateLocalDeviceMetadata(BuildTestMetadata());
 
-  ::nearby::internal::Metadata local_device_metadata =
-      fake_presence_service_->GetLocalDeviceMetadata();
-  EXPECT_EQ(kAccountName, local_device_metadata.account_name());
+  ::nearby::internal::DeviceIdentityMetaData local_device_metadata =
+      fake_presence_service_->GetDeviceIdentityMetaData();
   EXPECT_EQ(kDeviceName, local_device_metadata.device_name());
-  EXPECT_EQ(kProfileUrl, local_device_metadata.device_profile_url());
+  EXPECT_EQ(std::string(kDeviceId.begin(), kDeviceId.end()),
+            local_device_metadata.device_id());
 }
 
 TEST_F(NearbyPresenceTest,

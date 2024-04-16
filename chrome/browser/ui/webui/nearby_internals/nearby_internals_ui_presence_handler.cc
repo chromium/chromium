@@ -65,9 +65,10 @@ std::string PresenceActionToString(nearby::presence::PresenceAction action) {
 base::Value::Dict PresenceDeviceToDictionary(
     nearby::presence::PresenceDevice presence_device) {
   base::Value::Dict dictionary;
-  dictionary.Set(kDeviceNameKey, presence_device.GetMetadata().device_name());
+  dictionary.Set(kDeviceNameKey,
+                 presence_device.GetDeviceIdentityMetadata().device_name());
   // TODO(b/277820435): add other device type options.
-  if (presence_device.GetMetadata().device_type() ==
+  if (presence_device.GetDeviceIdentityMetadata().device_type() ==
       nearby::internal::DeviceType::DEVICE_TYPE_PHONE) {
     dictionary.Set(kTypeKey, "DEVICE_TYPE_PHONE");
   }

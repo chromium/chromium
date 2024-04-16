@@ -150,8 +150,9 @@ void NearbyPresence::UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) {
   // to only set metadata, and not to generate credentials. Generating
   // credentials is only called during the first time flow or when device
   // metadata changes (e.g. the user's name).
-  presence_service_->UpdateLocalDeviceMetadata(
-      MetadataFromMojom(metadata.get()), /*regen_credentials=*/false,
+  presence_service_->UpdateDeviceIdentityMetaData(
+      MetadataFromMojom(metadata.get()),
+      /*regen_credentials=*/false,
       /*manager_app_id=*/kChromeOSManagerAppId,
       /*identity_types=*/
       {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},
@@ -163,8 +164,9 @@ void NearbyPresence::UpdateLocalDeviceMetadata(mojom::MetadataPtr metadata) {
 void NearbyPresence::UpdateLocalDeviceMetadataAndGenerateCredentials(
     mojom::MetadataPtr metadata,
     UpdateLocalDeviceMetadataAndGenerateCredentialsCallback callback) {
-  presence_service_->UpdateLocalDeviceMetadata(
-      MetadataFromMojom(metadata.get()), /*regen_credentials=*/true,
+  presence_service_->UpdateDeviceIdentityMetaData(
+      MetadataFromMojom(metadata.get()),
+      /*regen_credentials=*/true,
       /*manager_app_id=*/kChromeOSManagerAppId,
       /*identity_types=*/
       {::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE},

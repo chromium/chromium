@@ -35,7 +35,7 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
       const std::vector<::nearby::internal::SharedCredential>&
           new_shared_credentials) override;
   std::string GetDeviceId() override;
-  ::nearby::internal::Metadata GetDeviceMetadata() override;
+  ::nearby::internal::DeviceIdentityMetaData GetDeviceMetadata() override;
   std::string GetAccountName() override;
   void SaveUserRegistrationInfo(const std::string& display_name,
                                 const std::string& image_url) override;
@@ -47,6 +47,9 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
   // For example, "Josh's Chromebook." If a given name cannot be found, returns
   // just the device type.
   std::string GetDeviceName() const;
+
+  std::optional<std::string> FetchAndDecodeDeviceId();
+  void EncodeAndPersistDeviceId(std::string raw_device_id_bytes);
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

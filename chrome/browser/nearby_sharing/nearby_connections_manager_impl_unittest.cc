@@ -38,18 +38,19 @@ const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const char kBytePayload[] = {0x08, 0x09, 0x06, 0x04, 0x0f};
 const char kBytePayload2[] = {0x0a, 0x0b, 0x0c, 0x0d, 0x0e};
-const char kAccountName[] = "criscros@gmail.com";
-const char kUserName[] = "CrisCrOS";
 const char kDeviceName[] = "Cris Cros's Pixel";
-const char kDeviceProfileUrl[] = "cris_cros_url";
+const std::vector<uint8_t> kDeviceId = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab,
+                                        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
+                                        0x89, 0xab, 0xcd, 0xef};
 const int64_t kPayloadId = 689777;
 const int64_t kPayloadId2 = 777689;
 const int64_t kPayloadId3 = 986777;
 const uint64_t kTotalSize = 5201314;
 const uint64_t kBytesTransferred = 721831;
 const uint8_t kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
-const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
-const char kInvalidBluetoothMacAddress[] = {0x07, 0x07, 0x07};
+const std::vector<uint8_t> kBluetoothMacAddress = {0x00, 0x00, 0xe6,
+                                                   0x88, 0x64, 0x13};
+const std::vector<uint8_t> kInvalidBluetoothMacAddress = {0x07, 0x07, 0x07};
 
 // Timeout for initiating a connection to a remote device.
 constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
@@ -133,26 +134,25 @@ ash::nearby::presence::mojom::PresenceDeviceType DeviceTypeToMojom(
 }
 
 ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
-    ::nearby::internal::Metadata metadata) {
+    ::nearby::internal::DeviceIdentityMetaData metadata) {
   return ash::nearby::presence::mojom::Metadata::New(
-      DeviceTypeToMojom(metadata.device_type()), metadata.account_name(),
-      metadata.device_name(), metadata.user_name(),
-      metadata.device_profile_url(),
+      DeviceTypeToMojom(metadata.device_type()), metadata.device_name(),
       std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
-                           metadata.bluetooth_mac_address().end()));
+                           metadata.bluetooth_mac_address().end()),
+      std::vector<uint8_t>(metadata.device_id().begin(),
+                           metadata.device_id().end()));
 }
 
 nearby::presence::PresenceDevice CreatePresenceDevice() {
-  nearby::internal::Metadata metadata;
+  nearby::internal::DeviceIdentityMetaData metadata;
   metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
-  metadata.set_account_name(kAccountName);
-  metadata.set_user_name(kUserName);
   metadata.set_device_name(kDeviceName);
-  metadata.set_device_profile_url(kDeviceProfileUrl);
-  metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+  metadata.set_bluetooth_mac_address(
+      std::string(kBluetoothMacAddress.begin(), kBluetoothMacAddress.end()));
+  metadata.set_device_id(std::string(kDeviceId.begin(), kDeviceId.end()));
 
   nearby::presence::PresenceDevice presence_device(kRemoteEndpointId);
-  presence_device.SetMetadata(metadata);
+  presence_device.SetDeviceIdentityMetaData(metadata);
   presence_device.AddAction(static_cast<uint32_t>(
       nearby::presence::ActionBit::kPresenceManagerAction));
 
@@ -168,7 +168,8 @@ ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
       device.GetEndpointId(), std::move(actions),
-      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()),
+      /*stable_device_id=*/std::nullopt,
+      MetadataToMojom(device.GetDeviceIdentityMetadata()),
       /*decrypt_shared_credential=*/nullptr);
 }
 
@@ -828,14 +829,9 @@ struct ConnectionBluetoothMacAddressTestData {
   std::optional<std::vector<uint8_t>> bluetooth_mac_address;
   std::optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
 } kConnectionBluetoothMacAddressTestData[] = {
-    {std::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
-                                             std::end(kBluetoothMacAddress))),
-     std::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
-                                             std::end(kBluetoothMacAddress)))},
-    {std::make_optional(
-         std::vector<uint8_t>(std::begin(kInvalidBluetoothMacAddress),
-                              std::end(kInvalidBluetoothMacAddress))),
-     std::nullopt},
+    {std::make_optional(kBluetoothMacAddress),
+     std::make_optional(kBluetoothMacAddress)},
+    {std::make_optional(kInvalidBluetoothMacAddress), std::nullopt},
     {std::nullopt, std::nullopt}};
 
 class NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress

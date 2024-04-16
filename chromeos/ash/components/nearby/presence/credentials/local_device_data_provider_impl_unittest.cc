@@ -67,15 +67,10 @@ class LocalDeviceDataProviderImplTest : public testing::Test {
 TEST_F(LocalDeviceDataProviderImplTest, DeviceId) {
   CreateDataProvider();
 
-  // A 10-character alphanumeric ID is automatically generated if one doesn't
-  // already exist.
   std::string id = local_device_data_provider_->GetDeviceId();
-  EXPECT_EQ(10u, id.size());
-  for (const char c : id) {
-    EXPECT_TRUE(absl::ascii_isalnum(static_cast<unsigned char>(c)));
-  }
+  EXPECT_EQ(16u, id.size());
 
-  // The ID is persisted.
+  // Ensure the ID is persisted.
   DestroyDataProvider();
   CreateDataProvider();
   EXPECT_EQ(id, local_device_data_provider_->GetDeviceId());
@@ -106,7 +101,7 @@ TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
 
   // Assume that without the given name, the device name is just the
   // device type.
-  ::nearby::internal::Metadata metadata =
+  ::nearby::internal::DeviceIdentityMetaData metadata =
       local_device_data_provider_->GetDeviceMetadata();
   EXPECT_EQ(base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             metadata.device_name());
@@ -122,9 +117,6 @@ TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
             metadata.device_name());
 
   // Confirm the other fields are expected.
-  EXPECT_EQ(kCanocalizedUserEmail, metadata.account_name());
-  EXPECT_EQ(kUserName, metadata.user_name());
-  EXPECT_EQ(kProfileUrl, metadata.device_profile_url());
   EXPECT_EQ(::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
             metadata.device_type());
   EXPECT_EQ(std::string(), metadata.bluetooth_mac_address());
