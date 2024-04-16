@@ -30,41 +30,6 @@ namespace blink {
 
 using mojom::blink::ModelStreamingResponseStatus;
 
-// TODO(crbug.com/1520700): update this to different DOMException once the
-// list finalized.
-const char* ConvertModelStreamingResponseErrorToString(
-    ModelStreamingResponseStatus error) {
-  switch (error) {
-    case ModelStreamingResponseStatus::kErrorUnknown:
-      return "Unknown error.";
-    case ModelStreamingResponseStatus::kErrorInvalidRequest:
-      return "The request was invalid.";
-    case ModelStreamingResponseStatus::kErrorRequestThrottled:
-      return "The request was throttled.";
-    case ModelStreamingResponseStatus::kErrorPermissionDenied:
-      return "User permission errors such as not signed-in or not allowed to "
-             "execute model.";
-    case ModelStreamingResponseStatus::kErrorGenericFailure:
-      return "Other generic failures.";
-    case ModelStreamingResponseStatus::kErrorRetryableError:
-      return "Retryable error occurred in server.";
-    case ModelStreamingResponseStatus::kErrorNonRetryableError:
-      return "Non-retryable error occurred in server.";
-    case ModelStreamingResponseStatus::kErrorUnsupportedLanguage:
-      return "Unsupported.";
-    case ModelStreamingResponseStatus::kErrorFiltered:
-      return "Bad response.";
-    case ModelStreamingResponseStatus::kErrorDisabled:
-      return "Response was disabled.";
-    case ModelStreamingResponseStatus::kErrorCancelled:
-      return "The request was cancelled.";
-    case ModelStreamingResponseStatus::kOngoing:
-    case ModelStreamingResponseStatus::kComplete:
-      NOTREACHED();
-      return "";
-  }
-}
-
 // Implementation of blink::mojom::blink::ModelStreamingResponder that
 // handles the streaming output of the model execution, and returns the full
 // result through a promise.
@@ -107,7 +72,8 @@ class ModelGenericSession::Responder final
       if (status == ModelStreamingResponseStatus::kComplete) {
         resolver_->Resolve(response_);
       } else {
-        resolver_->Reject(ConvertModelStreamingResponseErrorToString(status));
+        resolver_->Reject(
+            ConvertModelStreamingResponseErrorToDOMException(status));
       }
       // Record the per execution metrics and run the complete callback.
       base::UmaHistogramCounts1M(
@@ -189,9 +155,8 @@ class ModelGenericSession::StreamingResponder final
       if (status == ModelStreamingResponseStatus::kComplete) {
         Controller()->Close();
       } else {
-        Controller()->Error(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotReadableError,
-            ConvertModelStreamingResponseErrorToString(status)));
+        Controller()->Error(
+            ConvertModelStreamingResponseErrorToDOMException(status));
       }
       // Record the per execution metrics and run the complete callback.
       base::UmaHistogramCounts1M(
