@@ -321,6 +321,8 @@ void OverviewGroupItem::SetShouldUseSpawnAnimation(bool value) {
   for (const auto& item : overview_items_) {
     item->SetShouldUseSpawnAnimation(value);
   }
+
+  should_use_spawn_animation_ = value;
 }
 
 void OverviewGroupItem::OnStartingAnimationComplete() {

@@ -1343,8 +1343,7 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
 
   ScopedOverviewAnimationSettings item_animation_settings(animation_type,
                                                           widget_window);
-  // Create a start animation observer if this is an enter overview layout
-  // animation.
+
   if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER ||
       animation_type == OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
@@ -1354,7 +1353,7 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
   }
   widget_window->SetTransform(gfx::Transform());
 
-  // The header doesn't need to be painted to a layer unless dragged.
+  // The header doesn't need to be painted to a layer unless been dragged.
   WindowMiniViewHeaderView* header_view = overview_item_view_->header_view();
   if (!header_view->layer()) {
     header_view->SetPaintToLayer();
@@ -1362,12 +1361,13 @@ void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {
   }
   ui::Layer* header_layer = overview_item_view_->header_view()->layer();
 
-  // Since header view is a child of the overview item view, the bounds
-  // animation is appled to the header as well when it's applied to the overview
-  // item. However, when calculating the target bounds for the window, it's
-  // always assumed that the header's height is 40, there's a gap between the
-  // header and the window during the animation. In order to neutralize the gap,
-  // apply the reversed vertical transform to the header separately.
+  // Since header view is a child view of the overview item view, the bounds
+  // animation will be applied to the header view when it's applied to the
+  // overview item. When calculating the target bounds for the window,
+  // it assumes that the header's height is `kWindowMiniViewHeaderHeight`
+  // without considering the gap between the header view and the window. In
+  // order to neutralize the gap, apply a separate vertical transform to the
+  // header view.
   float vertical_scale = item_bounds_transform.To2dScale().y();
   gfx::Transform vertical_reverse_transform =
       gfx::Transform::MakeScale(1.f, 1.f / vertical_scale);
