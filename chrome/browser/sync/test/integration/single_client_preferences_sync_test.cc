@@ -138,6 +138,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                 syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
 
+// TODO(crbug.com/1117345): PRE_ tests are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   sync_pb::EntitySpecifics specifics;
@@ -181,6 +183,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
                    syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that priority synced preferences and regular synced preferences are
 // kept separate. Tests that incoming priority preference change does not have
@@ -748,6 +751,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// TODO(crbug.com/1117345): PRE_ tests are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 // Adds pref values to persistent storage.
 IN_PROC_BROWSER_TEST_F(
     SingleClientPreferencesWithAccountStorageSyncTest,
@@ -849,6 +854,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   ASSERT_TRUE(
       GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using SingleClientPreferencesWithAccountStorageMergeSyncTest =
     SingleClientPreferencesWithAccountStorageSyncTest;
