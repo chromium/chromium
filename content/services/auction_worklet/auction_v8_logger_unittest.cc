@@ -170,6 +170,7 @@ TEST_F(AuctionV8LoggerTest, LogConsoleWarning) {
       "warning", /*json_args=*/R"([{"type":"string", "value":"Warning 2"}])",
       /*stack_trace_size=*/1, /*function=*/"foo", /*url=*/url_,
       /*line_number=*/3);
+  channel->ExpectNoMoreConsoleEvents();
   id->AbortDebuggerPauses();
 }
 

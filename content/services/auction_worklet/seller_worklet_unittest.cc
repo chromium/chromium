@@ -1567,6 +1567,8 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrlDeprecationWarning) {
       "browserSignals.renderURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
       /*line_number=*/4);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Check that accessing `renderURL` of browserSignals does not display a
@@ -1586,17 +1588,7 @@ TEST_F(SellerWorkletTest, ScoreAdRenderUrlNoDeprecationWarning) {
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
   RunScoreAdExpectingResultOnWorklet(worklet_impl, 1);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
@@ -1786,6 +1778,8 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlDeprecationWarning) {
       "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"scoreAd", decision_logic_url_,
       /*line_number=*/9);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
@@ -1846,17 +1840,7 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigUrlNoDeprecationWarning) {
       inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
   RunScoreAdExpectingResultOnWorklet(worklet_impl, /*expected_score=*/1);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
@@ -3035,6 +3019,8 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrlDeprecationWarning) {
       "browserSignals.renderURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
       /*line_number=*/10);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Check that accessing `renderURL` of browserSignals does not display a
@@ -3061,17 +3047,7 @@ TEST_F(SellerWorkletTest, ReportResultRenderUrlNoDeprecationWarning) {
       /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
       run_loop.QuitClosure());
   run_loop.Run();
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
@@ -3561,6 +3537,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlDeprecationWarning) {
       "Please use auctionConfig.trustedScoringSignalsURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"reportResult", decision_logic_url_,
       /*line_number=*/15);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Check that accessing `decisionLogicURL` and `trustedScoringSignalsURL` of
@@ -3625,17 +3603,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigUrlNoDeprecationWarning) {
       /*expected_reporting_latency_timeout=*/false, /*expected_errors=*/{},
       run_loop.QuitClosure());
   run_loop.Run();
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(SellerWorkletTest,

@@ -105,6 +105,10 @@ class TestChannel : public v8_inspector::V8Inspector::Channel {
                                         const GURL& url,
                                         int line_number);
 
+  // Checks that there are no more console events, after spinning the run loop
+  // until idle.
+  void ExpectNoMoreConsoleEvents();
+
   // v8_inspector::V8Inspector::Channel implementation.
   void sendResponse(
       int call_id,

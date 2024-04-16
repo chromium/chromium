@@ -1645,6 +1645,8 @@ TEST_F(BidderWorkletTest, AdsRenderUrlDeprecationWarning) {
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/5);
 
+  channel->ExpectNoMoreConsoleEvents();
+
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
   bids_.clear();
@@ -1682,16 +1684,7 @@ TEST_F(BidderWorkletTest, AdsRenderUrlNoDeprecationWarning) {
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
 
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
@@ -2057,6 +2050,8 @@ TEST_F(BidderWorkletTest, AdComponentsRenderUrlDeprecationWarning) {
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/6);
 
+  channel->ExpectNoMoreConsoleEvents();
+
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
   bids_.clear();
@@ -2097,17 +2092,7 @@ TEST_F(BidderWorkletTest, AdComponentsRenderUrlNoDeprecationWarning) {
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidModelingSignals) {
@@ -3639,6 +3624,7 @@ TEST_F(BidderWorkletTest, UseBiddingSignalsPrioritizationDeprecationWarning) {
       "instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -3678,17 +3664,7 @@ TEST_F(BidderWorkletTest,
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupPriorityVector) {
@@ -3773,6 +3749,7 @@ TEST_F(BidderWorkletTest, BiddingLogicUrlDeprecationWarning) {
       "interestGroup.biddingLogicURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -3808,17 +3785,7 @@ TEST_F(BidderWorkletTest, BiddingLogicUrlNoDeprecationWarning) {
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
@@ -3890,6 +3857,7 @@ TEST_F(BidderWorkletTest, BiddingWasmHelperUrlDeprecationWarning) {
       "use interestGroup.biddingWasmHelperURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -3930,17 +3898,7 @@ TEST_F(BidderWorkletTest, BiddingWasmHelperUrlNoDeprecationWarning) {
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
@@ -4034,6 +3992,7 @@ TEST_F(BidderWorkletTest, UpdateUrlDeprecationWarning) {
       "interestGroup.updateURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -4075,6 +4034,7 @@ TEST_F(BidderWorkletTest, DailyUpdateUrlDeprecationWarning) {
       "interestGroup.updateURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -4112,17 +4072,7 @@ TEST_F(BidderWorkletTest, UpdateUrlNoDeprecationWarning) {
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
@@ -4204,6 +4154,7 @@ TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlDeprecationWarning) {
       "Please use interestGroup.trustedBiddingSignalsURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"generateBid",
       interest_group_bidding_url_, /*line_number=*/4);
+  channel->ExpectNoMoreConsoleEvents();
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
@@ -4248,17 +4199,7 @@ TEST_F(BidderWorkletTest, TrustedBiddingSignalsUrlNoDeprecationWarning) {
 
   ASSERT_EQ(1u, bids_.size());
   EXPECT_EQ(1, bids_[0]->bid);
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
@@ -7645,6 +7586,8 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlDeprecationWarning) {
       "browserSignals.renderURL instead.\"}]",
       /*stack_trace_size=*/1, /*function=*/"reportWin",
       interest_group_bidding_url_, /*line_number=*/10);
+
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 // Check that accessing `renderURL` of browserSignals does not display a
@@ -7676,17 +7619,7 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRenderUrlNoDeprecationWarning) {
                                    /*expected_errors=*/{},
                                    run_loop.QuitClosure());
   run_loop.Run();
-
-  // Make sure all events have been received.
-  task_environment_.RunUntilIdle();
-
-  std::list<TestChannel::Event> events = channel->TakeAllEvents();
-  for (const auto& event : events) {
-    if (event.type == TestChannel::Event::Type::Notification) {
-      EXPECT_NE(*event.value.GetDict().FindString("method"),
-                "Runtime.consoleAPICalled");
-    }
-  }
+  channel->ExpectNoMoreConsoleEvents();
 }
 
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalBid) {

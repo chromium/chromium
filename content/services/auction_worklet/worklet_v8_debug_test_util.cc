@@ -129,6 +129,17 @@ void TestChannel::WaitForAndValidateConsoleMessage(std::string_view type,
   EXPECT_EQ(line_number, stack_trace_dict->FindInt("lineNumber"));
 }
 
+void TestChannel::ExpectNoMoreConsoleEvents() {
+  base::RunLoop().RunUntilIdle();
+  base::AutoLock hold_lock(lock_);
+  for (const auto& event : events_) {
+    if (event.type == TestChannel::Event::Type::Notification) {
+      EXPECT_NE(*event.value.GetDict().FindString("method"),
+                "Runtime.consoleAPICalled");
+    }
+  }
+}
+
 void TestChannel::sendResponse(
     int call_id,
     std::unique_ptr<v8_inspector::StringBuffer> message) {
