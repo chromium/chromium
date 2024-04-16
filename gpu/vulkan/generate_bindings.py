@@ -129,6 +129,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkCmdBindVertexBuffers',
       'vkCmdCopyBuffer',
       'vkCmdCopyBufferToImage',
+      'vkCmdCopyImage',
       'vkCmdCopyImageToBuffer',
       'vkCmdDraw',
       'vkCmdEndRenderPass',

@@ -77,6 +77,7 @@ class ClientBase {
     // by default clients only clear buffers with a solid color, this flag is
     // meant to ensure that the rendering actually draws a textured quad.
     bool use_vulkan_texture = false;
+    bool use_vulkan_blitter = false;
   };
 
   struct Buffer {
@@ -231,7 +232,10 @@ class ClientBase {
   std::unique_ptr<ScopedVkImageView> vk_texture_image_view_;
   std::unique_ptr<ScopedVkSampler> vk_texture_sampler_;
   std::vector<VkDescriptorSet> vk_descriptor_sets_;
+  // A command pool for the transfer queue (blitter)
+  std::unique_ptr<ScopedVkCommandPool> vk_command_pool_transfer_;
   VkQueue vk_queue_;
+  VkQueue vk_queue_transfer_;
 #endif
 #endif
   scoped_refptr<gl::GLSurface> gl_surface_;

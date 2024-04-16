@@ -51,8 +51,12 @@ class ScopedVulkanRenderFrame {
                           VkFramebuffer framebuffer,
                           SkColor clear_color,
                           int frame,
-                          bool use_texture)
+                          bool use_texture,
+                          VkImage blitting_target)
       : client_(client) {
+    use_blitter_ = use_texture && blitting_target != VK_NULL_HANDLE;
+    vk_command_pool_ = use_blitter_ ? client->vk_command_pool_transfer_->get()
+                                    : client->vk_command_pool_->get();
     static const VkCommandBufferBeginInfo vk_command_buffer_begin_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
@@ -60,7 +64,7 @@ class ScopedVulkanRenderFrame {
 
     VkCommandBufferAllocateInfo command_buffer_allocate_info{
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-        .commandPool = client->vk_command_pool_->get(),
+        .commandPool = vk_command_pool_,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         .commandBufferCount = 1,
     };
@@ -74,56 +78,81 @@ class ScopedVulkanRenderFrame {
         vkBeginCommandBuffer(command_buffer_, &vk_command_buffer_begin_info);
     CHECK_EQ(VK_SUCCESS, result);
 
-    SkColor4f sk_color = SkColor4f::FromColor(clear_color);
-    VkClearValue clear_value = {
-        .color =
-            {
-                .float32 =
-                    {
-                        sk_color.fR, sk_color.fG, sk_color.fB, sk_color.fA,
-                    },
-            },
-    };
-    VkRenderPassBeginInfo render_pass_begin_info{
-        .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        .renderPass = client_->vk_render_pass_->get(),
-        .framebuffer = framebuffer,
-        .renderArea =
-            (VkRect2D){
-                .offset = {0, 0},
-                .extent =
-                    {static_cast<uint32_t>(client_->surface_size_.width()),
-                     static_cast<uint32_t>(client_->surface_size_.height())},
-            },
-        .clearValueCount = 1,
-        .pClearValues = &clear_value,
-    };
-    vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
-
-    if (use_texture) {
-      vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                        client_->vk_pipeline_->get());
-      VkViewport viewport{
-          .x = 0.0f,
-          .y = 0.0f,
-          .width = 256.0f,
-          .height = 256.0f,
-          .minDepth = 0.0f,
-          .maxDepth = 1.0f,
+    if (!use_blitter_) {
+      SkColor4f sk_color = SkColor4f::FromColor(clear_color);
+      VkClearValue clear_value = {
+          .color =
+              {
+                  .float32 =
+                      {
+                          sk_color.fR,
+                          sk_color.fG,
+                          sk_color.fB,
+                          sk_color.fA,
+                      },
+              },
       };
-      vkCmdSetViewport(command_buffer_, 0, 1, &viewport);
-
-      VkRect2D scissor{
-          .offset = {0, 0},
-          .extent = {256, 256},
+      VkRenderPassBeginInfo render_pass_begin_info{
+          .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+          .renderPass = client_->vk_render_pass_->get(),
+          .framebuffer = framebuffer,
+          .renderArea =
+              (VkRect2D){
+                  .offset = {0, 0},
+                  .extent =
+                      {static_cast<uint32_t>(client_->surface_size_.width()),
+                       static_cast<uint32_t>(client_->surface_size_.height())},
+              },
+          .clearValueCount = 1,
+          .pClearValues = &clear_value,
       };
-      vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
-      vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                              client_->vk_pipeline_layout_->get(), 0, 1,
-                              &(client_->vk_descriptor_sets_[frame]), 0,
-                              nullptr);
-      vkCmdDraw(command_buffer_, 6, 1, 0, 0);
+
+      vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
+                           VK_SUBPASS_CONTENTS_INLINE);
+
+      if (use_texture) {
+        vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          client_->vk_pipeline_->get());
+        VkViewport viewport{
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = 256.0f,
+            .height = 256.0f,
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f,
+        };
+        vkCmdSetViewport(command_buffer_, 0, 1, &viewport);
+
+        VkRect2D scissor{
+            .offset = {0, 0},
+            .extent = {256, 256},
+        };
+        vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
+        vkCmdBindDescriptorSets(
+            command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS,
+            client_->vk_pipeline_layout_->get(), 0, 1,
+            &(client_->vk_descriptor_sets_[frame]), 0, nullptr);
+        vkCmdDraw(command_buffer_, 6, 1, 0, 0);
+      }
+    } else {
+      VkImageCopy imageCopy{
+          .srcSubresource{
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .layerCount = 1,
+          },
+          .dstSubresource{
+              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .layerCount = 1,
+          },
+          .extent{
+              .width = 256,
+              .height = 256,
+              .depth = 4,
+          },
+      };
+      vkCmdCopyImage(command_buffer_, client_->vk_texture_image_->get(),
+                     VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, blitting_target,
+                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
     }
   }
 
@@ -131,25 +160,31 @@ class ScopedVulkanRenderFrame {
   ScopedVulkanRenderFrame& operator=(const ScopedVulkanRenderFrame&) = delete;
 
   ~ScopedVulkanRenderFrame() {
-    vkCmdEndRenderPass(command_buffer_);
-
+    if (!use_blitter_) {
+      vkCmdEndRenderPass(command_buffer_);
+    }
     VkResult result = vkEndCommandBuffer(command_buffer_);
     CHECK_EQ(VK_SUCCESS, result);
     VkSubmitInfo submit_info{.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
                              .commandBufferCount = 1,
                              .pCommandBuffers = &command_buffer_};
-    result = vkQueueSubmit(client_->vk_queue_, 1, &submit_info, VK_NULL_HANDLE);
+
+    VkQueue vk_queue =
+        use_blitter_ ? client_->vk_queue_transfer_ : client_->vk_queue_;
+    result = vkQueueSubmit(vk_queue, 1, &submit_info, VK_NULL_HANDLE);
     CHECK_EQ(VK_SUCCESS, result);
 
-    result = vkQueueWaitIdle(client_->vk_queue_);
+    result = vkQueueWaitIdle(vk_queue);
 
-    vkFreeCommandBuffers(client_->vk_device_->get(),
-                         client_->vk_command_pool_->get(), 1, &command_buffer_);
+    vkFreeCommandBuffers(client_->vk_device_->get(), vk_command_pool_, 1,
+                         &command_buffer_);
   }
 
  private:
   const raw_ptr<VulkanClient> client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
+  VkCommandPool vk_command_pool_ = VK_NULL_HANDLE;
+  bool use_blitter_ = false;
 };
 
 void VulkanClient::Run(const ClientBase::InitParams& params) {
@@ -177,7 +212,8 @@ void VulkanClient::Run(const ClientBase::InitParams& params) {
       ScopedVulkanRenderFrame vulkan_frame(
           this, buffer->vk_framebuffer->get(),
           kColors[frame_count % std::size(kColors)], frame_parity,
-          params.use_vulkan_texture);
+          params.use_vulkan_texture,
+          params.use_vulkan_blitter ? buffer->vk_image->get() : VK_NULL_HANDLE);
 
       // This is where the drawing code would go.
       // This client is not drawing anything. Just clearing the fb.
