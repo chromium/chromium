@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_
+
+#include <memory>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
@@ -99,4 +101,4 @@ class WebDocumentSubresourceFilterImpl final
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_RENDERER_WEB_DOCUMENT_SUBRESOURCE_FILTER_IMPL_H_

@@ -8,8 +8,6 @@ static_library("renderer") {
     "subresource_filter_agent.h",
     "unverified_ruleset_dealer.cc",
     "unverified_ruleset_dealer.h",
-    "web_document_subresource_filter_impl.cc",
-    "web_document_subresource_filter_impl.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
@@ -24,6 +22,7 @@ static_library("renderer") {
   ]
   deps = [
     "//components/subresource_filter/content/shared/common",
+    "//components/subresource_filter/content/shared/renderer",
     "//content/public/common",
     "//ipc",
     "//third_party/blink/public:blink",
