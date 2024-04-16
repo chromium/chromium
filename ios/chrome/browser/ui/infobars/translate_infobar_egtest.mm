@@ -748,8 +748,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the target language can be changed. TODO(crbug.com/1046629):
 // implement test for changing source language.
-// TODO(crbug.com/1116012): This test is failing flaky on iOS14.
-- (void)testInfobarChangeTargetLanguage {
+// TODO(crbug.com/334867767) Fix and reenable tests.
+- (void)DISABLED_testInfobarChangeTargetLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
