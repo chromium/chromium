@@ -53,6 +53,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrIcon) {
   RunTest("cr_elements/cr_icon_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrIconset) {
+  RunTest("cr_elements/cr_iconset_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, FindShortcutMixin) {
   RunTest("cr_elements/find_shortcut_mixin_test.js", "mocha.run()");
 }

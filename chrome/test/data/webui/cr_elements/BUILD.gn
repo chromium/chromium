@@ -26,6 +26,7 @@ build_webui_tests("build") {
     "cr_grid_focus_test.ts",
     "cr_icon_button_test.ts",
     "cr_icon_test.ts",
+    "cr_iconset_test.ts",
     "cr_input_test.ts",
     "cr_lazy_render_test.ts",
     "cr_link_row_test.ts",

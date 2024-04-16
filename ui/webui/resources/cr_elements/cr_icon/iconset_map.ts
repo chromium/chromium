@@ -7,7 +7,6 @@ import {assert} from '//resources/js/assert.js';
 // Common interface implemented by CrIconsetElement and IronIconset.
 export interface Iconset {
   name: string;
-  getIconNames(): string[];
   applyIcon(element: HTMLElement, iconName: string): SVGElement|null;
   createIcon(iconName: string): SVGElement|null;
   removeIcon(element: HTMLElement): void;

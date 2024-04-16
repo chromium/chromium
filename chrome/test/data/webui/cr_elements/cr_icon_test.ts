@@ -5,8 +5,10 @@
 // clang-format off
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html as litHtml, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
@@ -17,6 +19,25 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-icon', function() {
   let icon: CrIconElement;
+
+  suiteSetup(function() {
+    // Add a test cr-iconset to the page. Necessary since there are not yet
+    // any cr-iconsets in prod that can be imported instead.
+    const iconsetHtml = litHtml`
+      <cr-iconset name="cr-test" size="24">
+        <svg>
+          <defs>
+            <g id="arrow-drop-up">
+              <path d="M7 14l5-5 5 5z"></path>
+            </g>
+            <g id="arrow-drop-down">
+              <path d="M7 10l5 5 5-5z"></path>
+            </g>
+          </defs>
+        </svg>
+      </cr-iconset>`;
+    render(iconsetHtml, document.head);
+  });
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -66,6 +87,41 @@ suite('cr-icon', function() {
     </iron-iconset-svg>
     `;
     document.head.appendChild(template.content);
+    await microtasksFinished();
+    svg = icon.shadowRoot!.querySelector('svg');
+    assertTrue(!!svg);
+  });
+
+  test('cr-iconset', async () => {
+    icon.icon = 'cr-test:arrow-drop-up';
+    await microtasksFinished();
+    let svgs = icon.shadowRoot!.querySelectorAll('svg');
+    assertEquals(1, svgs.length);
+    assertSvgPath(svgs[0]!, 'M7 14l5-5 5 5z');
+
+    icon.icon = 'cr-test:arrow-drop-down';
+    await microtasksFinished();
+    svgs = icon.shadowRoot!.querySelectorAll('svg');
+    assertEquals(1, svgs.length);
+    assertSvgPath(svgs[0]!, 'M7 10l5 5 5-5z');
+  });
+
+  test('cr-iconset added later', async () => {
+    icon.icon = 'cr-test-late:print';
+    await microtasksFinished();
+    let svg = icon.shadowRoot!.querySelector('svg');
+    assertFalse(!!svg);
+
+    const iconsetHtml = litHtml`
+      <cr-iconset name="cr-test-late" size="24">
+        <svg>
+          <defs>
+            <g id="print"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></g>
+          </defs>
+        </svg>
+      </cr-iconset>`;
+    render(iconsetHtml, document.head);
+
     await microtasksFinished();
     svg = icon.shadowRoot!.querySelector('svg');
     assertTrue(!!svg);
