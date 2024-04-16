@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "ui/gfx/geometry/transform.h"
@@ -114,7 +113,6 @@ class ViewTransitionStyleTracker
 
   void UpdateElementIndicesAndSnapshotId(
       Element*,
-      ViewTransitionElementId&,
       viz::ViewTransitionElementResourceId&) const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and

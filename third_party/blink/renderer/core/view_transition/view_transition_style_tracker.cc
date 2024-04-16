@@ -988,13 +988,11 @@ void ViewTransitionStyleTracker::EndTransition() {
 
 void ViewTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
     Element* element,
-    ViewTransitionElementId& index,
     viz::ViewTransitionElementResourceId& resource_id) const {
   DCHECK(element);
 
   for (const auto& entry : element_data_map_) {
     if (entry.value->target_element == element) {
-      index.AddIndex(entry.value->element_index);
       const auto& snapshot_id = HasLiveNewContent()
                                     ? entry.value->new_snapshot_id
                                     : entry.value->old_snapshot_id;

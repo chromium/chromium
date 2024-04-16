@@ -15,9 +15,8 @@ TEST(ViewTransitionRequestTest, PrepareRequest) {
   bool called = false;
   auto callback = base::BindLambdaForTesting([&called]() { called = true; });
 
-  auto request = ViewTransitionRequest::CreateCapture(
-      /*document_tag=*/0, /*shared_element_count=*/0, viz::NavigationId::Null(),
-      {}, std::move(callback));
+  auto request = ViewTransitionRequest::CreateCapture(viz::NavigationId::Null(),
+                                                      {}, std::move(callback));
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();
@@ -35,8 +34,8 @@ TEST(ViewTransitionRequestTest, PrepareRequest) {
 }
 
 TEST(ViewTransitionRequestTest, StartRequest) {
-  auto request = ViewTransitionRequest::CreateAnimateRenderer(
-      /*document_tag=*/0, viz::NavigationId::Null());
+  auto request =
+      ViewTransitionRequest::CreateAnimateRenderer(viz::NavigationId::Null());
 
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 

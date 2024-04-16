@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -355,10 +354,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // this is also the `navigation_id` provided to the browser/GPU process to
   // track the lifetime of generated resources.
   const viz::TransitionId transition_id_;
-
-  // The document tag identifies the document to which this transition
-  // belongs. It's unique among other local documents.
-  uint32_t document_tag_ = 0u;
 
   Member<ViewTransitionStyleTracker> style_tracker_ = nullptr;
 

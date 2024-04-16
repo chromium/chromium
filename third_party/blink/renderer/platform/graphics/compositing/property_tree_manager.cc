@@ -1017,7 +1017,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         // tests will fail without the following condition.
         // TODO(crbug.com/1345805): Investigate the reason and remove the
         // condition if possible.
-        if (!current_.effect->ViewTransitionElementId().valid()) {
+        if (!current_.effect->ViewTransitionElementResourceId().IsValid()) {
           // Use the parent clip as the output clip of the synthetic effect so
           // that the clip will apply to the masked contents but not the mask
           // layer, to ensure the masked content is fully covered by the mask
@@ -1147,7 +1147,7 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     // element resource ID. The view transition should either prevent such
     // content or ensure effect nodes are contiguous. See crbug.com/1303081 for
     // details. This restriction also applies to element capture.
-    DCHECK((!next_effect.ViewTransitionElementId().valid() &&
+    DCHECK((!next_effect.ViewTransitionElementResourceId().IsValid() &&
             next_effect.ElementCaptureId()->is_zero()) ||
            !has_multiple_groups)
         << next_effect.ToString();
@@ -1218,8 +1218,9 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
       effect.BlendMode() != SkBlendMode::kDstIn) {
     return cc::RenderSurfaceReason::kBlendMode;
   }
-  if (effect.ViewTransitionElementId().valid())
+  if (effect.ViewTransitionElementResourceId().IsValid()) {
     return cc::RenderSurfaceReason::kViewTransitionParticipant;
+  }
   // If the effect's transform node flattens the transform while it
   // participates in the 3d sorting context of an ancestor, cc needs a
   // render surface for correct flattening.
@@ -1261,8 +1262,6 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();
 
-  effect_node.view_transition_shared_element_id =
-      effect.ViewTransitionElementId();
   effect_node.view_transition_element_resource_id =
       effect.ViewTransitionElementResourceId();
 

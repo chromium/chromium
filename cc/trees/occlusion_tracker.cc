@@ -206,7 +206,8 @@ void OcclusionTracker::FinishedRenderTarget(
       !IsOccludingBlendMode(finished_target_surface->BlendMode()) ||
       target_is_only_for_copy_request_or_force_render_surface ||
       finished_target_surface->Filters().HasFilterThatAffectsOpacity() ||
-      finished_target_surface->GetViewTransitionElementId().valid()) {
+      finished_target_surface->OwningEffectNode()
+          ->view_transition_element_resource_id.IsValid()) {
     stack_.back().occlusion_from_outside_target.Clear();
     stack_.back().occlusion_from_inside_target.Clear();
   }

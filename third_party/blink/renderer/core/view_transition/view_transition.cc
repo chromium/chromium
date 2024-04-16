@@ -40,14 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
-namespace {
-
-uint32_t NextDocumentTag() {
-  static uint32_t next_document_tag = 1u;
-  return next_document_tag++;
-}
-
-}  // namespace
 
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
     const Document& document) {
@@ -137,7 +129,6 @@ ViewTransition::ViewTransition(PassKey,
       document_(document),
       delegate_(delegate),
       transition_id_(viz::TransitionId::Create()),
-      document_tag_(NextDocumentTag()),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
                                                            transition_id_)),
@@ -161,7 +152,6 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kScript),
       document_(document),
-      document_tag_(NextDocumentTag()),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *document->GetExecutionContext(),
           *this,
@@ -191,7 +181,6 @@ ViewTransition::ViewTransition(PassKey,
       document_(document),
       delegate_(delegate),
       transition_id_(navigation_id),
-      document_tag_(NextDocumentTag()),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
                                                            transition_id_)),
@@ -223,7 +212,6 @@ ViewTransition::ViewTransition(PassKey,
       document_(document),
       delegate_(delegate),
       transition_id_(transition_state.transition_id),
-      document_tag_(NextDocumentTag()),
       style_tracker_(MakeGarbageCollected<ViewTransitionStyleTracker>(
           *document_,
           std::move(transition_state))),
@@ -260,8 +248,8 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (static_cast<int>(state_) >
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
-    delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-        document_tag_, CrossDocumentNavigationId()));
+    delegate_->AddPendingRequest(
+        ViewTransitionRequest::CreateRelease(CrossDocumentNavigationId()));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -457,7 +445,6 @@ void ViewTransition::ProcessCurrentState() {
         }
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
-            document_tag_, style_tracker_->CapturedTagCount(),
             CrossDocumentNavigationId(),
             style_tracker_->TakeCaptureResourceIds(),
             ConvertToBaseOnceCallback(
@@ -580,7 +567,7 @@ void ViewTransition::ProcessCurrentState() {
 
         delegate_->AddPendingRequest(
             ViewTransitionRequest::CreateAnimateRenderer(
-                document_tag_, CrossDocumentNavigationId()));
+                CrossDocumentNavigationId()));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -609,8 +596,8 @@ void ViewTransition::ProcessCurrentState() {
         CHECK(script_delegate_);
         script_delegate_->DidFinishAnimating();
 
-        delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-            document_tag_, CrossDocumentNavigationId()));
+        delegate_->AddPendingRequest(
+            ViewTransitionRequest::CreateRelease(CrossDocumentNavigationId()));
         delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;
@@ -793,7 +780,6 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
   state.direct_compositing_reasons = CompositingReason::kViewTransitionElement;
   state.local_transform_space = current_transform;
   state.output_clip = current_clip;
-  state.view_transition_element_id = ViewTransitionElementId(document_tag_);
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       object.UniqueId(), CompositorElementIdNamespace::kViewTransitionElement);
   auto* element = DynamicTo<Element>(object.GetNode());
@@ -806,7 +792,7 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
     // transition, requiring a snapshot.
     if (IsRootTransitioning()) {
       style_tracker_->UpdateElementIndicesAndSnapshotId(
-          document_->documentElement(), state.view_transition_element_id,
+          document_->documentElement(),
           state.view_transition_element_resource_id);
     }
     return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
@@ -814,8 +800,7 @@ PaintPropertyChangeType ViewTransition::UpdateEffect(
 
   state.self_or_ancestor_participates_in_view_transition = true;
   style_tracker_->UpdateElementIndicesAndSnapshotId(
-      element, state.view_transition_element_id,
-      state.view_transition_element_resource_id);
+      element, state.view_transition_element_resource_id);
   return style_tracker_->UpdateEffect(*element, std::move(state),
                                       current_effect);
 }

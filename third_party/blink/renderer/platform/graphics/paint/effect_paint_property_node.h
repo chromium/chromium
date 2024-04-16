@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -116,10 +115,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     // === End of effects ===
     CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
     CompositorElementId compositor_element_id;
-
-    // An identifier for a view transition element. `id.valid()` returns true if
-    // this has been set, and false otherwise.
-    blink::ViewTransitionElementId view_transition_element_id;
 
     // An identifier to tag transition element resources generated and cached in
     // the Viz process. This generated resource can be used as content for other
@@ -304,7 +299,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   // is entirely empty.
   bool DrawsContent() const {
     return MayHaveFilter() || MayHaveBackdropEffect() ||
-           ViewTransitionElementId().valid() || !ElementCaptureId()->is_zero();
+           ViewTransitionElementResourceId().IsValid() ||
+           !ElementCaptureId()->is_zero();
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
@@ -313,10 +309,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   const CompositorElementId& GetCompositorElementId() const {
     return state_.compositor_element_id;
-  }
-
-  const blink::ViewTransitionElementId& ViewTransitionElementId() const {
-    return state_.view_transition_element_id;
   }
 
   const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()

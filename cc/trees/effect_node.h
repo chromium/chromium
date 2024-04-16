@@ -11,7 +11,6 @@
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/property_ids.h"
-#include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -168,9 +167,6 @@ struct CC_EXPORT EffectNode {
   int closest_ancestor_with_copy_request_id = kInvalidPropertyNodeId;
   int closest_ancestor_being_captured_id = kInvalidPropertyNodeId;
   int closest_ancestor_with_shared_element_id = kInvalidPropertyNodeId;
-
-  // Represents a DOM element id for the view transition API.
-  ViewTransitionElementId view_transition_shared_element_id;
 
   // Represents a resource id for a resource cached or generated in the Viz
   // process.

@@ -2700,30 +2700,30 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
-  ViewTransitionRequest::SharedElementMap shared_element_render_pass_id_map;
+  ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
   for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
-    const auto& shared_element_id =
-        render_surface->GetViewTransitionElementId();
-    if (!shared_element_id.valid())
+    const auto& view_transition_element_resource_id =
+        render_surface->OwningEffectNode()->view_transition_element_resource_id;
+    if (!view_transition_element_resource_id.IsValid()) {
       continue;
+    }
 
-    DCHECK(
-        !base::Contains(shared_element_render_pass_id_map, shared_element_id))
-        << "Cannot map " << shared_element_id.ToString() << " to render pass "
+    DCHECK(!base::Contains(view_transition_element_map,
+                           view_transition_element_resource_id))
+        << "Cannot map " << view_transition_element_resource_id.ToString()
+        << " to render pass "
         << render_surface->render_pass_id().GetUnsafeValue()
         << "; It already maps to render pass "
-        << shared_element_render_pass_id_map[shared_element_id]
-               .render_pass_id.GetUnsafeValue();
+        << view_transition_element_map[view_transition_element_resource_id]
+               .GetUnsafeValue();
 
-    shared_element_render_pass_id_map[shared_element_id].render_pass_id =
+    view_transition_element_map[view_transition_element_resource_id] =
         render_surface->render_pass_id();
-    shared_element_render_pass_id_map[shared_element_id].resource_id =
-        render_surface->OwningEffectNode()->view_transition_element_resource_id;
   }
 
   for (auto& request : active_tree_->TakeViewTransitionRequests()) {
     metadata.transition_directives.push_back(
-        request->ConstructDirective(shared_element_render_pass_id_map));
+        request->ConstructDirective(view_transition_element_map));
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);

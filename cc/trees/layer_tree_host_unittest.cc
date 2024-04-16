@@ -9939,7 +9939,6 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
   void BeginTest() override {
     layer_tree_host()->AddViewTransitionRequest(
         ViewTransitionRequest::CreateCapture(
-            /*document_tag=*/0, /*shared_element_count=*/0,
             viz::NavigationId::Null(), {},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
   }
@@ -10898,10 +10897,6 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
         layer_with_view_transition_content_.get(), kContentsRootPropertyNodeId);
     layer_with_view_transition_content_->SetEffectTreeIndex(
         layer_with_view_transition_content_node.id);
-    layer_with_view_transition_content_node.view_transition_shared_element_id =
-        ViewTransitionElementId(1u);
-    layer_with_view_transition_content_node.view_transition_shared_element_id
-        .AddIndex(0u);
     layer_with_view_transition_content_node
         .view_transition_element_resource_id = resource_id_;
     layer_with_view_transition_content_node.render_surface_reason =

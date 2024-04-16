@@ -1212,7 +1212,6 @@ component("platform") {
     "graphics/video_frame_sink_bundle.h",
     "graphics/video_frame_submitter.cc",
     "graphics/video_frame_submitter.h",
-    "graphics/view_transition_element_id.h",
     "graphics/visual_rect_flags.h",
     "graphics/viz_util.cc",
     "graphics/viz_util.h",

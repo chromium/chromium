@@ -448,8 +448,6 @@ cc_component("cc") {
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
     "trees/viewport_property_ids.h",
-    "view_transition/view_transition_element_id.cc",
-    "view_transition/view_transition_element_id.h",
     "view_transition/view_transition_request.cc",
     "view_transition/view_transition_request.h",
   ]
