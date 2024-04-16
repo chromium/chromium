@@ -11,8 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/commerce_resources.h"
-#include "chrome/grit/commerce_resources_map.h"
+#include "chrome/grit/commerce_product_specifications_resources.h"
+#include "chrome/grit/commerce_product_specifications_resources_map.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
@@ -42,11 +42,13 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source, base::make_span(kCommerceResources, kCommerceResourcesSize),
+      source,
+      base::make_span(kCommerceProductSpecificationsResources,
+                      kCommerceProductSpecificationsResourcesSize),
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   source->AddString("message", "Some example content...");
-  source->AddString("pageTitle", "Compare");
+  source->AddString("pageTitle", "Product Specifications");
   source->AddString("summaryTitle", "Summary");
 }
 

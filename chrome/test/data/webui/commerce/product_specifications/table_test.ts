@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compare/product_specifications/table.js';
+import 'chrome://compare/table.js';
 
-import type {TableElement} from 'chrome://compare/product_specifications/table.js';
+import type {TableElement} from 'chrome://compare/table.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

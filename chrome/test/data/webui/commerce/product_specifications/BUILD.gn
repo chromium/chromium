@@ -2,19 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("../build_webui_tests.gni")
+import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
-    "product_specifications/app_test.ts",
-    "product_specifications/table_test.ts",
+    "app_test.ts",
+    "table_test.ts",
   ]
   ts_path_mappings =
       [ "chrome://compare/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/commerce/tsc/*",
+        rebase_path("$root_gen_dir/chrome/browser/resources/commerce/product_specifications/tsc/*",
                     target_gen_dir) ]
   ts_deps = [
-    "//chrome/browser/resources/commerce:build_ts",
+    "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
   ]
 }

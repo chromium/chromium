@@ -5,13 +5,13 @@
 import '../strings.m.js';
 import './table.js';
 
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {Router} from '../router.js';
+import {Router} from './router.js';
 import type {TableColumn, TableRow} from './table.js';
 
 export class ProductSpecificationsElement extends PolymerElement {

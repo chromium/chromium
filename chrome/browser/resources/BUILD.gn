@@ -29,7 +29,7 @@ group("resources") {
       "access_code_cast:resources",
       "app_service_internals:resources",
       "bookmarks:resources",
-      "commerce:resources",
+      "commerce/product_specifications:resources",
       "downloads:resources",
       "feedback:resources",
       "gaia_auth_host:resources",

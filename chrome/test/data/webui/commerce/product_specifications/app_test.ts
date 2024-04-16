@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compare/product_specifications/app.js';
+import 'chrome://compare/app.js';
 
-import type {ProductSpecificationsElement} from 'chrome://compare/product_specifications/app.js';
+import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import {Router} from 'chrome://compare/router.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

@@ -152,7 +152,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/access_code_cast_resources.pak",
         "$root_gen_dir/chrome/app_service_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",
-        "$root_gen_dir/chrome/commerce_resources.pak",
+        "$root_gen_dir/chrome/commerce_product_specifications_resources.pak",
         "$root_gen_dir/chrome/component_extension_resources.pak",
         "$root_gen_dir/chrome/dev_ui_resources.pak",
         "$root_gen_dir/chrome/downloads_resources.pak",
@@ -199,7 +199,7 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
-        "//chrome/browser/resources/commerce:resources",
+        "//chrome/browser/resources/commerce/product_specifications:resources",
         "//chrome/browser/resources/lens/overlay:resources",
         "//chrome/browser/resources/lens/overlay/search_bubble:resources",
         "//chrome/browser/resources/search_engine_choice:resources",

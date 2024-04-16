@@ -1,14 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
-  grd_prefix = "commerce"
+  grd_prefix = "commerce_product_specifications"
 
-  static_files = [ "product_specifications/product_specifications.html" ]
+  static_files = [ "product_specifications.html" ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
-    "product_specifications/app.ts",
-    "product_specifications/table.ts",
+    "app.ts",
+    "table.ts",
   ]
 
   non_web_component_files = [ "router.ts" ]
