@@ -7967,9 +7967,9 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 void AXObject::PreSerializationConsistencyCheck() {
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
-  // TODO(https://crbug.com/1480627): convert to CHECKs.
   CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues());
+  CHECK(!NeedsToUpdateCachedValues())
+      << "Stale values on: " << ToString(true, true);
   if (!AccessibilityIsIncludedInTree()) {
     AXObject* included_parent = ParentObjectIncludedInTree();
     // TODO(accessibility): Return to CHECK once it has been resolved,
@@ -8009,6 +8009,12 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
 
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
+    // The following can be useful for debugging locally when determining if
+    // two objects with the same AXID were the same instance.
+    // std::ostringstream pointer_str;
+    // pointer_str << " hex:" << std::hex << reinterpret_cast<uintptr_t>(this);
+    // string_builder = string_builder + String(pointer_str.str());
+
     // Add useful HTML element info, like <div.myClass#myId>.
     if (GetNode()) {
       string_builder = string_builder + " " + GetNodeString(GetNode());

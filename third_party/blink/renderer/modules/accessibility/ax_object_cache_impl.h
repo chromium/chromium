@@ -561,14 +561,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   static constexpr int kDataTableHeuristicMinRows = 20;
 
-  // Updates the AX tree by walking from the root, calling AXObject::
-  // UpdateChildrenIfNecessary on each AXObject for which NeedsUpdate is true.
-  // This method is part of a11y-during-render, and in particular transitioning
-  // to an eager (as opposed to lazy) AX tree update pattern. See
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1342801#c12 for more
-  // details.
-  void UpdateTreeIfNeeded();
-
   void UpdateAXForAllDocuments() override;
   void MarkDocumentDirty() override;
   void ResetSerializer() override;
@@ -690,9 +682,17 @@ class MODULES_EXPORT AXObjectCacheImpl
         "blink::WebAXObject");
   };
 
+  // Updates the AX tree by walking from the root, calling AXObject::
+  // UpdateChildrenIfNecessary on each AXObject for which NeedsUpdate is true.
+  // This method is part of a11y-during-render, and in particular transitioning
+  // to an eager (as opposed to lazy) AX tree update pattern. See
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1342801#c12 for more
+  // details.
+  void UpdateTreeIfNeeded();
+
   // Make sure a relation cache exists and is initialized. Must be called with
   // clean layout.
-  void EnsureRelationCache();
+  void EnsureRelationCacheAndInitialTree();
 
   // Make sure the AXTreeSerializer has been created.
   void EnsureSerializer();
@@ -1030,13 +1030,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // setting enabled, or where there is no active ancestral aria-modal dialog.
   Element* AncestorAriaModalDialog(Node* node);
 
-  // Return the AXObject for the update if it is relevant (its backing data has
-  // not been destroyed and it is attached to the expected tree document).
-  AXObject* TreeUpdateObjectIfRelevant(Document& document,
-                                       TreeUpdateParams* tree_update);
-
-  void FireTreeUpdatedEventImmediately(TreeUpdateParams* tree_update,
-                                       AXObject* ax_object);
+  void FireTreeUpdatedEventForAXID(TreeUpdateParams* update,
+                                   Document& document);
+  void FireTreeUpdatedEventForNode(TreeUpdateParams* update);
 
   void FireAXEventImmediately(AXObject* obj,
                               ax::mojom::blink::Event event_type,

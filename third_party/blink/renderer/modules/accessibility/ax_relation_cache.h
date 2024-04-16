@@ -245,7 +245,7 @@ class AXRelationCache {
   // For each of these, the new set of owned children
   // will be computed, and if it's different than before, ChildrenChanged
   // will be fired on all affected nodes.
-  HashSet<AXID> owner_ids_to_update_;
+  HashSet<DOMNodeId> owner_ids_to_update_;
 
   // A map from a source AXObject to the id attribute values for relations
   // targets that are not yet in the DOM tree.

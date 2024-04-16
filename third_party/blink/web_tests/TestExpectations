@@ -2709,13 +2709,6 @@ crbug.com/332372552 virtual/shared-storage-fenced-frame-mparch/external/wpt/shar
 crbug.com/332345856 [ Win11-arm64 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Timeout ]
 crbug.com/331851044 [ Win11-arm64 ] external/wpt/accname/name/comp_label.html [ Failure Timeout ]
 crbug.com/331906059 external/wpt/css/css-cascade/at-scope-relative-syntax.html [ Crash ]
-crbug.com/331837315 [ Mac11-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/331837315 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/331837315 [ Mac13 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/331837315 [ Mac12 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/331837315 [ Mac13-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/331837315 [ Mac11 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
-crbug.com/332345860 [ Mac14-arm64 ] external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout ]
 crbug.com/331835714 [ Win11-arm64 ] external/wpt/webaudio/the-audio-api/the-audionode-interface/audionode.html [ Failure Timeout ]
 crbug.com/331915503 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/notify-event-iframe.https.html [ Skip Timeout ]
 crbug.com/331851044 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.html [ Skip Timeout ]
@@ -5290,6 +5283,11 @@ crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash 
 # Selectlist flakes
 crbug.com/1253971 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-parts-structure.tentative.html [ Crash Timeout ]
 crbug.com/1394524 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-form-state-restore.tentative.html [ Failure Pass Timeout ]
+
+# Accessibility crashes in experimental StylableSelect
+crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout Crash ]
+crbug.com/1401767 fast/forms/select/stylable-select/new-structure-in-appearance-auto.html [ Timeout Crash ]
+crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-datalist-popover-behavior.tentative.html [ Pass Crash ]
 
 # StylableSelect
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist.tentative.html [ Failure ]

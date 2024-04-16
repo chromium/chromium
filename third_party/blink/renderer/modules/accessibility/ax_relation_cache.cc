@@ -29,12 +29,6 @@ void AXRelationCache::Init() {
     DoInitialDocumentScan(*popup_doc);
   }
 
-  // Build out initial tree so that AXObjects exist for
-  // AXRelationCache::ProcessUpdatesWithCleanLayout();
-  if (!owner_ids_to_update_.empty()) {
-    object_cache_->UpdateTreeIfNeeded();
-  }
-
 #if DCHECK_IS_ON()
   is_initialized_ = true;
 #endif
@@ -182,13 +176,14 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
 #endif
 
 void AXRelationCache::ProcessUpdatesWithCleanLayout() {
-  HashSet<AXID> old_owner_ids_to_update;
+  HashSet<DOMNodeId> old_owner_ids_to_update;
   old_owner_ids_to_update.swap(owner_ids_to_update_);
 
-  for (AXID aria_owns_obj_id : old_owner_ids_to_update) {
-    AXObject* obj = ObjectFromAXID(aria_owns_obj_id);
-    if (obj)
+  for (DOMNodeId aria_owns_id : old_owner_ids_to_update) {
+    AXObject* obj = Get(DOMNodeIds::NodeForId(aria_owns_id));
+    if (obj) {
       UpdateAriaOwnsWithCleanLayout(obj);
+    }
   }
 
   owner_ids_to_update_.clear();
@@ -830,6 +825,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
     if (related) {
       // Ensure that the candidate owner updates its children in its validity
       // as an owner is changing.
+      owner_ids_to_update_.insert(related->GetNode()->GetDomNodeId());
       object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       related->SetNeedsToUpdateChildren();
       if (IsValidOwnsRelation(related, *node)) {
@@ -1050,7 +1046,8 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   GetReverseRelated(child->GetNode(), id_attr_to_owns_relation_mapping_,
                     other_potential_owners);
   for (AXObject* other_potential_owner : other_potential_owners) {
-    owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
+    owner_ids_to_update_.insert(
+        other_potential_owner->GetNode()->GetDomNodeId());
   }
 }
 
