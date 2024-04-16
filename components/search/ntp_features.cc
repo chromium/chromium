@@ -80,18 +80,18 @@ BASE_FEATURE(kRealboxCr23ConsistentRowHeight,
 // updated entity corner radii.
 BASE_FEATURE(kRealboxCr23ExpandedStateIcons,
              "NtpRealboxCr23ExpandedStateIcons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NTP "realbox" expanded state layout CR23 updates will
 // appear.
 BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
              "NtpRealboxCr23ExpandedStateLayout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NTP "realbox" will use CR23 hover fill shape.
 BASE_FEATURE(kRealboxCr23HoverFillShape,
              "NtpRealboxCr23HoverFillShape",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, NTP "realbox" will be themed for CR23. Includes realbox
 // matching omnibox theme and increased realbox shadow.

@@ -12444,41 +12444,6 @@
             ]
         }
     ],
-    "NtpRealboxCr23": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Icons_Layout_HoverFill",
-                    "enable_features": [
-                        "NtpRealboxCr23ExpandedStateIcons",
-                        "NtpRealboxCr23ExpandedStateLayout",
-                        "NtpRealboxCr23HoverFillShape"
-                    ]
-                },
-                {
-                    "name": "Enabled_Icons_Layout",
-                    "enable_features": [
-                        "NtpRealboxCr23ExpandedStateIcons",
-                        "NtpRealboxCr23ExpandedStateLayout"
-                    ]
-                },
-                {
-                    "name": "Enabled_Icons",
-                    "enable_features": [
-                        "NtpRealboxCr23ExpandedStateIcons"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpTabResumption": [
         {
             "platforms": [
