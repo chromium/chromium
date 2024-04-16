@@ -328,7 +328,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
-  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent_if_known);
+  AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent);
   // Used for objects without backing DOM nodes, layout objects, etc.
   AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
@@ -336,17 +336,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // be created. For instance, not all HTMLElements can have an AXObject,
   // such as <head> or <script> tags.
   AXObject* GetOrCreate(AccessibleNode*, AXObject* parent);
-  AXObject* GetOrCreate(LayoutObject*, AXObject* parent_if_known);
+  AXObject* GetOrCreate(LayoutObject*, AXObject* parent);
   AXObject* GetOrCreate(LayoutObject* layout_object);
-  AXObject* GetOrCreate(const Node*, AXObject* parent_if_known) override;
-  AXObject* GetOrCreate(Node*, AXObject* parent_if_known);
-  AXObject* GetOrCreate(Node*);
-  AXObject* GetOrCreate(const Node*);
-  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
-
-  // Compute the included parent and its children, and then return
-  // the AXObject for |child|.
-  AXObject* RepairChildrenOfIncludedParent(Node* child);
+  AXObject* GetOrCreate(const Node*, AXObject* parent) override;
+  AXObject* GetOrCreate(Node*, AXObject* parent);
+  AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
 
   // Return an AXObject for the AccessibleNode. If the AccessibleNode is
   // attached to an element, will return the AXObject for that element instead.

@@ -1165,20 +1165,7 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
 
   Node* parent_node = GetParentNodeForComputeParent(cache, current_node);
 
-  // If the tree is not currently mutable, then new AXObjects cannot be created.
-  // Return the AXObject for the parent only if it is already part of the tree.
-  if (!cache.IsProcessingDeferredEvents()) {
-    return cache.Get(parent_node);
-  }
-
-  // Get the existing AXObject for the parent or create one if necessary.
-  // Will not create an object if no valid parent node is found. This occurs
-  // when a DOM child isn't visited by LayoutTreeBuilderTraversal, such as an
-  // element child of a <textarea>, which only supports plain text.
-  // TODO(acessibility) Covert to NOTREACHED(), and eventually try to remove
-  // parent repairs and this method entirely, as AXObjects will only be created
-  // by building from the top down.
-  return cache.GetOrCreate(parent_node);
+  return cache.Get(parent_node);
 }
 
 #if DCHECK_IS_ON()

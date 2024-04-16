@@ -5284,11 +5284,6 @@ crbug.com/1316144 external/wpt/css/cssom-view/scrollIntoView-fixed.html [ Crash 
 crbug.com/1253971 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-parts-structure.tentative.html [ Crash Timeout ]
 crbug.com/1394524 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-form-state-restore.tentative.html [ Failure Pass Timeout ]
 
-# Accessibility crashes in experimental StylableSelect
-crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Timeout Crash ]
-crbug.com/1401767 fast/forms/select/stylable-select/new-structure-in-appearance-auto.html [ Timeout Crash ]
-crbug.com/1401767 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-datalist-popover-behavior.tentative.html [ Pass Crash ]
-
 # StylableSelect
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist-invalidation.tentative.html [ Timeout ]

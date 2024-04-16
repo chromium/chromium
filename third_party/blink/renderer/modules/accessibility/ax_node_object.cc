@@ -4241,10 +4241,6 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
           // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
           // See the following content_browsertest:
           // All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink.
-          // TODO(crbug.com/1401767): DCHECK fails with synchronous
-          // serialization.
-          DCHECK(selected->firstChild())
-              << "There is a selected option but it has no DOM children.";
           return selected->textContent();
         }
         return String();

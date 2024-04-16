@@ -825,7 +825,7 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
     if (related) {
       // Ensure that the candidate owner updates its children in its validity
       // as an owner is changing.
-      owner_ids_to_update_.insert(related->GetNode()->GetDomNodeId());
+      owner_ids_to_update_.insert(related->AXObjectID());
       object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       related->SetNeedsToUpdateChildren();
       if (IsValidOwnsRelation(related, *node)) {
@@ -1046,8 +1046,7 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
   GetReverseRelated(child->GetNode(), id_attr_to_owns_relation_mapping_,
                     other_potential_owners);
   for (AXObject* other_potential_owner : other_potential_owners) {
-    owner_ids_to_update_.insert(
-        other_potential_owner->GetNode()->GetDomNodeId());
+    owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
   }
 }
 

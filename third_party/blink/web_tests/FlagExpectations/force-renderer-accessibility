@@ -17,7 +17,6 @@ virtual/* [ Skip ]
 
 # StylableSelect Crashes
 crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-marker-end-aligned.tentative.html [ Crash ]
-crbug.com/1401767 accessibility/canvas-accessibilitynodeobject.html [ Crash ]
 
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.

@@ -989,8 +989,6 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
   // object (e.g. a pseudo-element or object introduced to match the structure
   // of content). Such objects can only be created or destroyed via creation of
   // their parents and recursion via AddPseudoElementChildrenFromLayoutTree.
-  // RepairMissingParent will not be able to restore a missing parent; instead
-  // we should never need to do that.
   DCHECK(!result->IsMissingParent() || !result->GetNode())
       << "Had AXObject but is missing parent: " << layout_object << " "
       << result->ToString(true, true);
@@ -1346,26 +1344,18 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AccessibleNode* accessible_node,
   return new_obj;
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node) {
-  return GetOrCreate(node, nullptr);
+AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node, AXObject* parent) {
+  return GetOrCreate(const_cast<Node*>(node), parent);
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(Node* node) {
-  return GetOrCreate(node, nullptr);
-}
-
-AXObject* AXObjectCacheImpl::GetOrCreate(const Node* node,
-                                         AXObject* parent_if_known) {
-  return GetOrCreate(const_cast<Node*>(node), parent_if_known);
-}
-
-AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
-                                         AXObject* parent_if_known) {
+AXObject* AXObjectCacheImpl::GetOrCreate(Node* node, AXObject* parent) {
   CHECK(IsProcessingDeferredEvents())
       << "Only create AXObjects while processing AX events and tree: " << node;
 
   if (!node)
     return nullptr;
+
+  CHECK(parent);
 
   if (AXObject* obj = Get(node)) {
     // The object already exists.
@@ -1374,129 +1364,22 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
       return obj;
     }
 
-    if (parent_if_known) {
-      // The parent is provided when the object is being added to the parent.
-      // This is expected when re-adding a child to a parent via
-      // AXNodeObject::AddChildren(), as the parent on previous children
-      // will have been cleared immediately before re-adding any of them.
-      obj->SetParent(parent_if_known);
-      return obj;
-    }
-
-    // TODO(accessibility) Try to get rid of repair situations by addressing
-    // partial subtrees and mid-tree object removal directly when they occur.
-    return RepairChildrenOfIncludedParent(node);
+    // The parent is provided when the object is being added to the parent.
+    // This is expected when re-adding a child to a parent via
+    // AXNodeObject::AddChildren(), as the parent on previous children
+    // will have been cleared immediately before re-adding any of them.
+    obj->SetParent(parent);
+    CHECK(!obj->IsMissingParent());
+    return obj;
   }
 
-  return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
-}
-
-// TODO(accessibility) Try to get rid of repair situations by addressing
-// partial subtrees and mid-tree object removal directly when they occur.
-AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
-  CHECK(Root());
-
-  // Create a list of ancestor nodes up to and including the first one included
-  // in the tree.
-  // These will be used to repair the local included subtree top down.
-  HeapDeque<Member<Node>> ancestors_to_repair;
-  Node* ancestor = child;
-  AXObject* ax_ancestor = Get(ancestor);
-  AXObject* ax_included_ancestor = nullptr;
-
-  while (true) {
-    // Check for an aria-owns relation. If one is found, both the owner and
-    // child's AXObject will exist, with correctly set parent-child relations.
-    if (AXObject* ax_owner =
-            relation_cache_->GetOrCreateAriaOwnerFor(ancestor, ax_ancestor)) {
-      // There cannot be any other ancestors to repair, brecause both aria-owns
-      // parents and children are both always included in the tree.
-      // Create the child with the aria-owns parent as its parent.
-      GetOrCreate(ancestor, ax_owner);
-      if (AXObject* ax_owned_child = Get(ancestor)) {
-        if (IsAriaOwned(ax_owned_child) &&
-            ax_owned_child->CachedParentObject() == ax_owner) {
-          // aria-owns relation was valid and created the child.
-          CHECK(ax_owned_child->AccessibilityIsIncludedInTree());
-          CHECK(ax_owner->AccessibilityIsIncludedInTree());
-          CHECK_GE(ax_owned_child->IndexInParent(), 0);
-          ax_included_ancestor = ax_owned_child;
-          break;
-        }
-        // Detach from parent, so that when we fall through, it can be
-        // reattached when the correct parent adds it as a child.
-        ax_owned_child->DetachFromParent();
-        // Ensure that the cached values are recomputed with the new parent as
-        // a basis, since some cached values are inherited from the parent.
-        ax_owned_child->InvalidateCachedValues();
-      }
-      // aria-owns relation was not valid, fall through to using DOM ancestry.
-    }
-    // Loop stops on included ancestor, and the root is always included.
-    CHECK(!ax_ancestor || !ax_ancestor->IsRoot()) << "Should not reach root.";
-
-    // Get or compute the next ancestor's Node and AXObject.
-    AXObject* next_ax_ancestor = nullptr;
-    if (ax_ancestor && ax_ancestor->CachedParentObject()) {
-      // Use computed parent if available, it could be from aria-owns.
-      next_ax_ancestor = ax_ancestor->CachedParentObject();
-    } else if (ancestor) {
-      next_ax_ancestor = AXObject::ComputeNonARIAParent(*this, ancestor);
-    }
-
-    if (!next_ax_ancestor) {
-      // A parent was not reached. An example is a node that is no longer in the
-      // flat tree, such as a slot that is unassigned.
-      RemoveSubtreeWhenSafe(ancestor ? ancestor : child);
-      return nullptr;
-    }
-
-    ax_ancestor = next_ax_ancestor;
-    ancestor = next_ax_ancestor->GetNode();
-
-    // Push this ancestor to the front, as the subtree will be built top-down
-    // in the next loop.
-    if (ancestor) {
-      ancestors_to_repair.push_front(ancestor);
-    }
-    if (ax_ancestor) {
-      if (ax_ancestor->LastKnownIsIncludedInTreeValue() &&
-          !ancestors_to_repair.empty()) {
-        ax_included_ancestor = ax_ancestor;
-        break;
-      }
-      ax_ancestor->SetNeedsToUpdateChildren();
-    }
-  }
-
-  // The first included ancestor needs to update its children.
-  ax_included_ancestor->ChildrenChangedWithCleanLayout();
-
-  // Starting from the highest ancestor, add children.
-  for (Node* ancestor_to_repair : ancestors_to_repair) {
-    ax_ancestor = Get(ancestor_to_repair);
-    if (!ax_ancestor || ax_ancestor->IsDetached()) {
-      RemoveSubtreeWhenSafe(ancestor_to_repair);
-      return nullptr;
-    }
-    ax_ancestor->UpdateChildrenIfNecessary();
-  }
-
-  CHECK(!ax_included_ancestor->NeedsToUpdateChildren());
-
-  AXObject* result = Get(child);
-  if (!result || result->IsDetached()) {
-    RemoveSubtreeWhenSafe(child);
-    return nullptr;
-  }
-
-  return result;
+  return CreateAndInit(node, node->GetLayoutObject(), parent);
 }
 
 // Caller must provide a node, a layout object, or both (where they match).
 AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
                                            LayoutObject* layout_object,
-                                           AXObject* parent_if_known) {
+                                           AXObject* parent) {
   // New AXObjects cannot be created when the tree is frozen.
   // In this state, the tree should already be complete because
   // of UpdateTreeIfNeeded().
@@ -1507,7 +1390,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 #if DCHECK_IS_ON()
   DCHECK(node || layout_object);
   DCHECK(!node || !layout_object || layout_object->GetNode() == node);
-  DCHECK(!parent_if_known || parent_if_known->CanHaveChildren());
+  DCHECK(parent || node == document_);
+  DCHECK(!parent || parent->CanHaveChildren());
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kAfterPerformLayout)
       << "Unclean document at lifecycle "
@@ -1533,8 +1417,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   }
 
   // Determine the type of accessibility object to be created.
-  AXObjectType ax_type =
-      DetermineAXObjectType(node, layout_object, parent_if_known);
+  AXObjectType ax_type = DetermineAXObjectType(node, layout_object, parent);
   if (ax_type == kPruneSubtree) {
     return nullptr;
   }
@@ -1559,43 +1442,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
         << "AXObject for document is always created with a node.";
   }
 #endif
-
-  // Determine the parent.
-  AXObject* parent = nullptr;
-  if (parent_if_known) {
-    // Parent is known because the tree is being explored downward, and as the
-    // parent adds its children it passes itself in.
-    parent = parent_if_known;
-  } else if (node == &GetDocument()) {
-    // The root object does not have a parent.
-    parent = nullptr;
-  } else {
-    // The AXObject is being created in the middle of the tree, without a known
-    // parent. First compute the parent, and then add all of its children.
-    // If the AXObject for |node| was created during that process, we will
-    // return it. If not, that means the entire subtree is not viable, and
-    // therefore we ensure it is removed, and null is returned.
-    CHECK(node)
-        << "AXNodeObjects without a node are pseudo element descendants, and "
-           "they must be created with a passed-in |parent_if_known|: "
-        << layout_object;
-
-    // If the node is for a document, it must be a popup document to reach here.
-    if (auto* document = DynamicTo<Document>(node)) {
-      CHECK(document->GetFrame() && document->GetFrame()->PagePopupOwner());
-    }
-
-    // TODO(accessibility) Try to get rid of repair situations by addressing
-    // partial subtrees and mid-tree object removal directly when they occur.
-    if (AXObject* result = RepairChildrenOfIncludedParent(node)) {
-      // If this is the target of an aria-activedescendant relation, fire the
-      // relevant events.
-      CHECK(relation_cache_);
-      relation_cache_->UpdateRelatedActiveDescendant(node);
-      return result;
-    }
-    return nullptr;
-  }
 
   // If there is a DOM node, use its dom_node_id, otherwise, generate an AXID.
   // The dom_node_id can be used even if there is also a layout object.
@@ -1650,28 +1496,26 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
 
   // Eagerly fill out new subtrees.
   new_obj->UpdateChildrenIfNecessary();
+
   return new_obj;
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object) {
-  return GetOrCreate(layout_object, nullptr);
-}
-
 AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
-                                         AXObject* parent_if_known) {
+                                         AXObject* parent) {
   CHECK(IsProcessingDeferredEvents())
       << "Only create AXObjects while processing AX events and tree: "
       << layout_object;
 
+  CHECK(parent);
+
   if (!layout_object)
     return nullptr;
 
-  if (AXObject* obj = Get(layout_object, parent_if_known)) {
+  if (AXObject* obj = Get(layout_object, parent)) {
     return obj;
   }
 
-  return CreateAndInit(layout_object->GetNode(), layout_object,
-                       parent_if_known);
+  return CreateAndInit(layout_object->GetNode(), layout_object, parent);
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
@@ -1685,7 +1529,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
   if (!parent) {
     LayoutText* layout_text_parent = inline_text_box->GetLayoutText();
     DCHECK(layout_text_parent);
-    parent = GetOrCreate(layout_text_parent);
+    parent = Get(layout_text_parent);
     if (!parent) {
       DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty() ||
              IsFrozen() ||
@@ -2647,6 +2491,11 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
     // No AX subtree to invalidate: just add an AXObject for this node.
     // It will automatically add its subtree.
     ChildrenChanged(LayoutTreeBuilderTraversal::Parent(*node));
+    // Ensure that aria-owns is updated on this element once the above
+    // children changed causes it to have an AXObject.
+    if (AXObject::HasARIAOwns(DynamicTo<Element>(node))) {
+      DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, node);
+    }
     return;
   }
 
@@ -2708,11 +2557,10 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
     ChildrenChanged(focused_element);
     return;
   }
-
-  // Handle subtree that was previously display:none gaining layout.
   if (node->GetLayoutObject()) {
+    // Handle subtree that was previously display:none gaining layout.
     if (AXObject* obj = Get(node); obj && !obj->GetLayoutObject()) {
-      // Had a previous AXObject, but didn't contain a LayoutObject, even though
+      // Had a previous AXObject, but wasn't an AXLayoutObject, even though
       // there is a layout object available.
       RemoveSubtreeWithFlatTraversal(node);
       return;
@@ -2749,6 +2597,12 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
         }
       }
     }
+  } else if (!node->IsFinishedParsingChildren() && node->GetComputedStyle() &&
+             node->GetComputedStyle()->Display() == EDisplay::kContents &&
+             !node_to_parse_before_more_tree_updates_) {
+    // display:contents subtrees need to wait before processing until they can
+    // include text contents in their accessible name.
+    node_to_parse_before_more_tree_updates_ = node;
   }
 
   DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
@@ -2781,8 +2635,8 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
 
   // Even if the node or parent are ignored, an ancestor may need to include
   // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
-  // must be called. It handles ignored logic, ensuring that the first ancestor
-  // that should have this as a child will be updated.
+  // must be called. It handles ignored logic, ensuring that the first
+  // ancestor that should have this as a child will be updated.
   ChildrenChangedWithCleanLayout(obj->CachedParentObject());
 
   if (IsA<HTMLAreaElement>(node)) {
@@ -3737,21 +3591,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
     return;
   }
 
-  // TODO(accessibility) Try to get rid of repair situations by addressing
-  // partial subtrees and mid-tree object removal directly when they occur.
-  if (ax_object->IsMissingParent()) {
-    // TODO(accessibility) Convert to CHECK once we resolve remaining cases.
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Missing parent on: " << ax_object->ToString(true, true);
-    if (!ax_object->GetNode()) {
-      RemoveIncludedSubtree(ax_object, /* remove_root */ true);
-      return;
-    }
-    ax_object = RepairChildrenOfIncludedParent(ax_object->GetNode());
-    if (!ax_object) {
-      return;
-    }
-  }
   DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
       << ax_object->ToString(true, true);
 
@@ -3793,6 +3632,12 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
       NOTREACHED() << "Update reason not handled: "
                    << static_cast<int>(tree_update->update_reason);
   }
+
+  // Ensure that new subtrees are filled out. Any new AXObjects added will
+  // also add their children.
+  if (!ax_object->IsDetached()) {
+    ax_object->UpdateChildrenIfNecessary();
+  }
 }
 
 void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
@@ -3803,9 +3648,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     return;
   }
 
-  // TODO(accessibility) // Remove or replace with Get(), so that we are
-  // not trying to create an AXObject in the middle of the tree.
-  AXObject* ax_object = GetOrCreate(node);
+  AXObject* ax_object = Get(node);
   if (!ax_object) {
     return;
   }
@@ -3918,6 +3761,11 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     default:
       NOTREACHED() << "Update reason not handled: "
                    << static_cast<int>(tree_update->update_reason);
+  }
+  // Ensure that new subtrees are filled out. Any new AXObjects added will
+  // also add their children.
+  if (!ax_object->IsDetached()) {
+    ax_object->UpdateChildrenIfNecessary();
   }
 }
 
@@ -4262,7 +4110,7 @@ void AXObjectCacheImpl::TableCellRoleMaybeChanged(Node* node) {
 }
 
 void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {
-  if (AXObject* obj = GetOrCreate(node)) {
+  if (AXObject* obj = Get(node)) {
     // If role would stay the same, do nothing.
     if (obj->RoleValue() == obj->DetermineRoleValue()) {
       return;
