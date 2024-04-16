@@ -4592,10 +4592,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="Timing.GetUserInfoToButtonMode">
     <summary>
-      Records the time in milliseconds from when the getUserInfo() API is called
-      to the time when the Button Mode API is called. Recorded when the Button
-      mode is invoked and there was a getUserInfo call on this page. Recorded at
-      most once per getUserInfo API call.
+      Records the time in milliseconds from when the accounts are received via
+      the getUserInfo() API to the time when the Button Mode API is called.
+      Recorded when the Button mode is invoked and there was a successful
+      accounts fetch via the getUserInfo API call on this page. Recorded at most
+      once per getUserInfo API call.
     </summary>
   </metric>
   <metric name="Timing.IdTokenResponse">
