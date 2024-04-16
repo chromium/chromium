@@ -386,6 +386,9 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;
+    case mojom::Operation::Tag::kWhere:
+      operator_offset = SerializeWhere(*op.get_where());
+      break;
     case mojom::Operation::Tag::kBatchNormalization:
       return base::unexpected("batchNormalization is not implemented");
     case mojom::Operation::Tag::kExpand:
@@ -416,8 +419,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("softsign is not implemented");
     case mojom::Operation::Tag::kTriangular:
       return base::unexpected("triangular is not implemented");
-    case mojom::Operation::Tag::kWhere:
-      return base::unexpected("where is not implemented");
   }
   operators_.emplace_back(operator_offset);
 
@@ -1592,6 +1593,46 @@ auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
       operand_to_index_map_.at(transpose.input_operand_id),
       operand_to_index_map_.at(transpose.output_operand_id),
       transpose.permutation);
+}
+
+auto GraphBuilder::SerializeWhere(const mojom::Where& where) -> OperatorOffset {
+  // The data type of WebNN condition operand is uint8, but TFLite requires the
+  // condition operand to be of type bool, so a cast operation need to be
+  // inserted before the operation to convert uint8 to bool for the condition
+  // operand.
+  const mojom::Operand& condition_operand =
+      GetOperand(where.condition_operand_id);
+  // The shape of condition operand has been validated to not overflow before
+  // creating tensor.
+  const auto signed_condition_dimensions =
+      ToSignedDimensions(condition_operand.dimensions);
+  CHECK(signed_condition_dimensions.has_value());
+  const int32_t condition_bool_tensor_index =
+      base::checked_cast<int32_t>(tensors_.size());
+  tensors_.emplace_back(::tflite::CreateTensor(
+      builder_, builder_.CreateVector<int32_t>(*signed_condition_dimensions),
+      ::tflite::TensorType_BOOL));
+
+  CHECK_EQ(condition_operand.data_type, mojom::Operand::DataType::kUint8);
+  operators_.emplace_back(SerializeCastOperation(
+      operand_to_index_map_.at(where.condition_operand_id),
+      /*input_tensor_type=*/::tflite::TensorType_UINT8,
+      condition_bool_tensor_index,
+      /*output_tensor_type=*/::tflite::TensorType_BOOL));
+
+  // TFLite SELECT_V2 builtin operator supports broadcastable shapes between
+  // `condition`, `true` and `false` operand.
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_SELECT_V2);
+  const std::array<int32_t, 3> op_inputs = {
+      condition_bool_tensor_index,
+      operand_to_index_map_.at(where.true_value_operand_id),
+      operand_to_index_map_.at(where.false_value_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(where.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 }  // namespace webnn::tflite

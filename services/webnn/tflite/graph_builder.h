@@ -186,6 +186,7 @@ class GraphBuilder final {
       const mojom::Split& split);
   OperatorOffset SerializeTanh(const mojom::Tanh& tanh);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
+  OperatorOffset SerializeWhere(const mojom::Where& where);
 
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.

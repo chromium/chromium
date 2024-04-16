@@ -165,6 +165,8 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_RESIZE_NEAREST_NEIGHBOR(),
              /* min_version = */ 1,
              /* max_version = */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_SELECT_V2,
+             ::tflite::ops::builtin::Register_SELECT_V2());
   AddBuiltin(::tflite::BuiltinOperator_SIN,
              ::tflite::ops::builtin::Register_SIN());
   AddBuiltin(::tflite::BuiltinOperator_SLICE,
