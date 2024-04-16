@@ -19,6 +19,8 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/gestures/gesture_recognizer.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_host_root_view.h"
@@ -141,11 +143,6 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.context = init_params.context ? init_params.context->GetNativeWindow()
                                        : gfx::NativeWindow();
   params.bounds = init_params.bounds;
-
-#if BUILDFLAG(IS_OZONE)
-  params.frame_insets =
-      submenu_->GetScrollViewContainer()->outside_border_insets();
-#endif
 
 #if defined(USE_AURA)
   params.init_properties_container.SetProperty(aura::client::kOwnedWindowAnchor,
@@ -356,6 +353,15 @@ void MenuHost::OnDragComplete() {
 Widget* MenuHost::GetPrimaryWindowWidget() {
   return GetOwner() ? GetOwner()->GetPrimaryWindowWidget()
                     : Widget::GetPrimaryWindowWidget();
+}
+
+gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
+#if BUILDFLAG(IS_OZONE)
+  if (submenu_) {
+    return submenu_->GetScrollViewContainer()->outside_border_insets();
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+  return gfx::Insets();
 }
 
 void MenuHost::OnWidgetDestroying(Widget* widget) {

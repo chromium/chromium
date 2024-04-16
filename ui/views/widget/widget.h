@@ -28,7 +28,6 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -42,6 +41,7 @@ class TimeDelta;
 }
 
 namespace gfx {
+class Insets;
 class Point;
 class Rect;
 }  // namespace gfx
@@ -460,10 +460,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // window should request the wayland compositor to send key events,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
-
-    // Specifies the insets of the Widget. Default is empty, which means no
-    // insets are to be set.
-    gfx::Insets frame_insets;
 #endif
 
     // Directly sets the NativeTheme used by the Widget. Providing the
@@ -674,6 +670,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Retrieves the restored size for the window.
   gfx::Size GetSize() const;
+
+  // Returns the insets that each widget implementation can customize. It
+  // returns empty insets by default.
+  virtual gfx::Insets GetCustomInsetsInDIP() const;
 
   // Sizes the window to the specified size and centers it.
   void CenterWindow(const gfx::Size& size);

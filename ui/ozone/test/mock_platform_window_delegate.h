@@ -25,6 +25,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
 
   ~MockPlatformWindowDelegate() override;
 
+  MOCK_CONST_METHOD1(CalculateInsetsInDIP,
+                     gfx::Insets(PlatformWindowState window_state));
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));
   MOCK_METHOD1(DispatchEvent, void(Event* event));

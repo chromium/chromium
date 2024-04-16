@@ -20,26 +20,34 @@ bool IsPlatformWindowStateFullscreen(PlatformWindowState state) {
          state == PlatformWindowState::kTrustedPinnedFullscreen;
 }
 
-bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
+bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
     const State& old) const {
-  // Changing the bounds origin won't produce a new frame. Anything else will,
-  // except for the occlusion state. We do not check that here since there isn't
-  // enough information to determine if it will produce a frame, as it depends
-  // on whether native occlusion is enabled and if the ui compositor changes
-  // visibility.
-  return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
-         old.window_scale != window_scale || old.raster_scale != raster_scale ||
-         old.insets != insets;
+  // Changing the bounds origin or fullscreen type will not produce a new frame.
+  // Anything else will produce a frame, except for the occlusion state. We do
+  // not check that here since there isn't enough information to determine if
+  // it will produce a frame, as it depends on whether native occlusion is
+  // enabled and if the ui compositor changes visibility.
+  // Note: Changing the window state produces a new frame as
+  // OnWindowStateChanged will schedule relayout even without the bounds change.
+  // On the other hand, the fullscreen type change will not schedule relayout
+  // and does not affect producing the frame.
+  return old.window_state != window_state ||
+         old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
+         old.window_scale != window_scale || old.raster_scale != raster_scale;
 }
 
 std::string PlatformWindowDelegate::State::ToString() const {
   std::stringstream result;
   result << "State {";
-  result << "bounds_dip = " << bounds_dip.ToString();
+  result << "window_state = " << static_cast<int>(window_state);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  result << ", fullscreen_type = " << static_cast<int>(fullscreen_type);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  result << ", bounds_dip = " << bounds_dip.ToString();
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", raster_scale = " << raster_scale;
-  result << ", insets = " << insets.ToString();
+  result << ", occlusion_state = " << static_cast<int>(occlusion_state);
   result << "}";
   return result.str();
 }
@@ -47,6 +55,11 @@ std::string PlatformWindowDelegate::State::ToString() const {
 PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;
+
+gfx::Insets PlatformWindowDelegate::CalculateInsetsInDIP(
+    PlatformWindowState window_state) const {
+  return gfx::Insets();
+}
 
 #if BUILDFLAG(IS_LINUX)
 void PlatformWindowDelegate::OnWindowTiledStateChanged(
@@ -123,6 +136,11 @@ gfx::Rect PlatformWindowDelegate::ConvertRectToDIP(
 gfx::PointF PlatformWindowDelegate::ConvertScreenPointToLocalDIP(
     const gfx::Point& screen_in_pixels) const {
   return gfx::PointF(screen_in_pixels);
+}
+
+gfx::Insets PlatformWindowDelegate::ConvertInsetsToPixels(
+    const gfx::Insets& insets_dip) const {
+  return insets_dip;
 }
 
 void PlatformWindowDelegate::DisableNativeWindowOcclusion() {}

@@ -118,7 +118,6 @@ class X11Window : public PlatformWindow,
   void SizeConstraintsChanged() override;
   void SetOpacity(float opacity) override;
   bool CanSetDecorationInsets() const override;
-  void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetOpaqueRegion(
       std::optional<std::vector<gfx::Rect>> region_px) override;
   void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px) override;
@@ -166,6 +165,8 @@ class X11Window : public PlatformWindow,
   FRIEND_TEST_ALL_PREFIXES(X11WindowTest, WindowManagerTogglesFullscreen);
   FRIEND_TEST_ALL_PREFIXES(X11WindowTest,
                            ToggleMinimizePropogateToPlatformWindowDelegate);
+
+  void UpdateDecorationInsets();
 
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;

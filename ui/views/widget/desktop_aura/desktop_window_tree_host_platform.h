@@ -152,6 +152,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
                                      bool visible) override;
 
   // PlatformWindowDelegate:
+  gfx::Insets CalculateInsetsInDIP(
+      ui::PlatformWindowState window_state) const override;
   void OnClosed() override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;

@@ -131,8 +131,7 @@ ui::PlatformWindowShadowType GetPlatformWindowShadowType(
 }
 
 ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
-    const Widget::InitParams& params,
-    float device_scale_factor) {
+    const Widget::InitParams& params) {
   ui::PlatformWindowInitProperties properties;
   properties.type = GetPlatformWindowType(params.type);
   properties.accept_events = params.accept_events;
@@ -171,9 +170,6 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
     }
   }
   properties.inhibit_keyboard_shortcuts = params.inhibit_keyboard_shortcuts;
-
-  properties.frame_insets_px =
-      gfx::ScaleToCeiledInsets(params.frame_insets, device_scale_factor);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -271,7 +267,7 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
     GetContentWindow()->SetProperty(aura::client::kAnimationsDisabledKey, true);
 
   ui::PlatformWindowInitProperties properties =
-      ConvertWidgetInitParamsToInitProperties(params, device_scale_factor());
+      ConvertWidgetInitParamsToInitProperties(params);
   AddAdditionalInitProperties(params, &properties);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -897,6 +893,11 @@ void DesktopWindowTreeHostPlatform::OnCompositorVisibilityChanged(
   if (!visible) {
     GetContentWindow()->Hide();
   }
+}
+
+gfx::Insets DesktopWindowTreeHostPlatform::CalculateInsetsInDIP(
+    ui::PlatformWindowState window_state) const {
+  return GetWidget()->GetCustomInsetsInDIP();
 }
 
 void DesktopWindowTreeHostPlatform::OnClosed() {

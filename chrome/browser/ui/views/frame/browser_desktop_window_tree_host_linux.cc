@@ -57,6 +57,14 @@ std::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
   return std::nullopt;
 }
 
+bool IsShowingFrame(bool use_custom_frame,
+                    ui::PlatformWindowState window_state) {
+  return use_custom_frame &&
+         window_state != ui::PlatformWindowState::kMaximized &&
+         window_state != ui::PlatformWindowState::kMinimized &&
+         !ui::IsPlatformWindowStateFullscreen(window_state);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,34 +196,31 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   auto* window = platform_window();
+  auto window_state = window->GetPlatformWindowState();
   float scale = device_scale_factor();
   auto* view =
       static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView());
-  bool showing_frame =
-      browser_frame_->native_browser_frame()->UseCustomFrame() &&
-      !view->IsFrameCondensed() && !view->frame()->IsMinimized();
   const gfx::Size widget_size =
       view->GetWidget()->GetWindowBoundsInScreen().size();
 
   if (SupportsClientFrameShadow()) {
-    // Set the frame decoration insets.
-    const gfx::Insets insets_dip = view->MirroredFrameBorderInsets();
-    const gfx::Insets insets_px = gfx::ScaleToCeiledInsets(insets_dip, scale);
-    window->SetDecorationInsets(showing_frame ? &insets_px : nullptr);
-
-    // Set the input region.
-    gfx::Rect input_bounds(widget_size);
-    input_bounds.Inset(insets_dip - view->GetInputInsets());
-    input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
-    window->SetInputRegion(
-        showing_frame ? std::optional<std::vector<gfx::Rect>>({input_bounds})
-                      : std::nullopt);
+    auto insets = CalculateInsetsInDIP(window_state);
+    if (insets.IsEmpty()) {
+      window->SetInputRegion(std::nullopt);
+    } else {
+      gfx::Rect input_bounds(widget_size);
+      input_bounds.Inset(insets - view->GetInputInsets());
+      input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
+      window->SetInputRegion(
+          std::optional<std::vector<gfx::Rect>>({input_bounds}));
+    }
   }
 
   if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     // Set the opaque region.
     std::vector<gfx::Rect> opaque_region;
-    if (showing_frame) {
+    if (IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
+                       window_state)) {
       // The opaque region is a list of rectangles that contain only fully
       // opaque pixels of the window.  We need to convert the clipping
       // rounded-rect into this format.
@@ -324,6 +329,18 @@ bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect() const {
   return (browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
          x11_extension && x11_extension->IsWmTiling() &&
          x11_extension->CanResetOverrideRedirect();
+}
+
+gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
+    ui::PlatformWindowState window_state) const {
+  // If we are not showing frame, the insets should be zero.
+  if (!IsShowingFrame(browser_frame_->native_browser_frame()->UseCustomFrame(),
+                      window_state)) {
+    return gfx::Insets();
+  }
+
+  return static_cast<BrowserNonClientFrameView*>(browser_frame_->GetFrameView())
+      ->MirroredFrameBorderInsets();
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnBoundsChanged(

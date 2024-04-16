@@ -354,6 +354,18 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
 int64_t WindowTreeHostPlatform::OnStateUpdate(
     const PlatformWindowDelegate::State& old,
     const PlatformWindowDelegate::State& latest) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Notify the fullscreen type change before the window state change to reflect
+  // the immersive status at OnWindowStateChanged.
+  if (old.fullscreen_type != latest.fullscreen_type) {
+    OnFullscreenTypeChanged(old.fullscreen_type, latest.fullscreen_type);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  if (old.window_state != latest.window_state) {
+    OnWindowStateChanged(old.window_state, latest.window_state);
+  }
+
   if (old.bounds_dip != latest.bounds_dip || old.size_px != latest.size_px ||
       old.window_scale != latest.window_scale) {
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
@@ -364,7 +376,7 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
     compositor()->SetExternalPageScaleFactor(latest.raster_scale);
   }
 
-  bool needs_frame = latest.ProducesFrameOnUpdateFrom(old);
+  bool needs_frame = latest.WillProduceFrameOnUpdateFrom(old);
   if (old.occlusion_state != latest.occlusion_state &&
       NativeWindowOcclusionTracker::
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {

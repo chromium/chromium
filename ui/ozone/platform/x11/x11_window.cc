@@ -738,14 +738,6 @@ void X11Window::Maximize() {
   // save this one for later too.
   should_maximize_after_map_ = !window_mapped_in_client_;
 
-  // Some WMs keep respecting the frame extents even if the window is maximised.
-  // Remove the insets when maximising.  The extents will be set again when the
-  // window is restored to normal state.
-  // See https://crbug.com/1260821
-  if (CanSetDecorationInsets()) {
-    SetDecorationInsets(nullptr);
-  }
-
   SetWMSpecState(true, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
                  x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
 }
@@ -1105,26 +1097,6 @@ bool X11Window::CanSetDecorationInsets() const {
   return connection_->WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
 }
 
-void X11Window::SetDecorationInsets(const gfx::Insets* insets_px) {
-  auto atom = x11::GetAtom("_GTK_FRAME_EXTENTS");
-  if (!insets_px) {
-    connection_->DeleteProperty(xwindow_, atom);
-    return;
-  }
-
-  // Insets must be zero when the window state is not normal nor unknown.
-  CHECK(GetPlatformWindowState() == PlatformWindowState::kNormal ||
-        GetPlatformWindowState() == PlatformWindowState::kUnknown ||
-        *insets_px == gfx::Insets(0));
-
-  connection_->SetArrayProperty(
-      xwindow_, atom, x11::Atom::CARDINAL,
-      std::vector<uint32_t>{static_cast<uint32_t>(insets_px->left()),
-                            static_cast<uint32_t>(insets_px->right()),
-                            static_cast<uint32_t>(insets_px->top()),
-                            static_cast<uint32_t>(insets_px->bottom())});
-}
-
 void X11Window::SetOpaqueRegion(
     std::optional<std::vector<gfx::Rect>> region_px) {
   auto atom = x11::GetAtom("_NET_WM_OPAQUE_REGION");
@@ -1427,6 +1399,29 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
                             base::Unretained(platform_window_delegate())));
 }
 
+void X11Window::UpdateDecorationInsets() {
+  auto atom = x11::GetAtom("_GTK_FRAME_EXTENTS");
+  auto insets_dip =
+      platform_window_delegate_->CalculateInsetsInDIP(GetPlatformWindowState());
+
+  if (insets_dip.IsEmpty()) {
+    connection_->DeleteProperty(xwindow_, atom);
+    return;
+  }
+
+  // Insets must be zero when the window state is not normal nor unknown.
+  CHECK(GetPlatformWindowState() == PlatformWindowState::kNormal ||
+        GetPlatformWindowState() == PlatformWindowState::kUnknown);
+
+  auto insets_px = platform_window_delegate_->ConvertInsetsToPixels(insets_dip);
+  connection_->SetArrayProperty(
+      xwindow_, atom, x11::Atom::CARDINAL,
+      std::vector<uint32_t>{static_cast<uint32_t>(insets_px.left()),
+                            static_cast<uint32_t>(insets_px.right()),
+                            static_cast<uint32_t>(insets_px.top()),
+                            static_cast<uint32_t>(insets_px.bottom())});
+}
+
 void X11Window::OnXWindowStateChanged() {
   // Determine the new window state information to be propagated to the client.
   // Note that the order of checks is important here, because window can have
@@ -1490,6 +1485,9 @@ void X11Window::OnXWindowStateChanged() {
     auto old_state = state_;
     state_ = new_state;
     platform_window_delegate_->OnWindowStateChanged(old_state, state_);
+    if (CanSetDecorationInsets()) {
+      UpdateDecorationInsets();
+    }
   }
 
   WindowTiledEdges tiled_state = GetTiledState();

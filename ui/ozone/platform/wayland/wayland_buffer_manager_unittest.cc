@@ -1577,6 +1577,9 @@ TEST_P(WaylandBufferManagerTest,
   PlatformWindowInitProperties properties;
   properties.type = PlatformWindowType::kWindow;
   properties.bounds = kNormalBounds;
+  gfx::Insets insets;
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillRepeatedly(testing::Return(insets));
   auto window = WaylandWindow::Create(&delegate_, connection_.get(),
                                       std::move(properties));
   ASSERT_TRUE(window);
@@ -1590,8 +1593,6 @@ TEST_P(WaylandBufferManagerTest,
   window->SetRestoredBoundsInDIP(kRestoredBounds);
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
-  gfx::Insets insets;
-  window->SetDecorationInsets(&insets);
   window->Show(false);
 
   const uint32_t surface_id = window->root_surface()->get_surface_id();

@@ -34,6 +34,8 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/drag_controller.h"
@@ -695,6 +697,10 @@ void Widget::SetSize(const gfx::Size& size) {
 
 gfx::Size Widget::GetSize() const {
   return GetRestoredBounds().size();
+}
+
+gfx::Insets Widget::GetCustomInsetsInDIP() const {
+  return gfx::Insets();
 }
 
 void Widget::CenterWindow(const gfx::Size& size) {
