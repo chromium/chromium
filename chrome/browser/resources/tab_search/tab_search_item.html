@@ -1,17 +1,5 @@
 <style include="mwb-element-shared-style">
   :host {
-     --audio-icon-color: var(--google-grey-700);
-     --media-recording-icon-color:  var(--google-red-600);
-   }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --audio-icon-color: var(--google-grey-300);
-      --media-recording-icon-color:  var(--google-red-300);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host {
      --audio-icon-color: var(--color-tab-search-media-icon);
      --media-recording-icon-color:  var(--color-tab-search-media-recording-icon);
    }
@@ -154,10 +142,6 @@
   }
 
   #iconContainer {
-    margin-inline-end: 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) #iconContainer {
     align-items: center;
     background: var(--tab-search-favicon-background,
         var(--color-list-item-url-favicon-background));
@@ -167,10 +151,11 @@
     height: 40px;
     justify-content: center;
     overflow: hidden;
+    margin-inline-end: 16px;
     width: 40px;
   }
 
-  :host-context([chrome-refresh-2023]):host([compact]) #iconContainer {
+  :host([compact]) #iconContainer {
     height: 24px;
     width: 24px;
   }

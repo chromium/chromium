@@ -1,29 +1,5 @@
 <style>
   :host {
-    --image-background-color-1: rgb(211, 227, 253);
-    --image-background_color-2: rgb(231, 248, 237);
-    --window_frame_color: #A8C7FA;
-    --tab-group-1-color: #0B57D0;
-    --tab-group-2-color: #1EA446;
-    --tab-content-color-top: #fff;
-    --tab-content-color-bottom: #ECF3FE;
-    --active-tab-text-color: #D3E3FD;
-    --inactive-tab-text-color: #1B6EF3;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-        --image-background-color-1: rgb(8, 66, 160);
-        --image-background_color-2: rgb(15, 82, 35);
-        --window_frame_color: #0B57D0;
-        --tab-group-1-color: #A8C7FA;
-        --tab-content-color-top: #041E49;
-        --tab-content-color-bottom: #062E6F;
-        --active-tab-text-color: var(--inactive-tab-text-color);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host {
     --image-background-color-1: var(--color-loading-gradient-middle);
     --image-background_color-2: var(--color-loading-gradient-end);
     --window_frame_color: var(--color-tab-search-image-window-frame);
@@ -88,7 +64,7 @@
     fill: var(--inactive-tab-text-color);
   }
 </style>
-  
+
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="103" fill="none">
   <g clip-path="url(#a)">
     <rect width="280" height="103" fill="url(#b)" rx="8"></rect>

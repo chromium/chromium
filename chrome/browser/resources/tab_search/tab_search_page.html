@@ -108,22 +108,15 @@
     background-color: var(--mwb-background-color);
     color: var(--cr-secondary-text-color);
     display: flex;
-    font-size: var(--mwb-list-section-title-font-size);
-    font-weight: bolder;
+    font-size: var(--mwb-primary-text-font-size);
+    font-weight: var(--mwb-primary-text-font-weight);
     height: var(--mwb-list-section-title-height);
     padding-inline-end: 28px;
     padding-inline-start: var(--mwb-list-item-horizontal-margin);
     position: sticky;
-    text-transform: uppercase;
     top: 0;
     user-select: none;
     z-index: 1000;
-  }
-
-  :host-context([chrome-refresh-2023]) .list-section-title {
-    font-size: var(--mwb-primary-text-font-size);
-    font-weight: var(--mwb-primary-text-font-weight);
-    text-transform: none;
   }
 
   cr-expand-button {
