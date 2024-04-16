@@ -40,11 +40,13 @@ class MODULES_EXPORT VideoFrameHandle
  public:
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    ExecutionContext*,
-                   std::string monitoring_source_id = std::string());
+                   std::string monitoring_source_id = std::string(),
+                   bool use_capture_timestamp = false);
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
                    ExecutionContext*,
-                   std::string monitoring_source_id = std::string());
+                   std::string monitoring_source_id = std::string(),
+                   bool use_capture_timestamp = false);
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
                    scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,

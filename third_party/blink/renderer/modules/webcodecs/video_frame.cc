@@ -623,10 +623,12 @@ HeapVector<Member<PlaneLayout>> ConvertLayout(
 VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
                        ExecutionContext* context,
                        std::string monitoring_source_id,
-                       sk_sp<SkImage> sk_image) {
+                       sk_sp<SkImage> sk_image,
+                       bool use_capture_timestamp) {
   DCHECK(frame);
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
-      frame, std::move(sk_image), context, std::move(monitoring_source_id));
+      frame, std::move(sk_image), context, std::move(monitoring_source_id),
+      use_capture_timestamp);
   external_allocated_memory_ =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
   context->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(

@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_source.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/time/time.h"
+#include "media/base/video_frame_metadata.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -88,8 +92,9 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
       const std::optional<base::TimeDelta>& timestamp = std::nullopt) {
     const scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
-    if (timestamp)
+    if (timestamp) {
       frame->set_timestamp(*timestamp);
+    }
     pushable_video_source_->PushFrame(frame, base::TimeTicks());
     RunIOUntilIdle();
   }
@@ -551,6 +556,65 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   // Context 2 closes its source, which should clear everything in the monitor.
   source2->Close();
   EXPECT_TRUE(monitor.IsEmpty());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
+       VideoFramePrefersCaptureTimestamp) {
+  const base::TimeDelta kTimestamp = base::Seconds(2);
+  const base::TimeDelta kReferenceTimestamp = base::Seconds(3);
+  const base::TimeDelta kCaptureTimestamp = base::Seconds(4);
+  ASSERT_NE(kTimestamp, kCaptureTimestamp);
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track);
+  auto* stream =
+      ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  NonThrowableExceptionState exception_state;
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
+
+  // Create and push a video frame with a capture and reference timestamp
+  scoped_refptr<media::VideoFrame> video_frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  video_frame->set_timestamp(kTimestamp);
+  media::VideoFrameMetadata metadata;
+  metadata.capture_begin_time = base::TimeTicks() + kCaptureTimestamp;
+  metadata.reference_time = base::TimeTicks() + kReferenceTimestamp;
+  video_frame->set_metadata(metadata);
+
+  PushableMediaStreamVideoSource* pushable_source =
+      static_cast<PushableMediaStreamVideoSource*>(
+          track->Component()->Source()->GetPlatformSource());
+  pushable_source->PushFrame(std::move(video_frame), base::TimeTicks::Now());
+
+  VideoFrame* web_video_frame =
+      ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+  EXPECT_EQ(web_video_frame->timestamp(), kCaptureTimestamp.InMicroseconds());
+
+  // Create and push a video frame with only a reference timestamp
+  video_frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  video_frame->set_timestamp(kTimestamp);
+  metadata.capture_begin_time = std::nullopt;
+  video_frame->set_metadata(metadata);
+  pushable_source->PushFrame(std::move(video_frame), base::TimeTicks::Now());
+  VideoFrame* web_video_frame2 =
+      ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+  EXPECT_EQ(web_video_frame2->timestamp(),
+            kReferenceTimestamp.InMicroseconds());
+
+  // Create and push a new video frame without a capture or reference timestamp
+  video_frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+  video_frame->set_timestamp(kTimestamp);
+  pushable_source->PushFrame(std::move(video_frame), base::TimeTicks::Now());
+  VideoFrame* web_video_frame3 =
+      ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+  EXPECT_EQ(web_video_frame3->timestamp(), kTimestamp.InMicroseconds());
+
+  source->Close();
+  track->stopTrack(v8_scope.GetExecutionContext());
 }
 
 }  // namespace blink
