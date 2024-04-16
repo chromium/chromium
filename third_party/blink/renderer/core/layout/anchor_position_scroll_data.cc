@@ -87,7 +87,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     if (container->IsScrollContainer()) {
       const PaintLayerScrollableArea* scrollable_area =
           To<LayoutBox>(container)->GetScrollableArea();
-      if (container != anchor_or_bounds && container != bounding_container) {
+      if (container != bounding_container) {
         result.adjustment_container_ids.push_back(
             scrollable_area->GetScrollElementId());
         result.accumulated_adjustment += scrollable_area->GetScrollOffset();
