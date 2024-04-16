@@ -61,6 +61,19 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
+constexpr char kViewDurationHistogram[] = ".ViewDuration";
+constexpr char kReasonHistogram[] = ".Reason";
+constexpr char kScreenClosedQSSetUpWithAndroidPhone[] =
+    "QuickStart.ScreenClosed.QSSetUpWithAndroidPhone";
+constexpr char kScreenClosedQSConnectingToWifi[] =
+    "QuickStart.ScreenClosed.QSConnectingToWifi";
+constexpr char kScreenClosedQSWifiCredentialsReceived[] =
+    "QuickStart.ScreenClosed.QSWifiCredentialsReceived";
+constexpr char kScreenClosedChooseChromebookSetup[] =
+    "QuickStart.ScreenClosed.ChooseChromebookSetup";
+constexpr char kScreenClosedNetworkScreen[] =
+    "QuickStart.ScreenClosed.NetworkScreen";
+
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
 constexpr test::UIPath kQuickStartButtonPath = {
@@ -323,6 +336,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
       connection_broker_factory_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
       mock_bluetooth_adapter_;
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
@@ -440,8 +454,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 0);
   test::WaitForWelcomeScreen();
@@ -467,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
 
   // Squaring the CELL_COUNT must yield the total size of the QR code.
   EXPECT_EQ(canvas_cell_count * canvas_cell_count, qr_code_size);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 1);
 }
@@ -511,6 +524,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
   EnterQuickStartFlowFromWelcomeScreen();
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 0);
 
   // Cancel button must be present.
   test::OobeJS()
@@ -520,6 +536,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   EnsureFlowNotActive();
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
@@ -564,51 +583,109 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelAndRestartWithNewSession) {
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, EndToEndWithMetrics) {
   SetUpDisconnectedWifiNetwork();
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 0);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} +
+          kViewDurationHistogram,
+      0);
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram, 0);
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSConnectingToWifi, 0);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSConnectingToWifi} + kViewDurationHistogram, 0);
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSConnectingToWifi} + kReasonHistogram, 0);
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived,
       0);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSWifiCredentialsReceived} +
+          kViewDurationHistogram,
+      0);
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSWifiCredentialsReceived} + kReasonHistogram,
+      0);
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kChooseChromebookSetup, 0);
+  histogram_tester_.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kQSSelectGoogleAccount, 0);
 
   EnterQuickStartFlowFromWelcomeScreen();
-  histogram_tester.ExpectBucketCount(
+
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 1);
 
   SimulatePhoneConnection();
   SimulateUserVerification();
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} +
+          kViewDurationHistogram,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow, 1);
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSConnectingToWifi, 1);
 
   SimulateWiFiTransfer();
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSConnectingToWifi} + kViewDurationHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSConnectingToWifi} + kReasonHistogram,
+      quick_start::QuickStartMetrics::kAdvancedInFlow, 1);
+  histogram_tester_.ExpectBucketCount(
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived,
       1);
 
   test::WaitForNetworkSelectionScreen();
+
+  histogram_tester_.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kNetworkScreen, 1);
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedQSWifiCredentialsReceived} +
+          kViewDurationHistogram,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSWifiCredentialsReceived} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow, 1);
+
   SkipUpdateScreenOnBrandedBuilds();
   WaitForUserCreationAndTriggerPersonalFlow();
-
-  histogram_tester.ExpectBucketCount(
-      kScreenOpenedHistogram,
-      quick_start::QuickStartMetrics::ScreenName::kChooseChromebookSetup, 1);
 
   // The flow continues to QuickStart upon reaching the GaiaInfoScreen or
   // GaiaScreen.
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedNetworkScreen} + kViewDurationHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedNetworkScreen} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow, 1);
+  histogram_tester_.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kChooseChromebookSetup, 1);
+  histogram_tester_.ExpectTotalCount(
+      std::string{kScreenClosedChooseChromebookSetup} + kViewDurationHistogram,
+      1);
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedChooseChromebookSetup} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow, 1);
+  histogram_tester_.ExpectBucketCount(
+      kScreenOpenedHistogram,
+      quick_start::QuickStartMetrics::ScreenName::kQSSelectGoogleAccount, 1);
 }
 
 // Simulates the phone cancelling the flow after the WiFi credentials are sent
@@ -770,12 +847,18 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
 
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 0);
+
   // Cancel button must be present.
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
       ->Wait();
   test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
-
+  histogram_tester_.ExpectBucketCount(
+      std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
+      quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 1);
   // Returns to the Gaia screen
   OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
 }

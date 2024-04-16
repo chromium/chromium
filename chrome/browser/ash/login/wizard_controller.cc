@@ -2026,6 +2026,7 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
     // after the 'RecoveryEligibility' screen and continues OOBE into
     // the TermsOfServiceScreen
     case QuickStartScreen::Result::SETUP_COMPLETE_NEXT_BUTTON:
+      quickstart_controller_->RecordFlowFinished();
       AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
   }
 }

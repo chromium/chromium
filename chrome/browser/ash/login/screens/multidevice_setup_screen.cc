@@ -284,7 +284,8 @@ void MultiDeviceSetupScreen::OnGetGroupPrivateKeyStatus(
 void MultiDeviceSetupScreen::MaybeRecordQuickStartScreenClosed() {
   if (quick_start_metrics_ != nullptr) {
     quick_start_metrics_->RecordScreenClosed(
-        quick_start::QuickStartMetrics::ScreenName::kUnifiedSetup);
+        quick_start::QuickStartMetrics::ScreenName::kUnifiedSetup,
+        quick_start::QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow);
   }
 }
 void MultiDeviceSetupScreen::RecordOobeMultideviceScreenSkippedReasonHistogram(

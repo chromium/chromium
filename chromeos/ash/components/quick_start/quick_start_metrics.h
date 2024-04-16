@@ -53,6 +53,19 @@ class QuickStartMetrics {
     kMaxValue = kQSCreatingAccount
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
+  enum ScreenClosedReason {
+    kAdvancedInFlow,   // User moved to next screen as expected via flow.
+    kUserCancelled,    // User clicked cancel.
+    kUserClickedBack,  // User clicked back.
+    kSetupComplete,    // User finished Quick Start.
+    kError,            // An error occurred.
+    kMaxValue = kError
+  };
+
   enum class ExitReason {
     kAdvancedInFlow,
     kUserCancelled,
@@ -233,7 +246,7 @@ class QuickStartMetrics {
 
   void RecordScreenOpened(ScreenName screen);
 
-  void RecordScreenClosed(ScreenName screen);
+  void RecordScreenClosed(ScreenName screen, ScreenClosedReason reason);
 
   // Records the start of an attempt to fetch challenge bytes from Gaia.
   // Challenge bytes are later used to generate a Remote Attestation certificate

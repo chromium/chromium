@@ -82,46 +82,47 @@ constexpr const char kGaiaAuthenticationResultHistogramName[] =
 constexpr const char kGaiaAuthenticationDurationHistogramName[] =
     "QuickStart.GaiaAuthentication.Duration";
 constexpr const char kScreenOpened[] = "QuickStart.ScreenOpened";
-constexpr const char kScreenNameAddChild[] = "QuickStart.ScreenClosed.AddChild";
+constexpr const char kScreenClosedAddChild[] =
+    "QuickStart.ScreenClosed.AddChild";
 constexpr const char
-    kScreenNameCheckingForUpdateAndDeterminingDeviceConfiguration[] =
+    kScreenClosedCheckingForUpdateAndDeterminingDeviceConfiguration[] =
         "QuickStart.ScreenClosed."
         "CheckingForUpdateAndDeterminingDeviceConfiguration";
-constexpr const char kScreenNameChooseChromebookSetup[] =
+constexpr const char kScreenClosedChooseChromebookSetup[] =
     "QuickStart.ScreenClosed.ChooseChromebookSetup";
-constexpr const char kScreenNameConsumerUpdate[] =
+constexpr const char kScreenClosedConsumerUpdate[] =
     "QuickStart.ScreenClosed.ConsumerUpdate";
-constexpr const char kScreenNameGaiaInfoScreen[] =
+constexpr const char kScreenClosedGaiaInfoScreen[] =
     "QuickStart.ScreenClosed.GaiaInfoScreen";
-constexpr const char kScreenNameGaiaScreen[] =
+constexpr const char kScreenClosedGaiaScreen[] =
     "QuickStart.ScreenClosed.GaiaScreen";
-constexpr const char kScreenNameNetworkScreen[] =
-    "QuickStart.ScreenClosed.Other";
-constexpr const char kScreenNameNone[] = "QuickStart.ScreenClosed.None";
-constexpr const char kScreenNameOther[] = "QuickStart.ScreenClosed.Other";
-constexpr const char kScreenNameQSComplete[] =
+constexpr const char kScreenClosedNetworkScreen[] =
+    "QuickStart.ScreenClosed.NetworkScreen";
+constexpr const char kScreenClosedNone[] = "QuickStart.ScreenClosed.None";
+constexpr const char kScreenClosedOther[] = "QuickStart.ScreenClosed.Other";
+constexpr const char kScreenClosedQSComplete[] =
     "QuickStart.ScreenClosed.QSComplete";
-constexpr const char kScreenNameQSConnectingToWifi[] =
+constexpr const char kScreenClosedQSConnectingToWifi[] =
     "QuickStart.ScreenClosed.QSConnectingToWifi";
-constexpr const char kScreenNameQSResumingConnectionAfterUpdate[] =
+constexpr const char kScreenClosedQSResumingConnectionAfterUpdate[] =
     "QuickStart.ScreenClosed.QSResumingConnectionAfterUpdate";
-constexpr const char kScreenNameQSSelectGoogleAccount[] =
+constexpr const char kScreenClosedQSSelectGoogleAccount[] =
     "QuickStart.ScreenClosed.QSSelectGoogleAccount";
-constexpr const char kScreenNameQSSetUpWithAndroidPhone[] =
+constexpr const char kScreenClosedQSSetUpWithAndroidPhone[] =
     "QuickStart.ScreenClosed.QSSetUpWithAndroidPhone";
-constexpr const char kScreenNameQSWifiCredentialsReceived[] =
+constexpr const char kScreenClosedQSWifiCredentialsReceived[] =
     "QuickStart.ScreenClosed.QSWifiCredentialsReceived";
-constexpr const char kScreenNameReviewPrivacyAndTerms[] =
+constexpr const char kScreenClosedReviewPrivacyAndTerms[] =
     "QuickStart.ScreenClosed.ReviewPrivacyAndTerms";
-constexpr const char kScreenNameSetupDevicePIN[] =
+constexpr const char kScreenClosedSetupDevicePIN[] =
     "QuickStart.ScreenClosed.SetupDevicePIN";
-constexpr const char kScreenNameUnifiedSetup[] =
+constexpr const char kScreenClosedUnifiedSetup[] =
     "QuickStart.ScreenClosed.UnifiedSetup";
-constexpr const char kScreenNameWelcomeScreen[] =
+constexpr const char kScreenClosedWelcomeScreen[] =
     "QuickStart.ScreenClosed.WelcomeScreen";
-constexpr const char kScreenNameQSGettingGoogleAccountInfo[] =
+constexpr const char kScreenClosedQSGettingGoogleAccountInfo[] =
     "QuickStart.ScreenClosed.QSGettingGoogleAccountInfo";
-constexpr const char kScreenNameQSCreatingAccount[] =
+constexpr const char kScreenClosedQSCreatingAccount[] =
     "QuickStart.ScreenClosed.QSCreatingAccount";
 
 std::string MapMessageTypeToMetric(
@@ -149,50 +150,50 @@ std::string MapMessageTypeToMetric(
 std::string MapScreenNameToMetric(QuickStartMetrics::ScreenName screen_name) {
   switch (screen_name) {
     case QuickStartMetrics::ScreenName::kNone:
-      return kScreenNameNone;
+      return kScreenClosedNone;
     case QuickStartMetrics::ScreenName::kWelcomeScreen:
-      return kScreenNameWelcomeScreen;
+      return kScreenClosedWelcomeScreen;
     case QuickStartMetrics::ScreenName::kNetworkScreen:
-      return kScreenNameNetworkScreen;
+      return kScreenClosedNetworkScreen;
     case QuickStartMetrics::ScreenName::kGaiaScreen:
-      return kScreenNameGaiaScreen;
+      return kScreenClosedGaiaScreen;
     case QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone:
-      return kScreenNameQSSetUpWithAndroidPhone;
+      return kScreenClosedQSSetUpWithAndroidPhone;
     case QuickStartMetrics::ScreenName::kQSConnectingToWifi:
-      return kScreenNameQSConnectingToWifi;
+      return kScreenClosedQSConnectingToWifi;
     case QuickStartMetrics::ScreenName::
         kCheckingForUpdateAndDeterminingDeviceConfiguration:
-      return kScreenNameCheckingForUpdateAndDeterminingDeviceConfiguration;
+      return kScreenClosedCheckingForUpdateAndDeterminingDeviceConfiguration;
     case QuickStartMetrics::ScreenName::kChooseChromebookSetup:
-      return kScreenNameChooseChromebookSetup;
+      return kScreenClosedChooseChromebookSetup;
     case QuickStartMetrics::ScreenName::kConsumerUpdate:
-      return kScreenNameConsumerUpdate;
+      return kScreenClosedConsumerUpdate;
     case QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate:
-      return kScreenNameQSResumingConnectionAfterUpdate;
+      return kScreenClosedQSResumingConnectionAfterUpdate;
     case QuickStartMetrics::ScreenName::kQSGettingGoogleAccountInfo:
-      return kScreenNameQSGettingGoogleAccountInfo;
+      return kScreenClosedQSGettingGoogleAccountInfo;
     case QuickStartMetrics::ScreenName::kQSComplete:
-      return kScreenNameQSComplete;
+      return kScreenClosedQSComplete;
     case QuickStartMetrics::ScreenName::kSetupDevicePIN:
-      return kScreenNameSetupDevicePIN;
+      return kScreenClosedSetupDevicePIN;
     case QuickStartMetrics::ScreenName::kAddChild:
-      return kScreenNameAddChild;
+      return kScreenClosedAddChild;
     case QuickStartMetrics::ScreenName::kReviewPrivacyAndTerms:
-      return kScreenNameReviewPrivacyAndTerms;
+      return kScreenClosedReviewPrivacyAndTerms;
     case QuickStartMetrics::ScreenName::kUnifiedSetup:
-      return kScreenNameUnifiedSetup;
+      return kScreenClosedUnifiedSetup;
     case QuickStartMetrics::ScreenName::kGaiaInfoScreen:
-      return kScreenNameGaiaInfoScreen;
+      return kScreenClosedGaiaInfoScreen;
     case QuickStartMetrics::ScreenName::kQSWifiCredentialsReceived:
-      return kScreenNameQSWifiCredentialsReceived;
+      return kScreenClosedQSWifiCredentialsReceived;
     case QuickStartMetrics::ScreenName::kQSSelectGoogleAccount:
-      return kScreenNameQSSelectGoogleAccount;
+      return kScreenClosedQSSelectGoogleAccount;
     case QuickStartMetrics::ScreenName::kQSCreatingAccount:
-      return kScreenNameQSCreatingAccount;
+      return kScreenClosedQSCreatingAccount;
     case QuickStartMetrics::ScreenName::kOther:
       [[fallthrough]];
     default:
-      return kScreenNameOther;
+      return kScreenClosedOther;
   }
 }
 
@@ -269,8 +270,8 @@ void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
   last_screen_opened_ = screen;
 }
 
-void QuickStartMetrics::RecordScreenClosed(ScreenName screen) {
-  // TODO(b/298042953): Add ScreenClosedReason
+void QuickStartMetrics::RecordScreenClosed(ScreenName screen,
+                                           ScreenClosedReason reason) {
   if (screen_opened_view_duration_timer_ == nullptr) {
     QS_LOG(ERROR) << "RecordScreenClosed called but now "
                      "screen_opened_view_duration_timer_ set. screen: "
@@ -285,6 +286,8 @@ void QuickStartMetrics::RecordScreenClosed(ScreenName screen) {
     return;
   }
 
+  base::UmaHistogramEnumeration(MapScreenNameToMetric(screen) + ".Reason",
+                                reason);
   base::UmaHistogramTimes(MapScreenNameToMetric(screen) + ".ViewDuration",
                           screen_opened_view_duration_timer_->Elapsed());
   screen_opened_view_duration_timer_.reset();

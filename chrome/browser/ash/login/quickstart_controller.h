@@ -172,6 +172,9 @@ class QuickStartController
   // the OOBE UpdateScreen or ConsumerUpdateScreen.
   void ResumeSessionAfterCancelledUpdate();
 
+  // Called after a user clicks "next" on final Setup Complete UI.
+  void RecordFlowFinished();
+
   bool did_transfer_wifi() const {
     return bootstrap_controller_->did_transfer_wifi();
   }
@@ -195,7 +198,7 @@ class QuickStartController
   void MaybeRecordQuickStartScreenOpened(UiState new_ui);
 
   // Records ScreenClosed metric when UiState or OOBE screen changes.
-  void MaybeRecordQuickStartScreenClosed(UiState closed_ui);
+  void MaybeRecordQuickStartScreenAdvanced(std::optional<UiState> closed_ui);
 
   // Updates the UI state and notifies the frontend.
   void UpdateUiState(UiState ui_state);
@@ -293,6 +296,10 @@ class QuickStartController
 
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+
+  // Whether OOBE is transitioning to the QuickStartScreen. Used for recording
+  // UI metrics.
+  bool is_transitioning_to_quick_start_screen_ = false;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

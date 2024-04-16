@@ -82,8 +82,10 @@ std::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
 }
 
 QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
-    OobeScreenId screen_id) {
-  if (screen_id == WelcomeView::kScreenId) {
+    std::optional<OobeScreenId> screen_id) {
+  if (!screen_id.has_value()) {
+    return QuickStartMetrics::ScreenName::kNone;
+  } else if (screen_id == WelcomeView::kScreenId) {
     return QuickStartMetrics::ScreenName::kWelcomeScreen;
   } else if (screen_id == NetworkScreenView::kScreenId) {
     return QuickStartMetrics::ScreenName::kNetworkScreen;
@@ -106,9 +108,13 @@ QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
 }
 
 QuickStartMetrics::ScreenName ScreenNameFromUiState(
-    QuickStartController::UiState ui_state,
+    std::optional<QuickStartController::UiState> ui_state,
     QuickStartController::ControllerState controller_state) {
-  switch (ui_state) {
+  if (!ui_state.has_value()) {
+    return QuickStartMetrics::ScreenName::kNone;
+  }
+
+  switch (ui_state.value()) {
     case QuickStartController::UiState::SHOWING_QR:
       [[fallthrough]];
     case QuickStartController::UiState::SHOWING_PIN:
@@ -139,6 +145,26 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
       [[fallthrough]];
     default:
       return QuickStartMetrics::ScreenName::kNone;
+  }
+}
+
+QuickStartMetrics::ScreenClosedReason ScreenClosedReasonFromAbortFlowReason(
+    QuickStartController::AbortFlowReason reason) {
+  switch (reason) {
+    case QuickStartController::AbortFlowReason::USER_CLICKED_BACK:
+      return QuickStartMetrics::ScreenClosedReason::kUserClickedBack;
+    case QuickStartController::AbortFlowReason::USER_CLICKED_CANCEL:
+      return QuickStartMetrics::ScreenClosedReason::kUserCancelled;
+    case QuickStartController::AbortFlowReason::SIGNIN_SCHOOL:
+      [[fallthrough]];
+    case QuickStartController::AbortFlowReason::ADD_CHILD:
+      [[fallthrough]];
+    case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
+      return QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow;
+    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
+      return QuickStartMetrics::ScreenClosedReason::kSetupComplete;
+    case QuickStartController::AbortFlowReason::ERROR:
+      return QuickStartMetrics::ScreenClosedReason::kError;
   }
 }
 
@@ -227,27 +253,37 @@ void QuickStartController::MaybeRecordQuickStartScreenOpened(
   }
 }
 
-void QuickStartController::MaybeRecordQuickStartScreenClosed(
-    QuickStartController::UiState closed_ui) {
+void QuickStartController::MaybeRecordQuickStartScreenAdvanced(
+    std::optional<QuickStartController::UiState> closed_ui) {
   QuickStartMetrics::ScreenName screen_name =
       ScreenNameFromUiState(closed_ui, controller_state_);
   if (screen_name != QuickStartMetrics::ScreenName::kNone) {
-    metrics_->RecordScreenClosed(screen_name);
+    metrics_->RecordScreenClosed(
+        screen_name, QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow);
   }
 }
 
 void QuickStartController::UpdateUiState(UiState ui_state) {
   QS_LOG(INFO) << "Updating UI state to " << ui_state;
-  std::optional<UiState> previous_ui_state = ui_state_;
+
+  if (is_transitioning_to_quick_start_screen_) {
+    is_transitioning_to_quick_start_screen_ = false;
+    QuickStartMetrics::ScreenName previous_screen_name =
+        ScreenNameFromOobeScreenId(previous_screen_);
+    metrics_->RecordScreenClosed(
+        previous_screen_name,
+        QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow);
+  } else {
+    MaybeRecordQuickStartScreenAdvanced(ui_state_);
+  }
+
   ui_state_ = ui_state;
+  MaybeRecordQuickStartScreenOpened(ui_state);
+
   CHECK(!ui_delegates_.empty());
   for (auto& delegate : ui_delegates_) {
     delegate.OnUiUpdateRequested(ui_state_.value());
   }
-  if (previous_ui_state.has_value()) {
-    MaybeRecordQuickStartScreenClosed(previous_ui_state.value());
-  }
-  MaybeRecordQuickStartScreenOpened(ui_state);
 }
 
 void QuickStartController::ForceEnableQuickStart() {
@@ -291,7 +327,17 @@ void QuickStartController::DetermineEntryPointVisibility(
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
-  QS_LOG(INFO) << "Aborting flow: " << reason;
+
+  // Screen is closed when flow aborts on these screens.
+  if (current_screen_ == QuickStartScreenHandler::kScreenId ||
+      current_screen_ == NetworkScreenHandler::kScreenId) {
+    QuickStartMetrics::ScreenName current_screen_name =
+        current_screen_ == QuickStartScreenHandler::kScreenId
+            ? ScreenNameFromUiState(ui_state_, controller_state_)
+            : ScreenNameFromOobeScreenId(current_screen_.value());
+    metrics_->RecordScreenClosed(current_screen_name,
+                                 ScreenClosedReasonFromAbortFlowReason(reason));
+  }
 
   // If user proceeds with enrollment, allow source device to gracefully close
   // connection and show "setup complete" UI.
@@ -327,6 +373,15 @@ void QuickStartController::ResumeSessionAfterCancelledUpdate() {
       ->GetWizardContext()
       ->quick_start_setup_ongoing = true;
   controller_state_ = ControllerState::WAITING_TO_RESUME_AFTER_UPDATE;
+}
+
+void QuickStartController::RecordFlowFinished() {
+  // State has already been reset when SETUP_COMPLETE UI is shown.
+  // We still want to record how long user viewed this final UI.
+  metrics_->RecordScreenClosed(
+      QuickStartMetrics::ScreenName::kQSComplete,
+      QuickStartMetrics::ScreenClosedReason::kSetupComplete);
+  metrics_.reset();
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
@@ -491,11 +546,18 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
                << current_screen;
 
   if (current_screen_ == QuickStartScreenHandler::kScreenId) {
-    // Just switched into the quick start screen. The ScreenOpened metrics on
-    // the Quick Start screen are recorded from OnStatusChanged().
+    // Just switched into the quick start screen. The ScreenOpened and
+    // ScreenClosed metrics are recorded from UpdateUiState() in this case.
+    is_transitioning_to_quick_start_screen_ = true;
     HandleTransitionToQuickStartScreen();
   } else if (IsSetupOngoing()) {
-    metrics_->RecordScreenClosed(ScreenNameFromOobeScreenId(previous_screen));
+    QuickStartMetrics::ScreenName previous_screen_name =
+        previous_screen == QuickStartScreenHandler::kScreenId
+            ? ScreenNameFromUiState(ui_state_, controller_state_)
+            : ScreenNameFromOobeScreenId(previous_screen);
+    metrics_->RecordScreenClosed(
+        previous_screen_name,
+        QuickStartMetrics::ScreenClosedReason::kAdvancedInFlow);
     metrics_->RecordScreenOpened(ScreenNameFromOobeScreenId(current_screen));
 
     // Detect when the user leaves the Gaia screen during the fallback flow.
