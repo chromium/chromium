@@ -468,7 +468,7 @@ public class AppLanguagePromoDialog {
             LanguageItem currentOverrideLanguage) {
         LinkedHashSet<String> topLanguageCodes = new LinkedHashSet<>();
 
-        topLanguageCodes.addAll(LanguageBridge.getULPFromPreference());
+        topLanguageCodes.addAll(LanguageBridge.getULPFromPreference(profile));
         // Add current Accept-Languages to bottom of top languages list.
         topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes(profile));
 
@@ -657,7 +657,8 @@ public class AppLanguagePromoDialog {
         // Don't show if prompt has already been shown.
         if (TranslateBridge.getAppLanguagePromptShown(profile)) return false;
         @TopULPMatchType
-        int hasULPMatch = LanguageBridge.isTopULPBaseLanguage(Locale.getDefault().toLanguageTag());
+        int hasULPMatch =
+                LanguageBridge.isTopULPBaseLanguage(profile, Locale.getDefault().toLanguageTag());
         recordTopULPMatchStatus(hasULPMatch);
         // Don't show if UI language doesn't match the top ULP language.
         if (hasULPMatch != TopULPMatchType.NO) {

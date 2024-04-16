@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.language.LanguageProfileController;
 import org.chromium.components.language.LanguageProfileDelegateImpl;
 
@@ -23,12 +24,14 @@ public class LanguageBridge {
     /**
      * Returns the TopULPMatchType for |language| and the top ULP language. Only language bases are
      * compared (e.g. en-US = en-GB).
+     *
+     * @param profile
      * @param language String of language tag to check.
      * @return TopULPMatchType
      */
     public static @AppLanguagePromoDialog.TopULPMatchType int isTopULPBaseLanguage(
-            String language) {
-        LinkedHashSet<String> ulpLanguages = getULPFromPreference();
+            Profile profile, String language) {
+        LinkedHashSet<String> ulpLanguages = getULPFromPreference(profile);
 
         Iterator<String> ulpIterator = ulpLanguages.iterator();
         if (!ulpIterator.hasNext()) return AppLanguagePromoDialog.TopULPMatchType.EMPTY;
@@ -55,8 +58,9 @@ public class LanguageBridge {
     /**
      * @return The ordered set of ULP languages as saved in the Chrome preference.
      */
-    public static LinkedHashSet<String> getULPFromPreference() {
-        return new LinkedHashSet<>(Arrays.asList(LanguageBridgeJni.get().getULPFromPreference()));
+    public static LinkedHashSet<String> getULPFromPreference(Profile profile) {
+        return new LinkedHashSet<>(
+                Arrays.asList(LanguageBridgeJni.get().getULPFromPreference(profile)));
     }
 
     /** Blocking call used by native ULPLanguageModel to get device ULP languages. */
@@ -74,6 +78,6 @@ public class LanguageBridge {
 
     @NativeMethods
     interface Natives {
-        String[] getULPFromPreference();
+        String[] getULPFromPreference(Profile profile);
     }
 }
