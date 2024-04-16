@@ -130,6 +130,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, CalibrationSetupPage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, FirmwareUpdatePage) {
+  RunTest("chromeos/shimless_rma/reimaging_firmware_update_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
