@@ -1,6 +1,4 @@
 CONSOLE ERROR: 'data' URLs may not be used as base URLs for a document.
 This is a testharness.js-based test.
-[FAIL] 'data:' is an invalid base URL.
-  assert_equals: expected "data:/,This is a data URL." but got "data:/,This%20is%20a%20data%20URL."
 Harness: the test ran to completion.
 
