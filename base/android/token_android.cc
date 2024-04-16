@@ -4,17 +4,51 @@
 
 #include "base/android/token_android.h"
 
-#include "base/numerics/safe_conversions.h"
 #include "build/robolectric_buildflags.h"
 
 #if BUILDFLAG(IS_ROBOLECTRIC)
-#include "base/base_robolectric_jni/Token_jni.h"  // nogncheck
+#include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
+#include "base/base_robolectric_jni/Token_jni.h"      // nogncheck
 #else
+#include "base/base_jni/TokenBase_jni.h"
 #include "base/base_jni/Token_jni.h"
 #endif
 
-namespace base {
-namespace android {
+namespace jni_zero {
+template <>
+BASE_EXPORT base::Token FromJniType<base::Token>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  return base::android::TokenAndroid::FromJavaToken(env, j_object);
+}
+template <>
+BASE_EXPORT std::optional<base::Token> FromJniType<std::optional<base::Token>>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  if (!j_object) {
+    return std::nullopt;
+  }
+  return base::android::TokenAndroid::FromJavaToken(env, j_object);
+}
+
+template <>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<base::Token>(
+    JNIEnv* env,
+    const base::Token& token) {
+  return base::android::TokenAndroid::Create(env, token);
+}
+template <>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniType<std::optional<base::Token>>(
+    JNIEnv* env,
+    const std::optional<base::Token>& token) {
+  if (!token) {
+    return nullptr;
+  }
+  return base::android::TokenAndroid::Create(env, token.value());
+}
+}  // namespace jni_zero
+
+namespace base::android {
 
 ScopedJavaLocalRef<jobject> TokenAndroid::Create(JNIEnv* env,
                                                  const base::Token& token) {
@@ -24,33 +58,15 @@ ScopedJavaLocalRef<jobject> TokenAndroid::Create(JNIEnv* env,
 
 base::Token TokenAndroid::FromJavaToken(JNIEnv* env,
                                         const JavaRef<jobject>& j_token) {
-  const uint64_t high = static_cast<uint64_t>(Java_Token_getHigh(env, j_token));
-  const uint64_t low = static_cast<uint64_t>(Java_Token_getLow(env, j_token));
+  const uint64_t high = static_cast<uint64_t>(
+      Java_TokenBase_getHighForSerialization(env, j_token));
+  const uint64_t low = static_cast<uint64_t>(
+      Java_TokenBase_getLowForSerialization(env, j_token));
   return base::Token(high, low);
 }
 
-ScopedJavaLocalRef<jobjectArray> TokenAndroid::ToJavaArrayOfTokens(
-    JNIEnv* env,
-    base::span<std::optional<base::Token>> tokens) {
-  ScopedJavaLocalRef<jclass> token_clazz =
-      jni_zero::GetClass(env, "org/chromium/base/Token");
-  jobjectArray joa = env->NewObjectArray(checked_cast<jsize>(tokens.size()),
-                                         token_clazz.obj(), nullptr);
-  jni_zero::CheckException(env);
-
-  for (size_t i = 0; i < tokens.size(); i++) {
-    ScopedJavaLocalRef<jobject> token;
-    if (tokens[i]) {
-      token = TokenAndroid::Create(env, *tokens[i]);
-    }
-    env->SetObjectArrayElement(joa, static_cast<jsize>(i), token.obj());
-  }
-  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+static base::Token JNI_Token_CreateRandom(JNIEnv* env) {
+  return base::Token::CreateRandom();
 }
 
-static ScopedJavaLocalRef<jobject> JNI_Token_CreateRandom(JNIEnv* env) {
-  return TokenAndroid::Create(env, base::Token::CreateRandom());
-}
-
-}  // namespace android
-}  // namespace base
+}  // namespace base::android

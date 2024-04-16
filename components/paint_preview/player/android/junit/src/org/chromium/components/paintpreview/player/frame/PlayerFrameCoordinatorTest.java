@@ -27,7 +27,7 @@ public class PlayerFrameCoordinatorTest {
                 new PlayerFrameCoordinator(
                         RuntimeEnvironment.systemContext,
                         Mockito.mock(PlayerCompositorDelegate.class),
-                        Mockito.mock(UnguessableToken.class),
+                        UnguessableToken.createForTesting(),
                         100,
                         2000,
                         0,
@@ -43,7 +43,7 @@ public class PlayerFrameCoordinatorTest {
                 new PlayerFrameCoordinator(
                         RuntimeEnvironment.systemContext,
                         Mockito.mock(PlayerCompositorDelegate.class),
-                        Mockito.mock(UnguessableToken.class),
+                        UnguessableToken.createForTesting(),
                         100,
                         200,
                         0,
