@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {DestinationManager} from './data/destination_manager.js';
+import {PrintTicketManager} from './data/print_ticket_manager.js';
 import {getPrintPreviewPageHandler} from './utils/mojo_data_providers.js';
 import {SessionContext} from './utils/print_preview_cros_app_types.js';
 
@@ -18,6 +19,7 @@ export class PrintPreviewCrosAppController extends EventTarget {
   private printPreviewPageHandler = getPrintPreviewPageHandler();
   private sessionContext: SessionContext;
   private destinationManager = DestinationManager.getInstance();
+  private printTicketManager = PrintTicketManager.getInstance();
 
   constructor() {
     super();
@@ -26,6 +28,7 @@ export class PrintPreviewCrosAppController extends EventTarget {
         (sessionContext: SessionContext): void => {
           this.sessionContext = sessionContext;
           this.destinationManager.initializeSession(this.sessionContext);
+          this.printTicketManager.initializeSession(this.sessionContext);
         });
   }
 }

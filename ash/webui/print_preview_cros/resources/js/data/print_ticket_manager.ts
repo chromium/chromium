@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
-import {type PrintPreviewPageHandler} from '../utils/print_preview_cros_app_types.js';
+import {type PrintPreviewPageHandler, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -18,6 +18,8 @@ export const PRINT_REQUEST_STARTED_EVENT =
     'print-ticket-manager.print-request-started';
 export const PRINT_REQUEST_FINISHED_EVENT =
     'print-ticket-manager.print-request-finished';
+export const PRINT_TICKET_MANAGER_SESSION_INITIALIZED =
+    'print-ticket-manager.session-initialized';
 
 export class PrintTicketManager extends EventTarget {
   private static instance: PrintTicketManager|null = null;
@@ -37,6 +39,7 @@ export class PrintTicketManager extends EventTarget {
   // Non-static properties:
   private printPreviewPageHandler: PrintPreviewPageHandler|null;
   private printRequestInProgress = false;
+  private sessionContext: SessionContext;
 
   // Prevent additional initialization.
   private constructor() {
@@ -45,6 +48,19 @@ export class PrintTicketManager extends EventTarget {
     // Setup mojo data providers.
     this.printPreviewPageHandler = getPrintPreviewPageHandler();
   }
+
+  // `initializeSession` is only intended to be called once from the
+  // `PrintPreviewCrosAppController`.
+  initializeSession(sessionContext: SessionContext): void {
+    assert(
+        !this.sessionContext, 'SessionContext should only be configured once');
+    this.sessionContext = sessionContext;
+    // TODO(b/323421684): Uses session context to configure ticket properties
+    // and validating ticket matches policy requirements.
+    this.dispatchEvent(
+        createCustomEvent(PRINT_TICKET_MANAGER_SESSION_INITIALIZED));
+  }
+
 
   // Handles notifying start and finish print request.
   // TODO(b/323421684): Takes current print ticket uses PrintPreviewPageHandler
@@ -77,6 +93,12 @@ export class PrintTicketManager extends EventTarget {
 
   isPrintRequestInProgress(): boolean {
     return this.printRequestInProgress;
+  }
+
+  // Returns true only after the `initializeSession` function has been called
+  // with a valid `SessionContext`.
+  isSessionInitialized(): boolean {
+    return !!this.sessionContext;
   }
 }
 

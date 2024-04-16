@@ -5,6 +5,7 @@
 import 'chrome://os-print/js/print_preview_cros_app_controller.js';
 
 import {DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
@@ -17,11 +18,14 @@ suite('PrintPreviewCrosAppController', () => {
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
   let mockTimer: MockTimer;
 
+  const testDelay = 1;
+
   setup(() => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
     DestinationManager.resetInstanceForTesting();
+    PrintTicketManager.resetInstanceForTesting();
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
 
@@ -31,6 +35,7 @@ suite('PrintPreviewCrosAppController', () => {
   teardown(() => {
     printPreviewPageHandler.reset();
     DestinationManager.resetInstanceForTesting();
+    PrintTicketManager.resetInstanceForTesting();
     mockTimer.uninstall();
   });
 
@@ -78,13 +83,38 @@ suite('PrintPreviewCrosAppController', () => {
                 'not be initialized');
 
         // Move timer forward to resolve startSession.
-        mockTimer.tick(delay);
+        mockTimer.tick(testDelay);
         await eventToPromise(
             DESTINATION_MANAGER_SESSION_INITIALIZED, destinationManager);
 
         assertTrue(
             destinationManager.isSessionInitialized(),
             'After initializeSession destination manager instance should be ' +
+                'initialized');
+      });
+
+  // Verify print ticket manager is initialized after start session resolves.
+  test(
+      'on resolve of startSession calls PrintTicketManager.initializeSession',
+      async () => {
+        printPreviewPageHandler.setTestDelay(testDelay);
+
+        const controller = new PrintPreviewCrosAppController();
+        assertTrue(!!controller, 'Unable to create controller');
+        const printTicketManager = PrintTicketManager.getInstance();
+        assertFalse(
+            printTicketManager.isSessionInitialized(),
+            'Before initializeSession PrintTicketManager instance should ' +
+                'not be initialized');
+
+        // Move timer forward to resolve startSession.
+        mockTimer.tick(testDelay);
+        await eventToPromise(
+            PRINT_TICKET_MANAGER_SESSION_INITIALIZED, printTicketManager);
+
+        assertTrue(
+            printTicketManager.isSessionInitialized(),
+            'After initializeSession PrintTicketManager instance should be ' +
                 'initialized');
       });
 });
