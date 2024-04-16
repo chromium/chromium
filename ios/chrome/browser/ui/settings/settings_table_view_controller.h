@@ -5,15 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-@protocol ApplicationCommands;
 class Browser;
-@protocol BrowserCommands;
-@protocol BrowsingDataCommands;
-@class SigninInteractionController;
-@protocol SnackbarCommands;
 
 // This class is the TableView for the application settings.
 @interface SettingsTableViewController

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -65,11 +64,9 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
@@ -190,7 +187,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     NotificationsCoordinatorDelegate,
     PrivacyCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
-    SettingsControllerProtocol,
     SearchEngineObserving,
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
@@ -294,10 +290,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // The item related to the enterprise managed show feed settings.
 @property(nonatomic, strong, readonly)
     TableViewInfoButtonItem* managedFeedSettingsItem;
-
-@property(nonatomic, readonly, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
 
 // YES if the default browser settings row is currently showing the notification
 // dot.
