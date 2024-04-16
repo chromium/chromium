@@ -535,22 +535,19 @@ void TabletModeController::RemoveObserver(TabletModeObserver* observer) {
 bool TabletModeController::ForceUiTabletModeState(std::optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;
-    AccelerometerReader::GetInstance()->SetEnabled(true);
-    if (!SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState()))
-      return UpdateUiTabletState();
-    return true;
-  }
-  if (*enabled) {
+  } else if (*enabled) {
     tablet_mode_behavior_ = kOnForAutotest;
   } else {
     tablet_mode_behavior_ = kOffForAutotest;
   }
+
   // We want to suppress the accelerometer to auto-rotate the screen based on
   // the physical orientation, as it will confuse the test scenarios. Note that
   // this should not block ScreenOrientationController as the screen may want
   // to be rotated for other factors.
-  AccelerometerReader::GetInstance()->SetEnabled(false);
-  return SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+  AccelerometerReader::GetInstance()->SetEnabled(!enabled.has_value());
+  return SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState()) ||
+         UpdateUiTabletState();
 }
 
 void TabletModeController::SetEnabledForTest(bool enabled) {
