@@ -33,6 +33,12 @@ namespace {
 
 class FakeCloudPolicyClient : public testing::NiceMock<MockCloudPolicyClient> {
  public:
+  using UploadEuiccInfoCallbackHandler =
+      base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>;
+
+  void SetHandler(UploadEuiccInfoCallbackHandler handler) {
+    handler_ = handler;
+  }
   void SetStatus(bool status) { status_ = status; }
 
   enterprise_management::UploadEuiccInfoRequest* GetLastRequest() {
@@ -48,12 +54,19 @@ class FakeCloudPolicyClient : public testing::NiceMock<MockCloudPolicyClient> {
       std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
       base::OnceCallback<void(bool)> callback) override {
     requests_.push_back(std::move(request));
+    if (handler_) {
+      handler_.Run(std::move(callback));
+      return;
+    }
     std::move(callback).Run(status_);
   }
 
   std::vector<std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>>
       requests_;
   bool status_ = false;
+  // This member is used to control how the callback is executed when
+  // UploadEuiccInfo() is called.
+  UploadEuiccInfoCallbackHandler handler_;
 };
 
 bool RequestsAreEqual(
@@ -307,6 +320,11 @@ class EuiccStatusUploaderTest : public testing::Test {
     cloud_policy_client_.SetStatus(success);
   }
 
+  void SetPolicyClientHandler(
+      FakeCloudPolicyClient::UploadEuiccInfoCallbackHandler handler) {
+    cloud_policy_client_.SetHandler(std::move(handler));
+  }
+
   const base::Value& GetStoredPref() {
     return local_state_.GetValue(
         ash::features::IsSmdsSupportEnabled()
@@ -435,6 +453,11 @@ class EuiccStatusUploaderTest : public testing::Test {
                      base::test::ParseJson(last_value));
   }
 
+  void TriggerManagedCellularPrefChanged(EuiccStatusUploader* status_uploader) {
+    static_cast<ash::ManagedCellularPrefHandler::Observer*>(status_uploader)
+        ->OnManagedCellularPrefChanged();
+  }
+
   void ExecuteResetCommandLegacy(EuiccStatusUploader* status_uploader) {
     SetUpDeviceProfilesLegacy(kEuiccTestData_AfterReset);
 
@@ -454,6 +477,10 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   int GetRequestCount() { return cloud_policy_client_.num_requests(); }
+
+  enterprise_management::UploadEuiccInfoRequest* GetLastRequest() {
+    return cloud_policy_client_.GetLastRequest();
+  }
 
   void CheckHistogram(int total_count, int success_count, int failed_count) {
     histogram_tester_.ExpectTotalCount(kEuiccStatusUploadResultHistogram,
@@ -678,11 +705,52 @@ TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, ResetRequest) {
 
   // Send the reset command again.
   ExecuteResetCommandLegacy(status_uploader.get());
-  // Request will be force-sent again because we've received a reset command..
+  // Request will be force-sent again because we've received a reset command.
   EXPECT_EQ(GetRequestCount(), 4);
 
   ValidateUploadedStatus(kEuiccStatus_AfterReset,
                          /*clear_profile_list=*/true);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled,
+       ClearProfileListRaceCondition) {
+  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
+
+  // Create the status uploader but do not trigger an upload via the policies
+  // being fetched.
+  auto status_uploader = CreateStatusUploader(/*is_policy_fetched=*/false);
+  EXPECT_EQ(GetRequestCount(), 0);
+
+  // Capture the callback that the status uploader provides to the cloud policy
+  // client to allow us to block the completion of the first upload.
+  base::OnceCallback<void(bool)> callback;
+  SetPolicyClientHandler(base::BindRepeating(
+      [](base::OnceCallback<void(bool)>* callback_out,
+         base::OnceCallback<void(bool)> callback_in) {
+        *callback_out = std::move(callback_in);
+      },
+      &callback));
+
+  // Trigger the first upload.
+  SetPolicyFetched(status_uploader.get());
+
+  EXPECT_FALSE(GetLastRequest()->clear_profile_list());
+  EXPECT_EQ(GetRequestCount(), 1);
+
+  // Simulate a race condition where an upload is in progress and an EUICC reset
+  // causes the "clear profile list" pref to be set to |true|. This pref should
+  // not be cleared when the first upload finishes. This won't affect the value
+  // of |callback| since an ongoing upload is blocking.
+  ExecuteResetCommandLegacy(status_uploader.get());
+
+  // Complete the first status upload. When this completes the status uploader
+  // class will check if it should perform another upload; this class will
+  // identify that the EUICC was reset and will trigger a second upload.
+  ASSERT_TRUE(callback);
+  std::move(callback).Run(true);
+
+  EXPECT_TRUE(GetLastRequest()->clear_profile_list());
+  EXPECT_EQ(GetRequestCount(), 2);
 }
 
 TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled,
@@ -944,6 +1012,47 @@ TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled, ResetRequest) {
 
   ValidateUploadedStatus(kEuiccStatus_AfterReset,
                          /*clear_profile_list=*/true);
+}
+
+TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled,
+       ClearProfileListRaceCondition) {
+  SetUpDeviceProfiles(kEuiccTestData_OneProfile);
+
+  // Create the status uploader but do not trigger an upload via the policies
+  // being fetched.
+  auto status_uploader = CreateStatusUploader(/*is_policy_fetched=*/false);
+  EXPECT_EQ(GetRequestCount(), 0);
+
+  // Capture the callback that the status uploader provides to the cloud policy
+  // client to allow us to block the completion of the first upload.
+  base::OnceCallback<void(bool)> callback;
+  SetPolicyClientHandler(base::BindRepeating(
+      [](base::OnceCallback<void(bool)>* callback_out,
+         base::OnceCallback<void(bool)> callback_in) {
+        *callback_out = std::move(callback_in);
+      },
+      &callback));
+
+  // Trigger the first upload.
+  SetPolicyFetched(status_uploader.get());
+
+  EXPECT_FALSE(GetLastRequest()->clear_profile_list());
+  EXPECT_EQ(GetRequestCount(), 1);
+
+  // Simulate a race condition where an upload is in progress and an EUICC reset
+  // causes the "clear profile list" pref to be set to |true|. This pref should
+  // not be cleared when the first upload finishes. This won't affect the value
+  // of |callback| since an ongoing upload is blocking.
+  ExecuteResetCommand(status_uploader.get());
+
+  // Complete the first status upload. When this completes the status uploader
+  // class will check if it should perform another upload; this class will
+  // identify that the EUICC was reset and will trigger a second upload.
+  ASSERT_TRUE(callback);
+  std::move(callback).Run(true);
+
+  EXPECT_TRUE(GetLastRequest()->clear_profile_list());
+  EXPECT_EQ(GetRequestCount(), 2);
 }
 
 TEST_F(EuiccStatusUploaderTest_SmdsSupportEnabled,

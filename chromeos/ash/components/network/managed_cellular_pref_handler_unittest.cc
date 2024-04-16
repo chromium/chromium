@@ -201,12 +201,12 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled, AddApnMigratedIccid) {
   // Add APN migrated ICCIDs to pref and verify that the prefs store these
   // values.
   AddApnMigratedIccid(kIccid0);
-  EXPECT_EQ(1, NumObserverEvents());
+  EXPECT_EQ(0, NumObserverEvents());
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
 
   AddApnMigratedIccid(kIccid1);
-  EXPECT_EQ(2, NumObserverEvents());
+  EXPECT_EQ(0, NumObserverEvents());
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
 }
@@ -292,12 +292,12 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, AddApnMigratedIccid) {
   // Add APN migrated ICCIDs to pref and verify that the prefs store these
   // values.
   AddApnMigratedIccid(kIccid0);
-  EXPECT_EQ(1, NumObserverEvents());
+  EXPECT_EQ(0, NumObserverEvents());
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
 
   AddApnMigratedIccid(kIccid1);
-  EXPECT_EQ(2, NumObserverEvents());
+  EXPECT_EQ(0, NumObserverEvents());
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
 }

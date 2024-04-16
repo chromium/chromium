@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
    public:
     ~Observer() override = default;
 
-    // Invoked when a ICCID - SMDP address is added or removed.
+    // Invoked when metadata of a managed eSIM profile is added or removed.
     virtual void OnManagedCellularPrefChanged() = 0;
   };
 

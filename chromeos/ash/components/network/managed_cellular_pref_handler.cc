@@ -223,8 +223,6 @@ void ManagedCellularPrefHandler::AddApnMigratedIccid(const std::string& iccid) {
       << iccid;
   ScopedDictPrefUpdate update(device_prefs_, prefs::kApnMigratedIccids);
   update->SetByDottedPath(iccid, true);
-  network_state_handler_->SyncStubCellularNetworks();
-  NotifyManagedCellularPrefChanged();
 }
 
 bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(

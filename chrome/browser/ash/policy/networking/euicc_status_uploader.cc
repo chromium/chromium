@@ -370,16 +370,21 @@ void EuiccStatusUploader::UploadStatus(base::Value::Dict status) {
   currently_uploading_ = true;
   attempted_upload_status_ = std::move(status);
 
+  const bool should_send_clear_profiles_request =
+      local_state_->GetBoolean(kShouldSendClearProfilesRequestPref);
+
   auto upload_request = ConstructRequestFromStatus(
-      attempted_upload_status_,
-      local_state_->GetBoolean(kShouldSendClearProfilesRequestPref));
+      attempted_upload_status_, should_send_clear_profiles_request);
   client_->UploadEuiccInfo(
       std::move(upload_request),
       base::BindOnce(&EuiccStatusUploader::OnStatusUploaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     should_send_clear_profiles_request));
 }
 
-void EuiccStatusUploader::OnStatusUploaded(bool success) {
+void EuiccStatusUploader::OnStatusUploaded(
+    bool should_send_clear_profiles_request,
+    bool success) {
   currently_uploading_ = false;
   retry_entry_.InformOfRequest(/*succeeded=*/success);
   base::UmaHistogramBoolean(
@@ -403,13 +408,14 @@ void EuiccStatusUploader::OnStatusUploaded(bool success) {
                           std::move(attempted_upload_status_));
   }
 
-  // Clean out the local state preference to not send |clear_profile_list| =
-  // true multiple times.
-  local_state_->ClearPref(kShouldSendClearProfilesRequestPref);
+  if (should_send_clear_profiles_request) {
+    // Clean out the local state preference to not send `clear_profile_list` =
+    // true multiple times.
+    local_state_->ClearPref(kShouldSendClearProfilesRequestPref);
+  }
   attempted_upload_status_.clear();
 
   MaybeUploadStatus();
-  return;
 }
 
 void EuiccStatusUploader::RetryUpload() {

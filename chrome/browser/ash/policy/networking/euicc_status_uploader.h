@@ -117,9 +117,8 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
 
   base::Value::Dict GetCurrentEuiccStatus() const;
   void MaybeUploadStatus();
-  void MaybeUploadStatusWithDelay();
   void UploadStatus(base::Value::Dict status);
-  void OnStatusUploaded(bool success);
+  void OnStatusUploaded(bool should_send_clear_profiles_request, bool success);
   void RetryUpload();
 
   // Used in tests. Fires |retry_timer_| to avoid flakiness.
