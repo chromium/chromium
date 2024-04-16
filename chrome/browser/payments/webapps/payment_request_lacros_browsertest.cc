@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -77,15 +77,15 @@ crosapi::mojom::WebAppAndroidPackagePtr CreateWebAppAndroidPackage() {
 }  // namespace
 
 class PaymentRequestLacrosBrowserTest
-    : public web_app::WebAppControllerBrowserTest,
+    : public web_app::WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   PaymentRequestLacrosBrowserTest() : has_associated_package_(GetParam()) {}
   ~PaymentRequestLacrosBrowserTest() override = default;
 
-  // web_app::WebAppControllerBrowserTest:
+  // web_app::WebAppBrowserTestBase:
   void SetUpOnMainThread() override {
-    web_app::WebAppControllerBrowserTest::SetUpOnMainThread();
+    web_app::WebAppBrowserTestBase::SetUpOnMainThread();
 
     chromeos::LacrosService* service = chromeos::LacrosService::Get();
     ASSERT_TRUE(service);
@@ -114,7 +114,7 @@ class PaymentRequestLacrosBrowserTest
 
   void TearDownOnMainThread() override {
     UninstallTestApp();
-    web_app::WebAppControllerBrowserTest::TearDownOnMainThread();
+    web_app::WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   GURL GetAppURL() {

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/web_app_profile_switcher.h"
-
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,7 +16,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -76,8 +75,8 @@ void InstallAppForProfile(
 
 }  // namespace
 
-class WebAppProfileSwitcherBrowserTest
-    : public web_app::WebAppControllerBrowserTest {};
+class WebAppProfileSwitcherBrowserTest : public web_app::WebAppBrowserTestBase {
+};
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileRequiresInstall) {

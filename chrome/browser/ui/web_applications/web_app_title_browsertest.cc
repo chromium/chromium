@@ -4,7 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -17,7 +17,7 @@
 namespace web_app {
 
 // Test app title scenarios with valid, empty and dynamic app title.
-class WebAppTitleBrowserTest : public WebAppControllerBrowserTest {
+class WebAppTitleBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppTitleBrowserTest() = default;
 

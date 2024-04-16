@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -70,7 +70,7 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
 
 namespace web_app {
 
-class PWAMixedContentBrowserTest : public WebAppControllerBrowserTest {
+class PWAMixedContentBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL GetMixedContentAppURL() {
     return https_server()->GetURL("app.com",

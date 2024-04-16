@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -36,7 +36,7 @@
 
 namespace web_app {
 
-class WebAppIconManagerBrowserTest : public WebAppControllerBrowserTest {
+class WebAppIconManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppIconManagerBrowserTest() = default;
   WebAppIconManagerBrowserTest(const WebAppIconManagerBrowserTest&) = delete;
@@ -54,10 +54,10 @@ class WebAppIconManagerBrowserTest : public WebAppControllerBrowserTest {
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
   }
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }

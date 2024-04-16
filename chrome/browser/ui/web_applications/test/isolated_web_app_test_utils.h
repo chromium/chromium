@@ -13,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -43,7 +43,7 @@ namespace web_app {
 
 class IsolatedWebAppUrlInfo;
 
-class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
+class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
  public:
   IsolatedWebAppBrowserTestHarness();
   IsolatedWebAppBrowserTestHarness(const IsolatedWebAppBrowserTestHarness&) =

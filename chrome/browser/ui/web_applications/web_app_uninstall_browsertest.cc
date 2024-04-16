@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -37,7 +37,7 @@
 
 namespace web_app {
 
-class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
+class WebAppUninstallBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");

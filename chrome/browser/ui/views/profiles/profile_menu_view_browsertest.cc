@@ -53,7 +53,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1739,14 +1739,14 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
 #endif
 
 class ProfileMenuViewWebAppTest : public ProfileMenuViewTestBase,
-                                  public web_app::WebAppControllerBrowserTest {
+                                  public web_app::WebAppBrowserTestBase {
  protected:
   void TearDownOnMainThread() override {
     for (Profile* profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
       web_app::test::UninstallAllWebApps(profile);
     }
-    web_app::WebAppControllerBrowserTest::TearDownOnMainThread();
+    web_app::WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   WebAppFrameToolbarTestHelper& toolbar_helper() {

@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -52,14 +52,14 @@ void AcceptDialogAndContinue(views::Widget* widget) {
 
 }  // namespace
 
-class IsolatedWebAppInstallerBrowserTest : public WebAppControllerBrowserTest {
+class IsolatedWebAppInstallerBrowserTest : public WebAppBrowserTestBase {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
          features::kIsolatedWebAppUnmanagedInstall},
         {});
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
  private:
@@ -127,12 +127,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
 }
 
 class IsolatedWebAppInstallerDisabledBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode},
         {features::kIsolatedWebAppUnmanagedInstall});
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
  private:

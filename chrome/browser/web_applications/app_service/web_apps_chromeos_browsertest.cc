@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -85,7 +85,7 @@ void CheckSeparator(const ui::SimpleMenuModel& model, size_t index) {
 
 }  // namespace
 
-using WebAppsChromeOsBrowserTest = web_app::WebAppControllerBrowserTest;
+using WebAppsChromeOsBrowserTest = web_app::WebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =
@@ -161,7 +161,7 @@ constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
 }  // namespace
 
 class WebAppsPreventCloseChromeOsBrowserTest
-    : public web_app::WebAppControllerBrowserTest,
+    : public web_app::WebAppBrowserTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
   WebAppsPreventCloseChromeOsBrowserTest() = default;

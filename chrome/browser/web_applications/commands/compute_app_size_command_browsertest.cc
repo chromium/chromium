@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/commands/compute_app_size_command.h"
+
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/compute_app_size_command.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,7 +19,7 @@
 
 namespace web_app {
 
-class ComputeAppSizeCommandBrowserTest : public WebAppControllerBrowserTest {};
+class ComputeAppSizeCommandBrowserTest : public WebAppBrowserTestBase {};
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandBrowserTest, RetrieveWebAppSize) {
   ASSERT_TRUE(embedded_test_server()->Start());

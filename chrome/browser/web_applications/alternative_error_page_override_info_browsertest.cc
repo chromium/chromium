@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -29,7 +29,7 @@
 
 // Class to test browser error page display info.
 class AlternativeErrorPageOverrideInfoBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+    : public web_app::WebAppBrowserTestBase {
  public:
   AlternativeErrorPageOverrideInfoBrowserTest() {
     feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
@@ -63,11 +63,11 @@ class AlternativeErrorPageOverrideInfoBrowserTest
 
  private:
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   base::test::ScopedFeatureList feature_list_;

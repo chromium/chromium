@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
+
 #include <memory>
 
 #include "base/containers/flat_set.h"
@@ -10,8 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -30,11 +31,10 @@
 
 namespace web_app {
 
-class InstallPreloadedVerifiedAppCommandTest
-    : public WebAppControllerBrowserTest {
+class InstallPreloadedVerifiedAppCommandTest : public WebAppBrowserTestBase {
  public:
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("lh3.googleusercontent.com", "127.0.0.1");
     host_resolver()->AddRule("fonts.gstatic.com", "127.0.0.1");
     host_resolver()->AddRule("youtube.com", "127.0.0.1");
@@ -42,7 +42,7 @@ class InstallPreloadedVerifiedAppCommandTest
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(test::UninstallAllWebApps(profile()));
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   bool IsShortcutCreated(const webapps::AppId& app_id,

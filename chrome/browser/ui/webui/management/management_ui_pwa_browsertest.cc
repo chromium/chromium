@@ -9,7 +9,7 @@
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -30,7 +30,7 @@
 namespace {
 constexpr char kTestApp[] = "https://test.test/";
 
-class ManagementUIPWATest : public web_app::WebAppControllerBrowserTest {
+class ManagementUIPWATest : public web_app::WebAppBrowserTestBase {
  public:
   ManagementUIPWATest() { BuildAndInitFeatureList(); }
 

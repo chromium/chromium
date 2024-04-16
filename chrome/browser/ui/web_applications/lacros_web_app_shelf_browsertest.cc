@@ -53,7 +53,7 @@ constexpr char kSecondAppUrlHost[] = "second-pwa.test";
 
 namespace web_app {
 
-class LacrosWebAppShelfBrowserTest : public WebAppControllerBrowserTest {
+class LacrosWebAppShelfBrowserTest : public WebAppBrowserTestBase {
  public:
   LacrosWebAppShelfBrowserTest() = default;
   ~LacrosWebAppShelfBrowserTest() override = default;

@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/test_server_redirect_handle.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -64,7 +64,7 @@
 
 namespace web_app {
 
-class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
+class WebAppFileHandlingTestBase : public WebAppBrowserTestBase {
  public:
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
@@ -124,8 +124,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     entry3.accept[0].file_extensions.insert(".csv");
     web_app_info->file_handlers.push_back(std::move(entry3));
 
-    app_id_ =
-        WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+    app_id_ = WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
   }
 
   webapps::AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
@@ -142,7 +141,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     entry1.accept[0].file_extensions.insert(".jpeg");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
-    return WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+    return WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
   }
 
  protected:
@@ -218,7 +217,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     entry.accept[0].mime_type = "text/*";
     entry.accept[0].file_extensions.insert(".txt");
     web_app_info->file_handlers.push_back(std::move(entry));
-    return WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+    return WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
   }
 
  protected:
@@ -509,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 #endif
 
 class WebAppFileHandlingIconBrowserTest
-    : public WebAppControllerBrowserTest,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   WebAppFileHandlingIconBrowserTest() {

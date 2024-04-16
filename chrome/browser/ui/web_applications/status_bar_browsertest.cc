@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -12,7 +12,7 @@
 namespace web_app {
 namespace {
 
-using WebAppStatusBarTest = WebAppControllerBrowserTest;
+using WebAppStatusBarTest = WebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
   NavigateViaLinkClickToURLAndWait(

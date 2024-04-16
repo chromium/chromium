@@ -45,12 +45,12 @@ using ::testing::Property;
 using ::testing::VariantWith;
 
 class InstallIsolatedWebAppFromCommandLineBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
  protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   WebAppRegistrar& GetWebAppRegistrar() {

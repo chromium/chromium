@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -51,7 +51,7 @@ std::vector<apps::FileHandler::AcceptEntry> GetAcceptEntriesForFileHandler(
 }  // namespace
 
 class ExternallyManagedInstallCommandBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
  public:
   ExternallyManagedInstallCommandBrowserTest() = default;
   ExternallyManagedInstallCommandBrowserTest(

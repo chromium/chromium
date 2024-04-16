@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_helpers.h"
-
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
@@ -20,7 +19,7 @@
 
 namespace web_app {
 
-class WebAppNavigateBrowserTest : public WebAppControllerBrowserTest {
+class WebAppNavigateBrowserTest : public WebAppBrowserTestBase {
  public:
   static GURL GetGoogleURL() { return GURL("http://www.google.com/"); }
 

@@ -58,7 +58,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
@@ -243,7 +243,7 @@ namespace web_app {
 
 using ::base::BucketsAre;
 
-class WebAppBrowserTest : public WebAppControllerBrowserTest {
+class WebAppBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");

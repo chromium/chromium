@@ -6,7 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -27,7 +27,7 @@
 namespace web_app {
 namespace {
 
-class InstallFromSyncCommandTest : public WebAppControllerBrowserTest {
+class InstallFromSyncCommandTest : public WebAppBrowserTestBase {
  public:
   InstallFromSyncCommandTest() = default;
   ~InstallFromSyncCommandTest() override = default;

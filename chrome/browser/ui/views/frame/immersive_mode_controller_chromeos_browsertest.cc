@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -37,7 +37,7 @@
 #include "ui/views/window/frame_caption_button.h"
 
 class ImmersiveModeControllerChromeosWebAppBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+    : public web_app::WebAppBrowserTestBase {
  public:
   ImmersiveModeControllerChromeosWebAppBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -49,9 +49,9 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
 
   ~ImmersiveModeControllerChromeosWebAppBrowserTest() override = default;
 
-  // WebAppControllerBrowserTest override:
+  // WebAppBrowserTestBase override:
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 

@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -93,15 +93,15 @@ base::Value::Dict GetCustomAppIconAndNameItem() {
 
 }  // namespace
 
-class WebAppPolicyManagerBrowserTest : public WebAppControllerBrowserTest {
+class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppPolicyManagerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
-  void TearDown() override { WebAppControllerBrowserTest::TearDown(); }
+  void TearDown() override { WebAppBrowserTestBase::TearDown(); }
 
   Profile* profile() { return browser()->profile(); }
 

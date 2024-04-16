@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/test/browser_test.h"
@@ -13,7 +13,7 @@
 
 namespace web_app {
 
-class WebAppMinimalUITest : public WebAppControllerBrowserTest {
+class WebAppMinimalUITest : public WebAppBrowserTestBase {
  public:
   WebAppMinimalUITest() = default;
 

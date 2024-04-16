@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -36,7 +36,7 @@
 
 namespace web_app {
 
-class FetchManifestAndInstallCommandTest : public WebAppControllerBrowserTest {
+class FetchManifestAndInstallCommandTest : public WebAppBrowserTestBase {
  public:
   WebAppInstallDialogCallback CreateDialogCallback(
       bool accept = true,

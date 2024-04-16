@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -34,7 +34,7 @@ namespace web_app {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
+class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppIconHealthChecksBrowserTest() {
     WebAppMetrics::DisableAutomaticIconHealthChecksForTesting();
@@ -43,7 +43,7 @@ class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
   ~WebAppIconHealthChecksBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 

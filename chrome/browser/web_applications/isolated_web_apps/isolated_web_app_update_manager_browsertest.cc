@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
 // TODO(crbug.com/1479463): Session restore does not restore app windows on
 // Lacros. Forcing the IWA to open via the `--app-id` command line switch is
-// also not viable, because `WebAppControllerBrowserTest` expects a `browser()`
+// also not viable, because `WebAppBrowserTestBase` expects a `browser()`
 // to open before the `WebAppProvider` is ready.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 

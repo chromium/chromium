@@ -7,7 +7,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -35,8 +35,7 @@ const char16_t kAppName[] = u"Test App";
 // OS where protocols are registered on the OS differently compared to
 // other OSes where protocols are bundled into the shortcut
 // registration/update/unregistration flow.
-class UpdateProtocolHandlerApprovalCommandTest
-    : public WebAppControllerBrowserTest {
+class UpdateProtocolHandlerApprovalCommandTest : public WebAppBrowserTestBase {
  public:
   const GURL kTestAppUrl = GURL("https://example.com");
 
@@ -45,7 +44,7 @@ class UpdateProtocolHandlerApprovalCommandTest
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(test::UninstallAllWebApps(profile()));
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   webapps::AppId InstallWebAppWithProtocolHandlers(

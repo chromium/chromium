@@ -45,7 +45,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -339,7 +339,7 @@ class DidFinishLoadObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
+class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   ManifestUpdateManagerBrowserTest()
       : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
@@ -364,7 +364,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     // Suppress globally to avoid OS hooks deployed for system web app during
     // WebAppProvider setup.
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {

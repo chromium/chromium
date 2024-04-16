@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "install_from_info_command.h"
+
 #include <map>
 #include <memory>
 #include <utility>
@@ -9,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -22,13 +24,12 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
-#include "install_from_info_command.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
 
-class InstallFromInfoCommandTest : public WebAppControllerBrowserTest {
+class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
  public:
   InstallFromInfoCommandTest() {
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(

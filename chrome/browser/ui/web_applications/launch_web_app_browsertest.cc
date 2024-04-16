@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/context_menu_params.h"
@@ -22,7 +22,7 @@
 
 namespace web_app {
 
-class LaunchWebAppBrowserTest : public WebAppControllerBrowserTest {
+class LaunchWebAppBrowserTest : public WebAppBrowserTestBase {
  public:
   LaunchWebAppBrowserTest() = default;
   ~LaunchWebAppBrowserTest() override = default;

@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -70,7 +70,7 @@ constexpr char kAppPath[] = "/web_apps/no_service_worker.html";
 }  // namespace
 namespace web_app {
 
-class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
+class WebAppTabStripBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppTabStripBrowserTest() = default;
   ~WebAppTabStripBrowserTest() override = default;
@@ -83,7 +83,7 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
         {});
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   struct App {
@@ -1265,8 +1265,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
                                u"Favicon only"));
 }
 
-class WebAppTabStripOriginTrialBrowserTest
-    : public WebAppControllerBrowserTest {
+class WebAppTabStripOriginTrialBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppTabStripOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
@@ -1275,7 +1274,7 @@ class WebAppTabStripOriginTrialBrowserTest
   }
   ~WebAppTabStripOriginTrialBrowserTest() override = default;
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Using the test public key from docs/origin_trials_integration.md#Testing.
     command_line->AppendSwitchASCII(
@@ -1283,7 +1282,7 @@ class WebAppTabStripOriginTrialBrowserTest
         "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
   }
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(browser()->profile()));
   }

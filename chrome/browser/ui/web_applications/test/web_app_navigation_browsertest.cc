@@ -214,16 +214,16 @@ void WebAppNavigationBrowserTest::SetUp() {
             std::move(response));
       }));
 
-  WebAppControllerBrowserTest::SetUp();
+  WebAppBrowserTestBase::SetUp();
 }
 
 void WebAppNavigationBrowserTest::SetUpInProcessBrowserTestFixture() {
-  WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture();
+  WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture();
   cert_verifier_.SetUpInProcessBrowserTestFixture();
 }
 
 void WebAppNavigationBrowserTest::TearDownInProcessBrowserTestFixture() {
-  WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture();
+  WebAppBrowserTestBase::TearDownInProcessBrowserTestFixture();
   cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
@@ -237,7 +237,7 @@ void WebAppNavigationBrowserTest::SetUpCommandLine(
 }
 
 void WebAppNavigationBrowserTest::SetUpOnMainThread() {
-  WebAppControllerBrowserTest::SetUpOnMainThread();
+  WebAppBrowserTestBase::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
@@ -269,7 +269,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
   }
 #endif
 
-  WebAppControllerBrowserTest::TearDownOnMainThread();
+  WebAppBrowserTestBase::TearDownOnMainThread();
 }
 
 Profile* WebAppNavigationBrowserTest::profile() {

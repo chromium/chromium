@@ -45,11 +45,11 @@ Creating an integration test (using the integration framework) should satisfy th
 
 Browser tests are much more expensive to run, as they run a fully functional browser. These tests are usually only created to test functionality that requires multiple parts of the system to be running or dependencies like the Sync service to be fully running and functional. It is good practice to have browsertests be as true-to-user-action as possible, to make sure that as much of our stack is exercised.
 
-An example set of browser tests are in [`web_app_browsertest.cc`][6]. Please use the [`WebAppControllerBrowserTest`][5] base class.
+An example set of browser tests are in [`web_app_browsertest.cc`][6]. Please use the [`WebAppBrowserTestBase`][5] base class.
 
 Notes
 
-- Browser tests based on `WebAppControllerBrowserTest` print a snapshot of chrome://web-app-internals to console on test failures. This can be a powerful debugging tool. The command line flag `--disable-web-app-internals-log` can be used to disable this feature.
+- Browser tests based on `WebAppBrowserTestBase` print a snapshot of chrome://web-app-internals to console on test failures. This can be a powerful debugging tool. The command line flag `--disable-web-app-internals-log` can be used to disable this feature.
 
 ## Integration tests
 
@@ -63,7 +63,7 @@ Notes
 
 ## Testing OS integration
 
-It is very common to test OS integration. By default, OS integration is suppressed if the test extends [`WebAppTest`][4]  or  [`WebAppControllerBrowserTest`][5].
+It is very common to test OS integration. By default, OS integration is suppressed if the test extends [`WebAppTest`][4]  or  [`WebAppBrowserTestBase`][5].
 
 End-to-end OS integration testing is facilitated using the [`OsIntegrationTestOverride`][9]. If OS integration CAN be tested in an automated way, this class will do so. If not, the existence of this override will stub-out the OS integration at the lowest level to test as much of our code as possible.
 
@@ -124,7 +124,7 @@ Sometimes classes use a dependency that either doesn't work or isn't fake-able i
 [2]: http://b/271124885
 [3]: README.md#external-dependencies
 [4]: https://source.chromium.org/search?q=web_app_test.h
-[5]: https://source.chromium.org/search?q=WebAppControllerBrowserTest
+[5]: https://source.chromium.org/search?q=WebAppBrowserTestBase
 [6]: https://source.chromium.org/search?q=web_app_browsertest.cc
 [7]: integration-testing-framework.md
 [8]: ../testing/code_coverage.md

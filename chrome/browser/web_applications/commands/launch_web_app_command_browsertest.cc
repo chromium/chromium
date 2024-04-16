@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -121,7 +121,7 @@ class FirstRunServiceOverrideHelper {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class LaunchWebAppWithFirstRunServiceBrowserTest
-    : public WebAppControllerBrowserTest,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   LaunchWebAppWithFirstRunServiceBrowserTest() = default;
@@ -269,13 +269,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          LaunchWebAppWithFirstRunServiceBrowserTest,
                          ::testing::Values(true, false));
 
-class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
+class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
  public:
   const std::string kAppName = "TestApp";
   const GURL kAppStartUrl = GURL("https://example.com");
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     app_id_ = test::InstallDummyWebApp(profile(), kAppName, kAppStartUrl);
   }
 

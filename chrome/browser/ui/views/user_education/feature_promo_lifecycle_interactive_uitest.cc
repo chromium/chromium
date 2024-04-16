@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -64,8 +64,7 @@ BASE_FEATURE(kFeaturePromoLifecycleTestAlert2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-using TestBase =
-    InteractiveFeaturePromoTestT<web_app::WebAppControllerBrowserTest>;
+using TestBase = InteractiveFeaturePromoTestT<web_app::WebAppBrowserTestBase>;
 using user_education::FeaturePromoResult;
 
 class FeaturePromoLifecycleUiTest : public TestBase {

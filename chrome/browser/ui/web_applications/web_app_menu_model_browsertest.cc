@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+
 #include <algorithm>
 #include <vector>
 
@@ -9,8 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -26,10 +27,10 @@
 
 namespace web_app {
 
-class TestWebAppMenuModelCR2023 : public WebAppControllerBrowserTest {
+class TestWebAppMenuModelCR2023 : public WebAppBrowserTestBase {
  public:
   TestWebAppMenuModelCR2023()
-      : WebAppControllerBrowserTest({features::kChromeRefresh2023}, {}) {}
+      : WebAppBrowserTestBase({features::kChromeRefresh2023}, {}) {}
 
   TestWebAppMenuModelCR2023(const TestWebAppMenuModelCR2023&) = delete;
   TestWebAppMenuModelCR2023& operator=(const TestWebAppMenuModelCR2023&) =

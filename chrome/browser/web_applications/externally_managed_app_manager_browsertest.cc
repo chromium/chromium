@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -70,8 +70,7 @@ using testing::Property;
 
 namespace web_app {
 
-class ExternallyManagedAppManagerBrowserTest
-    : public WebAppControllerBrowserTest {
+class ExternallyManagedAppManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
       const net::test_server::HttpRequest& request) {
@@ -99,7 +98,7 @@ class ExternallyManagedAppManagerBrowserTest
 
  protected:
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider());

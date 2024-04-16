@@ -6,7 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -20,7 +20,7 @@
 namespace web_app {
 
 class NavigateAndTriggerInstallDialogCommandTest
-    : public WebAppControllerBrowserTest,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   const GURL kOriginUrl = GURL("https://test.com");

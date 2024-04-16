@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -67,7 +67,7 @@ class ScopedSharesheetAppSelection {
 
 namespace web_app {
 
-class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
+class ShareToTargetBrowserTest : public WebAppBrowserTestBase {
  public:
   std::string ExecuteShare(const std::string& script) {
     const GURL url = https_server()->GetURL("/webshare/index.html");
@@ -97,11 +97,11 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
   const webapps::AppId& app_id() const { return app_id_; }
 
  private:
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void TearDownOnMainThread() override {
     if (!app_id_.empty())
       CloseAppWindows(app_id_);
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   static void CloseAppWindows(const webapps::AppId& app_id) {

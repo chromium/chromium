@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace web_app {
 
-class AppBrowserControllerBrowserTest : public WebAppControllerBrowserTest {
+class AppBrowserControllerBrowserTest : public WebAppBrowserTestBase {
  public:
   AppBrowserControllerBrowserTest() = default;
   ~AppBrowserControllerBrowserTest() override = default;

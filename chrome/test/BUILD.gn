@@ -1000,8 +1000,8 @@ static_library("test_support") {
       "../browser/ui/web_applications/test/test_server_redirect_handle.h",
       "../browser/ui/web_applications/test/web_app_browsertest_util.cc",
       "../browser/ui/web_applications/test/web_app_browsertest_util.h",
-      "../browser/ui/web_applications/web_app_controller_browsertest.cc",
-      "../browser/ui/web_applications/web_app_controller_browsertest.h",
+      "../browser/ui/web_applications/web_app_browsertest_base.cc",
+      "../browser/ui/web_applications/web_app_browsertest_base.h",
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]

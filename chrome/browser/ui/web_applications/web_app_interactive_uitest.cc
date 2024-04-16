@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ namespace {
 constexpr const char kExampleURL[] = "http://example.org/";
 }
 
-class WebAppInteractiveUiTest : public WebAppControllerBrowserTest {};
+class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 
 // Disabled everywhere except ChromeOS, Mac and Windows because those are the
 // only platforms with functional display mocking at the moment. While a partial

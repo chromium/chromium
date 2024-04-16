@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -68,7 +68,7 @@ std::string LoadExtension(Profile* profile, const base::FilePath& path) {
 
 namespace web_app {
 
-class CreateShortcutBrowserTest : public WebAppControllerBrowserTest {
+class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
  public:
   webapps::AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
     SetAutoAcceptWebAppDialogForTesting(true, open_as_window);

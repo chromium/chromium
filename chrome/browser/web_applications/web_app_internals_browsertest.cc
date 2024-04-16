@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -68,7 +68,7 @@ std::string TrimLineEndings(std::string_view text) {
 
 }  // namespace
 
-class WebAppInternalsBrowserTest : public WebAppControllerBrowserTest {
+class WebAppInternalsBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppInternalsBrowserTest() = default;
   WebAppInternalsBrowserTest(const WebAppInternalsBrowserTest&) = delete;
@@ -84,12 +84,12 @@ class WebAppInternalsBrowserTest : public WebAppControllerBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
     test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
   webapps::AppId InstallWebApp(const GURL& app_url) {

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -40,7 +40,7 @@ namespace web_app {
 namespace {
 
 class SimpleInstallDialogBubbleViewBrowserTest
-    : public WebAppControllerBrowserTest,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   SimpleInstallDialogBubbleViewBrowserTest()

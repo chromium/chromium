@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
 #include "base/test/bind.h"
@@ -10,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -31,7 +31,7 @@ using web_app::test::WithCrosapiParam;
 
 namespace web_app {
 
-class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
+class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase,
                                        public WithCrosapiParam {
  public:
   PreinstalledWebAppsBrowserTest()
@@ -51,7 +51,7 @@ class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    WebAppControllerBrowserTest::SetUpDefaultCommandLine(command_line);
+    WebAppBrowserTestBase::SetUpDefaultCommandLine(command_line);
 
     // This was added by PrepareBrowserCommandLineForTests(), re-enable default
     // apps as we wish to test that they get installed.
@@ -67,7 +67,7 @@ class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
       chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
       SelectFirstBrowser();
     }
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     VerifyLacrosStatus();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

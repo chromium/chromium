@@ -15,7 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -30,13 +30,13 @@ using content::RenderFrameHost;
 
 namespace web_app {
 
-class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
+class WebAppBadgingBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppBadgingBrowserTest()
       : cross_origin_https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(cross_origin_https_server_.Start());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -122,7 +122,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     badge_manager->SetDelegate(std::move(owned_delegate));
   }
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void TearDownOnMainThread() override {
     WebAppRegistrar& registrar = provider().registrar_unsafe();
     for (const auto& app_id : registrar.GetAppIds()) {
@@ -132,7 +132,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
           .Await();
     }
 
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   void OnBadgeChanged() {

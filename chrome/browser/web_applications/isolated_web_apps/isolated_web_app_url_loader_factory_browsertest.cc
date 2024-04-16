@@ -64,8 +64,7 @@ std::u16string MessagesAsString(
   return text;
 }
 
-class IsolatedWebAppURLLoaderFactoryBrowserTest
-    : public WebAppControllerBrowserTest {
+class IsolatedWebAppURLLoaderFactoryBrowserTest : public WebAppBrowserTestBase {
  public:
   IsolatedWebAppURLLoaderFactoryBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
@@ -74,7 +73,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
  protected:
   void TearDown() override {
     SetTrustedWebBundleIdsForTesting({});
-    WebAppControllerBrowserTest::TearDown();
+    WebAppBrowserTestBase::TearDown();
   }
 
   void TrustWebBundleId() {

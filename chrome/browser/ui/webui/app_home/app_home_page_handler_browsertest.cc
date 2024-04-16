@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/mock_app_home_page.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"

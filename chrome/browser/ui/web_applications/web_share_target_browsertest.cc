@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -159,7 +159,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
 
 namespace web_app {
 
-class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
+class WebShareTargetBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL share_target_url() const {
     return embedded_test_server()->GetURL("/web_share_target/share.html");
@@ -207,7 +207,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
 
     // Replace the production sharesheet with a fake for testing.
     mojo::Remote<crosapi::mojom::Sharesheet>& remote =

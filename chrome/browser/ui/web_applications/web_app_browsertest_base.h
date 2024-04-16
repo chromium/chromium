@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_CONTROLLER_BROWSERTEST_H_
-#define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_CONTROLLER_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_BROWSERTEST_BASE_H_
 
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,16 +40,16 @@ class WebAppProvider;
 
 // Base class for tests of user interface support for web applications.
 #if BUILDFLAG(IS_CHROMEOS)
-class WebAppControllerBrowserTest : public ChromeOSBrowserUITest {
+class WebAppBrowserTestBase : public ChromeOSBrowserUITest {
 #else
-class WebAppControllerBrowserTest : public InProcessBrowserTest {
+class WebAppBrowserTestBase : public InProcessBrowserTest {
 #endif
  public:
-  WebAppControllerBrowserTest();
-  WebAppControllerBrowserTest(const WebAppControllerBrowserTest&) = delete;
-  WebAppControllerBrowserTest& operator=(const WebAppControllerBrowserTest&) =
+  WebAppBrowserTestBase();
+  WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
+  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) =
       delete;
-  ~WebAppControllerBrowserTest() override = 0;
+  ~WebAppBrowserTestBase() override = 0;
 
   WebAppProvider& provider();
 
@@ -100,7 +100,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   OsIntegrationTestOverrideImpl& os_integration_override();
 
  protected:
-  WebAppControllerBrowserTest(
+  WebAppBrowserTestBase(
       const std::vector<base::test::FeatureRef>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features);
 
@@ -139,4 +139,4 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_CONTROLLER_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_BROWSERTEST_BASE_H_

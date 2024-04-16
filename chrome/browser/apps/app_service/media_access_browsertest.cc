@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
       AccessingMicrophone(browser()->profile(), app_constants::kChromeAppId));
 }
 
-class MediaAccessWebAppsTest : public web_app::WebAppControllerBrowserTest {
+class MediaAccessWebAppsTest : public web_app::WebAppBrowserTestBase {
  public:
   MediaAccessWebAppsTest() = default;
   ~MediaAccessWebAppsTest() override = default;

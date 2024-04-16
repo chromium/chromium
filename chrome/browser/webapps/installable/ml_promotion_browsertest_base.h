@@ -36,7 +36,7 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
   ~MLPromotionBrowserTestBase() override;
 
   // PlatformBrowserTest override. For desktop based tests, these 2 functions
-  // should be in sync with the functions in WebAppControllerBrowsertest so as
+  // should be in sync with the functions in WebAppBrowserTestBase so as
   // to ensure that all dependencies are correctly handled.
   void SetUp() override;
   void SetUpOnMainThread() override;

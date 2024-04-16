@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/web_applications/web_app_metrics.h"
-
 #include <bitset>
 #include <vector>
 
@@ -22,7 +20,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -129,7 +128,7 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
 
 namespace web_app {
 
-class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
+class WebAppEngagementBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppEngagementBrowserTest() = default;
   WebAppEngagementBrowserTest(const WebAppEngagementBrowserTest&) = delete;

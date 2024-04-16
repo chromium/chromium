@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class WebAppScopeExtensionsOriginTrialBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
  public:
   WebAppScopeExtensionsOriginTrialBrowserTest() {
     feature_list_.InitAndDisableFeature(
@@ -361,7 +361,7 @@ class WebAppScopeExtensionsOriginTrialBrowserTest
   }
   ~WebAppScopeExtensionsOriginTrialBrowserTest() override = default;
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Using the test public key from docs/origin_trials_integration.md#Testing.
     command_line->AppendSwitchASCII(
@@ -369,7 +369,7 @@ class WebAppScopeExtensionsOriginTrialBrowserTest
         "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
   }
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(browser()->profile()));
   }

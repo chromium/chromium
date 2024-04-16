@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -64,7 +64,7 @@ using testing::Pair;
 // Tests for web app metrics recording.
 // Note that there are further tests of the daily metrics emitting behavior in
 // |DailyMetricsHelperTest|.
-class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
+class WebAppMetricsBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppMetricsBrowserTest() = default;
   WebAppMetricsBrowserTest(const WebAppMetricsBrowserTest&) = delete;
@@ -72,7 +72,7 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
   ~WebAppMetricsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     // Ignore real window activation which causes flakiness in tests.
     WebAppMetrics::Get(profile())->RemoveBrowserListObserverForTesting();
   }

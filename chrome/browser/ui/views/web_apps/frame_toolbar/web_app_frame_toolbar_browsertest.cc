@@ -53,7 +53,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -156,19 +156,18 @@ SkColor GetFrameColor(Browser* browser) {
 
 }  // namespace
 
-class WebAppFrameToolbarBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
   WebAppFrameToolbarBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   WebAppFrameToolbarTestHelper* helper() {
@@ -2476,12 +2475,12 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
     provider->origin_association_manager().SetFetcherForTest(
         std::move(origin_association_fetcher));
 
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     test_origin_association_fetcher_ = nullptr;
-    web_app::WebAppControllerBrowserTest::TearDownOnMainThread();
+    web_app::WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   std::string OriginAssociationFileFromAppIdentity(const GURL& app_identity) {

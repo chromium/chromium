@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -39,7 +39,7 @@ std::vector<std::string> GetContextMenuForShelfItem(const std::string& app_id) {
   return items_future.Take();
 }
 
-using LacrosWebAppBrowserTest = WebAppControllerBrowserTest;
+using LacrosWebAppBrowserTest = WebAppBrowserTestBase;
 
 // Test that for a PWA with a file handler, App info from the Shelf context menu
 // launches the Settings SWA. Regression test for https://crbug.com/1315958.
