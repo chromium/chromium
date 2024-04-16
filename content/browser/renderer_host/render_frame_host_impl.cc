@@ -6426,9 +6426,7 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
   // code in-process, the security invariant cannot be enforced, therefore it
   // should be skipped in that case.
   if (webui_bindings != BINDINGS_POLICY_NONE &&
-      !RenderProcessHost::run_renderer_in_process() &&
-      base::FeatureList::IsEnabled(
-          features::kEnsureAllowBindingsIsAlwaysForWebUI)) {
+      !RenderProcessHost::run_renderer_in_process()) {
     ProcessLock process_lock = GetProcess()->GetProcessLock();
     if (!process_lock.is_locked_to_site() ||
         !base::Contains(URLDataManagerBackend::GetWebUISchemes(),

@@ -168,13 +168,6 @@ BASE_FEATURE(kEnableDevToolsJsErrorReporting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-// TODO(https://crbug.com/1442346): Feature flag to guard extra CHECKs put in
-// place to ensure that the AllowBindings API on RenderFrameHost is not called
-// for documents outside of WebUI ones.
-BASE_FEATURE(kEnsureAllowBindingsIsAlwaysForWebUI,
-             "EnsureAllowBindingsIsAlwaysForWebUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
 // experimental Content Security Policy features ('navigate-to').
