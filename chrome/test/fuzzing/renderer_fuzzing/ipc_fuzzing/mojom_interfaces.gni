@@ -3,7 +3,7 @@
 # defined at https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=740;bpv=1;bpt=1
 # At some point, this will be automatically generated based on what's contained
 # in this function. This only demonstrates how this could be done.
-blink_browser_exposed_interfaces = [
+context_browser_exposed_interfaces = [
   [
     "//third_party/blink/public/mojom/interest_group/ad_auction_service.mojom",
     "blink.mojom.AdAuctionService",
@@ -37,6 +37,11 @@ blink_browser_exposed_interfaces = [
   [
     "//third_party/blink/public/mojom/blob/blob_url_store.mojom",
     "blink.mojom.BlobURLStore",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom",
+    "blink.mojom.BroadcastChannelProvider",
     "Remote",
   ],
   [
@@ -135,6 +140,11 @@ blink_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom",
+    "blink.mojom.FileBackedBlobFactory",
+    "Remote",
+  ],
+  [
     "//third_party/blink/public/mojom/choosers/file_chooser.mojom",
     "blink.mojom.FileChooser",
     "Remote",
@@ -225,13 +235,13 @@ blink_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/frame/frame.mojom",
-    "blink.mojom.NonAssociatedLocalFrameHost",
+    "//third_party/blink/public/mojom/prerender/prerender.mojom",
+    "blink.mojom.NoStatePrefetchProcessor",
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/prerender/prerender.mojom",
-    "blink.mojom.NoStatePrefetchProcessor",
+    "//third_party/blink/public/mojom/frame/frame.mojom",
+    "blink.mojom.NonAssociatedLocalFrameHost",
     "Remote",
   ],
   [
@@ -374,6 +384,178 @@ blink_browser_exposed_interfaces = [
     "blink.mojom.WebUsbService",
     "Remote",
   ],
+  [
+    "//services/device/public/mojom/battery_monitor.mojom",
+    "device.mojom.BatteryMonitor",
+    "Remote",
+  ],
+  [
+    "//device/gamepad/public/mojom/gamepad.mojom",
+    "device.mojom.GamepadHapticsManager",
+    "Remote",
+  ],
+  [
+    "//device/gamepad/public/mojom/gamepad.mojom",
+    "device.mojom.GamepadMonitor",
+    "Remote",
+  ],
+
+  # [
+  #   "//services/device/public/mojom/pressure_manager.mojom",
+  #   "device.mojom.PressureManager",
+  #   "Remote",
+  # ],
+  [
+    "//device/vr/public/mojom/vr_service.mojom",
+    "device.mojom.VRService",
+    "Remote",
+  ],
+  [
+    "//services/device/public/mojom/vibration_manager.mojom",
+    "device.mojom.VibrationManager",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/handwriting/handwriting.mojom",
+    "handwriting.mojom.HandwritingRecognitionService",
+    "Remote",
+  ],
+  [
+    "//media/capture/mojom/image_capture.mojom",
+    "media.mojom.ImageCapture",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/key_system_support.mojom",
+    "media.mojom.KeySystemSupport",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/renderer_extensions.mojom",
+    "media.mojom.MediaFoundationRendererNotifier",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/media_metrics_provider.mojom",
+    "media.mojom.MediaMetricsProvider",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/media_player.mojom",
+    "media.mojom.MediaPlayerObserverClient",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/remoting.mojom",
+    "media.mojom.RemoterFactory",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/speech_recognition.mojom",
+    "media.mojom.SpeechRecognitionClientBrowserInterface",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/speech_recognition.mojom",
+    "media.mojom.SpeechRecognitionContext",
+    "Remote",
+  ],
+  [
+    "//media/capture/mojom/video_capture.mojom",
+    "media.mojom.VideoCaptureHost",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/video_decode_perf_history.mojom",
+    "media.mojom.VideoDecodePerfHistory",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/webrtc_video_perf.mojom",
+    "media.mojom.WebrtcVideoPerfHistory",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/webrtc_video_perf.mojom",
+    "media.mojom.WebrtcVideoPerfRecorder",
+    "Remote",
+  ],
+  [
+    "//media/midi/midi_service.mojom",
+    "midi.mojom.MidiSessionProvider",
+    "Remote",
+  ],
+  [
+    "//components/ml/mojom/ml_service.mojom",
+    "ml.model_loader.mojom.MLService",
+    "Remote",
+  ],
+  [
+    "//content/common/input/input_injector.mojom",
+    "content.mojom.InputInjector",
+    "Remote",
+  ],
+  [
+    "//services/network/public/mojom/mdns_responder.mojom",
+    "network.mojom.MdnsResponder",
+    "Remote",
+  ],
+  [
+    "//services/network/public/mojom/p2p.mojom",
+    "network.mojom.P2PSocketManager",
+    "Remote",
+  ],
+  [
+    "//services/network/public/mojom/restricted_cookie_manager.mojom",
+    "network.mojom.RestrictedCookieManager",
+    "Remote",
+  ],
+  [
+    "//services/network/public/mojom/trust_tokens.mojom",
+    "network.mojom.TrustTokenQueryAnswerer",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/payments/payment_credential.mojom",
+    "payments.mojom.PaymentCredential",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/payments/payment_app.mojom",
+    "payments.mojom.PaymentManager",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/payments/payment_request.mojom",
+    "payments.mojom.PaymentRequest",
+    "Remote",
+  ],
+  [
+    "//services/shape_detection/public/mojom/barcodedetection_provider.mojom",
+    "shape_detection.mojom.BarcodeDetectionProvider",
+    "Remote",
+  ],
+  [
+    "//services/shape_detection/public/mojom/facedetection_provider.mojom",
+    "shape_detection.mojom.FaceDetectionProvider",
+    "Remote",
+  ],
+  [
+    "//services/shape_detection/public/mojom/textdetection.mojom",
+    "shape_detection.mojom.TextDetection",
+    "Remote",
+  ],
+  [
+    "//services/metrics/public/mojom/ukm_interface.mojom",
+    "ukm.mojom.UkmRecorderFactory",
+    "Remote",
+  ],
+
+  #[
+  #  "//services/webnn/public/mojom/webnn_context_provider.mojom",
+  #  "webnn.mojom.WebNNContextProvider",
+  #  "Remote",
+  #],
 ]
 
 process_browser_exposed_interfaces = [

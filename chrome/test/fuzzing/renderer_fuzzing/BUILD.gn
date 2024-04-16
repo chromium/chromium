@@ -38,7 +38,7 @@ if (!is_android) {
       rebase_path("${target_gen_dir}/testcase.h", root_build_dir),
       "-c",
     ]
-    foreach(interface, blink_browser_exposed_interfaces) {
+    foreach(interface, context_browser_exposed_interfaces) {
       args += [ interface[1] ]
     }
     args += [ "-p" ]
@@ -51,38 +51,45 @@ if (!is_android) {
       "renderer_in_process_mojolpm_fuzzer") {
     sources = [ "renderer_in_process_mojolpm_fuzzer.cc" ]
 
-    interfaces = blink_browser_exposed_interfaces
+    interfaces = context_browser_exposed_interfaces
     interfaces += process_browser_exposed_interfaces
+
+    _interfaces_deps = [
+      "//components/metrics/public/mojom:single_sample_metrics_mojo_bindings_mojolpm",
+      "//components/ml/mojom:mojom_mojolpm",
+      "//content/common:mojo_bindings_mojolpm",
+      "//device/gamepad/public/mojom:mojom_mojolpm",
+      "//device/vr/public/mojom:vr_service_mojolpm",
+      "//media/capture/mojom:image_capture_mojolpm",
+      "//media/capture/mojom:video_capture_mojolpm",
+      "//media/midi:mojo_mojolpm",
+      "//media/mojo/mojom:mojom_mojolpm",
+      "//media/mojo/mojom:remoting_mojolpm",
+      "//services/device/public/mojom:mojom_mojolpm",
+      "//services/metrics/public/mojom:mojom_mojolpm",
+      "//services/network/public/mojom:mojom_mojolpm",
+      "//services/resource_coordinator/public/mojom:mojom_mojolpm",
+      "//services/shape_detection/public/mojom:mojom_mojolpm",
+      "//services/webnn/public/mojom:mojom_mojolpm",
+      "//third_party/blink/public/mojom:android_mojo_bindings_mojolpm",
+      "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_mojolpm",
+      "//third_party/blink/public/mojom:mojom_core_mojolpm",
+      "//third_party/blink/public/mojom:mojom_modules_mojolpm",
+      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+      "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_mojolpm",
+    ]
 
     deps = [
       ":renderer_in_process_mojolpm_fuzzer_generator",
       "//chrome/test:test_support",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
-      "//components/metrics/public/mojom:single_sample_metrics_mojo_bindings_mojolpm",
-      "//content/common:mojo_bindings_mojolpm",
       "//content/test/fuzzer:mojolpm_fuzzer_support",
-      "//media/mojo/mojom:mojom_mojolpm",
-      "//services/resource_coordinator/public/mojom:mojom_mojolpm",
       "//testing/libfuzzer:renderer_fuzzing",
       "//testing/libfuzzer/proto:url_proto_converter",
       "//third_party/blink/public/common:storage_key_proto_converter",
-      "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:mojom_core_mojolpm",
-      "//third_party/blink/public/mojom:mojom_modules_mojolpm",
-      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-      "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_mojolpm",
     ]
+    deps += _interfaces_deps
 
-    proto_deps = [
-      "//components/metrics/public/mojom:single_sample_metrics_mojo_bindings_mojolpm",
-      "//content/common:mojo_bindings_mojolpm",
-      "//media/mojo/mojom:mojom_mojolpm",
-      "//services/resource_coordinator/public/mojom:mojom_mojolpm",
-      "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:mojom_core_mojolpm",
-      "//third_party/blink/public/mojom:mojom_modules_mojolpm",
-      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-      "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_mojolpm",
-    ]
+    proto_deps = _interfaces_deps
   }
 }
