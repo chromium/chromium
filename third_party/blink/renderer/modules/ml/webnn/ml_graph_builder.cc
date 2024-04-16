@@ -962,8 +962,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
 
   auto conv2d_attributes = ConvertToConv2dAttributes(options);
   if (!conv2d_attributes.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      conv2d_attributes.error());
+    exception_state.ThrowTypeError(conv2d_attributes.error());
     return nullptr;
   }
 
@@ -971,9 +970,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
       ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
       std::move(conv2d_attributes.value()));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   // Create conv2d operator and its output operand. Connect the conv2d operator
@@ -985,8 +982,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
       this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), conv2d);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   conv2d->Connect(std::move(inputs), {output.value()});
