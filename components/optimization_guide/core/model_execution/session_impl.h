@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -33,53 +34,6 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
     const google::protobuf::MessageLite&,
     std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultCallback)>;
-
-class SafetyConfig final {
- public:
-  SafetyConfig();
-  explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
-  SafetyConfig(SafetyConfig&&);
-  SafetyConfig& operator=(SafetyConfig&&);
-  ~SafetyConfig();
-
-  bool IsMissingSafetyInfo(bool has_safety_info) const;
-  std::optional<uint32_t> TokenInterval() const;
-
-  // Whether the text is in a language not supported by the safety classifier,
-  // or the language could not be detected despite the classifier requiring one
-  // or more specific languages.
-  bool IsTextInUnsupportedOrUndeterminedLanguage(
-      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
-
-  // Whether scores indicate the output text is unsafe.
-  bool IsUnsafeText(
-      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
-
-  // The number of request safety checks to perform.
-  int NumRequestChecks() const;
-
-  // Constructs input for a request safety check.
-  // check_idx must be < NumRequestChecks().
-  std::optional<SubstitutionResult> GetRequestCheckInput(
-      int check_idx,
-      const google::protobuf::MessageLite& request_metadata) const;
-
-  // Evaluates scores for a request safety check.
-  // check_idx must be < NumRequestChecks().
-  bool IsRequestUnsafe(
-      int check_idx,
-      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
-
-  // Whether this config has a special raw output check.
-  bool HasRawOutputCheck() const;
-
-  // Get the input for the raw output check.
-  std::optional<SubstitutionResult> GetRawOutputCheckInput(
-      const std::string&) const;
-
- private:
-  std::optional<proto::FeatureTextSafetyConfiguration> proto_;
-};
 
 // Session implementation that uses either the on device model or the server
 // model.

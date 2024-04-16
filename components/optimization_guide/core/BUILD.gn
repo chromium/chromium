@@ -250,6 +250,8 @@ static_library("core") {
       "model_execution/redactor.h",
       "model_execution/repetition_checker.cc",
       "model_execution/repetition_checker.h",
+      "model_execution/safety_config.cc",
+      "model_execution/safety_config.h",
       "model_execution/safety_model_info.cc",
       "model_execution/safety_model_info.h",
       "model_execution/session_impl.cc",
