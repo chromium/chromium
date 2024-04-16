@@ -60,6 +60,7 @@ public interface TabManagementDelegate {
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *     when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
+     * @param appHeaderHeightSupplier A supplier for the app header height, in px.
      * @return The {@link TabSwitcherLayout}.
      */
     Layout createTabSwitcherLayout(
@@ -70,7 +71,8 @@ public interface TabManagementDelegate {
             BrowserControlsStateProvider browserControlsStateProvider,
             TabSwitcher tabSwitcher,
             ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator);
+            ScrimCoordinator scrimCoordinator,
+            ObservableSupplier<Float> appHeaderHeightSupplier);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.

@@ -10,6 +10,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -57,6 +59,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
+
+    private ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
+    private Callback<Boolean> mDesktopWindowModeSupplierCallback;
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
@@ -142,6 +147,22 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
 
+        mAppHeaderHeightSupplier = new ObservableSupplierImpl<>();
+        appHeaderCoordinatorSupplier.onAvailable(
+                appHeaderCoordinator -> {
+                    mDesktopWindowModeSupplier = appHeaderCoordinator;
+                    mDesktopWindowModeSupplierCallback =
+                            isInDesktopWindow -> {
+                                var tabStripHeight =
+                                        ViewUtils.dpToPx(
+                                                mHost.getContext(),
+                                                mTabStripLayoutHelperManager.getHeight());
+                                var appHeaderHeight = isInDesktopWindow ? tabStripHeight : 0f;
+                                mAppHeaderHeightSupplier.set(appHeaderHeight);
+                            };
+                    mDesktopWindowModeSupplier.addObserver(mDesktopWindowModeSupplierCallback);
+                });
+
         setNextLayout(null, true);
     }
 
@@ -158,6 +179,10 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             removeObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
             mTabStripLayoutHelperManager.destroy();
             mTabStripLayoutHelperManager = null;
+        }
+
+        if (mDesktopWindowModeSupplier != null) {
+            mDesktopWindowModeSupplier.removeObserver(mDesktopWindowModeSupplierCallback);
         }
     }
 

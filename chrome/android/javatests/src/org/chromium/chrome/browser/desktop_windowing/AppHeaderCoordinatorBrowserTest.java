@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.desktop_windowing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -30,11 +32,15 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
@@ -44,6 +50,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Browser test for {@link AppHeaderCoordinator} */
@@ -72,13 +79,14 @@ public class AppHeaderCoordinatorBrowserTest {
 
         doAnswer(args -> mWidestUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
         doAnswer(args -> mWindowRect).when(mInsetsRectProvider).getWindowRect();
+
+        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
     public void testTabStripHeightChangeForTabStripLayoutOptimization() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         // Configure mock InsetsRectProvider.
@@ -122,9 +130,101 @@ public class AppHeaderCoordinatorBrowserTest {
                 /* isInDesktopWindow= */ true, /* isActivityFocused= */ false);
     }
 
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void testEnterTabSwitcherInDesktopWindow() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Enter desktop windowing mode.
+        triggerDesktopWindowingModeChange(true);
+        // Enter the tab switcher.
+        TabUiTestHelper.enterTabSwitcher(activity);
+
+        var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
+        var tabSwitcherLayout =
+                ((TabSwitcherLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var tabSwitcherContainerView =
+                tabSwitcherLayout
+                        .getTabSwitcherForTesting()
+                        .getController()
+                        .getTabSwitcherContainer();
+        float stripHeightPx =
+                ViewUtils.dpToPx(
+                        activity.getApplicationContext(),
+                        activity.getLayoutManager().getStripLayoutHelperManager().getHeight());
+        assertTrue(
+                "Tab switcher container view y-offset should be non-zero.",
+                tabSwitcherContainerView.getY() != 0);
+        assertEquals(
+                "Tab switcher container view y-offset should match the tab strip height.",
+                stripHeightPx,
+                tabSwitcherContainerView.getY(),
+                0f);
+
+        // Exit desktop windowing mode.
+        triggerDesktopWindowingModeChange(false);
+        assertEquals(
+                "Tab switcher container view y-offset should be zero.",
+                0,
+                tabSwitcherContainerView.getY(),
+                0f);
+        // Exit tab switcher.
+        TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void testEnterDesktopWindowWithTabSwitcherActive() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Enter the tab switcher. Desktop windowing mode is not active initially.
+        TabUiTestHelper.enterTabSwitcher(activity);
+
+        var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
+        var tabSwitcherLayout =
+                ((TabSwitcherLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var tabSwitcherContainerView =
+                tabSwitcherLayout
+                        .getTabSwitcherForTesting()
+                        .getController()
+                        .getTabSwitcherContainer();
+        assertEquals(
+                "Tab switcher container view y-offset should be zero.",
+                0,
+                tabSwitcherContainerView.getY(),
+                0.0);
+
+        // Enter desktop windowing mode while the tab switcher is visible.
+        triggerDesktopWindowingModeChange(true);
+
+        float stripHeightPx =
+                ViewUtils.dpToPx(
+                        activity.getApplicationContext(),
+                        activity.getLayoutManager().getStripLayoutHelperManager().getHeight());
+        assertTrue(
+                "Tab switcher container view y-offset should be non-zero.",
+                tabSwitcherContainerView.getY() != 0);
+        assertEquals(
+                "Tab switcher container view y-offset should match the tab strip height.",
+                stripHeightPx,
+                tabSwitcherContainerView.getY(),
+                0f);
+
+        // Exit desktop windowing mode.
+        triggerDesktopWindowingModeChange(false);
+        assertEquals(
+                "Tab switcher container view y-offset should be zero.",
+                0,
+                tabSwitcherContainerView.getY(),
+                0f);
+        // Exit tab switcher.
+        TabUiTestHelper.clickFirstCardFromTabSwitcher(activity);
+    }
+
     private void doTestOnTopResumedActivityChanged(
             boolean isInDesktopWindow, boolean isActivityFocused) {
-        mActivityTestRule.startMainActivityOnBlankPage();
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
@@ -179,6 +279,19 @@ public class AppHeaderCoordinatorBrowserTest {
                             "Bookmark button tint is incorrect.",
                             toolbarTablet.getBookmarkButtonForTesting().getImageTintList(),
                             Matchers.is(omniboxIconTint));
+                });
+    }
+
+    private void triggerDesktopWindowingModeChange(boolean isInDesktopWindow) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var desktopWindowModeSupplier =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getRootUiCoordinatorForTesting()
+                                    .getAppHeaderCoordinatorSupplier()
+                                    .get();
+                    desktopWindowModeSupplier.set(isInDesktopWindow);
                 });
     }
 }
