@@ -10,14 +10,15 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -44,30 +45,6 @@
 namespace resource_attribution {
 
 namespace {
-
-// Returns true if `resource_context` refers to a node that's been removed from
-// the PM graph.
-bool IsDeadContext(const ResourceContext& resource_context) {
-  return absl::visit(base::Overloaded{
-                         [](const FrameContext& context) {
-                           return context.GetFrameNode() == nullptr;
-                         },
-                         [](const PageContext& context) {
-                           return context.GetPageNode() == nullptr;
-                         },
-                         [](const ProcessContext& context) {
-                           return context.GetProcessNode() == nullptr;
-                         },
-                         [](const WorkerContext& context) {
-                           return context.GetWorkerNode() == nullptr;
-                         },
-                         [](const OriginInPageContext& context) {
-                           return context.GetPageContext().GetPageNode() ==
-                                  nullptr;
-                         },
-                     },
-                     resource_context);
-}
 
 // CHECK's that `result` obeys all constraints: the start and end timestamps
 // form a positive interval and `cumulative_cpu` will fit into that interval.
@@ -128,8 +105,10 @@ void CPUMeasurementMonitor::SetDelegateFactoryForTesting(
 void CPUMeasurementMonitor::StartMonitoring(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!graph_);
+  CHECK(dead_measurement_results_.empty());
   graph_ = graph;
   graph_->AddFrameNodeObserver(this);
+  graph_->AddPageNodeObserver(this);
   graph_->AddProcessNodeObserver(this);
   graph_->AddWorkerNodeObserver(this);
 
@@ -148,7 +127,9 @@ void CPUMeasurementMonitor::StopMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(graph_);
   cpu_measurement_map_.clear();
+  dead_measurement_results_.clear();
   graph_->RemoveFrameNodeObserver(this);
+  graph_->RemovePageNodeObserver(this);
   graph_->RemoveProcessNodeObserver(this);
   graph_->RemoveWorkerNodeObserver(this);
   graph_ = nullptr;
@@ -159,23 +140,64 @@ bool CPUMeasurementMonitor::IsMonitoring() const {
   return graph_;
 }
 
-QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements() {
+void CPUMeasurementMonitor::RepeatingQueryStarted(internal::QueryId query_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsMonitoring());
+  // Start with an empty dead measurement list for this query.
+  const auto [_, inserted] =
+      dead_measurement_results_.try_emplace(query_id, DeadContextResultList{});
+  CHECK(inserted);
+}
+
+void CPUMeasurementMonitor::RepeatingQueryStopped(internal::QueryId query_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsMonitoring());
+  size_t erased = dead_measurement_results_.erase(query_id);
+  CHECK_EQ(erased, 1u);
+}
+
+bool CPUMeasurementMonitor::IsTrackingQueryForTesting(
+    internal::QueryId query_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::Contains(dead_measurement_results_, query_id);
+}
+
+size_t CPUMeasurementMonitor::GetDeadContextCountForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  size_t count = 0;
+  for (const auto& [_, result_list] : dead_measurement_results_) {
+    count += result_list.size();
+  }
+  return count;
+}
+
+QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
+    std::optional<internal::QueryId> query_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateAllCPUMeasurements();
   QueryResultMap results;
-  for (const auto& [context, result] : measurement_results_) {
-    ValidateCPUTimeResult(result);
-    results.emplace(context, QueryResults{.cpu_time_result = result});
+  for (const auto& [context, result_ptr] : measurement_results_) {
+    CHECK(result_ptr);
+    ValidateCPUTimeResult(result_ptr->data);
+    results.emplace(context, QueryResults{.cpu_time_result = result_ptr->data});
   }
 
-  // After a node is deleted its measurements should only be kept until used
-  // for one query result. This was that query.
-  // TODO(http://crbug.com/333254816): That means multiple queries measuring the
-  // same node now race to see who gets the result.
-  std::erase_if(measurement_results_,
-                [](const std::pair<ResourceContext, CPUTimeResult>& entry) {
-                  return IsDeadContext(entry.first);
-                });
+  if (query_id.has_value()) {
+    // Include measurements for nodes that were deleted since the last time this
+    // query got an update. This drops the query's reference to the
+    // ScopedCPUTimeResultPtr so the result won't be sent again for this query,
+    // and will be deleted once all queries have dropped their reference.
+    auto it = dead_measurement_results_.find(query_id.value());
+    CHECK(it != dead_measurement_results_.end());
+    DeadContextResultList dead_results;
+    std::swap(it->second, dead_results);
+    for (const auto& [context, result_ptr] : dead_results) {
+      CHECK(result_ptr);
+      ValidateCPUTimeResult(result_ptr->data);
+      results.emplace(context,
+                      QueryResults{.cpu_time_result = result_ptr->data});
+    }
+  }
 
   return results;
 }
@@ -196,6 +218,7 @@ void CPUMeasurementMonitor::OnBeforeFrameNodeRemoved(
   // its final CPU usage is attributed to it before it's removed.
   UpdateCPUMeasurements(frame_node->GetProcessNode(),
                         GraphChangeRemoveFrame(frame_node));
+  SaveFinalMeasurements({frame_node->GetResourceContext()});
 }
 
 void CPUMeasurementMonitor::OnURLChanged(const FrameNode* frame_node,
@@ -206,6 +229,27 @@ void CPUMeasurementMonitor::OnURLChanged(const FrameNode* frame_node,
   // before the navigation committed is attributed to the old origin.
   UpdateCPUMeasurements(frame_node->GetProcessNode(),
                         GraphChangeUpdateURL(frame_node, previous_value));
+}
+
+void CPUMeasurementMonitor::OnBeforePageNodeRemoved(const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // No need to call UpdateCPUMeasurements() since a measurement was taken when
+  // the last frame was removed from the page.
+  const PageContext& page_context = page_node->GetResourceContext();
+  std::vector<ResourceContext> contexts{page_context};
+  // Find all OriginInPageContexts for this page.
+  // TODO(crbug.com/333112603): OriginInPageContext results for opaque origins
+  // could also be deleted when the PageNode no longer has any frames for the
+  // given origin. Non-opaque origins should be kept for the lifetime of the
+  // page, because new frames for the same origin could be created.
+  for (const auto& [context, _] : measurement_results_) {
+    auto origin_context = AsOptionalContext<OriginInPageContext>(context);
+    if (origin_context.has_value() &&
+        origin_context->GetPageContext() == page_context) {
+      contexts.push_back(std::move(origin_context.value()));
+    }
+  }
+  SaveFinalMeasurements(contexts);
 }
 
 void CPUMeasurementMonitor::OnProcessLifetimeChange(
@@ -224,6 +268,13 @@ void CPUMeasurementMonitor::OnProcessLifetimeChange(
 void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // On most platforms this will get no updates as the OS process is no longer
+  // running. Windows and Fuchsia will return final measurements of a process
+  // after it exits.
+  // TODO(crbug.com/325330345): Capture the full final measurement reported
+  // through ChildProcessTerminationInfo::cpu_usage.
+  UpdateCPUMeasurements(process_node);
+  SaveFinalMeasurements({process_node->GetResourceContext()});
   cpu_measurement_map_.erase(process_node);
 }
 
@@ -243,6 +294,7 @@ void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
   // its final CPU usage is attributed to it before it's removed.
   UpdateCPUMeasurements(worker_node->GetProcessNode(),
                         GraphChangeRemoveWorker(worker_node));
+  SaveFinalMeasurements({worker_node->GetResourceContext()});
 }
 
 void CPUMeasurementMonitor::OnClientFrameAdded(
@@ -448,12 +500,16 @@ void CPUMeasurementMonitor::ApplySequentialDelta(const ResourceContext& context,
                                                  const CPUTimeResult& delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ValidateCPUTimeResult(delta);
-  auto [it, inserted] = measurement_results_.try_emplace(context, delta);
+  auto [it, inserted] =
+      measurement_results_.try_emplace(context, ScopedCPUTimeResultPtr());
   if (inserted) {
     // First result for `context`, use `delta` unchanged.
+    it->second =
+        base::MakeRefCounted<base::RefCountedData<CPUTimeResult>>(delta);
     return;
   }
-  CPUTimeResult& result = it->second;
+  CHECK(it->second);
+  CPUTimeResult& result = it->second->data;
   ValidateCPUTimeResult(result);
   CHECK_EQ(result.metadata.algorithm, delta.metadata.algorithm);
   CHECK_LE(result.metadata.measurement_time, delta.start_time);
@@ -469,13 +525,16 @@ void CPUMeasurementMonitor::ApplyOverlappingDelta(
     const CPUTimeResult& delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ValidateCPUTimeResult(delta);
-  auto [it, inserted] = measurement_results_.try_emplace(context, delta);
+  auto [it, inserted] =
+      measurement_results_.try_emplace(context, ScopedCPUTimeResultPtr());
   if (inserted) {
     // First result for `context`, use `delta` with correct algorithm for pages.
-    it->second.metadata.algorithm = MeasurementAlgorithm::kSum;
+    it->second =
+        base::MakeRefCounted<base::RefCountedData<CPUTimeResult>>(delta);
+    it->second->data.metadata.algorithm = MeasurementAlgorithm::kSum;
     return;
   }
-  CPUTimeResult& result = it->second;
+  CPUTimeResult& result = it->second->data;
   ValidateCPUTimeResult(result);
   CHECK_EQ(result.metadata.algorithm, MeasurementAlgorithm::kSum);
   result.metadata.measurement_time = std::max(result.metadata.measurement_time,
@@ -487,13 +546,34 @@ void CPUMeasurementMonitor::ApplyOverlappingDelta(
   ValidateCPUTimeResult(result);
 }
 
+void CPUMeasurementMonitor::SaveFinalMeasurements(
+    const std::vector<ResourceContext>& contexts) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& context : contexts) {
+    auto it = measurement_results_.find(context);
+    if (it == measurement_results_.end()) {
+      continue;
+    }
+    // Copy the scoped_refptr to result list for every existing query_id.
+    const ScopedCPUTimeResultPtr& result_ptr = it->second;
+    for (auto& [query_id, result_list] : dead_measurement_results_) {
+      result_list.emplace_back(context, result_ptr);
+    }
+    // Drop the scoped_refptr from the live measurement results. Now there's one
+    // reference for every query, and the CPUTimeResult will be deleted once all
+    // queries have gotten the result.
+    measurement_results_.erase(it);
+  }
+}
+
 base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
     const ResourceContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict dict;
   const auto it = measurement_results_.find(context);
   if (it != measurement_results_.end()) {
-    const CPUTimeResult& result = it->second;
+    CHECK(it->second);
+    const CPUTimeResult& result = it->second->data;
     const base::TimeDelta measurement_interval =
         result.metadata.measurement_time - result.start_time;
     dict.Merge(DescribeResultMetadata(result.metadata));

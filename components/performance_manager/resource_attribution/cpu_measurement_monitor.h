@@ -8,14 +8,18 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
@@ -24,6 +28,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
+#include "components/performance_manager/resource_attribution/query_params.h"
 
 class GURL;
 
@@ -37,6 +42,7 @@ namespace resource_attribution {
 // components/performance_manager/README.md
 class CPUMeasurementMonitor
     : public FrameNode::ObserverDefaultImpl,
+      public PageNode::ObserverDefaultImpl,
       public ProcessNode::ObserverDefaultImpl,
       public WorkerNode::ObserverDefaultImpl,
       public performance_manager::NodeDataDescriberDefaultImpl {
@@ -60,17 +66,36 @@ class CPUMeasurementMonitor
   // Returns true if currently monitoring.
   bool IsMonitoring() const;
 
+  // Creates an empty list in `dead_measurement_results_` to store results from
+  // deleted nodes for `query_id`.
+  void RepeatingQueryStarted(internal::QueryId query_id);
+
+  // Removes all `dead_measurement_results_` that are waiting for `query_id`.
+  void RepeatingQueryStopped(internal::QueryId query_id);
+
+  // Returns true if `dead_measurement_results_` contains `query_id`.
+  bool IsTrackingQueryForTesting(internal::QueryId query_id) const;
+
+  // Returns the total number of ResourceContexts tracked in
+  // `dead_measurement_results_`. Contexts can be tracked more than once.
+  size_t GetDeadContextCountForTesting() const;
+
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
   // all pages containing them. Each QueryResults object will contain a
-  // CPUTimeResult.
-  QueryResultMap UpdateAndGetCPUMeasurements();
+  // CPUTimeResult. `query_id` is the ID of the ScopedResourceUsageQuery that
+  // made the request, or nullopt for a one-shot query.
+  QueryResultMap UpdateAndGetCPUMeasurements(
+      std::optional<internal::QueryId> query_id = std::nullopt);
 
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnURLChanged(const FrameNode* frame_node,
                     const GURL& previous_value) override;
+
+  // PageNode::Observer:
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // ProcessNode::Observer:
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
@@ -184,6 +209,10 @@ class CPUMeasurementMonitor
   void ApplyOverlappingDelta(const ResourceContext& context,
                              const CPUTimeResult& delta);
 
+  // Moves the measurements for `contexts` from `measurement_results_` to
+  // `dead_measurement_results_`.
+  void SaveFinalMeasurements(const std::vector<ResourceContext>& contexts);
+
   // Returns description of the most recent measurement of `context` for
   // NodeDataDescriber, or an empty dict if there is none.
   base::Value::Dict DescribeContextData(const ResourceContext& context) const;
@@ -194,8 +223,26 @@ class CPUMeasurementMonitor
   std::map<const ProcessNode*, CPUMeasurement> cpu_measurement_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // A map from resource contexts to the estimated CPU usage of each.
-  std::map<ResourceContext, CPUTimeResult> measurement_results_
+  using ScopedCPUTimeResultPtr =
+      scoped_refptr<base::RefCountedData<CPUTimeResult>>;
+
+  // A map from live resource contexts to the estimated CPU usage of each,
+  // updated whenever UpdateCPUMeasurements() is called.
+  std::map<ResourceContext, ScopedCPUTimeResultPtr> measurement_results_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The final measurements of dead resource contexts (eg. the FrameContext of a
+  // FrameNode that's been deleted). The CPUTimeResult for each context is no
+  // longer updated, and will be deleted after it's reported to each
+  // ScopedResourceUsageQuery that existed when the context was deleted.
+  //
+  // TODO(crbug.com/333112603): Not every ScopedResourceUsageQuery wants results
+  // for each context. Currently all results are reported to every query, and
+  // QueryScheduler filters out the ones the query doesn't need. For efficiency
+  // CPUMeasurementMonitor should only report the results the query needs.
+  using DeadContextResultList =
+      std::vector<std::pair<ResourceContext, ScopedCPUTimeResultPtr>>;
+  std::map<internal::QueryId, DeadContextResultList> dead_measurement_results_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Factory that creates CPUMeasurementDelegate objects for each ProcessNode

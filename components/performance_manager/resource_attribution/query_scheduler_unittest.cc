@@ -10,14 +10,19 @@
 
 #include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
+#include "base/location.h"
+#include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/performance_manager/embedder/graph_features.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
@@ -36,6 +41,8 @@
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace resource_attribution::internal {
 
@@ -58,14 +65,16 @@ std::unique_ptr<QueryParams> CreateQueryParams(
 }
 
 // Waits for a result from `query` and tests that it matches `matcher`.
-void ExpectQueryResult(QueryScheduler* scheduler,
-                       QueryParams* query,
-                       auto matcher) {
+void ExpectQueryResult(
+    QueryScheduler* scheduler,
+    QueryParams* query,
+    auto matcher,
+    const base::Location& location = base::Location::Current()) {
   base::RunLoop run_loop;
   scheduler->RequestResults(
       *query,
       base::BindLambdaForTesting([&](const QueryResultMap& query_results) {
-        EXPECT_THAT(query_results, matcher);
+        EXPECT_THAT(query_results, matcher) << location.ToString();
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -137,6 +146,24 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
                         {ResourceContextTypeId::ForType<ProcessContext>()});
   scheduler->AddScopedQuery(cpu_memory_query.get());
 
+  // Simulate a query that uses Start() to request a measurement every minute.
+  // The other queries in this test simulate queries that call QueryOnce() after
+  // a minute without calling Start().
+  auto repeating_query = CreateQueryParams(
+      {ResourceType::kCPUTime}, {mock_graph.process->GetResourceContext()});
+  scheduler->AddScopedQuery(repeating_query.get());
+  scheduler->StartRepeatingQuery(repeating_query.get());
+
+  // Only the repeating query should have a QueryId.
+  EXPECT_EQ(no_resource_query->GetIdForTesting(), std::nullopt);
+  EXPECT_EQ(memory_query->GetIdForTesting(), std::nullopt);
+  EXPECT_EQ(cpu_memory_query->GetIdForTesting(), std::nullopt);
+  std::optional<QueryId> repeating_query_id =
+      repeating_query->GetIdForTesting();
+  ASSERT_TRUE(repeating_query_id.has_value());
+  EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsTrackingQueryForTesting(
+      repeating_query_id.value()));
+
   // Allow some time to pass to measure.
   task_env().FastForwardBy(base::Minutes(1));
 
@@ -157,15 +184,305 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
               mock_graph.other_process->GetResourceContext(), _, _),
           ResultForContextMatchesAll<CPUTimeResult, MemorySummaryResult>(
               mock_graph.browser_process->GetResourceContext(), _, _)));
+  ExpectQueryResult(scheduler, repeating_query.get(),
+                    ElementsAre(ResultForContextMatches<CPUTimeResult>(
+                        mock_graph.process->GetResourceContext(), _)));
 
   // Removing non-CPU query should not affect CPU monitoring.
   scheduler->RemoveScopedQuery(std::move(no_resource_query));
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 
   // CPU monitoring should not stop until the last CPU query is deleted.
+  scheduler->RemoveScopedQuery(std::move(repeating_query));
+  EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsTrackingQueryForTesting(
+      repeating_query_id.value()));
+  EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
   scheduler->RemoveScopedQuery(std::move(cpu_query));
   EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
   scheduler->RemoveScopedQuery(std::move(cpu_memory_query));
+  EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+}
+
+TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
+  auto* scheduler = QueryScheduler::GetFromGraph(graph());
+  ASSERT_TRUE(scheduler);
+
+  EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+
+  auto process1 = CreateRendererProcessNode();
+  auto process2 = CreateRendererProcessNode();
+  auto process3 = CreateRendererProcessNode();
+  process1->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process2->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  process3->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  const auto process_context1 = process1->GetResourceContext();
+  const auto process_context2 = process2->GetResourceContext();
+  const auto process_context3 = process3->GetResourceContext();
+
+  // Create a page with several origins, to validate that OriginInPageContext
+  // results are cleared along with the PageContext.
+  auto page1 = CreateNode<PageNodeImpl>();
+  const GURL kUrl1("https://a.com");
+  auto frame1 = CreateFrameNodeAutoId(process3.get(), page1.get());
+  frame1->OnNavigationCommitted(kUrl1, /*same_document=*/false);
+  const GURL kUrl2("https://b.com");
+  auto frame2 = CreateFrameNodeAutoId(process3.get(), page1.get());
+  frame2->OnNavigationCommitted(kUrl2, /*same_document=*/false);
+
+  const auto page_context1 = page1->GetResourceContext();
+  const auto frame_context1 = frame1->GetResourceContext();
+  const auto frame_context2 = frame2->GetResourceContext();
+  const auto origin_in_page_context1 = OriginInPageContext(
+      url::Origin::Create(kUrl1), page1->GetResourceContext());
+  const auto origin_in_page_context2 = OriginInPageContext(
+      url::Origin::Create(kUrl2), page1->GetResourceContext());
+
+  // Also test that WorkerContexts are tracked correctly.
+  auto worker1 = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
+                                            process3.get());
+  const auto worker_context1 = worker1->GetResourceContext();
+
+  // Simulates a query that never calls Start(), just uses QueryOnce() to
+  // request results periodically.
+  auto non_repeating_query =
+      CreateQueryParams({ResourceType::kCPUTime}, /*resource_contexts=*/{},
+                        {ResourceContextTypeId::ForType<ProcessContext>()});
+  scheduler->AddScopedQuery(non_repeating_query.get());
+
+  // Simulates queries that call Start() to request results for all processes
+  // on a schedule.
+  auto repeating_all_process_query =
+      CreateQueryParams({ResourceType::kCPUTime}, /*resource_contexts=*/{},
+                        {ResourceContextTypeId::ForType<ProcessContext>()});
+  scheduler->AddScopedQuery(repeating_all_process_query.get());
+  scheduler->StartRepeatingQuery(repeating_all_process_query.get());
+
+  auto repeating_all_process_query2 =
+      CreateQueryParams({ResourceType::kCPUTime}, /*resource_contexts=*/{},
+                        {ResourceContextTypeId::ForType<ProcessContext>()});
+  scheduler->AddScopedQuery(repeating_all_process_query2.get());
+  scheduler->StartRepeatingQuery(repeating_all_process_query2.get());
+
+  // Simulates a query that calls Start() to request results for a fixed set of
+  // processes on a schedule.
+  auto repeating_some_process_query =
+      CreateQueryParams({ResourceType::kCPUTime},
+                        {process_context1, process_context2, process_context3});
+  scheduler->AddScopedQuery(repeating_some_process_query.get());
+  scheduler->StartRepeatingQuery(repeating_some_process_query.get());
+
+  EXPECT_TRUE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
+  EXPECT_FALSE(non_repeating_query->GetIdForTesting().has_value());
+  ASSERT_TRUE(repeating_all_process_query->GetIdForTesting().has_value());
+  ASSERT_TRUE(repeating_all_process_query2->GetIdForTesting().has_value());
+  ASSERT_TRUE(repeating_some_process_query->GetIdForTesting().has_value());
+
+  // Allow some time to pass to measure.
+  task_env().FastForwardBy(base::Minutes(1));
+
+  int i = 0;
+  for (QueryParams* query :
+       {non_repeating_query.get(), repeating_all_process_query.get(),
+        repeating_all_process_query2.get(),
+        repeating_some_process_query.get()}) {
+    SCOPED_TRACE(::testing::Message() << "Query " << i++);
+    ExpectQueryResult(
+        scheduler, query,
+        UnorderedElementsAre(
+            ResultForContextMatches<CPUTimeResult>(process_context1, _),
+            ResultForContextMatches<CPUTimeResult>(process_context2, _),
+            ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  }
+
+  // Delete a process after the measurement. Results should still be delivered
+  // to the repeating queries, but not the non-repeating query.
+  process1.reset();
+  task_env().FastForwardBy(base::Minutes(1));
+
+  ExpectQueryResult(
+      scheduler, non_repeating_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context1, _),
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+
+  task_env().FastForwardBy(base::Minutes(1));
+  ExpectQueryResult(
+      scheduler, non_repeating_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  // Should not see the result for `process1` twice.
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  // Seeing the result for `process1` for the first time.
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query2.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context1, _),
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  ExpectQueryResult(
+      scheduler, repeating_some_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context1, _),
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+
+  task_env().FastForwardBy(base::Minutes(1));
+  // All queries have now seen the result for `process1`.
+  i = 0;
+  for (QueryParams* query :
+       {non_repeating_query.get(), repeating_all_process_query.get(),
+        repeating_all_process_query2.get(),
+        repeating_some_process_query.get()}) {
+    SCOPED_TRACE(::testing::Message() << "Query " << i++);
+    ExpectQueryResult(
+        scheduler, query,
+        UnorderedElementsAre(
+            ResultForContextMatches<CPUTimeResult>(process_context2, _),
+            ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  }
+
+  auto process4 = CreateRendererProcessNode();
+  process4->SetProcess(base::Process::Current(), base::TimeTicks::Now());
+  const auto process_context4 = process4->GetResourceContext();
+  process2.reset();
+
+  // Create a query that measures all context types.
+  // Since it's created after `process2` dies it should never see its result.
+  auto all_context_query = CreateQueryParams(
+      {ResourceType::kCPUTime}, /*resource_contexts=*/{},
+      {
+          ResourceContextTypeId::ForType<FrameContext>(),
+          ResourceContextTypeId::ForType<PageContext>(),
+          ResourceContextTypeId::ForType<ProcessContext>(),
+          ResourceContextTypeId::ForType<WorkerContext>(),
+          ResourceContextTypeId::ForType<OriginInPageContext>(),
+      });
+  scheduler->AddScopedQuery(all_context_query.get());
+  scheduler->StartRepeatingQuery(all_context_query.get());
+  ASSERT_TRUE(all_context_query->GetIdForTesting().has_value());
+
+  task_env().FastForwardBy(base::Minutes(1));
+  ExpectQueryResult(
+      scheduler, non_repeating_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _)));
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _)));
+  ExpectQueryResult(
+      scheduler, repeating_some_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  ExpectQueryResult(
+      scheduler, all_context_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(frame_context1, _),
+          ResultForContextMatches<CPUTimeResult>(frame_context2, _),
+          ResultForContextMatches<CPUTimeResult>(page_context1, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _),
+          ResultForContextMatches<CPUTimeResult>(worker_context1, _),
+          ResultForContextMatches<CPUTimeResult>(origin_in_page_context1, _),
+          ResultForContextMatches<CPUTimeResult>(origin_in_page_context2, _)));
+
+  process4.reset();
+
+  // Frames must be removed from the page before it's deleted.
+  frame1.reset();
+  frame2.reset();
+  page1.reset();
+
+  worker1.reset();
+
+  task_env().FastForwardBy(base::Minutes(1));
+  ExpectQueryResult(scheduler, non_repeating_query.get(),
+                    UnorderedElementsAre(ResultForContextMatches<CPUTimeResult>(
+                        process_context3, _)));
+  // Already seen the response for `process2`, now sees the last response for
+  // `process4`.
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _)));
+  // Now sees the last response for both `process2` and `process4`.
+  ExpectQueryResult(
+      scheduler, repeating_all_process_query2.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(process_context2, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _)));
+  // Already seen the response for `process2`, not measuring `process4`.
+  ExpectQueryResult(scheduler, repeating_some_process_query.get(),
+                    UnorderedElementsAre(ResultForContextMatches<CPUTimeResult>(
+                        process_context3, _)));
+  // Never measured `process2`, now sees the last response for `process4` and
+  // all non-process contexts.
+  ExpectQueryResult(
+      scheduler, all_context_query.get(),
+      UnorderedElementsAre(
+          ResultForContextMatches<CPUTimeResult>(frame_context1, _),
+          ResultForContextMatches<CPUTimeResult>(frame_context2, _),
+          ResultForContextMatches<CPUTimeResult>(page_context1, _),
+          ResultForContextMatches<CPUTimeResult>(process_context3, _),
+          ResultForContextMatches<CPUTimeResult>(process_context4, _),
+          ResultForContextMatches<CPUTimeResult>(worker_context1, _),
+          ResultForContextMatches<CPUTimeResult>(origin_in_page_context1, _),
+          ResultForContextMatches<CPUTimeResult>(origin_in_page_context2, _)));
+
+  task_env().FastForwardBy(base::Minutes(1));
+  // All queries have now seen the results for all dead contexts. Only
+  // `process3` is live.
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 0u);
+  i = 0;
+  for (QueryParams* query :
+       {non_repeating_query.get(), repeating_all_process_query.get(),
+        repeating_all_process_query2.get(), repeating_some_process_query.get(),
+        all_context_query.get()}) {
+    SCOPED_TRACE(::testing::Message() << "Query " << i++);
+    ExpectQueryResult(
+        scheduler, query,
+        UnorderedElementsAre(
+            ResultForContextMatches<CPUTimeResult>(process_context3, _)));
+  }
+
+  process3.reset();
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 4u);
+
+  // As repeating queries are removed, results not reported to them should be
+  // dropped.
+  scheduler->RemoveScopedQuery(std::move(repeating_all_process_query));
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 3u);
+  scheduler->RemoveScopedQuery(std::move(repeating_all_process_query2));
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 2u);
+  scheduler->RemoveScopedQuery(std::move(repeating_some_process_query));
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 1u);
+  scheduler->RemoveScopedQuery(std::move(all_context_query));
+  EXPECT_EQ(
+      scheduler->GetCPUMonitorForTesting().GetDeadContextCountForTesting(), 0u);
+
+  scheduler->RemoveScopedQuery(std::move(non_repeating_query));
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 

@@ -34,6 +34,7 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
+#include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -137,17 +138,19 @@ class ResourceAttrCPUMonitorTest
 
   // Calls UpdateAndGetCPUMeasurements() on the CPUMeasurementMonitor under
   // test, and caches the results.
-  void UpdateAndGetCPUMeasurements() {
+  void UpdateAndGetCPUMeasurements(
+      std::optional<internal::QueryId> query_id = std::nullopt) {
     last_measurements_ = current_measurements_;
-    current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements();
+    current_measurements_ = cpu_monitor_.UpdateAndGetCPUMeasurements(query_id);
   }
 
   // Helper to get the most recent output of `cpu_monitor_` and convert to a
   // QueryResultMap which CPUProportionTracker expects.
-  QueryResultMap GetCPUQueryResults() {
+  QueryResultMap GetCPUQueryResults(
+      std::optional<internal::QueryId> query_id = std::nullopt) {
     QueryResultMap results;
     for (const auto& [context, cpu_time_result] :
-         cpu_monitor_.UpdateAndGetCPUMeasurements()) {
+         cpu_monitor_.UpdateAndGetCPUMeasurements(query_id)) {
       results[context] = QueryResults{cpu_time_result};
     }
     return results;
@@ -839,6 +842,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
 
   StartMonitoring();
 
+  // Assign results to a repeating query so that they're not dropped immediately
+  // when nodes are removed.
+  constexpr internal::QueryId kDummyQuery;
+  cpu_monitor_.RepeatingQueryStarted(kDummyQuery);
+
   const FrameContext& frame_context = mock_graph.frame->GetResourceContext();
   const FrameContext& child_frame_context =
       mock_graph.child_frame->GetResourceContext();
@@ -900,7 +908,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   const auto new_worker3_context = new_worker3->GetResourceContext();
   const auto node_added_time3 = base::TimeTicks::Now();
 
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kDummyQuery);
 
   // For the first half of the period:
   //
@@ -1034,7 +1042,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   const auto node_removed_time2 = base::TimeTicks::Now();
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 2);
-  UpdateAndGetCPUMeasurements();
+  UpdateAndGetCPUMeasurements(kDummyQuery);
 
   // `new_frame1` and `new_worker1` were removed on the same tick as the
   // previous measurement, so don't contribute to CPU usage since then.
@@ -1155,6 +1163,8 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
               CPUDeltaMatches(origin2_in_other_page_context,
                               expected_origin2_in_other_page_delta2,
                               MeasurementAlgorithm::kSum));
+
+  cpu_monitor_.RepeatingQueryStopped(kDummyQuery);
 }
 
 // Tests that WorkerNode CPU usage is correctly distributed to pages as clients
@@ -1747,6 +1757,11 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
       base::BindRepeating(&ContextIs<FrameContext>));
   StartMonitoring();
 
+  // Assign results to a repeating query so that they're not dropped immediately
+  // when nodes are removed.
+  constexpr internal::QueryId kDummyQuery;
+  cpu_monitor_.RepeatingQueryStarted(kDummyQuery);
+
   std::map<ResourceContext, double> expected_results;
 
   // Context that existed before CPUProportionTracker started.
@@ -1766,7 +1781,7 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
 
   // Test the first interval, where the CPUProportionTracker has no history.
   proportion_tracker.StartFirstInterval(base::TimeTicks::Now(),
-                                        GetCPUQueryResults());
+                                        GetCPUQueryResults(kDummyQuery));
 
   // Context exists for entire interval.
   // Uses 90% CPU for entire interval = 0.9.
@@ -1808,8 +1823,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
   existing_frame1.reset();
 
   EXPECT_EQ(expected_results,
-            proportion_tracker.StartNextInterval(base::TimeTicks::Now(),
-                                                 GetCPUQueryResults()));
+            proportion_tracker.StartNextInterval(
+                base::TimeTicks::Now(), GetCPUQueryResults(kDummyQuery)));
 
   // Make sure the same scenarios also work for a second interval, where
   // CPUProportionTracker has history.
@@ -1873,16 +1888,19 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
   EXPECT_EQ(expected_results2,
             proportion_tracker.StartNextInterval(
                 base::TimeTicks::Now(),
-                add_fake_result(GetCPUQueryResults(), base::TimeTicks::Now())));
+                add_fake_result(GetCPUQueryResults(kDummyQuery),
+                                base::TimeTicks::Now())));
 
   // Third interval. The fake `frame8` should now be included using 40% CPU for
   // the entire interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements);
-  EXPECT_THAT(
-      proportion_tracker.StartNextInterval(
-          base::TimeTicks::Now(),
-          add_fake_result(GetCPUQueryResults(), base::TimeTicks::Now())),
-      Contains(Pair(frame8->GetResourceContext(), 0.4)));
+  EXPECT_THAT(proportion_tracker.StartNextInterval(
+                  base::TimeTicks::Now(),
+                  add_fake_result(GetCPUQueryResults(kDummyQuery),
+                                  base::TimeTicks::Now())),
+              Contains(Pair(frame8->GetResourceContext(), 0.4)));
+
+  cpu_monitor_.RepeatingQueryStopped(kDummyQuery);
 }
 
 // Tests that multiple CPUProportionTrackers with different schedules are
@@ -2047,11 +2065,17 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   base::WeakPtr<ProcessNode> browser_process_node =
       PerformanceManager::GetProcessNodeForBrowserProcess();
 
+  // Assign results to a repeating query so that they're not dropped
+  // immediately when nodes are removed.
+  constexpr internal::QueryId kDummyQuery;
+
   // Since process() returns a MockRenderProcessHost, ProcessNode is created
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
   // OnProcessLifetimeChange.)
   LetTimePass();
   performance_manager::RunInGraph([&] {
+    cpu_monitor_->RepeatingQueryStarted(kDummyQuery);
+
     ASSERT_TRUE(process_node);
     EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
@@ -2060,7 +2084,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_NE(browser_process_node->GetProcessId(), base::kNullProcessId);
 
     // Renderer process can't be measured yet, browser can.
-    const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
+    const auto measurements =
+        cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
     EXPECT_FALSE(
         base::Contains(measurements, process_node->GetResourceContext()));
     EXPECT_FALSE(base::Contains(measurements, frame_context));
@@ -2097,7 +2122,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_TRUE(browser_process_node->GetProcess().IsValid());
 
     // Both processes can be measured now.
-    const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
+    const auto measurements =
+        cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
@@ -2126,8 +2152,10 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_FALSE(process_node->GetProcess().IsValid());
 
     // CPUMeasurementMonitor will return the last measured usage of the process
-    // and its main frame for one query after the FrameNode is deleted.
-    const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
+    // and its main frame for one query with ID kDummyQuery after the FrameNode
+    // is deleted.
+    const auto measurements =
+        cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
@@ -2156,7 +2184,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(process_node);
     EXPECT_TRUE(process_node->GetProcess().IsValid());
 
-    const auto measurements = cpu_monitor_->UpdateAndGetCPUMeasurements();
+    const auto measurements =
+        cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
     ASSERT_TRUE(
         base::Contains(measurements, process_node->GetResourceContext()));
@@ -2166,6 +2195,8 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     cumulative_process_cpu = new_process_cpu;
 
     EXPECT_FALSE(base::Contains(measurements, frame_context));
+
+    cpu_monitor_->RepeatingQueryStopped(kDummyQuery);
   });
 }
 

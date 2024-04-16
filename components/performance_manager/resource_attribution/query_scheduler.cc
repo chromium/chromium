@@ -144,7 +144,8 @@ void QueryScheduler::AddScopedQuery(QueryParams* query_params) {
   CHECK(query_params);
   // TODO(crbug.com/1471683): Associate a notifier with the params so that when
   // a scheduled measurement is done, the correct ScopedResourceUsageQuery can
-  // be notified.
+  // be notified. (Currently queries are only notified when they request it by
+  // calling RequestResults().)
   if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
     AddCPUQuery();
   }
@@ -159,6 +160,11 @@ void QueryScheduler::RemoveScopedQuery(
   CHECK(query_params);
   // TODO(crbug.com/1471683): Forget the notifier associated with the params.
   if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
+    const std::optional<QueryId>& query_id =
+        query_params->GetId(base::PassKey<QueryScheduler>());
+    if (query_id.has_value()) {
+      cpu_monitor_.RepeatingQueryStopped(query_id.value());
+    }
     RemoveCPUQuery();
   }
   if (query_params->resource_types.Has(ResourceType::kMemorySummary)) {
@@ -179,6 +185,9 @@ void QueryScheduler::StartRepeatingQuery(QueryParams* query_params) {
       query_params->GetMutableId(base::PassKey<QueryScheduler>());
   CHECK(!query_id.has_value());
   query_id = id_generator.GenerateNextId();
+  if (query_params->resource_types.Has(ResourceType::kCPUTime)) {
+    cpu_monitor_.RepeatingQueryStarted(query_id.value());
+  }
 }
 
 void QueryScheduler::RequestResults(
@@ -198,7 +207,9 @@ void QueryScheduler::RequestResults(
     switch (resource_type) {
       case ResourceType::kCPUTime:
         if (cpu_monitor_.IsMonitoring()) {
-          barrier_callback.Run(cpu_monitor_.UpdateAndGetCPUMeasurements());
+          // Pass the QueryId of a scoped query or nullopt for a one-shot.
+          barrier_callback.Run(cpu_monitor_.UpdateAndGetCPUMeasurements(
+              query_params.GetId(base::PassKey<QueryScheduler>())));
         } else {
           // If no scoped query is keeping the CPU monitor running, just return
           // empty results.
