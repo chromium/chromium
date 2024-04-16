@@ -31,6 +31,10 @@
 /// Called when the user accepts autocomplete text in `textField`.
 - (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField;
 
+/// Called when the additional text has been removed due to a user action in
+/// `textField`.
+- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TEXT_FIELD_DELEGATE_H_

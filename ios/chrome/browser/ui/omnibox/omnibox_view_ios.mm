@@ -649,6 +649,13 @@ void OmniboxViewIOS::OnAcceptAutocomplete() {
   OnDidChange(/*processing_user_event=*/true);
 }
 
+void OmniboxViewIOS::OnRemoveAdditionalText() {
+  if (model()) {
+    model()->UpdateInput(/*has_selected_text=*/false,
+                         /*prevent_inline_autocomplete=*/true);
+  }
+}
+
 void OmniboxViewIOS::ClearText() {
   // Ensure omnibox is first responder. This will bring up the keyboard so the
   // user can start typing a new query.

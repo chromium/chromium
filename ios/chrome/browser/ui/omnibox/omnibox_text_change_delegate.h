@@ -36,6 +36,9 @@ class OmniboxTextChangeDelegate {
   /// Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
   /// tap on left/right arrow key).
   virtual void OnAcceptAutocomplete() = 0;
+  /// Called when additional text is removed. (e.g. tap on delete, tap on
+  /// left/right arrow key).
+  virtual void OnRemoveAdditionalText() = 0;
 };
 
 // The delegate that is notified of the return key being pressed in the omnibox

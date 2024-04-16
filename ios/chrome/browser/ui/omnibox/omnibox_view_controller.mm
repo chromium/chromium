@@ -412,6 +412,12 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
+  if (_textChangeDelegate) {
+    _textChangeDelegate->OnRemoveAdditionalText();
+  }
+}
+
 - (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
   for (NSItemProvider* itemProvider in itemProviders) {
     if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&

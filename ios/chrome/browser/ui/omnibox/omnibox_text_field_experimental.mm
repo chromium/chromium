@@ -917,8 +917,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// suggestions.
 - (void)handleUserInitiatedRemovalOfAdditionalText {
   [self removeAdditionalText];
-  // TODO(crbug.com/325035406): Delegate refresh suggestion list to change
-  // default suggestion.
+  if ([self.delegate
+          respondsToSelector:@selector(textFieldDidRemoveAdditionalText:)]) {
+    [self.delegate textFieldDidRemoveAdditionalText:self];
+  }
 }
 
 /// Accepts the autocomplete text.

@@ -135,6 +135,7 @@ class OmniboxViewIOS : public OmniboxView,
   void WillPaste() override;
   void OnDeleteBackward() override;
   void OnAcceptAutocomplete() override;
+  void OnRemoveAdditionalText() override;
 
   // OmniboxTextAcceptDelegate methods
   void OnAccept() override;
