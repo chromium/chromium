@@ -96,6 +96,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
     case RequestType::kIdleDetection:
       return RequestTypeForUma::PERMISSION_IDLE_DETECTION;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kKeyboardLock:
+      return RequestTypeForUma::PERMISSION_KEYBOARD_LOCK;
+#endif
     case RequestType::kMicStream:
       return RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC;
     case RequestType::kMidiSysex:
@@ -105,6 +109,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #if BUILDFLAG(IS_ANDROID)
     case RequestType::kNfcDevice:
       return RequestTypeForUma::PERMISSION_NFC;
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kPointerLock:
+      return RequestTypeForUma::PERMISSION_POINTER_LOCK;
 #endif
     case RequestType::kNotifications:
       return RequestTypeForUma::PERMISSION_NOTIFICATIONS;
@@ -203,6 +211,10 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "WebPrinting";
     case RequestTypeForUma::PERMISSION_IDENTITY_PROVIDER:
       return "IdentityProvider";
+    case RequestTypeForUma::PERMISSION_KEYBOARD_LOCK:
+      return "KeyboardLock";
+    case RequestTypeForUma::PERMISSION_POINTER_LOCK:
+      return "PointerLock";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -1322,6 +1334,14 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::WEB_PRINTING:
       base::UmaHistogramEnumeration("Permissions.Action.WebPrinting", action,
+                                    PermissionAction::NUM);
+      break;
+    case ContentSettingsType::POINTER_LOCK:
+      base::UmaHistogramEnumeration("Permissions.Action.PointerLock", action,
+                                    PermissionAction::NUM);
+      break;
+    case ContentSettingsType::KEYBOARD_LOCK:
+      base::UmaHistogramEnumeration("Permissions.Action.KeyboardLock", action,
                                     PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no

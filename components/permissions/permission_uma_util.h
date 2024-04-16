@@ -96,6 +96,8 @@ enum class RequestTypeForUma {
   PERMISSION_SMART_CARD = 34,
   PERMISSION_WEB_PRINTING = 35,
   PERMISSION_IDENTITY_PROVIDER = 36,
+  PERMISSION_KEYBOARD_LOCK = 37,
+  PERMISSION_POINTER_LOCK = 38,
   // NUM must be the last value in the enum.
   NUM
 };

@@ -134,6 +134,12 @@
   <message name="IDS_AR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use AR. Follows a prompt: 'This site would like to:">
     Create a 3D map of your surroundings and track camera position
   </message>
+  <message name="IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's keyboard. When the keyboard is locked, any keyboard input usually handled by the browser or the OS is handled by the website instead. Follows a prompt: 'This site would like to:">
+    Lock your keyboard
+  </message>
+  <message name="IDS_POINTER_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's mouse pointer. When the mouse pointer is locked, the cursor is hidden and its motions are handled by the website. Follows a prompt: 'This site would like to:">
+    Lock your mouse pointer
+  </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE" desc="The title of a dialog box that prompts the user to provide permission. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. 1) “wants to” means “is asking permission to”2) “use info” means retrieve existing info and save additional info. 3) “they've saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.A user might visit a site called www.myfavoritesite.com. That site might embed content and services from other sites. Embedded content can include things like text, images, audio, and services (for example, Google Docs). In this example, the dialog box is shown by Google Docs. The permission is to enable a connection between www.myfavoritesite.com and Google Docs and to allow Google Docs to access information that services has previously saved about the user. For example, Google Docs would need this permission to verify the user's identity and display the user's documents as they browse www.myfavoritesite.com.">
     <ph name="EMBEDDED_URL">$1<ex>google.com</ex></ph> wants to use info they've saved about you
   </message>

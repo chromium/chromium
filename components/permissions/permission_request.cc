@@ -302,6 +302,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kKeyboardLock:
+      message_id = IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT;
+      break;
     case RequestType::kLocalFonts:
       message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
       break;
@@ -316,6 +319,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kNotifications:
       message_id = IDS_NOTIFICATION_PERMISSIONS_FRAGMENT;
+      break;
+    case RequestType::kPointerLock:
+      message_id = IDS_POINTER_LOCK_PERMISSIONS_FRAGMENT;
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:

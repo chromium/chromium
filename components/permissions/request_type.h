@@ -49,6 +49,10 @@ enum class RequestType {
   kNfcDevice,
 #endif
   kNotifications,
+#if !BUILDFLAG(IS_ANDROID)
+  kKeyboardLock,
+  kPointerLock,
+#endif
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   kProtectedMediaIdentifier,
 #endif
