@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -280,18 +281,6 @@ const CGFloat kLeadingMargin = 20;
                       constraintEqualToAnchor:self.bottomAnchor],
                 ]]];
 
-    // Setup the layout guide centered between the contents of the location bar.
-    _centeredBetweenLocationBarContentsLayoutGuide =
-        [[UILayoutGuide alloc] init];
-    [_locationButton
-        addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
-    [NSLayoutConstraint activateConstraints:@[
-      [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:_badgesContainerStackView.trailingAnchor],
-      [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:_trailingButton.leadingAnchor],
-    ]];
-
     // Different possible X anchors for the location label container.
     _xStickToLeadingSideConstraint = [_locationContainerView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
@@ -302,17 +291,34 @@ const CGFloat kLeadingMargin = 20;
         constraintEqualToAnchor:self.centerXAnchor];
     _xAbsoluteCenteredConstraint.priority = UILayoutPriorityDefaultHigh;
 
-    _xRelativeToContentCenteredConstraint = [_locationContainerView
-                                                 .centerXAnchor
-        constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
-                                    .centerXAnchor];
-    _xRelativeToContentCenteredConstraint.priority =
-        UILayoutPriorityDefaultHigh - 1;
-
     _locationContainerViewLeadingAnchorConstraint =
         [_locationContainerView.leadingAnchor
             constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                         constant:kLocationBarLeadingPadding];
+
+    // TODO(crbug.com/334891575): Investigate and implement fix for UI
+    // interaction blocking badges container when exiting fullscreen.
+    if (IsContextualPanelEnabled()) {
+      // Setup the layout guide centered between the contents of the location
+      // bar.
+      _centeredBetweenLocationBarContentsLayoutGuide =
+          [[UILayoutGuide alloc] init];
+      [_locationButton
+          addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
+      [NSLayoutConstraint activateConstraints:@[
+        [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
+            constraintEqualToAnchor:_badgesContainerStackView.trailingAnchor],
+        [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
+            constraintEqualToAnchor:_trailingButton.leadingAnchor],
+      ]];
+
+      _xRelativeToContentCenteredConstraint = [_locationContainerView
+                                                   .centerXAnchor
+          constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
+                                      .centerXAnchor];
+      _xRelativeToContentCenteredConstraint.priority =
+          UILayoutPriorityDefaultHigh - 1;
+    }
 
     _trailingButtonTrailingAnchorConstraint =
         [self.trailingButton.trailingAnchor
