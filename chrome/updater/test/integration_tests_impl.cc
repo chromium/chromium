@@ -1449,4 +1449,14 @@ void ExpectDeviceManagementPolicyValidationRequest(
                                 "GoogleDMToken", dm_token, net::HTTP_OK, "");
 }
 
+void ExpectProxyPacScriptRequest(ScopedServer* test_server) {
+  test_server->ExpectOnce(
+      {request::GetPathMatcher(test_server->proxy_pac_path()),
+       request::GetHeaderMatcher(
+           {{"User-Agent", "WinHttp-Autoproxy-Service.*"}})},
+      base::StringPrintf(
+          "function FindProxyForURL(url, host) { return \"PROXY %s\"; }",
+          test_server->host_port_pair().c_str()));
+}
+
 }  // namespace updater::test

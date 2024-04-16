@@ -446,6 +446,7 @@ void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
                                                 bool invalidate_token);
 void ExpectDeviceManagementPolicyValidationRequest(ScopedServer* test_server,
                                                    const std::string& dm_token);
+void ExpectProxyPacScriptRequest(ScopedServer* test_server);
 
 }  // namespace updater::test
 

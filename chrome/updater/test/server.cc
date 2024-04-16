@@ -114,6 +114,9 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   if (base::StartsWith(request.relative_url, device_management_path())) {
     response->set_content_type("application/x-protobuf");
   }
+  if (base::StartsWith(request.relative_url, proxy_pac_path())) {
+    VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
+  }
   response->set_content(response_body);
   request_matcher_groups_.pop_front();
   responses_.pop_front();

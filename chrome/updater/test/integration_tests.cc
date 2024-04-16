@@ -2901,7 +2901,8 @@ TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
                                             kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_proxy_mode("fixed_servers");
-  omaha_settings.set_proxy_server(test_server_->proxy_url_no_path());
+  omaha_settings.set_proxy_server(
+      base::StrCat({test_server_->proxy_url_no_path(), ";DIRECT"}));
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
                                            omaha_settings);
   ASSERT_NO_FATAL_FAILURE(
@@ -2909,7 +2910,7 @@ TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  // Redirect network traffics to remote hosts to engage the proxy.
+  // Redirect network traffic to remote hosts to engage the proxy.
   const GURL update_check_url = GURL("http://update.server.not_exist/update");
   const GURL dm_server_url = GURL("http://dm.server.not_exist/dmapi");
   EnterTestMode(update_check_url, test_server_->crash_upload_url(),
@@ -2919,9 +2920,47 @@ TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
                                            dm_server_url);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-
   ASSERT_NO_FATAL_FAILURE(
       ExpectUninstallPing(test_server_.get(), update_check_url));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTestDeviceManagement, PacScript) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
+
+  // Fetch proxy settings policy.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_proxy_mode("pac_script");
+  omaha_settings.set_proxy_pac_url(test_server_->proxy_pac_url().spec());
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ExpectProxyPacScriptRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Redirect network traffic to remote hosts to engage the proxy.
+  // Note the test server won't receive additional PAC script download requests
+  // because Windows caches it.
+  const GURL update_check_url = GURL("http://update.server.not_exist/update");
+  const GURL dm_server_url = GURL("http://dm.server.not_exist2/dmapi");
+  EnterTestMode(update_check_url, test_server_->crash_upload_url(),
+                dm_server_url, {}, base::Minutes(5));
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings, false, false,
+                                           dm_server_url);
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
