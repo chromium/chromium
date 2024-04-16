@@ -136,14 +136,14 @@ export class MockCdpNetworkEvents {
       initiator: {type: 'other'},
       redirectHasExtraInfo: true,
       redirectResponse: {
-        url: this.url,
+        url: `${this.url}/redirect`,
         status: 302,
         statusText: 'Found',
         headers: {
           Connection: 'keep-alive',
           Date: 'Tue, 02 Apr 2024 13:07:22 GMT',
           'Transfer-Encoding': 'chunked',
-          location: '/redirect',
+          location: this.url,
         },
         mimeType: '',
         charset: '',
@@ -239,6 +239,26 @@ export class MockCdpNetworkEvents {
       statusCode: 200,
       headersText:
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Fri, 19 Nov 2021 09:53:58 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
+    });
+  }
+
+  responseReceivedExtraInfoRedirect() {
+    this.cdpClient.emit('Network.responseReceivedExtraInfo', {
+      requestId: this.requestId,
+      blockedCookies: [],
+      headers: {
+        Connection: 'keep-alive',
+        Date: 'Mon, 15 Apr 2024 11:53:20 GMT',
+        'Transfer-Encoding': 'chunked',
+        location: this.url,
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 302,
+      headersText:
+        'HTTP/1.1 302 Found\r\nlocation: http://localhost:37363/empty.html\r\nDate: Mon, 15 Apr 2024 11:53:20 GMT\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n',
+      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKeyOpaque: false,
+      exemptedCookies: [],
     });
   }
 
@@ -382,6 +402,43 @@ export class MockCdpNetworkEvents {
       errorText: 'net::ERR_NAME_NOT_RESOLVED',
       canceled: false,
     });
+  }
+
+  setJsonEvent(json: string | Record<string, unknown>, _normalize = false) {
+    const event = json instanceof Object ? json : JSON.parse(json);
+
+    const replaceKeys = [
+      ['requestId', this.requestId],
+      ['networkId', this.requestId],
+      ['loaderId', this.loaderId],
+      ['frameId', this.frameId],
+      ['url', this.url],
+    ] as const;
+    for (const [key, value] of replaceKeys) {
+      this.findAndReplaceKey(event, key, value);
+    }
+
+    this.cdpClient.emit(event.method, event.params);
+  }
+
+  findAndReplaceKey(
+    source: Record<string, unknown>,
+    searchKey: string,
+    value: unknown
+  ): void {
+    for (const key of Object.keys(source)) {
+      if (key === searchKey) {
+        source[key] = value;
+        return;
+      }
+      if (typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        this.findAndReplaceKey(
+          source[key] as Record<string, unknown>,
+          searchKey,
+          value
+        );
+      }
+    }
   }
 }
 

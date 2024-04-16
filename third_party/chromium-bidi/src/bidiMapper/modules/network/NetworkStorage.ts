@@ -105,6 +105,7 @@ export class NetworkStorage {
         'Network.requestWillBeSent',
         (params: Protocol.Network.RequestWillBeSentEvent) => {
           const request = this.getRequestById(params.requestId);
+
           if (request && request.isRedirecting()) {
             request.handleRedirect(params);
             this.deleteRequest(params.requestId);

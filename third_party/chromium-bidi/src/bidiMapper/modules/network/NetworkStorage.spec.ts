@@ -347,7 +347,6 @@ describe('NetworkStorage', () => {
 
       request.authRequired();
       const event = await getEvent('network.authRequired');
-      event;
       expect(event).to.deep.nested.include({
         'request.request': request.fetchId,
         'request.method': 'GET',
@@ -387,6 +386,24 @@ describe('NetworkStorage', () => {
       request.requestWillBeSentRedirect();
       const event = await getEvent('network.responseCompleted');
       expect(event).to.exist;
+    });
+  });
+
+  describe('redirects', () => {
+    it('should return 200 from last response', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.requestWillBeSentRedirect();
+      request.responseReceivedExtraInfoRedirect();
+      request.requestWillBeSentExtraInfo();
+      request.responseReceived();
+      request.responseReceivedExtraInfo();
+
+      const event = await getEvent('network.responseCompleted');
+
+      expect(event).to.deep.nested.include({
+        'response.status': 200,
+      });
     });
   });
 });

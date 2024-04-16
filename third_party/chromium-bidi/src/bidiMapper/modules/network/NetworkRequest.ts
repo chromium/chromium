@@ -288,6 +288,17 @@ export class NetworkRequest {
   onResponseReceivedExtraInfoEvent(
     event: Protocol.Network.ResponseReceivedExtraInfoEvent
   ) {
+    if (
+      event.statusCode >= 300 &&
+      event.statusCode <= 399 &&
+      this.#request.info &&
+      event.headers['location'] === this.#request.info.request.url
+    ) {
+      // We received the Response Extra info for the redirect
+      // Too late so we need to skip it as it will
+      // fire wrongly for the last one
+      return;
+    }
     this.#response.extraInfo = event;
     this.#emitEventsIfReady();
   }
@@ -500,6 +511,7 @@ export class NetworkRequest {
       return;
     }
     this.#phaseChanged();
+
     this.#emittedEvents[event.method] = true;
     this.#eventManager.registerEvent(
       Object.assign(event, {
