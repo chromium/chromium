@@ -122,40 +122,43 @@ UIColor* BackgroundColor() {
   self.serviceIdentifiers = serviceIdentifiers;
 }
 
+// Deprecated in iOS 17.0+.
+// Replaced with provideCredentialWithoutUserInteractionForRequest.
 - (void)provideCredentialWithoutUserInteractionForIdentity:
     (ASPasswordCredentialIdentity*)credentialIdentity {
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    // reauthenticationModule can't attempt reauth when no password is set. This
-    // means a password shouldn't be retrieved.
-    if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
-      [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
-      return;
-    }
-    // iOS already gates the password with device auth for
-    // -provideCredentialWithoutUserInteractionForIdentity:. Not using
-    // reauthenticationModule here to avoid a double authentication request.
-    [weakSelf provideCredentialForIdentity:credentialIdentity];
-  }];
+  if (@available(iOS 17.0, *)) {
+    return;
+  }
+
+  [self provideCredentialWithoutUserInteractionForIdentifier:
+            credentialIdentity.recordIdentifier];
 }
 
+// Only available in iOS 17.0+.
+- (void)provideCredentialWithoutUserInteractionForRequest:
+    (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  [self provideCredentialWithoutUserInteractionForIdentifier:
+            credentialRequest.credentialIdentity.recordIdentifier];
+}
+
+// Deprecated in iOS 17.0+.
+// Replaced with prepareInterfaceToProvideCredentialForRequest.
 - (void)prepareInterfaceToProvideCredentialForIdentity:
     (ASPasswordCredentialIdentity*)credentialIdentity {
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
-      [weakSelf showStaleCredentials];
-      return;
-    }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf provideCredentialForIdentity:credentialIdentity];
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
-      }
-    }];
-  }];
+  if (@available(iOS 17.0, *)) {
+    return;
+  }
+
+  [self prepareInterfaceToProvideCredentialForIdentifier:credentialIdentity
+                                                             .recordIdentifier];
+}
+
+// Only available in iOS 17.0+.
+- (void)prepareInterfaceToProvideCredentialForRequest:
+    (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  [self prepareInterfaceToProvideCredentialForIdentifier:credentialRequest
+                                                             .credentialIdentity
+                                                             .recordIdentifier];
 }
 
 - (void)prepareInterfaceForExtensionConfiguration {
@@ -216,11 +219,44 @@ UIColor* BackgroundColor() {
       presentReminderOnViewController:self];
 }
 
+- (void)provideCredentialWithoutUserInteractionForIdentifier:
+    (NSString*)identifier {
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    // reauthenticationModule can't attempt reauth when no password is set. This
+    // means a password shouldn't be retrieved.
+    if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
+      return;
+    }
+    // iOS already gates the password with device auth for
+    // -provideCredentialWithoutUserInteractionForRequest:. Not using
+    // reauthenticationModule here to avoid a double authentication request.
+    [weakSelf provideCredentialForIdentifier:identifier];
+  }];
+}
+
+- (void)prepareInterfaceToProvideCredentialForIdentifier:(NSString*)identifier {
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf showStaleCredentials];
+      return;
+    }
+    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                  ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [weakSelf provideCredentialForIdentifier:identifier];
+      } else {
+        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+      }
+    }];
+  }];
+}
+
 // Completes the extension request providing `ASPasswordCredential` that matches
-// the `credentialIdentity` or an error if not found.
-- (void)provideCredentialForIdentity:
-    (ASPasswordCredentialIdentity*)credentialIdentity {
-  NSString* identifier = credentialIdentity.recordIdentifier;
+// the `identifier` or an error if not found.
+- (void)provideCredentialForIdentifier:(NSString*)identifier {
   id<Credential> credential =
       [self.credentialStore credentialWithRecordIdentifier:identifier];
   if (credential) {
