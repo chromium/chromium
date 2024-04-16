@@ -4144,7 +4144,7 @@
   {
     "name": "enable-winrt-geolocation-implementation",
     "owners": [ "pelavall@microsoft.com", "deviceapi-team@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 150
   },
   {
     "name": "enable-zero-copy",
