@@ -97,6 +97,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayCloseButton) {
   RunOverlayTest("lens/overlay/overlay_close_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayScreenshot) {
+  RunOverlayTest("lens/overlay/overlay_screenshot_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, ManualRegionSelection) {
   RunOverlayTest("lens/overlay/region_selection_test.js", "mocha.run()");
 }

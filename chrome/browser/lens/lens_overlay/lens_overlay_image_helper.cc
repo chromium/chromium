@@ -86,23 +86,24 @@ SkBitmap CropAndDownscaleImageIfNeeded(const SkBitmap& image,
       dest_subset);
 }
 
-bool EncodeImage(const SkBitmap& image,
-                 scoped_refptr<base::RefCountedBytes>* output) {
-  *output = base::MakeRefCounted<base::RefCountedBytes>();
-  return gfx::JPEGCodec::Encode(
-      image, lens::features::GetLensOverlayImageCompressionQuality(),
-      &(*output)->data());
-}
-
 }  // namespace
 
 namespace lens {
+
+bool EncodeImage(const SkBitmap& image,
+                 int compression_quality,
+                 scoped_refptr<base::RefCountedBytes>* output) {
+  *output = base::MakeRefCounted<base::RefCountedBytes>();
+  return gfx::JPEGCodec::Encode(image, compression_quality, &(*output)->data());
+}
 
 lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image) {
   lens::ImageData image_data;
   scoped_refptr<base::RefCountedBytes> data;
   auto resized_bitmap = DownscaleImageIfNeeded(image);
-  if (EncodeImage(resized_bitmap, &data)) {
+  if (EncodeImage(resized_bitmap,
+                  lens::features::GetLensOverlayImageCompressionQuality(),
+                  &data)) {
     image_data.mutable_image_metadata()->set_height(resized_bitmap.height());
     image_data.mutable_image_metadata()->set_width(resized_bitmap.width());
 
@@ -134,7 +135,9 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
   lens::ImageCrop image_crop;
   scoped_refptr<base::RefCountedBytes> data;
   auto region_bitmap = CropAndDownscaleImageIfNeeded(image, region_rect);
-  if (EncodeImage(region_bitmap, &data)) {
+  if (EncodeImage(region_bitmap,
+                  lens::features::GetLensOverlayImageCompressionQuality(),
+                  &data)) {
     auto* mutable_zoomed_crop = image_crop.mutable_zoomed_crop();
     mutable_zoomed_crop->set_parent_height(image.height());
     mutable_zoomed_crop->set_parent_width(image.width());

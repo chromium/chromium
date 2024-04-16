@@ -60,6 +60,12 @@ constexpr char kCheckSidePanelLoadedScript[] =
 
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
+  void ScreenshotDataUriReceived(const std::string& data_uri) override {
+    last_received_screenshot_data_uri_ = data_uri;
+    // Do the real call on the open WebUI we intercepted.
+    overlay_page_->ScreenshotDataUriReceived(data_uri);
+  }
+
   void ObjectsReceived(
       std::vector<lens::mojom::OverlayObjectPtr> objects) override {
     last_received_objects_ = std::move(objects);
@@ -69,6 +75,11 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     last_received_text_ = std::move(text);
   }
 
+  // The real side panel page that was opened by the lens overlay. Needed to
+  // call real functions on the WebUI.
+  mojo::Remote<lens::mojom::LensPage> overlay_page_;
+
+  std::string last_received_screenshot_data_uri_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
 };
@@ -82,6 +93,7 @@ class LensOverlayControllerFake : public LensOverlayController {
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
+    fake_overlay_page_.overlay_page_.Bind(std::move(page));
     // Set up the fake overlay page to intercept the mojo call.
     LensOverlayController::BindOverlay(
         std::move(receiver),
@@ -89,10 +101,6 @@ class LensOverlayControllerFake : public LensOverlayController {
   }
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
-
-  const LensOverlayPageFake& GetFakeLensOverlayPage() {
-    return fake_overlay_page_;
-  }
 
   LensOverlayPageFake fake_overlay_page_;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
@@ -188,8 +196,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
-// TODO(https://crbug.com/329708692): If this test flakes please disable and
-// refile against the same bug.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   WaitForPaint();
   // State should start in off.
@@ -207,7 +213,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
 
   // Verify screenshot was captured and stored.
   auto screenshot_bitmap = controller->current_screenshot();
-  ASSERT_FALSE(screenshot_bitmap.empty());
+  EXPECT_FALSE(screenshot_bitmap.empty());
+
+  // Verify screenshot was encoded and passed to WebUI.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
@@ -316,6 +328,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   controller->ShowUI();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Simulate mouse events on the overlay for drawing a manual region.
@@ -414,11 +431,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   fake_controller->FlushForTesting();
 
   EXPECT_FALSE(
-      fake_controller->GetFakeLensOverlayPage().last_received_objects_.empty());
+      fake_controller->fake_overlay_page_.last_received_objects_.empty());
   EXPECT_TRUE(test_object->Equals(
-      *fake_controller->GetFakeLensOverlayPage().last_received_objects_[0]));
+      *fake_controller->fake_overlay_page_.last_received_objects_[0]));
   EXPECT_TRUE(test_text->Equals(
-      *fake_controller->GetFakeLensOverlayPage().last_received_text_));
+      *fake_controller->fake_overlay_page_.last_received_text_));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -446,8 +463,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   fake_controller->FlushForTesting();
 
   EXPECT_TRUE(
-      fake_controller->GetFakeLensOverlayPage().last_received_objects_.empty());
-  EXPECT_FALSE(fake_controller->GetFakeLensOverlayPage().last_received_text_);
+      fake_controller->fake_overlay_page_.last_received_objects_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.last_received_text_);
 }
 
 }  // namespace

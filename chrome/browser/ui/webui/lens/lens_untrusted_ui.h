@@ -58,10 +58,6 @@ class LensUntrustedUI : public UntrustedTopChromeWebUIController,
       mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) override;
 
-  void LoadScreenshot(
-      const std::string& resource_path,
-      content::WebUIDataSource::GotDataCallback got_data_callback);
-
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>

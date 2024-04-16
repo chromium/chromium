@@ -52,6 +52,7 @@ export class SelectionOverlayElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+      screenshotDataUri: String,
     };
   }
 
@@ -75,6 +76,8 @@ export class SelectionOverlayElement extends PolymerElement {
   private initialHeight: number = 0;
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean;
+  // The data URI of the current overlay screenshot.
+  private screenshotDataUri: string;
 
   override connectedCallback() {
     super.connectedCallback();

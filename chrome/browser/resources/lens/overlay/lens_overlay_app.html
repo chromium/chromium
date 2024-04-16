@@ -13,9 +13,13 @@
   }
 </style>
 <div class="app-container">
-  <lens-selection-overlay></lens-selection-overlay>
+  <!-- Do not render selection overlay if data URI is empty. -->
+  <template is="dom-if" if="[[screenshotDataUri.length]]">
+    <lens-selection-overlay
+      screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
+  </template>
   <cr-button id="closeButton" class="action-button"
-      on-click="onCloseButtonClick_">
+      on-click="onCloseButtonClick">
     $i18n{close}
   </cr-button>
 </div>

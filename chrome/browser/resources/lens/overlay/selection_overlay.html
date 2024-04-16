@@ -53,16 +53,18 @@
   }
 </style>
 <div id="selectionOverlay">
-  <img id="backgroundImage" draggable="false" src="screenshot.jpeg">
+  <img id="backgroundImage" draggable="false" src="[[screenshotDataUri]]">
   <div id="scrim"></div>
   <!-- Wrapper div is needed to stack the seleciton elements on top of
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
     <post-selection-renderer
-      id="postSelectionRenderer"></post-selection-renderer>
+        id="postSelectionRenderer" screenshot-data-uri="[[screenshotDataUri]]">
+    </post-selection-renderer>
     <lens-object-layer id="objectSelectionLayer"></lens-object-layer>
-    <region-selection id="regionSelectionLayer"></region-selection>
+    <region-selection id="regionSelectionLayer"
+        screenshot-data-uri="[[screenshotDataUri]]"></region-selection>
     <lens-text-layer id="textSelectionLayer"></lens-text-layer>
   </div>
 </div>

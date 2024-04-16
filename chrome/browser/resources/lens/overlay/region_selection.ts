@@ -36,12 +36,15 @@ export class RegionSelectionElement extends PolymerElement {
     return {
       canvasHeight: Number,
       canvasWidth: Number,
+      screenshotDataUri: String,
     };
   }
 
   private canvasHeight: number;
   private canvasWidth: number;
   private context: CanvasRenderingContext2D;
+  // The data URI of the current overlay screenshot.
+  private screenshotDataUri: string;
 
   override ready() {
     super.ready();

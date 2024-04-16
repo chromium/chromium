@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
 
-#include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -18,14 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
-
-const char kScreenshotPath[] = "screenshot.jpeg";
-
-bool ShouldLoadScreenshot(const std::string& path) {
-  return path == kScreenshotPath;
-}
 
 namespace lens {
 
@@ -51,9 +43,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::FrameSrc, frame_src_directive);
 
   // Allow ImgSrc and StyleSrc from chrome-untrusted:// paths for searchbox use.
+  // Allow data URLs to load in WebUI for full page screenshot.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src 'self' chrome-untrusted://resources;");
+      "img-src 'self' chrome-untrusted://resources data:;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");
@@ -68,36 +61,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
   html_source->AddBoolean("reportMetrics", false);
-
-  // Set request filter for loading the screenshot on the page.
-  html_source->SetRequestFilter(
-      base::BindRepeating(&ShouldLoadScreenshot),
-      base::BindRepeating(&LensUntrustedUI::LoadScreenshot,
-                          weak_factory_.GetWeakPtr()));
-}
-
-void LensUntrustedUI::LoadScreenshot(
-    const std::string& resource_path,
-    content::WebUIDataSource::GotDataCallback got_data_callback) {
-  // Get the viewport screenshot
-  const SkBitmap& screenshot_bitmap =
-      LensOverlayController::GetController(web_ui())->current_screenshot();
-
-  // Convert Bitmap into JPEG so it can easily be rendered in the WebUI
-  // TODO(b/328294622): Increase quality if pixelated once rendered.
-  // TODO(b/328630043): Ensure doing JPEG encoding on main thread does not cause
-  // performance issues.
-  std::vector<unsigned char> screenshot_image;
-  if (!gfx::JPEGCodec::Encode(screenshot_bitmap, /*quality=*/90,
-                              &screenshot_image)) {
-    // If encoding fails, the output to the vector is unknown, so we clear to
-    // make sure there is not bad data.
-    std::move(got_data_callback).Run(nullptr);
-    return;
-  }
-
-  std::move(got_data_callback)
-      .Run(base::RefCountedBytes::TakeVector(&screenshot_image));
 }
 
 void LensUntrustedUI::BindInterface(

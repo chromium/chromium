@@ -12,15 +12,16 @@
   /** Render the selected part of the image again so it appears glowing over
       the scrim */
   #backgroundImage {
-    background-image: url('screenshot.jpeg');
-    background-size: contain;
     clip-path: rect(var(--selection-top)
                     calc(var(--selection-left) + var(--selection-width))
                     calc(var(--selection-top) + var(--selection-height))
                     var(--selection-left));
+    height: 100%;
     inset: 0;
+    object-fit: contain;
     position: absolute;
-  }
+    width: 100%;
+}
 
   #selectionCorners {
     background-image: paint(post-selection);
@@ -32,6 +33,6 @@
   }
 </style>
 <div id="postSelection" hidden$="[[!hasSelection(height, width)]]">
-  <div id="backgroundImage"></div>
+  <img id="backgroundImage" src="[[screenshotDataUri]]">
   <div id="selectionCorners"></div>
 </div>

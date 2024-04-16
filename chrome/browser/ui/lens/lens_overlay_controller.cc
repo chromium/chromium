@@ -10,11 +10,13 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -232,6 +234,7 @@ void LensOverlayController::CloseUI() {
   receiver_.reset();
   page_.reset();
   current_screenshot_.reset();
+  current_screenshot_data_uri_.clear();
   lens_overlay_query_controller_.reset();
   scoped_tab_modal_ui_.reset();
   // In the future we may want a hibernate state. In this case we would stop
@@ -262,6 +265,7 @@ void LensOverlayController::BindOverlay(
   }
   receiver_.Bind(std::move(receiver));
   page_.Bind(std::move(page));
+  page_->ScreenshotDataUriReceived(current_screenshot_data_uri_);
   base::UmaHistogramBoolean("Desktop.LensOverlay.Shown", true);
   state_ = State::kOverlay;
 
@@ -437,6 +441,18 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // Need to store the current screenshot before creating the WebUI, since the
   // WebUI is dependent on the screenshot.
   current_screenshot_ = bitmap;
+
+  scoped_refptr<base::RefCountedBytes> data;
+  if (!lens::EncodeImage(
+          bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
+          &data)) {
+    // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
+    CloseUI();
+    return;
+  }
+  current_screenshot_data_uri_ =
+      webui::MakeDataURIForImage(data->data(), "jpeg");
+
   ShowOverlayWidget();
 
   state_ = State::kStartingWebUI;

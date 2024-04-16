@@ -49,6 +49,7 @@ export class PostSelectionRendererElement extends PolymerElement {
       left: Number,
       height: Number,
       width: Number,
+      screenshotDataUri: String,
     };
   }
 
@@ -58,6 +59,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   private left: number = 0;
   private height: number = 0;
   private width: number = 0;
+  // The data URI of the current overlay screenshot.
+  private screenshotDataUri: string;
 
   constructor() {
     super();

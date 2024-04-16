@@ -9,6 +9,7 @@ import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
 
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
@@ -42,6 +43,12 @@ interface LensPageHandler {
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
+  // TODO(b/335214602): This should pass something other than a data URI as
+  // encoding/decoding base64 could be very slow. Large data should instead
+  // use something like a blob URL.
+  // Pass screenshot data URL string to WebUI.
+  ScreenshotDataUriReceived(mojo_base.mojom.BigString screenshot_data_uri);
+
   // Passes objects received from Lens to WebUI for rendering.
   ObjectsReceived(array<OverlayObject> objects);
 

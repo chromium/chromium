@@ -14,6 +14,12 @@ class SkBitmap;
 
 namespace lens {
 
+// Encodes the SkBitmap into JPEG placing the bytes into |output|. Returns false
+// if encoding fails.
+bool EncodeImage(const SkBitmap& image,
+                 int compression_quality,
+                 scoped_refptr<base::RefCountedBytes>* output);
+
 // Downscales and encodes the provided bitmap and then stores it in a
 // lens::ImageData object. Returns an empty object if encoding fails.
 // Downscaling only occurs if the bitmap dimensions exceed configured flag

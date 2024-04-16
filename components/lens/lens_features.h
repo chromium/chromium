@@ -209,6 +209,13 @@ extern std::string GetLensOverlayResultsSearchURL();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageCompressionQuality();
 
+// Returns the finch configured image compression quality for the full
+// screenshot being used for the lens overlay feature. This is different than
+// the "image" compression quality because it is stays on the client to be
+// displayed on the overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayScreenshotRenderQuality();
+
 // Returns the finch configured max image area for the Lens overlay feature.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageMaxArea();

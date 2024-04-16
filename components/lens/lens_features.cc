@@ -51,6 +51,8 @@ const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kResultsSearchUrl{
     &kLensOverlay, "results-search-url", "https://www.google.com/search"};
+const base::FeatureParam<int> kLensOverlayScreenshotRenderQuality{
+    &kLensOverlay, "overlay-screenshot-render-quality", 90};
 const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
     &kLensOverlay, "image-compression-quality", 40};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
@@ -205,6 +207,10 @@ std::string GetLensOverlayResultsSearchURL() {
 
 int GetLensOverlayImageCompressionQuality() {
   return kLensOverlayImageCompressionQuality.Get();
+}
+
+int GetLensOverlayScreenshotRenderQuality() {
+  return kLensOverlayScreenshotRenderQuality.Get();
 }
 
 int GetLensOverlayImageMaxArea() {
