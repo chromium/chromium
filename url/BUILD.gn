@@ -333,6 +333,7 @@ if (is_android && !is_cronet_build) {
         ":url_java",
         "//base:base_java",
         "//base:base_java_test_support",
+        "//build/android:build_java",
         "//content/public/test/android:content_java_test_support",
         "//mojo/public/mojom/base:base_java",
         "//third_party/androidx:androidx_core_core_java",

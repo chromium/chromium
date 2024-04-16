@@ -22,6 +22,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.BuildConfig;
 import org.chromium.url.mojom.Url;
 import org.chromium.url.mojom.UrlConstants;
 
@@ -301,11 +302,27 @@ public class GURL {
     }
 
     /**
+     * Prefer using {#link getSpec} instead. This method override exists only for pretty-printing a
+     * GURL object during Java junit tests, such as when {#code Assert.assertEquals(gurl1, gurl2)}
+     * throws an error.
+     */
+    @Override
+    public String toString() {
+        if (BuildConfig.ENABLE_ASSERTS) {
+            // We prefix the spec with "GURL" in case this object is being compared to a non-GURL
+            // object (such as a String). In such a case, the objects will not be equal but we want
+            // the pretty-printed output to give a hint that this is because the types don't match.
+            return "GURL(" + getSpec() + ")";
+        }
+        return super.toString();
+    }
+
+    /**
      * Deserialize a GURL serialized with {@link GURL#serialize()}. This will re-parse in case of
      * version mismatch, which may trigger undesired native loading. {@see
      * deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
      *
-     * This function should *never* be used on a String coming from an untrusted source.
+     * <p>This function should *never* be used on a String coming from an untrusted source.
      *
      * @return The deserialized GURL (or null if the input is empty).
      */

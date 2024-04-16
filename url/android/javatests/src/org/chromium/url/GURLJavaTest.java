@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.net.URISyntaxException;
@@ -329,5 +330,48 @@ public class GURLJavaTest {
                 new GURL("https://www.google.com/".concat("a".repeat(2 * 1024 * 1024)))
                         .toMojom()
                         .url);
+    }
+
+    /**
+     * Verifies that GURL can be used in assertEquals() statements and similar assertion statements.
+     */
+    @SmallTest
+    @Test
+    public void testSupportsAssertEqualsComparison() {
+        Assert.assertEquals(
+                "GURLs created from the same spec should be equal",
+                new GURL("https://example.test/"),
+                new GURL("https://example.test/"));
+        Assert.assertNotEquals(
+                "GURLs with different paths are not equal",
+                new GURL("https://example.test/"),
+                new GURL("https://example.test/this/has/a/path.html"));
+        Assert.assertNotEquals(
+                "GURLs with different domains are not equal",
+                new GURL("https://example.test/"),
+                new GURL("https://different.test/"));
+        Assert.assertNotEquals(
+                "GURLs with different schemes are not equal",
+                new GURL("https://example.test/"),
+                new GURL("http://example.test/"));
+
+        // When an assertion does fail, make sure that the failure message is human readable.
+        Throwable exception =
+                Assert.assertThrows(
+                        AssertionError.class,
+                        () -> {
+                            Assert.assertEquals(
+                                    new GURL("https://example.test/"),
+                                    new GURL("https://different.test/"));
+                        });
+        if (BuildConfig.ENABLE_ASSERTS) {
+            String expectedMessage =
+                    "expected:<GURL(https://example.test/)> but"
+                            + " was:<GURL(https://different.test/)>";
+            Assert.assertEquals(
+                    "Assertion message was not what we expected.",
+                    expectedMessage,
+                    exception.getMessage());
+        }
     }
 }
