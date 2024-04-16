@@ -41,7 +41,7 @@ build_webui_tests("build_webui_tests") {
     "shimless_rma_app_test.js",
     "wrapup_finalize_page_test.js",
     "wrapup_repair_complete_page_test.js",
-    "wrapup_restock_page_test.js",
+    "wrapup_restock_page_test.ts",
     "wrapup_wait_for_manual_wp_enable_page_test.js",
   ]
 

@@ -43,7 +43,6 @@ const tests = [
   ['ShimlessRMAAppTest', 'shimless_rma_app_test.js'],
   ['WrapupFinalizePageTest', 'wrapup_finalize_page_test.js'],
   ['WrapupRepairCompletePageTest', 'wrapup_repair_complete_page_test.js'],
-  ['WrapupRestockPageTest', 'wrapup_restock_page_test.js'],
   [
     'WrapupWaitForManualWpEnablePageTest',
     'wrapup_wait_for_manual_wp_enable_page_test.js'
