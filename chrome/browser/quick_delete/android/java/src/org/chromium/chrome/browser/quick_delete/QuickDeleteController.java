@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -43,6 +44,7 @@ public class QuickDeleteController {
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull Profile mProfile;
+    private final @NonNull TabModel mTabModel;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
@@ -71,8 +73,8 @@ public class QuickDeleteController {
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
 
-        mDeleteTabsFilter =
-                new QuickDeleteTabsFilter(tabModelSelector.getModel(/* incognito= */ false));
+        mTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        mDeleteTabsFilter = new QuickDeleteTabsFilter(mTabModel);
         mProfile = tabModelSelector.getCurrentModel().getProfile();
         mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
 
@@ -154,7 +156,9 @@ public class QuickDeleteController {
     private void maybeShowQuickDeleteAnimation(
             @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
         mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
-        if (isQuickDeleteFollowupEnabled()) {
+        boolean isTabModelEmpty = mTabModel.getCount() == 0;
+
+        if (isQuickDeleteFollowupEnabled() && !isTabModelEmpty) {
             List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
             mDelegate.showQuickDeleteAnimation(
                     () -> showPostDeleteFeedback(timePeriod, trackerLock), tabs);
