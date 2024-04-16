@@ -74,7 +74,6 @@
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/hid_chooser.h"
@@ -144,6 +143,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -5132,7 +5132,7 @@ class WebContentsAccessibilityEventWatcher
   }
 
   void AccessibilityEventReceived(
-      const content::AXEventNotificationDetails& event_bundle) override {
+      const ui::AXEventNotificationDetails& event_bundle) override {
     bool found = false;
     int event_node_id = 0;
     for (auto& event : event_bundle.events) {

@@ -99,6 +99,8 @@ class SharedDictionaryAccessDetails;
 
 namespace ui {
 class ClipboardFormatType;
+struct AXEventNotificationDetails;
+struct AXLocationChangeNotificationDetails;
 }
 
 namespace content {
@@ -107,8 +109,6 @@ class PrerenderHostRegistry;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
 class SiteInstanceGroup;
-struct AXEventNotificationDetails;
-struct AXLocationChangeNotificationDetails;
 struct ContextMenuParams;
 struct CookieAccessDetails;
 struct GlobalRequestID;
@@ -300,9 +300,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // from a render frame, when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
   virtual void AccessibilityEventReceived(
-      const AXEventNotificationDetails& details) {}
+      const ui::AXEventNotificationDetails& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<AXLocationChangeNotificationDetails>& details) {}
+      const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
 
   // Indicates an unrecoverable error in accessibility. Gracefully turns off
   // accessibility in all frames.

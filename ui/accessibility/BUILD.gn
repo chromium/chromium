@@ -72,6 +72,8 @@ component("ax_base") {
     "ax_event.h",
     "ax_event_intent.cc",
     "ax_event_intent.h",
+    "ax_event_notification_details.cc",
+    "ax_event_notification_details.h",
     "ax_mode.cc",
     "ax_mode.h",
     "ax_mode_histogram_logger.cc",

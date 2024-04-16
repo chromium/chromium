@@ -76,7 +76,7 @@ class MockAutomationEventRouter
   }
 
   void DispatchAccessibilityLocationChange(
-      const content::AXLocationChangeNotificationDetails& details) override {}
+      const ui::AXLocationChangeNotificationDetails& details) override {}
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 

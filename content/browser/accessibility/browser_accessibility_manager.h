@@ -20,11 +20,11 @@
 #include "cc/base/rtree.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -258,7 +258,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy
   // the manager.
-  virtual bool OnAccessibilityEvents(const AXEventNotificationDetails& details);
+  virtual bool OnAccessibilityEvents(
+      const ui::AXEventNotificationDetails& details);
 
   // Allows derived classes to do event pre-processing
   virtual void BeforeAccessibilityEvents();

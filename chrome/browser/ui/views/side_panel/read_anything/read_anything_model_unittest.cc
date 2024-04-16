@@ -11,10 +11,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 
 using testing::_;
 using testing::FloatNear;

@@ -5118,7 +5118,7 @@ void WebContentsImpl::AXTreeIDForMainFrameHasChanged() {
 }
 
 void WebContentsImpl::AccessibilityEventReceived(
-    const AXEventNotificationDetails& details) {
+    const ui::AXEventNotificationDetails& details) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::AccessibilityEventReceived");
   observers_.NotifyObservers(&WebContentsObserver::AccessibilityEventReceived,
@@ -5126,7 +5126,7 @@ void WebContentsImpl::AccessibilityEventReceived(
 }
 
 void WebContentsImpl::AccessibilityLocationChangesReceived(
-    const std::vector<AXLocationChangeNotificationDetails>& details) {
+    const std::vector<ui::AXLocationChangeNotificationDetails>& details) {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::AccessibilityLocationChangesReceived");
   observers_.NotifyObservers(

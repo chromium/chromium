@@ -48,9 +48,13 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace ui::mojom {
+namespace ui {
+struct AXEventNotificationDetails;
+struct AXLocationChangeNotificationDetails;
+namespace mojom {
 enum class VirtualKeyboardMode;
-}  // namespace ui::mojom
+}  // namespace mojom
+}  // namespace ui
 
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
@@ -67,8 +71,6 @@ class RenderViewHost;
 class RenderWidgetHost;
 class Page;
 class WebContents;
-struct AXEventNotificationDetails;
-struct AXLocationChangeNotificationDetails;
 struct CookieAccessDetails;
 struct EntryChangedDetails;
 struct FocusedNodeDetails;
@@ -768,9 +770,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // from a render frame, but only when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
   virtual void AccessibilityEventReceived(
-      const AXEventNotificationDetails& details) {}
+      const ui::AXEventNotificationDetails& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<AXLocationChangeNotificationDetails>& details) {}
+      const std::vector<ui::AXLocationChangeNotificationDetails>& details) {}
 
   // Invoked when theme color is changed.
   virtual void DidChangeThemeColor() {}

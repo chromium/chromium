@@ -50,7 +50,7 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
                                    const gfx::Point& mouse_location,
                                    std::vector<ui::AXEvent> events) override;
   void DispatchAccessibilityLocationChange(
-      const content::AXLocationChangeNotificationDetails& details) override;
+      const ui::AXLocationChangeNotificationDetails& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data,
                             bool result,

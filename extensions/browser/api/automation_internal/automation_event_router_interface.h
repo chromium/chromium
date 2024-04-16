@@ -9,9 +9,9 @@
 #include <set>
 #include <vector>
 
-#include "content/public/browser/ax_event_notification_details.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 
 namespace content {
 class BrowserContext;
@@ -31,7 +31,7 @@ class AutomationEventRouterInterface {
       const gfx::Point& mouse_location,
       std::vector<ui::AXEvent> events) = 0;
   virtual void DispatchAccessibilityLocationChange(
-      const content::AXLocationChangeNotificationDetails& details) = 0;
+      const ui::AXLocationChangeNotificationDetails& details) = 0;
 
   // Notify all automation extensions that an accessibility tree was
   // destroyed. If |browser_context| is null, use the currently active context.

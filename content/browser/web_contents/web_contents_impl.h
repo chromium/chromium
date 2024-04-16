@@ -115,6 +115,10 @@ namespace service_manager {
 class InterfaceProvider;
 }  // namespace service_manager
 
+namespace ui {
+struct AXEventNotificationDetails;
+}
+
 namespace content {
 class JavaScriptDialogDismissNotifier;
 enum class PictureInPictureResult;
@@ -146,7 +150,6 @@ class WakeLockContextHost;
 class WebContentsDelegate;
 class WebContentsImpl;
 class WebContentsView;
-struct AXEventNotificationDetails;
 struct MHTMLGenerationParams;
 class PreloadingAttempt;
 
@@ -677,9 +680,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void ResetAccessibility() override;
   void AXTreeIDForMainFrameHasChanged() override;
   void AccessibilityEventReceived(
-      const AXEventNotificationDetails& details) override;
+      const ui::AXEventNotificationDetails& details) override;
   void AccessibilityLocationChangesReceived(
-      const std::vector<AXLocationChangeNotificationDetails>& details) override;
+      const std::vector<ui::AXLocationChangeNotificationDetails>& details)
+      override;
   ui::AXNode* GetAccessibilityRootNode() override;
   std::string DumpAccessibilityTree(
       bool internal,

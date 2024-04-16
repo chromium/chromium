@@ -56,7 +56,7 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
 }
 
 void AutomationManagerLacros::DispatchAccessibilityLocationChange(
-    const content::AXLocationChangeNotificationDetails& details) {
+    const ui::AXLocationChangeNotificationDetails& details) {
   ui::AXTreeID tree_id = details.ax_tree_id;
   if (!tree_id.token())
     return;

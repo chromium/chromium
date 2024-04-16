@@ -175,7 +175,6 @@
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/active_url_message_filter.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
@@ -283,6 +282,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
@@ -7261,7 +7261,7 @@ bool RenderFrameHostImpl::Reload() {
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
-    const AXEventNotificationDetails& details) {
+    const ui::AXEventNotificationDetails& details) {
   if (!browser_accessibility_manager_) {
     return;
   }
@@ -9716,7 +9716,7 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   GetOrCreateBrowserAccessibilityManager();
 
-  AXEventNotificationDetails details;
+  ui::AXEventNotificationDetails details;
   details.ax_tree_id = tree_id;
   details.events = std::move(updates_and_events->events);
   details.updates = std::move(updates_and_events->updates);
@@ -9805,10 +9805,10 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     manager->OnLocationChanges(changes);
 
   // Send the updates to the automation extension API.
-  std::vector<AXLocationChangeNotificationDetails> details;
+  std::vector<ui::AXLocationChangeNotificationDetails> details;
   details.reserve(changes.size());
   for (auto& change : changes) {
-    AXLocationChangeNotificationDetails detail;
+    ui::AXLocationChangeNotificationDetails detail;
     detail.id = change->id;
     detail.ax_tree_id = GetAXTreeID();
     detail.new_location = change->new_location;
@@ -11437,7 +11437,7 @@ void RenderFrameHostImpl::UpdateAXTreeData() {
     return;
   }
 
-  AXEventNotificationDetails detail;
+  ui::AXEventNotificationDetails detail;
   detail.ax_tree_id = GetAXTreeID();
   detail.updates.resize(1);
   detail.updates[0].has_tree_data = true;

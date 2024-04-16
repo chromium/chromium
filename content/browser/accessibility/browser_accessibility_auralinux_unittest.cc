@@ -306,7 +306,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
   g_object_unref(root_atk_object);
 
   text1.SetName(text1_name + text1_name);
-  AXEventNotificationDetails event_bundle;
+  ui::AXEventNotificationDetails event_bundle;
   event_bundle.updates.resize(1);
   event_bundle.updates[0].nodes.push_back(text1);
   event_bundle.updates[0].nodes.push_back(root);

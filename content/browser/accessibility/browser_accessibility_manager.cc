@@ -409,7 +409,7 @@ void BrowserAccessibilityManager ::
 }
 
 bool BrowserAccessibilityManager::OnAccessibilityEvents(
-    const AXEventNotificationDetails& details) {
+    const ui::AXEventNotificationDetails& details) {
   TRACE_EVENT0("accessibility",
                "BrowserAccessibilityManager::OnAccessibilityEvents");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(

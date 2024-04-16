@@ -62,7 +62,7 @@ void AutomationAsh::DispatchAccessibilityLocationChange(
     const base::UnguessableToken& tree_id,
     int32_t node_id,
     const ui::AXRelativeBounds& bounds) {
-  content::AXLocationChangeNotificationDetails details;
+  ui::AXLocationChangeNotificationDetails details;
   details.ax_tree_id = ui::AXTreeID::FromToken(tree_id);
   details.id = node_id;
   details.new_location = bounds;

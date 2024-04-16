@@ -19,12 +19,12 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "components/translate/core/browser/translate_client.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 
 namespace content {
 class ScopedAccessibilityMode;
@@ -52,7 +52,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void AccessibilityEventReceived(
-      const content::AXEventNotificationDetails& details) override;
+      const ui::AXEventNotificationDetails& details) override;
   void PrimaryPageChanged(content::Page& page) override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
@@ -95,7 +95,7 @@ class ReadAnythingUntrustedPageHandler
   ~ReadAnythingUntrustedPageHandler() override;
 
   void AccessibilityEventReceived(
-      const content::AXEventNotificationDetails& details);
+      const ui::AXEventNotificationDetails& details);
   void PrimaryPageChanged();
 
  private:

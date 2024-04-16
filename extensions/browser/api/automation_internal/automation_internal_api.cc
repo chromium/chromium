@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -44,6 +43,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_event_notification_details.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -339,8 +339,8 @@ class AutomationWebContentsObserver
   }
 
   // content::WebContentsObserver overrides.
-  void AccessibilityEventReceived(const content::AXEventNotificationDetails&
-                                      content_event_bundle) override {
+  void AccessibilityEventReceived(
+      const ui::AXEventNotificationDetails& content_event_bundle) override {
     gfx::Point mouse_location;
 #if defined(USE_AURA)
     mouse_location = aura::Env::GetInstance()->last_mouse_location();
@@ -353,7 +353,7 @@ class AutomationWebContentsObserver
   }
 
   void AccessibilityLocationChangesReceived(
-      const std::vector<content::AXLocationChangeNotificationDetails>& details)
+      const std::vector<ui::AXLocationChangeNotificationDetails>& details)
       override {
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     for (const auto& src : details) {
@@ -368,7 +368,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    content::AXEventNotificationDetails content_event_bundle;
+    ui::AXEventNotificationDetails content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -385,7 +385,7 @@ class AutomationWebContentsObserver
     if (!render_frame_host)
       return;
 
-    content::AXEventNotificationDetails content_event_bundle;
+    ui::AXEventNotificationDetails content_event_bundle;
     content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
     content_event_bundle.events.resize(1);
     content_event_bundle.events[0].event_type =
@@ -453,7 +453,7 @@ class AutomationWebContentsObserver
         return;
       }
 
-      content::AXEventNotificationDetails content_event_bundle;
+      ui::AXEventNotificationDetails content_event_bundle;
       content_event_bundle.ax_tree_id = render_frame_host->GetAXTreeID();
       content_event_bundle.events.resize(1);
       content_event_bundle.events[0].event_type =

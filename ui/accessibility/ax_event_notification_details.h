@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_AX_EVENT_NOTIFICATION_DETAILS_H_
-#define CONTENT_PUBLIC_BROWSER_AX_EVENT_NOTIFICATION_DETAILS_H_
+#ifndef UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_
+#define UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_
 
 #include <vector>
 
-#include "content/common/content_export.h"
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-namespace content {
+namespace ui {
 
-// Use this object in conjunction with the
-// |WebContentsObserver::AccessibilityEventReceived| method.
-struct CONTENT_EXPORT AXEventNotificationDetails {
+struct AX_BASE_EXPORT AXEventNotificationDetails {
  public:
   AXEventNotificationDetails();
 
@@ -38,9 +36,7 @@ struct CONTENT_EXPORT AXEventNotificationDetails {
   std::vector<ui::AXEvent> events;
 };
 
-// Use this object in conjunction with the
-// |WebContentsObserver::AccessibilityLocationChangeReceived| method.
-struct CONTENT_EXPORT AXLocationChangeNotificationDetails {
+struct AX_BASE_EXPORT AXLocationChangeNotificationDetails {
  public:
   AXLocationChangeNotificationDetails();
   AXLocationChangeNotificationDetails(
@@ -52,6 +48,6 @@ struct CONTENT_EXPORT AXLocationChangeNotificationDetails {
   ui::AXRelativeBounds new_location;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_PUBLIC_BROWSER_AX_EVENT_NOTIFICATION_DETAILS_H_
+#endif  // UI_ACCESSIBILITY_AX_EVENT_NOTIFICATION_DETAILS_H_

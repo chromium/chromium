@@ -41,8 +41,6 @@ source_set("browser_sources") {
     "audio_stream_broker.cc",
     "audio_stream_broker.h",
     "authenticator_common.h",
-    "ax_event_notification_details.cc",
-    "ax_event_notification_details.h",
     "ax_inspect_factory.cc",
     "ax_inspect_factory.h",
     "back_forward_cache.h",
