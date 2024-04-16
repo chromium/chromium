@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/fixed_array.h"
 #include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
 #include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber_impl.h"
 #include "chromeos/ash/components/carrier_lock/metrics.h"
@@ -371,10 +372,10 @@ void CarrierLockManager::Initialize() {
   if (base::PathExists(oem_path)) {
     base::File file(oem_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     int64_t length = file.GetLength();
-    std::unique_ptr<char[]> buffer(new char[length + 1]);
-    file.Read(0, buffer.get(), length);
+    base::FixedArray<char> buffer(length + 1);
+    file.Read(0, buffer.data(), length);
     buffer[length] = '\0';
-    manufacturer_ = buffer.get();
+    manufacturer_ = buffer.data();
   } else {
     LOG(WARNING) << "Manufacturer name file doesn't exist!";
   }
@@ -383,10 +384,10 @@ void CarrierLockManager::Initialize() {
   if (base::PathExists(model_path)) {
     base::File file(model_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     int64_t length = file.GetLength();
-    std::unique_ptr<char[]> buffer(new char[length + 1]);
-    file.Read(0, buffer.get(), length);
+    base::FixedArray<char> buffer(length + 1);
+    file.Read(0, buffer.data(), length);
     buffer[length] = '\0';
-    model_ = buffer.get();
+    model_ = buffer.data();
   } else {
     LOG(WARNING) << "Model name file doesn't exist!";
   }
