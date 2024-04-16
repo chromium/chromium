@@ -124,11 +124,21 @@ constexpr char kOpLogicalLessEqual[] = "less_equal";
 constexpr char kOpAvgPoolTypeName[] = "avg_pool";
 constexpr char kOpL2PoolTypeName[] = "l2_pool";
 constexpr char kOpMaxPoolTypeName[] = "max_pool";
+// Reduction operators.
+constexpr char kOpReduceL1[] = "reduce_l1_norm";
+constexpr char kOpReduceL2[] = "reduce_l2_norm";
+constexpr char kOpReduceLogSum[] = "reduce_log_sum";
+constexpr char kOpReduceLogSumExp[] = "reduce_log_sum_exp";
+constexpr char kOpReduceMax[] = "reduce_max";
+constexpr char kOpReduceMean[] = "reduce_mean";
+constexpr char kOpReduceMin[] = "reduce_min";
+constexpr char kOpReduceProduct[] = "reduce_prod";
+constexpr char kOpReduceSum[] = "reduce_sum";
+constexpr char kOpReduceSumSquare[] = "reduce_sum_square";
 // Resample2d operators.
 constexpr char kOpUpsampleBilinearTypeName[] = "upsample_bilinear";
 constexpr char kOpUpsampleNearestNeighborTypeName[] =
     "upsample_nearest_neighbor";
-
 // General op params that are shared across multiple ops.
 constexpr char kOpParamX[] = "x";
 constexpr char kOpParamY[] = "y";
@@ -581,6 +591,10 @@ GraphBuilder::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForPool2d(*operation->get_pool2d(), block));
         break;
       }
+      case mojom::Operation::Tag::kReduce: {
+        RETURN_IF_ERROR(AddOperationForReduce(*operation->get_reduce(), block));
+        break;
+      }
       case mojom::Operation::Tag::kRelu: {
         RETURN_IF_ERROR(AddOperationForRelu(*operation->get_relu(), block));
         break;
@@ -628,7 +642,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
-      case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kReshape:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftmax:
@@ -1175,6 +1188,69 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForPool2d(
        {kParamCeilMode, CreateScalarImmediateValue(false)}});
 
   PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReduce(
+    const mojom::Reduce& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  if (!kFloatsAndInt32DataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  switch (operation.kind) {
+    case mojom::Reduce::Kind::kL1:
+      op->set_type(kOpReduceL1);
+      break;
+    case mojom::Reduce::Kind::kL2:
+      op->set_type(kOpReduceL2);
+      break;
+    case mojom::Reduce::Kind::kLogSum:
+      op->set_type(kOpReduceLogSum);
+      break;
+    case mojom::Reduce::Kind::kLogSumExp:
+      op->set_type(kOpReduceLogSumExp);
+      break;
+    case mojom::Reduce::Kind::kMax:
+      op->set_type(kOpReduceMax);
+      break;
+    case mojom::Reduce::Kind::kMean:
+      op->set_type(kOpReduceMean);
+      break;
+    case mojom::Reduce::Kind::kMin:
+      op->set_type(kOpReduceMin);
+      break;
+    case mojom::Reduce::Kind::kProduct:
+      op->set_type(kOpReduceProduct);
+      break;
+    case mojom::Reduce::Kind::kSum:
+      op->set_type(kOpReduceSum);
+      break;
+    case mojom::Reduce::Kind::kSumSquare:
+      op->set_type(kOpReduceSumSquare);
+      break;
+  }
+
+  constexpr char kParamAxes[] = "axes";
+  constexpr char kParamKeepDims[] = "keep_dims";
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+
+  std::vector<int32_t> axes;
+  base::ranges::transform(
+      operation.axes, std::back_inserter(axes),
+      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
+       {kParamKeepDims,
+        CreateScalarImmediateValue(operation.keep_dimensions)}});
   return base::ok();
 }
 
