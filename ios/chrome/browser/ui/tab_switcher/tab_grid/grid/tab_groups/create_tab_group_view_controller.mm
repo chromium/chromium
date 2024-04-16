@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -26,28 +27,40 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr CGFloat kBackgroundAlpha = 0.6;
-constexpr CGFloat kColoredDotSize = 21;
-constexpr CGFloat kTitleHorizontalMargin = 16;
-constexpr CGFloat kTitleVerticalMargin = 10;
-constexpr CGFloat kHorizontalMargin = 32;
-constexpr CGFloat kdotAndFieldContainerMargin = 44;
-constexpr CGFloat kDotTitleSeparationMargin = 12;
-constexpr CGFloat kTitleBackgroundCornerRadius = 17;
-constexpr CGFloat kButtonsHeight = 50;
-constexpr CGFloat kButtonsMargin = 8;
-constexpr CGFloat kButtonBackgroundCornerRadius = 15;
-constexpr CGFloat kColoredButtonSize = 24;
-constexpr CGFloat kColorSelectionImageSize = 13;
-constexpr CGFloat kColorListViewHeight = 44;
-constexpr CGFloat kColorListBottomMargin = 16;
-constexpr CGFloat kSnapshotViewRatio = 0.83;
-constexpr CGFloat kSnapshotViewMaxHeight = 190;
-constexpr CGFloat kSnapshotViewCornerRadius = 18;
-constexpr CGFloat kSnapshotViewVerticalMargin = 25;
-constexpr CGFloat kSingleSnapshotRatio = 0.75;
-constexpr CGFloat kContainersMaxWidth = 400;
-constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
+
+// View constants.
+const CGFloat kBackgroundAlpha = 0.6;
+const CGFloat kHorizontalMargin = 32;
+const CGFloat kdotAndFieldContainerMargin = 44;
+const CGFloat kDotTitleSeparationMargin = 12;
+const CGFloat kContainersMaxWidth = 400;
+
+// Group color selection constants.
+const CGFloat kColoredButtonSize = 24;
+const CGFloat kColoredButtonContentInset = 8;
+const CGFloat kColorSelectionImageSize = 13;
+const CGFloat kColorListViewHeight = 44;
+const CGFloat kColorListBottomMargin = 16;
+const CGFloat kColoredDotSize = 21;
+
+// Snapshot view constants.
+const CGFloat kSnapshotViewRatio = 0.83;
+const CGFloat kSnapshotViewMaxHeight = 190;
+const CGFloat kSnapshotViewCornerRadius = 18;
+const CGFloat kSnapshotViewVerticalMargin = 25;
+const CGFloat kSingleSnapshotRatio = 0.75;
+const CGFloat kMultipleSnapshotsRatio = 0.90;
+
+// Group title constants
+const CGFloat kTitleHorizontalMargin = 16;
+const CGFloat kTitleVerticalMargin = 10;
+const CGFloat kTitleBackgroundCornerRadius = 17;
+
+// Button constants
+const CGFloat kButtonsHeight = 50;
+const CGFloat kButtonsMargin = 8;
+const CGFloat kButtonBackgroundCornerRadius = 15;
+
 }  // namespace
 
 @implementation CreateTabGroupViewController {
@@ -360,6 +373,9 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 // Creates all the available color buttons.
 - (void)createColorSelectionButtons {
   NSMutableArray* buttons = [[NSMutableArray alloc] init];
+  const tab_groups::ColorLabelMap colorLabelMap =
+      tab_groups::GetTabGroupColorLabelMap();
+
   for (tab_groups::TabGroupColorId colorID :
        TabGroup::AllPossibleTabGroupColors()) {
     UIButton* colorButton = [[UIButton alloc] init];
@@ -369,8 +385,12 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
     UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.baseBackgroundColor = [UIColor clearColor];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(8, 8, 8, 8);
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsets(
+        kColoredButtonContentInset, kColoredButtonContentInset,
+        kColoredButtonContentInset, kColoredButtonContentInset);
     colorButton.configuration = buttonConfiguration;
+    colorButton.accessibilityLabel =
+        base::SysUTF16ToNSString(colorLabelMap.at(colorID));
 
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
         configurationWithPointSize:kColoredButtonSize
