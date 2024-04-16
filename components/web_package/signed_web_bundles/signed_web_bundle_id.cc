@@ -21,11 +21,13 @@ namespace web_package {
 // static
 base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
     base::StringPiece encoded_id) {
-  if (encoded_id.size() != kEd25519EncodedIdLength) {
-    return base::unexpected(
-        base::StringPrintf("The signed web bundle ID must be exactly %zu "
-                           "characters long, but was %zu characters long.",
-                           kEd25519EncodedIdLength, encoded_id.size()));
+  if (encoded_id.size() != kEd25519EncodedIdLength &&
+      encoded_id.size() != kEcdsaP256EncodedIdLength) {
+    return base::unexpected(base::StringPrintf(
+        "The signed web bundle ID must be exactly %zu "
+        "characters long (for Ed25519) or %zu characters long (for ECDSA "
+        "P-256), but was %zu characters long.",
+        kEd25519EncodedIdLength, kEcdsaP256EncodedIdLength, encoded_id.size()));
   }
 
   for (const char c : encoded_id) {
@@ -66,12 +68,22 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
           kEd25519EncodedIdLength, encoded_id.size()));
     }
   }
+  if (base::ranges::equal(type_suffix, kTypeEcdsaP256PublicKey)) {
+    if (decoded_id.size() == kEcdsaP256DecodedIdLength) {
+      return SignedWebBundleId(Type::kEcdsaP256PublicKey, encoded_id);
+    } else {
+      return base::unexpected(base::StringPrintf(
+          "An ECDSA P-256 signed web bundle ID must be exactly %zu "
+          "characters long, but was %zu characters long.",
+          kEcdsaP256EncodedIdLength, encoded_id.size()));
+    }
+  }
   return base::unexpected("The signed web bundle ID has an unknown type.");
 }
 
 // static
 SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
-    Ed25519PublicKey public_key) {
+    const Ed25519PublicKey& public_key) {
   std::array<uint8_t, kEd25519DecodedIdLength> decoded_id;
   base::ranges::copy(public_key.bytes(), decoded_id.begin());
   base::ranges::copy(kTypeEd25519PublicKey,
@@ -81,6 +93,20 @@ SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
       decoded_id, base32::Base32EncodePolicy::OMIT_PADDING);
   auto encoded_id = base::ToLowerASCII(encoded_id_uppercase);
   return SignedWebBundleId(Type::kEd25519PublicKey, encoded_id);
+}
+
+// static
+SignedWebBundleId SignedWebBundleId::CreateForEcdsaP256PublicKey(
+    const EcdsaP256PublicKey& public_key) {
+  std::array<uint8_t, kEcdsaP256DecodedIdLength> decoded_id;
+  base::ranges::copy(public_key.bytes(), decoded_id.begin());
+  base::ranges::copy(kTypeEcdsaP256PublicKey,
+                     decoded_id.end() - kTypeSuffixLength);
+
+  auto encoded_id_uppercase = base32::Base32Encode(
+      decoded_id, base32::Base32EncodePolicy::OMIT_PADDING);
+  auto encoded_id = base::ToLowerASCII(encoded_id_uppercase);
+  return SignedWebBundleId(Type::kEcdsaP256PublicKey, encoded_id);
 }
 
 // static
