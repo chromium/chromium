@@ -24,6 +24,7 @@ module.exports = {
     'new-parens': 'error',
     'no-array-constructor': 'error',
     'no-console': ['error', {allow: ['info', 'warn', 'error', 'assert']}],
+    'no-debugger': 'error',
     'no-extra-boolean-cast': 'error',
     'no-extra-semi': 'error',
     'no-new-wrappers': 'error',

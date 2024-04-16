@@ -38,10 +38,6 @@ class JSChecker(object):
         '    // <if expr="chromeos">\n' +
         "    // </if>\n")
 
-  def DebuggerCheck(self, i, line):
-    return self.RegexCheck(i, line, r"^\s*(debugger);",
-                           "Debugger statements should be removed")
-
   def EndJsDocCommentCheck(self, i, line):
     msg = "End JSDoc comments with */ instead of **/"
     def _check(regex):
@@ -139,7 +135,6 @@ class JSChecker(object):
                 self.BindThisCheck(i, line),
                 self.ChromeSendCheck(i, line),
                 self.CommentIfAndIncludeCheck(i, line),
-                self.DebuggerCheck(i, line),
                 self.EndJsDocCommentCheck(i, line),
                 self.ExtraDotInGenericCheck(i, line),
                 self.InheritDocCheck(i, line),

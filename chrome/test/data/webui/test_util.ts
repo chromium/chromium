@@ -139,6 +139,7 @@ export async function launchDebugger(timeout: number = 2000) {
   await new Promise<void>(res => {
     window.setTimeout(() => res(), timeout);
   });
+   /* eslint-disable-next-line no-debugger */
   debugger;
 }
 
