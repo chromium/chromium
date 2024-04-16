@@ -1214,7 +1214,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1240,7 +1241,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1270,7 +1272,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1307,7 +1310,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1351,7 +1355,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1386,7 +1391,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1421,7 +1427,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1460,7 +1467,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1505,7 +1513,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1541,7 +1550,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1577,7 +1587,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1615,7 +1626,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1640,7 +1652,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1666,7 +1679,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1696,7 +1710,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1722,7 +1737,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1759,7 +1775,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1803,7 +1820,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1838,7 +1856,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1873,7 +1892,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1912,7 +1932,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1957,7 +1978,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1993,7 +2015,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2029,7 +2052,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2067,7 +2091,8 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.5"
+            "os": "Mac-13.5",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2094,7 +2119,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2122,7 +2148,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2154,7 +2181,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2193,7 +2221,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2239,7 +2268,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2276,7 +2306,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2313,7 +2344,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2354,7 +2386,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2401,7 +2434,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2439,7 +2473,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2477,7 +2512,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2517,7 +2553,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2544,7 +2581,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2572,7 +2610,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2604,7 +2643,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2632,7 +2672,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -2671,7 +2712,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2717,7 +2759,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2754,7 +2797,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2791,7 +2835,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2832,7 +2877,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2879,7 +2925,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2917,7 +2964,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2955,7 +3003,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2995,7 +3044,8 @@
             "gpu": "1002:67ef",
             "hidpi": "1",
             "os": "Mac-13.5",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3020,7 +3070,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3046,7 +3097,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3076,7 +3128,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3102,7 +3155,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3125,7 +3179,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3162,7 +3217,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3206,7 +3262,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3241,7 +3298,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3276,7 +3334,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3315,7 +3374,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3360,7 +3420,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3396,7 +3457,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3432,7 +3494,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3469,7 +3532,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3495,7 +3559,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3521,7 +3586,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3551,7 +3617,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3577,7 +3644,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3600,7 +3668,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -3637,7 +3706,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3681,7 +3751,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3716,7 +3787,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3751,7 +3823,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3790,7 +3863,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3835,7 +3909,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3871,7 +3946,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3907,7 +3983,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -3944,7 +4021,8 @@
             "display_attached": "1",
             "gpu": "10de:2184-27.21.14.5638",
             "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
+            "pool": "chromium.tests.gpu",
+            "puppet_env": "production"
           },
           "hard_timeout": 1800,
           "idempotent": false,

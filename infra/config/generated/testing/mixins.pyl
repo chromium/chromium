@@ -1133,6 +1133,13 @@
       },
     },
   },
+  'puppet_production': {
+    'swarming': {
+      'dimensions': {
+        'puppet_env': 'production',
+      },
+    },
+  },
   'record_failed_tests': {
     'args': [
       '--record-video',

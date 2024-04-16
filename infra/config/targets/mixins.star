@@ -1467,6 +1467,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "puppet_production",
+    swarming = targets.swarming(
+        dimensions = {
+            "puppet_env": "production",
+        },
+    ),
+)
+
+targets.mixin(
     name = "record_failed_tests",
     args = [
         "--record-video",

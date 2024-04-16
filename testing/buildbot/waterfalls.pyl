@@ -4011,6 +4011,8 @@
         'os_type': 'linux',
         'mixins': [
           'linux_nvidia_gtx_1660_stable',
+          # TODO(crbug.com/331756538): Specify the puppet_production mixin once
+          # testing is moved to Ubuntu 22.
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4022,6 +4024,8 @@
         'os_type': 'linux',
         'mixins': [
           'linux_nvidia_gtx_1660_stable',
+          # TODO(crbug.com/331756538): Specify the puppet_production mixin once
+          # testing is moved to Ubuntu 22.
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4033,6 +4037,7 @@
         'os_type': 'mac',
         'mixins': [
           'mac_mini_intel_gpu_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4044,6 +4049,7 @@
         'os_type': 'mac',
         'mixins': [
           'mac_mini_intel_gpu_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4055,6 +4061,7 @@
         'os_type': 'mac',
         'mixins': [
           'mac_retina_amd_gpu_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4066,6 +4073,7 @@
         'os_type': 'mac',
         'mixins': [
           'mac_retina_amd_gpu_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -4077,6 +4085,7 @@
         'os_type': 'win',
         'mixins': [
           'win10_nvidia_gtx_1660_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_win_gtests',
@@ -4088,6 +4097,7 @@
         'os_type': 'win',
         'mixins': [
           'win10_nvidia_gtx_1660_stable',
+          'puppet_production',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_win_gtests',
