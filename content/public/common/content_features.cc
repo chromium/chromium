@@ -362,7 +362,7 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
 // If enabled use the expanded range for the prefetch cmd line option.
 BASE_FEATURE(kExpandedPrefetchRange,
              "ExpandedPrefetchRange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_WIN)
 
