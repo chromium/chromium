@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -279,17 +278,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   EXPECT_NE(ntp1_host, web1_host);
   EXPECT_NE(ntp1_host, extension1_host);
 
-  // Hosted apps only share with instances of the same app, unless we're in a
-  // legacy mode that allows different hosted apps loaded from different paths
-  // of the same site to share a process.
+  // Hosted apps only share with instances of the same app.
   // Note that hosted2_host's app has the background permission and will use
   // process-per-site mode.
   EXPECT_EQ(hosted1_host, hosted1_second_host);
-  if (base::FeatureList::IsEnabled(kStopUsingRenderProcessHostPrivilege)) {
-    EXPECT_NE(hosted1_host, hosted2_host);
-  } else {
-    EXPECT_EQ(hosted1_host, hosted2_host);
-  }
+  EXPECT_NE(hosted1_host, hosted2_host);
   EXPECT_NE(hosted1_host, web1_host);
   EXPECT_NE(hosted1_host, extension1_host);
 
