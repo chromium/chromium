@@ -146,34 +146,51 @@ template("mixed_test") {
     # don't have issues.
     import("//third_party/jni_zero/jni_zero.gni")
   }
-  target(invoker.target_type, target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + _rs_vars + [ "fuzztests" ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    sources = _cc_sources
-    if (!defined(deps)) {
-      deps = []
-    }
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
 
-    if (_rs_sources != []) {
-      deps += [ ":${_rust_target_name}" ]
+  _building_fuzztest_fuzzer =
+      defined(invoker.fuzztests) && use_fuzzing_engine && is_linux
+
+  # Fuzz tests are small fuzzers that do not require particularly-powerful
+  # machines to run, so we do not build them when `high_end_fuzzer_targets`
+  # is true and we are building fuzztests in fuzzing mode.
+  if (_building_fuzztest_fuzzer && high_end_fuzzer_targets) {
+    not_needed(invoker, "*")
+    not_needed("*")
+
+    # We still want a reachable target, so make it a no-op empty group. This
+    # will let the fuzzer builders crawl the build graph and invoke ninja in
+    # the same way regardless of GN args.
+    group(target_name) {
     }
-    if (defined(invoker.fuzztests)) {
-      deps += [ "//third_party/fuzztest" ]
+  } else {
+    target(invoker.target_type, target_name) {
+      forward_variables_from(
+          invoker,
+          "*",
+          TESTONLY_AND_VISIBILITY + _rs_vars + [ "fuzztests" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      sources = _cc_sources
+      if (!defined(deps)) {
+        deps = []
+      }
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+
+      if (_rs_sources != []) {
+        deps += [ ":${_rust_target_name}" ]
+      }
+      if (defined(invoker.fuzztests)) {
+        deps += [ "//third_party/fuzztest" ]
+      }
     }
   }
 
-  if (defined(invoker.fuzztests) && use_fuzzing_engine && is_linux) {
+  if (_building_fuzztest_fuzzer && !high_end_fuzzer_targets) {
     # This test contains fuzztests. We want to package them up in a way
     # which ClusterFuzz knows how to extract. We need to:
     # 1) make an executable for each individual fuzz test;
-    # 2) name the main executable something specific so that ClusterFuzz
-    #    knows how to extract it
-    # 3) check that the fuzztests variable is correct.
+    # 2) check that the fuzztests variable is correct.
     # At present, all this is likely to work only if invoker.target_type
     # is 'executable', since we generate a wrapper script that assumes so.
     # At the moment, we aim to fuzz these fuzztests only on Linux so that's

@@ -23,6 +23,8 @@ template("in_process_fuzzer") {
       target_type = "fuzzer_test"
     }
     target(target_type, target_name) {
+      # Those tests are big, they need a lot of resources.
+      high_end_job_required = true
       deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps

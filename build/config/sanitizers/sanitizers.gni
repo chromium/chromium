@@ -116,6 +116,14 @@ declare_args() {
 
   # When true, sanitizer warnings will cause test case failures.
   fail_on_san_warnings = false
+
+  # When true, only builds fuzzer targets that require high end machines to run.
+  # Otherwise, builds all the targets.
+  # TODO(paulsemel): once we have everything implemented on the recipe side, we
+  # can change the behaviour for the false case, and only build the non high-end
+  # jobs, so that they do not appear in the zip. As for now, this behaviour
+  # ensures nothing breaks.
+  high_end_fuzzer_targets = false
 }
 
 declare_args() {
