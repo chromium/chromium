@@ -140,7 +140,6 @@ export class ExtensionsDetailViewElement extends
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
-  private safetyCheckExtensionsEnabled_: boolean;
 
   // <if expr="chromeos_ash">
   private readonly isLacrosEnabled_: boolean;
