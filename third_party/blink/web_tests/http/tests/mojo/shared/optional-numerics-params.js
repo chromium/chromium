@@ -26,6 +26,16 @@ class ParamsJsImpl {
       'sendNullFloat',
       'sendNullDouble',
       'sendNullEnum',
+
+      'sendNullBools',
+      'sendNullInt16s',
+      'sendNullUint32s',
+      'sendNullDoubles',
+      'sendNullEnums',
+
+      'sendNullBoolMap',
+      'sendNullDoubleMap',
+      'sendNullEnumMap',
     ];
     for (const method of sendNullMethods) {
       this[method] = this.sendNull;
@@ -44,6 +54,16 @@ class ParamsJsImpl {
       'sendOptionalFloat',
       'sendOptionalDouble',
       'sendOptionalEnum',
+
+      'sendOptionalBools',
+      'sendOptionalInt16s',
+      'sendOptionalUint32s',
+      'sendOptionalDoubles',
+      'sendOptionalEnums',
+
+      'sendOptionalBoolMap',
+      'sendOptionalDoubleMap',
+      'sendOptionalEnumMap',
     ];
     for (const method of sendOptionalMethods) {
       this[method] = this.sendOptional;
@@ -160,6 +180,20 @@ for (const {method, numericalType} of testNullMethods) {
 }
 
 promise_test(async () => {
+  assert_empty_response(await cpp.sendNullBools([null, null]));
+  assert_empty_response(await cpp.sendNullInt16s([null, null]));
+  assert_empty_response(await cpp.sendNullUint32s([null, null]));
+  assert_empty_response(await cpp.sendNullDoubles([null, null]));
+  assert_empty_response(await cpp.sendNullEnums([null, null]));
+});
+
+promise_test(async () => {
+  assert_empty_response(await cpp.sendNullBoolMap({0: null}));
+  assert_empty_response(await cpp.sendNullDoubleMap({1: null}));
+  assert_empty_response(await cpp.sendNullEnumMap({2: null}));
+});
+
+promise_test(async () => {
   assert_empty_response(await cpp.sendNullStructWithOptionalNumerics(null));
 }, `JS encoding and C++ decoding of null struct with optional numerics.`);
 
@@ -225,10 +259,56 @@ for (const {method, valueToUse, numericalType} of testMethods) {
   promise_test(async () => {
     assert_value_equals(await cpp[method](valueToUse), valueToUse);
   }, `JS encoding and C++ decoding of optional ${numericalType}.`);
+}
 
-  promise_test(async () => {
-    assert_value_equals(await cpp[method](valueToUse), valueToUse);
-  }, `JS decoding of optional ${numericalType} params.`);
+const testArrayMethods = [{
+  method: 'sendOptionalBools',
+  valuesToUse: [true, null, false, true],
+  expected: [true, false, true],
+}, {
+  method: 'sendOptionalInt16s',
+  valuesToUse: [3, null, 2, 1],
+  expected: [3, 2, 1],
+}, {
+  method: 'sendOptionalUint32s',
+  valuesToUse: [null, 1],
+  expected: [1],
+}, {
+  method: 'sendOptionalDoubles',
+  valuesToUse: [6.66, 9.99],
+  expected: [6.66, 9.99],
+}, {
+  method: 'sendOptionalEnums',
+  valuesToUse: [null, OptionalNumericsRegularEnum.kBar, null, null],
+  expected: [OptionalNumericsRegularEnum.kBar],
+}];
+
+for (const {method, valuesToUse, expected} of testArrayMethods) {
+  promise_test(async() => {
+    const response = await cpp[method](valuesToUse);
+    assert_array_equals(response.values, expected, `JS encoding and C++ decoding of: ${method}`);
+  });
+}
+
+const testMapMethods = [{
+  method: 'sendOptionalBoolMap',
+  valuesToUse: {0: true, 1: null, 2:false},
+  expected: {0: true, 2: false},
+}, {
+  method: 'sendOptionalDoubleMap',
+  valuesToUse: {3: 3.33, 4: null},
+  expected: {3: 3.33},
+}, {
+  method: 'sendOptionalEnumMap',
+  valuesToUse: {5: null, 6: OptionalNumericsRegularEnum.kBar},
+  expected: {6: OptionalNumericsRegularEnum.kBar},
+}];
+
+for (const {method, valuesToUse, expected} of testMapMethods) {
+  promise_test(async() => {
+    const response = await cpp[method](valuesToUse);
+    assert_object_equals(response.values, expected, `JS encoding and C++ decoding of: ${method}`);
+  });
 }
 
 const structFields = [

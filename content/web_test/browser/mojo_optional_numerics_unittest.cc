@@ -85,6 +85,76 @@ void Params::SendNullEnum(std::optional<mojom::RegularEnum> optional_enum,
   std::move(callback).Run();
 }
 
+template <typename T>
+void CheckAllNulls(const std::vector<T>& optionals) {
+  for (auto& optional : optionals) {
+    CHECK(!optional.has_value());
+  }
+}
+
+void Params::SendNullBools(
+    const std::vector<std::optional<bool>>& optional_bools,
+    SendNullBoolsCallback callback) {
+  CheckAllNulls(optional_bools);
+  std::move(callback).Run();
+}
+
+void Params::SendNullInt16s(
+    const std::vector<std::optional<int16_t>>& optional_int16s,
+    SendNullInt16sCallback callback) {
+  CheckAllNulls(optional_int16s);
+  std::move(callback).Run();
+}
+
+void Params::SendNullUint32s(
+    const std::vector<std::optional<uint32_t>>& optional_uint32s,
+    SendNullUint32sCallback callback) {
+  CheckAllNulls(optional_uint32s);
+  std::move(callback).Run();
+}
+
+void Params::SendNullDoubles(
+    const std::vector<std::optional<double>>& optional_doubles,
+    SendNullDoublesCallback callback) {
+  CheckAllNulls(optional_doubles);
+  std::move(callback).Run();
+}
+
+void Params::SendNullEnums(
+    const std::vector<std::optional<mojom::RegularEnum>>& optional_enums,
+    SendNullEnumsCallback callback) {
+  CheckAllNulls(optional_enums);
+  std::move(callback).Run();
+}
+
+template <typename K, typename V>
+void CheckAllNulls(const base::flat_map<K, V>& values) {
+  for (auto& pair : values) {
+    CHECK(!pair.second.has_value());
+  }
+}
+
+void Params::SendNullBoolMap(
+    const base::flat_map<int32_t, std::optional<bool>>& values,
+    SendNullBoolMapCallback callback) {
+  CheckAllNulls(values);
+  std::move(callback).Run();
+}
+
+void Params::SendNullDoubleMap(
+    const base::flat_map<int32_t, std::optional<double>>& values,
+    SendNullDoubleMapCallback callback) {
+  CheckAllNulls(values);
+  std::move(callback).Run();
+}
+
+void Params::SendNullEnumMap(
+    const base::flat_map<int32_t, std::optional<mojom::RegularEnum>>& values,
+    SendNullEnumMapCallback callback) {
+  CheckAllNulls(values);
+  std::move(callback).Run();
+}
+
 void Params::SendOptionalBool(std::optional<bool> optional_bool,
                               SendOptionalBoolCallback callback) {
   std::move(callback).Run(optional_bool.value());
@@ -143,6 +213,76 @@ void Params::SendOptionalDouble(std::optional<double> optional_double,
 void Params::SendOptionalEnum(std::optional<mojom::RegularEnum> optional_enum,
                               SendOptionalEnumCallback callback) {
   std::move(callback).Run(optional_enum.value());
+}
+
+template <typename T>
+std::vector<T> Unwrap(const std::vector<std::optional<T>>& in) {
+  std::vector<T> out;
+  for (auto e : in) {
+    if (e) {
+      out.push_back(*e);
+    }
+  }
+  return out;
+}
+
+void Params ::SendOptionalBools(
+    const std::vector<std::optional<bool>>& optional_bools,
+    SendOptionalBoolsCallback callback) {
+  std::move(callback).Run(Unwrap(optional_bools));
+}
+
+void Params ::SendOptionalInt16s(
+    const std::vector<std::optional<int16_t>>& optional_int16s,
+    SendOptionalInt16sCallback callback) {
+  std::move(callback).Run(Unwrap(optional_int16s));
+}
+
+void Params ::SendOptionalUint32s(
+    const std::vector<std::optional<uint32_t>>& optional_uint32s,
+    SendOptionalUint32sCallback callback) {
+  std::move(callback).Run(Unwrap(optional_uint32s));
+}
+
+void Params ::SendOptionalDoubles(
+    const std::vector<std::optional<double>>& optional_doubles,
+    SendOptionalDoublesCallback callback) {
+  std::move(callback).Run(Unwrap(optional_doubles));
+}
+
+void Params ::SendOptionalEnums(
+    const std::vector<std::optional<mojom::RegularEnum>>& optional_enums,
+    SendOptionalEnumsCallback callback) {
+  std::move(callback).Run(Unwrap(optional_enums));
+}
+
+template <typename K, typename V>
+base::flat_map<K, V> Unwrap(const base::flat_map<K, std::optional<V>>& values) {
+  base::flat_map<K, V> out;
+  for (const auto& entry : values) {
+    if (entry.second) {
+      out.insert({entry.first, *entry.second});
+    }
+  }
+  return out;
+}
+
+void Params::SendOptionalBoolMap(
+    const base::flat_map<int32_t, std::optional<bool>>& values,
+    SendOptionalBoolMapCallback callback) {
+  std::move(callback).Run(Unwrap(values));
+}
+
+void Params::SendOptionalDoubleMap(
+    const base::flat_map<int32_t, std::optional<double>>& values,
+    SendOptionalDoubleMapCallback callback) {
+  std::move(callback).Run(Unwrap(values));
+}
+
+void Params::SendOptionalEnumMap(
+    const base::flat_map<int32_t, std::optional<mojom::RegularEnum>>& values,
+    SendOptionalEnumMapCallback callback) {
+  std::move(callback).Run(Unwrap(values));
 }
 
 void Params::SendNullStructWithOptionalNumerics(
@@ -235,6 +375,41 @@ void ResponseParams::GetNullDouble(GetNullDoubleCallback callback) {
 void ResponseParams::GetNullEnum(GetNullEnumCallback callback) {
   std::move(callback).Run(std::nullopt);
 }
+void ResponseParams::GetNullBools(GetNullBoolsCallback callback) {
+  std::move(callback).Run(std::vector({std::optional<bool>()}));
+}
+
+void ResponseParams::GetNullInt16s(GetNullInt16sCallback callback) {
+  std::move(callback).Run(std::vector({std::optional<int16_t>()}));
+}
+
+void ResponseParams::GetNullUint32s(GetNullUint32sCallback callback) {
+  std::move(callback).Run(std::vector({std::optional<uint32_t>()}));
+}
+
+void ResponseParams::GetNullDoubles(GetNullDoublesCallback callback) {
+  std::move(callback).Run(std::vector({std::optional<double>()}));
+}
+
+void ResponseParams::GetNullEnums(GetNullEnumsCallback callback) {
+  std::move(callback).Run(std::vector({std::optional<mojom::RegularEnum>()}));
+}
+
+void ResponseParams::GetNullBoolMap(GetNullBoolMapCallback callback) {
+  std::move(callback).Run(
+      base::flat_map<int16_t, std::optional<bool>>({{0, std::nullopt}}));
+}
+
+void ResponseParams::GetNullInt32Map(GetNullInt32MapCallback callback) {
+  std::move(callback).Run(
+      base::flat_map<int16_t, std::optional<int32_t>>({{0, std::nullopt}}));
+}
+
+void ResponseParams::GetNullEnumMap(GetNullEnumMapCallback callback) {
+  std::move(callback).Run(
+      base::flat_map<int16_t, std::optional<mojom::RegularEnum>>(
+          {{0, std::nullopt}}));
+}
 
 void ResponseParams::GetOptionalBool(bool value,
                                      GetOptionalBoolCallback callback) {
@@ -294,6 +469,54 @@ void ResponseParams::GetOptionalDouble(double value,
 void ResponseParams::GetOptionalEnum(mojom::RegularEnum value,
                                      GetOptionalEnumCallback callback) {
   std::move(callback).Run(value);
+}
+
+template <typename T>
+std::vector<std::optional<T>> WrapWithNulls(T value) {
+  return std::vector<std::optional<T>>({std::nullopt, value, std::nullopt});
+}
+
+void ResponseParams::GetOptionalBools(bool value,
+                                      GetOptionalBoolsCallback callback) {
+  std::move(callback).Run(WrapWithNulls(value));
+}
+void ResponseParams::GetOptionalInt16s(int16_t value,
+                                       GetOptionalInt16sCallback callback) {
+  std::move(callback).Run(WrapWithNulls(value));
+}
+void ResponseParams::GetOptionalUint32s(uint32_t value,
+                                        GetOptionalUint32sCallback callback) {
+  std::move(callback).Run(WrapWithNulls(value));
+}
+void ResponseParams::GetOptionalDoubles(double value,
+                                        GetOptionalDoublesCallback callback) {
+  std::move(callback).Run(WrapWithNulls(value));
+}
+void ResponseParams::GetOptionalEnums(mojom::RegularEnum value,
+                                      GetOptionalEnumsCallback callback) {
+  std::move(callback).Run(WrapWithNulls(value));
+}
+
+template <typename K, typename V>
+base::flat_map<K, std::optional<V>> WrapWithNulls(K key, V value) {
+  return base::flat_map<K, std::optional<V>>(
+      {{key - 1, std::nullopt}, {key, value}, {key + 1, std::nullopt}});
+}
+
+void ResponseParams::GetOptionalBoolMap(int16_t key,
+                                        bool value,
+                                        GetOptionalBoolMapCallback callback) {
+  std::move(callback).Run(WrapWithNulls(key, value));
+}
+void ResponseParams::GetOptionalFloatMap(int16_t key,
+                                         float value,
+                                         GetOptionalFloatMapCallback callback) {
+  std::move(callback).Run(WrapWithNulls(key, value));
+}
+void ResponseParams::GetOptionalEnumMap(int16_t key,
+                                        mojom::RegularEnum value,
+                                        GetOptionalEnumMapCallback callback) {
+  std::move(callback).Run(WrapWithNulls(key, value));
 }
 
 void ResponseParams::GetNullStructWithOptionalNumerics(
