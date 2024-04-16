@@ -25,7 +25,8 @@ UIFont* GetTitleFont(UIButtonConfiguration* button_configuration) {
 // Tests that the chip button has the expected configuration after its title is
 // set.
 TEST_F(ChipButtonTest, SetTitle) {
-  UIFont* font = [UIFont systemFontOfSize:14 weight:UIFontWeightMedium];
+  UIFont* font = [[UIFontMetrics defaultMetrics]
+      scaledFontForFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium]];
   NSString* title = @"Title";
 
   {

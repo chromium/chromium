@@ -30,6 +30,9 @@ constexpr CGFloat kChipVerticalPadding = 11.5;
 // the kIOSKeyboardAccessoryUpgrade feature is disabled.
 constexpr CGFloat kChipVerticalMargin = 4;
 
+// Minimal height and width for the button.
+constexpr CGFloat kChipMinSize = 40;
+
 // Font size for the button's title.
 constexpr CGFloat kFontSize = 14;
 
@@ -136,7 +139,8 @@ CGFloat GetChipVerticalPadding() {
       [[NSMutableParagraphStyle alloc] init];
   paragraphStyle.lineSpacing = kLineSpacing;
   _titleAttributes = @{
-    NSFontAttributeName : font,
+    NSFontAttributeName :
+        [[UIFontMetrics defaultMetrics] scaledFontForFont:font],
     NSParagraphStyleAttributeName : paragraphStyle,
   };
 
@@ -176,6 +180,16 @@ CGFloat GetChipVerticalPadding() {
 
   [self addSubview:_backgroundView];
   [self sendSubviewToBack:_backgroundView];
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_backgroundView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kChipMinSize],
+      [_backgroundView.widthAnchor
+          constraintGreaterThanOrEqualToConstant:kChipMinSize],
+    ]];
+  }
+
   [NSLayoutConstraint activateConstraints:@[
     [_backgroundView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [_backgroundView.trailingAnchor
