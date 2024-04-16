@@ -625,13 +625,12 @@ void WebApp::SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode state) {
 }
 
 void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
-  // Sync data must never be set on an app with mismatching start_url.
+  // Populate sync_proto's start_url from this WebApp if missing.
   if (!start_url().is_empty()) {
     CHECK(start_url().is_valid(), base::NotFatalUntil::M126);
-    if (sync_proto.has_start_url()) {
-      CHECK_EQ(sync_proto.start_url(), start_url().spec(),
-               base::NotFatalUntil::M126);
-    } else {
+    // Note: sync data may have a start_url that does not match the `WebApp`
+    // start_url, but it does not update the app (matching pre-M125 behaviour).
+    if (!sync_proto.has_start_url()) {
       sync_proto.set_start_url(start_url().spec());
     }
   }
