@@ -83,66 +83,19 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   }
 
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
-  CreatePictureBuffers(
-      uint32_t count,
-      VideoPixelFormat pixel_format,
-      gfx::Size texture_size,
-      uint32_t texture_target,
-      VideoDecodeAccelerator::TextureAllocationMode mode) override {
+  CreatePictureBuffers(uint32_t count,
+                       VideoPixelFormat pixel_format,
+                       gfx::Size texture_size,
+                       uint32_t texture_target) override {
     DVLOG(2) << __func__;
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
     DCHECK(count);
-    DCHECK(!allocate_gpu_memory_buffers_ ||
-           mode == VideoDecodeAccelerator::TextureAllocationMode::
-                       kDoNotAllocateGLTextures);
-#if BUILDFLAG(IS_APPLE)
-    // GL texture allocation is not supported (and never requested) on Apple
-    // platforms: see
-    // VideoDecodeAccelerator::GetSharedImageTextureAllocationMode(), which is
-    // where the value of `mode` that is passed in to this method comes from.
-    CHECK_EQ(mode, VideoDecodeAccelerator::TextureAllocationMode::
-                       kDoNotAllocateGLTextures);
-#endif
-
-    // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
-    // called with the context current.
-    if (mode ==
-        VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-      if (!command_buffer_helper_->MakeContextCurrent()) {
-        DVLOG(1) << "Failed to make context current";
-        return {};
-      }
-    }
 
     std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
         picture_buffers_and_gmbs;
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size};
-#if !BUILDFLAG(IS_APPLE)
-      if (mode ==
-          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-        // Create a texture for this plane.
-        // When using shared images, the VDA might not require GL textures to
-        // exist.
-        // TODO(crbug.com/1011555): Do not allocate GL textures when unused.
-        GLuint service_id = command_buffer_helper_->CreateTexture(
-            texture_target, GL_RGBA,
-            base::strict_cast<GLsizei>(texture_size.width()),
-            base::strict_cast<GLsizei>(texture_size.height()), GL_RGBA,
-            GL_UNSIGNED_BYTE);
-        DCHECK(service_id);
-        picture_data.service_id = service_id;
-
-        // NOTE: The texture is not cleared yet, but it will be before the VDA
-        // outputs it.
-
-        // Generate a mailbox while we are still on the GPU thread.
-        picture_data.legacy_mailbox_holder = gpu::MailboxHolder(
-            command_buffer_helper_->CreateLegacyMailbox(service_id),
-            gpu::SyncToken(), texture_target);
-      }
-#endif  // !BUILDFLAG(IS_APPLE)
 
       gfx::GpuMemoryBufferHandle gmb_handle;
       if (allocate_gpu_memory_buffers_) {
@@ -198,20 +151,14 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_buffers_[picture_buffer_id] = picture_data;
       }
 
-      // `picture_data.service_id` should be non-zero only when allocating
-      // GL textures.
-      CHECK(!picture_data.service_id ||
-            mode == VideoDecodeAccelerator::TextureAllocationMode::
-                        kAllocateGLTextures);
-
       // Since our textures have no client IDs, we reuse the service IDs as
       // convenient unique identifiers.
       //
       // TODO(sandersd): Refactor the bind image callback to use service IDs so
       // that we can get rid of the client IDs altogether.
       picture_buffers_and_gmbs.emplace_back(
-          PictureBuffer{picture_buffer_id, texture_size,
-                        picture_data.service_id, texture_target, pixel_format},
+          PictureBuffer{picture_buffer_id, texture_size, 0, texture_target,
+                        pixel_format},
           std::move(gmb_handle));
     }
     return picture_buffers_and_gmbs;
@@ -439,7 +386,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
-    GLuint service_id = 0;
     std::array<scoped_refptr<Picture::ScopedSharedImage>,
                VideoFrame::kMaxPlanes>
         scoped_shared_images;
@@ -449,19 +395,9 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       DCHECK(it != picture_buffers_.end());
       DCHECK(it->second.dismissed);
       DCHECK(!it->second.IsInUse());
-      service_id = it->second.service_id;
       scoped_shared_images = std::move(it->second.scoped_shared_images);
       picture_buffers_.erase(it);
     }
-
-    if (!service_id) {
-      return;
-    }
-
-    if (!command_buffer_helper_->MakeContextCurrent())
-      return;
-
-    command_buffer_helper_->DestroyTexture(service_id);
   }
 
   const bool allocate_gpu_memory_buffers_;
@@ -475,9 +411,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   struct PictureBufferData {
     VideoPixelFormat pixel_format;
     gfx::Size texture_size;
-    // Texture id and holder for the legacy mailbox, if were created by using
-    // TextureAllocationMode::kAllocateGLTextures.
-    GLuint service_id = 0;
     gpu::MailboxHolder legacy_mailbox_holder;
 
     std::array<scoped_refptr<Picture::ScopedSharedImage>,

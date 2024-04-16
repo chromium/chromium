@@ -87,8 +87,7 @@ class PictureBufferManager
   CreatePictureBuffers(uint32_t count,
                        VideoPixelFormat pixel_format,
                        gfx::Size texture_size,
-                       uint32_t texture_target,
-                       VideoDecodeAccelerator::TextureAllocationMode mode) = 0;
+                       uint32_t texture_target) = 0;
 
   // Dismisses a picture buffer from the pool.
   //

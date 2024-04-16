@@ -416,12 +416,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // May be called on any thread at any time.
   virtual bool SupportsSharedImagePictureBuffers() const;
 
-  // NOTE: `kAllocateGLTextures` is not supported on Apple platforms.
-  enum class TextureAllocationMode {
-    kDoNotAllocateGLTextures,
-    kAllocateGLTextures
-  };
-
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which
   // will Destroy() it properly by default.

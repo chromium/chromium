@@ -44,19 +44,10 @@ class PictureBufferManagerImplTest : public testing::Test {
     pbm_->Initialize(environment_.GetMainThreadTaskRunner(), cbh_);
   }
 
-  std::vector<PictureBuffer> CreateARGBPictureBuffers(
-      uint32_t count,
-      VideoDecodeAccelerator::TextureAllocationMode mode =
-          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-#if BUILDFLAG(IS_APPLE)
-    // Allocation of GL textures is not supported on Apple platforms; tests of
-    // that mode do not run on those platforms.
-    CHECK_EQ(mode, VideoDecodeAccelerator::TextureAllocationMode::
-                       kDoNotAllocateGLTextures);
-#endif
+  std::vector<PictureBuffer> CreateARGBPictureBuffers(uint32_t count) {
     std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
         picture_buffers_and_gmbs = pbm_->CreatePictureBuffers(
-            count, PIXEL_FORMAT_ARGB, gfx::Size(320, 240), GL_TEXTURE_2D, mode);
+            count, PIXEL_FORMAT_ARGB, gfx::Size(320, 240), GL_TEXTURE_2D);
     std::vector<PictureBuffer> picture_buffers;
     for (const auto& picture_buffer_and_gmb : picture_buffers_and_gmbs) {
       picture_buffers.push_back(picture_buffer_and_gmb.first);
@@ -64,25 +55,28 @@ class PictureBufferManagerImplTest : public testing::Test {
     return picture_buffers;
   }
 
-  PictureBuffer CreateARGBPictureBuffer(
-      VideoDecodeAccelerator::TextureAllocationMode mode =
-          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-    std::vector<PictureBuffer> picture_buffers =
-        CreateARGBPictureBuffers(1, mode);
+  PictureBuffer CreateARGBPictureBuffer() {
+    std::vector<PictureBuffer> picture_buffers = CreateARGBPictureBuffers(1);
     DCHECK_EQ(picture_buffers.size(), 1U);
     return picture_buffers[0];
   }
 
   scoped_refptr<VideoFrame> CreateVideoFrame(int32_t picture_buffer_id) {
-    return pbm_->CreateVideoFrame(
-        Picture(picture_buffer_id,              // picture_buffer_id
-                0,                              // bitstream_buffer_id
-                gfx::Rect(),                    // visible_rect (ignored)
-                gfx::ColorSpace::CreateSRGB(),  // color_space
-                false),                         // allow_overlay
-        base::TimeDelta(),                      // timestamp
-        gfx::Rect(1, 1),                        // visible_rect
-        gfx::Size(1, 1));                       // natural_size
+    auto picture =
+        Picture(picture_buffer_id,
+                /*bitstream_buffer_id=*/0,
+                /*visible_rect=*/gfx::Rect(), gfx::ColorSpace::CreateSRGB(),
+                /*allow_overlay=*/false);
+
+    picture.set_scoped_shared_image(
+        base::MakeRefCounted<Picture::ScopedSharedImage>(
+            gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
+            base::DoNothing()));
+
+    return pbm_->CreateVideoFrame(picture,
+                                  base::TimeDelta(),  // timestamp
+                                  gfx::Rect(1, 1),    // visible_rect
+                                  gfx::Size(1, 1));   // natural_size
   }
 
   gpu::SyncToken GenerateSyncToken(scoped_refptr<VideoFrame> video_frame) {
@@ -110,36 +104,10 @@ TEST_F(PictureBufferManagerImplTest, Initialize) {
   Initialize();
 }
 
-#if !BUILDFLAG(IS_APPLE)
-TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_GLTextures) {
-  Initialize();
-  PictureBuffer pb = CreateARGBPictureBuffer();
-  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-}
-#endif
-
 TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_SharedImage) {
   Initialize();
-  PictureBuffer pb1 = CreateARGBPictureBuffer(
-      VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures);
+  PictureBuffer pb1 = CreateARGBPictureBuffer();
   EXPECT_EQ(pb1.service_texture_id(), 0u);
-
-#if !BUILDFLAG(IS_APPLE)
-  PictureBuffer pb2 = CreateARGBPictureBuffer(
-      VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
-  EXPECT_TRUE(cbh_->HasTexture(pb2.service_texture_id()));
-#endif
-}
-
-// The below tests rely on creation of picture buffers via allocation of GL
-// textures, which is not supported on Apple platforms.
-#if !BUILDFLAG(IS_APPLE)
-// Tests that allocation of GL textures fails without a GL context.
-TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_ContextLost) {
-  Initialize();
-  cbh_->ContextLost();
-  std::vector<PictureBuffer> pbs = CreateARGBPictureBuffers(1);
-  EXPECT_TRUE(pbs.empty());
 }
 
 TEST_F(PictureBufferManagerImplTest, ReusePictureBuffer) {
@@ -183,74 +151,6 @@ TEST_F(PictureBufferManagerImplTest, ReusePictureBuffer_MultipleOutputs) {
   environment_.RunUntilIdle();
 }
 
-TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Available) {
-  Initialize();
-  PictureBuffer pb = CreateARGBPictureBuffer();
-  pbm_->DismissPictureBuffer(pb.id());
-
-  // Allocated textures should be deleted soon.
-  environment_.RunUntilIdle();
-  EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
-}
-
-TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_Output) {
-  Initialize();
-  PictureBuffer pb = CreateARGBPictureBuffer();
-  scoped_refptr<VideoFrame> frame = CreateVideoFrame(pb.id());
-  gpu::SyncToken sync_token = GenerateSyncToken(frame);
-  pbm_->DismissPictureBuffer(pb.id());
-
-  // Allocated textures should not be deleted while the VideoFrame exists.
-  environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-
-  // Or after it has been returned.
-  frame = nullptr;
-  environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-
-  // The textures should be deleted once the the wait has completed. The reuse
-  // callback should not be called for a dismissed picture buffer.
-  cbh_->ReleaseSyncToken(sync_token);
-  environment_.RunUntilIdle();
-  EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
-}
-
-TEST_F(PictureBufferManagerImplTest, DismissPictureBuffer_MultipleOutputs) {
-  constexpr size_t kOutputCountPerPictureBuffer = 3;
-
-  Initialize();
-  PictureBuffer pb = CreateARGBPictureBuffer();
-  std::vector<scoped_refptr<VideoFrame>> frames;
-  std::vector<gpu::SyncToken> sync_tokens;
-  for (size_t i = 0; i < kOutputCountPerPictureBuffer; i++) {
-    scoped_refptr<VideoFrame> frame = CreateVideoFrame(pb.id());
-    frames.push_back(frame);
-    sync_tokens.push_back(GenerateSyncToken(frame));
-  }
-  pbm_->DismissPictureBuffer(pb.id());
-
-  // Allocated textures should not be deleted while the VideoFrames exists.
-  environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-
-  // Or after they have been returned.
-  frames.clear();
-  environment_.RunUntilIdle();
-  EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-
-  // The textures should be deleted only once all of the waits have completed.
-  for (size_t i = 0; i < kOutputCountPerPictureBuffer; i++) {
-    cbh_->ReleaseSyncToken(sync_tokens[i]);
-    environment_.RunUntilIdle();
-    if (i < kOutputCountPerPictureBuffer - 1) {
-      EXPECT_TRUE(cbh_->HasTexture(pb.service_texture_id()));
-    } else {
-      EXPECT_FALSE(cbh_->HasTexture(pb.service_texture_id()));
-    }
-  }
-}
-
 TEST_F(PictureBufferManagerImplTest, CanReadWithoutStalling) {
   // Works before Initialize().
   EXPECT_TRUE(pbm_->CanReadWithoutStalling());
@@ -275,6 +175,5 @@ TEST_F(PictureBufferManagerImplTest, CanReadWithoutStalling) {
   pbm_->DismissPictureBuffer(pb.id());
   EXPECT_TRUE(pbm_->CanReadWithoutStalling());
 }
-#endif  // !BUILDFLAG(IS_APPLE)
 
 }  // namespace media

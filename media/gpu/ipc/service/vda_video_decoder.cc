@@ -587,9 +587,7 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
 
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
       picture_buffers_and_gmbs = picture_buffer_manager_->CreatePictureBuffers(
-          count, pixel_format, texture_size, texture_target,
-          VideoDecodeAccelerator::TextureAllocationMode::
-              kDoNotAllocateGLTextures);
+          count, pixel_format, texture_size, texture_target);
   if (picture_buffers_and_gmbs.empty()) {
     parent_task_runner_->PostTask(
         FROM_HERE,
