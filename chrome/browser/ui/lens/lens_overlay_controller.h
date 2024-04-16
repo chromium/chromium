@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,8 +15,7 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
-#include "chrome/browser/ui/tabs/tab_model_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,16 +26,10 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
-class TabStripModel;
-
 namespace lens {
 class LensOverlaySidePanelCoordinator;
 class LensOverlayQueryController;
 }  // namespace lens
-
-namespace tabs {
-class TabModel;
-}  // namespace tabs
 
 namespace views {
 class View;
@@ -46,16 +40,19 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace variations {
+class VariationsClient;
+}  // namespace variations
+
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
 // thread.
-class LensOverlayController : public TabStripModelObserver,
-                              public LensSearchboxClient,
+class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
-                              public lens::mojom::LensSidePanelPageHandler,
-                              public tabs::TabModelObserver {
+                              public lens::mojom::LensSidePanelPageHandler {
  public:
-  explicit LensOverlayController(tabs::TabModel* tab_model);
+  LensOverlayController(tabs::TabInterface* tab,
+                        variations::VariationsClient* variations_client);
   ~LensOverlayController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -200,12 +197,6 @@ class LensOverlayController : public TabStripModelObserver,
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();
 
-  // Overridden from TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
@@ -216,10 +207,17 @@ class LensOverlayController : public TabStripModelObserver,
   void OnSuggestionAccepted(const GURL& destination_url) override;
 
   // Called when the associated tab enters the foreground.
-  void TabForegrounded();
+  void TabForegrounded(tabs::TabInterface* tab);
 
   // Called when the associated tab enters the background.
-  void TabBackgrounded();
+  void TabBackgrounded(tabs::TabInterface* tab);
+
+  // Called when the tab's WebContents are removed.
+  void WillRemoveContents(tabs::TabInterface* tab,
+                          content::WebContents* contents);
+
+  // Called when the tab's WebContents are added.
+  void DidAddContents(tabs::TabInterface* tab, content::WebContents* contents);
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;
@@ -245,14 +243,8 @@ class LensOverlayController : public TabStripModelObserver,
   void HandleInteractionDataResponse(
       lens::proto::LensOverlayInteractionResponse response);
 
-  // tabs::TabModelObserver overrides:
-  void WillRemoveContents(tabs::TabModel* tab,
-                          content::WebContents* contents) override;
-  void DidAddContents(tabs::TabModel* tab,
-                      content::WebContents* contents) override;
-
   // Owns this class.
-  raw_ptr<tabs::TabModel> tab_model_;
+  raw_ptr<tabs::TabInterface> tab_;
 
   // A monotonically increasing id. This is used to differentiate between
   // different screenshot attempts.
@@ -309,8 +301,14 @@ class LensOverlayController : public TabStripModelObserver,
   // query.
   lens::mojom::CenterRotatedBoxPtr selected_region_;
 
-  base::ScopedObservation<tabs::TabModel, tabs::TabModelObserver>
-      tab_model_observer_{this};
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Owned by Profile, and thus guaranteed to outlive this instance.
+  raw_ptr<variations::VariationsClient> variations_client_;
+
+  // Prevents other features from showing tab-modal UI.
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

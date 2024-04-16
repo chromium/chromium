@@ -60,11 +60,11 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
           interaction_data_callback,
-      Profile* profile)
+      variations::VariationsClient* variations_client)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
-                                   profile) {}
+                                   variations_client) {}
   ~LensOverlayQueryControllerMock() override = default;
 
   lens::LensOverlayObjectsResponse fake_objects_response_;
@@ -129,7 +129,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), profile());
+      base::NullCallback(), profile()->GetVariationsClient());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
 
@@ -163,7 +163,8 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(), profile());
+      interaction_data_response_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -246,7 +247,8 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(), profile());
+      interaction_data_response_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -332,7 +334,8 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(), profile());
+      interaction_data_response_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient());
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -397,7 +400,8 @@ TEST_F(LensOverlayQueryControllerTest,
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(),
-      interaction_data_response_future.GetRepeatingCallback(), profile());
+      interaction_data_response_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient());
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(bitmap);
   task_environment_.RunUntilIdle();

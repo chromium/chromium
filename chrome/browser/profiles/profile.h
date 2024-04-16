@@ -545,6 +545,9 @@ class Profile : public content::BrowserContext {
       observers_;
 
   class ChromeVariationsClient;
+
+  // This member is lazily created. Once it is is created its lifetime must
+  // match that of Profile itself.
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
 
   base::WeakPtrFactory<Profile> weak_factory_{this};

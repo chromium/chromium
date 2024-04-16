@@ -28,6 +28,9 @@ class ScopedTabModalUI {
 // This is the public interface for tabs in a desktop browser. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
 // dependencies this interface should not depend on anything else in //chrome.
+// Ping erikchen for assistance if this class does not have the functionality
+// your feature needs. This comment will be deleted after there are 10+ features
+// in TabFeatures.
 class TabInterface {
  public:
   // When a tab is in the background, the WebContents may be discarded to save
@@ -70,6 +73,10 @@ class TabInterface {
   // tab-modal UI.
   virtual bool CanShowModalUI() const = 0;
   virtual std::unique_ptr<ScopedTabModalUI> ShowModalUI() = 0;
+
+  // A normal browser window has a tab strip and an omnibox. The returned value
+  // never changes.
+  virtual bool IsInNormalWindow() const = 0;
 };
 
 }  // namespace tabs

@@ -10,10 +10,8 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/supports_handles.h"
-#include "chrome/browser/ui/tabs/tab_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -39,10 +37,6 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   void OnAddedToModel(TabStripModel* owning_model);
   void OnRemovedFromModel();
-
-  void AddObserver(TabModelObserver* obs) { observers_.AddObserver(obs); }
-
-  void RemoveObserver(TabModelObserver* obs) { observers_.RemoveObserver(obs); }
 
   content::WebContents* contents() const { return contents_.get(); }
   TabStripModel* owning_model() const { return owning_model_.get(); }
@@ -114,6 +108,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
       TabInterface::DidEnterBackgroundCallback callback) override;
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
+  bool IsInNormalWindow() const override;
 
  private:
   std::unique_ptr<content::WebContents> RemoveContents();
@@ -154,8 +149,6 @@ class TabModel final : public SupportsHandles<const TabModel>,
   std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
   raw_ptr<TabCollection> parent_collection_ = nullptr;
 
-  base::ObserverList<TabModelObserver> observers_;
-
   using DidAddContentsCallbackList =
       base::RepeatingCallbackList<void(TabInterface*, content::WebContents*)>;
   DidAddContentsCallbackList did_add_contents_callback_list_;
@@ -174,6 +167,11 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // Tabs may be temporarily detached but they never move between normal and
+  // non-normal windows. Thus this value is recorded at construction and never
+  // changed.
+  const bool is_in_normal_window_;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -41,28 +42,24 @@ void TabFeatures::ReplaceTabFeaturesForTesting(TabFeaturesFactory factory) {
   f = std::move(factory);
 }
 
-void TabFeatures::Init(TabModel* tab) {
+void TabFeatures::Init(TabInterface* tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
 
-  // Avoid passing `TabModel` directly to features. Instead, pass the minimum
-  // necessary state or controllers necessary.
-  // Ping erikchen for assistance. This comment will be deleted after there are
-  // 10+ features.
-  //
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
-  if (tab->owning_model()->delegate()->IsNormalWindow()) {
-    // TODO(https://crbug.com/333791050): Don't pass TabModel.
-    lens_overlay_controller_ = CreateLensController(tab);
+  if (tab->IsInNormalWindow()) {
+    lens_overlay_controller_ = CreateLensController(tab, profile);
   }
 }
 
 TabFeatures::TabFeatures() = default;
 
 std::unique_ptr<LensOverlayController> TabFeatures::CreateLensController(
-    TabModel* tab) {
-  return std::make_unique<LensOverlayController>(tab);
+    TabInterface* tab,
+    Profile* profile) {
+  return std::make_unique<LensOverlayController>(
+      tab, profile->GetVariationsClient());
 }
 
 }  // namespace tabs

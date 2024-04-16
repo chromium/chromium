@@ -10,10 +10,11 @@
 #include "base/functional/callback.h"
 
 class LensOverlayController;
+class Profile;
 
 namespace tabs {
 
-class TabModel;
+class TabInterface;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -35,7 +36,7 @@ class TabFeatures {
   }
 
   // Called exactly once to initialize features.
-  void Init(TabModel* tab);
+  void Init(TabInterface* tab, Profile* profile);
 
  protected:
   TabFeatures();
@@ -43,7 +44,8 @@ class TabFeatures {
   // Override these methods to stub out individual feature controllers for
   // testing.
   virtual std::unique_ptr<LensOverlayController> CreateLensController(
-      TabModel* tab);
+      TabInterface* tab,
+      Profile* profile);
 
  private:
   bool initialized_ = false;

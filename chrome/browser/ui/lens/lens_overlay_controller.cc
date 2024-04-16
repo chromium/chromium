@@ -12,12 +12,8 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_features.h"
@@ -96,23 +92,33 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(LensOverlayControllerTabLookup);
 
 }  // namespace
 
-LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
-    : tab_model_(tab_model) {
-  if (tab_model_->contents()) {
-    LensOverlayControllerTabLookup::CreateForWebContents(tab_model_->contents(),
+LensOverlayController::LensOverlayController(
+    tabs::TabInterface* tab,
+    variations::VariationsClient* variations_client)
+    : tab_(tab), variations_client_(variations_client) {
+  if (tab_->GetContents()) {
+    LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
                                                          this);
   }
 
-  // Automatically unregisters on destruction.
-  tab_model_->owning_model()->AddObserver(this);
-  tab_model_observer_.Observe(tab_model);
+  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+      base::BindRepeating(&LensOverlayController::TabForegrounded,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidEnterBackground(
+      base::BindRepeating(&LensOverlayController::TabBackgrounded,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidAddContents(base::BindRepeating(
+      &LensOverlayController::DidAddContents, weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillRemoveContents(
+      base::BindRepeating(&LensOverlayController::WillRemoveContents,
+                          weak_factory_.GetWeakPtr())));
 }
 
 LensOverlayController::~LensOverlayController() {
   CloseUI();
   lens_overlay_query_controller_.reset();
-  if (tab_model_->contents()) {
-    tab_model_->contents()->RemoveUserData(
+  if (tab_->GetContents()) {
+    tab_->GetContents()->RemoveUserData(
         LensOverlayControllerTabLookup::UserDataKey());
   }
 }
@@ -132,12 +138,12 @@ void LensOverlayController::ShowUI() {
   }
 
   // The UI should only show if the tab is in the foreground.
-  if (tab_model_->owning_model()->GetActiveTab() != tab_model_) {
+  if (!tab_->IsInForeground()) {
     return;
   }
 
   // Begin the process of grabbing a screenshot.
-  content::RenderWidgetHostView* view = tab_model_->contents()
+  content::RenderWidgetHostView* view = tab_->GetContents()
                                             ->GetPrimaryMainFrame()
                                             ->GetRenderViewHost()
                                             ->GetWidget()
@@ -151,13 +157,13 @@ void LensOverlayController::ShowUI() {
   // Create the results side panel coordinator when showing the UI if it does
   // not already exist for this tab's web contents.
   if (!results_side_panel_coordinator_) {
-    Browser* tab_browser = chrome::FindBrowserWithTab(tab_model_->contents());
+    Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
     CHECK(tab_browser);
     results_side_panel_coordinator_ =
         std::make_unique<lens::LensOverlaySidePanelCoordinator>(
             tab_browser, this,
             SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
-            tab_model_->contents());
+            tab_->GetContents());
   }
 
   // Create the query controller.
@@ -171,9 +177,11 @@ void LensOverlayController::ShowUI() {
           base::BindRepeating(
               &LensOverlayController::HandleInteractionDataResponse,
               weak_factory_.GetWeakPtr()),
-          tab_model_->owning_model()->profile());
+          variations_client_);
 
   state_ = State::kScreenshot;
+  scoped_tab_modal_ui_ = tab_->ShowModalUI();
+
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindPostTask(
@@ -201,7 +209,7 @@ void LensOverlayController::CloseUI() {
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
   // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
-  content::WebContents* contents = tab_model_->contents();
+  content::WebContents* contents = tab_->GetContents();
   if (contents) {
     auto* permission_request_manager =
         permissions::PermissionRequestManager::FromWebContents(contents);
@@ -228,6 +236,7 @@ void LensOverlayController::CloseUI() {
   page_.reset();
   current_screenshot_.reset();
   lens_overlay_query_controller_.reset();
+  scoped_tab_modal_ui_.reset();
   // In the future we may want a hibernate state. In this case we would stop
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
@@ -295,7 +304,7 @@ views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
 }
 
 void LensOverlayController::ResetUIBounds() {
-  content::WebContents* active_web_contents = tab_model_->contents();
+  content::WebContents* active_web_contents = tab_->GetContents();
   overlay_widget_->SetBounds(active_web_contents->GetContainerBounds());
 }
 
@@ -400,13 +409,6 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
-  // It is not possible to show the overlay UI if the tab is not associated with
-  // a tab strip.
-  if (!tab_model_->owning_model()) {
-    CloseUI();
-    return;
-  }
-
   // The documentation for CopyFromSurface claims that the copy can fail, but
   // without providing information about how this can happen.
   // Supposedly IsSurfaceAvailableForCopy() should guard against this case, but
@@ -432,7 +434,7 @@ void LensOverlayController::ShowOverlayWidget() {
   overlay_widget_->Init(CreateWidgetInitParams());
   overlay_widget_->SetContentsView(CreateViewForOverlay());
 
-  content::WebContents* active_web_contents = tab_model_->contents();
+  content::WebContents* active_web_contents = tab_->GetContents();
   tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
       active_web_contents, this);
 
@@ -447,7 +449,7 @@ void LensOverlayController::ShowOverlayWidget() {
 }
 
 views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
-  content::WebContents* active_web_contents = tab_model_->contents();
+  content::WebContents* active_web_contents = tab_->GetContents();
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "LensOverlayWidget";
@@ -467,15 +469,13 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
-  CHECK(tab_model_);
   // Create a flex layout host view to make sure the web view covers the entire
   // tab.
   std::unique_ptr<views::FlexLayoutView> host_view =
       std::make_unique<views::FlexLayoutView>();
 
-  // Create the web view that hosts the WebUI.
-  std::unique_ptr<views::WebView> web_view =
-      std::make_unique<views::WebView>(tab_model_->owning_model()->profile());
+  std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
+      tab_->GetContents()->GetBrowserContext());
   web_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -494,24 +494,6 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
 
   host_view->AddChildView(std::move(web_view));
   return host_view;
-}
-
-void LensOverlayController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!selection.active_tab_changed()) {
-    return;
-  }
-
-  if (selection.new_contents == tab_model_->contents()) {
-    TabForegrounded();
-    return;
-  }
-
-  if (selection.old_contents == tab_model_->contents()) {
-    TabBackgrounded();
-  }
 }
 
 const GURL& LensOverlayController::GetPageURL() const {
@@ -554,10 +536,21 @@ void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
   }
 }
 
-void LensOverlayController::TabForegrounded() {}
+void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {}
 
-void LensOverlayController::TabBackgrounded() {
+void LensOverlayController::TabBackgrounded(tabs::TabInterface* tab) {
   CloseUI();
+}
+
+void LensOverlayController::WillRemoveContents(tabs::TabInterface* tab,
+                                               content::WebContents* contents) {
+  contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
+  CloseUI();
+}
+
+void LensOverlayController::DidAddContents(tabs::TabInterface* tab,
+                                           content::WebContents* contents) {
+  LensOverlayControllerTabLookup::CreateForWebContents(contents, this);
 }
 
 void LensOverlayController::CloseRequestedByOverlay() {
@@ -613,13 +606,3 @@ void LensOverlayController::HandleInteractionURLResponse(
 void LensOverlayController::HandleInteractionDataResponse(
     lens::proto::LensOverlayInteractionResponse response) {}
 
-void LensOverlayController::WillRemoveContents(tabs::TabModel* tab,
-                                               content::WebContents* contents) {
-  contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
-  CloseUI();
-}
-
-void LensOverlayController::DidAddContents(tabs::TabModel* tab,
-                                           content::WebContents* contents) {
-  LensOverlayControllerTabLookup::CreateForWebContents(contents, this);
-}

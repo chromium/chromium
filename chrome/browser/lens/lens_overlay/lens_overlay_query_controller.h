@@ -21,7 +21,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
-class Profile;
+namespace variations {
+class VariationsClient;
+}  // namespace variations
 
 namespace lens {
 
@@ -44,7 +46,7 @@ class LensOverlayQueryController {
           url_callback,
       base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
           interaction_data_callback,
-      Profile* profile);
+      variations::VariationsClient* variations_client);
   virtual ~LensOverlayQueryController();
 
   // Starts a query flow by sending a request to Lens using the screenshot,
@@ -181,9 +183,8 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
-  // The profile, necessary to get the variation data to attach to the
-  // Lens server request.
-  raw_ptr<Profile> profile_;
+  // Owned by Profile, and thus guaranteed to outlive this instance.
+  raw_ptr<variations::VariationsClient> variations_client_;
 
   // The request counter, used to make sure requests are not sent out of order.
   int request_counter_ = 0;

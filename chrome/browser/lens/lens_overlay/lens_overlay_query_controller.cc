@@ -15,7 +15,6 @@
 #include "chrome/browser/lens/lens_overlay/lens_overlay_image_helper.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_proto_converter.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
 #include "components/variations/variations.mojom.h"
@@ -111,13 +110,13 @@ LensOverlayQueryController::LensOverlayQueryController(
     LensOverlayFullImageResponseCallback full_image_callback,
     LensOverlayUrlResponseCallback url_callback,
     LensOverlayInteractionResponseCallback interaction_data_callback,
-    Profile* profile)
+    variations::VariationsClient* variations_client)
     : request_id_generator_{std::make_unique<
           lens::LensOverlayRequestIdGenerator>()},
       full_image_callback_{full_image_callback},
       url_callback_{url_callback},
       interaction_data_callback_{interaction_data_callback},
-      profile_{profile} {}
+      variations_client_(variations_client) {}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -447,9 +446,8 @@ LensOverlayQueryController::CreateEndpointFetcher(
   CHECK(request_data.SerializeToString(&request_data_string));
   std::vector<std::string> cors_exempt_headers;
 
-  variations::VariationsClient* provider = profile_->GetVariationsClient();
   variations::mojom::VariationsHeadersPtr headers =
-      provider->GetVariationsHeaders();
+      variations_client_->GetVariationsHeaders();
   if (!headers.is_null()) {
     cors_exempt_headers.push_back(kClientDataHeader);
     // The endpoint is always a Google property.

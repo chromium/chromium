@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/tab_features.h"
@@ -66,8 +67,9 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 // Stubs out network requests and mojo calls.
 class LensOverlayControllerFake : public LensOverlayController {
  public:
-  explicit LensOverlayControllerFake(tabs::TabModel* tab_model)
-      : LensOverlayController(tab_model) {}
+  LensOverlayControllerFake(tabs::TabInterface* tab,
+                            variations::VariationsClient* variations_client)
+      : LensOverlayController(tab, variations_client) {}
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
@@ -94,8 +96,10 @@ class TabFeaturesFake : public tabs::TabFeatures {
 
  protected:
   std::unique_ptr<LensOverlayController> CreateLensController(
-      tabs::TabModel* tab) override {
-    return std::make_unique<LensOverlayControllerFake>(tab);
+      tabs::TabInterface* tab,
+      Profile* profile) override {
+    return std::make_unique<LensOverlayControllerFake>(
+        tab, profile->GetVariationsClient());
   }
 };
 

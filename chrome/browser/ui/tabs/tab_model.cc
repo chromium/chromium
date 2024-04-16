@@ -16,14 +16,18 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
                    TabStripModel* owning_model)
     : contents_owned_(std::move(contents)),
       contents_(contents_owned_.get()),
-      owning_model_(owning_model) {
+      owning_model_(owning_model),
+      is_in_normal_window_(owning_model->delegate()->IsNormalWindow()) {
   // When a TabModel is constructed it must be attached to a TabStripModel. This
   // may later change if the Tab is detached.
   CHECK(owning_model);
   owning_model_->AddObserver(this);
 
   tab_features_ = TabFeatures::CreateTabFeatures();
-  tab_features_->Init(this);
+
+  // Once tabs are pulled into a standalone module, TabFeatures and its
+  // initialization will need to be delegated back to the main module.
+  tab_features_->Init(this, owning_model_->profile());
 }
 
 TabModel::~TabModel() = default;
@@ -112,6 +116,10 @@ std::unique_ptr<ScopedTabModalUI> TabModel::ShowModalUI() {
   return std::make_unique<ScopedTabModalUIImpl>(this);
 }
 
+bool TabModel::IsInNormalWindow() const {
+  return is_in_normal_window_;
+}
+
 void TabModel::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -155,9 +163,6 @@ std::unique_ptr<content::WebContents> TabModel::ReplaceContents(
 }
 
 std::unique_ptr<content::WebContents> TabModel::RemoveContents() {
-  for (auto& obs : observers_) {
-    obs.WillRemoveContents(this, contents_.get());
-  }
   will_remove_contents_callback_list_.Notify(this, contents_.get());
   contents_ = nullptr;
   return std::move(contents_owned_);
@@ -176,9 +181,6 @@ void TabModel::SetContents(std::unique_ptr<content::WebContents> contents) {
   CHECK(contents);
   contents_owned_ = std::move(contents);
   contents_ = contents_owned_.get();
-  for (auto& obs : observers_) {
-    obs.DidAddContents(this, contents_.get());
-  }
   did_add_contents_callback_list_.Notify(this, contents_.get());
 }
 
