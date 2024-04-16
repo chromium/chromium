@@ -73,6 +73,11 @@ export class PrintTicketManager extends EventTarget {
   sendPrintRequest(): void {
     assert(this.printPreviewPageHandler);
 
+    if (this.printTicket === null) {
+      // Print Ticket is not ready to be sent.
+      return;
+    }
+
     if (this.printRequestInProgress) {
       // Print is already in progress, wait for request to resolve before
       // allowing a second attempt.
@@ -84,7 +89,7 @@ export class PrintTicketManager extends EventTarget {
 
     // TODO(b/323421684): Handle result from page handler and update UI if error
     // occurred.
-    this.printPreviewPageHandler!.print().finally(() => {
+    this.printPreviewPageHandler!.print(this.printTicket).finally(() => {
       this.printRequestInProgress = false;
       this.dispatchEvent(createCustomEvent(PRINT_REQUEST_FINISHED_EVENT));
     });

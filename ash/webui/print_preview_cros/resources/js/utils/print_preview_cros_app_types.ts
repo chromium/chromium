@@ -49,9 +49,10 @@ export interface PrintPreviewPageHandler {
   // a SessionContext.
   startSession(): Promise<SessionContext>;
 
-  // Start the print job and close the window. Needs to wait for result to
-  // display error messaging if starting the print job fails.
-  print(): Promise<PrintRequestOutcome>;
+  // Start the print job and close the window. Requires a print ticket to detail
+  // how print job should be configured.Needs to wait for result to display
+  // error messaging if starting the print job fails.
+  print(ticket: PrintTicket): Promise<PrintRequestOutcome>;
 
   // Cancel the print preview and close the window.
   cancel(): void;

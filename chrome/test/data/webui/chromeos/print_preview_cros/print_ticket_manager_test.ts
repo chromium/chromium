@@ -47,12 +47,13 @@ suite('PrintTicketManager', () => {
   test('sendPrintRequest calls PrintPreviewPageHandler.print', () => {
     const instance = PrintTicketManager.getInstance();
     assertEquals(0, printPreviewPageHandler.getCallCount('print'));
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     instance.sendPrintRequest();
     assertEquals(1, printPreviewPageHandler.getCallCount('print'));
   });
 
   // Verify PrintPreviewPageHandler called when cancelPrintRequest triggered.
-  test('sendPrintRequest calls PrintPreviewPageHandler.print', () => {
+  test('sendPrintRequest calls PrintPreviewPageHandler.cancel', () => {
     const instance = PrintTicketManager.getInstance();
     const method = 'cancel';
     assertEquals(0, printPreviewPageHandler.getCallCount(method));
@@ -70,6 +71,7 @@ suite('PrintTicketManager', () => {
         const delay = 1;
         printPreviewPageHandler.setTestDelay(delay);
         const instance = PrintTicketManager.getInstance();
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         let startCount = 0;
         instance.addEventListener(PRINT_REQUEST_STARTED_EVENT, () => {
           ++startCount;
@@ -113,6 +115,7 @@ suite('PrintTicketManager', () => {
             eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
         const finishEvent =
             eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
         assertFalse(instance.isPrintRequestInProgress(), 'Request not started');
 
@@ -134,9 +137,9 @@ suite('PrintTicketManager', () => {
     const delay = 1;
     printPreviewPageHandler.setTestDelay(delay);
     const instance = PrintTicketManager.getInstance();
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     const startEvent = eventToPromise(PRINT_REQUEST_STARTED_EVENT, instance);
     const finishEvent = eventToPromise(PRINT_REQUEST_FINISHED_EVENT, instance);
-
     const method = 'print';
     let expectedCallCount = 0;
     assertEquals(
@@ -210,5 +213,32 @@ suite('PrintTicketManager', () => {
           printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
         } as PrintTicket;
         assertDeepEquals(expectedTicket, instance.getPrintTicketForTesting());
+      });
+
+  // Verify `sendPrintRequest` requires a valid print ticket.
+  test(
+      'sendPrintRequest returns early if the print ticket is not valid', () => {
+        const delay = 1;
+        printPreviewPageHandler.setTestDelay(delay);
+        const instance = PrintTicketManager.getInstance();
+        assertEquals(null, instance.getPrintTicketForTesting());
+
+        // Attempt sending while ticket is null to verify print is not called.
+        instance.sendPrintRequest();
+
+        let expectedPrintCallCount = 0;
+        assertEquals(
+            expectedPrintCallCount,
+            printPreviewPageHandler.getCallCount('print'));
+
+        // Initialize session will setup the print ticket.
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        instance.sendPrintRequest();
+        ++expectedPrintCallCount;
+
+        assertEquals(
+            expectedPrintCallCount,
+            printPreviewPageHandler.getCallCount('print'),
+            'Print request can be sent');
       });
 });
