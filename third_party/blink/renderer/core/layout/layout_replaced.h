@@ -140,8 +140,14 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void WillBeDestroyed() override;
 
+  // See: intrinsic_size_.
   PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
+
+    if (RuntimeEnabledFeatures::NoIntrinsicSizeOverrideEnabled()) {
+      return intrinsic_size_;
+    }
+
     auto width_override = IntrinsicWidthOverride();
     auto height_override = IntrinsicHeightOverride();
     return PhysicalSize(width_override.value_or(intrinsic_size_.width),
@@ -194,6 +200,8 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const PhysicalRect& base_content_rect,
       const PhysicalSize* overridden_intrinsic_size) const;
 
+  // TODO(crbug.com/335003884): remove IntrinsicWidthOverride and
+  // IntrinsicHeightOverride when removing the NoIntrinsicSizeOverride flag.
   std::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())

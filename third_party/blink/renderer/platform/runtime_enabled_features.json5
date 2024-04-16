@@ -405,6 +405,7 @@
       // If enabled, lazy loaded images can be auto sized if the sizes
       // attribute is missing or set to auto.
       name: "AutoSizeLazyLoadedImages",
+      depends_on: ["NoIntrinsicSizeOverride"],
       status: "experimental",
     },
     {
@@ -2586,6 +2587,13 @@
     // character. See https://crbug.com/326888905
     {
       name: "NoIncreasingEndOffsetOnSplittingTextNodes",
+      status: "stable",
+    },
+    {
+      // If enabled, LayoutReplaced::IntrinsicSize will return the
+      // natural/intrinsic size for this replaced element based on the natural
+      // size for the element's contents
+      name: "NoIntrinsicSizeOverride",
       status: "stable",
     },
     // Makes enter/leave Mouse and Pointer Events non-composed as per

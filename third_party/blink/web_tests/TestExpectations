@@ -2654,8 +2654,6 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/333926318 external/wpt/css/css-images/object-fit-containcontainintrinsicsize-png-001i.tentative.html [ Failure ]
-crbug.com/333926318 external/wpt/css/css-images/object-fit-containsize-png-001i.tentative.html [ Failure ]
 crbug.com/333976551 [ Mac12 ] external/wpt/html/meta/refresh-time.html [ Timeout ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-002.html [ Failure ]
 crbug.com/333971751 external/wpt/mathml/relations/css-styling/first-line-first-letter-pseudo-elements-003.html [ Failure ]
