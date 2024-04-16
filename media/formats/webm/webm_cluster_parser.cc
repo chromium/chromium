@@ -14,7 +14,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "media/base/decrypt_config.h"
-#include "media/base/media_client.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/webvtt_util.h"
@@ -494,23 +493,12 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  scoped_refptr<StreamParserBuffer> buffer;
-  if (auto* media_client = GetMediaClient()) {
-    if (auto* alloc = media_client->GetMediaAllocator()) {
-      auto data_span = UNSAFE_BUFFERS(base::span(
-          data + data_offset, base::checked_cast<size_t>(size - data_offset)));
-      buffer = StreamParserBuffer::FromExternalMemory(
-          alloc->CopyFrom(data_span), is_keyframe, buffer_type, track_num);
-    }
-  }
-  if (!buffer) {
-    // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
-    // type with remapped bytestream track numbers and allow multiple tracks as
-    // applicable. See https://crbug.com/341581.
-    buffer =
-        StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
-                                     is_keyframe, buffer_type, track_num);
-  }
+  // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
+  // type with remapped bytestream track numbers and allow multiple tracks as
+  // applicable. See https://crbug.com/341581.
+  auto buffer =
+      StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
+                                   is_keyframe, buffer_type, track_num);
   if (additional_size) {
     buffer->WritableSideData().alpha_data.assign(additional,
                                                  additional + additional_size);
