@@ -1469,8 +1469,10 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
     // Note: The following is used by
     // chrome/browser/media/cast_mirroring_performance_browsertest.cc, in
     // addition to the usual runtime tracing
-    TRACE_EVENT_END("gpu.capture", CaptureTrack(frame->metadata()), "success",
-                    false);
+    if (frame) {
+      TRACE_EVENT_END("gpu.capture", CaptureTrack(frame->metadata()), "success",
+                      false);
+    }
     MaybeScheduleRefreshFrame();
     return;
   }
