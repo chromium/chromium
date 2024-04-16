@@ -29,7 +29,8 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
 void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
-    base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) {
+    base::OnceCallback<void(mojom::PixCodeDetectionResult, const std::string&)>
+        callback) {
   GetAgent()->TriggerPixCodeDetection(std::move(callback));
 }
 

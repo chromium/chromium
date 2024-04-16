@@ -15,8 +15,10 @@ enum PixCodeDetectionResult {
 // process. All methods are called by browser on renderer.
 interface FacilitatedPaymentsAgent {
   // Triggers a scan of the page for PIX codes. Returns whether a valid (or
-  // invalid) PIX code is found. This method scans the full page: it can be
-  // slow, so it should not be invoked in a critical path. Should be called only
-  // on the top level frame.
-  TriggerPixCodeDetection() => (PixCodeDetectionResult result);
+  // invalid) PIX code is found. If a valid PIX code is found, then returns this
+  // PIX code, too. Otherwise, the PIX code is an empty string.
+  //
+  // This method scans the full page: it can be slow, so it should not be
+  // invoked in a critical path. Should be called only on the top level frame.
+  TriggerPixCodeDetection() => (PixCodeDetectionResult result, string pix_code);
 };

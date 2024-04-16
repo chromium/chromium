@@ -43,10 +43,10 @@ class FacilitatedPaymentsDriver {
       ukm::SourceId ukm_source_id) const;
 
   // Trigger PIX code detection on the page. The `callback` is called after
-  // running PIX code detection and is passed a boolean informing whether or not
-  // a PIX code was found.
+  // running PIX code detection.
   virtual void TriggerPixCodeDetection(
-      base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) = 0;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult,
+                              const std::string&)> callback) = 0;
 
  private:
   std::unique_ptr<FacilitatedPaymentsManager> manager_;

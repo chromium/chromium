@@ -111,7 +111,7 @@ void FacilitatedPaymentsManager::TriggerPixCodeDetection() {
 }
 
 void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
-    mojom::PixCodeDetectionResult result) {
+    mojom::PixCodeDetectionResult result, const std::string& pix_code) {
   // If a PIX code was not found, re-trigger PIX code detection after a short
   // duration to allow async content to load completely.
   if (result == mojom::PixCodeDetectionResult::kPixCodeNotFound &&

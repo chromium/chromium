@@ -41,8 +41,8 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   // FacilitatedPaymentsDriver:
   void TriggerPixCodeDetection(
-      base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback)
-      override;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult,
+                              const std::string&)> callback) override;
 
  private:
   // Lazily binds the agent.

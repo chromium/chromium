@@ -33,7 +33,8 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   MOCK_METHOD(void,
               TriggerPixCodeDetection,
-              (base::OnceCallback<void(mojom::PixCodeDetectionResult)>),
+              (base::OnceCallback<void(mojom::PixCodeDetectionResult,
+                                       const std::string&)>),
               (override));
 };
 
@@ -460,7 +461,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
   EXPECT_CALL(*driver_, TriggerPixCodeDetection)
       .Times(manager_->kMaxAttemptsForPixCodeDetection)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_)));
+          testing::ByRef(pix_code_detection_result_), std::string()));
 
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
       url, ukm::UkmRecorder::GetNewSourceID());
@@ -492,7 +493,7 @@ TEST_F(FacilitatedPaymentsManagerTest, NoPixCode_NoUkm) {
   manager_->TriggerPixCodeDetection();
   FastForwardBy(base::Milliseconds(200));
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kPixCodeNotFound);
+      mojom::PixCodeDetectionResult::kPixCodeNotFound, std::string());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
@@ -542,7 +543,7 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   // Run the callback with different results.
   EXPECT_CALL(*driver_, TriggerPixCodeDetection)
       .Times(1)
-      .WillOnce(base::test::RunOnceCallback<0>(GetParam()));
+      .WillOnce(base::test::RunOnceCallback<0>(GetParam(), std::string()));
 
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
       url, ukm::UkmRecorder::GetNewSourceID());
@@ -593,7 +594,7 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   EXPECT_CALL(*driver_, TriggerPixCodeDetection)
       .Times(1)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_)));
+          testing::ByRef(pix_code_detection_result_), std::string()));
 
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
       url, ukm::UkmRecorder::GetNewSourceID());
@@ -645,7 +646,7 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   EXPECT_CALL(*driver_, TriggerPixCodeDetection)
       .Times(GetPixCodeDetectionAttemptCount(page_load_delay))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_)));
+          testing::ByRef(pix_code_detection_result_), std::string()));
 
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
       url, ukm::UkmRecorder::GetNewSourceID());
@@ -696,7 +697,7 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists,
   EXPECT_CALL(*driver_, TriggerPixCodeDetection)
       .Times(manager_->kMaxAttemptsForPixCodeDetection)
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
-          testing::ByRef(pix_code_detection_result_)));
+          testing::ByRef(pix_code_detection_result_), std::string()));
 
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(
       url, ukm::UkmRecorder::GetNewSourceID());
@@ -726,7 +727,7 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists, Ukm) {
   // actually doesn't trigger PIX code detection.
   manager_->TriggerPixCodeDetection();
   FastForwardBy(base::Milliseconds(200));
-  manager_->ProcessPixCodeDetectionResult(GetParam());
+  manager_->ProcessPixCodeDetectionResult(GetParam(), std::string());
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PixCodeDetectionResult::kEntryName,
@@ -807,7 +808,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound);
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
 }
 
 // A test fixture for the facilitated payment manager with the
@@ -832,7 +833,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(*api_client_, IsAvailable(testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound);
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
 }
 
 // When an invalid PIX code is detected, the manager does not check whether the
@@ -843,7 +844,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
 
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kInvalidPixCodeFound);
+      mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string());
 }
 
 // If a valid PIX code is detected, then the manager will show a UI prompt for
@@ -858,7 +859,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound);
+      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
 }
 
 }  // namespace payments::facilitated

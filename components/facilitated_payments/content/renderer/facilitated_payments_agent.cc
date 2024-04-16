@@ -30,16 +30,18 @@ FacilitatedPaymentsAgent::FacilitatedPaymentsAgent(
 FacilitatedPaymentsAgent::~FacilitatedPaymentsAgent() = default;
 
 void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
-    base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) {
+    base::OnceCallback<void(mojom::PixCodeDetectionResult, const std::string&)>
+        callback) {
   if (will_destruct_ || !render_frame() || !render_frame()->IsMainFrame() ||
       !render_frame()->GetWebFrame()) {
     std::move(callback).Run(
-        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun);
+        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun, std::string());
     return;
   }
 
   mojom::PixCodeDetectionResult result =
       mojom::PixCodeDetectionResult::kPixCodeNotFound;
+  std::string pix_code;
   constexpr char kPixCodeIdentifierLowercase[] = "0014br.gov.bcb.pix";
   // Discard the PIX code string.
   render_frame()->GetWebFrame()->GetDocument().FindTextInElementWith(
@@ -55,10 +57,15 @@ void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
                      ? mojom::PixCodeDetectionResult::kValidPixCodeFound
                      : mojom::PixCodeDetectionResult::kInvalidPixCodeFound;
 
-        return result == mojom::PixCodeDetectionResult::kValidPixCodeFound;
+        if (result != mojom::PixCodeDetectionResult::kValidPixCodeFound) {
+          return false;
+        }
+
+        pix_code = trimmed_result;
+        return true;
       });
 
-  std::move(callback).Run(result);
+  std::move(callback).Run(result, pix_code);
 }
 
 void FacilitatedPaymentsAgent::OnDestruct() {

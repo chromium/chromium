@@ -140,7 +140,8 @@ class FacilitatedPaymentsManager {
 
   // Callback to be called after attempting PIX code detection. `result`
   // represents the result of the document scan.
-  void ProcessPixCodeDetectionResult(mojom::PixCodeDetectionResult result);
+  void ProcessPixCodeDetectionResult(mojom::PixCodeDetectionResult result,
+                                     const std::string& pix_code);
 
   // Starts `pix_code_detection_latency_measuring_timestamp_`.
   void StartPixCodeDetectionLatencyTimer();
