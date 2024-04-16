@@ -209,6 +209,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_NAME)));
   specifics->set_address_home_thoroughfare_number(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER)));
+  specifics->set_address_home_thoroughfare_number_and_apt(
+      UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER_AND_APT)));
   specifics->set_address_home_street_location(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_LOCATION)));
   specifics->set_address_home_subpremise_name(
@@ -299,6 +301,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_thoroughfare_number_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER)));
+  specifics->set_address_home_thoroughfare_number_and_apt_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER_AND_APT)));
   specifics->set_address_home_street_location_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_STREET_LOCATION)));
@@ -565,6 +570,12 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       UTF8ToUTF16(specifics.address_home_thoroughfare_number()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_thoroughfare_number_status()));
+
+  profile->SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+      UTF8ToUTF16(specifics.address_home_thoroughfare_number_and_apt()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.address_home_thoroughfare_number_and_apt_status()));
 
   profile->SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_LOCATION,

@@ -161,6 +161,10 @@ message AutofillProfileSpecifics {
   // address_home_dependent_locality. Note that some address forms require the
   // combination of both in a single field as opposed to each one separately.
   optional string address_home_street_location_and_locality = 89;
+  // Combination of types address_home_thoroughfare_number and
+  // address_home_apt. Note that some address forms require the combination of
+  // both in a single field as opposed to each one separately.
+  optional string address_home_thoroughfare_number_and_apt = 91;
 
   // Validation status records for address fields.
   optional VerificationStatus address_home_city_status = 43;
@@ -178,6 +182,8 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_overflow_and_landmark_status = 84;
   optional VerificationStatus address_home_street_location_and_locality_status =
       90;
+  optional VerificationStatus address_home_thoroughfare_number_and_apt_status =
+      92;
   optional VerificationStatus address_home_street_address_status = 47;
   optional VerificationStatus address_home_sorting_code_status = 48;
   optional VerificationStatus address_home_dependent_locality_status = 49;

@@ -425,6 +425,11 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       sync_pb::
           AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
+  specifics.set_address_home_thoroughfare_number_and_apt("");
+  specifics.set_address_home_thoroughfare_number_and_apt_status(
+      sync_pb::
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
+
   return specifics;
 }
 

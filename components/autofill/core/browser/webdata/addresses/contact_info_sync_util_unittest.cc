@@ -341,6 +341,8 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
   SetToken(specifics.mutable_address_street_location_and_locality(), "",
            ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
+  SetToken(specifics.mutable_address_thoroughfare_number_and_apt(), "",
+           ContactInfoSpecifics::VERIFICATION_STATUS_UNSPECIFIED);
 
   // All of the following types don't store verification statuses in
   // AutofillProfile. This corresponds to `VERIFICATION_STATUS_UNSPECIFIED`.

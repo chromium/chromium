@@ -197,6 +197,10 @@ message ContactInfoSpecifics {
   // address_dependent_locality. Note that some address forms require the
   // combination of both in a single field as opposed to each one separately.
   optional StringToken address_street_location_and_locality = 52;
+  // Combination of types address_thoroughfare_number and address_apt. Note that
+  // some address forms require the combination of both in a single field as
+  // opposed to each one separately.
+  optional StringToken address_thoroughfare_number_and_apt = 53;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;
