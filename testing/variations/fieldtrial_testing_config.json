@@ -6251,7 +6251,8 @@
                         "aida_api_key": "someRandomAPIKey",
                         "aida_endpoint": "https://www.example.com/aida",
                         "aida_model_id": "aida_model_id",
-                        "aida_scope": "https://www.example.com/auth/"
+                        "aida_scope": "https://www.example.com/auth/",
+                        "opt_in": "false"
                     },
                     "enable_features": [
                         "DevToolsConsoleInsightsDogfood"
