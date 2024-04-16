@@ -5,6 +5,7 @@
 #ifndef UI_GL_GL_FEATURES_H_
 #define UI_GL_GL_FEATURES_H_
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -35,6 +36,11 @@ GL_EXPORT BASE_DECLARE_FEATURE(kUsePrimaryMonitorVSyncIntervalOnSV3);
 GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 
 GL_EXPORT bool UsePassthroughCommandDecoder();
+
+GL_EXPORT void GetANGLEFeaturesFromCommandLineAndFinch(
+    const base::CommandLine* command_line,
+    std::vector<std::string>& enabled_angle_features,
+    std::vector<std::string>& disabled_angle_features);
 
 }  // namespace features
 
