@@ -6,13 +6,11 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -106,19 +104,7 @@ class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
 
 }  // namespace
 
-class PageLoadTrackerDecoratorTest : public InProcessBrowserTest {
- public:
-  PageLoadTrackerDecoratorTest() {
-    // TODO(http://crbug.com/40755583): Temporarily disabling this feature
-    // because the test fails with it. Fix and re-enable the feature instead.
-    scoped_feature_list_.InitAndDisableFeature(features::kRunOnMainThreadSync);
-  }
-
-  ~PageLoadTrackerDecoratorTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using PageLoadTrackerDecoratorTest = InProcessBrowserTest;
 
 // Integration test verifying that everything is hooked up in Chrome to update
 // PageNode::GetLoadingState() is updated on navigation. See

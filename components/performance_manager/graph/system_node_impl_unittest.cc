@@ -79,6 +79,7 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
@@ -86,10 +87,24 @@ using testing::InvokeWithoutArgs;
 }  // namespace
 
 TEST_F(SystemNodeImplTest, ObserverWorks) {
+  MockObserver head_obs;
   MockObserver obs;
+  MockObserver tail_obs;
+  graph()->AddSystemNodeObserver(&head_obs);
   graph()->AddSystemNodeObserver(&obs);
+  graph()->AddSystemNodeObserver(&tail_obs);
 
   const SystemNode* system_node = graph()->GetSystemNode();
+
+  // Remove observers at the head and tail of the list inside a callback, and
+  // expect that `obs` is still notified correctly.
+  EXPECT_CALL(head_obs, OnProcessMemoryMetricsAvailable(_))
+      .WillOnce(InvokeWithoutArgs([&] {
+        graph()->RemoveSystemNodeObserver(&head_obs);
+        graph()->RemoveSystemNodeObserver(&tail_obs);
+      }));
+  // `tail_obs` should not be notified as it was removed.
+  EXPECT_CALL(tail_obs, OnProcessMemoryMetricsAvailable(_)).Times(0);
 
   EXPECT_CALL(obs, OnProcessMemoryMetricsAvailable(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedSystemNode));
@@ -97,15 +112,25 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
   EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
 
   EXPECT_CALL(obs, OnBeforeMemoryPressure(
-                       base::MemoryPressureListener::MemoryPressureLevel::
-                           MEMORY_PRESSURE_LEVEL_CRITICAL));
-  EXPECT_CALL(
-      obs, OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel::
-                                MEMORY_PRESSURE_LEVEL_CRITICAL));
+                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  EXPECT_CALL(obs, OnMemoryPressure(
+                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
   SystemNodeImpl::FromNode(system_node)
       ->OnMemoryPressureForTesting(
-          base::MemoryPressureListener::MemoryPressureLevel::
-              MEMORY_PRESSURE_LEVEL_CRITICAL);
+          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Re-entrant iteration should work.
+  EXPECT_CALL(obs, OnProcessMemoryMetricsAvailable(system_node))
+      .WillOnce(InvokeWithoutArgs([&] {
+        SystemNodeImpl::FromNode(system_node)
+            ->OnMemoryPressureForTesting(
+                MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+      }));
+  EXPECT_CALL(obs, OnBeforeMemoryPressure(
+                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
+  EXPECT_CALL(obs, OnMemoryPressure(
+                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
+  SystemNodeImpl::FromNode(system_node)->OnProcessMemoryMetricsAvailable();
 
   graph()->RemoveSystemNodeObserver(&obs);
 }

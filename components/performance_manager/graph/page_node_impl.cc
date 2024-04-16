@@ -344,14 +344,16 @@ void PageNodeImpl::SetUkmSourceId(ukm::SourceId ukm_source_id) {
 
 void PageNodeImpl::OnFaviconUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* observer : GetObservers())
-    observer->OnFaviconUpdated(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnFaviconUpdated(this);
+  }
 }
 
 void PageNodeImpl::OnTitleUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* observer : GetObservers())
-    observer->OnTitleUpdated(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnTitleUpdated(this);
+  }
 }
 
 void PageNodeImpl::OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node) {
@@ -361,8 +363,8 @@ void PageNodeImpl::OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node) {
     return;
   }
 
-  for (auto* observer : GetObservers()) {
-    observer->OnAboutToBeDiscarded(this, new_page_node.get());
+  for (auto& observer : GetObservers()) {
+    observer.OnAboutToBeDiscarded(this, new_page_node.get());
   }
 }
 
@@ -389,8 +391,9 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
   if (same_document)
     return;
 
-  for (auto* observer : GetObservers())
-    observer->OnMainFrameDocumentChanged(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnMainFrameDocumentChanged(this);
+  }
 }
 
 void PageNodeImpl::OnNotificationPermissionStatusChange(
@@ -445,8 +448,9 @@ void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
   opener_frame_node_ = opener;
   opener->AddOpenedPage(PassKey(), this);
 
-  for (auto* observer : GetObservers())
-    observer->OnOpenerFrameNodeChanged(this, previous_opener);
+  for (auto& observer : GetObservers()) {
+    observer.OnOpenerFrameNodeChanged(this, previous_opener);
+  }
 }
 
 void PageNodeImpl::ClearOpenerFrameNode() {
@@ -458,8 +462,9 @@ void PageNodeImpl::ClearOpenerFrameNode() {
   opener_frame_node_->RemoveOpenedPage(PassKey(), this);
   opener_frame_node_ = nullptr;
 
-  for (auto* observer : GetObservers())
-    observer->OnOpenerFrameNodeChanged(this, previous_opener);
+  for (auto& observer : GetObservers()) {
+    observer.OnOpenerFrameNodeChanged(this, previous_opener);
+  }
 }
 
 void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
@@ -480,9 +485,9 @@ void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
   embedding_type_ = embedding_type;
   embedder->AddEmbeddedPage(PassKey(), this);
 
-  for (auto* observer : GetObservers())
-    observer->OnEmbedderFrameNodeChanged(this, previous_embedder,
-                                         previous_type);
+  for (auto& observer : GetObservers()) {
+    observer.OnEmbedderFrameNodeChanged(this, previous_embedder, previous_type);
+  }
 }
 
 void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
@@ -497,9 +502,9 @@ void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
   embedder_frame_node_ = nullptr;
   embedding_type_ = EmbeddingType::kInvalid;
 
-  for (auto* observer : GetObservers())
-    observer->OnEmbedderFrameNodeChanged(this, previous_embedder,
-                                         previous_type);
+  for (auto& observer : GetObservers()) {
+    observer.OnEmbedderFrameNodeChanged(this, previous_embedder, previous_type);
+  }
 }
 
 void PageNodeImpl::set_has_nonempty_beforeunload(

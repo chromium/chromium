@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/properties.h"
 
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,10 +16,10 @@ namespace {
 
 class DummyNode;
 
-class DummyObserver {
+class DummyObserver : public base::CheckedObserver {
  public:
-  DummyObserver() {}
-  ~DummyObserver() {}
+  DummyObserver() = default;
+  ~DummyObserver() override = default;
 
   MOCK_METHOD1(NotifyAlwaysConst, void(const DummyNode*));
   MOCK_METHOD1(NotifyOnlyOnChangesConst, void(const DummyNode*));
@@ -31,10 +32,15 @@ class DummyNode {
   DummyNode() = default;
   ~DummyNode() = default;
 
-  void AddObserver(DummyObserver* observer) { observers_.push_back(observer); }
+  void AddObserver(DummyObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(DummyObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
   // Fulfills ObservedProperty contract.
-  const std::vector<DummyObserver*>& GetObservers() { return observers_; }
+  const base::ObserverList<DummyObserver>& GetObservers() { return observers_; }
   bool CanSetProperty() const { return can_set_; }
   bool CanSetAndNotifyProperty() const { return can_set_; }
 
@@ -78,18 +84,13 @@ class DummyNode {
       observed_only_on_changes_with_previous_value_{false};
 
   bool can_set_ = true;
-  std::vector<DummyObserver*> observers_;
+  base::ObserverList<DummyObserver> observers_;
 };
 
 class GraphPropertiesTest : public ::testing::Test {
  public:
-  GraphPropertiesTest() {}
-  ~GraphPropertiesTest() override {}
-
-  void SetUp() override {
-    node_.AddObserver(&observer_);
-    ::testing::Test::SetUp();
-  }
+  GraphPropertiesTest() { node_.AddObserver(&observer_); }
+  ~GraphPropertiesTest() override { node_.RemoveObserver(&observer_); }
 
   DummyObserver observer_;
   DummyNode node_;

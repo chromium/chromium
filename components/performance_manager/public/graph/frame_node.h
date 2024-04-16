@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -265,14 +266,14 @@ class FrameNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class FrameNodeObserver {
+class FrameNodeObserver : public base::CheckedObserver {
  public:
   FrameNodeObserver();
 
   FrameNodeObserver(const FrameNodeObserver&) = delete;
   FrameNodeObserver& operator=(const FrameNodeObserver&) = delete;
 
-  virtual ~FrameNodeObserver();
+  ~FrameNodeObserver() override;
 
   // Node lifetime notifications.
 

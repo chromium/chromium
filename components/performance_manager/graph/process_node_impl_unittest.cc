@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
+#include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -127,13 +128,27 @@ using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using testing::_;
 using testing::Invoke;
+using testing::InvokeWithoutArgs;
 using testing::Return;
 
 }  // namespace
 
 TEST_F(ProcessNodeImplTest, ObserverWorks) {
+  MockObserver head_obs;
   MockObserver obs;
+  MockObserver tail_obs;
+  graph()->AddProcessNodeObserver(&head_obs);
   graph()->AddProcessNodeObserver(&obs);
+  graph()->AddProcessNodeObserver(&tail_obs);
+
+  // Remove observers at the head and tail of the list inside a callback, and
+  // expect that `obs` is still notified correctly.
+  EXPECT_CALL(head_obs, OnProcessNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
+    graph()->RemoveProcessNodeObserver(&head_obs);
+    graph()->RemoveProcessNodeObserver(&tail_obs);
+  }));
+  // `tail_obs` should not be notified as it was removed.
+  EXPECT_CALL(tail_obs, OnProcessNodeAdded(_)).Times(0);
 
   // Create a page node and expect a matching call to "OnProcessNodeAdded".
   EXPECT_CALL(obs, OnProcessNodeAdded(_))
@@ -166,6 +181,14 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
   process_node->OnAllFramesInProcessFrozenForTesting();
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
+
+  // Re-entrant iteration should work.
+  EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(raw_process_node))
+      .WillOnce(InvokeWithoutArgs([&] {
+        process_node->set_priority(base::TaskPriority::USER_BLOCKING);
+      }));
+  EXPECT_CALL(obs, OnPriorityChanged(raw_process_node, _));
+  process_node->SetMainThreadTaskLoadIsLow(false);
 
   // Release the page node and expect a call to "OnBeforeProcessNodeRemoved".
   EXPECT_CALL(obs, OnBeforeProcessNodeRemoved(_))

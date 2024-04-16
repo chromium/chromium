@@ -15,6 +15,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
@@ -53,6 +54,16 @@ class GraphImpl : public Graph {
   using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
   using NodeSet = std::unordered_set<raw_ptr<NodeBase, CtnExperimental>>;
+
+  // An ObserverList that DCHECK's if any observers are still in it when the
+  // graph is deleted. `allow_reentrancy` is true because some observers update
+  // node properties that also trigger observers. (For example
+  // FrameVisibilityVoter::OnFrameVisibilityChanged() can call
+  // FrameNodeImpl::SetPriorityAndReason().)
+  template <typename Observer>
+  using ObserverList = base::ObserverList<Observer,
+                                          /*check_empty=*/true,
+                                          /*allow_reentrancy=*/true>;
 
   GraphImpl();
   ~GraphImpl() override;
@@ -191,7 +202,7 @@ class GraphImpl : public Graph {
   // Provides access to per-node-class typed observers. Exposed to nodes via
   // TypedNodeBase.
   template <typename Observer>
-  const std::vector<Observer*>& GetObservers() const;
+  const ObserverList<Observer>& GetObservers() const;
 
  private:
   struct ProcessAndFrameId {
@@ -261,19 +272,17 @@ class GraphImpl : public Graph {
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Typed observers.
-  // TODO(chrisha): We should wrap these containers in something that catches
-  // invalid reentrant usage in DCHECK builds.
-  std::vector<GraphObserver*> graph_observers_
+  ObserverList<GraphObserver> graph_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<FrameNodeObserver*> frame_node_observers_
+  ObserverList<FrameNodeObserver> frame_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<PageNodeObserver*> page_node_observers_
+  ObserverList<PageNodeObserver> page_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<ProcessNodeObserver*> process_node_observers_
+  ObserverList<ProcessNodeObserver> process_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<SystemNodeObserver*> system_node_observers_
+  ObserverList<SystemNodeObserver> system_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::vector<WorkerNodeObserver*> worker_node_observers_
+  ObserverList<WorkerNodeObserver> worker_node_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Graph-owned objects. For now we only expect O(10) clients, hence the

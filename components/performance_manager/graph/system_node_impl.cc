@@ -31,18 +31,19 @@ void SystemNodeImpl::RemoveNodeAttachedData() {}
 
 void SystemNodeImpl::OnProcessMemoryMetricsAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* observer : GetObservers())
-    observer->OnProcessMemoryMetricsAvailable(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnProcessMemoryMetricsAvailable(this);
+  }
 }
 
 void SystemNodeImpl::OnMemoryPressure(MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto* observer : GetObservers()) {
-    observer->OnBeforeMemoryPressure(new_level);
+  for (auto& observer : GetObservers()) {
+    observer.OnBeforeMemoryPressure(new_level);
   }
-  for (auto* observer : GetObservers()) {
-    observer->OnMemoryPressure(new_level);
+  for (auto& observer : GetObservers()) {
+    observer.OnMemoryPressure(new_level);
   }
 }
 

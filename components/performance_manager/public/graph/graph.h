@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list_types.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -183,14 +184,14 @@ class Graph {
 #endif
 
 // Observer interface for the graph.
-class GraphObserver {
+class GraphObserver : public base::CheckedObserver {
  public:
   GraphObserver();
 
   GraphObserver(const GraphObserver&) = delete;
   GraphObserver& operator=(const GraphObserver&) = delete;
 
-  virtual ~GraphObserver();
+  ~GraphObserver() override;
 
   // Called before the |graph| associated with this observer disappears. This
   // allows the observer to do any necessary cleanup work. Note that the

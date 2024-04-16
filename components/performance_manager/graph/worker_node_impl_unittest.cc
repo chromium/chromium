@@ -7,11 +7,15 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/task_traits.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace performance_manager {
 
@@ -21,6 +25,46 @@ class WorkerNodeImplTest : public GraphTestHarness {
  public:
  protected:
 };
+
+// Mock observer for the basic ObserverWorks test.
+class LenientMockObserver : public WorkerNodeImpl::Observer {
+ public:
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
+
+  MOCK_METHOD(void, OnWorkerNodeAdded, (const WorkerNode*), (override));
+  MOCK_METHOD(void, OnBeforeWorkerNodeRemoved, (const WorkerNode*), (override));
+  MOCK_METHOD(void,
+              OnFinalResponseURLDetermined,
+              (const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnClientFrameAdded,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientFrameRemoved,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnClientWorkerAdded,
+              (const WorkerNode*, const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientWorkerRemoved,
+              (const WorkerNode*, const WorkerNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnPriorityAndReasonChanged,
+              (const WorkerNode*, const PriorityAndReason&),
+              (override));
+};
+
+using MockObserver = ::testing::StrictMock<LenientMockObserver>;
+
+using testing::_;
+using testing::Invoke;
+using testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -207,6 +251,47 @@ TEST_F(WorkerNodeImplTest, PriorityAndReason) {
   EXPECT_EQ(worker_impl->GetPriorityAndReason(), kTestPriorityAndReason);
 }
 
+TEST_F(WorkerNodeImplTest, ObserverWorks) {
+  auto process = CreateNode<ProcessNodeImpl>();
+
+  MockObserver head_obs;
+  MockObserver obs;
+  MockObserver tail_obs;
+  graph()->AddWorkerNodeObserver(&head_obs);
+  graph()->AddWorkerNodeObserver(&obs);
+  graph()->AddWorkerNodeObserver(&tail_obs);
+
+  // Remove observers at the head and tail of the list inside a callback, and
+  // expect that `obs` is still notified correctly.
+  EXPECT_CALL(head_obs, OnWorkerNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
+    graph()->RemoveWorkerNodeObserver(&head_obs);
+    graph()->RemoveWorkerNodeObserver(&tail_obs);
+  }));
+  // `tail_obs` should not be notified as it was removed.
+  EXPECT_CALL(tail_obs, OnWorkerNodeAdded(_)).Times(0);
+
+  // Create a worker node and expect a matching call to "OnWorkerNodeAdded".
+  const WorkerNode* worker_node = nullptr;
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_))
+      .WillOnce(Invoke([&](const WorkerNode* node) { worker_node = node; }));
+  auto dedicated_worker = CreateNode<WorkerNodeImpl>(
+      WorkerNode::WorkerType::kDedicated, process.get());
+  EXPECT_EQ(worker_node, dedicated_worker.get());
+
+  // Re-entrant iteration should work.
+  EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker_node))
+      .WillOnce(InvokeWithoutArgs([&] {
+        dedicated_worker->SetPriorityAndReason(PriorityAndReason(
+            base::TaskPriority::USER_BLOCKING, "test priority"));
+      }));
+  EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_node, _));
+  dedicated_worker->OnFinalResponseURLDetermined(GURL("https://example.com"));
+
+  graph()->RemoveWorkerNodeObserver(&obs);
+}
+
+// A more complicated observer that tests the consistency of client
+// relationships.
 class TestWorkerNodeObserver : public WorkerNodeObserver {
  public:
   TestWorkerNodeObserver() = default;

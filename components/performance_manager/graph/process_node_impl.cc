@@ -433,8 +433,9 @@ base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* observer : GetObservers())
-    observer->OnAllFramesInProcessFrozen(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnAllFramesInProcessFrozen(this);
+  }
 }
 
 void ProcessNodeImpl::OnJoiningGraph() {

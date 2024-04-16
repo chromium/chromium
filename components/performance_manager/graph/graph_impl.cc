@@ -7,14 +7,12 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -35,28 +33,6 @@ namespace {
 
 // A unique type ID for this implementation.
 const uintptr_t kGraphImplType = reinterpret_cast<uintptr_t>(&kGraphImplType);
-
-template <typename NodeObserverType>
-void AddObserverImpl(std::vector<NodeObserverType*>* observers,
-                     NodeObserverType* observer) {
-  DCHECK(observers);
-  DCHECK(observer);
-  DCHECK(!base::Contains(*observers, observer));
-  observers->push_back(observer);
-}
-
-template <typename NodeObserverType>
-void RemoveObserverImpl(std::vector<NodeObserverType*>* observers,
-                        NodeObserverType* observer) {
-  DCHECK(observers);
-  DCHECK(observer);
-  // We expect to find the observer in the array.
-  auto it = base::ranges::find(*observers, observer);
-  DCHECK(it != observers->end());
-  observers->erase(it);
-  // There should only have been one copy of the observer.
-  DCHECK(!base::Contains(*observers, observer));
-}
 
 base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
                                             const Node* node) {
@@ -156,13 +132,6 @@ GraphImpl::~GraphImpl() {
   DCHECK(graph_owned_.empty());
   DCHECK(registered_objects_.empty());
 
-  // At this point, all typed observers should be empty.
-  DCHECK(graph_observers_.empty());
-  DCHECK(frame_node_observers_.empty());
-  DCHECK(page_node_observers_.empty());
-  DCHECK(process_node_observers_.empty());
-  DCHECK(system_node_observers_.empty());
-
   // All process and frame nodes should have been removed already.
   DCHECK(processes_by_pid_.empty());
   DCHECK(frames_by_id_.empty());
@@ -185,8 +154,9 @@ void GraphImpl::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Notify graph observers that the graph is being destroyed.
-  for (auto* observer : graph_observers_)
-    observer->OnBeforeGraphDestroyed(this);
+  for (auto& observer : graph_observers_) {
+    observer.OnBeforeGraphDestroyed(this);
+  }
 
   // Clean up graph owned objects. This causes their TakeFromGraph callbacks to
   // be invoked, and ideally they clean up any observers they may have, etc.
@@ -212,62 +182,62 @@ void GraphImpl::TearDown() {
 
 void GraphImpl::AddGraphObserver(GraphObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&graph_observers_, observer);
+  graph_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddFrameNodeObserver(FrameNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&frame_node_observers_, observer);
+  frame_node_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddPageNodeObserver(PageNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&page_node_observers_, observer);
+  page_node_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddProcessNodeObserver(ProcessNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&process_node_observers_, observer);
+  process_node_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddSystemNodeObserver(SystemNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&system_node_observers_, observer);
+  system_node_observers_.AddObserver(observer);
 }
 
 void GraphImpl::AddWorkerNodeObserver(WorkerNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddObserverImpl(&worker_node_observers_, observer);
+  worker_node_observers_.AddObserver(observer);
 }
 
 void GraphImpl::RemoveGraphObserver(GraphObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&graph_observers_, observer);
+  graph_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemoveFrameNodeObserver(FrameNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&frame_node_observers_, observer);
+  frame_node_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemovePageNodeObserver(PageNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&page_node_observers_, observer);
+  page_node_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemoveProcessNodeObserver(ProcessNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&process_node_observers_, observer);
+  process_node_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemoveSystemNodeObserver(SystemNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&system_node_observers_, observer);
+  system_node_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::RemoveWorkerNodeObserver(WorkerNodeObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RemoveObserverImpl(&worker_node_observers_, observer);
+  worker_node_observers_.RemoveObserver(observer);
 }
 
 void GraphImpl::PassToGraphImpl(std::unique_ptr<GraphOwned> graph_owned) {
@@ -524,27 +494,32 @@ NodeState GraphImpl::GetNodeState(const NodeBase* node) const {
 }
 
 template <>
-const std::vector<FrameNodeObserver*>& GraphImpl::GetObservers() const {
+const GraphImpl::ObserverList<FrameNodeObserver>& GraphImpl::GetObservers()
+    const {
   return frame_node_observers_;
 }
 
 template <>
-const std::vector<PageNodeObserver*>& GraphImpl::GetObservers() const {
+const GraphImpl::ObserverList<PageNodeObserver>& GraphImpl::GetObservers()
+    const {
   return page_node_observers_;
 }
 
 template <>
-const std::vector<ProcessNodeObserver*>& GraphImpl::GetObservers() const {
+const GraphImpl::ObserverList<ProcessNodeObserver>& GraphImpl::GetObservers()
+    const {
   return process_node_observers_;
 }
 
 template <>
-const std::vector<SystemNodeObserver*>& GraphImpl::GetObservers() const {
+const GraphImpl::ObserverList<SystemNodeObserver>& GraphImpl::GetObservers()
+    const {
   return system_node_observers_;
 }
 
 template <>
-const std::vector<WorkerNodeObserver*>& GraphImpl::GetObservers() const {
+const GraphImpl::ObserverList<WorkerNodeObserver>& GraphImpl::GetObservers()
+    const {
   return worker_node_observers_;
 }
 
@@ -574,25 +549,29 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
   switch (node->type()) {
     case NodeTypeEnum::kFrame: {
       auto* frame_node = FrameNodeImpl::FromNodeBase(node);
-      for (auto* observer : frame_node_observers_)
-        observer->OnFrameNodeAdded(frame_node);
+      for (auto& observer : frame_node_observers_) {
+        observer.OnFrameNodeAdded(frame_node);
+      }
     } break;
     case NodeTypeEnum::kPage: {
       auto* page_node = PageNodeImpl::FromNodeBase(node);
-      for (auto* observer : page_node_observers_)
-        observer->OnPageNodeAdded(page_node);
+      for (auto& observer : page_node_observers_) {
+        observer.OnPageNodeAdded(page_node);
+      }
     } break;
     case NodeTypeEnum::kProcess: {
       auto* process_node = ProcessNodeImpl::FromNodeBase(node);
-      for (auto* observer : process_node_observers_)
-        observer->OnProcessNodeAdded(process_node);
+      for (auto& observer : process_node_observers_) {
+        observer.OnProcessNodeAdded(process_node);
+      }
     } break;
     case NodeTypeEnum::kSystem:
       break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
-      for (auto* observer : worker_node_observers_)
-        observer->OnWorkerNodeAdded(worker_node);
+      for (auto& observer : worker_node_observers_) {
+        observer.OnWorkerNodeAdded(worker_node);
+      }
     } break;
     case NodeTypeEnum::kInvalidType: {
       NOTREACHED();
@@ -606,25 +585,29 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
   switch (node->type()) {
     case NodeTypeEnum::kFrame: {
       auto* frame_node = FrameNodeImpl::FromNodeBase(node);
-      for (auto* observer : frame_node_observers_)
-        observer->OnBeforeFrameNodeRemoved(frame_node);
+      for (auto& observer : frame_node_observers_) {
+        observer.OnBeforeFrameNodeRemoved(frame_node);
+      }
     } break;
     case NodeTypeEnum::kPage: {
       auto* page_node = PageNodeImpl::FromNodeBase(node);
-      for (auto* observer : page_node_observers_)
-        observer->OnBeforePageNodeRemoved(page_node);
+      for (auto& observer : page_node_observers_) {
+        observer.OnBeforePageNodeRemoved(page_node);
+      }
     } break;
     case NodeTypeEnum::kProcess: {
       auto* process_node = ProcessNodeImpl::FromNodeBase(node);
-      for (auto* observer : process_node_observers_)
-        observer->OnBeforeProcessNodeRemoved(process_node);
+      for (auto& observer : process_node_observers_) {
+        observer.OnBeforeProcessNodeRemoved(process_node);
+      }
     } break;
     case NodeTypeEnum::kSystem:
       break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
-      for (auto* observer : worker_node_observers_)
-        observer->OnBeforeWorkerNodeRemoved(worker_node);
+      for (auto& observer : worker_node_observers_) {
+        observer.OnBeforeWorkerNodeRemoved(worker_node);
+      }
     } break;
     case NodeTypeEnum::kInvalidType: {
       NOTREACHED();

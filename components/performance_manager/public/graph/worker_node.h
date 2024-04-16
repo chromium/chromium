@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -150,14 +151,14 @@ class WorkerNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class WorkerNodeObserver {
+class WorkerNodeObserver : public base::CheckedObserver {
  public:
   WorkerNodeObserver();
 
   WorkerNodeObserver(const WorkerNodeObserver&) = delete;
   WorkerNodeObserver& operator=(const WorkerNodeObserver&) = delete;
 
-  virtual ~WorkerNodeObserver();
+  ~WorkerNodeObserver() override;
 
   // Node lifetime notifications.
 

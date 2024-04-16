@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/observer_list_types.h"
 #include "components/performance_manager/public/graph/node.h"
 
 namespace performance_manager {
@@ -30,14 +31,14 @@ class SystemNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class SystemNodeObserver {
+class SystemNodeObserver : public base::CheckedObserver {
  public:
   SystemNodeObserver();
 
   SystemNodeObserver(const SystemNodeObserver&) = delete;
   SystemNodeObserver& operator=(const SystemNodeObserver&) = delete;
 
-  virtual ~SystemNodeObserver();
+  ~SystemNodeObserver() override;
 
   // Called when a new set of process memory metrics is available.
   //

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -248,7 +249,7 @@ class PageNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class PageNodeObserver {
+class PageNodeObserver : public base::CheckedObserver {
  public:
   using PageState = PageNode::PageState;
   using EmbeddingType = PageNode::EmbeddingType;
@@ -258,7 +259,7 @@ class PageNodeObserver {
   PageNodeObserver(const PageNodeObserver&) = delete;
   PageNodeObserver& operator=(const PageNodeObserver&) = delete;
 
-  virtual ~PageNodeObserver();
+  ~PageNodeObserver() override;
 
   // Node lifetime notifications.
 

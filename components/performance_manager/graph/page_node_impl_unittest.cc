@@ -294,14 +294,28 @@ using MockObserver = ::testing::StrictMock<LenientMockObserver>;
 
 using testing::_;
 using testing::Invoke;
+using testing::InvokeWithoutArgs;
 
 }  // namespace
 
 TEST_F(PageNodeImplTest, ObserverWorks) {
   auto process = CreateNode<ProcessNodeImpl>();
 
+  MockObserver head_obs;
   MockObserver obs;
+  MockObserver tail_obs;
+  graph()->AddPageNodeObserver(&head_obs);
   graph()->AddPageNodeObserver(&obs);
+  graph()->AddPageNodeObserver(&tail_obs);
+
+  // Remove observers at the head and tail of the list inside a callback, and
+  // expect that `obs` is still notified correctly.
+  EXPECT_CALL(head_obs, OnPageNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
+    graph()->RemovePageNodeObserver(&head_obs);
+    graph()->RemovePageNodeObserver(&tail_obs);
+  }));
+  // `tail_obs` should not be notified as it was removed.
+  EXPECT_CALL(tail_obs, OnPageNodeAdded(_)).Times(0);
 
   // Create a page node and expect a matching call to "OnPageNodeAdded".
   EXPECT_CALL(obs, OnPageNodeAdded(_))
@@ -367,6 +381,12 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
   page_node->OnFaviconUpdated();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  // Re-entrant iteration should work.
+  EXPECT_CALL(obs, OnIsFocusedChanged(raw_page_node))
+      .WillOnce(InvokeWithoutArgs([&] { page_node->SetIsVisible(false); }));
+  EXPECT_CALL(obs, OnIsVisibleChanged(raw_page_node));
+  page_node->SetIsFocused(false);
 
   // Release the page node and expect a call to "OnBeforePageNodeRemoved".
   EXPECT_CALL(obs, OnBeforePageNodeRemoved(_))

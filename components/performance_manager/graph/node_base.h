@@ -6,15 +6,10 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_BASE_H_
 
 #include <stdint.h>
-#include <map>
-#include <memory>
-#include <utility>
-#include <vector>
 
-#include "base/functional/callback.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/properties.h"
@@ -86,7 +81,8 @@ class NodeBase {
   // Helper function for TypedNodeBase to access the list of typed observers
   // stored in the graph.
   template <typename Observer>
-  const std::vector<Observer*>& GetObservers(const GraphImpl* graph) const {
+  const GraphImpl::ObserverList<Observer>& GetObservers(
+      const GraphImpl* graph) const {
     DCHECK(CanSetAndNotifyProperty());
     return graph->GetObservers<Observer>();
   }
@@ -201,7 +197,7 @@ class TypedNodeBase : public NodeBase {
 
   // Convenience accessor to the per-node-class list of observers that is stored
   // in the graph. Satisfies the contract expected by ObservedProperty.
-  const std::vector<NodeObserverClass*>& GetObservers() const {
+  const GraphImpl::ObserverList<NodeObserverClass>& GetObservers() const {
     // Mediate through NodeBase, as it's the class that is friended by the
     // GraphImpl in order to provide access.
     return NodeBase::GetObservers<NodeObserverClass>(graph());
