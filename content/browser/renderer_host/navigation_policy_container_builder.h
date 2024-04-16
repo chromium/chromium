@@ -91,6 +91,11 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetCrossOriginEmbedderPolicy(network::CrossOriginEmbedderPolicy coep);
 
+  // Sets the document isolation policy of the new document.
+  //
+  // This must be called before `ComputePolicies()`.
+  void SetDocumentIsolationPolicy(const network::DocumentIsolationPolicy& dip);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before `ComputePolicies()`.

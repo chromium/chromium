@@ -29,6 +29,7 @@ struct SameSizeAsPolicyContainerPolicies {
       content_security_policies;
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  network::DocumentIsolationPolicy document_isolation_policy;
   network::mojom::WebSandboxFlags sandbox_flags;
   bool is_credentialless;
   bool can_navigate_top_without_user_gesture;
@@ -53,6 +54,7 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   auto csp = network::mojom::ContentSecurityPolicy::New();
   csp->treat_as_public_address = true;
   csps.push_back(std::move(csp));
+
   network::CrossOriginOpenerPolicy coop;
   network::mojom::WebSandboxFlags sandbox_flags =
       network::mojom::WebSandboxFlags::kOrientationLock |
@@ -62,6 +64,7 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
   coop.reporting_endpoint = "endpoint 1";
   coop.report_only_reporting_endpoint = "endpoint 2";
+
   network::CrossOriginEmbedderPolicy coep;
   coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
   coep.report_only_value =
@@ -69,11 +72,19 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   coep.reporting_endpoint = "endpoint 1";
   coep.report_only_reporting_endpoint = "endpoint 2";
 
+  network::DocumentIsolationPolicy dip;
+  dip.value =
+      network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp;
+  dip.report_only_value =
+      network::mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless;
+  dip.reporting_endpoint = "endpoint 1";
+  dip.report_only_reporting_endpoint = "endpoint 2";
+
   PolicyContainerPolicies policies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
       /*is_web_secure_context=*/true, std::move(csps), coop, coep,
-      sandbox_flags,
+      std::move(dip), sandbox_flags,
       /*is_credentialless=*/true,
       /*can_navigate_top_without_user_gesture=*/true,
       /*allow_cross_origin_isolation=*/false);

@@ -47,6 +47,7 @@ PolicyContainerPolicies MakeTestPolicies() {
       network::mojom::IPAddressSpace::kPublic,
       /*is_web_secure_context=*/true, std::move(csp_list),
       network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy(),
+      network::DocumentIsolationPolicy(),
       network::mojom::WebSandboxFlags::kNone,
       /*is_credentialless=*/false,
       /*can_navigate_top_without_user_gesture=*/true,
@@ -135,6 +136,27 @@ TEST_F(NavigationPolicyContainerBuilderTest, SetCrossOriginOpenerPolicy) {
 
   PolicyContainerPolicies expected_policies;
   expected_policies.cross_origin_opener_policy = coop;
+
+  EXPECT_EQ(builder.DeliveredPoliciesForTesting(), expected_policies);
+}
+
+// Verifies that SetDocumentIsolationPolicy sets the document-isolation-policy
+// in the builder's delivered policies.
+TEST_F(NavigationPolicyContainerBuilderTest, SetDocumentIsolationPolicy) {
+  NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
+
+  network::DocumentIsolationPolicy dip;
+  dip.value =
+      network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp;
+  dip.report_only_value =
+      network::mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless;
+  dip.reporting_endpoint = "A";
+  dip.report_only_reporting_endpoint = "B";
+
+  builder.SetDocumentIsolationPolicy(dip);
+
+  PolicyContainerPolicies expected_policies;
+  expected_policies.document_isolation_policy = dip;
 
   EXPECT_EQ(builder.DeliveredPoliciesForTesting(), expected_policies);
 }

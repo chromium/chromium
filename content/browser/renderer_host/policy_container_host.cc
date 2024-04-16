@@ -39,6 +39,7 @@ bool operator==(const PolicyContainerPolicies& lhs,
                              rhs.content_security_policies) &&
          lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
          lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
+         lhs.document_isolation_policy == rhs.document_isolation_policy &&
          lhs.sandbox_flags == rhs.sandbox_flags &&
          lhs.is_credentialless == rhs.is_credentialless &&
          lhs.can_navigate_top_without_user_gesture ==
@@ -98,6 +99,17 @@ std::ostream& operator<<(std::ostream& out,
              .value_or("<null>")
       << " }";
 
+  out << ", document_isolation_policy: " << "{ value: "
+      << policies.document_isolation_policy.value << ", reporting_endpoint: "
+      << policies.document_isolation_policy.reporting_endpoint.value_or(
+             "<null>")
+      << ", report_only_value: "
+      << policies.document_isolation_policy.report_only_value
+      << ", report_only_reporting_endpoint: "
+      << policies.document_isolation_policy.report_only_reporting_endpoint
+             .value_or("<null>")
+      << " }";
+
   out << ", sandbox_flags: " << policies.sandbox_flags;
   out << ", is_credentialless: " << policies.is_credentialless;
   out << ", can_navigate_top_without_user_gesture: "
@@ -118,6 +130,7 @@ PolicyContainerPolicies::PolicyContainerPolicies(
         content_security_policies,
     const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     bool is_credentialless,
     bool can_navigate_top_without_user_gesture,
@@ -128,6 +141,7 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       content_security_policies(std::move(content_security_policies)),
       cross_origin_opener_policy(cross_origin_opener_policy),
       cross_origin_embedder_policy(cross_origin_embedder_policy),
+      document_isolation_policy(document_isolation_policy),
       sandbox_flags(sandbox_flags),
       is_credentialless(is_credentialless),
       can_navigate_top_without_user_gesture(
@@ -158,6 +172,7 @@ PolicyContainerPolicies::PolicyContainerPolicies(
           mojo::Clone(response_head->parsed_headers->content_security_policy),
           response_head->parsed_headers->cross_origin_opener_policy,
           response_head->parsed_headers->cross_origin_embedder_policy,
+          response_head->parsed_headers->document_isolation_policy,
           network::mojom::WebSandboxFlags::kNone,
           /*is_credentialless=*/false,
           /*can_navigate_top_without_user_gesture=*/true,
@@ -181,8 +196,9 @@ PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
   return PolicyContainerPolicies(
       referrer_policy, ip_address_space, is_web_secure_context,
       mojo::Clone(content_security_policies), cross_origin_opener_policy,
-      cross_origin_embedder_policy, sandbox_flags, is_credentialless,
-      can_navigate_top_without_user_gesture, allow_cross_origin_isolation);
+      cross_origin_embedder_policy, mojo::Clone(document_isolation_policy),
+      sandbox_flags, is_credentialless, can_navigate_top_without_user_gesture,
+      allow_cross_origin_isolation);
 }
 
 std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::ClonePtr()

@@ -9444,6 +9444,14 @@ void NavigationRequest::ComputePoliciesToCommit() {
   policy_container_builder_->SetCrossOriginEmbedderPolicy(
       ComputeCrossOriginEmbedderPolicy());
 
+  // If the navigation is the result of a network response, set DIP to the
+  // one in the network response. Otherwise, DIP should follow normal rules of
+  // policy inheritance, which should be handled by the policy container.
+  if (response_head_) {
+    policy_container_builder_->SetDocumentIsolationPolicy(
+        response_head_->parsed_headers->document_isolation_policy);
+  }
+
   // COOP origins always match after a main frame navigation, so we only need
   // to check sub frames. The main frame could be about:blank so we still might
   // inherit `true`.

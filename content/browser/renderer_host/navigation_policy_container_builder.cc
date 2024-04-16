@@ -139,6 +139,13 @@ void NavigationPolicyContainerBuilder::SetCrossOriginEmbedderPolicy(
   delivered_policies_.cross_origin_embedder_policy = coep;
 }
 
+void NavigationPolicyContainerBuilder::SetDocumentIsolationPolicy(
+    const network::DocumentIsolationPolicy& dip) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_.document_isolation_policy = dip;
+}
+
 const PolicyContainerPolicies&
 NavigationPolicyContainerBuilder::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());

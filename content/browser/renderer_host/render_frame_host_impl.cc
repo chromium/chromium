@@ -3081,9 +3081,9 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   } else if (GetParentOrOuterDocument()) {
     // In the MPArch implementation of FencedFrame, this RenderFrameHost's
     // SiteInstance has been adjusted to match its parent. During navigations,
-    // COOP and COEP are used to determine the SiteInstance. It means that if
-    // SiteInstance has been inherited, COOP/COEP must also be inherited to
-    // avoid creating inconsistencies. See:
+    // COOP, COEP and DIP are used to determine the SiteInstance. It means that
+    // if SiteInstance has been inherited, COOP,COEP and DIP  must also be
+    // inherited to avoid creating inconsistencies. See:
     // https://chromium-review.googlesource.com/c/chromium/src/+/3645368
     //
     // TODO(https://crbug.com/1338603): What makes sense for GuestView?
@@ -3105,6 +3105,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             std::vector<network::mojom::ContentSecurityPolicyPtr>(),
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
+            parent_policies.document_isolation_policy,
             network::mojom::WebSandboxFlags::kNone,
             /*is_credentialless=*/false,
             /*can_navigate_top_without_user_gesture=*/true,
