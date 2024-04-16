@@ -19,10 +19,11 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // TODO(rgod): Disable pin textfield.
   auto pin_textfield = std::make_unique<PinTextfield>(pin_digits_count);
   pin_textfield->SetController(this);
   pin_textfield->SetAccessibleName(u"Pin field (UNTRANSLATED)");
+  pin_textfield->SetObscured(true);
+  pin_textfield->SetDisabled(ui_disabled);
   pin_textfield_ = AddChildView(std::move(pin_textfield));
 
   reveal_button_ = AddChildView(CreateRevealButton(
