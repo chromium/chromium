@@ -48,6 +48,7 @@ public class PdfPageUnitTest {
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
 
+    private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
@@ -81,7 +82,13 @@ public class PdfPageUnitTest {
     @Test
     public void testCreatePdfPage_WithContentUri() {
         PdfPage pdfPage =
-                new PdfPage(mMockNativePageHost, mMockProfile, mActivity, CONTENT_URL, mPdfInfo);
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        mActivity,
+                        CONTENT_URL,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
@@ -103,7 +110,13 @@ public class PdfPageUnitTest {
     @Test
     public void testCreatePdfPage_WithFileUri() {
         PdfPage pdfPage =
-                new PdfPage(mMockNativePageHost, mMockProfile, mActivity, FILE_URL, mPdfInfo);
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        mActivity,
+                        FILE_URL,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
@@ -126,7 +139,13 @@ public class PdfPageUnitTest {
     @Test
     public void testCreatePdfPage_WithPdfLink() {
         PdfPage pdfPage =
-                new PdfPage(mMockNativePageHost, mMockProfile, mActivity, PDF_LINK, mPdfInfo);
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockProfile,
+                        mActivity,
+                        PDF_LINK,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
         Assert.assertFalse(
                 "Pdf should not be loaded when the download is not completed.",
@@ -154,12 +173,11 @@ public class PdfPageUnitTest {
 
     @Test
     public void testGetFileNameFromUrl() {
-        String filename = PdfUtils.getFileNameFromUrl(FILE_URL);
+        String filename = PdfUtils.getFileNameFromUrl(FILE_URL, DEFAULT_TAB_TITLE);
         Assert.assertEquals("Filename does not match for file url.", FILE_NAME, filename);
 
-        filename = PdfUtils.getFileNameFromUrl(PDF_LINK);
-        Assert.assertEquals(
-                "Filename does not match for pdf link.", PdfUtils.PDF_PAGE_TITLE, filename);
+        filename = PdfUtils.getFileNameFromUrl(PDF_LINK, DEFAULT_TAB_TITLE);
+        Assert.assertEquals("Filename does not match for pdf link.", DEFAULT_TAB_TITLE, filename);
     }
 
     @Test

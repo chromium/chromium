@@ -27,14 +27,23 @@ public class PdfPage extends BasicNativePage {
      * @param activity The current Activity.
      * @param url The pdf url, which could be a pdf link, content uri or file uri.
      * @param pdfInfo Information of the pdf.
+     * @param defaultTitle Default title of the pdf page.
      */
     public PdfPage(
-            NativePageHost host, Profile profile, Activity activity, String url, PdfInfo pdfInfo) {
+            NativePageHost host,
+            Profile profile,
+            Activity activity,
+            String url,
+            PdfInfo pdfInfo,
+            String defaultTitle) {
         super(host);
 
         String filepath =
                 pdfInfo.filepath == null ? PdfUtils.getFilePathFromUrl(url) : pdfInfo.filepath;
-        mTitle = pdfInfo.filename == null ? PdfUtils.getFileNameFromUrl(url) : pdfInfo.filename;
+        mTitle =
+                pdfInfo.filename == null
+                        ? PdfUtils.getFileNameFromUrl(url, defaultTitle)
+                        : pdfInfo.filename;
         mUrl = url;
         mPdfCoordinator = new PdfCoordinator(host, profile, activity, filepath, url);
         initWithView(mPdfCoordinator.getView());

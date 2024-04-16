@@ -28,8 +28,6 @@ import java.util.Locale;
 
 /** Utilities for inline pdf support. */
 public class PdfUtils {
-    // TODO(shuyng): add this to android_chrome_strings.grd once the UX spec is finalized.
-    static final String PDF_PAGE_TITLE = "PDF";
     private static final String TAG = "PdfUtils";
     private static final String PDF_EXTENSION = "pdf";
     private static boolean sShouldOpenPdfInlineForTesting;
@@ -81,7 +79,7 @@ public class PdfUtils {
         return new PdfInfo(nativePage.getTitle(), nativePage.getCanonicalFilepath());
     }
 
-    static String getFileNameFromUrl(String url) {
+    static String getFileNameFromUrl(String url, String defaultTitle) {
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
         assert scheme != null;
@@ -89,7 +87,7 @@ public class PdfUtils {
                 || scheme.equals(UrlConstants.HTTPS_SCHEME)
                 || scheme.equals(UrlConstants.CONTENT_SCHEME)
                 || scheme.equals(UrlConstants.FILE_SCHEME);
-        String fileName = PDF_PAGE_TITLE;
+        String fileName = defaultTitle;
         if (scheme.equals(UrlConstants.CONTENT_SCHEME)) {
             String displayName = ContentUriUtils.maybeGetDisplayName(url);
             if (!TextUtils.isEmpty(displayName)) {

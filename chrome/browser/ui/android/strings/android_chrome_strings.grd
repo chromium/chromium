@@ -6158,6 +6158,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_NEGATIVE_BUTTON_TEXT" translateable="false">
         Do Not Share
       </message>
+
+      <!-- Inline PDF viewer support -->
+      <message name="IDS_PDF_TRANSIENT_TAB_TITLE" desc="This string is shown as the temporary tab title when a PDF file is loading in a tab. The tab title will be updated to the actual PDF file name once available.">
+        Loading PDF…
+      </message>
     </messages>
   </release>
 </grit>
