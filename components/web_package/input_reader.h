@@ -6,10 +6,10 @@
 #define COMPONENTS_WEB_PACKAGE_INPUT_READER_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+#include "base/containers/span_reader.h"
 
 namespace web_package {
 
@@ -32,13 +32,12 @@ constexpr uint64_t kMaxCBORItemHeaderSize = 9;
 // A utility class for reading various values from input buffer.
 class InputReader {
  public:
-  explicit InputReader(base::span<const uint8_t> buf)
-      : buf_(buf), total_size_(buf_.remaining()) {}
+  explicit InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
 
   InputReader(const InputReader&) = delete;
   InputReader& operator=(const InputReader&) = delete;
 
-  size_t CurrentOffset() const { return total_size_ - buf_.remaining(); }
+  size_t CurrentOffset() const { return buf_.num_read(); }
   size_t Size() const { return buf_.remaining(); }
 
   std::optional<uint8_t> ReadByte();
@@ -47,14 +46,14 @@ class InputReader {
     requires(std::is_integral_v<T> && std::is_unsigned_v<T>)
   bool ReadBigEndian(T* out) {
     if constexpr (sizeof(T) == 1) {
-      return buf_.ReadU8(out);
+      return buf_.ReadU8BigEndian(*out);
     } else if constexpr (sizeof(T) == 2) {
-      return buf_.ReadU16(out);
+      return buf_.ReadU16BigEndian(*out);
     } else if constexpr (sizeof(T) == 4) {
-      return buf_.ReadU32(out);
+      return buf_.ReadU32BigEndian(*out);
     } else {
       static_assert(sizeof(T) == 8);
-      return buf_.ReadU64(out);
+      return buf_.ReadU64BigEndian(*out);
     }
   }
 
@@ -70,8 +69,7 @@ class InputReader {
  private:
   std::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();
 
-  base::BigEndianReader buf_;
-  size_t total_size_;
+  base::SpanReader<const uint8_t> buf_;
 };
 
 }  // namespace web_package

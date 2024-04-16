@@ -10,27 +10,25 @@ namespace web_package {
 
 std::optional<uint8_t> InputReader::ReadByte() {
   uint8_t b;
-  if (!buf_.ReadU8(&b)) {
+  if (!buf_.ReadU8BigEndian(b)) {
     return std::nullopt;
   }
   return {b};
 }
 
 std::optional<base::span<const uint8_t>> InputReader::ReadBytes(size_t n) {
-  return buf_.ReadSpan(n);
+  return buf_.Read(n);
 }
 
 std::optional<std::string_view> InputReader::ReadString(size_t n) {
-  auto bytes = buf_.ReadSpan(n);
+  auto bytes = buf_.Read(n);
   if (!bytes) {
     return std::nullopt;
   }
-  std::string_view str(base::as_chars(*bytes).begin(),
-                       base::as_chars(*bytes).end());
-  if (!base::IsStringUTF8(str)) {
+  if (!base::IsStringUTF8(base::as_string_view(*bytes))) {
     return std::nullopt;
   }
-  return str;
+  return base::as_string_view(*bytes);
 }
 
 std::optional<uint64_t> InputReader::ReadCBORHeader(CBORType expected_type) {

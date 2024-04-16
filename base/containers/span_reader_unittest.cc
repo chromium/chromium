@@ -307,5 +307,22 @@ TEST(SpanReaderTest, ReadNativeEndian) {
   }
 }
 
+TEST(SpanReaderTest, ReadChar) {
+  std::array<const uint8_t, 5u> kArray = {uint8_t{1}, uint8_t{2}, uint8_t{3},
+                                          uint8_t{4}, uint8_t{5}};
+
+  auto r = SpanReader(base::span(kArray));
+  EXPECT_EQ(r.num_read(), 0u);
+
+  char c;
+  EXPECT_TRUE(r.ReadChar(c));
+  EXPECT_EQ(c, char{1});
+  EXPECT_TRUE(r.Skip(3u));
+  EXPECT_TRUE(r.ReadChar(c));
+  EXPECT_EQ(c, char{5});
+  EXPECT_FALSE(r.ReadChar(c));
+  EXPECT_EQ(c, char{5});
+}
+
 }  // namespace
 }  // namespace base

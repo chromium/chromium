@@ -33,9 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/big_endian.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -73,8 +74,8 @@ bool ParseVDMX(int* y_max,
   // this layout.
   uint16_t num_ratios;
   {
-    base::BigEndianReader reader(vdmx);
-    if (!reader.Skip(4u) || !reader.ReadU16(&num_ratios)) {
+    auto reader = base::SpanReader(vdmx);
+    if (!reader.Skip(4u) || !reader.ReadU16BigEndian(num_ratios)) {
       return false;
     }
   }
@@ -93,12 +94,13 @@ bool ParseVDMX(int* y_max,
   // We read 4 bytes per record, so the offset range is
   //   6 <= x <= 524286
   {
-    base::BigEndianReader reader(vdmx.subspan(ratios_offset));
+    auto reader = base::SpanReader(vdmx.subspan(ratios_offset));
     for (unsigned i = 0; i < num_ratios; ++i) {
       uint8_t x_ratio, y_ratio1, y_ratio2;
 
-      if (!reader.Skip(1u) || !reader.ReadU8(&x_ratio) ||
-          !reader.ReadU8(&y_ratio1) || !reader.ReadU8(&y_ratio2)) {
+      if (!reader.Skip(1u) || !reader.ReadU8BigEndian(x_ratio) ||
+          !reader.ReadU8BigEndian(y_ratio1) ||
+          !reader.ReadU8BigEndian(y_ratio2)) {
         return false;
       }
 
@@ -127,12 +129,13 @@ bool ParseVDMX(int* y_max,
   }
 
   {
-    base::BigEndianReader reader(vdmx.subspan(
+    auto reader = base::SpanReader(vdmx.subspan(
         // Range 0 <= x <= 65535
         group_offset));
 
     uint16_t num_records;
-    if (!reader.ReadU16(&num_records) || !reader.Skip(sizeof(uint16_t))) {
+    if (!reader.ReadU16BigEndian(num_records) ||
+        !reader.Skip(sizeof(uint16_t))) {
       return false;
     }
 
@@ -140,7 +143,7 @@ bool ParseVDMX(int* y_max,
     //   4 <= x <= 458749
     for (unsigned i = 0; i < num_records; ++i) {
       uint16_t pixel_size;
-      if (!reader.ReadU16(&pixel_size)) {
+      if (!reader.ReadU16BigEndian(pixel_size)) {
         return false;
       }
       // the entries are sorted, so we can abort early if need be
@@ -150,7 +153,10 @@ bool ParseVDMX(int* y_max,
 
       if (pixel_size == target_pixel_size) {
         int16_t temp_y_max, temp_y_min;
-        if (!reader.ReadI16(&temp_y_max) || !reader.ReadI16(&temp_y_min)) {
+        if (!base::OptionalUnwrapTo(reader.Read<2u>(), temp_y_max,
+                                    base::I16FromBigEndian) ||
+            !base::OptionalUnwrapTo(reader.Read<2u>(), temp_y_min,
+                                    base::I16FromBigEndian)) {
           return false;
         }
         *y_min = temp_y_min;

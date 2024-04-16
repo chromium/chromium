@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/big_endian.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/net_errors.h"
@@ -79,14 +79,14 @@ P2PSocket::~P2PSocket() = default;
 bool P2PSocket::GetStunPacketType(base::span<const uint8_t> data,
                                   StunMessageType* type) {
   // See https://www.rfc-editor.org/rfc/rfc5389.html#section-6
-  base::BigEndianReader reader(data);
+  auto reader = base::SpanReader(data);
   uint16_t message_type, length;
   uint32_t cookie;
   if (data.size() < kStunHeaderSize ||            //
-      !reader.ReadU16(&message_type) ||           //
-      !reader.ReadU16(&length) ||                 //
+      !reader.ReadU16BigEndian(message_type) ||   //
+      !reader.ReadU16BigEndian(length) ||         //
       length != data.size() - kStunHeaderSize ||  //
-      !reader.ReadU32(&cookie) ||                 //
+      !reader.ReadU32BigEndian(cookie) ||         //
       cookie != kStunMagicCookie) {
     return false;
   }

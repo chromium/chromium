@@ -165,6 +165,15 @@ class SpanReader {
     return ReadAnd<8>([&](auto buf) { value = U64FromNativeEndian(buf); });
   }
 
+  // For a SpanReader over bytes, reads one byte and returns it as a `char`,
+  // which may be signed or unsigned depending on the platform. Returns true if
+  // there was room remaining and the byte was read.
+  bool ReadChar(char& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<1>([&](auto buf) { value = static_cast<char>(buf[0u]); });
+  }
+
   // Returns the number of objects remaining to be read from the original span.
   size_t remaining() const { return buf_.size(); }
   // Returns the objects that have not yet been read, as a span.
