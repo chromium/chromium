@@ -29,6 +29,10 @@
 // Notifies the consumer to update the text immediately.
 - (void)updateText:(NSAttributedString*)text;
 
+// Notifies the consumer to update the additional text. Pass `nil` to
+// remove additional text.
+- (void)updateAdditionalText:(NSAttributedString*)additionalText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSUMER_H_

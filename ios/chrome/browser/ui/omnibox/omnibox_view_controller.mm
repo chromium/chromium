@@ -528,6 +528,11 @@ using base::UserMetricsAction;
   [self.textField setText:text userTextLength:text.length];
 }
 
+- (void)updateAdditionalText:(NSAttributedString*)additionalText {
+  CHECK(IsRichAutocompletionEnabled());
+  self.textField.additionalText = additionalText;
+}
+
 #pragma mark - EditViewAnimatee
 
 - (void)setLeadingIconScale:(CGFloat)scale {

@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
@@ -142,6 +143,10 @@ using base::UserMetricsAction;
   // On first update, don't set the preview text, as omnibox will automatically
   // receive the suggestion as inline autocomplete through OmniboxViewIOS.
   if (!isFirstUpdate) {
+    // Remove additional text when previewing suggestions.
+    if (IsRichAutocompletionEnabled()) {
+      [self.consumer updateAdditionalText:nil];
+    }
     [self.consumer updateText:suggestion.omniboxPreviewText];
   }
 
