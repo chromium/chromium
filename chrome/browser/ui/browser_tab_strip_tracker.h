@@ -14,6 +14,15 @@ class TabStripModelObserver;
 // BrowserTabStripTracker attaches a TabStripModelObserver to a subset of
 // pre-existing and future Browsers. The subset of Browsers that are tracked is
 // determined by an optional BrowserTabStripTrackerDelegate.
+//
+// This class is typically not the right helper to use. Its primary purpose is
+// to hook up a TabStripModelObserver across multiple TabStripModels. As per the
+// documentation for TabStripModelObserver, only features that need to interact
+// with the tab strip like tab groups and tab search should use
+// TabStripModelObserver. Other features should use TabInterface and
+// TabFeatures. Furthermore, this class mixes state across multiple
+// TabStripModels. This is typically not desirable and instead features should
+// hold state on a per-browser-window basis, using BrowserWindowFeatures.
 class BrowserTabStripTracker : public BrowserListObserver {
  public:
   // |tab_strip_model_observer| is a non-nullptr TabStripModelObserver

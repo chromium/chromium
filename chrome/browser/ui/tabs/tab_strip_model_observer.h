@@ -29,6 +29,13 @@ class WebContents;
 //
 // TabStripModelChange / TabStripSelectionChange
 //
+// This observer is not appropriate for most use cases. It's primarily used for
+// features that must directly interface with the tab strip, for example: tab
+// groups, tab search, etc.
+// Most features in Chrome need to hold state on a per-tab basis. In that case,
+// add a controller to TabFeatures and use TabInterface to observe for the tab
+// events.
+//
 // The following class and structures are used to inform TabStripModelObservers
 // of changes to:
 // 1) selection model
