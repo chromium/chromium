@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -30,6 +31,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/site_access_requests_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
@@ -213,6 +215,7 @@ PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
 PermissionsManager::~PermissionsManager() {
   user_permissions_.restricted_sites.clear();
   user_permissions_.permitted_sites.clear();
+  requests_helpers_.clear();
 }
 
 // static
@@ -780,6 +783,36 @@ PermissionsManager::GetExtensionGrantedPermissions(
              : extension_prefs_->GetGrantedPermissions(extension.id());
 }
 
+void PermissionsManager::AddSiteAccessRequest(
+    content::WebContents* web_contents,
+    int tab_id,
+    const Extension& extension) {
+  SiteAccessRequestsHelper* helper =
+      GetOrCreateSiteAccessRequestsHelperFor(web_contents, tab_id);
+  helper->AddRequest(extension);
+}
+
+void PermissionsManager::RemoveSiteAccessRequest(
+    int tab_id,
+    const ExtensionId& extension_id) {
+  SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
+  if (!helper) {
+    return;
+  }
+
+  helper->RemoveRequest(extension_id);
+
+  if (!helper->HasRequests()) {
+    DeleteSiteAccessRequestHelperFor(tab_id);
+  }
+}
+
+bool PermissionsManager::HasSiteAccessRequest(int tab_id,
+                                              const ExtensionId& extension_id) {
+  SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
+  return helper && helper->HasRequest(extension_id);
+}
+
 void PermissionsManager::AddExtensionToPreviousBroadSiteAccessSet(
     const ExtensionId& extension_id) {
   extensions_with_previous_broad_access_.insert(extension_id);
@@ -802,13 +835,29 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
   for (Observer& observer : observers_) {
     observer.OnExtensionPermissionsUpdated(extension, permissions, reason);
   }
+
+  std::vector<int> tabs_to_remove;
+  for (auto& [tab_id, helper] : requests_helpers_) {
+    helper->RemoveRequestIfGrantedAccess(extension);
+    if (!helper->HasRequests()) {
+      tabs_to_remove.push_back(tab_id);
+    }
+  }
+
+  for (auto tab_id : tabs_to_remove) {
+    DeleteSiteAccessRequestHelperFor(tab_id);
+  }
 }
 
 void PermissionsManager::NotifyActiveTabPermisssionGranted(
+    content::WebContents* web_contents,
+    int tab_id,
     const Extension& extension) {
   for (Observer& observer : observers_) {
     observer.OnActiveTabPermissionGranted(extension);
   }
+
+  RemoveSiteAccessRequest(tab_id, extension.id());
 }
 
 void PermissionsManager::NotifyExtensionDismissedRequests(
@@ -917,6 +966,32 @@ bool PermissionsManager::RemoveRestrictedSiteAndUpdatePrefs(
     RemoveSiteFromPrefs(extension_prefs_, kRestrictedSites, origin);
 
   return removed_site;
+}
+
+SiteAccessRequestsHelper* PermissionsManager::GetSiteAccessRequestsHelperFor(
+    int tab_id) {
+  auto it = requests_helpers_.find(tab_id);
+  return it == requests_helpers_.end() ? nullptr : it->second.get();
+}
+
+SiteAccessRequestsHelper*
+PermissionsManager::GetOrCreateSiteAccessRequestsHelperFor(
+    content::WebContents* web_contents,
+    int tab_id) {
+  auto* helper = GetSiteAccessRequestsHelperFor(tab_id);
+
+  if (!helper) {
+    auto helper_unique = std::make_unique<SiteAccessRequestsHelper>(
+        PassKey(), this, web_contents, tab_id);
+    helper = helper_unique.get();
+    requests_helpers_.emplace(tab_id, std::move(helper_unique));
+  }
+
+  return helper;
+}
+
+void PermissionsManager::DeleteSiteAccessRequestHelperFor(int tab_id) {
+  requests_helpers_.erase(tab_id);
 }
 
 void PermissionsManager::NotifyUserPermissionSettingsChanged() {

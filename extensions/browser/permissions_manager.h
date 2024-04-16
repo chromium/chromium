@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_PERMISSIONS_MANAGER_H_
 #define EXTENSIONS_BROWSER_PERMISSIONS_MANAGER_H_
 
+#include <map>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -12,6 +13,8 @@
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/site_access_requests_helper.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
 
@@ -268,6 +271,18 @@ class PermissionsManager : public KeyedService {
   std::unique_ptr<const PermissionSet> GetExtensionGrantedPermissions(
       const Extension& extension) const;
 
+  // Adds site access request for `extension` in `web_contents` with
+  // `tab_id`. Extension must have site access withheld for request to be added.
+  void AddSiteAccessRequest(content::WebContents* web_contents,
+                            int tab_id,
+                            const Extension& extension);
+
+  // Removes site access request for `extension` in `tab_id`, if existent.
+  void RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
+
+  // Returns whether `tab_id` has a site access request for `extension_id`.
+  bool HasSiteAccessRequest(int tab_id, const ExtensionId& extension_id);
+
   // Adds `extension_id` to the `extensions_with_previous_broad_access` set.
   void AddExtensionToPreviousBroadSiteAccessSet(
       const ExtensionId& extension_id);
@@ -288,8 +303,10 @@ class PermissionsManager : public KeyedService {
                                          UpdateReason reason);
 
   // Notifies `observers_` that `extension` has been granted active tab
-  // permission.
-  void NotifyActiveTabPermisssionGranted(const Extension& extension);
+  // permission for `web_contents` on `tab_id`.
+  void NotifyActiveTabPermisssionGranted(content::WebContents* web_contents,
+                                         int tab_id,
+                                         const Extension& extension);
 
   // Notifies `observers_`that show access requests in toolbar pref changed.
   void NotifyShowAccessRequestsInToolbarChanged(
@@ -307,6 +324,9 @@ class PermissionsManager : public KeyedService {
   void RemoveObserver(Observer* observer);
 
  private:
+  using PassKey = base::PassKey<PermissionsManager>;
+  friend class SiteAccessRequestsHelper;
+
   // Called whenever `user_permissions_` have changed.
   void OnUserPermissionsSettingsChanged();
 
@@ -328,6 +348,20 @@ class PermissionsManager : public KeyedService {
       const Extension& extension,
       const PermissionSet& user_permitted_set);
 
+  // Returns the site access requests helper for `tab_id` or nullptr if it
+  // doesn't exist.
+  SiteAccessRequestsHelper* GetSiteAccessRequestsHelperFor(int tab_id);
+
+  // Returns the site access requests helper for `tab_id`. If the helper doesn't
+  // exist for such tab, it creates a new one.
+  SiteAccessRequestsHelper* GetOrCreateSiteAccessRequestsHelperFor(
+      content::WebContents* web_contents,
+      int tab_id);
+
+  // Deletes helper corresponding to `tab_id` by removing its entry from
+  // `requests_helper_`.
+  void DeleteSiteAccessRequestHelperFor(int tab_id);
+
   // Notifies `observers_` that user permissions have changed.
   void NotifyUserPermissionSettingsChanged();
 
@@ -338,6 +372,9 @@ class PermissionsManager : public KeyedService {
 
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   UserPermissionsSettings user_permissions_;
+
+  // Helpers that store and manage the site access requests per tab.
+  std::map<int, std::unique_ptr<SiteAccessRequestsHelper>> requests_helpers_;
 
   // Stores extensions whose site access was updated using the extensions
   // menu and previously had broad site access. This is done to preserve the

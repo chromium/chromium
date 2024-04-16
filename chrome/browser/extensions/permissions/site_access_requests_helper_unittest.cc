@@ -1,0 +1,265 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "extensions/browser/site_access_requests_helper.h"
+
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
+
+namespace extensions {
+
+class SiteAccessRequestsHelperUnittest : public ExtensionServiceTestBase {
+ public:
+  SiteAccessRequestsHelperUnittest() = default;
+  ~SiteAccessRequestsHelperUnittest() override = default;
+
+  SiteAccessRequestsHelperUnittest(const SiteAccessRequestsHelperUnittest&) =
+      delete;
+  SiteAccessRequestsHelperUnittest& operator=(
+      const SiteAccessRequestsHelperUnittest&) = delete;
+
+  // Installs an extension with `host_permission` and withhelds them.
+  scoped_refptr<const Extension> InstallExtensionAndWithholdHostPermissions(
+      const std::string& name,
+      const std::string& host_permission);
+
+  // Installs an extension with activeTab permission.
+  scoped_refptr<const Extension> InstallExtensionWithActiveTab(
+      const std::string& name);
+
+  // Adds a new tab with `url` to the tab strip, and returns the WebContents
+  // associated with it.
+  content::WebContents* AddTab(const GURL& url);
+
+  // Returns the browser. Creates a new one if it doesn't exist.
+  Browser* browser();
+
+  PermissionsManager* permissions_manager() { return permissions_manager_; }
+
+  // ExtensionServiceTestBase:
+  void SetUp() override;
+  void TearDown() override;
+
+ private:
+  // The browser and accompaying window.
+  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+
+  raw_ptr<PermissionsManager> permissions_manager_;
+};
+
+scoped_refptr<const Extension>
+SiteAccessRequestsHelperUnittest::InstallExtensionAndWithholdHostPermissions(
+    const std::string& name,
+    const std::string& host_permission) {
+  auto extension =
+      ExtensionBuilder(name)
+          .SetManifestVersion(3)
+          .SetManifestKey("host_permissions",
+                          base::Value::List().Append(host_permission))
+          .SetID(crx_file::id_util::GenerateId(name))
+          .Build();
+  service()->AddExtension(extension.get());
+
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  return extension;
+}
+
+scoped_refptr<const Extension>
+SiteAccessRequestsHelperUnittest::InstallExtensionWithActiveTab(
+    const std::string& name) {
+  auto extension = ExtensionBuilder(name)
+                       .SetManifestVersion(3)
+                       .SetID(crx_file::id_util::GenerateId(name))
+                       .AddPermission("activeTab")
+                       .Build();
+  service()->AddExtension(extension.get());
+
+  return extension;
+}
+
+content::WebContents* SiteAccessRequestsHelperUnittest::AddTab(
+    const GURL& url) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  content::WebContents* raw_contents = web_contents.get();
+
+  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
+                                                  true);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), raw_contents);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(raw_contents, url);
+  EXPECT_EQ(url, raw_contents->GetLastCommittedURL());
+
+  return raw_contents;
+}
+
+Browser* SiteAccessRequestsHelperUnittest::browser() {
+  if (!browser_) {
+    Browser::CreateParams params(profile(), true);
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window_.get();
+    browser_.reset(Browser::Create(params));
+  }
+  return browser_.get();
+}
+
+void SiteAccessRequestsHelperUnittest::SetUp() {
+  ExtensionServiceTestBase::SetUp();
+  InitializeEmptyExtensionService();
+
+  permissions_manager_ = PermissionsManager::Get(profile());
+}
+
+void SiteAccessRequestsHelperUnittest::TearDown() {
+  // Remove any tabs in the tab strip; else the test crashes.
+  if (browser_) {
+    while (!browser_->tab_strip_model()->empty()) {
+      browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+    }
+  }
+  permissions_manager_ = nullptr;
+
+  ExtensionServiceTestBase::TearDown();
+}
+
+// Tests site access requests are properly added and removed.
+TEST_F(SiteAccessRequestsHelperUnittest, AddAndRemoveRequests) {
+  auto extension_A =
+      InstallExtensionAndWithholdHostPermissions("Extension A", "<all_urls>");
+  auto extension_B =
+      InstallExtensionAndWithholdHostPermissions("Extension B", "<all_urls>");
+
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension A. Verify only extension A has a
+  // request.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
+                                              *extension_A);
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+
+  // Add site access request for extension B. Verify both extensions have a
+  // request.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
+                                              *extension_B);
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+
+  // Remove site access request for extension A. Verify only extension B has a
+  // request.
+  permissions_manager()->RemoveSiteAccessRequest(tab_id, extension_A->id());
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+}
+
+// Tests request is removed on cross-origin navigations.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       RequestRemovedOnCrossOriginNavigation) {
+  auto extension =
+      InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+
+  content::WebContents* web_contents =
+      AddTab(GURL("http://www.same-origin.com/a"));
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents);
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+
+  // Same-origin navigation should retain request.
+  web_contents_tester->NavigateAndCommit(GURL("http://www.same-origin.com/b"));
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+
+  // Cross-origin navigation should remove request.
+  web_contents_tester->NavigateAndCommit(GURL("http://www.cross-origin.com/c"));
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+}
+
+// Test request is removed when extension is granted "always on this site" site
+// access.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       RequestRemovedWhenExtensionHasSiteAccess) {
+  auto extension =
+      InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+
+  content::WebContents* web_contents =
+      AddTab(GURL("http://www.same-origin.com/a"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+
+  // Grant "always on this site" access to the extension.
+  PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+  SitePermissionsHelper permissions(profile());
+  permissions.UpdateSiteAccess(*extension, web_contents,
+                               PermissionsManager::UserSiteAccess::kOnSite);
+  waiter.WaitForExtensionPermissionsUpdate();
+
+  // Request should be removed since extension has granted site access.
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+}
+
+// Test request is removed when extension is granted one-time site access.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       RequestRemovedWhenExtensionHasGrantedActiveTab) {
+  auto extension = InstallExtensionWithActiveTab("Extension");
+
+  content::WebContents* web_contents =
+      AddTab(GURL("http://www.same-origin.com/a"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+
+  // Grant tab permission to extension.
+  ActiveTabPermissionGranter* active_tab_permission_granter =
+      TabHelper::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->active_tab_permission_granter();
+  ASSERT_TRUE(active_tab_permission_granter);
+  active_tab_permission_granter->GrantIfRequested(extension.get());
+
+  // Request should be removed since extension has granted site access.
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+}
+
+}  // namespace extensions

@@ -202,7 +202,8 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
 
       auto* permissions_manager =
           PermissionsManager::Get(web_contents()->GetBrowserContext());
-      permissions_manager->NotifyActiveTabPermisssionGranted(*extension);
+      permissions_manager->NotifyActiveTabPermisssionGranted(
+          web_contents(), tab_id_, *extension);
     }
   }
 }

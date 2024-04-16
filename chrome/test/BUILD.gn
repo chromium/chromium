@@ -9166,6 +9166,7 @@ test("unit_tests") {
       "../browser/extensions/permissions/permissions_manager_unittest.cc",
       "../browser/extensions/permissions/permissions_updater_unittest.cc",
       "../browser/extensions/permissions/scripting_permissions_modifier_unittest.cc",
+      "../browser/extensions/permissions/site_access_requests_helper_unittest.cc",
       "../browser/extensions/permissions/site_permissions_helper_unittest.cc",
       "../browser/extensions/permissions_based_management_policy_provider_unittest.cc",
       "../browser/extensions/policy_handlers_unittest.cc",
