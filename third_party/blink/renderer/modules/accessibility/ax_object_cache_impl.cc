@@ -310,54 +310,6 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
   return CanIgnoreSpaceNextTo(child, is_after, ++counter);
 }
 
-// TODO(accessibility) Rearrange methods so that a forward decl is unnecessary.
-bool CanIgnoreSpace(const LayoutText& layout_text);
-
-bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
-  if (!layout_text.Parent())
-    return false;
-
-  Node* node = layout_text.GetNode();
-  DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
-
-#if DCHECK_IS_ON()
-  DCHECK(node->GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kAfterPerformLayout)
-      << "Unclean document at lifecycle "
-      << node->GetDocument().Lifecycle().ToString();
-#endif
-
-  // Ignore empty text.
-  if (layout_text.HasEmptyText())
-    return false;
-
-  // Always keep if anything other than collapsible whitespace.
-  if (!layout_text.IsAllCollapsibleWhitespace() || layout_text.IsBR())
-    return true;
-
-  // Use previous decision for this whitespace. This is helpful for performance,
-  // consistency (flake reduction) and code simplicity, as we do not need to
-  // recompute block subtrees when inline nodes change. It also helps ensure
-  // that whitespace nodes do not change whether they store a layout object
-  // at inopportune times.
-  // TODO(accessibility) Convert this method and callers of it to member
-  // methods so we can access whitespace_ignored_map_ directly.
-  AXObjectCacheImpl* cache = static_cast<AXObjectCacheImpl*>(
-      node->GetDocument().ExistingAXObjectCache());
-  auto& whitespace_ignored_map = cache->whitespace_ignored_map();
-  DOMNodeId whitespace_node_id = node->GetDomNodeId();
-  auto it = whitespace_ignored_map.find(whitespace_node_id);
-  if (it != whitespace_ignored_map.end()) {
-    return it->value;
-  }
-
-  // Compute ignored value for whitespace and record decision.
-  bool ignore_whitespace = CanIgnoreSpace(layout_text);
-  // Memoize the result.
-  whitespace_ignored_map.insert(whitespace_node_id, ignore_whitespace);
-  return ignore_whitespace;
-}
-
 bool CanIgnoreSpace(const LayoutText& layout_text) {
   Node* node = layout_text.GetNode();
 
@@ -417,6 +369,51 @@ bool CanIgnoreSpace(const LayoutText& layout_text) {
   }
 
   return true;
+}
+
+bool IsLayoutTextRelevantForAccessibility(const LayoutText& layout_text) {
+  if (!layout_text.Parent())
+    return false;
+
+  Node* node = layout_text.GetNode();
+  DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
+
+#if DCHECK_IS_ON()
+  DCHECK(node->GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
+      << "Unclean document at lifecycle "
+      << node->GetDocument().Lifecycle().ToString();
+#endif
+
+  // Ignore empty text.
+  if (layout_text.HasEmptyText())
+    return false;
+
+  // Always keep if anything other than collapsible whitespace.
+  if (!layout_text.IsAllCollapsibleWhitespace() || layout_text.IsBR())
+    return true;
+
+  // Use previous decision for this whitespace. This is helpful for performance,
+  // consistency (flake reduction) and code simplicity, as we do not need to
+  // recompute block subtrees when inline nodes change. It also helps ensure
+  // that whitespace nodes do not change whether they store a layout object
+  // at inopportune times.
+  // TODO(accessibility) Convert this method and callers of it to member
+  // methods so we can access whitespace_ignored_map_ directly.
+  AXObjectCacheImpl* cache = static_cast<AXObjectCacheImpl*>(
+      node->GetDocument().ExistingAXObjectCache());
+  auto& whitespace_ignored_map = cache->whitespace_ignored_map();
+  DOMNodeId whitespace_node_id = node->GetDomNodeId();
+  auto it = whitespace_ignored_map.find(whitespace_node_id);
+  if (it != whitespace_ignored_map.end()) {
+    return it->value;
+  }
+
+  // Compute ignored value for whitespace and record decision.
+  bool ignore_whitespace = CanIgnoreSpace(layout_text);
+  // Memoize the result.
+  whitespace_ignored_map.insert(whitespace_node_id, ignore_whitespace);
+  return ignore_whitespace;
 }
 
 bool IsHiddenTextNodeRelevantForAccessibility(const Text& text_node,
