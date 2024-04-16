@@ -2160,13 +2160,22 @@ TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
   UpdateAllLifecyclePhasesExceptPaint();
 
   // The anchor positioning translation should be updated on main thread.
-  EXPECT_EQ(PaintPropertiesForElement("target")
-                ->AnchorPositionScrollTranslation()
-                ->Get2dTranslation(),
-            gfx::Vector2dF(0, -300));
+  auto* transform =
+      PaintPropertiesForElement("target")->AnchorPositionScrollTranslation();
+  EXPECT_EQ(transform->Get2dTranslation(), gfx::Vector2dF(0, -300));
 
   // Anchor positioning scroll update should not require main thread commits.
   EXPECT_FALSE(GetFrame().View()->GetPaintArtifactCompositor()->NeedsUpdate());
+
+  auto& cc_transform_tree =
+      GetChromeClient().layer_tree_host()->property_trees()->transform_tree();
+  auto* cc_transform = cc_transform_tree.FindNodeFromElementId(
+      transform->GetCompositorElementId());
+  ASSERT_TRUE(cc_transform);
+  EXPECT_TRUE(cc_transform->local.IsIdentity());
+  EXPECT_EQ(cc_transform_tree.GetAnchorPositionScrollData(cc_transform->id)
+                ->default_adjustment,
+            gfx::Vector2dF(0, -300));
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ElementCaptureUpdate) {

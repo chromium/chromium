@@ -156,6 +156,9 @@ class PropertyTreeManager {
   static bool DirectlyUpdatePageScaleTransform(
       cc::LayerTreeHost&,
       const TransformPaintPropertyNode&);
+  static bool DirectlyUpdateAnchorPositionScrollTranslation(
+      cc::LayerTreeHost&,
+      const TransformPaintPropertyNode&);
 
   // This function only updates the cc scroll tree scroll offset and does not
   // update the cc transform node's scroll offset.

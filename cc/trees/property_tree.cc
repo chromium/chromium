@@ -551,9 +551,9 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
                 container_id)) {
       container_transform_id = scroll_node->transform_id;
       const TransformNode* transform_node = Node(container_transform_id);
-      // We don't ever expect that an anchor node or any of its scrolling
-      // containers should have an invalid transform_id.
-      DCHECK(container_transform_id != kInvalidPropertyNodeId);
+      if (!transform_node) {
+        return data->default_adjustment;
+      }
       accumulated_offset += transform_node->scroll_offset.OffsetFromOrigin();
       // TODO(crbug.com/325613705): Should we consider snap_amount here?
     } else if (TransformNode* container_transform =
@@ -568,6 +568,8 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
       // blink::AnchorPositionScrollData::AccmulatedOffset().
       accumulated_offset -= AnchorPositionOffset(
           container_transform, max_updated_node_id, update_data);
+    } else {
+      return data->default_adjustment;
     }
     if (container_transform_id > max_updated_node_id) {
       // The adjustment depends on a later transform node that may contain

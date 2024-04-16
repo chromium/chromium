@@ -327,6 +327,10 @@ struct CC_EXPORT AnchorPositionScrollData {
   // containers.
   std::vector<ElementId> adjustment_container_ids;
   gfx::Vector2d accumulated_scroll_origin;
+  // Used as the default return value of TransformTree::AnchorPositionOffset()
+  // when it fails to find any referenced scroll/transform node from
+  // adjustment_container_ids.
+  gfx::Vector2dF default_adjustment;
   bool needs_scroll_adjustment_in_x = false;
   bool needs_scroll_adjustment_in_y = false;
 };

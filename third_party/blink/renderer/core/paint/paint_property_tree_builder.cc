@@ -847,8 +847,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       state.anchor_position_scroll_data->needs_scroll_adjustment_in_y =
           anchor_position_scroll_data.NeedsScrollAdjustmentInY();
 
-      OnUpdateTransform(properties_->UpdateAnchorPositionScrollTranslation(
-          *context_.current.transform, std::move(state)));
+      // state.anchor_position_scroll_data->default_adjustment is not set here.
+      // It's set to Get2dTranslation() of this transform node by
+      // PaintArtifactCompositor either now or during full update.
+      auto change_type = properties_->UpdateAnchorPositionScrollTranslation(
+          *context_.current.transform, std::move(state));
+      if (change_type == PaintPropertyChangeType::kChangedOnlySimpleValues) {
+        if (auto* paint_artifact_compositor =
+                object_.GetFrameView()->GetPaintArtifactCompositor()) {
+          auto& transform = *properties_->AnchorPositionScrollTranslation();
+          if (paint_artifact_compositor
+                  ->DirectlyUpdateAnchorPositionScrollTranslation(transform)) {
+            change_type = PaintPropertyChangeType::kChangedOnlyCompositedValues;
+            transform.CompositorSimpleValuesUpdated();
+          }
+        }
+      }
+      OnUpdateTransform(change_type);
     } else {
       OnClearTransform(properties_->ClearAnchorPositionScrollTranslation());
     }

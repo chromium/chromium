@@ -201,6 +201,25 @@ bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
   return true;
 }
 
+bool PropertyTreeManager::DirectlyUpdateAnchorPositionScrollTranslation(
+    cc::LayerTreeHost& host,
+    const TransformPaintPropertyNode& transform) {
+  host.WaitForProtectedSequenceCompletion();
+
+  auto& transform_tree = host.property_trees()->transform_tree_mutable();
+  auto* cc_transform = transform_tree.Node(
+      transform.CcNodeId(host.property_trees()->sequence_number()));
+  if (!cc_transform) {
+    return false;
+  }
+
+  transform_tree.EnsureAnchorPositionScrollData(cc_transform->id)
+      .default_adjustment = transform.Get2dTranslation();
+  // The change of the translation must be a result of other transform changes,
+  // so we can rely on the other changes to set the changed flags.
+  return true;
+}
+
 void PropertyTreeManager::DirectlySetScrollOffset(
     cc::LayerTreeHost& host,
     CompositorElementId element_id,
@@ -480,7 +499,9 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   }
 
   if (const auto* data = transform_node.GetAnchorPositionScrollData()) {
-    transform_tree_.EnsureAnchorPositionScrollData(id) = *data;
+    auto& cc_data = transform_tree_.EnsureAnchorPositionScrollData(id);
+    cc_data = *data;
+    cc_data.default_adjustment = transform_node.Get2dTranslation();
   }
 
   auto compositor_element_id = transform_node.GetCompositorElementId();

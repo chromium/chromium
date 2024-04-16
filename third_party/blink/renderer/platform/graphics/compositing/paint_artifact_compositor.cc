@@ -1062,6 +1062,16 @@ bool PaintArtifactCompositor::DirectlyUpdatePageScaleTransform(
   return false;
 }
 
+bool PaintArtifactCompositor::DirectlyUpdateAnchorPositionScrollTranslation(
+    const TransformPaintPropertyNode& transform) {
+  CHECK(transform.RequiresCompositingForAnchorPosition());
+  if (CanDirectlyUpdateProperties()) {
+    return PropertyTreeManager::DirectlyUpdateAnchorPositionScrollTranslation(
+        *root_layer_->layer_tree_host(), transform);
+  }
+  return false;
+}
+
 bool PaintArtifactCompositor::DirectlySetScrollOffset(
     CompositorElementId element_id,
     const gfx::PointF& scroll_offset) {

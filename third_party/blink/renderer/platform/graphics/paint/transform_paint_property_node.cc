@@ -47,10 +47,14 @@ TransformPaintPropertyNode::State::ComputeTransformChange(
 
   if ((direct_compositing_reasons & CompositingReason::kStickyPosition) ||
       (direct_compositing_reasons & CompositingReason::kAnchorPosition)) {
-    // The compositor handles sticky offset changes and anchor position
-    // translation offset changes automatically.
     DCHECK(transform_and_origin.matrix.Preserves2dAxisAlignment());
     DCHECK(other.matrix.Preserves2dAxisAlignment());
+    // We need to update the default adjustment for anchor position translation
+    // offset changes.
+    if (direct_compositing_reasons & CompositingReason::kAnchorPosition) {
+      return PaintPropertyChangeType::kChangedOnlySimpleValues;
+    }
+    // The compositor handles sticky offset changes automatically.
     return PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
