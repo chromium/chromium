@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.AnimationPlaybackRateChanged"
-    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2024-08-08">
+    enum="DevToolsAnimationPlaybackRateChanged" expires_after="2024-10-13">
   <owner>yangguo@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <owner>ergunsh@chromium.org</owner>
@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.AnimationPointDragged"
-    enum="DevToolsAnimationPointDragged" expires_after="2024-08-08">
+    enum="DevToolsAnimationPointDragged" expires_after="2024-10-13">
   <owner>yangguo@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <owner>ergunsh@chromium.org</owner>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad" units="ms" expires_after="2024-08-12">
+<histogram name="DevTools.TraceLoad" units="ms" expires_after="2024-10-13">
   <owner>paulirish@chromium.org</owner>
   <owner>jacktfranklin@chromium.org</owner>
   <owner>victorporof@chromium.org</owner>
