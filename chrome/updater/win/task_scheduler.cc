@@ -1108,7 +1108,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     base::win::ScopedBstr task_subfolder_name(GetTaskSubfolderName());
     hr = root_task_folder->GetFolder(task_subfolder_name.Get(), &folder);
 
-    // Try creating the folder it wasn't there.
+    // Try creating the folder if it wasn't there.
     if (IsFileOrPathNotFoundError(hr)) {
       // Use default SDDL.
       hr = root_task_folder->CreateFolder(
@@ -1116,7 +1116,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
           &folder);
 
       if (FAILED(hr)) {
-        LOG(ERROR) << "Failed to create the folder." << std::hex << hr;
+        LOG(ERROR) << "Failed to create the folder: "
+                   << task_subfolder_name.Get() << ", error: " << std::hex
+                   << hr;
         return nullptr;
       }
     } else if (FAILED(hr)) {
