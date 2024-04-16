@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
@@ -279,9 +278,6 @@ void LoginManagerMixin::LoginAsNewRegularUser(
 }
 
 void LoginManagerMixin::LoginAsNewChildUser() {
-  // TODO(b/333450354): Determine why this is necessary and fix.
-  SetDelayNetworkCallsForTesting(true);
-
   LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
