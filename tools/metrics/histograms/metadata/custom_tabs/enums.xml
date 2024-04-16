@@ -33,22 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="REFERRER"/>
 </enum>
 
-<enum name="CustomTabsBrandingDecision">
-  <summary>Used by CustomTabs.Branding.BrandingDecision</summary>
-  <int value="0" label="None">
-    Branding is not shown. Used when branding is already shown in the past set
-    cadence (e.g. one hour).
-  </int>
-  <int value="1" label="Shown on toolbar">
-    Branding is shown on the toolbar. Used when the client app launches CCT past
-    the set branding cadence.
-  </int>
-  <int value="2" label="Shown with Toast">
-    Branding is shown with a toast. Used when the client app launches CCT for
-    the first time.
-  </int>
-</enum>
-
 <enum name="CustomTabsCloseCause">
   <int value="0" label="User action in Chrome (back press, close button)"/>
   <int value="1" label="User action in Android (home)"/>

@@ -96,7 +96,7 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(PACKAGE_1, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher(/* decision= */ BrandingDecision.TOOLBAR);
+        HistogramWatcher watcher = newHistogramWatcher();
         mainLooper().idle();
         assertEquals(
                 "Branding is checked after cadence, BrandingDecision should be TOOLBAR. ",
@@ -113,7 +113,7 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(NEW_APPLICATION, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher(/* decision= */ BrandingDecision.TOAST);
+        HistogramWatcher watcher = newHistogramWatcher();
         mainLooper().idle();
         long showBrandingTime = SystemClock.elapsedRealtime();
         assertEquals(
@@ -135,7 +135,7 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(PACKAGE_1, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher(/* decision= */ BrandingDecision.TOAST);
+        HistogramWatcher watcher = newHistogramWatcher();
         // Run looper for #doInBackground
         mainLooper().runOneTask();
         assertEquals("BrandingDecision is not set yet.", 0, callbackDelegate.getCallCount());
@@ -158,7 +158,7 @@ public class BrandingCheckerUnitTest {
         BrandingChecker checker = createBrandingChecker(INVALID_ID, callbackDelegate);
         checker.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        HistogramWatcher watcher = newHistogramWatcher(/* decision= */ BrandingDecision.TOAST);
+        HistogramWatcher watcher = newHistogramWatcher();
         mainLooper().idle();
         assertEquals(
                 "Package is invalid, BrandingDecision should be the test default. ",
@@ -236,9 +236,8 @@ public class BrandingCheckerUnitTest {
         ShadowSystemClock.advanceBy(increments, TimeUnit.MILLISECONDS);
     }
 
-    private HistogramWatcher newHistogramWatcher(@BrandingDecision int decision) {
+    private HistogramWatcher newHistogramWatcher() {
         return HistogramWatcher.newBuilder()
-                .expectIntRecord("CustomTabs.Branding.BrandingDecision", decision)
                 .expectAnyRecord("CustomTabs.Branding.BrandingCheckDuration")
                 .build();
     }

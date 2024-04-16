@@ -81,23 +81,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Branding.BrandingDecision"
-    enum="CustomTabsBrandingDecision" expires_after="2024-04-28">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. When such task
-    completed, a branding decision will be made based on the last time branding
-    was shown, and the task completion time. (e.g. show a &quot;chrome logo +
-    text&quot; combination on the toolbar). See go/clank-cct-branding-dd for
-    detail.
-
-    Record what branding decision will be used for the current CCT session when
-    the branding check is finished or canceled. Record for Android CCT only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Branding.NumberOfClients" units="count"
     expires_after="2024-09-01">
   <owner>wenyufu@chromium.org</owner>
