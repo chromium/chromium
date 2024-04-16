@@ -439,8 +439,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
     if (this.isReadAloudEnabled_) {
+      // Default to the first font option if the previously used font is no
+      // longer available.
       this.setCheckMarkForMenu_(
-          this.$.fontMenu.getIfExists(), currentFontIndex);
+          this.$.fontMenu.getIfExists(),
+          currentFontIndex > -1 ? currentFontIndex : 0);
 
     } else {
       const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
