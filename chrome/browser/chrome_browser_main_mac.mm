@@ -80,7 +80,6 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   CHECK(ui::ResourceBundle::HasSharedInstance());
 
 #if BUILDFLAG(ENABLE_UPDATER)
-  EnsureUpdater(base::DoNothing(), base::DoNothing());
   updater::SchedulePeriodicTasks();
 #endif  // BUILDFLAG(ENABLE_UPDATER)
 

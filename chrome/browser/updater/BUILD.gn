@@ -70,6 +70,7 @@ source_set("scheduler") {
       sources += [ "scheduler_mac.cc" ]
       deps += [
         ":browser_updater_client",
+        "//chrome/browser/ui",
         "//chrome/common",
         "//chrome/updater:browser_sources",
       ]
