@@ -114,6 +114,7 @@ class CalendarViewEventListViewTest
     controller_.reset();
     scoped_feature_list_.Reset();
     widget_.reset();
+    calendar_model_ = nullptr;
 
     AshTestBase::TearDown();
   }
@@ -192,7 +193,7 @@ class CalendarViewEventListViewTest
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
-  raw_ptr<CalendarModel, DanglingUntriaged> calendar_model_;
+  raw_ptr<CalendarModel> calendar_model_ = nullptr;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -509,6 +510,7 @@ class CalendarViewEventListViewFetchTest
     controller_.reset();
     scoped_feature_list_.Reset();
     time_overrides_.reset();
+    calendar_model_ = nullptr;
 
     AshTestBase::TearDown();
   }
@@ -607,7 +609,7 @@ class CalendarViewEventListViewFetchTest
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
-  raw_ptr<CalendarModel, DanglingUntriaged> calendar_model_;
+  raw_ptr<CalendarModel> calendar_model_ = nullptr;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
