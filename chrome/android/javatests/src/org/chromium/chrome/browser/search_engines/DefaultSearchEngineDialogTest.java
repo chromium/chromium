@@ -19,7 +19,10 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +37,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -65,6 +69,8 @@ public class DefaultSearchEngineDialogTest {
     private final FakeTemplateUrl mEngine1 = new FakeTemplateUrl("EngineOne", "EngineOneKeyword");
     private final FakeTemplateUrl mEngine2 = new FakeTemplateUrl("EngineTwo", "EngineTwoKeyword");
 
+    private UserActionTester mUserActionTester;
+
     @Before
     public void setUp() throws Exception {
         final CallbackHelper templateUrlServiceInit = new CallbackHelper();
@@ -94,12 +100,58 @@ public class DefaultSearchEngineDialogTest {
                 });
         templateUrlServiceInit.waitForFirst();
         mActivityTestRule.launchActivity(null);
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
+    }
+
+    @Test
+    @MediumTest
+    public void testUserActionShowNew() {
+        Assert.assertEquals(
+                0, mUserActionTester.getActionCount("SearchEnginePromo.NewDevice.Shown.Dialog"));
+        Assert.assertEquals(
+                0,
+                mUserActionTester.getActionCount("SearchEnginePromo.ExistingDevice.Shown.Dialog"));
+        showDialog(SearchEnginePromoType.SHOW_NEW);
+        onView(withText(R.string.search_engine_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        Assert.assertEquals(
+                1, mUserActionTester.getActionCount("SearchEnginePromo.NewDevice.Shown.Dialog"));
+        Assert.assertEquals(
+                0,
+                mUserActionTester.getActionCount("SearchEnginePromo.ExistingDevice.Shown.Dialog"));
+    }
+
+    @Test
+    @MediumTest
+    public void testUserActionShowExisting() {
+        Assert.assertEquals(
+                0, mUserActionTester.getActionCount("SearchEnginePromo.NewDevice.Shown.Dialog"));
+        Assert.assertEquals(
+                0,
+                mUserActionTester.getActionCount("SearchEnginePromo.ExistingDevice.Shown.Dialog"));
+        showDialog(SearchEnginePromoType.SHOW_EXISTING);
+        onView(withText(R.string.search_engine_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        Assert.assertEquals(
+                0, mUserActionTester.getActionCount("SearchEnginePromo.NewDevice.Shown.Dialog"));
+        Assert.assertEquals(
+                1,
+                mUserActionTester.getActionCount("SearchEnginePromo.ExistingDevice.Shown.Dialog"));
     }
 
     @Test
     @LargeTest
     public void testDialogView() {
-        showDialog();
+        showDialog(SearchEnginePromoType.SHOW_EXISTING);
 
         onView(withText(R.string.search_engine_dialog_title))
                 .inRoot(isDialog())
@@ -112,7 +164,7 @@ public class DefaultSearchEngineDialogTest {
     @Test
     @LargeTest
     public void testButtonClickRunsCallback() {
-        showDialog();
+        showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -126,7 +178,7 @@ public class DefaultSearchEngineDialogTest {
     @Test
     @LargeTest
     public void testButtonClickDismissesDialog() {
-        showDialog();
+        showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -140,7 +192,7 @@ public class DefaultSearchEngineDialogTest {
     @Test
     @LargeTest
     public void testBackPressDoesNotDismissDialog() {
-        showDialog();
+        showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
@@ -152,7 +204,7 @@ public class DefaultSearchEngineDialogTest {
                 .check(matches(isDisplayed()));
     }
 
-    private void showDialog() {
+    private void showDialog(@SearchEnginePromoType int promoType) {
         DefaultSearchEngineDialogHelper.Delegate delegate =
                 new DefaultSearchEngineDialogHelper.Delegate() {
                     @Override
@@ -172,7 +224,7 @@ public class DefaultSearchEngineDialogTest {
                     new DefaultSearchEngineDialogCoordinator(
                                     mActivityTestRule.getActivity(),
                                     delegate,
-                                    SearchEnginePromoType.SHOW_EXISTING,
+                                    promoType,
                                     mOnSuccessCallback)
                             .show();
                 });
