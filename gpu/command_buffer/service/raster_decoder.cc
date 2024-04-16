@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
@@ -83,6 +84,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -889,6 +891,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::vector<GrBackendSemaphore> end_semaphores_;
   std::unique_ptr<cc::ServicePaintCache> paint_cache_;
 
+  std::unique_ptr<SkNoDrawCanvas> no_draw_canvas_;
   raw_ptr<SkCanvas> raster_canvas_ = nullptr;
   std::vector<SkDiscardableHandleId> locked_handles_;
 
@@ -1015,6 +1018,10 @@ RasterDecoderImpl::RasterDecoderImpl(
       is_raw_draw_enabled_(features::IsUsingRawDraw()) {
   DCHECK(shared_context_state_);
   shared_context_state_->AddContextLostObserver(this);
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(switches::kDisableGLDrawingForTests)) {
+    no_draw_canvas_ = std::make_unique<SkNoDrawCanvas>(0, 0);
+  }
 }
 
 RasterDecoderImpl::~RasterDecoderImpl() {
@@ -2977,7 +2984,12 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
     DCHECK(result);
   }
 
-  raster_canvas_ = sk_surface_->getCanvas();
+  if (no_draw_canvas_) {
+    no_draw_canvas_->resetCanvas(sk_surface_->width(), sk_surface_->height());
+    raster_canvas_ = no_draw_canvas_.get();
+  } else {
+    raster_canvas_ = sk_surface_->getCanvas();
+  }
 
   paint_op_shared_image_provider_ = std::make_unique<SharedImageProviderImpl>(
       &shared_image_representation_factory_, shared_context_state_, sk_surface_,

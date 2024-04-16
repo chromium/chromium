@@ -159,30 +159,46 @@ GetOrCreateGraphiteCacheController(skgpu::graphite::Recorder* recorder) {
 }  // namespace
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    GrDeferredDisplayListRecorder* root_ddl_recorder)
-    : ddl_recorder_(root_ddl_recorder), canvas_(ddl_recorder_->getCanvas()) {}
+    GrDeferredDisplayListRecorder* root_ddl_recorder,
+    bool skip_draw_for_tests)
+    : ddl_recorder_(root_ddl_recorder), canvas_(ddl_recorder_->getCanvas()) {
+  Initialize(skip_draw_for_tests);
+}
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     const GrSurfaceCharacterization& characterization,
-    const gpu::Mailbox& mailbox)
+    const gpu::Mailbox& mailbox,
+    bool skip_draw_for_tests)
     : mailbox_(mailbox) {
   ddl_recorder_storage_.emplace(characterization);
   ddl_recorder_ = &ddl_recorder_storage_.value();
   canvas_ = ddl_recorder_->getCanvas();
+  Initialize(skip_draw_for_tests);
 }
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     skgpu::graphite::Recorder* recorder,
     const SkImageInfo& image_info,
     skgpu::graphite::TextureInfo texture_info,
-    const gpu::Mailbox& mailbox)
+    const gpu::Mailbox& mailbox,
+    bool skip_draw_for_tests)
     : graphite_recorder_(recorder), mailbox_(mailbox) {
   CHECK(graphite_recorder_);
   canvas_ = graphite_recorder_->makeDeferredCanvas(image_info, texture_info);
+  Initialize(skip_draw_for_tests);
 }
 
 SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() {
   CHECK(!canvas_);
+}
+
+void SkiaOutputSurfaceImpl::ScopedPaint::Initialize(bool skip_draw_for_tests) {
+  if (canvas_ && skip_draw_for_tests) {
+    auto image_info = canvas_->imageInfo();
+    no_draw_canvas_ = std::make_unique<SkNoDrawCanvas>(image_info.width(),
+                                                       image_info.height());
+    canvas_ = no_draw_canvas_.get();
+  }
 }
 
 sk_sp<GrDeferredDisplayList> SkiaOutputSurfaceImpl::ScopedPaint::DetachDDL() {
@@ -284,7 +300,9 @@ SkiaOutputSurfaceImpl::SkiaOutputSurfaceImpl(
       display_compositor_controller_(display_controller),
       gpu_task_scheduler_(display_compositor_controller_->gpu_task_scheduler()),
       is_using_raw_draw_(features::IsUsingRawDraw()),
-      is_raw_draw_using_msaa_(features::IsRawDrawUsingMSAA()) {
+      is_raw_draw_using_msaa_(features::IsRawDrawUsingMSAA()),
+      skip_draw_for_tests_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGLDrawingForTests)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (is_using_raw_draw_) {
     auto* manager = dependency_->GetSharedImageManager();
@@ -460,10 +478,11 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
         /*supports_multiplanar_rendering=*/false,
         /*supports_multiplanar_copy=*/false);
     CHECK(texture_info.isValid());
-    current_paint_.emplace(graphite_recorder_, image_info, texture_info);
+    current_paint_.emplace(graphite_recorder_, image_info, texture_info,
+                           gpu::Mailbox(), skip_draw_for_tests_);
   } else {
     reset_ddl_recorder_on_swap_ = true;
-    current_paint_.emplace(&root_ddl_recorder_.value());
+    current_paint_.emplace(&root_ddl_recorder_.value(), skip_draw_for_tests_);
   }
   return current_paint_->canvas();
 }
@@ -854,7 +873,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
       return nullptr;
     }
     current_paint_.emplace(graphite_recorder_, image_info, texture_info,
-                           mailbox);
+                           mailbox, skip_draw_for_tests_);
   } else {
     GrSurfaceCharacterization characterization =
         CreateGrSurfaceCharacterizationRenderPass(
@@ -864,7 +883,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
       DLOG(ERROR) << "BeginPaintRenderPass: invalid GrSurfaceCharacterization";
       return nullptr;
     }
-    current_paint_.emplace(characterization, mailbox);
+    current_paint_.emplace(characterization, mailbox, skip_draw_for_tests_);
   }
 
   // We are going to overwrite the render pass when it is not for overlay, so we
