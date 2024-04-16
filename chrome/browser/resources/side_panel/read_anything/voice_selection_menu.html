@@ -1,5 +1,5 @@
 <style include="cr-icons">
-  iron-icon {
+  cr-icon {
     --icon-size: 20px;
     height: var(--icon-size);
     width: var(--icon-size);
@@ -86,9 +86,9 @@
               class="dropdown-item dropdown-voice-selection-button"
               on-click="onVoiceSelectClick_">
               <span class="voice-name">
-                <iron-icon id="check-mark"
+                <cr-icon id="check-mark"
                   class$="item-invisible-[[!item.selected]] check-mark"
-                  icon="read-anything-20:check-mark"></iron-icon>
+                  icon="read-anything-20:check-mark"></cr-icon>
                 [[item.title]]
               </span>
               <!-- TODO(b/333958820): Ensure keyboard focus is handled correctly

@@ -1,5 +1,5 @@
 <style include="cr-icons md-select">
-  iron-icon {
+  cr-icon {
     --icon-size: 20px;
     height: var(--icon-size);
     width: var(--icon-size);
@@ -278,9 +278,9 @@
         <template is="dom-repeat" items="[[rateOptions_]]" index-as="index"
                   initial-count="8">
           <button class="dropdown-item" on-click="onRateClick_">
-            <iron-icon class$="button-image check-mark
+            <cr-icon class$="button-image check-mark
               check-mark-hidden-[[isRateItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></iron-icon>
+                icon="read-anything-20:check-mark"></cr-icon>
             [[item]]x
           </button>
         </template>
@@ -321,10 +321,10 @@
         <template is="dom-repeat" items="[[colorOptions_]]" index-as="index"
                   initial-count="5">
           <button class="dropdown-item" on-click="onColorClick_">
-            <iron-icon class$="button-image check-mark
+            <cr-icon class$="button-image check-mark
                               check-mark-hidden-[[isColorItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></iron-icon>
-            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+                icon="read-anything-20:check-mark"></cr-icon>
+            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
         </template>
@@ -338,10 +338,10 @@
                   items="[[lineSpacingOptions_]]" index-as="index"
                   initial-count="3">
           <button class="dropdown-item" on-click="onLineSpacingClick_">
-            <iron-icon class$="button-image check-mark
+            <cr-icon class$="button-image check-mark
                         check-mark-hidden-[[isLineSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></iron-icon>
-            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+                icon="read-anything-20:check-mark"></cr-icon>
+            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
         </template>
@@ -355,10 +355,10 @@
                   items="[[letterSpacingOptions_]]" index-as="index"
                   initial-count="3">
           <button class="dropdown-item" on-click="onLetterSpacingClick_">
-            <iron-icon class$="button-image check-mark
+            <cr-icon class$="button-image check-mark
                       check-mark-hidden-[[isLetterSpacingItemSelected_(index)]]"
-                icon="read-anything-20:check-mark"></iron-icon>
-            <iron-icon class="button-image" icon="[[item.icon]]"></iron-icon>
+                icon="read-anything-20:check-mark"></cr-icon>
+            <cr-icon class="button-image" icon="[[item.icon]]"></cr-icon>
             [[item.title]]
           </button>
         </template>
@@ -372,10 +372,10 @@
                   initial-count="8">
           <button class="dropdown-item" on-click="onFontClick_"
               style$="font-family:[[item]]">
-            <iron-icon
+            <cr-icon
               class$="button-image check-mark
               check-mark-hidden-[[isFontItemSelected_(index)]]"
-              icon="read-anything-20:check-mark"></iron-icon>
+              icon="read-anything-20:check-mark"></cr-icon>
             [[getFontItemLabel_(item, areFontsLoaded_)]]
           </button>
         </template>

@@ -14,13 +14,13 @@ import './icons.html.js';
 
 import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -733,7 +733,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const checked =
         Array.from(menu.getElementsByClassName('check-mark-hidden-false'));
     checked.forEach(element => {
-      const iconElement = element as IronIconElement;
+      const iconElement = element as CrIconElement;
       // TODO(crbug.com/1465029): Ensure this works with screen readers
       if (iconElement) {
         iconElement.classList.toggle('check-mark-hidden-true', true);
@@ -742,7 +742,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
 
     const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
-    const checkMark = checkMarks[index] as IronIconElement;
+    const checkMark = checkMarks[index] as CrIconElement;
     if (checkMark) {
       checkMark.classList.toggle('check-mark-hidden-true', false);
       checkMark.classList.toggle('check-mark-hidden-false', true);
