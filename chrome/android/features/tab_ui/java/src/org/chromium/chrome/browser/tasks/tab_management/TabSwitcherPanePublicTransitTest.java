@@ -53,7 +53,7 @@ import org.chromium.chrome.test.transit.PageStation;
 public class TabSwitcherPanePublicTransitTest {
     @Rule
     public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class);
+            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

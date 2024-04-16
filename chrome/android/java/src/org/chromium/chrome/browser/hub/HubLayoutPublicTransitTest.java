@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.util.Batch;
@@ -28,11 +27,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.HubTabSwitcherStation;
@@ -40,7 +38,6 @@ import org.chromium.chrome.test.transit.NewTabPageStation;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -48,34 +45,30 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @EnableFeatures({ANDROID_HUB})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
-    @Rule
-    public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class);
-
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
+    @Rule
+    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
+            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
         PageStation previousTab = tabSwitcher.leaveHubToPreviousTabViaBack();
 
         assertFinalDestination(previousTab);
-        assertFinalTabModelState();
     }
 
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
@@ -83,18 +76,13 @@ public class HubLayoutPublicTransitTest {
 
         NewTabPageStation newTab = appMenu.openNewTab();
 
-        // Reset to original state for batching.
-        tabSwitcher = newTab.openHub(HubTabSwitcherStation.class);
-        tabSwitcher = tabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
-        PageStation blankTab = tabSwitcher.selectTabAtIndex(0);
-        assertFinalDestination(blankTab);
-        assertFinalTabModelState();
+        assertFinalDestination(newTab);
     }
 
     @Test
     @LargeTest
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
 
         HubTabSwitcherStation tabSwitcher = page.openHub(HubTabSwitcherStation.class);
 
@@ -102,19 +90,13 @@ public class HubLayoutPublicTransitTest {
 
         NewTabPageStation newIncognitoTab = appMenu.openNewIncognitoTab();
 
-        // Reset to original state for batching.
-        HubIncognitoTabSwitcherStation incognitoTabSwitcher =
-                newIncognitoTab.openHub(HubIncognitoTabSwitcherStation.class);
-        tabSwitcher = incognitoTabSwitcher.closeTabAtIndex(0, HubTabSwitcherStation.class);
-        PageStation blankTab = tabSwitcher.selectTabAtIndex(0);
-        assertFinalDestination(blankTab);
-        assertFinalTabModelState();
+        assertFinalDestination(newIncognitoTab);
     }
 
     @Test
     @LargeTest
     public void testChangeTabSwitcherPanes() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
 
         PageAppMenuFacility appMenu = page.openAppMenu();
         NewTabPageStation incognitoNewTabPage = appMenu.openNewIncognitoTab();
@@ -129,14 +111,9 @@ public class HubLayoutPublicTransitTest {
         HubTabSwitcherStation tabSwitcher =
                 incognitoTabSwitcher.selectPane(PaneId.TAB_SWITCHER, HubTabSwitcherStation.class);
 
-        // Reset to original state for batching.
-        incognitoTabSwitcher =
-                tabSwitcher.selectPane(
-                        PaneId.INCOGNITO_TAB_SWITCHER, HubIncognitoTabSwitcherStation.class);
-        tabSwitcher = incognitoTabSwitcher.closeTabAtIndex(0, HubTabSwitcherStation.class);
+        // Go back to a PageStation for BlankCTATabInitialStateRule to reset state.
         PageStation blankTab = tabSwitcher.selectTabAtIndex(0);
         assertFinalDestination(blankTab);
-        assertFinalTabModelState();
     }
 
     @Test
@@ -146,7 +123,7 @@ public class HubLayoutPublicTransitTest {
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.setForTesting(0);
 
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
 
         PageAppMenuFacility appMenu = page.openAppMenu();
         NewTabPageStation newTabPage = appMenu.openNewTab();
@@ -157,12 +134,7 @@ public class HubLayoutPublicTransitTest {
         tabSwitcher = page.openHub(HubTabSwitcherStation.class);
         newTabPage = pauseAndResumeActivity(tabSwitcher);
 
-        // Reset to original state for batching.
-        tabSwitcher = newTabPage.openHub(HubTabSwitcherStation.class);
-        tabSwitcher = tabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
-        page = tabSwitcher.selectTabAtIndex(0);
-        assertFinalDestination(page);
-        assertFinalTabModelState();
+        assertFinalDestination(newTabPage);
     }
 
     private NewTabPageStation pauseAndResumeActivity(TransitStation currentStation) {
@@ -198,15 +170,5 @@ public class HubLayoutPublicTransitTest {
         }
 
         return destination;
-    }
-
-    private void assertFinalTabModelState() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelSelector selector =
-                            sActivityTestRule.getActivity().getTabModelSelector();
-                    assertEquals(1, selector.getModel(false).getCount());
-                    assertEquals(0, selector.getModel(true).getCount());
-                });
     }
 }

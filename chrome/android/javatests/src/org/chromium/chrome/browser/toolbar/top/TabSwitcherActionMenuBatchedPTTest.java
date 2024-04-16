@@ -49,7 +49,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
     @Rule
     public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class);
+            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
