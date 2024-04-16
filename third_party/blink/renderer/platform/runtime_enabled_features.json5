@@ -3719,11 +3719,6 @@
       status: "experimental",
     },
     {
-      name: "StorageAccessAPIBeyondCookies",
-      status: "stable",
-      origin_trial_feature_name: "StorageAccessAPIBeyondCookies",
-    },
-    {
       name: "StorageBuckets",
       status: "stable",
     },
