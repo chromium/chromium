@@ -5,7 +5,6 @@
 /**
  * @fileoverview Constants used throughout the accessibility extensions.
  */
-import {TestImportManager} from './testing/test_import_manager.js';
 
 export namespace constants {
   /**
@@ -53,5 +52,3 @@ export namespace constants {
     BRAILLE = 'braille',
   }
 }
-
-TestImportManager.exportForTesting(['constants', constants]);

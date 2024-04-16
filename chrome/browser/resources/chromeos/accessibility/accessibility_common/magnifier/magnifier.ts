@@ -7,7 +7,6 @@ import {ChromeEventHandler} from '/common/chrome_event_handler.js';
 import {EventHandler} from '/common/event_handler.js';
 import {FlagName, Flags} from '/common/flags.js';
 import {RectUtil} from '/common/rect_util.js';
-import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
@@ -365,5 +364,3 @@ export namespace Magnifier {
    */
   export const IGNORE_STS_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
 }
-
-TestImportManager.exportForTesting(Magnifier);

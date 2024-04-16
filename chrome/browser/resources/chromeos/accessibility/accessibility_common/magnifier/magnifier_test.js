@@ -219,11 +219,10 @@ TEST_F(
     });
 
 AX_TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', async function() {
-  await this.runWithLoadedTree('');
-
   const magnifier = accessibilityCommon.getMagnifierForTest();
   magnifier.setIsInitializingForTest(false);
 
+  await this.runWithLoadedTree('');
   chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
       (newBounds) => {
         throw new Error(
@@ -326,6 +325,9 @@ AX_TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', async function() {
 
 TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
   this.newCallback(async () => {
+    await importModule(
+        'Magnifier', '/accessibility_common/magnifier/magnifier.js');
+
     // Disable focus following for full screen magnifier, and verify prefs and
     // state.
     await this.setPref(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, false);
@@ -348,6 +350,8 @@ TEST_F(
     'MagnifierE2ETest', 'ScreenMagnifierSelectToSpeakFollowingPref',
     function() {
       this.newCallback(async () => {
+        await importModule(
+            'Magnifier', '/accessibility_common/magnifier/magnifier.js');
         // Disable select to speak following for full screen magnifier, and
         // verify prefs and state.
         await this.setPref(
@@ -374,6 +378,8 @@ TEST_F(
     'MagnifierE2ETest', 'FullscreenMagnifierDoesNotFollowStsWhenPrefOff',
     function() {
       this.newCallback(async () => {
+        await importModule(
+            'Magnifier', '/accessibility_common/magnifier/magnifier.js');
         // Disable select to speak following for full screen magnifier, and
         // verify prefs and state.
         await this.setPref(
@@ -400,6 +406,8 @@ TEST_F(
 TEST_F(
     'MagnifierE2ETest', 'FullscreenMagnifierFollowsStsWhenPrefOn', function() {
       this.newCallback(async () => {
+        await importModule(
+            'Magnifier', '/accessibility_common/magnifier/magnifier.js');
         // Disable select to speak following for full screen magnifier, and
         // verify prefs and state.
         await this.setPref(
