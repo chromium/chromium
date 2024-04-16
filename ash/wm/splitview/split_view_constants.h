@@ -42,41 +42,11 @@ constexpr int kSplitviewDividerEnlargedShortSideLength = 12;
 // The time duration for the window transformation animations.
 constexpr auto kSplitviewWindowTransformDuration = base::Milliseconds(250);
 
-// The time duration for the `split_view_divider_` animations when dragging
-// starts and ends.
-constexpr auto kSplitviewDividerSelectionStatusChangeDuration =
-    base::Milliseconds(250);
-
-// The time duration for the `split_view_divider_` spawning animation.
-constexpr auto kSplitviewDividerSpawnDuration = base::Milliseconds(100);
-
-// The delay before the `split_view_divider_` spawning animation.
-constexpr auto kSplitviewDividerSpawnDelay = base::Milliseconds(183);
-
 // The one-way bouncing animation duration for the `split_view_divider_` when
 // the to-be-snapped window can't fit in the work area. The actual duration when
 // used should be doubled to include the "bouncing out and bounding back in"
 // process.
 constexpr auto kBouncingAnimationOneWayDuration = base::Milliseconds(250);
-
-// The thickness of the `split_view_divider_`'s handler.
-constexpr int kDividerHandlerShortSideLength = 2;
-
-// The length of the `split_view_divider_`'s handler.
-constexpr int kDividerHandlerLongSideLength = 16;
-
-// The corner radius of the `split_view_divider_`'s handler.
-constexpr int kDividerHandlerCornerRadius = 1;
-
-// The radius of the circular handler when the `split_view_divider_` is being
-// dragged.
-constexpr int kDividerHandlerRadius = 2;
-
-// The length of the `split_view_divider_`'s handler when it spawns.
-constexpr int kDividerHandlerSpawnLongSideLength = 2;
-
-// The distance from the `split_view_divider_` to where its handler spawns.
-constexpr int kDividerHandlerSpawnUnsignedOffset = 2;
 
 // The opacity of the highlight area.
 constexpr float kHighlightOpacity = 0.25f;

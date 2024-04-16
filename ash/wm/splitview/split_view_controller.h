@@ -550,10 +550,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          const gfx::Point& last_location_in_screen,
                          WindowSnapActionSource snap_action_source);
 
-  // Do the split divider spawn animation. It will add a finishing touch to the
-  // |window| animation that generally accommodates snapping by dragging.
-  void DoSplitDividerSpawnAnimation(aura::Window* window);
-
   // Called by `SwapWindows()` to swap the window(s) if exist that occupy the
   // `SnapPosition::kPrimary` and `SnapPosition::kSecondary`. The bounds of the
   // window(s) will also be updated.

@@ -4152,8 +4152,11 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindowLimitHeight) {
   std::unique_ptr<aura::Window> bottom_window(CreateWindow(bounds));
   auto bottom_client =
       std::make_unique<TestTextInputClient>(bottom_window.get());
-  split_view_controller()->SnapWindow(bottom_window.get(),
-                                      SnapPosition::kSecondary);
+
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kSecondary);
 
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
@@ -4171,18 +4174,23 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindowLimitHeight) {
   const int screen_height = screen_bounds.height();
   const int limit_y = screen_height * kMinDividerPositionRatio;
 
+  gfx::Rect ori_divider_bounds = split_view_controller->split_view_divider()
+                                     ->divider_widget()
+                                     ->GetWindowBoundsInScreen();
+
   // Resize divider to a position that when the bottom window is pushed up, its
   // position will exceeds `1-kMinDividerPositionRatio` of screen height.
-  split_view_divider()->StartResizeWithDivider(divider_bounds.CenterPoint());
+  const auto drag_start_point = divider_bounds.CenterPoint();
+  split_view_divider()->StartResizeWithDivider(drag_start_point);
+  const int drag_end_point_y = screen_height * 0.15f;
   split_view_divider()->ResizeWithDivider(gfx::Point(0, screen_height * 0.15f));
 
-  const gfx::Rect orig_bottom_bounds = bottom_window->GetBoundsInScreen();
-  EXPECT_LT(keyboard_bounds.y() - orig_bottom_bounds.height(), limit_y);
+  // Adjust the `ori_divider_bounds` with the dragging distance to be used for
+  // check later.
+  ori_divider_bounds.Offset(0, drag_end_point_y - drag_start_point.y());
 
-  const gfx::Rect orig_divider_bounds = split_view_controller()
-                                            ->split_view_divider()
-                                            ->divider_widget()
-                                            ->GetWindowBoundsInScreen();
+  const gfx::Rect ori_bottom_bounds = bottom_window->GetBoundsInScreen();
+  EXPECT_LT(keyboard_bounds.y() - ori_bottom_bounds.height(), limit_y);
 
   // Set the caret position in bottom window below the upper bounds of the
   // virtual keyboard. When the virtual keyboard is enabled, the bottom window
@@ -4192,32 +4200,31 @@ TEST_F(SplitViewKeyboardTest, PushUpBottomWindowLimitHeight) {
                                       keyboard_bounds.y() - limit_y);
   const gfx::Rect shift_divider_bounds(
       shift_bottom_bounds.origin() +
-          gfx::Vector2d(0, -orig_divider_bounds.height()),
-      orig_divider_bounds.size());
+          gfx::Vector2d(0, -ori_divider_bounds.height()),
+      ori_divider_bounds.size());
 
   bottom_client->set_caret_bounds(gfx::Rect(keyboard_bounds.top_center(),
                                             gfx::Size(0, kCaretHeightForTest)));
   bottom_client->Focus();
   EXPECT_TRUE(keyboard_controller()->IsKeyboardVisible());
   EXPECT_EQ(shift_bottom_bounds, bottom_window->GetBoundsInScreen());
+
   // The split view divider will also be shifted and become unadjustable.
-  EXPECT_EQ(shift_divider_bounds, split_view_controller()
-                                      ->split_view_divider()
+  EXPECT_EQ(shift_divider_bounds, split_view_controller->split_view_divider()
                                       ->divider_widget()
                                       ->GetWindowBoundsInScreen());
-  EXPECT_FALSE(split_view_controller()->split_view_divider()->IsAdjustable());
+  EXPECT_FALSE(split_view_controller->split_view_divider()->IsAdjustable());
 
   // Disable the keyboard. The bottom window will restore to original bounds.
   // The split view divider will also be adjustable and restore to original
   // bounds.
   bottom_client->UnFocus();
   EXPECT_FALSE(keyboard_controller()->IsKeyboardVisible());
-  EXPECT_EQ(orig_bottom_bounds, bottom_window->GetBoundsInScreen());
-  EXPECT_EQ(orig_divider_bounds, split_view_controller()
-                                     ->split_view_divider()
-                                     ->divider_widget()
-                                     ->GetWindowBoundsInScreen());
-  EXPECT_TRUE(split_view_controller()->split_view_divider()->IsAdjustable());
+  EXPECT_EQ(ori_bottom_bounds, bottom_window->GetBoundsInScreen());
+  EXPECT_EQ(ori_divider_bounds, split_view_controller->split_view_divider()
+                                    ->divider_widget()
+                                    ->GetWindowBoundsInScreen());
+  EXPECT_TRUE(split_view_controller->split_view_divider()->IsAdjustable());
 }
 
 // Tests that when the bottom window is pushed up due to the virtual keyboard

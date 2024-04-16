@@ -2864,8 +2864,6 @@ component("ash") {
     "wm/splitview/split_view_controller.h",
     "wm/splitview/split_view_divider.cc",
     "wm/splitview/split_view_divider.h",
-    "wm/splitview/split_view_divider_handler_view.cc",
-    "wm/splitview/split_view_divider_handler_view.h",
     "wm/splitview/split_view_divider_view.cc",
     "wm/splitview/split_view_divider_view.h",
     "wm/splitview/split_view_drag_indicators.cc",

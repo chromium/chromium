@@ -11,7 +11,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
@@ -86,19 +85,19 @@ gfx::Rect GetWorkAreaBoundsInScreen(aura::Window* window) {
 }
 
 // Returns the widget init params needed to create the widget.
-views::Widget::InitParams CreateWidgetInitParams(
-    aura::Window* parent_window,
-    const std::string& widget_name) {
+views::Widget::InitParams CreateWidgetInitParams(aura::Window* parent_window,
+                                                 const gfx::Rect& bounds) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = parent_window;
+  params.bounds = bounds;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   // Exclude the divider from getting transformed with its transient parent
   // window when we are resizing. The divider will set its own transforms.
   params.init_properties_container.SetProperty(
       kExcludeFromTransientTreeTransformKey, true);
-  params.name = widget_name;
+  params.name = "SplitViewDividerWidget";
   return params;
 }
 
@@ -115,31 +114,25 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(
     bool landscape,
     int divider_position,
     bool is_dragging) {
-  const int dragging_diff = (kSplitviewDividerEnlargedShortSideLength -
-                             kSplitviewDividerShortSideLength) /
-                            2;
+  const int dragging_diff = is_dragging
+                                ? (kSplitviewDividerEnlargedShortSideLength -
+                                   kSplitviewDividerShortSideLength) /
+                                      2
+                                : 0;
   if (landscape) {
-    return is_dragging
-               ? gfx::Rect(work_area_bounds_in_screen.x() + divider_position -
-                               dragging_diff,
-                           work_area_bounds_in_screen.y(),
-                           kSplitviewDividerEnlargedShortSideLength,
-                           work_area_bounds_in_screen.height())
-               : gfx::Rect(work_area_bounds_in_screen.x() + divider_position,
-                           work_area_bounds_in_screen.y(),
-                           kSplitviewDividerShortSideLength,
-                           work_area_bounds_in_screen.height());
+    return gfx::Rect(
+        work_area_bounds_in_screen.x() + divider_position - dragging_diff,
+        work_area_bounds_in_screen.y(),
+        is_dragging ? kSplitviewDividerEnlargedShortSideLength
+                    : kSplitviewDividerShortSideLength,
+        work_area_bounds_in_screen.height());
   } else {
-    return is_dragging
-               ? gfx::Rect(work_area_bounds_in_screen.x(),
-                           work_area_bounds_in_screen.y() + divider_position -
-                               dragging_diff,
-                           work_area_bounds_in_screen.width(),
-                           kSplitviewDividerEnlargedShortSideLength)
-               : gfx::Rect(work_area_bounds_in_screen.x(),
-                           work_area_bounds_in_screen.y() + divider_position,
-                           work_area_bounds_in_screen.width(),
-                           kSplitviewDividerShortSideLength);
+    return gfx::Rect(
+        work_area_bounds_in_screen.x(),
+        work_area_bounds_in_screen.y() + divider_position - dragging_diff,
+        work_area_bounds_in_screen.width(),
+        is_dragging ? kSplitviewDividerEnlargedShortSideLength
+                    : kSplitviewDividerShortSideLength);
   }
 }
 
@@ -216,7 +209,7 @@ void SplitViewDivider::StartResizeWithDivider(
   }
 
   is_resizing_with_divider_ = true;
-  UpdateDividerBounds();
+  EnlargeOrShrinkDivider(/*should_enlarge=*/true);
   previous_event_location_ = location_in_screen;
 
   controller_->StartResizeWithDivider(location_in_screen);
@@ -253,6 +246,7 @@ void SplitViewDivider::ResizeWithDivider(const gfx::Point& location_in_screen) {
   // `LayoutDividerController` will update the window and divider bounds in
   // `UpdateResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
+  EnlargeOrShrinkDivider(/*should_enlarge=*/true);
   controller_->UpdateResizeWithDivider(modified_location_in_screen);
 
   previous_event_location_ = modified_location_in_screen;
@@ -267,13 +261,16 @@ void SplitViewDivider::EndResizeWithDivider(
   is_resizing_with_divider_ = false;
 
   gfx::Point modified_location_in_screen = GetBoundedPosition(
-      location_in_screen,
-      GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow()));
+      location_in_screen, GetWorkAreaBoundsInScreen(GetRootWindow()));
 
   // Order here matters: we first update `divider_position_`, then the
   // `LayoutDividerController` will transform and update the windows bounds in
   // `EndResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
+  const gfx::Point cursor_point =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+  EnlargeOrShrinkDivider(
+      GetDividerBoundsInScreen(/*is_dragging=*/true).Contains(cursor_point));
 
   // If the delegate is done with resizing, finish resizing and clean up.
   // Otherwise it will be called later, in
@@ -292,10 +289,6 @@ void SplitViewDivider::CleanUpWindowResizing() {
   controller_->OnResizeEnded();
 }
 
-void SplitViewDivider::DoSpawningAnimation(int spawning_position) {
-  divider_view_->DoSpawningAnimation(spawning_position);
-}
-
 void SplitViewDivider::UpdateDividerBounds() {
   if (divider_widget_) {
     divider_widget_->SetBounds(GetDividerBoundsInScreen(/*is_dragging=*/false));
@@ -311,6 +304,15 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
                                   divider_position_, is_dragging);
 }
 
+void SplitViewDivider::EnlargeOrShrinkDivider(bool should_enlarge) {
+  if (!divider_widget_ || !divider_widget_->GetNativeWindow()->IsVisible()) {
+    return;
+  }
+
+  divider_widget_->SetBounds(GetDividerBoundsInScreen(should_enlarge));
+  divider_view_->RefreshDividerHandler(should_enlarge);
+}
+
 void SplitViewDivider::SetAdjustable(bool adjustable) {
   if (adjustable == IsAdjustable()) {
     return;
@@ -319,7 +321,7 @@ void SplitViewDivider::SetAdjustable(bool adjustable) {
   divider_widget_->GetNativeWindow()->SetEventTargetingPolicy(
       adjustable ? aura::EventTargetingPolicy::kTargetAndDescendants
                  : aura::EventTargetingPolicy::kNone);
-  divider_view_->SetDividerBarVisible(adjustable);
+  divider_view_->SetHandlerBarVisible(adjustable);
 }
 
 bool SplitViewDivider::IsAdjustable() const {
@@ -543,8 +545,13 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   CHECK(top_window);
   parent_container = top_window->parent();
   CHECK(parent_container);
+
+  const gfx::Rect initial_divider_bounds = GetDividerBoundsInScreen(
+      GetWorkAreaBoundsInScreen(observed_windows_[0].get()),
+      IsLayoutHorizontal(observed_windows_[0].get()), divider_position,
+      /*is_dragging=*/false);
   divider_widget_->Init(
-      CreateWidgetInitParams(parent_container, "SplitViewDivider"));
+      CreateWidgetInitParams(parent_container, initial_divider_bounds));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
   divider_view_ = divider_widget_->SetContentsView(

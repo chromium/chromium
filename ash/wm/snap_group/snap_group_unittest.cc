@@ -2310,35 +2310,6 @@ TEST_F(SnapGroupTest, AutoSnapNewWindow) {
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w3.get()));
 }
 
-// TODO(b/326481241): Currently it's not possible to swap windows since
-// `SplitViewController` still manages the windows and updates the bounds in a
-// `SnapGroup`. This will just check that double tap still works after
-// conversion.
-TEST_F(SnapGroupTest, DoubleTapDivider) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get());
-  auto* snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
-  EXPECT_TRUE(snap_group);
-  auto* new_primary_window = snap_group->window1();
-  auto* new_secondary_window = snap_group->window2();
-
-  // Switch to tablet mode. Test that double tap on the divider swaps the
-  // windows.
-  SwitchToTabletMode();
-  EXPECT_EQ(new_primary_window, split_view_controller()->primary_window());
-  EXPECT_EQ(new_secondary_window, split_view_controller()->secondary_window());
-  EXPECT_TRUE(split_view_divider()->divider_widget());
-  const gfx::Point divider_center =
-      split_view_divider()
-          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
-          .CenterPoint();
-  GetEventGenerator()->GestureTapAt(divider_center);
-  GetEventGenerator()->GestureTapAt(divider_center);
-  EXPECT_EQ(new_secondary_window, split_view_controller()->primary_window());
-  EXPECT_EQ(new_primary_window, split_view_controller()->secondary_window());
-}
-
 TEST_F(SnapGroupTest, DontAutoSnapNewWindowOutsideSplitViewOverview) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -2480,6 +2451,44 @@ TEST_F(SnapGroupTest, AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
 
 using SnapGroupDividerTest = SnapGroupTest;
 
+// Tests that the divider starts with a thin default width
+// (`kSplitviewDividerShortSideLength`) in landscape mode, expands to
+// `kSplitviewDividerEnlargedShortSideLength` on mouse hover or drag, and
+// returns to its default thin width on mouse exit.
+TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  const auto divider_bounds_before_hover =
+      divider_widget->GetWindowBoundsInScreen();
+  EXPECT_EQ(kSplitviewDividerShortSideLength,
+            divider_bounds_before_hover.width());
+
+  auto* event_generator = GetEventGenerator();
+
+  // Shift the hover point so that it is not right on the divider handler view
+  // to trigger hover to enlarge.
+  const auto delta_vector = gfx::Vector2d(0, -10);
+  const gfx::Point hover_point =
+      divider_bounds_before_hover.CenterPoint() + delta_vector;
+  event_generator->MoveMouseTo(hover_point);
+  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength,
+            divider_widget->GetWindowBoundsInScreen().width());
+
+  event_generator->MoveMouseBy(10, 0);
+  EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength,
+            divider_widget->GetWindowBoundsInScreen().width());
+
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  EXPECT_EQ(kSplitviewDividerShortSideLength,
+            divider_widget->GetWindowBoundsInScreen().width());
+}
+
 // Tests that the split view divider will be stacked on top of both windows in
 // the snap group and that on a third window activated the split view divider
 // will be stacked below the newly activated window.
@@ -2491,6 +2500,7 @@ TEST_F(SnapGroupDividerTest, DividerStackingOrderTest) {
 
   SplitViewDivider* divider = snap_group_divider();
   auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
   aura::Window* divider_window = divider_widget->GetNativeWindow();
   EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), w1.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(w1.get(), divider_window));
@@ -2827,6 +2837,35 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerEnlargedHitArea) {
   // issue while dragging with divider.
   EXPECT_NEAR(snap_group_divider_bounds_in_screen().CenterPoint().x(),
               (cached_divider_center_point + move_vector).x(), /*abs_error=*/1);
+}
+
+// TODO(b/326481241): Currently it's not possible to swap windows since
+// `SplitViewController` still manages the windows and updates the bounds in a
+// `SnapGroup`. This will just check that double tap still works after
+// conversion.
+TEST_F(SnapGroupTest, DoubleTapDividerInTablet) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
+  EXPECT_TRUE(snap_group);
+  auto* new_primary_window = snap_group->window1();
+  auto* new_secondary_window = snap_group->window2();
+
+  // Switch to tablet mode. Test that double tap on the divider swaps the
+  // windows.
+  SwitchToTabletMode();
+  EXPECT_EQ(new_primary_window, split_view_controller()->primary_window());
+  EXPECT_EQ(new_secondary_window, split_view_controller()->secondary_window());
+  EXPECT_TRUE(split_view_divider()->divider_widget());
+  const gfx::Point divider_center =
+      split_view_divider()
+          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint();
+  GetEventGenerator()->GestureTapAt(divider_center);
+  GetEventGenerator()->GestureTapAt(divider_center);
+  EXPECT_EQ(new_secondary_window, split_view_controller()->primary_window());
+  EXPECT_EQ(new_primary_window, split_view_controller()->secondary_window());
 }
 
 // Tests to verify that when a window is dragged out of a snap group and onto

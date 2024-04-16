@@ -1201,29 +1201,9 @@ void SplitViewController::OnPostWindowStateTypeChange(
   aura::Window* window = window_state->window();
 
   if (window_state->IsSnapped()) {
-    bool do_divider_spawn_animation = false;
-    // Only need to do divider spawn animation if split view is to be active,
-    // window is not minimized and has an non-identify transform in tablet mode.
-    // If window|is currently minimized then it will undergo the unminimizing
-    // animation instead, therefore skip the divider spawn animation if
-    // the window is minimized.
-    if (state_ == State::kNoSnap && InTabletMode() &&
-        old_type != WindowStateType::kMinimized &&
-        !window->transform().IsIdentity()) {
-      // For the divider spawn animation, at the end of the delay, the divider
-      // shall be visually aligned with an edge of |window|. This effect will
-      // be more easily achieved after |window| has been snapped and the
-      // corresponding transform animation has begun. So for now, just set a
-      // flag to indicate that the divider spawn animation should be done.
-      do_divider_spawn_animation = true;
-    }
-
     OnWindowSnapped(window, old_type,
                     window_state->snap_action_source().value_or(
                         WindowSnapActionSource::kNotSpecified));
-    if (do_divider_spawn_animation) {
-      DoSplitDividerSpawnAnimation(window);
-    }
   } else if (window_state->IsNormalStateType() || window_state->IsMaximized() ||
              window_state->IsFullscreen() || window_state->IsFloated()) {
     // End split view, and also overview if overview is active, in these cases:
@@ -2653,30 +2633,6 @@ void SplitViewController::EndWindowDragImpl(
     SnapWindow(window, desired_snap_position, snap_action_source,
                /*activate_window=*/true);
   }
-}
-
-void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {
-  DCHECK(window->layer()->GetAnimator()->GetTargetTransform().IsIdentity());
-  SnapPosition snap_position = GetPositionOfSnappedWindow(window);
-  const gfx::Rect bounds = GetSnappedWindowBoundsInScreen(
-      snap_position, window, window_util::GetSnapRatioForWindow(window),
-      ShouldConsiderDivider());
-  // Get one of the two corners of |window| that meet the divider.
-  gfx::Point p = IsPhysicalLeftOrTop(snap_position, window)
-                     ? bounds.bottom_right()
-                     : bounds.origin();
-  // Apply the transform that |window| will undergo when the divider spawns.
-  static const double value = gfx::Tween::CalculateValue(
-      gfx::Tween::FAST_OUT_SLOW_IN,
-      kSplitviewDividerSpawnDelay / kSplitviewWindowTransformDuration);
-  p = gfx::TransformAboutPivot(
-          gfx::PointF(bounds.origin()),
-          gfx::Tween::TransformValueBetween(value, window->transform(),
-                                            gfx::Transform()))
-          .MapPoint(p);
-  // Use a coordinate of the transformed |window| corner for spawn_position.
-  split_view_divider_.DoSpawningAnimation(IsLayoutHorizontal(window) ? p.x()
-                                                                     : p.y());
 }
 
 void SplitViewController::SwapWindowsAndUpdateBounds() {

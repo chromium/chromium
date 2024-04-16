@@ -13,9 +13,20 @@ namespace ash {
 
 class IconButton;
 class SplitViewDivider;
-class SplitViewDividerHandlerView;
 
-// A view that acts as the contents view of the split view divider widget.
+// A view that acts as the content view within a split view divider widget.
+// It hosts two child views: a handler view and a feedback button. Its
+// responsibility is to update the bounds and visibility of its child views in
+// response to located events.
+//          | |
+//          | |
+//          |||<-----handler_view_
+//          |||
+//          | |
+//         +---+
+//         |   |<----feedback_button_
+//         +---+
+//          | |
 class SplitViewDividerView : public views::View,
                              public views::ViewTargeterDelegate {
   METADATA_HEADER(SplitViewDividerView, views::View)
@@ -26,8 +37,7 @@ class SplitViewDividerView : public views::View,
   SplitViewDividerView& operator=(const SplitViewDividerView&) = delete;
   ~SplitViewDividerView() override;
 
-  void DoSpawningAnimation(int spawn_position);
-  void SetDividerBarVisible(bool visible);
+  void SetHandlerBarVisible(bool visible);
 
   // Called explicitly by SplitViewDivider when the divider widget is closing.
   void OnDividerClosing();
@@ -49,15 +59,19 @@ class SplitViewDividerView : public views::View,
   IconButton* feedback_button_for_testing() const { return feedback_button_; }
 
  private:
-  void SwapWindows();
+  friend class SplitViewDivider;
 
-  void OnResizeStatusChanged();
+  void SwapWindows();
 
   void StartResizing(gfx::Point location);
 
   // Safely ends resizing, preventing use after destruction. If
   // `swap_windows` is true, swaps the windows after resizing.
   void EndResizing(gfx::Point location, bool swap_windows);
+
+  // Refreshes the divider handler's bounds and rounded corners  in response to
+  // changes in the divider's dimensions or display properties.
+  void RefreshDividerHandler(bool should_enlarge);
 
   // Initializes, refreshes bounds, or updates visibility for the
   // `feedback_button_` on the divider.
@@ -76,9 +90,9 @@ class SplitViewDividerView : public views::View,
   // a resize.
   bool mouse_move_started_ = false;
 
-  raw_ptr<SplitViewDividerHandlerView> divider_handler_view_ = nullptr;
   raw_ptr<SplitViewDivider> divider_;
 
+  raw_ptr<views::View> handler_view_ = nullptr;
   raw_ptr<IconButton> feedback_button_ = nullptr;
 
   base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};

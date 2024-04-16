@@ -4,17 +4,14 @@
 
 #include "ash/wm/splitview/split_view_divider_view.h"
 
-#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
-#include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "base/functional/callback_helpers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,13 +22,24 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
 namespace {
+
+// The divider handler's default / enlarged short side length.
+constexpr int kDividerHandlerShortSideLength = 2;
+constexpr int kDividerHandlerEnlargedShortSideLength = 4;
+
+// The divider handler's default / enlarged long side length.
+constexpr int kDividerHandlerLongSideLength = 16;
+constexpr int kDividerHandlerEnlargedLongSideLength = 48;
+
+// The divider handler's default / enlarged corner radius.
+constexpr int kDividerHandlerCornerRadius = 1;
+constexpr int kDividerHandlerEnlargedCornerRadius = 2;
 
 // Distance between the bottom / right edge of the feedback button and the
 // bottom / right of the work area.
@@ -46,9 +54,8 @@ constexpr int kFeedbackButtonIconSize = 20;
 }  // namespace
 
 SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
-    : divider_handler_view_(
-          AddChildView(std::make_unique<SplitViewDividerHandlerView>())),
-      divider_(divider) {
+    : divider_(divider),
+      handler_view_(AddChildView(std::make_unique<views::View>())) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -56,7 +63,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
 
   SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSecondary));
-  RefreshFeedbackButton(false);
+  RefreshFeedbackButton(/*visible=*/false);
 }
 
 SplitViewDividerView::~SplitViewDividerView() = default;
@@ -65,37 +72,8 @@ void SplitViewDividerView::OnDividerClosing() {
   divider_ = nullptr;
 }
 
-void SplitViewDividerView::DoSpawningAnimation(int spawn_position) {
-  const gfx::Rect bounds = GetBoundsInScreen();
-  int divider_signed_offset;
-
-  // To animate the divider scaling up from nothing, animate its bounds rather
-  // than its transform, mostly because a transform that scales by zero would
-  // be singular. For that bounds animation, express `spawn_position` in local
-  // coordinates by subtracting a coordinate of the origin. Compute
-  // `divider_signed_offset` as described in the comment for
-  // `SplitViewDividerHandlerView::DoSpawningAnimation`.
-  if (IsCurrentScreenOrientationLandscape()) {
-    SetBounds(spawn_position - bounds.x(), 0, 0, bounds.height());
-    divider_signed_offset = spawn_position - bounds.CenterPoint().x();
-  } else {
-    SetBounds(0, spawn_position - bounds.y(), bounds.width(), 0);
-    divider_signed_offset = spawn_position - bounds.CenterPoint().y();
-  }
-
-  ui::LayerAnimator* divider_animator = layer()->GetAnimator();
-  ui::ScopedLayerAnimationSettings settings(divider_animator);
-  settings.SetTransitionDuration(kSplitviewDividerSpawnDuration);
-  settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
-  settings.SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
-  divider_animator->SchedulePauseForProperties(
-      kSplitviewDividerSpawnDelay, ui::LayerAnimationElement::BOUNDS);
-  SetBounds(0, 0, bounds.width(), bounds.height());
-  divider_handler_view_->DoSpawningAnimation(divider_signed_offset);
-}
-
-void SplitViewDividerView::SetDividerBarVisible(bool visible) {
-  divider_handler_view_->SetVisible(visible);
+void SplitViewDividerView::SetHandlerBarVisible(bool visible) {
+  handler_view_->SetVisible(visible);
 }
 
 void SplitViewDividerView::Layout(PassKey) {
@@ -109,17 +87,19 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
+  RefreshDividerHandler(/*hover=*/false);
   RefreshFeedbackButtonBounds();
-  divider_handler_view_->Refresh(divider_->is_resizing_with_divider());
 }
 
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
+  divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
+
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
 
+  // Show `feedback_button_` on mouse entered.
   if (!feedback_button_ ||
       !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
-    // Show `feedback_button_` on mouse entered.
     RefreshFeedbackButton(/*visible=*/true);
   }
 }
@@ -127,6 +107,14 @@ void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
 void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
+
+  if (handler_view_ &&
+      !handler_view_->GetBoundsInScreen().Contains(screen_location) &&
+      (!feedback_button_ ||
+       !feedback_button_->GetBoundsInScreen().Contains(screen_location))) {
+    divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+  }
+
   // Hide `feedback_button_` on mouse exited.
   if (feedback_button_ &&
       !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
@@ -143,7 +131,9 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
 
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
   CHECK(divider_);
+  divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
   RefreshFeedbackButton(/*visible=*/false);
+
   if (!mouse_move_started_) {
     // If this is the first mouse drag event, start the resize and reset
     // `mouse_move_started_`.
@@ -178,6 +168,7 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
     // synthetic touch event.
     return;
   }
+
   gfx::Point location(event->location());
   views::View::ConvertPointToScreen(this, &location);
   switch (event->type()) {
@@ -187,15 +178,29 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:
+      divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
+      RefreshFeedbackButton(/*visible=*/true);
+      break;
+    case ui::ET_GESTURE_TAP_CANCEL:
+      divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+      RefreshFeedbackButton(/*visible=*/false);
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       StartResizing(location);
+      RefreshFeedbackButton(/*visible=*/true);
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       divider_->ResizeWithDivider(location);
+      RefreshFeedbackButton(/*visible=*/true);
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+      divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+      RefreshFeedbackButton(/*visible=*/false);
       break;
     case ui::ET_GESTURE_END:
       EndResizing(location, /*swap_windows=*/false);
+      divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
+      RefreshFeedbackButton(/*visible=*/true);
       break;
 
     default:
@@ -221,49 +226,36 @@ void SplitViewDividerView::SwapWindows() {
   divider_->SwapWindows();
 }
 
-void SplitViewDividerView::OnResizeStatusChanged() {
-  // If split view has ended, the divider widget will be closing. In this case
-  // no need to update the divider layout and do the animation.
-  if (!divider_ || !divider_->divider_widget()) {
-    return;
-  }
-
-  // If `divider_view_`'s bounds are animating, it is for the divider spawning
-  // animation. Stop that before animating `divider_view_`'s transform.
-  ui::LayerAnimator* divider_animator = layer()->GetAnimator();
-  divider_animator->StopAnimatingProperty(ui::LayerAnimationElement::BOUNDS);
-
-  // Do the divider enlarge/shrink animation when starting/ending dragging.
-  const bool is_resizing = divider_->is_resizing_with_divider();
-  SetBoundsRect(GetLocalBounds());
-  const gfx::Rect old_bounds =
-      divider_->GetDividerBoundsInScreen(/*is_dragging=*/false);
-  const gfx::Rect new_bounds = divider_->GetDividerBoundsInScreen(is_resizing);
-  gfx::Transform transform;
-  transform.Translate(new_bounds.x() - old_bounds.x(),
-                      new_bounds.y() - old_bounds.y());
-  transform.Scale(
-      static_cast<float>(new_bounds.width()) / old_bounds.width(),
-      static_cast<float>(new_bounds.height()) / old_bounds.height());
-  ui::ScopedLayerAnimationSettings settings(divider_animator);
-  settings.SetTransitionDuration(
-      kSplitviewDividerSelectionStatusChangeDuration);
-  settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  SetTransform(transform);
-
-  divider_handler_view_->Refresh(is_resizing);
-}
-
 void SplitViewDividerView::StartResizing(gfx::Point location) {
   CHECK(divider_);
-  // `StartResizeWithDivider()` may cause this view to be destroyed.
-  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   divider_->StartResizeWithDivider(location);
-  if (weak_ptr) {
-    OnResizeStatusChanged();
+}
+
+void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
+  CHECK(divider_);
+
+  const gfx::Point divider_center = bounds().CenterPoint();
+  const int handler_short_side = should_enlarge
+                                     ? kDividerHandlerEnlargedShortSideLength
+                                     : kDividerHandlerShortSideLength;
+  const int handler_long_side = should_enlarge
+                                    ? kDividerHandlerEnlargedLongSideLength
+                                    : kDividerHandlerLongSideLength;
+  if (IsLayoutHorizontal(divider_->GetRootWindow())) {
+    handler_view_->SetBounds(divider_center.x() - handler_short_side / 2,
+                             divider_center.y() - handler_long_side / 2,
+                             handler_short_side, handler_long_side);
+  } else {
+    handler_view_->SetBounds(divider_center.x() - handler_long_side / 2,
+                             divider_center.y() - handler_short_side / 2,
+                             handler_long_side, handler_short_side);
   }
+
+  handler_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysOnSecondary,
+      should_enlarge ? kDividerHandlerEnlargedCornerRadius
+                     : kDividerHandlerCornerRadius));
+  handler_view_->SetVisible(true);
 }
 
 void SplitViewDividerView::RefreshFeedbackButton(bool visible) {
@@ -322,7 +314,7 @@ void SplitViewDividerView::EndResizing(gfx::Point location, bool swap_windows) {
   if (!weak_ptr) {
     return;
   }
-  OnResizeStatusChanged();
+
   if (swap_windows) {
     SwapWindows();
   }
