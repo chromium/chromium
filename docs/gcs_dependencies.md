@@ -42,22 +42,30 @@ deps = {
   # ...
 
   # This is the installation directory.
-  'src/buildtools/linux64': {
-    'bucket': 'chromium-clang-format',
-    # In this example, we're only putting one GCS object in this location,
-    # but multiple objects per entry is supported.
-    'objects': [
-      'object_name': 'clang-format-b42097ca924d1f1736a5a7806068fed9d7345eb4',
-      'sha256sum': 'b42097ca924d1f1736a5a7806068fed9d7345eb4',
-      'size_bytes': 1967524,
-      'generation': 1542380408102454,
-    # `output_file` is the name of the file that the downloade object should be
-    # saved as. It is optional and only relevant for objects that are NOT tar
-    # archives. Tar archives get extracted and saved under the same
-    # file/directory names they were archived as.
-    # 'output_file': <name of the downloaded object.>
-    ],
-  }
+  'src/third_party/blink/renderer/core/css/perftest_data': {
+      'bucket': 'chromium-style-perftest',
+      'objects': [
+        {
+          'object_name': '031d5599c8a21118754e30dbea141be66104f556',
+          'sha256sum': '031d5599c8a21118754e30dbea141be66104f556',
+          'size_bytes': 3203922,
+          'generation': 1664794206824773,
+          # `output_file` is the name of the file that the downloade object should be
+          # saved as. It is optional and only relevant for objects that are NOT tar
+          # archives. Tar archives get extracted and saved under the same
+          # file/directory names they were archived as.
+          'output_file': 'sports.json',
+        },
+          {
+          'object_name': '8aac3db2a8c9e44babec81e539a3d60aeab4985c',
+          'sha256sum': '8aac3db2a8c9e44babec81e539a3d60aeab4985c',
+          'size_bytes': 5902660,
+          'generation': 1664794209886788,
+          'output_file': 'video.json',
+        },
+      ],
+      'dep_type' = 'gcs',
+  },
 }
 ```
 
@@ -80,5 +88,7 @@ They can also be found in pantheon when viewing the object's "Object details".
 #### `sha256sum`
 
 `sha256sum` should be the SHA256 content hash of the GCS object (unextracted).
-There is no helper script separate from
-`upload_to_google_storage_first_class.py` to compute that.
+`upload_to_google_storage_first_class.py` will compute this for you, but if you
+are not using that helper script you will have to compute it on your own. You
+can test that the hash is correct by running `gclient sync` on your WIP change
+that adds the new GCS entry.
