@@ -135,8 +135,7 @@ void InputStreamImpl::ReceiveMore(MojoResult result,
   }
 
   if (result == MOJO_RESULT_OK) {
-    uint32_t num_bytes = static_cast<uint32_t>(pending_read_buffer_->size() -
-                                               pending_read_buffer_pos_);
+    size_t num_bytes = pending_read_buffer_->size() - pending_read_buffer_pos_;
     result = receive_stream_->ReadData(
         pending_read_buffer_->data() + pending_read_buffer_pos_, &num_bytes,
         MOJO_READ_DATA_FLAG_NONE);

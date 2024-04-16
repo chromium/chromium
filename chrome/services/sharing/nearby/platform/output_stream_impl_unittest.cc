@@ -33,16 +33,17 @@ void ReadDataBlocking(const std::string& expected_message,
                       mojo::ScopedDataPipeConsumerHandle* send_stream) {
   mojo::ScopedDataPipeConsumerHandle& stream = *send_stream;
   std::vector<char> message(expected_message.size());
-  uint32_t message_pos = 0;
+  size_t message_pos = 0;
   while (message_pos < message.size()) {
-    uint32_t read_size = message.size() - message_pos;
+    size_t read_size = message.size() - message_pos;
     MojoResult result = stream->ReadData(message.data() + message_pos,
                                          &read_size, MOJO_READ_DATA_FLAG_NONE);
     // |result| might be MOJO_RESULT_SHOULD_WAIT in which
     // case we need to retry until the writer has filled
     // the mojo pipe again.
-    if (result == MOJO_RESULT_OK)
+    if (result == MOJO_RESULT_OK) {
       message_pos += read_size;
+    }
   }
   EXPECT_EQ(message.size(), message_pos);
   EXPECT_EQ(expected_message, std::string(message.data(), message.size()));
@@ -103,8 +104,8 @@ TEST_F(OutputStreamImplTest, Write) {
   ByteArray byte_array(message);
   EXPECT_EQ(Exception::kSuccess, output_stream_->Write(byte_array).value);
 
-  const uint32_t max_buffer_size = 1024;
-  uint32_t buffer_size = max_buffer_size;
+  const size_t max_buffer_size = 1024;
+  size_t buffer_size = max_buffer_size;
   std::vector<char> buffer(max_buffer_size);
   EXPECT_EQ(MOJO_RESULT_OK, send_stream_->ReadData(buffer.data(), &buffer_size,
                                                    MOJO_READ_DATA_FLAG_NONE));

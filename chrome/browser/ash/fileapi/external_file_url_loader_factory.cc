@@ -92,7 +92,7 @@ class FileSystemReaderDataPipeProducer {
       if (!producer_handle_.is_valid())
         CompleteWithResult(net::ERR_FAILED);
       void* pipe_buffer;
-      uint32_t buffer_size = kDefaultPipeSize;
+      size_t buffer_size = kDefaultPipeSize;
       MojoResult result = producer_handle_->BeginWriteData(
           &pipe_buffer, &buffer_size, MOJO_WRITE_DATA_FLAG_NONE);
       // If we can't synchronously get the buffer to write to, stop for now and

@@ -243,7 +243,7 @@ class SlowDownloadInterceptor {
         mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
 
-    uint32_t write_size = data.size();
+    size_t write_size = data.size();
     MojoResult result = producer_handle->WriteData(data.c_str(), &write_size,
                                                    MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(MOJO_RESULT_OK, result);

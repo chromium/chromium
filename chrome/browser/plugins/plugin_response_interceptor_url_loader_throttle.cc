@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
@@ -180,7 +181,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  uint32_t len = payload.size();
+  size_t len = payload.size();
   CHECK_EQ(mojo::CreateDataPipe(len, producer_handle, consumer_handle),
            MOJO_RESULT_OK);
 
@@ -189,7 +190,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 
   network::URLLoaderCompletionStatus status(net::OK);
-  status.decoded_body_length = len;
+  status.decoded_body_length = base::checked_cast<int64_t>(len);
   new_client->OnComplete(status);
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;

@@ -182,7 +182,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
                                std::nullopt);
 
-    uint32_t write_size = data->size();
+    size_t write_size = data->size();
     MojoResult result = producer_handle->WriteData(data->front(), &write_size,
                                                    MOJO_WRITE_DATA_FLAG_NONE);
     OnFileWritten(result);

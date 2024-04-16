@@ -54,7 +54,7 @@ std::string ReadAndFulfillResponseBody(
   EXPECT_EQ(net::OK, error_future.Get());
 
   std::vector<char> buffer(response_length);
-  uint32_t bytes_read = buffer.size();
+  size_t bytes_read = buffer.size();
   MojoResult read_result =
       consumer->ReadData(buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
   EXPECT_EQ(MOJO_RESULT_OK, read_result);

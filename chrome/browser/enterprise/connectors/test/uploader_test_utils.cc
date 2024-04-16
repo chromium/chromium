@@ -35,7 +35,7 @@ std::string GetBodyFromFileOrPageRequest(
   // Write data from `data_pipe_consumer` to `buffer`, and ultimately to `body`.
   while (true) {
     char buffer[1024];
-    uint32_t read_size = sizeof(buffer);
+    size_t read_size = sizeof(buffer);
     MojoResult result = data_pipe_consumer->ReadData(buffer, &read_size,
                                                      MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {

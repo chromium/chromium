@@ -133,7 +133,7 @@ scoped_refptr<net::HttpResponseHeaders> GetHeadersForResponseCode(int code) {
 
 void WriteMojoMessage(const mojo::ScopedDataPipeProducerHandle& handle,
                       const char* message) {
-  uint32_t num_bytes = strlen(message);
+  size_t num_bytes = strlen(message);
   ASSERT_EQ(MOJO_RESULT_OK,
             handle->WriteData(message, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
 }

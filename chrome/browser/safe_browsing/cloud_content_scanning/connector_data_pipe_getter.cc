@@ -9,6 +9,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -316,8 +317,8 @@ bool ConnectorDataPipeGetter::Write(const char* data,
                                     int64_t offset) {
   while (true) {
     int64_t remaining_bytes = full_size - offset;
-    uint32_t write_size =
-        static_cast<uint32_t>(std::min(kMaxSize, remaining_bytes));
+    size_t write_size =
+        base::checked_cast<size_t>(std::min(kMaxSize, remaining_bytes));
     if (write_size == 0) {
       // The data is fully read, so allow the next Write.
       return true;

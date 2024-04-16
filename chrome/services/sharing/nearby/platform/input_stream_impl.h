@@ -66,7 +66,7 @@ class InputStreamImpl : public InputStream {
   mojo::SimpleWatcher receive_stream_watcher_;
 
   std::unique_ptr<ByteArray> pending_read_buffer_;
-  uint32_t pending_read_buffer_pos_ = 0;
+  size_t pending_read_buffer_pos_ = 0;
   ExceptionOr<ByteArray> exception_or_received_byte_array_;
   base::WaitableEvent read_waitable_event_;
 };

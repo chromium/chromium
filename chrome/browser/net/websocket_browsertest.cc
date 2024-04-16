@@ -580,7 +580,7 @@ class InvalidUtf8HandshakeClient
 
     // Invalid UTF-8.
     static const uint32_t message[] = {0xff};
-    uint32_t size = static_cast<uint32_t>(sizeof(message));
+    size_t size = sizeof(message);
 
     websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT, size);
 

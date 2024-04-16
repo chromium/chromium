@@ -115,8 +115,8 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
-  int bytes_of_raw_data_to_transfer_ = 0;
-  int write_position_ = 0;
+  size_t bytes_of_raw_data_to_transfer_ = 0;
+  size_t write_position_ = 0;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
   OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter_;

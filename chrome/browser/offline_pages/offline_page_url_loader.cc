@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -158,7 +159,7 @@ void OfflinePageURLLoader::NotifyReadRawDataComplete(int bytes_read) {
     return;
   }
 
-  bytes_of_raw_data_to_transfer_ = bytes_read;
+  bytes_of_raw_data_to_transfer_ = base::checked_cast<size_t>(bytes_read);
   write_position_ = 0;
 
   TransferRawData();
@@ -167,8 +168,7 @@ void OfflinePageURLLoader::NotifyReadRawDataComplete(int bytes_read) {
 void OfflinePageURLLoader::TransferRawData() {
   while (true) {
     DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
-    uint32_t write_size =
-        static_cast<uint32_t>(bytes_of_raw_data_to_transfer_ - write_position_);
+    size_t write_size = bytes_of_raw_data_to_transfer_ - write_position_;
     // If all the read data have been transferred, read more.
     if (write_size == 0) {
       ReadRawData();

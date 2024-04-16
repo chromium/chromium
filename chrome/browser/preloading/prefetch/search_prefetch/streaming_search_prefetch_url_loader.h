@@ -320,7 +320,7 @@ class StreamingSearchPrefetchURLLoader
   // if there is no more valid data. Returns an empty std::string_view if
   // writing_position reaches the end of the current response body but `this` is
   // waiting for the network to produce more data.
-  std::string_view GetMoreDataFromCache(int writing_position) const;
+  std::string_view GetMoreDataFromCache(size_t writing_position) const;
 
   // Push data into |producer_handle_|.
   void PushData();
@@ -387,9 +387,9 @@ class StreamingSearchPrefetchURLLoader
   std::optional<network::URLLoaderCompletionStatus> status_;
 
   // Total amount of bytes to transfer.
-  int bytes_of_raw_data_to_transfer_ = 0;
+  size_t bytes_of_raw_data_to_transfer_ = 0;
   // Bytes sent to |producer_handle_| already.
-  int write_position_ = 0;
+  size_t write_position_ = 0;
   // The request body.
   std::string body_content_;
   int estimated_length_ = 0;

@@ -68,7 +68,7 @@ class BidirectionalStreamTest : public ::testing::Test {
 
 TEST_F(BidirectionalStreamTest, Read) {
   std::string message = "ReceivedMessage";
-  uint32_t message_size = message.size();
+  size_t message_size = message.size();
   EXPECT_EQ(MOJO_RESULT_OK,
             receive_stream_->WriteData(message.data(), &message_size,
                                        MOJO_WRITE_DATA_FLAG_NONE));
@@ -91,8 +91,8 @@ TEST_F(BidirectionalStreamTest, Write) {
   EXPECT_EQ(Exception::kSuccess, bidirectional_stream_->GetOutputStream()
                                      ->Write(ByteArray{message})
                                      .value);
-  const uint32_t max_buffer_size = 1024;
-  uint32_t buffer_size = max_buffer_size;
+  const size_t max_buffer_size = 1024;
+  size_t buffer_size = max_buffer_size;
   std::vector<char> buffer(max_buffer_size);
   EXPECT_EQ(MOJO_RESULT_OK, send_stream_->ReadData(buffer.data(), &buffer_size,
                                                    MOJO_READ_DATA_FLAG_NONE));

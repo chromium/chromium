@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webshare/store_file_task.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -83,7 +84,7 @@ void StoreFileTask::OnDataPipeReadable(MojoResult result) {
   }
 
   while (true) {
-    uint32_t buffer_num_bytes;
+    size_t buffer_num_bytes;
     const void* buffer;
     MojoResult pipe_result = consumer_handle_->BeginReadData(
         &buffer, &buffer_num_bytes, MOJO_READ_DATA_FLAG_NONE);
@@ -103,10 +104,11 @@ void StoreFileTask::OnDataPipeReadable(MojoResult result) {
     }
 
     // Defend against compromised renderer process sending too much data.
+    int buffer_num_bytes_int = base::saturated_cast<int>(buffer_num_bytes);
     if (buffer_num_bytes > total_bytes_ - bytes_received_ ||
         output_file_.WriteAtCurrentPos(static_cast<const char*>(buffer),
-                                       buffer_num_bytes) !=
-            static_cast<int>(buffer_num_bytes)) {
+                                       buffer_num_bytes_int) !=
+            buffer_num_bytes_int) {
       std::move(callback_).Run(blink::mojom::ShareError::INTERNAL_ERROR);
       return;
     }

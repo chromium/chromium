@@ -64,7 +64,7 @@ class ConnectorDataPipeGetterTest : public testing::Test {
     size_t read_chunks = 0;
     while (true) {
       char buffer[1024];
-      uint32_t read_size = sizeof(buffer);
+      size_t read_size = sizeof(buffer);
       MojoResult result = data_pipe_consumer_->ReadData(
           buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {

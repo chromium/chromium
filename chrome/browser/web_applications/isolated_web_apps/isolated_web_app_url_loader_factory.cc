@@ -158,7 +158,7 @@ void CompleteWithGeneratedResponse(
                                    /*cached_metadata=*/std::nullopt);
 
   if (body.has_value()) {
-    uint32_t write_size = body->size();
+    size_t write_size = body->size();
     MojoResult write_result = producer_handle->WriteData(
         body->c_str(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
     if (write_result != MOJO_RESULT_OK || write_size != body->size()) {
@@ -382,10 +382,9 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
-    options.capacity_num_bytes =
-        std::min(base::strict_cast<uint64_t>(
-                     network::features::GetDataPipeDefaultAllocationSize()),
-                 response->head()->payload_length);
+    options.capacity_num_bytes = std::min(
+        uint64_t{network::features::GetDataPipeDefaultAllocationSize()},
+        response->head()->payload_length);
 
     auto result =
         mojo::CreateDataPipe(&options, producer_handle, consumer_handle);

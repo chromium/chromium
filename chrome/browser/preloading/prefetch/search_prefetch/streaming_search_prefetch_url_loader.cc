@@ -161,7 +161,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
       }
       break;
     }
-    uint32_t write_size = response_data.size();
+    size_t write_size = response_data.size();
     MojoResult result = producer_handle_->WriteData(
         response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
 
@@ -702,7 +702,7 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
 }
 
 std::string_view StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
-    int writing_position) const {
+    size_t writing_position) const {
   DCHECK_GE(bytes_of_raw_data_to_transfer_, writing_position);
   if (drain_complete_ && writing_position == bytes_of_raw_data_to_transfer_) {
     return std::string_view();
@@ -730,7 +730,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
       // No data can be fed into the producer.
       return;
     }
-    uint32_t write_size = response_data.size();
+    size_t write_size = response_data.size();
     MojoResult result = producer_handle_->WriteData(
         response_data.data(), &write_size, MOJO_WRITE_DATA_FLAG_NONE);
 

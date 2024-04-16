@@ -29,16 +29,17 @@ namespace {
 void WriteDataBlocking(const std::string& message,
                        mojo::ScopedDataPipeProducerHandle* receive_stream) {
   mojo::ScopedDataPipeProducerHandle& stream = *receive_stream;
-  uint32_t message_pos = 0;
+  size_t message_pos = 0;
   while (message_pos < message.size()) {
-    uint32_t written_size = message.size() - message_pos;
+    size_t written_size = message.size() - message_pos;
     MojoResult result = stream->WriteData(
         message.data() + message_pos, &written_size, MOJO_WRITE_DATA_FLAG_NONE);
     // |result| might be MOJO_RESULT_SHOULD_WAIT in which
     // case we need to retry until the reader has emptied
     // the mojo pipe enough.
-    if (result == MOJO_RESULT_OK)
+    if (result == MOJO_RESULT_OK) {
       message_pos += written_size;
+    }
   }
   EXPECT_EQ(message.size(), message_pos);
 }
@@ -96,7 +97,7 @@ class InputStreamImplTest : public ::testing::Test {
 
 TEST_F(InputStreamImplTest, Read) {
   std::string message = "ReceivedMessage";
-  uint32_t message_size = message.size();
+  size_t message_size = message.size();
   EXPECT_EQ(MOJO_RESULT_OK,
             receive_stream_->WriteData(message.data(), &message_size,
                                        MOJO_WRITE_DATA_FLAG_NONE));
@@ -204,7 +205,7 @@ TEST_F(InputStreamImplTest, CloseCalledFromMultipleThreads) {
 TEST_F(InputStreamImplTest, ResetHandle) {
   // Setup a message to receive that would work if the connection was not reset.
   std::string message = "ReceivedMessage";
-  uint32_t message_size = message.size();
+  size_t message_size = message.size();
   EXPECT_EQ(MOJO_RESULT_OK,
             receive_stream_->WriteData(message.data(), &message_size,
                                        MOJO_WRITE_DATA_FLAG_NONE));

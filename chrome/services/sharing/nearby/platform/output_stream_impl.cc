@@ -139,8 +139,8 @@ void OutputStreamImpl::SendMore(MojoResult result,
   }
 
   if (result == MOJO_RESULT_OK) {
-    uint32_t num_bytes = static_cast<uint32_t>(pending_write_buffer_->size() -
-                                               pending_write_buffer_pos_);
+    size_t num_bytes =
+        pending_write_buffer_->size() - pending_write_buffer_pos_;
     result = send_stream_->WriteData(
         pending_write_buffer_->data() + pending_write_buffer_pos_, &num_bytes,
         MOJO_WRITE_DATA_FLAG_NONE);
