@@ -1171,7 +1171,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           startIndex, endIndex);
       if (content) {
         // Add all of the text from the current nodes into a single utterance.
-        utteranceText += ' ' + content;
+        utteranceText += content;
       }
     }
     return utteranceText;
