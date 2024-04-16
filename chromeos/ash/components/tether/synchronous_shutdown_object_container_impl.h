@@ -41,7 +41,6 @@ class DeviceIdTetherNetworkGuidMap;
 class GmsCoreNotificationsStateTrackerImpl;
 class HostScanner;
 class HostScanScheduler;
-class HostScanDevicePrioritizerImpl;
 class HotspotUsageDurationTracker;
 class KeepAliveScheduler;
 class HostConnectionMetricsLogger;
@@ -130,7 +129,6 @@ class SynchronousShutdownObjectContainerImpl
       device_id_tether_network_guid_map_;
   std::unique_ptr<TetherSessionCompletionLogger>
       tether_session_completion_logger_;
-  std::unique_ptr<HostScanDevicePrioritizerImpl> host_scan_device_prioritizer_;
   std::unique_ptr<WifiHotspotConnector> wifi_hotspot_connector_;
   std::unique_ptr<ActiveHost> active_host_;
   std::unique_ptr<ActiveHostNetworkStateUpdater>

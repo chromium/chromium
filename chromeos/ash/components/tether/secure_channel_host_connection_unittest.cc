@@ -64,7 +64,6 @@ class SecureChannelHostConnectionTest : public testing::Test {
         std::make_unique<FakeTetherHostFetcher>(fake_remote_device_);
     fake_host_payload_listener_ =
         std::make_unique<FakeHostConnectionPayloadListener>();
-
     host_connection_factory_ =
         std::make_unique<SecureChannelHostConnection::Factory>(
             fake_device_sync_client_.get(), fake_secure_channel_client_.get(),

@@ -14,7 +14,6 @@
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/connection_preserver.h"
-#include "chromeos/ash/components/tether/host_scan_device_prioritizer.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"

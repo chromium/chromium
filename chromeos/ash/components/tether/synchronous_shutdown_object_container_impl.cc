@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/tether/connection_preserver_impl.h"
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
-#include "chromeos/ash/components/tether/host_scan_device_prioritizer_impl.h"
 #include "chromeos/ash/components/tether/host_scan_scheduler_impl.h"
 #include "chromeos/ash/components/tether/host_scanner_impl.h"
 #include "chromeos/ash/components/tether/hotspot_usage_duration_tracker.h"
@@ -98,9 +97,6 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           std::make_unique<DeviceIdTetherNetworkGuidMap>()),
       tether_session_completion_logger_(
           std::make_unique<TetherSessionCompletionLogger>()),
-      host_scan_device_prioritizer_(
-          std::make_unique<HostScanDevicePrioritizerImpl>(
-              tether_host_response_recorder_.get())),
       wifi_hotspot_connector_(
           std::make_unique<WifiHotspotConnector>(network_handler,
                                                  network_connect)),

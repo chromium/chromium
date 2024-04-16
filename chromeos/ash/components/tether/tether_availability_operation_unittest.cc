@@ -16,7 +16,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/fake_connection_preserver.h"
-#include "chromeos/ash/components/tether/host_scan_device_prioritizer.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/mock_tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
