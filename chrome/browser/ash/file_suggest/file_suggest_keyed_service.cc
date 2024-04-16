@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/utility/forest_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_suggest/drive_file_suggestion_provider.h"
@@ -34,7 +35,7 @@ FileSuggestKeyedService::FileSuggestKeyedService(
   proto_.Init();
 
   if (features::IsLauncherContinueSectionWithRecentsEnabled() ||
-      features::IsForestFeatureEnabled()) {
+      IsForestFeatureEnabled()) {
     drive_file_suggestion_provider_ =
         std::make_unique<DriveRecentFileSuggestionProvider>(
             profile, base::BindRepeating(

@@ -34,6 +34,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
@@ -489,8 +490,7 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
   const bool in_overview_mode = ShelfConfig::Get()->in_overview_mode();
-  const bool in_oak_session =
-      features::IsForestFeatureEnabled() && in_overview_mode;
+  const bool in_oak_session = IsForestFeatureEnabled() && in_overview_mode;
   const bool split_view = ShelfConfig::Get()->in_split_view_with_overview();
   bool show_opaque_background =
       (!in_oak_session) && (!tablet_mode || in_app || split_view);

@@ -39,6 +39,9 @@ ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
           ->wallpaper_widget_controller();
   auto* wallpaper_underlay_layer =
       wallpaper_widget_controller->wallpaper_underlay_layer();
+  // TODO(http://b/333952534): Remove this check once `wallpaper_underlay_layer`
+  // is always created.
+  CHECK(wallpaper_underlay_layer);
   wallpaper_underlay_layer->SetVisible(true);
 
   auto* wallpaper_view_layer =
