@@ -13,16 +13,24 @@
 #include "clang/AST/TypeLoc.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/SourceManager.h"
+#include "clang/Lex/HeaderSearchOptions.h"
 
 // Utility method for subclasses to determine the namespace of the
 // specified record, if any. Unnamed namespaces will be identified as
 // "<anonymous namespace>".
 std::string GetNamespace(const clang::Decl* record);
 
+enum class FilenamesFollowPresumed {
+  kYes,
+  kNo,
+};
+
 // Attempts to determine the filename for the given SourceLocation.
 // Returns an empty string if the filename could not be determined.
-std::string GetFilename(const clang::SourceManager& instance,
-                        clang::SourceLocation location);
+std::string GetFilename(
+    const clang::SourceManager& instance,
+    clang::SourceLocation location,
+    FilenamesFollowPresumed follow_presumed = FilenamesFollowPresumed::kYes);
 
 // Utility method to obtain a "representative" source location polymorphically.
 // We sometimes use a source location to determine a code owner has legitimate
@@ -92,8 +100,10 @@ enum LocationClassification {
 // Determines if a SourceLocation is considered part of first-party or
 // third-party code, or is generated code, which can be used to determine how or
 // which rules should be enforced.
-LocationClassification ClassifySourceLocation(const clang::SourceManager& sm,
-                                              clang::SourceLocation loc);
+LocationClassification ClassifySourceLocation(
+    const clang::HeaderSearchOptions& search,
+    const clang::SourceManager& sm,
+    clang::SourceLocation loc);
 
 }  // namespace chrome_checker
 

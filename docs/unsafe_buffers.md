@@ -6,24 +6,42 @@ bugs by always using containers.
 
 Most pointers are unowned references into an array (or vector)
 and the most appropriate replacement for the pointer is
-base::span.
+[`base::span`](../base/containers/span.h).
 
-When a file or directory is known to pass compilation with
-`-Wunsafe-buffer-usage`,it should be added to the
+Entire directories have been opted out of unsafe pointer usage
+warnings through the
 [`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
-file to enable compiler errors if unsafe pointer usage is added to
-the file later.
+file. As we convert unsafe pointers to safe constructs like
+`base::span`, `base::HeapArray` and `std::vector`, we will
+remove paths from that file to enable the warnings across the
+codebase.
+
+## Controlling warnings for a single file
+
+Warnings can be disabled for a single (C++ source or header) file by
+writing `#pragma allow_unsafe_buffers` anywhere in the file. This can
+be used to mark future work to drive down over time.
+
+Warnings can be enabled for a single (C++ source or header) file by
+writing `#pragma check_unsafe_buffers` anywhere in the file. It's recommended
+to place the pragma directly below the copyright and before any `#include`
+directives. This can be used to work through files in a directory
+incrementally. Though it's preferable to instead remove the whole directory
+from opt-out in the
+[`//build/config/unsafe_buffers_paths.txt`](../build/config/unsafe_buffers_paths.txt)
+file, and temporarily mark any files with `#pragma allow_unsafe_buffers`
+that need it.
 
 # Functions with array pointer parameters
 
 Functions that receive a pointer into an array may read
 or write out of bounds of the pointer if given a pointer that
 is incorrectly sized. Such functions should be marked with the
-UNSAFE_BUFFER_USAGE attribute macro.
+`UNSAFE_BUFFER_USAGE` attribute macro.
 
 The same is true for functions that accept an iterator instead
-of a range type. Some examples of each are memcpy() and
-std::copy().
+of a range type. Some examples of each are `memcpy()` and
+`std::copy()`.
 
 Calling such functions is unsafe and should generally be avoided.
 Instead, replace such functions with an API built on base::span
@@ -36,4 +54,5 @@ replace `memset()` with `std::ranges::fill()`.
 
 TODO: Write about `UNSAFE_BUFFERS()` for rare exceptions where
 the correctness of pointer bounds can be fully explained and
-encapsulated, such as within a data structure.
+encapsulated, such as within a data structure or when working
+with Operating System and C-like APIs.

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# The set of path prefixes that should be checked for unsafe buffer usage (see
+# The set of path prefixes that should be checked for unsafe pointer usage (see
 # -Wunsafe-buffer-usage in Clang).
 #
 # ***
@@ -11,13 +11,99 @@
 # as `base/`.
 # ***
 #
-# Files in this set are known to not use pointer arithmetic/subscripting, and
-# make use of constructs like base::span or containers like std::vector instead.
+# Lines that begin with `-` name path prefixes that will *not* be checked for
+# unsafe-buffer-usage. They are known to do unsafe things and should be
+# changed to use constructs like base::span or containers like base::HeapArray
+# and std::vector instead. See https://crbug.com/40285824
+#
+# Lines that begin with `+` name path prefixes that have no unsafe-buffer-usage
+# (or all such usage is annotated), and are protected against new unsafe pointer
+# behaviour by the compiler.
+#
+# By default, all files are checked for unsafe-buffer-usage unless they are
+# match a `-` path prefix line here. If a file matches both a `-` and `+` line,
+# the `+` line takes precedence and the file will be checked.
+#
+# To opt individual files out of checks, place `#pragma allow_unsafe_buffers`
+# anywhere in the (source or header) file. These pragmas represent the
+# technical debt and security risk present in the file through unsafe
+# pointer usage.
+#
+# ***
+# Recommended process for removing a `-dir/` line from this file:
+#
+# 1. Remove the `-dir/` line from this paths file.
+#    a. Possibly add some subdirectories if needed to reduce scope,
+#       like `-dir/sub_dir/`.
+# 2. Add `#pragma allow_unsafe_buffers` to every file in the directory that now
+#    has a compilation error, with a TODO to the tracking bug for the
+#    directory.
+# 3. Work through the files in the directory, converting pointers to spans, or
+#    to owning containers like HeapArray and vector. Remove the pragmas from
+#    the files when there is no unsafe pointer usage left in each one.
 #
 # See `docs/unsafe_buffers.md`.
 
-base/containers/buffer_iterator_nocompile.nc
-base/containers/span.h
-base/strings/cstring_view
-base/unsafe_buffers_unittest.cc
-base/unsafe_buffers_nocompile.nc
+-android_webview/
+-apps/
+-ash/
+
+-base/
++base/containers/buffer_iterator_nocompile.nc
++base/containers/span.h
++base/strings/cstring_view
++base/unsafe_buffers_unittest.cc
++base/unsafe_buffers_nocompile.nc
+
+-build/
+-build_overrides/
+-buildtools/
+-cc/
+-chrome/
+-chromecast/
+-chromeos/
+-clank/
+-codelabs/
+-components/
+-content/
+-courgette/
+-crypto/
+-data/
+-dbus/
+-device/
+-docs/
+-extensions/
+-fuchsia_web/
+-gin/
+-google_apis/
+-google_update/
+-gpu/
+-headless/
+-infra/
+-internal/
+-ios/
+-ios_internal/
+-ipc/
+-media/
+-mojo/
+-native_client/
+-native_client_sdk/
+-net/
+-pdf/
+-ppapi/
+-printing/
+-remoting/
+-rlz/
+-sandbox/
+-services/
+-signing_keys/
+-skia/
+-sql/
+-storage/
+-testing/
+-third_party/
+-tools/
+-ui/
+-url/
+-v8/
+-webkit/

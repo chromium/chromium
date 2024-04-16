@@ -2,24 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "Util.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/DiagnosticSema.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendAction.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
+#include "clang/Lex/Pragma.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/MemoryBuffer.h"
 
-#include "Util.h"
-
 namespace chrome_checker {
+
+// Stores `true` if the filename (key) should be checked for errors, and `false`
+// if it should not be. If the filename is not present, the choice is up to the
+// plugin to determine from the path prefixes control file.
+llvm::StringMap<bool> g_checked_files_cache;
 
 struct CheckFilePrefixes {
   // Owns the memory holding the strings.
   std::unique_ptr<llvm::MemoryBuffer> buffer;
   // Pointers into the `buffer`, in sorted order.
-  std::vector<llvm::StringRef> prefixes;
+  std::vector<llvm::StringRef> opt_out;
+  // Pointers into the `buffer`, in sorted order.
+  std::vector<llvm::StringRef> opt_in;
 };
 
 class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
@@ -31,7 +38,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       : engine_(engine),
         next_(next),
         instance_(instance),
-        check_file_prefixes_(std::move(check_file_prefixes)) {}
+        check_file_prefixes_(std::move(check_file_prefixes)),
+        diag_note_link_(engine_->getCustomDiagID(
+            clang::DiagnosticsEngine::Level::Note,
+            "See //docs/unsafe_buffers.md for help.")) {}
   ~UnsafeBuffersDiagnosticConsumer() override = default;
 
   void clear() override {
@@ -89,12 +99,19 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return;
     }
 
+    // Drop the note saying "pass -fsafe-buffer-usage-suggestions to receive
+    // code hardening suggestions" since that's not simple for Chrome devs to
+    // do anyway. We can provide a GN variable in the future and point to that
+    // if needed, or just turn it on always in this plugin, if desired.
+    if (diag_id == clang::diag::note_safe_buffer_usage_suggestions_disabled) {
+      return;
+    }
+
     if (!(diag_id == clang::diag::warn_unsafe_buffer_variable ||
           diag_id == clang::diag::warn_unsafe_buffer_operation ||
           diag_id == clang::diag::note_unsafe_buffer_operation ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_group ||
           diag_id == clang::diag::note_unsafe_buffer_variable_fixit_together ||
-          diag_id == clang::diag::note_safe_buffer_usage_suggestions_disabled ||
           diag_id == clang::diag::note_safe_buffer_debug_mode)) {
       return PassthroughDiagnostic(level, diag);
     }
@@ -129,6 +146,10 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       engine_->Clear();
       inside_handle_diagnostic_ = true;
       engine_->Report(stored);
+      if (elevated_level != clang::DiagnosticsEngine::Level::Note) {
+        // For each warning, we inject our own Note as well, pointing to docs.
+        engine_->Report(loc, diag_note_link_);
+      }
       inside_handle_diagnostic_ = false;
     }
   }
@@ -148,37 +169,37 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   bool FileHasSafeBuffersWarnings(const clang::SourceManager& sm,
                                   clang::SourceLocation loc) {
     // TODO(crbug.com/40284755): Expand this diagnostic to more code. It should
-    // include everything except kThirdParty and kSystem eventually.
-    LocationClassification loc_class = ClassifySourceLocation(sm, loc);
+    // include everything except kSystem eventually.
+    LocationClassification loc_class =
+        ClassifySourceLocation(instance_->getHeaderSearchOpts(), sm, loc);
     switch (loc_class) {
-      case LocationClassification::kThirdParty:
-        return false;
       case LocationClassification::kSystem:
         return false;
       case LocationClassification::kGenerated:
         return false;
+      case LocationClassification::kThirdParty:
+        break;
       case LocationClassification::kChromiumThirdParty:
-        return false;
-      case LocationClassification::kMacro:
         break;
       case LocationClassification::kFirstParty:
         break;
       case LocationClassification::kBlink:
         break;
+      case LocationClassification::kMacro:
+        // Try again where the macro is being called.
+        return FileHasSafeBuffersWarnings(sm, sm.getExpansionLoc(loc));
     }
 
-    // TODO(crbug.com/40284755): Currently we default to everything being
-    // known-bad except for a list of clean files. Eventually this should become
-    // default known-good with a list of bad files (which should become empty in
-    // time).
-    //
+    // We default to everything opting into checks (except categories that early
+    // out above) unless it is removed by the paths control file or by pragma.
+
     // TODO(danakj): It would be an optimization to find a way to avoid creating
     // a std::string here.
-    std::string filename = GetFilename(sm, loc);
+    std::string filename = GetFilename(sm, loc, FilenamesFollowPresumed::kNo);
 
     // Avoid searching `check_file_prefixes_` more than once for a file.
-    auto cache_it = checked_files_cache_.find(filename);
-    if (cache_it != checked_files_cache_.end()) {
+    auto cache_it = g_checked_files_cache.find(filename);
+    if (cache_it != g_checked_files_cache.end()) {
       return cache_it->second;
     }
 
@@ -192,21 +213,36 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     }
 
     // Look for prefix match (whether any of `check_file_prefixes_` is a prefix
-    // of the filename).
-    if (!check_file_prefixes_.prefixes.empty()) {
-      const auto begin = check_file_prefixes_.prefixes.begin();
-      const auto end = check_file_prefixes_.prefixes.end();
+    // of the filename). We first check for opt-ins, as these force checking for
+    // the file. If none are found, we look for opt-outs, which have lower
+    // precedence and remove checks from the file. If there's neither, the file
+    // is checked.
+    if (!check_file_prefixes_.opt_in.empty()) {
+      const auto begin = check_file_prefixes_.opt_in.begin();
+      const auto end = check_file_prefixes_.opt_in.end();
       auto it = std::upper_bound(begin, end, cmp_filename);
       if (it != begin) {
         --it;  // Now `it` will be either the exact or prefix match.
         if (*it == cmp_filename.take_front(it->size())) {
-          checked_files_cache_.insert({filename, true});
+          g_checked_files_cache.insert({filename, true});
           return true;
         }
       }
     }
-    checked_files_cache_.insert({filename, false});
-    return false;
+    if (!check_file_prefixes_.opt_out.empty()) {
+      const auto begin = check_file_prefixes_.opt_out.begin();
+      const auto end = check_file_prefixes_.opt_out.end();
+      auto it = std::upper_bound(begin, end, cmp_filename);
+      if (it != begin) {
+        --it;  // Now `it` will be either the exact or prefix match.
+        if (*it == cmp_filename.take_front(it->size())) {
+          g_checked_files_cache.insert({filename, false});
+          return false;
+        }
+      }
+    }
+    g_checked_files_cache.insert({filename, true});
+    return true;
   }
 
   // Used to prevent recursing into HandleDiagnostic() when we're emitting a
@@ -216,14 +252,7 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   clang::DiagnosticConsumer* next_;
   clang::CompilerInstance* instance_;
   CheckFilePrefixes check_file_prefixes_;
-  // Stores `true` if the filename (key) matches against the
-  // check_file_prefixes_, and `false` if it does not. Used as a shortcut to
-  // avoid looking through `check_file_prefixes_` for any file in this map.
-  //
-  // TODO(danakj): Another form of optimization here would be to replace this
-  // and the `check_file_prefixes_` vector with a string-prefix-matching data
-  // structure.
-  llvm::StringMap<bool> checked_files_cache_;
+  unsigned diag_note_link_;
 };
 
 class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
@@ -319,18 +348,28 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     // * Empty lines are ignored.
     // * Every other line is a path prefix from the source tree root using
     //   unix-style delimiters.
-    //   * For instance `a/b` will match the file at `//a/b/c.h` but will *not*
+    //   * Each line either removes a path from checks or adds a path to checks.
+    //   * If the line starts with `+` paths matching the line will be
+    //     checked. This takes precedence over the `-` operation.
+    //   * If the line starts with `-` paths matching the line will not be
+    //     checked.
+    //   * For instance `+a/b` will match the file at `//a/b/c.h` but will *not*
     //     match `//other/a/b/c.h`.
-    // * Exact file paths look like `a/b/c.h` and directory prefixes should end
-    //   with a `/` such as `a/b/`.
+    // * Exact file paths look like `+a/b/c.h` and directory prefixes should end
+    //   with a `/` such as `+a/b/`.
+    // * Files that do not match anything in the file will be checked.
     //
     // Example:
     // ```
     // # A file of path prefixes.
-    // # Matches anything under the directory //foo/bar.
-    // foo/bar/
-    // # Matches a specific file at //my/file.cc.
-    // my/file.cc
+    // # Matches anything under the directory //foo/bar, opting them into
+    // # checks.
+    // +foo/bar/
+    // # Avoids checks in the //my directory.
+    // -my/
+    // # Matches a specific file at //my/file.cc, overriding the `-my/` above
+    // # for this one file.
+    // +my/file.cc
 
     llvm::StringRef string = check_file_prefixes_.buffer->getBuffer();
     while (!string.empty()) {
@@ -338,19 +377,30 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
       string = rhs;
       bool keep_lhs = false;
       for (char c : lhs) {
-        if (c != ' ' && c != '#') {
-          keep_lhs = true;
+        if (c != ' ') {
+          keep_lhs = c != '#';
           break;
         }
       }
       if (keep_lhs) {
-        check_file_prefixes_.prefixes.push_back(lhs);
+        if (lhs[0u] == '+' && lhs.size() > 1u) {
+          check_file_prefixes_.opt_in.push_back(lhs.substr(1u));
+        } else if (lhs[0u] == '-' && lhs.size() > 1u) {
+          check_file_prefixes_.opt_out.push_back(lhs.substr(1u));
+        } else {
+          llvm::errs() << "[unsafe-buffers] Invalid line in paths file, must "
+                          "start with +/-: '"
+                       << lhs << "'\n";
+          return false;
+        }
       }
     }
 
     // TODO(danakj): Use std::ranges::sort when Clang is build with C++20.
-    std::sort(check_file_prefixes_.prefixes.begin(),
-              check_file_prefixes_.prefixes.end());
+    std::sort(check_file_prefixes_.opt_in.begin(),
+              check_file_prefixes_.opt_in.end());
+    std::sort(check_file_prefixes_.opt_out.begin(),
+              check_file_prefixes_.opt_out.end());
     return true;
   }
 
@@ -359,8 +409,52 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
   bool moved_prefixes_ = false;
 };
 
-static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X(
+class AllowUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
+ public:
+  static constexpr char kName[] = "allow_unsafe_buffers";
+
+  AllowUnsafeBuffersPragmaHandler() : clang::PragmaHandler(kName) {}
+
+  void HandlePragma(clang::Preprocessor& preprocessor,
+                    clang::PragmaIntroducer introducer,
+                    clang::Token& token) override {
+    // TODO(danakj): It would be an optimization to find a way to avoid creating
+    // a std::string here.
+    std::string filename =
+        GetFilename(preprocessor.getSourceManager(), introducer.Loc);
+    // The pragma opts the file out of checks.
+    g_checked_files_cache.insert({filename, false});
+  }
+};
+
+class CheckUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
+ public:
+  static constexpr char kName[] = "check_unsafe_buffers";
+
+  CheckUnsafeBuffersPragmaHandler() : clang::PragmaHandler(kName) {}
+
+  void HandlePragma(clang::Preprocessor& preprocessor,
+                    clang::PragmaIntroducer introducer,
+                    clang::Token& token) override {
+    // TODO(danakj): It would be an optimization to find a way to avoid creating
+    // a std::string here.
+    std::string filename =
+        GetFilename(preprocessor.getSourceManager(), introducer.Loc);
+    // The pragma opts the file into checks.
+    g_checked_files_cache.insert({filename, true});
+  }
+};
+
+static clang::FrontendPluginRegistry::Add<UnsafeBuffersASTAction> X1(
     "unsafe-buffers",
     "Enforces -Wunsafe-buffer-usage during incremental rollout");
+
+static clang::PragmaHandlerRegistry::Add<AllowUnsafeBuffersPragmaHandler> X2(
+    AllowUnsafeBuffersPragmaHandler::kName,
+    "Avoid reporting unsafe-buffer-usage warnings in the file");
+
+static clang::PragmaHandlerRegistry::Add<CheckUnsafeBuffersPragmaHandler> X3(
+    CheckUnsafeBuffersPragmaHandler::kName,
+    "Report unsafe-buffer-usage warnings in the file");
 
 }  // namespace chrome_checker

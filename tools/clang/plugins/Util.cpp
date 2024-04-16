@@ -58,17 +58,23 @@ std::string GetNamespace(const clang::Decl* record) {
 }
 
 std::string GetFilename(const clang::SourceManager& source_manager,
-                        clang::SourceLocation location) {
+                        clang::SourceLocation location,
+                        FilenamesFollowPresumed follow_presumed) {
   clang::SourceLocation spelling_location =
       source_manager.getSpellingLoc(location);
-  clang::PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);
-  if (ploc.isInvalid()) {
-    // If we're in an invalid location, we're looking at things that aren't
-    // actually stated in the source.
-    return "";
-  }
 
-  std::string name = ploc.getFilename();
+  std::string name;
+  if (follow_presumed == FilenamesFollowPresumed::kYes) {
+    clang::PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);
+    if (ploc.isInvalid()) {
+      // If we're in an invalid location, we're looking at things that aren't
+      // actually stated in the source.
+      return name;
+    }
+    name = ploc.getFilename();
+  } else {
+    name = source_manager.getFilename(spelling_location);
+  }
 
   // File paths can have separators which differ from ones at this platform.
   // Make them consistent.
@@ -78,8 +84,10 @@ std::string GetFilename(const clang::SourceManager& source_manager,
 
 namespace chrome_checker {
 
-LocationClassification ClassifySourceLocation(const clang::SourceManager& sm,
-                                              clang::SourceLocation loc) {
+LocationClassification ClassifySourceLocation(
+    const clang::HeaderSearchOptions& search,
+    const clang::SourceManager& sm,
+    clang::SourceLocation loc) {
   if (sm.isInSystemHeader(loc)) {
     return LocationClassification::kSystem;
   }
@@ -90,6 +98,16 @@ LocationClassification ClassifySourceLocation(const clang::SourceManager& sm,
     // code, where we avoid enforcing rules, instead of going through the full
     // lookup process.
     return LocationClassification::kThirdParty;
+  }
+
+  // Files in the sysroot do not automatically get categorized as system
+  // headers, so we do a path comparison. The sysroot can be set to "/" when it
+  // was not specified, which is just the whole filesystem, but every file is
+  // not a system header, so this is treated as equivalent to not having a
+  // sysroot.
+  if (!search.Sysroot.empty() && search.Sysroot != "/" &&
+      llvm::StringRef(filename).starts_with(search.Sysroot)) {
+    return LocationClassification::kSystem;
   }
 
   // We need to special case scratch space; which is where clang does its macro

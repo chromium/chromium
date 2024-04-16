@@ -23,4 +23,9 @@ inline void call_unsafe_stuff() {
   UNSAFE_BUFFERS(unsafe_fn());
 }
 
+// Unrelated pragmas
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+#pragma clang diagnostic pop
+
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_UNSAFE_BUFFERS_CLEAN_H_

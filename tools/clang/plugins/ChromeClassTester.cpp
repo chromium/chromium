@@ -67,7 +67,7 @@ void ChromeClassTester::CheckTag(TagDecl* tag) {
 ChromeClassTester::LocationType ChromeClassTester::ClassifyLocation(
     SourceLocation loc) {
   auto classification = chrome_checker::ClassifySourceLocation(
-      instance().getSourceManager(), loc);
+      instance().getHeaderSearchOpts(), instance().getSourceManager(), loc);
 
   // Convert to a less granular legacy classificatoin.
   switch (classification) {
