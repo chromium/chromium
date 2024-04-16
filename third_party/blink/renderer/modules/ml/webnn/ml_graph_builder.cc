@@ -1011,8 +1011,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
 
   auto convTranspose2d_attributes = ConvertToConvTranspose2dAttributes(options);
   if (!convTranspose2d_attributes.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      convTranspose2d_attributes.error());
+    exception_state.ThrowTypeError(convTranspose2d_attributes.error());
     return nullptr;
   }
 
@@ -1020,9 +1019,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
       ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
       std::move(convTranspose2d_attributes.value()));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
   // Create convTranspose2d operator and its output operand. Connect the
@@ -1034,8 +1031,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
       this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), convTranspose2d);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   convTranspose2d->Connect(std::move(inputs), {output.value()});
