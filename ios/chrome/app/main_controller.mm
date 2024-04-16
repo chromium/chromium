@@ -906,47 +906,57 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // _chromeMain.reset() is a blocking call that regularly causes
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
-  // TODO(crbug.com/325597817): Update this logic for multiple browser states.
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
-    // Expected number of time the `completionBlock` defined below needs to
+    // Expected number of time the `closure` defined below needs to
     // be called before it signal the semaphore. This corresponds to the
     // number of services that needs to be waited for.
-    uint32_t expected_count = 1;
+    uint32_t expectedCount = 0;
 
-    ChromeBrowserState* browserState = self.appState.mainBrowserState;
-    if (browserState->HasOffTheRecordChromeBrowserState()) {
-      expected_count += 1;
-    }
-
+    // MetricsService doesn't depend on a browser state.
     metrics::MetricsService* metrics =
         GetApplicationContext()->GetMetricsService();
     if (metrics) {
-      expected_count += 1;
+      expectedCount += 1;
     }
 
+    std::vector<ChromeBrowserState*> loadedBrowserStates =
+        GetApplicationContext()
+            ->GetChromeBrowserStateManager()
+            ->GetLoadedBrowserStates();
+    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+      expectedCount += 1;
+      if (browserState->HasOffTheRecordChromeBrowserState()) {
+        expectedCount += 1;
+      }
+    }
+
+    // `dispatch_semaphore_signal` is called only once when `closure` is called
+    // `expectedCount` times.
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     base::RepeatingClosure closure =
-        ExpectNCall(expected_count, base::BindRepeating(^{
+        ExpectNCall(expectedCount, base::BindRepeating(^{
                       dispatch_semaphore_signal(semaphore);
                     }));
 
-    SessionRestorationServiceFactory::GetForBrowserState(browserState)
-        ->InvokeClosureWhenBackgroundProcessingDone(closure);
-
-    if (browserState->HasOffTheRecordChromeBrowserState()) {
-      ChromeBrowserState* otrBrowserState =
-          browserState->GetOffTheRecordChromeBrowserState();
-      SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+    for (ChromeBrowserState* browserState : loadedBrowserStates) {
+      SessionRestorationServiceFactory::GetForBrowserState(browserState)
           ->InvokeClosureWhenBackgroundProcessingDone(closure);
+
+      if (browserState->HasOffTheRecordChromeBrowserState()) {
+        ChromeBrowserState* otrBrowserState =
+            browserState->GetOffTheRecordChromeBrowserState();
+        SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+            ->InvokeClosureWhenBackgroundProcessingDone(closure);
+      }
     }
 
     if (metrics) {
       metrics->Stop();
-      // MetricsService::Stop() depends on a committed local state, and does so
-      // asynchronously. To avoid losing metrics, this minimum wait is required.
-      // This will introduce a wait that will likely be the source of a number
-      // of watchdog kills, but it should still be fewer than the number of
-      // kills `_chromeMain.reset()` is responsible for.
+      // MetricsService::Stop() depends on a committed local state, and does
+      // so asynchronously. To avoid losing metrics, this minimum wait is
+      // required. This will introduce a wait that will likely be the source
+      // of a number of watchdog kills, but it should still be fewer than the
+      // number of kills `_chromeMain.reset()` is responsible for.
       GetApplicationContext()->GetLocalState()->CommitPendingWrite({}, closure);
     }
 
