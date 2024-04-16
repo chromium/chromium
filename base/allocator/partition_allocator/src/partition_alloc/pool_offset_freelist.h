@@ -12,6 +12,8 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/tagging.h"
 
 #if !defined(ARCH_CPU_BIG_ENDIAN)
@@ -94,7 +96,7 @@ class PoolOffsetFreelistEntry {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
-#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+#endif
   {
   }
   explicit PoolOffsetFreelistEntry(PoolOffsetFreelistEntry* next)
@@ -102,7 +104,7 @@ class PoolOffsetFreelistEntry {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
-#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+#endif
   {
   }
   // For testing only.
@@ -111,7 +113,7 @@ class PoolOffsetFreelistEntry {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(make_shadow_match ? encoded_next_.Inverted() : 12345)
-#endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+#endif
   {
   }
 
@@ -241,6 +243,8 @@ class PoolOffsetFreelistEntry {
     auto* ret = encoded_next_.Decode(pool_info);
     if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(pool_info, this, ret))) {
       if constexpr (crash_on_corruption) {
+        // Put the corrupted data on the stack, it may give us more information
+        // about what kind of corruption that was.
         PA_DEBUG_DATA_ON_STACK("first",
                                static_cast<size_t>(encoded_next_.encoded_));
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -250,6 +254,14 @@ class PoolOffsetFreelistEntry {
       }
       return nullptr;
     }
+
+    // In real-world profiles, the load of |encoded_next_| above is responsible
+    // for a large fraction of the allocation cost. However, we cannot
+    // anticipate it enough since it is accessed right after we know its
+    // address.
+    //
+    // In the case of repeated allocations, we can prefetch the access that will
+    // be done at the *next* allocation, which will touch *ret, prefetch it.
     PA_PREFETCH(ret);
     return ret;
   }
