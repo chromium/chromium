@@ -31,7 +31,8 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
-                                      recordType:LOCAL_CARD_RECORD_TYPE];
+                                      recordType:LOCAL_CARD_RECORD_TYPE
+                                 canFillDirectly:true];
   EXPECT_TRUE(card);
   EXPECT_TRUE([GUID isEqualToString:card.GUID]);
   EXPECT_TRUE([network isEqualToString:card.network]);
@@ -65,7 +66,8 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
-                                      recordType:LOCAL_CARD_RECORD_TYPE];
+                                      recordType:LOCAL_CARD_RECORD_TYPE
+                                 canFillDirectly:true];
 
   ManualFillCreditCard* equalCard =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
@@ -77,7 +79,8 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
-                                      recordType:LOCAL_CARD_RECORD_TYPE];
+                                      recordType:LOCAL_CARD_RECORD_TYPE
+                                 canFillDirectly:true];
 
   EXPECT_TRUE([card isEqual:equalCard]);
 
@@ -91,7 +94,8 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
                                  expirationMonth:expirationMonth
-                                      recordType:LOCAL_CARD_RECORD_TYPE];
+                                      recordType:LOCAL_CARD_RECORD_TYPE
+                                 canFillDirectly:true];
   EXPECT_FALSE([card isEqual:differentGuidCredential]);
 
   // Guid is the main differentiator, and as long as the guids are equal,

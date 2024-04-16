@@ -42,6 +42,10 @@
 // The type of card: masked, local, virtual, etc.
 @property(nonatomic, readonly) autofill::CreditCard::RecordType recordType;
 
+// YES if the card can be filled directly from the ManualFillCreditCard NO if it
+// needs to be requested.
+@property(nonatomic, readonly) BOOL canFillDirectly;
+
 // Default init. `GUID` and `number` are the only fields considered for
 // equality, so we can differentiate between an obfuscated and a complete one.
 - (instancetype)initWithGUID:(NSString*)GUID
@@ -54,7 +58,7 @@
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
                   recordType:(autofill::CreditCard::RecordType)recordType
-    NS_DESIGNATED_INITIALIZER;
+             canFillDirectly:(BOOL)canFillDirecly NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Please use `initWithGuid:network:bankName:cardholder:number:
 // obfuscatedNumber:expirationYear:expirationMonth:`.

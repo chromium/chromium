@@ -92,3 +92,60 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest, CreationObfuscated) {
   EXPECT_TRUE([@"01" isEqualToString:manualFillCard.expirationMonth]);
   EXPECT_TRUE([expirationYear isEqualToString:manualFillCard.expirationYear]);
 }
+
+// Tests that a local card's canFillDirectly is true
+TEST_F(ManualFillCreditCardFormAutofilliOSTest, CanFillDirectly) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_record_type(
+      autofill::CreditCard::RecordType::kLocalCard);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard];
+
+  EXPECT_TRUE(manualFillCard);
+  EXPECT_TRUE(manualFillCard.canFillDirectly);
+}
+
+// Tests that a virtual card's canFillDirectly is false
+TEST_F(ManualFillCreditCardFormAutofilliOSTest, VirtualCardCanNotFillDirectly) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_record_type(
+      autofill::CreditCard::RecordType::kVirtualCard);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard];
+
+  EXPECT_TRUE(manualFillCard);
+  EXPECT_FALSE(manualFillCard.canFillDirectly);
+}
+
+// Tests that a masked card's canFillDirectly is false
+TEST_F(ManualFillCreditCardFormAutofilliOSTest, MaskedCardCanNotFillDirectly) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_record_type(
+      autofill::CreditCard::RecordType::kMaskedServerCard);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard];
+
+  EXPECT_TRUE(manualFillCard);
+  EXPECT_FALSE(manualFillCard.canFillDirectly);
+}
