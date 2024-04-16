@@ -5,18 +5,18 @@ is stored in DEPS file located in the root of the project. In addition to DEPS
 file, gclient may read git submodules (see
 [depot_tools submodules support](https://docs.google.com/document/d/1N_fseFNOj10ETZG3pZ-I30R__w96rYNtvx5y_jFGJWw/view)).
 
-gclient supports two dependency types: git and [cipd](cipd_and_3pp.md).
+gclient supports three dependency types: git, [gcs](gcs_dependencies.md), and
+[cipd](cipd_and_3pp.md).
 
 [TOC]
 
 ## Adding dependencies
 
-Add your entry in DEPS file. Then, run `gclient gitmodules` to generate
-git submodules (it will contain .gitmodule change, and gitlink). Edit OWNERS
-file and add gitlink path. Then, run `git add DEPS OWNERS` to stage
-those files for commit, followed by `git commit`. Your change is now ready to be
-sent for a review using `git cl upload`.
-
+Add your entry in DEPS file. Then, run `gclient gitmodules` to generate git
+submodules (it will contain .gitmodule change, and gitlink). Edit OWNERS file
+and add gitlink path. Then, run `git add DEPS OWNERS` to stage those files for
+commit, followed by `git commit`. Your change is now ready to be sent for a
+review using `git cl upload`.
 
 For example, if new dependency is "src/foo/bar.git", its gitlink path is
 "foo/bar", and OWNERS entry at the top level is `per-file foo/bar=*`. You can
@@ -25,7 +25,7 @@ confirm that by running `git status`. [Example CL](https://crrev.com/c/4923074).
 ```
 # manual edit of DEPS and OWNERS file (see changes below).
 
- % gclient gitmodules                    
+ % gclient gitmodules
 .gitmodules and gitlinks updated. Please check `git diff --staged`and commit those staged changes (`git commit` without -a)
 
  % git add OWNERS DEPS # stage files
@@ -48,7 +48,7 @@ index 44fbc53a0d53a..05481be5066ed 100644
 +++ b/DEPS
 @@ -555,6 +555,10 @@ allowed_hosts = [
  ]
- 
+
  deps = {
 +  'src/foo/bar': {
 +      'url': Var('chromium_git') + '/foo/bar.git' + '@' +
@@ -63,7 +63,7 @@ index 55bfe60fcb03b..02b4117fca1ea 100644
 +++ b/OWNERS
 @@ -37,6 +37,7 @@ per-file README.md=*
  per-file WATCHLISTS=*
- 
+
  # git submodules
 +per-file foo/bar=*
  per-file third_party/clang-format/script=*
@@ -77,7 +77,7 @@ index 0000000000000..1111111111111
 @@ -0,0 +1 @@
 +Subproject commit 1111111111111111111111111111111111111111
 
- % git status 
+ % git status
 On branch test_newdep
 Your branch is up to date with 'origin/main'.
 
@@ -102,7 +102,7 @@ Changes not staged for commit:
  4 files changed, 9 insertions(+)
  create mode 160000 foo/bar
 
- % git cl upload   
+ % git cl upload
 Found change with 1 commit...
 Running Python 3 presubmit upload checks ...
 -- snip --
@@ -132,17 +132,11 @@ Under the hood, gclient understands DEPS file, and knows what needs to update.
 In the example above, it actually updates boringssl_revision variable that is
 used in boringssl deps declaration.
 
-Example of DEPS file:
-```
-vars = {
-  'boringssl_git': 'https://boringssl.googlesource.com',
-  'boringssl_revision': 'e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5',
-}
-deps = {
-  'src/third_party/boringssl/src':
-    Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),
-}
-```
+Example of DEPS file: `vars = { 'boringssl_git':
+'https://boringssl.googlesource.com', 'boringssl_revision':
+'e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5', } deps = {
+'src/third_party/boringssl/src': Var('boringssl_git') + '/boringssl.git' + '@' +
+Var('boringssl_revision'), }`
 
 It also updates gitlink if git submodules are used. Git status will show the
 following:
@@ -177,10 +171,8 @@ to directly insert the specified info into the index: 160000 is gitlink mode
 (used by git submodules), {hash} is a new commit hash you want to roll, and path
 is relative path to git submodule.
 
-
 Using the boringssl example above, the following will need to be run inside
 chromium/src worktree:
-
 
 ```
 git update-index --add --cacheinfo 160000,e4acd6cb568214b1c7db4e59ce54ea2e1deae1f5,third_party/boringssl/src
