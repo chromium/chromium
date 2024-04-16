@@ -924,6 +924,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 /// Accepts the autocomplete text.
 - (void)acceptAutocompleteText {
   [self setText:[self textWithoutAdditionalText].string];
+  if ([self.delegate
+          respondsToSelector:@selector(textFieldDidAcceptAutocomplete:)]) {
+    [self.delegate textFieldDidAcceptAutocomplete:self];
+  }
 }
 
 /// Sets the `text` in the textfield. `text` includes autocomplete text but

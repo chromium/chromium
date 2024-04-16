@@ -322,7 +322,7 @@ void OmniboxViewIOS::GetSelectionBounds(std::u16string::size_type* start,
   if ([field_ isFirstResponder]) {
     NSRange selected_range = [field_ selectedNSRange];
     *start = selected_range.location;
-    *end = selected_range.location + selected_range.length;
+    *end = selected_range.location + field_.autocompleteText.length;
   } else {
     *start = *end = 0;
   }
@@ -642,6 +642,11 @@ void OmniboxViewIOS::OnDeleteBackward() {
         model()->SetInputInProgress(YES);
     }
   }
+}
+
+void OmniboxViewIOS::OnAcceptAutocomplete() {
+  current_selection_ = [field_ selectedNSRange];
+  OnDidChange(/*processing_user_event=*/true);
 }
 
 void OmniboxViewIOS::ClearText() {

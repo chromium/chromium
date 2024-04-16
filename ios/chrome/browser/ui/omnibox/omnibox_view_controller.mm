@@ -406,6 +406,12 @@ using base::UserMetricsAction;
   _textChangeDelegate->OnDeleteBackward();
 }
 
+- (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField {
+  if (_textChangeDelegate) {
+    _textChangeDelegate->OnAcceptAutocomplete();
+  }
+}
+
 - (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
   for (NSItemProvider* itemProvider in itemProviders) {
     if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
