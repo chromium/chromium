@@ -112,8 +112,11 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
                            target:self.pageInfoCommandsHandler
                            action:@selector(hidePageInfo)];
   self.navigationItem.rightBarButtonItem = dismissButton;
-  self.tableView.separatorInset =
-      UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInset, 0, 0);
+  self.tableView.separatorInset = UIEdgeInsetsMake(
+      0,
+      IsRevampPageInfoIosEnabled() ? kPageInfoTableViewSeparatorInsetWithIcon
+                                   : kPageInfoTableViewSeparatorInset,
+      0, 0);
   if (!IsRevampPageInfoIosEnabled()) {
     self.tableView.allowsSelection = NO;
   }

@@ -27,6 +27,9 @@ extern NSString* const
 // The left edge insect for cell separators of page info.
 extern const CGFloat kPageInfoTableViewSeparatorInset;
 
+// The left edge insect for cell separators of page info with an icon.
+extern const CGFloat kPageInfoTableViewSeparatorInsetWithIcon;
+
 // The vertical padding between the navigation bar and the first section header
 // of page info.
 extern const CGFloat kPageInfoPaddingFirstSectionHeader;
