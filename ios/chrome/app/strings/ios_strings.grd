@@ -5103,10 +5103,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_STRIP_LEAVE_TAB_SWITCHER" desc="The accessibility label of the tab strip button to leave the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
         Leave Tab Switcher
       </message>
-      <message name="IDS_IOS_TAB_STRIP_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
-        You can swipe the tab strip to switch between tabs.
-      </message>
-            <message name="IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE" desc="Accessibility value to let the user know the position of the currently focused tab compared to the others. Read by Text-to-Speech">
+      <message name="IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE" desc="Accessibility value to let the user know the position of the currently focused tab compared to the others. Read by Text-to-Speech">
         Tab. <ph name="TAB_INDEX">$1<ex>3</ex></ph> of <ph name="NUMBER_OF_TABS">$2<ex>27</ex></ph>.
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
@@ -5222,6 +5219,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GRID" desc="The accessibility label for the toolbar show tab grid button [iOS only].">
         Show Tab Grid
+      </message>
+      <message name="IDS_IOS_TOOLBAR_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
+        You can swipe the toolbar to switch between tabs.
       </message>
       <message name="IDS_IOS_TOOLS_MENU" desc="The accessibility label for the iOS tools menu [iOS only]">
         Tools Menu

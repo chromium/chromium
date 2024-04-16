@@ -39,7 +39,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
                                  canGoBack:(BOOL)back
                                    forward:(BOOL)forward {
   CHECK(back || forward);
-  self = [super initWithText:l10n_util::GetNSString(IDS_IOS_TAB_STRIP_SWIPE_IPH)
+  self = [super initWithText:l10n_util::GetNSString(IDS_IOS_TOOLBAR_SWIPE_IPH)
           bubbleBoundingSize:bubbleBoundingSize
               swipeDirection:(back ^ UseRTLLayout())
                                  ? UISwipeGestureRecognizerDirectionRight
