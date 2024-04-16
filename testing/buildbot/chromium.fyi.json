@@ -3965,6 +3965,56 @@
       {
         "args": [
           "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter",
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.4",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15e204a",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "components_browsertests iPhone 14 17.4",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13|Mac-14"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15e204a",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_4",
+              "path": "Runtime-ios-17.4"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/",
+        "variant_id": "iPhone 14 17.4"
+      },
+      {
+        "args": [
+          "--test-launcher-bot-mode",
           "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
           "--platform",
           "iPhone 14",
