@@ -239,7 +239,7 @@ void TetherConnectorImpl::OnSuccessfulConnectTetheringResponse(
     const std::string& ssid,
     const std::string& password) {
   tether_host_response_recorder_->RecordSuccessfulConnectTetheringResponse(
-      remote_device);
+      remote_device.GetDeviceId());
   if (device_id_pending_connection_ != remote_device.GetDeviceId()) {
     // If the success was part of a previous attempt for a different device,
     // ignore it.

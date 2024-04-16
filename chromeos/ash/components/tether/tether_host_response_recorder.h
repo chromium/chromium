@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
 class PrefService;
 
@@ -18,9 +17,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // Records responses from tether hosts in user prefs, which persists these
 // responses between reboots of the device. When a TetherAvailabilityResponse or
@@ -54,7 +51,7 @@ class TetherHostResponseRecorder {
   // time that a response is received from a potential host, even if a
   // connection is not started.
   virtual void RecordSuccessfulTetherAvailabilityResponse(
-      multidevice::RemoteDeviceRef remote_device);
+      const std::string& device_id);
 
   // Gets device IDs corresponding to hosts which have sent
   // TetherAvailabilityResponses with a response code indicating that tethering
@@ -66,7 +63,7 @@ class TetherHostResponseRecorder {
   // Records a ConnectTetheringResponse. This function should be called each
   // time that a response is received from a host.
   virtual void RecordSuccessfulConnectTetheringResponse(
-      multidevice::RemoteDeviceRef remote_device);
+      const std::string& device_id);
 
   // Gets device IDs corresponding to hosts which have sent
   // ConnectTetheringResponses with a response code indicating that they have
@@ -91,8 +88,6 @@ class TetherHostResponseRecorder {
   base::ObserverList<Observer>::Unchecked observer_list_;
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_HOST_RESPONSE_RECORDER_H_

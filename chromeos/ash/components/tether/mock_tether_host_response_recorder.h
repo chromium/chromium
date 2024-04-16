@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -28,9 +27,9 @@ class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
   ~MockTetherHostResponseRecorder() override;
 
   MOCK_METHOD1(RecordSuccessfulTetherAvailabilityResponse,
-               void(multidevice::RemoteDeviceRef));
+               void(const std::string&));
   MOCK_METHOD1(RecordSuccessfulConnectTetheringResponse,
-               void(multidevice::RemoteDeviceRef));
+               void(const std::string&));
   MOCK_CONST_METHOD0(GetPreviouslyAvailableHostIds, std::vector<std::string>());
   MOCK_CONST_METHOD0(GetPreviouslyConnectedHostIds, std::vector<std::string>());
 };

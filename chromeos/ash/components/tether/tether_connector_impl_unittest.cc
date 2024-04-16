@@ -633,8 +633,9 @@ TEST_F(TetherConnectorImplTest, TestSuccessfulConnection) {
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
                   test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
 
-  EXPECT_CALL(*mock_tether_host_response_recorder_,
-              RecordSuccessfulConnectTetheringResponse(test_devices_[0]));
+  EXPECT_CALL(
+      *mock_tether_host_response_recorder_,
+      RecordSuccessfulConnectTetheringResponse(test_devices_[0].GetDeviceId()));
 
   fake_tether_host_fetcher_->SetTetherHost(test_devices_[0]);
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));

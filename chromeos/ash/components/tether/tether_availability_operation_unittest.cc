@@ -249,8 +249,9 @@ TEST_F(TetherAvailabilityOperationTest,
 
 TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
   // The scanned device is recorded.
-  EXPECT_CALL(mock_tether_host_response_recorder_,
-              RecordSuccessfulTetherAvailabilityResponse(remote_device_));
+  EXPECT_CALL(
+      mock_tether_host_response_recorder_,
+      RecordSuccessfulTetherAvailabilityResponse(remote_device_.GetDeviceId()));
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
@@ -278,8 +279,9 @@ TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
 
 TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
   // The scanned device is recorded.
-  EXPECT_CALL(mock_tether_host_response_recorder_,
-              RecordSuccessfulTetherAvailabilityResponse(remote_device_));
+  EXPECT_CALL(
+      mock_tether_host_response_recorder_,
+      RecordSuccessfulTetherAvailabilityResponse(remote_device_.GetDeviceId()));
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
@@ -307,8 +309,9 @@ TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
 
 TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
   // The scanned device is recorded.
-  EXPECT_CALL(mock_tether_host_response_recorder_,
-              RecordSuccessfulTetherAvailabilityResponse(remote_device_));
+  EXPECT_CALL(
+      mock_tether_host_response_recorder_,
+      RecordSuccessfulTetherAvailabilityResponse(remote_device_.GetDeviceId()));
 
   // The observer is notified that the scanned device has the |setup_required|
   // flag set.

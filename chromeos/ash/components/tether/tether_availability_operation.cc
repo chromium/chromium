@@ -167,7 +167,7 @@ void TetherAvailabilityOperation::OnMessageReceived(
         << setup_required;
 
     tether_host_response_recorder_->RecordSuccessfulTetherAvailabilityResponse(
-        remote_device());
+        remote_device().GetDeviceId());
 
     // Only attempt to preserve the BLE connection to this device if the
     // response indicated that the device can serve as a host.
