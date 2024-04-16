@@ -26,7 +26,8 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
     virtual void OnPinChanged(std::u16string pin) = 0;
   };
 
-  explicit AuthenticatorGPMArbitraryPinView(Delegate* delegate);
+  explicit AuthenticatorGPMArbitraryPinView(bool ui_disabled,
+                                            Delegate* delegate);
 
   AuthenticatorGPMArbitraryPinView(const AuthenticatorGPMArbitraryPinView&) =
       delete;

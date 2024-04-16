@@ -128,10 +128,12 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
                 AuthenticatorRequestDialogModel::Step::kGPMCreateArbitraryPin
             ? PinOptionsButton::CommandId::CHOOSE_ARBITRARY_PIN
             : PinOptionsButton::CommandId::CHOOSE_SIX_DIGIT_PIN;
-    SetExtraView(std::make_unique<PinOptionsButton>(
+    auto pin_options_button = std::make_unique<PinOptionsButton>(
         u"PIN options (UT)", checked_command_id,
         base::BindRepeating(&AuthenticatorRequestDialogView::GPMPinOptionChosen,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
+    pin_options_button->SetEnabled(!model_->ui_disabled_);
+    SetExtraView(std::move(pin_options_button));
   } else {
     SetExtraView(std::make_unique<views::View>());
   }

@@ -1697,6 +1697,10 @@ void AuthenticatorGPMPinSheetModel::SetPin(std::u16string pin) {
   }
 }
 
+bool AuthenticatorGPMPinSheetModel::ui_disabled() const {
+  return dialog_model()->ui_disabled_;
+}
+
 bool AuthenticatorGPMPinSheetModel::FullPinTyped() const {
   return static_cast<int>(pin_.length()) == pin_digits_count_;
 }
@@ -1735,7 +1739,7 @@ bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonEnabled() const {
-  return mode_ == Mode::kPinCreate && FullPinTyped();
+  return mode_ == Mode::kPinCreate && FullPinTyped() && !ui_disabled();
 }
 
 bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
@@ -1744,6 +1748,10 @@ bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
 
 bool AuthenticatorGPMPinSheetModel::IsGPMPinOptionsButtonVisible() const {
   return mode_ == Mode::kPinCreate;
+}
+
+bool AuthenticatorGPMPinSheetModel::IsActivityIndicatorVisible() const {
+  return ui_disabled();
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
@@ -1789,6 +1797,10 @@ void AuthenticatorGPMArbitraryPinSheetModel::SetPin(std::u16string pin) {
   }
 }
 
+bool AuthenticatorGPMArbitraryPinSheetModel::ui_disabled() const {
+  return dialog_model()->ui_disabled_;
+}
+
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepTitle() const {
   switch (mode_) {
     case Mode::kPinCreate:
@@ -1824,7 +1836,7 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
-  return pin_.length() > 0;
+  return pin_.length() > 0 && !ui_disabled();
 }
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsForgotGPMPinButtonVisible()
@@ -1835,6 +1847,11 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsForgotGPMPinButtonVisible()
 bool AuthenticatorGPMArbitraryPinSheetModel::IsGPMPinOptionsButtonVisible()
     const {
   return mode_ == Mode::kPinCreate;
+}
+
+bool AuthenticatorGPMArbitraryPinSheetModel::IsActivityIndicatorVisible()
+    const {
+  return ui_disabled();
 }
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()

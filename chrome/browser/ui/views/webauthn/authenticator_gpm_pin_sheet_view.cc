@@ -20,7 +20,8 @@ AuthenticatorGpmPinSheetView::gpm_pin_sheet_model() {
 std::pair<std::unique_ptr<views::View>, AuthenticatorGpmPinSheetView::AutoFocus>
 AuthenticatorGpmPinSheetView::BuildStepSpecificContent() {
   return std::make_pair(std::make_unique<AuthenticatorGPMPinView>(
-                            this, gpm_pin_sheet_model()->pin_digits_count()),
+                            gpm_pin_sheet_model()->pin_digits_count(),
+                            gpm_pin_sheet_model()->ui_disabled(), this),
                         AutoFocus::kYes);
 }
 

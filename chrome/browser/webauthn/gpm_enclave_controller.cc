@@ -602,8 +602,9 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
          model_->step() == Step::kGPMEnterPin);
   pin_ = base::UTF16ToUTF8(pin);
 
-  // TODO(enclave): jump to spinner state here? The PIN entry will still
-  // be showing so should, at least, be disabled.
+  // Disable the pin entry view while waiting for the response from enclave.
+  model_->ui_disabled_ = true;
+  model_->OnSheetModelChanged();
 
   if (account_state_ == AccountState::kRecoverable) {
     CHECK(enclave_manager_->has_pending_keys());

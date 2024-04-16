@@ -10,6 +10,7 @@
 #include "ui/views/layout/box_layout.h"
 
 AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
+    bool ui_disabled,
     Delegate* delegate)
     : delegate_(delegate) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -17,16 +18,19 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  // TODO(rgod): Pass the pin text when disabling.
   auto pin_textfield = std::make_unique<views::Textfield>();
   pin_textfield->SetController(this);
   pin_textfield->SetAccessibleName(u"Pin field (UNTRANSLATED)");
   pin_textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   pin_textfield->SetDefaultWidthInChars(20);
+  pin_textfield->SetReadOnly(ui_disabled);
   pin_textfield_ = AddChildView(std::move(pin_textfield));
 
   reveal_button_ = AddChildView(CreateRevealButton(base::BindRepeating(
       &AuthenticatorGPMArbitraryPinView::OnRevealButtonClicked,
       base::Unretained(this))));
+  reveal_button_->SetEnabled(!ui_disabled);
 }
 
 AuthenticatorGPMArbitraryPinView::~AuthenticatorGPMArbitraryPinView() = default;

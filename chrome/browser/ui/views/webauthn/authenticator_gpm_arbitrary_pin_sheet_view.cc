@@ -22,7 +22,8 @@ std::pair<std::unique_ptr<views::View>,
           AuthenticatorGPMArbitraryPinSheetView::AutoFocus>
 AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
   return std::make_pair(
-      std::make_unique<AuthenticatorGPMArbitraryPinView>(this),
+      std::make_unique<AuthenticatorGPMArbitraryPinView>(
+          gpm_arbitrary_pin_sheet_model()->ui_disabled(), this),
       AutoFocus::kYes);
 }
 
