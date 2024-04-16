@@ -982,27 +982,29 @@ void ReadAnythingAppModel::ToggleLinksEnabled() {
   links_enabled_ = !links_enabled_;
 }
 
+// TODO: b/40275871 - make this more efficient as we are now calling this
+// more often.
 std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
   std::vector<std::string> font_choices_;
 
-  if (base::Contains(kLanguagesSupportedByPoppins, language_code())) {
+  if (base::Contains(kLanguagesSupportedByPoppins, base_language_code())) {
     font_choices_.push_back("Poppins");
   }
   font_choices_.push_back("Sans-serif");
   font_choices_.push_back("Serif");
-  if (base::Contains(kLanguagesSupportedByComicNeue, language_code())) {
+  if (base::Contains(kLanguagesSupportedByComicNeue, base_language_code())) {
     font_choices_.push_back("Comic Neue");
   }
-  if (base::Contains(kLanguagesSupportedByLexendDeca, language_code())) {
+  if (base::Contains(kLanguagesSupportedByLexendDeca, base_language_code())) {
     font_choices_.push_back("Lexend Deca");
   }
-  if (base::Contains(kLanguagesSupportedByEbGaramond, language_code())) {
+  if (base::Contains(kLanguagesSupportedByEbGaramond, base_language_code())) {
     font_choices_.push_back("EB Garamond");
   }
-  if (base::Contains(kLanguagesSupportedByStixTwoText, language_code())) {
+  if (base::Contains(kLanguagesSupportedByStixTwoText, base_language_code())) {
     font_choices_.push_back("STIX Two Text");
   }
-  if (base::Contains(kLanguagesSupportedByAndika, language_code())) {
+  if (base::Contains(kLanguagesSupportedByAndika, base_language_code())) {
     font_choices_.push_back("Andika");
   }
   return font_choices_;

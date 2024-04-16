@@ -684,7 +684,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
-      .SetProperty("speechSynthesisLanguageCode",
+      .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
@@ -830,8 +830,8 @@ float ReadAnythingAppController::SpeechRate() const {
   return model_.speech_rate();
 }
 
-std::string ReadAnythingAppController::GetStoredVoice(
-    const std::string& lang) const {
+std::string ReadAnythingAppController::GetStoredVoice() const {
+  std::string lang = model_.base_language_code();
   if (model_.voices().contains(lang)) {
     return *model_.voices().FindString(lang);
   }
@@ -1122,7 +1122,7 @@ const std::string ReadAnythingAppController::GetDisplayNameForLocale(
 }
 
 const std::string& ReadAnythingAppController::GetLanguageCodeForSpeech() const {
-  return model_.language_code();
+  return model_.base_language_code();
 }
 
 void ReadAnythingAppController::OnConnected() {
@@ -1243,7 +1243,13 @@ void ReadAnythingAppController::OnSpeechRateChange(double rate) {
 
 void ReadAnythingAppController::OnVoiceChange(const std::string& voice,
                                               const std::string& lang) {
-  page_handler_->OnVoiceChange(voice, lang);
+  // Store the given voice with the base language. If the user prefers a voice
+  // for a specific language, we should always use that voice, regardless of the
+  // more specific locale. e.g. if the user prefers the en-UK voice for English
+  // pages, use that voice even if the page is marked en-US.
+  std::string base_lang = std::string(language::ExtractBaseLanguage(lang));
+  page_handler_->OnVoiceChange(voice, base_lang);
+  model_.setVoice(voice, base_lang);
 }
 
 void ReadAnythingAppController::TurnedHighlightOn() {
@@ -1388,10 +1394,10 @@ void ReadAnythingAppController::SetLanguageForTesting(
 }
 
 void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
-  model_.set_language_code(code);
+  std::string base_lang = std::string(language::ExtractBaseLanguage(code));
+  model_.set_base_language_code(base_lang);
 
-  // Signal to the WebUI that the supported fonts may have changed.
-  ExecuteJavaScript("chrome.readingMode.updateFonts();");
+  ExecuteJavaScript("chrome.readingMode.languageChanged();");
 }
 
 void ReadAnythingAppController::SetContentForTesting(

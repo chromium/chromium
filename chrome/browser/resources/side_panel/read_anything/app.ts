@@ -151,10 +151,10 @@ if (chrome.readingMode) {
     readAnythingApp.restoreSettingsFromPrefs();
   };
 
-  chrome.readingMode.updateFonts = () => {
+  chrome.readingMode.languageChanged = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
     assert(readAnythingApp, 'no app');
-    readAnythingApp.updateFonts();
+    readAnythingApp.languageChanged();
   };
 }
 
@@ -736,17 +736,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   defaultVoice(): SpeechSynthesisVoice|undefined {
     // TODO(crbug.com/1474951): Additional logic to find default voice if there
     // isn't a voice marked as default
-    const languageCode = chrome.readingMode.speechSynthesisLanguageCode;
-    // TODO(crbug.com/1474951): Ensure various locales are handled such as
-    // "en-US" vs. "en-UK." This should be fixed by using page language instead
-    // of browser language.
+    const baseLang = chrome.readingMode.baseLanguageForSpeech;
     const voicesForLanguage =
-        this.getVoices().filter(voice => voice.lang.startsWith(languageCode));
+        this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
 
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
-      // If no voices in the given language are found, use the default voice.
-      return this.getVoices().find(
-          ({default: isDefaultVoice}) => isDefaultVoice);
+      // Stay with the current voice if no voices are available for this
+      // language. If no voice is yet selected, use the default voice.
+      return this.selectedVoice ?
+          this.selectedVoice :
+          this.getVoices().find(({default: isDefaultVoice}) => isDefaultVoice);
     }
 
     // The default voice doesn't always match with the actual default voice
@@ -1199,13 +1198,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private defaultUtteranceSettings(): UtteranceSettings {
-    // TODO(crbug.com/1474951): Use correct locale when speaking.
-    const lang = chrome.readingMode.speechSynthesisLanguageCode;
+    const lang = chrome.readingMode.baseLanguageForSpeech;
 
     return {
       lang,
-      // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
-      // than on the next set of text.
       // TODO(crbug.com/1474951): Ensure the rate is valid for the current
       // speech engine.
       rate: this.rate,
@@ -1292,7 +1288,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     this.selectedVoice = event.detail.selectedVoice;
     chrome.readingMode.onVoiceChange(
-        this.selectedVoice.name, this.selectedVoice.lang.split('-')[0]);
+        this.selectedVoice.name, this.selectedVoice.lang);
 
     this.resetSpeechPostSettingChange_();
   }
@@ -1384,7 +1380,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   restoreSettingsFromPrefs() {
     if (this.isReadAloudEnabled_) {
       this.updateSpeechRate_(chrome.readingMode.speechRate);
-      this.restoreVoiceFromPrefs_();
+      this.selectPreferredVoice_();
     }
     this.updateLineSpacing_(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
@@ -1418,23 +1414,25 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
   }
 
-  private restoreVoiceFromPrefs_() {
-    const storedLang = chrome.readingMode.speechSynthesisLanguageCode;
-    const storedVoice = chrome.readingMode.getStoredVoice(storedLang);
+  private selectPreferredVoice_() {
+    // TODO: b/40275871 - decide whether this is the behavior we want. This
+    // shouldn't happen often, so just skip selecting a new voice for now.
+    // Another option would be to update the voice and the call
+    // resetSpeechPostSettingsChange(), but that could be jarring.
+    if (this.speechPlayingState.speechStarted) {
+      return;
+    }
 
-    if (!storedVoice) {
+    const storedVoiceName = chrome.readingMode.getStoredVoice();
+    if (!storedVoiceName) {
       this.selectedVoice = this.defaultVoice();
       return;
     }
 
-    // TODO(crbug.com/1474951): Ensure various locales are handled such as
-    // "en-US" vs. "en-UK." This should be fixed by using page language instead
-    // of browser language.
-    const selectedVoice =
-        Object.entries(this.getVoicesByLanguage())
-            .filter(([lang, _]) => lang.startsWith(storedLang))
-            .flatMap(([_, voices]) => voices)
-            .filter(voice => voice.name === storedVoice);
+    const selectedVoice = Object.entries(this.getVoicesByLanguage())
+                              .filter(([lang, _]) => lang)
+                              .flatMap(([_, voices]) => voices)
+                              .filter(voice => voice.name === storedVoiceName);
 
     assert(selectedVoice, 'Could not find stored selected voice');
     this.selectedVoice = selectedVoice ? selectedVoice[0] : this.defaultVoice();
@@ -1599,9 +1597,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.getSelectionTextColorVar(skColorToRgba(backgroundColor)));
   }
 
-  updateFonts() {
-    // Also update the font on the toolbar itself with the validated font name.
+  languageChanged() {
+    // TODO: b/40275871 - handle the case where the previously used font is not
+    // supported for the new language.
     this.$.toolbar.updateFonts();
+    this.selectPreferredVoice_();
   }
 
   private onKeyDown_(e: KeyboardEvent) {

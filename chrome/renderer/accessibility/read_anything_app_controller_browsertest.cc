@@ -304,6 +304,12 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetDisplayNameForLocale(locale, display_locale);
   }
 
+  void OnVoiceChange(const std::string& voice, const std::string& lang) {
+    controller_->OnVoiceChange(voice, lang);
+  }
+
+  std::string GetStoredVoice() { return controller_->GetStoredVoice(); }
+
   std::string GetDataFontCss(ui::AXNodeID ax_node_id) {
     return controller_->GetDataFontCss(ax_node_id);
   }
@@ -408,6 +414,60 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 
   scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   EXPECT_TRUE(IsReadAloudEnabled());
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
+  ASSERT_EQ(GetStoredVoice(), "");
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetStoredVoice_CurrentBaseLangStored_ReturnsExpectedVoice) {
+  std::string base_lang = "fr";
+  std::string expected_voice_name = "French voice 1";
+
+  OnVoiceChange(expected_voice_name, base_lang);
+  SetLanguageCode(base_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(1);
+  ASSERT_EQ(GetStoredVoice(), expected_voice_name);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetStoredVoice_CurrentFullLangStored_ReturnsExpectedVoice) {
+  std::string full_lang = "en-UK";
+  std::string expected_voice_name = "British voice 45";
+
+  OnVoiceChange(expected_voice_name, full_lang);
+  SetLanguageCode(full_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(1);
+  ASSERT_EQ(GetStoredVoice(), expected_voice_name);
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    GetStoredVoice_BaseLangStoredButCurrentLangIsFull_ReturnsStoredBaseLang) {
+  std::string base_lang = "zh";
+  std::string full_lang = "zh-TW";
+  std::string expected_voice_name = "Chinese voice";
+
+  OnVoiceChange(expected_voice_name, base_lang);
+  SetLanguageCode(full_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(1);
+  ASSERT_EQ(GetStoredVoice(), expected_voice_name);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetStoredVoice_CurrentLangNotStored_ReturnsEmpty) {
+  std::string current_lang = "de-DE";
+  std::string stored_lang = "it-IT";
+
+  OnVoiceChange("Italian voice 3", stored_lang);
+  SetLanguageCode(current_lang);
+
+  EXPECT_CALL(page_handler_, OnVoiceChange).Times(1);
+  ASSERT_EQ(GetStoredVoice(), "");
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsWebUIToolbarEnabled) {
@@ -2137,6 +2197,12 @@ TEST_F(ReadAnythingAppControllerTest,
        GetLanguageCodeForSpeech_ReturnsCorrectLanguageCode) {
   SetLanguageCode("es");
   ASSERT_EQ(LanguageCodeForSpeech(), "es");
+
+  SetLanguageCode("en-UK");
+  ASSERT_EQ(LanguageCodeForSpeech(), "en");
+
+  SetLanguageCode("zh-CN");
+  ASSERT_EQ(LanguageCodeForSpeech(), "zh");
 }
 
 TEST_F(ReadAnythingAppControllerTest,

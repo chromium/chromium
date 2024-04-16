@@ -120,9 +120,11 @@ class ReadAnythingAppModel {
   bool selection_from_action() { return selection_from_action_; }
   void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
-  const std::string& language_code() const { return language_code_; }
+  const std::string& base_language_code() const { return base_language_code_; }
 
-  void set_language_code(const std::string code) { language_code_ = code; }
+  void set_base_language_code(const std::string code) {
+    base_language_code_ = code;
+  }
 
   std::vector<std::string> GetSupportedFonts() const;
 
@@ -139,6 +141,9 @@ class ReadAnythingAppModel {
   const SkColor& background_color() const { return background_color_; }
   float speech_rate() const { return speech_rate_; }
   const base::Value::Dict& voices() const { return voices_; }
+  void setVoice(const std::string& voice, const std::string& lang) {
+    voices_.Set(lang, voice);
+  }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -454,8 +459,8 @@ class ReadAnythingAppModel {
   // contains all nodes between the start and end nodes of the selection.
   std::set<ui::AXNodeID> selection_node_ids_;
 
-  // The current language code used for fonts or reading aloud.
-  std::string language_code_ = "en-US";
+  // The current base language code used for fonts or reading aloud.
+  std::string base_language_code_ = "en";
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;

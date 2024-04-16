@@ -129,6 +129,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageChanged) {
+  RunSidePanelTest("side_panel/read_anything/language_change_test.js",
+                   "mocha.run()");
+}
+
 // Integration tests that need the actual Read Aloud flag enabled because they
 // use the full C++ pipeline
 class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {

@@ -677,10 +677,14 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
     const std::string& code) {
-  if (code.empty() || code == translate::kUnknownLanguageCode) {
-    page_->SetLanguageCode(default_language_code_);
-  } else {
-    page_->SetLanguageCode(code);
+  const std::string& language_code =
+      (code.empty() || code == translate::kUnknownLanguageCode)
+          ? default_language_code_
+          : code;
+  // Only send the language code if it's a new language.
+  if (language_code != current_language_code_) {
+    current_language_code_ = language_code;
+    page_->SetLanguageCode(current_language_code_);
   }
 }
 

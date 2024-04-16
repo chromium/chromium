@@ -208,8 +208,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void ResetTextSize() { model_->ResetTextSize(); }
 
-  std::string LanguageCode() { return model_->language_code(); }
-  void SetLanguageCode(std::string code) { model_->set_language_code(code); }
+  std::string LanguageCode() { return model_->base_language_code(); }
+  void SetLanguageCode(std::string code) {
+    model_->set_base_language_code(code);
+  }
 
   std::vector<std::string> GetSupportedFonts() {
     return model_->GetSupportedFonts();
@@ -1310,7 +1312,7 @@ TEST_F(ReadAnythingAppModelTest, ResetTextSize_ReturnsTextSizeToDefault) {
 }
 
 TEST_F(ReadAnythingAppModelTest, LanguageCode_ReturnsCorrectCode) {
-  ASSERT_EQ(LanguageCode(), "en-US");
+  ASSERT_EQ(LanguageCode(), "en");
 
   SetLanguageCode("es");
   ASSERT_EQ(LanguageCode(), "es");
@@ -1330,7 +1332,9 @@ TEST_F(ReadAnythingAppModelTest,
 
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_BeforeLanguageSet_ReturnsDefaultFonts) {
-  std::vector<std::string> expectedFonts = {"Sans-serif", "Serif"};
+  std::vector<std::string> expectedFonts = {
+      "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
+      "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};
   std::vector<std::string> fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
@@ -1341,8 +1345,8 @@ TEST_F(ReadAnythingAppModelTest,
 
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_SetLanguageCode_ReturnsExpectedDefaultFonts) {
-  // English
-  SetLanguageCode("en");
+  // Spanish
+  SetLanguageCode("es");
   std::vector<std::string> expectedFonts = {
       "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
       "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};

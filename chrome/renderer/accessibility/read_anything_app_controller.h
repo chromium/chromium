@@ -139,7 +139,7 @@ class ReadAnythingAppController
   int DarkTheme() const;
   int YellowTheme() const;
   int BlueTheme() const;
-  std::string GetStoredVoice(const std::string& lang) const;
+  std::string GetStoredVoice() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
   std::string GetDataFontCss(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;

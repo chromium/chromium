@@ -70,11 +70,11 @@ declare namespace chrome {
     // Fonts supported by the browser's preferred language.
     let supportedFonts: string[];
 
-    // The language code that should be used for speech synthesis voices.
-    let speechSynthesisLanguageCode: string;
+    // The base language code that should be used for speech synthesis voices.
+    let baseLanguageForSpeech: string;
 
-    // Returns the stored user voice preference for the given language.
-    function getStoredVoice(lang: string): string;
+    // Returns the stored user voice preference for the current language
+    function getStoredVoice(): string;
 
     // Returns a list of AXNodeIDs corresponding to the unignored children of
     // the AXNode for the provided AXNodeID. If there is a selection contained
@@ -280,9 +280,8 @@ declare namespace chrome {
     // refer to the previous granularity.
     function movePositionToPreviousGranularity(): void;
 
-    // Signal that the supported fonts should be updated i.e. that the brower's
-    // preferred language has changed.
-    function updateFonts(): void;
+    // Signal that the page language has changed.
+    function languageChanged(): void;
 
     // Gets the accessible text boundary for the given string
     function getAccessibleBoundary(text: string, maxSpeechLength: number):
