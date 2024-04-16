@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 
@@ -36,10 +37,21 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager {
   using ChromeBrowserStateImplPathMap =
       std::map<base::FilePath, std::unique_ptr<ChromeBrowserStateImpl>>;
 
+  // Callback invoked with the BrowserState once its initialisation is done.
+  // May be invoked with nullptr if loading the BrowserState failed. Will be
+  // called on the calling sequence, but may be asynchronous.
+  using BrowserStateLoadedCallback =
+      base::OnceCallback<void(ChromeBrowserState*)>;
+
   // Get the path of the last used browser state, or if that's undefined, the
   // default browser state.
   base::FilePath GetLastUsedBrowserStateDir(
       const base::FilePath& user_data_dir);
+
+  // Load ChromeBrowserState at `path` and invoke `callback` when the load
+  // is complete.
+  void LoadBrowserState(const base::FilePath& path,
+                        BrowserStateLoadedCallback callback);
 
   // Final initialization of the browser state.
   void DoFinalInit(ChromeBrowserState* browser_state);

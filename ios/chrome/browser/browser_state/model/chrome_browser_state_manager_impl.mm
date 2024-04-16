@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
 
 #import <stdint.h>
+
 #import <utility>
 
+#import "base/check_deref.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
 #import "base/strings/utf_string_conversions.h"
@@ -126,25 +129,7 @@ ChromeBrowserState* ChromeBrowserStateManagerImpl::GetBrowserState(
     return iter->second.get();
   }
 
-  // Get sequenced task runner for making sure that file operations of
-  // this profile are executed in expected order (what was previously assured by
-  // the FILE thread).
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
-
-  std::unique_ptr<ChromeBrowserStateImpl> browser_state_impl(
-      new ChromeBrowserStateImpl(path, io_task_runner));
-  DCHECK(!browser_state_impl->IsOffTheRecord());
-
-  std::pair<ChromeBrowserStateImplPathMap::iterator, bool> insert_result =
-      browser_states_.insert(
-          std::make_pair(path, std::move(browser_state_impl)));
-  DCHECK(insert_result.second);
-  DCHECK(insert_result.first != browser_states_.end());
-
-  DoFinalInit(insert_result.first->second.get());
-  return insert_result.first->second.get();
+  return nullptr;
 }
 
 base::FilePath ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDir(
@@ -181,9 +166,8 @@ ChromeBrowserStateManagerImpl::GetLoadedBrowserStates() {
 
 void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  DCHECK(local_state);
   base::Value::List last_active_browser_states =
-      local_state->GetList(prefs::kBrowserStatesLastActive).Clone();
+      CHECK_DEREF(local_state).GetList(prefs::kBrowserStatesLastActive).Clone();
 
   // If there is no last active browser state load the default one.
   if (last_active_browser_states.size() == 0) {
@@ -194,9 +178,35 @@ void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
     if (!browser_state_dir.is_string()) {
       continue;
     }
-    GetBrowserState(
-        GetUserDataDir().AppendASCII(browser_state_dir.GetString()));
+    LoadBrowserState(
+        GetUserDataDir().AppendASCII(browser_state_dir.GetString()),
+        base::DoNothing());
   }
+}
+
+void ChromeBrowserStateManagerImpl::LoadBrowserState(
+    const base::FilePath& path,
+    BrowserStateLoadedCallback callback) {
+  DCHECK(!base::Contains(browser_states_, path));
+
+  // Get sequenced task runner for making sure that file operations of
+  // this profile are executed in expected order (what was previously assured by
+  // the FILE thread).
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
+
+  auto [iter, inserted] = browser_states_.insert(std::make_pair(
+      path,
+      base::WrapUnique(new ChromeBrowserStateImpl(path, io_task_runner))));
+  DCHECK(inserted);
+  DCHECK(iter != browser_states_.end());
+
+  ChromeBrowserState* browser_state = iter->second.get();
+  DCHECK(!browser_state->IsOffTheRecord());
+
+  DoFinalInit(browser_state);
+  std::move(callback).Run(browser_state);
 }
 
 void ChromeBrowserStateManagerImpl::DoFinalInit(
