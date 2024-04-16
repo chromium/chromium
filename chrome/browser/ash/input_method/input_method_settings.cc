@@ -347,41 +347,26 @@ mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
       ValueOrEmpty(input_method_specific_pref.FindString("zhuyinPageSize")));
   return settings;
 }
+}  // namespace
 
-const base::Value::Dict& GetPrefsDictionaryForEngineId(
+mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
-    const std::string& engine_id,
-    const base::Value::Dict& fallback_dictionary) {
+    const std::string& engine_id) {
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
-  const base::Value::Dict& all_input_method_pref =
-      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
-
   // For each input method, the dictionary contains an entry, with the key being
   // a string that identifies the input method, and the value being a
   // subdictionary with the specific settings for that input method.  The
   // subdictionary structure depends on the type of input method it's for.  The
   // subdictionary may be null if the user hasn't changed any settings for that
   // input method.
-  const base::Value::Dict* input_method_specific_pref_or_null =
-      all_input_method_pref.FindDict(engine_id);
+  const base::Value::Dict* ime_prefs_ptr =
+      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
+          .FindDict(engine_id);
 
-  // For convenience, pass an empty dictionary if there are no settings for this
-  // input method yet.
-  return input_method_specific_pref_or_null
-             ? *input_method_specific_pref_or_null
-             : fallback_dictionary;
-}
-
-// Port the Prefs sett}  // namespace
-}  // namespace
-
-mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
-    const PrefService& prefs,
-    const std::string& engine_id) {
-  base::Value::Dict empty_dictionary;
-  const auto& input_method_specific_pref =
-      GetPrefsDictionaryForEngineId(prefs, engine_id, empty_dictionary);
+  base::Value::Dict default_dict;
+  const base::Value::Dict& input_method_specific_pref =
+      ime_prefs_ptr == nullptr ? default_dict : *ime_prefs_ptr;
 
   if (IsFstEngine(engine_id)) {
     return mojom::InputMethodSettings::NewLatinSettings(
