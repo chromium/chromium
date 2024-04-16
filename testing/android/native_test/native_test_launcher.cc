@@ -38,6 +38,11 @@
 #include "base/test/clang_profiling.h"
 #endif
 
+#if defined(__ANDROID_CLANG_COVERAGE__)
+// This is only used by Cronet in AOSP.
+extern "C" int __llvm_profile_dump(void);
+#endif
+
 using jni_zero::JavaParamRef;
 
 // The main function of the program to be wrapped as a test apk.
@@ -146,6 +151,14 @@ static void JNI_NativeTest_RunTests(
 // Explicitly write profiling data to LLVM profile file.
 #if BUILDFLAG(CLANG_PROFILING)
   base::WriteClangProfilingProfile();
+#elif defined(__ANDROID_CLANG_COVERAGE__)
+  // Cronet runs tests in AOSP, where due to build system constraints, compiler
+  // flags can be changed (to enable coverage), but source files cannot be
+  // conditionally linked (as is the case with `clang_profiling.cc`).
+  //
+  //  This will always get called from a single thread unlike
+  //  base::WriteClangProfilingProfile hence the lack of locks.
+  __llvm_profile_dump();
 #endif
 }
 
