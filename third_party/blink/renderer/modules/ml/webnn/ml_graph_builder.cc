@@ -1716,8 +1716,7 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
   auto validated_output = webnn::ValidateMatmulAndInferOutput(
       ConvertToComponentOperand(a), ConvertToComponentOperand(b));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
   }
@@ -1729,8 +1728,7 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
       this, ComponentOperandTypeToBlink(validated_output.value().data_type),
       Vector<uint32_t>(validated_output.value().dimensions), matmul);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   matmul->Connect(std::move(inputs), {output.value()});
