@@ -67,7 +67,7 @@ bool IntersectionObserverController::ComputeIntersections(
     gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   debug_info_ = debug_info_ +
-                String::Format("%x %f,%f|", flags,
+                String::Format("%x %g,%g|", flags,
                                accumulated_scroll_delta_since_last_update.x(),
                                accumulated_scroll_delta_since_last_update.y());
   if (debug_info_.length() > 256) {

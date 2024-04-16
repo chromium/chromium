@@ -104,9 +104,9 @@ class CORE_EXPORT IntersectionGeometry {
     gfx::Transform root_to_view_transform;
     int relationship = 0;
     bool root_scrolls_target = false;
-    String root_clip_tree;
-    String target_clip_tree;
-    String target_transform_tree;
+    String clip_tree;
+    String transform_tree;
+    String scroll_tree;
 
     String ToString() const;
 #endif
