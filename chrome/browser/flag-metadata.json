@@ -609,6 +609,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "auto-picture-in-picture-for-video-playback",
+    "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "auto-picture-in-picture-video-heuristics",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 140

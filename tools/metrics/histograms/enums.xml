@@ -19880,6 +19880,8 @@ from previous Chrome versions.
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
   <int value="-574354898" label="PostQuantumCECPQ2:enabled"/>
   <int value="-574217217" label="kSignInProfileCreationEnterprise:enabled"/>
+  <int value="-574177355"
+      label="AutoPictureInPictureForVideoPlayback:disabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
   <int value="-573375274" label="DisplayPerformanceMode:enabled"/>
@@ -22420,6 +22422,7 @@ from previous Chrome versions.
   <int value="558249253"
       label="ContextualSearchThinWebViewImplementation:disabled"/>
   <int value="558873715" label="SiteDetails:disabled"/>
+  <int value="559642066" label="AutoPictureInPictureForVideoPlayback:enabled"/>
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
   <int value="559903013"
       label="AutofillEnableMerchantOptOutErrorDialog:enabled"/>
