@@ -967,10 +967,10 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
       result_height.Unite(
           font_data->NormalizedTypoAscentAndDescent(font_baseline));
     }
-    result_height.ascent =
-        std::min(result_height.ascent, primary_height.ascent);
-    result_height.descent =
-        std::min(result_height.descent, primary_height.descent);
+    result_height.ascent = std::min(LayoutUnit(result_height.ascent.Ceil()),
+                                    primary_height.ascent);
+    result_height.descent = std::min(LayoutUnit(result_height.descent.Ceil()),
+                                     primary_height.descent);
     return result_height;
   }
   if (const auto& layout_result = line_item.layout_result) {
