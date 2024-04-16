@@ -4893,6 +4893,9 @@ targets.legacy_basic_suite(
             args = [
                 "--gtest_filter=*Vulkan_SwiftShader*",
             ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
             use_isolated_scripts_api = True,
         ),
     },

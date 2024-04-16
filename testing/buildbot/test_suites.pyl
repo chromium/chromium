@@ -5264,6 +5264,9 @@
         'args': [
           '--gtest_filter=*Vulkan_SwiftShader*',
         ],
+        'swarming': {
+          'shards': 2,
+        },
         'use_isolated_scripts_api': True,
       },
     },
