@@ -69,8 +69,8 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
         urls_with_metadata,
     uint32_t index,
     double budget_remaining,
-    bool& failed_due_to_no_budget) {
-  DCHECK(!failed_due_to_no_budget);
+    blink::SharedStorageSelectUrlBudgetStatus& budget_status) {
+  DCHECK_EQ(budget_status, blink::SharedStorageSelectUrlBudgetStatus::kOther);
   DCHECK_GT(urls_with_metadata.size(), 0u);
   DCHECK_LT(index, urls_with_metadata.size());
   DCHECK(page);
@@ -79,12 +79,20 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
 
   // If we are running out of budget, consider this mapping to be failed. Use
   // the default URL, and there's no need to further charge the budget.
-  if (budget_to_charge > 0.0 && (budget_to_charge > budget_remaining ||
-                                 !page->CheckAndMaybeDebitSelectURLBudgets(
-                                     shared_storage_site, budget_to_charge))) {
-    failed_due_to_no_budget = true;
-    index = 0;
-    budget_to_charge = 0.0;
+  if (budget_to_charge > 0.0) {
+    budget_status = (budget_to_charge > budget_remaining)
+                        ? blink::SharedStorageSelectUrlBudgetStatus::
+                              kInsufficientSiteNavigationBudget
+                        : page->CheckAndMaybeDebitSelectURLBudgets(
+                              shared_storage_site, budget_to_charge);
+    if (budget_status !=
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget) {
+      index = 0;
+      budget_to_charge = 0.0;
+    }
+  } else {
+    budget_status =
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget;
   }
 
   GURL mapped_url = urls_with_metadata[index]->url;
@@ -273,16 +281,18 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
   while (it != unresolved_urns_.end()) {
     const GURL& urn_uuid = it->first;
 
-    bool failed_due_to_no_budget = false;
+    blink::SharedStorageSelectUrlBudgetStatus budget_status =
+        blink::SharedStorageSelectUrlBudgetStatus::kOther;
+
     std::optional<FencedFrameConfig> config =
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
-                urn_uuid, CreateSharedStorageURNMappingResult(
-                              storage_partition_, browser_context_, page_.get(),
-                              main_frame_origin_, shared_storage_origin_,
-                              shared_storage_site_, std::move(it->second),
-                              /*index=*/0, /*budget_remaining=*/0.0,
-                              failed_due_to_no_budget));
+                urn_uuid,
+                CreateSharedStorageURNMappingResult(
+                    storage_partition_, browser_context_, page_.get(),
+                    main_frame_origin_, shared_storage_origin_,
+                    shared_storage_site_, std::move(it->second),
+                    /*index=*/0, /*budget_remaining=*/0.0, budget_status));
 
     shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
 
@@ -1031,19 +1041,24 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   unresolved_urns_.erase(it);
 
   if (page_) {
-    bool failed_due_to_no_budget = false;
+    blink::SharedStorageSelectUrlBudgetStatus budget_status =
+        blink::SharedStorageSelectUrlBudgetStatus::kOther;
+
     SharedStorageURNMappingResult mapping_result =
         CreateSharedStorageURNMappingResult(
             storage_partition_, browser_context_, page_.get(),
             main_frame_origin_, shared_storage_origin_, shared_storage_site_,
             std::move(urls_with_metadata), index, budget_result.bits,
-            failed_due_to_no_budget);
+            budget_status);
+
+    blink::LogSharedStorageSelectURLBudgetStatus(budget_status);
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());
 
       // Let the insufficient-budget failure supersede the script failure.
-      if (failed_due_to_no_budget) {
+      if (budget_status !=
+          blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget) {
         devtools_instrumentation::LogWorkletMessage(
             static_cast<RenderFrameHostImpl&>(
                 document_service_->render_frame_host()),

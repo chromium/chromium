@@ -197,6 +197,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SharedStorageSelectUrlBudgetStatus">
+  <int value="0" label="SufficientBudget"/>
+  <int value="1" label="InsufficientSiteNavigationBudget"/>
+  <int value="2" label="InsufficientOverallPageloadBudget"/>
+  <int value="3" label="InsufficientSitePageloadBudget"/>
+  <int value="4" label="Other">
+    The budget was not checked or an error occurred.
+  </int>
+</enum>
+
 <enum name="SharedStorageWorkletDestroyedStatus">
   <int value="0" label="DidNotEnterKeepAlive"/>
   <int value="1" label="KeepAliveEndedDueToOperationsFinished"/>

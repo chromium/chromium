@@ -41,6 +41,22 @@ enum class SharedStorageWorkletErrorType {
   kMaxValue = kSuccess,
 };
 
+// Whether or not there is sufficient budget for the `selectURL()` call, and if
+// there is insufficient budget, which of the budgets fell short. Note that
+// budgets are checked in the order: site navigation budget, overall pageload
+// budget, site pageload budget. Recorded to UMA; always add new values to the
+// end and do not reorder or delete values from this list.
+enum class SharedStorageSelectUrlBudgetStatus {
+  kSufficientBudget = 0,
+  kInsufficientSiteNavigationBudget = 1,
+  kInsufficientOverallPageloadBudget = 2,
+  kInsufficientSitePageloadBudget = 3,
+  kOther = 4,
+
+  // Keep this at the end and equal to the last entry.
+  kMaxValue = kOther,
+};
+
 // Whether the length of the urls input parameter (of the
 // sharedStorage.runURLSelectionOperation method) is valid.
 BLINK_COMMON_EXPORT bool IsValidSharedStorageURLsArrayLength(size_t length);
@@ -51,9 +67,13 @@ BLINK_COMMON_EXPORT bool IsValidSharedStorageKeyStringLength(size_t length);
 // Whether the length of shared storage's value is valid.
 BLINK_COMMON_EXPORT bool IsValidSharedStorageValueStringLength(size_t length);
 
-// Logs histograms of the calling method and error type for worklet errors.
+// Logs histogram of the calling method and error type for worklet errors.
 BLINK_COMMON_EXPORT void LogSharedStorageWorkletError(
     SharedStorageWorkletErrorType error_type);
+
+// Logs histogram of the `selectURL()` budget status.
+BLINK_COMMON_EXPORT void LogSharedStorageSelectURLBudgetStatus(
+    SharedStorageSelectUrlBudgetStatus budget_status);
 
 // Whether `privateAggregation` should be exposed to `SharedStorageWorklet`
 // scope.

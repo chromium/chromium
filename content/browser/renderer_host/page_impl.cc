@@ -17,11 +17,15 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
@@ -370,17 +374,22 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
-bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(
-    const net::SchemefulSite& site,
-    double bits_to_charge) {
+blink::SharedStorageSelectUrlBudgetStatus
+PageImpl::CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
+                                             double bits_to_charge) {
   if (!select_url_overall_budget_) {
     // The limits are not enabled.
-    return true;
+    return blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget;
   }
 
-  // Return false if there is insufficient overall budget.
+  // Return insufficient if there is insufficient overall budget.
   if (bits_to_charge > select_url_overall_budget_.value()) {
-    return false;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &GetMainDocument(),
+        blink::mojom::WebFeature::
+            kSharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient);
+    return blink::SharedStorageSelectUrlBudgetStatus::
+        kInsufficientOverallPageloadBudget;
   }
 
   DCHECK(select_url_max_bits_per_site_);
@@ -388,24 +397,26 @@ bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(
   // Return false if the max bits per site is set to a value smaller than the
   // current bits to charge.
   if (bits_to_charge > select_url_max_bits_per_site_.value()) {
-    return false;
+    return blink::SharedStorageSelectUrlBudgetStatus::
+        kInsufficientSitePageloadBudget;
   }
 
-  // Charge the per-site budget or return false if there is not enough.
+  // Charge the per-site budget or return insufficient if there is not enough.
   auto it = select_url_per_site_budget_.find(site);
   if (it == select_url_per_site_budget_.end()) {
     select_url_per_site_budget_[site] =
         select_url_max_bits_per_site_.value() - bits_to_charge;
   } else if (bits_to_charge > it->second) {
     // There is insufficient per-site budget remaining.
-    return false;
+    return blink::SharedStorageSelectUrlBudgetStatus::
+        kInsufficientSitePageloadBudget;
   } else {
     it->second -= bits_to_charge;
   }
 
   // Charge the overall budget.
   select_url_overall_budget_.value() -= bits_to_charge;
-  return true;
+  return blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget;
 }
 
 void PageImpl::TakeLoadingMemoryTracker(NavigationRequest* request) {

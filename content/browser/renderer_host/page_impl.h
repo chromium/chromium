@@ -23,6 +23,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
@@ -196,13 +197,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
   // Returns whether a pending call to `sharedStorage.selectURL()` has
-  // sufficient budget for `origin`, debiting `select_url_overall_budget_` and
-  // `select_url_per_origin_budget_[origin]` if so and if
+  // sufficient budget for `site`, debiting `select_url_overall_budget_` and
+  // `select_url_per_site_budget_[site]` if so and if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
   // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
-  // true.
-  bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
-                                          double bits_to_charge);
+  // `blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget`. If there is
+  // insufficient budget, the returned enum value specifies which budget was
+  // insufficient.
+  blink::SharedStorageSelectUrlBudgetStatus CheckAndMaybeDebitSelectURLBudgets(
+      const net::SchemefulSite& site,
+      double bits_to_charge);
 
   // See documentation for |credentialless_iframes_nonce_|.
   const base::UnguessableToken& credentialless_iframes_nonce() const {

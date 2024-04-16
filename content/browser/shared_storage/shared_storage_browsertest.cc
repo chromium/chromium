@@ -132,6 +132,9 @@ constexpr char kTimingRunExecutedInWorkletHistogram[] =
 constexpr char kTimingSelectUrlExecutedInWorkletHistogram[] =
     "Storage.SharedStorage.Document.Timing.SelectURL.ExecutedInWorklet";
 
+constexpr char kSelectUrlBudgetStatusHistogram[] =
+    "Storage.SharedStorage.Worklet.SelectURL.BudgetStatus";
+
 constexpr double kBudgetAllowed = 5.0;
 
 constexpr int kStalenessThresholdDays = 1;
@@ -2567,9 +2570,13 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("Finish executing 'test-url-selection-operation'",
             base::UTF16ToUTF8(console_observer.messages().back().message));
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      1);
+  histogram_tester_.ExpectUniqueSample(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget, 1);
 
   std::string origin_str = url::Origin::Create(main_url).Serialize();
   ExpectAccessObserved(
@@ -6379,9 +6386,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   EXPECT_DOUBLE_EQ(RemainingBudgetViaJSForOrigin(shared_storage_origin),
                    kBudgetAllowed - 3);
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      2);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget, 1);
+  histogram_tester_.ExpectBucketCount(
+      kSelectUrlBudgetStatusHistogram,
+      blink::SharedStorageSelectUrlBudgetStatus::
+          kInsufficientSiteNavigationBudget,
+      1);
 }
 
 // When number of urn mappings limit has been reached, subsequent `selectURL()`
@@ -7727,10 +7743,28 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
                                       &console_observer);
   }
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
 
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      call_limit + 1);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        call_limit);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        call_limit + 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
@@ -7785,10 +7819,28 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
                                       &console_observer);
   }
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
 
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      input4_call_limit + 2);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        input4_call_limit + 1);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        input4_call_limit + 2);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -7848,9 +7900,27 @@ IN_PROC_BROWSER_TEST_P(
                                    &console_observer);
   }
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      call_limit + 1);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        call_limit);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        call_limit + 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -7921,9 +7991,27 @@ IN_PROC_BROWSER_TEST_P(
                                    &console_observer);
   }
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      input4_call_limit + 2);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        input4_call_limit + 1);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        input4_call_limit + 2);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -7996,9 +8084,27 @@ IN_PROC_BROWSER_TEST_P(
   RunSuccessfulSelectURLInIframe(last_iframe_node, /*num_urls=*/8,
                                  &console_observer);
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      per_site_call_limit + 2);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        per_site_call_limit + 1);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        1);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        per_site_call_limit + 2);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8126,11 +8232,36 @@ IN_PROC_BROWSER_TEST_P(
                                    /*num_urls=*/2, &console_observer);
   }
 
-  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
+  WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram,
+                     kSelectUrlBudgetStatusHistogram});
   histogram_tester_.ExpectTotalCount(
       kTimingSelectUrlExecutedInWorkletHistogram,
       num_site_limit * (2 + per_site_input2_call_limit) +
           overall_budget_remaining + 1);
+
+  if (LimitSelectURLCalls()) {
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        num_site_limit * (1 + per_site_input2_call_limit) +
+            overall_budget_remaining);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientSitePageloadBudget,
+        overall_budget_remaining ? num_site_limit : num_site_limit - 1);
+    histogram_tester_.ExpectBucketCount(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::
+            kInsufficientOverallPageloadBudget,
+        overall_budget_remaining ? 1 : 2);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kSelectUrlBudgetStatusHistogram,
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
+        num_site_limit * (2 + per_site_input2_call_limit) +
+            overall_budget_remaining + 1);
+  }
 }
 
 class SharedStorageContextBrowserTest

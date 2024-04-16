@@ -42,6 +42,12 @@ void LogSharedStorageWorkletError(SharedStorageWorkletErrorType error_type) {
                                 error_type);
 }
 
+void LogSharedStorageSelectURLBudgetStatus(
+    SharedStorageSelectUrlBudgetStatus budget_status) {
+  base::UmaHistogramEnumeration(
+      "Storage.SharedStorage.Worklet.SelectURL.BudgetStatus", budget_status);
+}
+
 bool ShouldDefinePrivateAggregationInSharedStorage() {
   return base::FeatureList::IsEnabled(
              blink::features::kPrivateAggregationApi) &&

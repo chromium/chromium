@@ -1218,6 +1218,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.SelectURL.BudgetStatus"
+    enum="SharedStorageSelectUrlBudgetStatus" expires_after="2024-09-29">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the `selectURL()` call had sufficient budget, and if it had
+    insufficient budget, which budget check failed. Recorded in
+    `SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished()`
+    via `LogSharedStorageSelectURLBudgetStatus()`. Recorded for `selectURL()`
+    calls that succeed and for calls that fail due to insufficient budget.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.Timing.Append" units="ms"
     expires_after="2024-07-31">
   <owner>cammie@chromium.org</owner>
