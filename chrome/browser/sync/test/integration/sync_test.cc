@@ -609,7 +609,9 @@ bool SyncTest::SetupClients() {
 }
 
 void SyncTest::InitializeProfile(int index, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile);
+  CHECK(!profiles_[index]) << " for index " << index;
+
   profiles_[index] = profile;
   profile->AddObserver(this);
 
@@ -717,6 +719,13 @@ void SyncTest::ClearProfiles() {
   // This method is called for only a live server, so it shouldn't use
   // FakeGCMDriver.
   DCHECK(profile_to_fake_gcm_driver_.empty());
+
+  for (Profile* profile : profiles_) {
+    if (profile) {
+      profile->RemoveObserver(this);
+    }
+  }
+
   profiles_.clear();
   scoped_temp_dirs_.clear();
 #if !BUILDFLAG(IS_ANDROID)
