@@ -322,6 +322,11 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "shards-30",
+    shards = 30,
+)
+
+targets.mixin(
     name = "chromeos-amd64-generic",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",

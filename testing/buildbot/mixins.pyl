@@ -1190,6 +1190,9 @@
   'shards-20': {
     'shards': 20,
   },
+  'shards-30': {
+    'shards': 30,
+  },
   'shiba': {
     'swarming': {
       'dimensions': {

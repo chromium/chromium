@@ -202,7 +202,7 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 "chromeos-tast-public-builder",
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-20",
+                "shards-30",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -233,7 +233,7 @@ targets.legacy_matrix_compound_suite(
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
-                "shards-20",
+                "shards-30",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
