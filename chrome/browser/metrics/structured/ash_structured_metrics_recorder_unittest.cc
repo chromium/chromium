@@ -81,7 +81,7 @@ EventsProto MakeExternalEventProto(const std::vector<uint64_t>& ids) {
   EventsProto proto;
 
   for (const auto id : ids) {
-    auto* event = proto.add_non_uma_events();
+    auto* event = proto.add_events();
     event->set_profile_event_id(id);
   }
 

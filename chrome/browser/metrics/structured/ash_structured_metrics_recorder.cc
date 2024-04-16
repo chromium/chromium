@@ -130,14 +130,14 @@ void AshStructuredMetricsRecorder::OnExternalMetricsCollected(
     return;
   }
 
-  event_storage_->AddBatchEvents(events.non_uma_events());
+  event_storage_->AddBatchEvents(events.events());
 
-  for (const auto& event : events.non_uma_events()) {
+  for (const auto& event : events.events()) {
     NotifyEventRecorded(event);
   }
 
   // Only increment if new events were add.
-  if (events.non_uma_events_size()) {
+  if (events.events_size()) {
     external_metrics_scans_ += 1;
   }
 }

@@ -46,7 +46,7 @@ EventsProto MakeTestingProto(const std::vector<uint64_t>& ids,
 void AssertEqualsTestingProto(const EventsProto& proto,
                               const std::vector<uint64_t>& ids) {
   ASSERT_EQ(proto.uma_events().size(), static_cast<int>(ids.size()));
-  ASSERT_TRUE(proto.non_uma_events().empty());
+  ASSERT_TRUE(proto.events().empty());
 
   for (size_t i = 0; i < ids.size(); ++i) {
     const auto& event = proto.uma_events(i);

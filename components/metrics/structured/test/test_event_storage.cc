@@ -19,29 +19,29 @@ TestEventStorage::TestEventStorage() = default;
 TestEventStorage::~TestEventStorage() = default;
 
 void TestEventStorage::AddEvent(StructuredEventProto event) {
-  events()->mutable_non_uma_events()->Add(std::move(event));
+  events()->mutable_events()->Add(std::move(event));
 }
 
 RepeatedPtrField<StructuredEventProto> TestEventStorage::TakeEvents() {
-  return std::move(*events_.mutable_non_uma_events());
+  return std::move(*events_.mutable_events());
 }
 
 int TestEventStorage::RecordedEventsCount() const {
-  return events_.non_uma_events_size();
+  return events_.events_size();
 }
 
 void TestEventStorage::Purge() {
   events_.clear_uma_events();
-  events_.clear_non_uma_events();
+  events_.clear_events();
 }
 
 void TestEventStorage::AddBatchEvents(
     const RepeatedPtrField<StructuredEventProto>& events) {
-  events_.mutable_non_uma_events()->MergeFrom(events);
+  events_.mutable_events()->MergeFrom(events);
 }
 
 void TestEventStorage::CopyEvents(EventsProto* proto) const {
-  proto->mutable_non_uma_events()->MergeFrom(events_.non_uma_events());
+  proto->mutable_events()->MergeFrom(events_.events());
 }
 
 }  // namespace metrics::structured

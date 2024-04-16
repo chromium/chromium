@@ -116,7 +116,7 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
   EventsProto events;
   storage->CopyEvents(&events);
 
-  for (const auto& event : events.non_uma_events()) {
+  for (const auto& event : events.events()) {
     if (event.project_name_hash() == project_name_hash &&
         event.event_name_hash() == event_name_hash) {
       events_vector.push_back(event);

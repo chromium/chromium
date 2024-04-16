@@ -93,7 +93,7 @@ void ProcessEventProtosProjectCounts(
     IncrementProjectCount(project_count_map, event.project_name_hash());
   }
 
-  for (const auto& event : proto.non_uma_events()) {
+  for (const auto& event : proto.events()) {
     IncrementProjectCount(project_count_map, event.project_name_hash());
   }
 }
@@ -134,8 +134,8 @@ void MaybeFilterBluetoothEvents(
 bool FilterProto(EventsProto* proto,
                  const base::flat_set<uint64_t>& disallowed_projects) {
   FilterEvents(proto->mutable_uma_events(), disallowed_projects);
-  FilterEvents(proto->mutable_non_uma_events(), disallowed_projects);
-  return proto->uma_events_size() > 0 || proto->non_uma_events_size() > 0;
+  FilterEvents(proto->mutable_events(), disallowed_projects);
+  return proto->uma_events_size() > 0 || proto->events_size() > 0;
 }
 
 EventsProto ReadAndDeleteEvents(
@@ -232,7 +232,7 @@ EventsProto ReadAndDeleteEvents(
     // MergeFrom performs a copy that could be a move if done manually. But
     // all the protos here are expected to be small, so let's keep it simple.
     result.mutable_uma_events()->MergeFrom(proto.uma_events());
-    result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
+    result.mutable_events()->MergeFrom(proto.events());
   }
 
   if (recording_enabled) {
@@ -254,7 +254,7 @@ EventsProto ReadAndDeleteEvents(
   LogNumFilesPerExternalMetricsScan(file_counter);
 
   MaybeFilterBluetoothEvents(result.mutable_uma_events());
-  MaybeFilterBluetoothEvents(result.mutable_non_uma_events());
+  MaybeFilterBluetoothEvents(result.mutable_events());
 
   return result;
 }

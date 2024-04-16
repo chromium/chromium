@@ -14,23 +14,23 @@ ChromeEventStorage::ChromeEventStorage() = default;
 ChromeEventStorage::~ChromeEventStorage() = default;
 
 void ChromeEventStorage::AddEvent(StructuredEventProto event) {
-  *events_.add_non_uma_events() = std::move(event);
+  *events_.add_events() = std::move(event);
 }
 
 RepeatedPtrField<StructuredEventProto> ChromeEventStorage::TakeEvents() {
-  return std::move(*events_.mutable_non_uma_events());
+  return std::move(*events_.mutable_events());
 }
 
 int ChromeEventStorage::RecordedEventsCount() const {
-  return events_.non_uma_events_size();
+  return events_.events_size();
 }
 
 void ChromeEventStorage::Purge() {
-  events_.clear_non_uma_events();
+  events_.clear_events();
 }
 
 void ChromeEventStorage::CopyEvents(EventsProto* proto) const {
-  proto->mutable_non_uma_events()->MergeFrom(events_.non_uma_events());
+  proto->mutable_events()->MergeFrom(events_.events());
 }
 
 }  // namespace metrics::structured

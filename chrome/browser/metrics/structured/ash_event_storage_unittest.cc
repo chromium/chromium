@@ -108,7 +108,7 @@ TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
 
   EventsProto events;
   storage->CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 1);
+  EXPECT_EQ(events.events_size(), 1);
 
   StructuredDataProto proto = GetReport(storage.get());
   EXPECT_EQ(proto.events_size(), 1);
@@ -116,7 +116,7 @@ TEST_F(AshEventStorageTest, StoreAndProvideEvents) {
   // Storage should have no events after a successful dump.
   events.Clear();
   storage->CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 0);
+  EXPECT_EQ(events.events_size(), 0);
 
   ExpectNoErrors();
 }
@@ -140,7 +140,7 @@ TEST_F(AshEventStorageTest, PreRecordedEventsProcessedCorrectly) {
 
   EventsProto events;
   storage->CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 1);
+  EXPECT_EQ(events.events_size(), 1);
 
   ExpectNoErrors();
 }
@@ -208,7 +208,7 @@ TEST_F(AshEventStorageTest, EventsPreProfilePersistedCorrectly) {
   // Ensure that the event is persisted.
   EventsProto events;
   storage->CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 1);
+  EXPECT_EQ(events.events_size(), 1);
   ExpectNoErrors();
 
   AddProfile();
@@ -232,10 +232,10 @@ TEST_F(AshEventStorageTest, AddBatchEvents) {
   Wait();
 
   EventsProto proto;
-  *proto.add_non_uma_events() = BuildTestEvent();
-  *proto.add_non_uma_events() = BuildTestEvent();
-  *proto.add_non_uma_events() = BuildTestEvent();
-  storage->AddBatchEvents(proto.non_uma_events());
+  *proto.add_events() = BuildTestEvent();
+  *proto.add_events() = BuildTestEvent();
+  *proto.add_events() = BuildTestEvent();
+  storage->AddBatchEvents(proto.events());
 
   const auto data = GetReport(storage.get());
   ASSERT_EQ(data.events_size(), 3);
@@ -256,7 +256,7 @@ TEST_F(AshEventStorageTest, MergePreUserAndUserEvents) {
   // There should be 3 events in the pre-profile storage.
   EventsProto events_proto;
   storage->CopyEvents(&events_proto);
-  EXPECT_EQ(events_proto.non_uma_events_size(), 3);
+  EXPECT_EQ(events_proto.events_size(), 3);
 
   // Add profile and add an event while the profile events are being loaded.
   AddProfile();

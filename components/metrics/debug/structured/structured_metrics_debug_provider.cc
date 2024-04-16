@@ -192,7 +192,7 @@ void StructuredMetricsDebugProvider::OnEventRecorded(
 void StructuredMetricsDebugProvider::LoadRecordedEvents() {
   EventsProto proto;
   service_->recorder()->event_storage()->CopyEvents(&proto);
-  for (const auto& event : proto.non_uma_events()) {
+  for (const auto& event : proto.events()) {
     events_.Append(CreateEventDict(event));
   }
 }
