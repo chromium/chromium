@@ -50,6 +50,7 @@ inline constexpr char16_t kApartmentNumberRe[] =
     u"|(?:(?<!teléfo)no|n[úu]m(?:ero)?)\\.?\\s*(int\\b|interno)"  // es-MX
     u"|n(u|ú)mero.*app?art(a|e)ment"                              // es,fr,it
     u"|wohnung"                                                   // de
+    u"|(?:nr|numer)?[.\\s]*(?:lokalu|(?<!za)mieszkani[ae])"                  // pl
     u"|квартир";                                                  // ru
 inline constexpr char16_t kAddressLine1Re[] =
     u"^address$|address[_-]?line(one)?|address1|addr1|street"
