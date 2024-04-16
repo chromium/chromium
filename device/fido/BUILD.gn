@@ -165,6 +165,8 @@ component("fido") {
       "enclave/types.h",
       "enclave/verify/claim.cc",
       "enclave/verify/claim.h",
+      "enclave/verify/endorsement.cc",
+      "enclave/verify/endorsement.h",
       "enclave/verify/verify.h",
       "fido_authenticator.cc",
       "fido_authenticator.h",
