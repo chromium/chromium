@@ -78,8 +78,6 @@ class ExtendedUpdatesController {
  protected:
   ExtendedUpdatesController();
 
-  void MaybeShowNotification(base::WeakPtr<content::BrowserContext> context);
-
  private:
   friend class ScopedExtendedUpdatesController;
 
@@ -92,6 +90,8 @@ class ExtendedUpdatesController {
 
   // Returns true if the user has the ability to opt in the device.
   bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings);
+
+  void OnOwnershipDetermined(base::WeakPtr<content::BrowserContext> context);
 
   bool ShouldShowNotification(content::BrowserContext* context);
 

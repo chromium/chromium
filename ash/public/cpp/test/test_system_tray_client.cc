@@ -58,7 +58,9 @@ void TestSystemTrayClient::ShowWifiSyncSettings() {
   show_wifi_sync_settings_count_++;
 }
 
-void TestSystemTrayClient::ShowAboutChromeOS() {}
+void TestSystemTrayClient::ShowAboutChromeOS() {
+  show_about_chromeos_count_++;
+}
 
 void TestSystemTrayClient::ShowAboutChromeOSDetails() {}
 

@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/model/update_model.h"
 #include "base/functional/bind.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -143,7 +146,7 @@ void ExtendedUpdatesController::OnEolInfo(
   auto* owner_settings =
       OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
   owner_settings->IsOwnerAsync(base::IgnoreArgs<bool>(
-      base::BindOnce(&ExtendedUpdatesController::MaybeShowNotification,
+      base::BindOnce(&ExtendedUpdatesController::OnOwnershipDetermined,
                      weak_factory_.GetWeakPtr(), context->GetWeakPtr())));
 }
 
@@ -151,12 +154,20 @@ void ExtendedUpdatesController::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-void ExtendedUpdatesController::MaybeShowNotification(
+void ExtendedUpdatesController::OnOwnershipDetermined(
     base::WeakPtr<content::BrowserContext> context) {
-  if (!context || !ShouldShowNotification(context.get())) {
+  if (!context || !IsOptInEligible(context.get())) {
     return;
   }
-  ShowNotification(context.get());
+
+  if (auto* system_tray_model = Shell::Get()->system_tray_model()) {
+    // TODO(b/334225890): Set to false once opted in or ineligible.
+    system_tray_model->SetShowExtendedUpdatesNotice(true);
+  }
+
+  if (ShouldShowNotification(context.get())) {
+    ShowNotification(context.get());
+  }
 }
 
 // TODO(b/333619965): Also check if user has dismissed the notification before.

@@ -350,6 +350,10 @@ Style notes:
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_EOL_NOTICE_SHORT" desc="A short message shown to the user in the quick settings bubble when their device reaches end of life, and stops receiving software updates.">
         Updates ended
       </message>
+      <!-- TODO(b/324297162): Finalize and translate -->
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_EXTENDED_UPDATES_NOTICE" desc="Message shown to the user in the quick settings bubble when their device is eligible to receive extended updates support." translateable="false">
+        Security updates paused. Review options.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle the Autozoom feature (which controls if camera auto zoom to faces) on or off. [CHAR_LIMIT=14]">
         Camera framing
       </message>

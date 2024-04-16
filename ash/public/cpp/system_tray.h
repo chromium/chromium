@@ -109,6 +109,10 @@ class ASH_EXPORT SystemTray {
   // Sets whether end of life notice should be shown in quick settings.
   virtual void SetShowEolNotice(bool show) = 0;
 
+  // Sets whether the extended updates support notice should be shown
+  // in quick settings.
+  virtual void SetShowExtendedUpdatesNotice(bool show) = 0;
+
   // Shows the volume slider bubble shown at the right bottom of screen.
   virtual void ShowVolumeSliderBubble() = 0;
 

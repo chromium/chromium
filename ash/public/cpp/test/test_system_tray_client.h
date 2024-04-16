@@ -112,6 +112,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_connected_devices_settings_count_;
   }
 
+  int show_about_chromeos_count() const { return show_about_chromeos_count_; }
+
   int show_os_settings_privacy_and_security_count() const {
     return show_os_settings_privacy_and_security_count_;
   }
@@ -226,6 +228,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_hotspot_subpage_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
+  int show_about_chromeos_count_ = 0;
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_os_settings_privacy_hub_count_ = 0;
   int show_speak_on_mute_detection_count_ = 0;

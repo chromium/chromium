@@ -62,6 +62,7 @@ class ASH_EXPORT SystemTrayModel : public SystemTray {
   void SetUpdateDeferred(DeferredUpdateState state) override;
   void SetUpdateOverCellularAvailableIconVisible(bool visible) override;
   void SetShowEolNotice(bool show) override;
+  void SetShowExtendedUpdatesNotice(bool show) override;
   void ShowVolumeSliderBubble() override;
   void ShowNetworkDetailedViewBubble() override;
   void SetPhoneHubManager(

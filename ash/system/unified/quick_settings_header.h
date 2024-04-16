@@ -17,6 +17,7 @@ namespace ash {
 
 class ChannelIndicatorQuickSettingsView;
 class EolNoticeQuickSettingsView;
+class ExtendedUpdatesNoticeQuickSettingsView;
 class UnifiedSystemTrayController;
 
 // The header view shown at the top of the `QuickSettingsView`. Contains an
@@ -45,6 +46,7 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   views::View* GetSupervisedButtonForTest();
   views::Label* GetManagedButtonLabelForTest();
   views::Label* GetSupervisedButtonLabelForTest();
+  views::View* GetExtendedUpdatesViewForTest();
 
  private:
   // A view that shows whether the device is enterprise managed or not. It
@@ -64,6 +66,8 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   raw_ptr<ManagedStateView> supervised_view_ = nullptr;
   raw_ptr<ChannelIndicatorQuickSettingsView> channel_view_ = nullptr;
   raw_ptr<EolNoticeQuickSettingsView> eol_notice_ = nullptr;
+  raw_ptr<ExtendedUpdatesNoticeQuickSettingsView> extended_updates_notice_ =
+      nullptr;
 };
 
 }  // namespace ash

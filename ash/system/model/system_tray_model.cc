@@ -119,6 +119,10 @@ void SystemTrayModel::SetShowEolNotice(bool show) {
   update_model()->SetShowEolNotice(show);
 }
 
+void SystemTrayModel::SetShowExtendedUpdatesNotice(bool show) {
+  update_model()->SetShowExtendedUpdatesNotice(show);
+}
+
 void SystemTrayModel::ShowVolumeSliderBubble() {
   // Show the bubble on all monitors with a system tray.
   for (RootWindowController* root : Shell::GetAllRootWindowControllers()) {

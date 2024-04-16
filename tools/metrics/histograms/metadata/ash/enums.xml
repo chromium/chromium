@@ -1769,6 +1769,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="PowerSignoutMenuButton"/>
   <int value="15" label="PowerLockMenuButton"/>
   <int value="16" label="SupervisedButton"/>
+  <int value="19" label="ExtendedUpdatesNoticeButton"/>
 </enum>
 
 <enum name="QsFeatureCatalogName">

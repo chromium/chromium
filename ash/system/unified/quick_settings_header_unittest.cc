@@ -180,6 +180,79 @@ TEST_F(QuickSettingsHeaderTest, ChannelIndicatorNotShownWithEolNotice) {
   EXPECT_TRUE(header_->eol_notice_for_test()->GetVisible());
 }
 
+TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeVisible) {
+  Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
+  SimulateUserLogin("user@gmail.com");
+
+  CreateQuickSettingsHeader();
+  // Header is shown.
+  EXPECT_TRUE(header_->GetVisible());
+
+  // Extended Updates notice is visible.
+  auto* extended_updates_notice_view = header_->GetExtendedUpdatesViewForTest();
+  ASSERT_TRUE(extended_updates_notice_view);
+  EXPECT_TRUE(extended_updates_notice_view->GetVisible());
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_about_chromeos_count());
+  LeftClickOn(extended_updates_notice_view);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_about_chromeos_count());
+}
+
+TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotVisibleBeforeLogin) {
+  test_shell_delegate_->set_channel(version_info::Channel::BETA);
+  Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
+  CreateQuickSettingsHeader();
+
+  // Header is shown.
+  EXPECT_TRUE(header_->GetVisible());
+
+  // Channel view is created.
+  EXPECT_TRUE(header_->channel_view_for_test());
+
+  // Extended Updates notice is not visible.
+  EXPECT_FALSE(header_->GetExtendedUpdatesViewForTest());
+}
+
+TEST_F(QuickSettingsHeaderTest,
+       ChannelIndicatorNotShownWithExtendedUpdatesNotice) {
+  test_shell_delegate_->set_channel(version_info::Channel::BETA);
+  SimulateUserLogin("user@gmail.com");
+
+  Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
+
+  CreateQuickSettingsHeader();
+  // Header is shown.
+  EXPECT_TRUE(header_->GetVisible());
+
+  // No channel indicator.
+  EXPECT_FALSE(header_->channel_view_for_test());
+
+  // Extended Updates notice is visible.
+  ASSERT_TRUE(header_->GetExtendedUpdatesViewForTest());
+  EXPECT_TRUE(header_->GetExtendedUpdatesViewForTest()->GetVisible());
+}
+
+TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotShownWithEolNotice) {
+  SimulateUserLogin("user@gmail.com");
+
+  Shell::Get()->system_tray_model()->SetShowEolNotice(true);
+  Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
+
+  CreateQuickSettingsHeader();
+  // Header is shown.
+  EXPECT_TRUE(header_->GetVisible());
+
+  // No channel indicator.
+  EXPECT_FALSE(header_->channel_view_for_test());
+
+  // EOL notice is visible.
+  ASSERT_TRUE(header_->eol_notice_for_test());
+  EXPECT_TRUE(header_->eol_notice_for_test()->GetVisible());
+
+  // Extended Updates notice is not visible.
+  EXPECT_FALSE(header_->GetExtendedUpdatesViewForTest());
+}
+
 TEST_F(QuickSettingsHeaderTest, EnterpriseManagedDeviceVisible) {
   CreateQuickSettingsHeader();
 
