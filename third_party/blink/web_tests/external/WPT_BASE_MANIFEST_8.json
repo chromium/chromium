@@ -261662,58 +261662,6 @@
          {}
         ]
        ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.html": [
-        "1720f20589fcd676f93f9871d32f6701820672df",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.html": [
-        "87cd91bb120b52d5c6d2081444a5be759f9b5d75",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.html": [
-        "e8d01065c1d746407f641fecf5648c96df676145",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.html": [
-        "5c7fa379f14932e1377fab595f8b1a3302457d6c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.global-states.filter.blending.no-shadow.no-transform.html": [
         "188d5ea98be76d827857285197ccae1494d87db9",
         [
@@ -261818,58 +261766,6 @@
          {}
         ]
        ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.html": [
-        "ac5c7303a81856c5763f3237d75aeb5e9ddedc04",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.html": [
-        "3158a2fff34ef7327f85ce0c05d2b5bfbba271f4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.html": [
-        "839ab13add854c1c3c033568b2a8a37a4a5acb2b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.html": [
-        "7c090165f5903101ba0c4d945f0b9bd1efa3ee69",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform.html": [
         "d2b2d806c4b30ef0fa6d141766b7d0f9cbebc589",
         [
@@ -261968,19 +261864,6 @@
          [
           [
            "/html/canvas/element/layers/2d.layer.global-states.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.globalCompositeOperation.html": [
-        "32809d852c7b2466edc20334f0541320010e0d91",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.globalCompositeOperation-expected.html",
            "=="
           ]
          ],
@@ -264776,110 +264659,6 @@
          {}
         ]
        ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.html": [
-        "70b659f52ba565806c813e3d8c86cccf9666f548",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.w.html": [
-        "1db7f17a94d65c074b8ecfa41dd191f7f5889980",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.html": [
-        "2151535015b670f35cebc61cd9287350ef3e9bd9",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.w.html": [
-        "9c0cac99b913236a4946bbdf29ceb7221bdc2de5",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.html": [
-        "42231fa61eeda807201e913fb9d8edb27f144c6a",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.w.html": [
-        "20dc667ef8730ecf3216ea17b713b4a801b764da",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.html": [
-        "77158a9f962d2f0aa5bad8934a4a5b0676e20070",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.w.html": [
-        "def6bc51e2054f7189125a23dbcd12e78b5ff239",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.global-states.filter.blending.no-shadow.no-transform.html": [
         "8acbfa668fbc62c168d6d9ec43607b51291947c8",
         [
@@ -265088,110 +264867,6 @@
          {}
         ]
        ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.html": [
-        "f08ba940af401dfa88645adcbcf5b329b741e0f4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.w.html": [
-        "75fc90bae67cc47cb5606b5b0ece91e05eed0cd3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.html": [
-        "3f12cf0c4e4dc0444da574fee29fc56de19263b2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.w.html": [
-        "0a3ecee6698060758615b01ceae626ce0971ecf7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.html": [
-        "b4996deb6f3b5e7380ca32282e595dfd1095e326",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.w.html": [
-        "9c13a367b32606080ea265a82a54002874e69ee4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.html": [
-        "eab5f8312bbb31753800958d128562a235bfca77",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.w.html": [
-        "aebd6cc00d4802fa7dcea4162d85f081f46fa022",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform.html": [
         "f86b0fd37d73c501c1cdc3b466228b775349b678",
         [
@@ -265394,32 +265069,6 @@
          [
           [
            "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.globalCompositeOperation.html": [
-        "ab9bc4270b386951eb06b731dc4ae8ae8e0d8661",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.globalCompositeOperation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.globalCompositeOperation.w.html": [
-        "9a403140fc4b20402caf6c00b24b30aa33b72420",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.globalCompositeOperation-expected.html",
            "=="
           ]
          ],
@@ -359204,22 +358853,6 @@
         "da144975a57d2563394c7b6cedc1d998f8fb5ef1",
         []
        ],
-       "2d.layer.global-states.copy.no-shadow.no-transform-expected.html": [
-        "489d4322823e96b1f205e3088b7b4939c3757c39",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation-expected.html": [
-        "63913ffb0571c916d0c3927ba3265583486bfe2c",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform-expected.html": [
-        "021581f8925dcfbca0e02d83a58c6ac1ff2c7ea3",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.rotation-expected.html": [
-        "dd9a5c2a00141ad61a1e53e56b012cc99ae0316f",
-        []
-       ],
        "2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html": [
         "482ab25a8552ea83f004e35de28c5ac2a1532a4a",
         []
@@ -359252,22 +358885,6 @@
         "e70fe3e92d87c705328eff2cc4949599b093ed40",
         []
        ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html": [
-        "21aa241aca8b82feeba45f72b73c1fded973744c",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html": [
-        "b2b46ee039cb85c2eba622b7d7e6c320b436b139",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform-expected.html": [
-        "d11326d5d68dbde8aa28ed07f5093bbd9c414d71",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation-expected.html": [
-        "3ac098c344877d9e50c94810a1141f89bdd67e2d",
-        []
-       ],
        "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html": [
         "a445ae2c4a4b0c21c500ee6ab0ad7e470d479ef6",
         []
@@ -359298,10 +358915,6 @@
        ],
        "2d.layer.global-states.no-composite-op.shadow.rotation-expected.html": [
         "06f6a2dff3ec1533b419a8d1819a9fdf32fc1aa4",
-        []
-       ],
-       "2d.layer.globalCompositeOperation-expected.html": [
-        "02a8915c0b530b779842e1b10e4e7663e1de8598",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -360420,22 +360033,6 @@
         "da144975a57d2563394c7b6cedc1d998f8fb5ef1",
         []
        ],
-       "2d.layer.global-states.copy.no-shadow.no-transform-expected.html": [
-        "489d4322823e96b1f205e3088b7b4939c3757c39",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation-expected.html": [
-        "63913ffb0571c916d0c3927ba3265583486bfe2c",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform-expected.html": [
-        "021581f8925dcfbca0e02d83a58c6ac1ff2c7ea3",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.rotation-expected.html": [
-        "dd9a5c2a00141ad61a1e53e56b012cc99ae0316f",
-        []
-       ],
        "2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html": [
         "482ab25a8552ea83f004e35de28c5ac2a1532a4a",
         []
@@ -360468,22 +360065,6 @@
         "e70fe3e92d87c705328eff2cc4949599b093ed40",
         []
        ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html": [
-        "21aa241aca8b82feeba45f72b73c1fded973744c",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html": [
-        "b2b46ee039cb85c2eba622b7d7e6c320b436b139",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform-expected.html": [
-        "d11326d5d68dbde8aa28ed07f5093bbd9c414d71",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation-expected.html": [
-        "3ac098c344877d9e50c94810a1141f89bdd67e2d",
-        []
-       ],
        "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html": [
         "a445ae2c4a4b0c21c500ee6ab0ad7e470d479ef6",
         []
@@ -360514,10 +360095,6 @@
        ],
        "2d.layer.global-states.no-composite-op.shadow.rotation-expected.html": [
         "06f6a2dff3ec1533b419a8d1819a9fdf32fc1aa4",
-        []
-       ],
-       "2d.layer.globalCompositeOperation-expected.html": [
-        "02a8915c0b530b779842e1b10e4e7663e1de8598",
         []
        ],
        "2d.layer.nested-expected.html": [
@@ -360919,7 +360496,7 @@
         []
        ],
        "layers.yaml": [
-        "e71155650b0662d894cc9a665334af794effdf94",
+        "0f722a46486ec636b47dca18e170a052742f76a2",
         []
        ],
        "line-styles.yaml": [
@@ -362276,10 +361853,6 @@
        ],
        "style-01-ref.html": [
         "be8175e61d48282f046f4747abc1be8709301e0f",
-        []
-       ],
-       "the-anchor-attribute-xml.tentative-expected.txt": [
-        "442e5308b415d95d554fffc1edfaff132c6cf960",
         []
        ],
        "the-lang-attribute-003.html.headers": [
@@ -396493,11 +396066,11 @@
     ],
     "conformance_tests": {
      "arg_min_max.https.any-expected.txt": [
-      "2421c0e856bbdd02a0aa252ee7950c24d47c24e1",
+      "942c218a9914b2e2a506c79a544524c86aab85e7",
       []
      ],
      "arg_min_max.https.any.worker-expected.txt": [
-      "2421c0e856bbdd02a0aa252ee7950c24d47c24e1",
+      "942c218a9914b2e2a506c79a544524c86aab85e7",
       []
      ],
      "batch_normalization.https.any-expected.txt": [
@@ -438291,7 +437864,7 @@
      ]
     ],
     "fedcm-endpoint-redirects.https.html": [
-     "71dbce03267e86e00fd90e1b69abf186b0fdd3a3",
+     "36a4de7900c1f80f2df249a62ba6c5bd8a1ccf8b",
      [
       null,
       {
@@ -438300,7 +437873,7 @@
      ]
     ],
     "fedcm-error-basic.https.html": [
-     "fd902bcf9042ba4234bcd25b7c62d1a09e7f7c0e",
+     "49d6ea50df3881eec5032381c400c0f1ffa413dd",
      [
       null,
       {
@@ -531362,7 +530935,7 @@
      ]
     ],
     "disabled-by-permissions-policy.https.sub.html": [
-     "f374a58f785c556b3f275dbf6c2eacb8d7a2d1a0",
+     "6bd3e3500bc505375d7b5f7877f3ff272057a332",
      [
       null,
       {
@@ -531371,21 +530944,21 @@
      ]
     ],
     "enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html": [
-     "c2a2b09fc65a959a02a5fa5e8eccc2c77ae9dd77",
+     "864fb5e76139ed9e6158c08278dca0790f126c7b",
      [
       null,
       {}
      ]
     ],
     "enabled-by-permission-policy-attribute.https.sub.html": [
-     "50b8475b81086f374810f8bff69e1acb39b073ac",
+     "018409b82902672f66894b03a711bb708cad262c",
      [
       null,
       {}
      ]
     ],
     "enabled-by-permissions-policy.https.sub.html": [
-     "d5f72eb1ccb03d6230ef91b704479814610333a9",
+     "007f79ab9c4256fbebae51f54d34144843020982",
      [
       null,
       {
@@ -531394,7 +530967,7 @@
      ]
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
-     "ea4b65966f1b870f4d4385225ed4ceaed831e9b1",
+     "d879c1c5432bb884af89f0f9fc24e328f8a3eae5",
      [
       null,
       {
@@ -565751,13 +565324,6 @@
          {}
         ]
        ],
-       "the-anchor-attribute-xml.tentative.html": [
-        "c5e6d81826dea22d7eb96d659ac7d55782e4390f",
-        [
-         null,
-         {}
-        ]
-       ],
        "the-lang-attribute-001.html": [
         "c2966f362060cd0025fa79cd4a5dbea540079656",
         [
@@ -580304,7 +579870,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "e0e006e27c4b8a48c6b69ffed542ff67788ae930",
+       "45db242e918bf1e89a5c40df93dacbca62e70825",
        [
         null,
         {
