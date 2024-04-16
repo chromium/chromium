@@ -7571,18 +7571,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- About box strings -->
-      <if expr="is_win">
+      <if expr="is_win or is_macosx">
         <message name="IDS_ABOUT_BOX_ERROR_DURING_UPDATE_CHECK" desc="The error label for errors that occurred while checking for updates in the About box.">
           An error occurred while checking for updates: <ph name="ERROR">$1<ex>Unable to contact Google Update</ex></ph>
         </message>
+        <message name="IDS_ABOUT_BOX_GOOGLE_UPDATE_ERROR" desc="An error message from Google Update with details.">
+          <ph name="ERROR">$1<ex>An error message from Google Update.</ex></ph> (error code <ph name="ERROR_CODE">$2<ex>7: 0x80000005</ex></ph>).
+        </message>
+      </if>
+      <if expr="is_win">
         <message name="IDS_ABOUT_BOX_ERROR_UPDATE_CHECK_FAILED" desc="The error message for the specific case when we cannot create the Google Update component">
           Update check failed to start (error code <ph name="ERROR">$1<ex>0x80000005</ex></ph>).
         </message>
         <message name="IDS_ABOUT_BOX_EXTERNAL_UPDATE_IS_RUNNING" desc="The external updater is running independently.">
           The updater is currently running. Refresh in a minute to check again.
-        </message>
-        <message name="IDS_ABOUT_BOX_GOOGLE_UPDATE_ERROR" desc="An error message from Google Update with details.">
-          <ph name="ERROR">$1<ex>An error message from Google Update.</ex></ph> (error code <ph name="ERROR_CODE">$2<ex>7: 0x80000005</ex></ph>).
         </message>
       </if>
 

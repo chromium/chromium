@@ -48,7 +48,7 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
   VersionUpdater::Status status = VersionUpdater::Status::CHECKING;
   int progress = 0;
   std::string version;
-  std::string err_message;
+  std::u16string err_message;
 
   switch (update_state.state) {
     case updater::UpdateService::UpdateState::State::kCheckingForUpdates:
@@ -73,10 +73,13 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
       break;
     case updater::UpdateService::UpdateState::State::kUpdateError:
       status = VersionUpdater::Status::FAILED;
-      // TODO(crbug.com/40729907): Localize error string.
-      err_message = base::StringPrintf(
-          "An error occurred. (Error code: %d) (Extra code: %d)",
-          update_state.error_code, update_state.extra_code1);
+      err_message = l10n_util::GetStringFUTF16(
+          IDS_ABOUT_BOX_ERROR_DURING_UPDATE_CHECK,
+          l10n_util::GetStringFUTF16(IDS_ABOUT_BOX_GOOGLE_UPDATE_ERROR,
+                                     base::UTF8ToUTF16(base::StringPrintf(
+                                         "%d", update_state.error_code)),
+                                     base::UTF8ToUTF16(base::StringPrintf(
+                                         "%d", update_state.extra_code1))));
       break;
     case updater::UpdateService::UpdateState::State::kNotStarted:
       [[fallthrough]];
@@ -84,8 +87,7 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
       return;
   }
 
-  status_callback.Run(status, progress, false, false, version, 0,
-                      base::UTF8ToUTF16(err_message));
+  status_callback.Run(status, progress, false, false, version, 0, err_message);
 }
 
 // macOS implementation of version update functionality, used by the WebUI
