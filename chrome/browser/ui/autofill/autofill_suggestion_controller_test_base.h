@@ -356,16 +356,7 @@ class AutofillSuggestionControllerForTest
   ~AutofillSuggestionControllerForTest() override;
 
   // Making protected functions public for testing
-  using AutofillSuggestionControllerForTestBase::AcceptSuggestion;
   using AutofillSuggestionControllerForTestBase::element_bounds;
-  using AutofillSuggestionControllerForTestBase::GetLineCount;
-  using AutofillSuggestionControllerForTestBase::GetSuggestionAt;
-  using AutofillSuggestionControllerForTestBase::GetSuggestionLabelsAt;
-  using AutofillSuggestionControllerForTestBase::GetSuggestionMainTextAt;
-  using AutofillSuggestionControllerForTestBase::
-      PerformButtonActionForSuggestion;
-  using AutofillSuggestionControllerForTestBase::RemoveSuggestion;
-  using AutofillSuggestionControllerForTestBase::SelectSuggestion;
   MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
 
   void DoHide(PopupHidingReason reason = PopupHidingReason::kTabGone) {

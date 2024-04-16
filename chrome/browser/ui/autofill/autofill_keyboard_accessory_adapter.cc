@@ -137,12 +137,6 @@ void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
   }
 }
 
-void AutofillKeyboardAccessoryAdapter::PerformButtonActionForSuggestion(
-    int index) {
-  // Actions currently only exist on Desktop.
-  NOTREACHED();
-}
-
 int AutofillKeyboardAccessoryAdapter::GetLineCount() const {
   return controller_ ? controller_->GetLineCount() : 0;
 }
@@ -175,26 +169,6 @@ AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
 FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
   CHECK(controller_) << "Call GetPopupType only from its owner!";
   return controller_->GetMainFillingProduct();
-}
-
-bool AutofillKeyboardAccessoryAdapter::
-    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
-  CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
-                        "only from its owner!";
-  return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
-}
-
-base::WeakPtr<AutofillSuggestionController>
-AutofillKeyboardAccessoryAdapter::OpenSubPopup(
-    const gfx::RectF& anchor_bounds,
-    std::vector<Suggestion> suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
-  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
-  return nullptr;
-}
-
-void AutofillKeyboardAccessoryAdapter::HideSubPopup() {
-  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
 }
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(

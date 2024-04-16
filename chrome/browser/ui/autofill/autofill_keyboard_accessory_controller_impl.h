@@ -65,7 +65,6 @@ class AutofillKeyboardAccessoryControllerImpl
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
   void AcceptSuggestion(int index) override;
-  void PerformButtonActionForSuggestion(int index) override;
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -80,12 +79,6 @@ class AutofillKeyboardAccessoryControllerImpl
                                   std::u16string* title,
                                   std::u16string* body) override;
   FillingProduct GetMainFillingProduct() const override;
-  bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
-      const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions,
-      AutoselectFirstSuggestion autoselect_first_suggestion) override;
-  void HideSubPopup() override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
   void Show(std::vector<Suggestion> suggestions,

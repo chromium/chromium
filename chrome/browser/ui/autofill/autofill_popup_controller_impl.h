@@ -81,7 +81,6 @@ class AutofillPopupControllerImpl
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
   void AcceptSuggestion(int index) override;
-  void PerformButtonActionForSuggestion(int index) override;
   bool RemoveSuggestion(
       int list_index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -96,14 +95,8 @@ class AutofillPopupControllerImpl
                                   std::u16string* title,
                                   std::u16string* body) override;
   FillingProduct GetMainFillingProduct() const override;
-  bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
-  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
-      const gfx::RectF& anchor_bounds,
-      std::vector<Suggestion> suggestions,
-      AutoselectFirstSuggestion autoselect_first_suggestion) override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
-  void HideSubPopup() override;
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
   void Show(std::vector<Suggestion> suggestions,
@@ -116,6 +109,13 @@ class AutofillPopupControllerImpl
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
   // AutofillPopupController:
+  base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
+      const gfx::RectF& anchor_bounds,
+      std::vector<Suggestion> suggestions,
+      AutoselectFirstSuggestion autoselect_first_suggestion) override;
+  void HideSubPopup() override;
+  bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
+  void PerformButtonActionForSuggestion(int index) override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
 
  protected:

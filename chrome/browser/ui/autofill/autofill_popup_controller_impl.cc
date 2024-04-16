@@ -225,14 +225,6 @@ void AutofillPopupControllerImpl::KeepPopupOpenForTesting() {
   keep_popup_open_for_testing_ = true;
 }
 
-bool AutofillPopupControllerImpl::
-    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
-  return should_ignore_mouse_observed_outside_item_bounds_check_ ||
-         !IsRootPopup() ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillPopupDisablePaintChecks);
-}
-
 void AutofillPopupControllerImpl::UpdateDataListValues(
     base::span<const SelectOption> options) {
   UpdateSuggestionsFromDataList(options, suggestions_);
@@ -359,11 +351,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
                       .row = index, .sub_popup_level = GetPopupLevel()});
 }
 
-void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
-  CHECK_LE(base::checked_cast<size_t>(index), suggestions_.size());
-  delegate_->DidPerformButtonActionForSuggestion(suggestions_[index]);
-}
-
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {
   return controller_common_.container_view;
 }
@@ -383,34 +370,6 @@ base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
 
 std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
   return suggestions_;
-}
-
-base::WeakPtr<AutofillSuggestionController>
-AutofillPopupControllerImpl::OpenSubPopup(
-    const gfx::RectF& anchor_bounds,
-    std::vector<Suggestion> suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
-  PopupControllerCommon new_controller_common = controller_common_;
-  new_controller_common.element_bounds = anchor_bounds;
-  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
-      delegate_, web_contents_.get(), std::move(new_controller_common),
-      /*form_control_ax_id=*/form_control_ax_id_,
-      /*parent=*/weak_ptr_factory_.GetWeakPtr());
-
-  // Show() can fail and cause controller deletion. Therefore store the weak
-  // pointer before, so that this method returns null when that happens.
-  sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
-  controller->Show(std::move(suggestions), trigger_source_,
-                   autoselect_first_suggestion);
-  return sub_popup_controller_;
-}
-
-void AutofillPopupControllerImpl::HideSubPopup() {
-  if (sub_popup_controller_) {
-    sub_popup_controller_->Hide(
-        PopupHidingReason::kExpandedSuggestionCollapsedSubPopup);
-    sub_popup_controller_ = nullptr;
-  }
 }
 
 bool AutofillPopupControllerImpl::IsRootPopup() const {
@@ -771,6 +730,49 @@ void AutofillPopupControllerImpl::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
   view_ = std::move(view);
   time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+}
+
+// AutofillPopupController implementation.
+
+base::WeakPtr<AutofillSuggestionController>
+AutofillPopupControllerImpl::OpenSubPopup(
+    const gfx::RectF& anchor_bounds,
+    std::vector<Suggestion> suggestions,
+    AutoselectFirstSuggestion autoselect_first_suggestion) {
+  PopupControllerCommon new_controller_common = controller_common_;
+  new_controller_common.element_bounds = anchor_bounds;
+  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+      delegate_, web_contents_.get(), std::move(new_controller_common),
+      /*form_control_ax_id=*/form_control_ax_id_,
+      /*parent=*/weak_ptr_factory_.GetWeakPtr());
+
+  // Show() can fail and cause controller deletion. Therefore store the weak
+  // pointer before, so that this method returns null when that happens.
+  sub_popup_controller_ = controller->weak_ptr_factory_.GetWeakPtr();
+  controller->Show(std::move(suggestions), trigger_source_,
+                   autoselect_first_suggestion);
+  return sub_popup_controller_;
+}
+
+void AutofillPopupControllerImpl::HideSubPopup() {
+  if (sub_popup_controller_) {
+    sub_popup_controller_->Hide(
+        PopupHidingReason::kExpandedSuggestionCollapsedSubPopup);
+    sub_popup_controller_ = nullptr;
+  }
+}
+
+bool AutofillPopupControllerImpl::
+    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
+  return should_ignore_mouse_observed_outside_item_bounds_check_ ||
+         !IsRootPopup() ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillPopupDisablePaintChecks);
+}
+
+void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
+  CHECK_LE(base::checked_cast<size_t>(index), suggestions_.size());
+  delegate_->DidPerformButtonActionForSuggestion(suggestions_[index]);
 }
 
 }  // namespace autofill

@@ -276,11 +276,6 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::PerformButtonActionForSuggestion(
-    int index) {
-  NOTREACHED() << "Button actions do not exist for the keyboard accessory.";
-}
-
 bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
     int index,
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
@@ -431,23 +426,6 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 FillingProduct AutofillKeyboardAccessoryControllerImpl::GetMainFillingProduct()
     const {
   return delegate_->GetMainFillingProduct();
-}
-
-bool AutofillKeyboardAccessoryControllerImpl::
-    ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
-  return false;
-}
-
-base::WeakPtr<AutofillSuggestionController>
-AutofillKeyboardAccessoryControllerImpl::OpenSubPopup(
-    const gfx::RectF& anchor_bounds,
-    std::vector<Suggestion> suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion) {
-  NOTREACHED_NORETURN() << "Sub-popups do not exist in the keyboard accessory.";
-}
-
-void AutofillKeyboardAccessoryControllerImpl::HideSubPopup() {
-  NOTREACHED() << "Sub-popups do not exist in the keyboard accessory.";
 }
 
 std::optional<AutofillClient::PopupScreenLocation>
