@@ -2517,6 +2517,11 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   CHECK(node->isConnected());
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
+  // Ensure that ChildrenChanged() occurs on the correct parent in the case
+  // where Blink layout code did not have a corresponding LayoutObject parent
+  // to fire ChildrenChanged() on, such as in a display:contents case.
+  ChildrenChanged(AXObject::GetParentNodeForComputeParent(*this, node));
+
   // It normally is not necessary to process text nodes here, because we'll
   // also get a call for the attachment of the parent element. However in the
   // YieldingParser scenario, the `previousOnLineId` can be unexpectedly null
@@ -2597,12 +2602,6 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
         }
       }
     }
-  } else if (!node->IsFinishedParsingChildren() && node->GetComputedStyle() &&
-             node->GetComputedStyle()->Display() == EDisplay::kContents &&
-             !node_to_parse_before_more_tree_updates_) {
-    // display:contents subtrees need to wait before processing until they can
-    // include text contents in their accessible name.
-    node_to_parse_before_more_tree_updates_ = node;
   }
 
   DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
@@ -2632,12 +2631,6 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   CHECK(obj->CachedParentObject());
 
   MaybeNewRelationTarget(*node, obj);
-
-  // Even if the node or parent are ignored, an ancestor may need to include
-  // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
-  // must be called. It handles ignored logic, ensuring that the first
-  // ancestor that should have this as a child will be updated.
-  ChildrenChangedWithCleanLayout(obj->CachedParentObject());
 
   if (IsA<HTMLAreaElement>(node)) {
     ChildrenChangedWithCleanLayout(obj);

@@ -977,6 +977,11 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return popup_owner;
   }
 
+  // Avoid a CHECK that disallows calling LayoutTreeBuilderTraversal::Parent() with a shadow root node.
+  if (node->IsShadowRoot()) {
+    return node->OwnerShadowHost();
+  }
+
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
   // This can return nullptr for a node that is never visited by
   // LayoutTreeBuilderTraversal's child traversal. For example, while an element
