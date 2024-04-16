@@ -116,7 +116,7 @@ bool ParseIpAddresses(std::string_view param_value,
 
   std::vector<IPAddress> addresses;
   do {
-    if (auto addr_bytes = reader.Read<ADDRESS_SIZE>();
+    if (auto addr_bytes = reader.template Read<ADDRESS_SIZE>();
         !addr_bytes.has_value()) {
       return false;
     } else {
