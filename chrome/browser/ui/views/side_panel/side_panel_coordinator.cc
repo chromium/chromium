@@ -311,7 +311,8 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
   }
 
-  if (features::IsSidePanelPinningEnabled()) {
+  if (features::IsSidePanelPinningEnabled() &&
+      !browser_view_->GetIsWebAppType()) {
     browser_view_->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHSidePanelGenericMenuFeature);
   }
