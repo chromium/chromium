@@ -381,24 +381,6 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
   EXPECT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
 }
 
-// Tests that if we enter tablet mode while dragging a floated window, there is
-// no crash. Regression test for http://b/293957581.
-TEST_F(WindowFloatTest, EnterTabletWhileDragging) {
-  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-
-  // Start dragging the floated window.
-  chromeos::HeaderView* header_view = GetHeaderView(window.get());
-  auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(
-      header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseBy(100, 0);
-
-  // Enter tablet mode and continue dragging. There should be no crash.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  event_generator->MoveMouseBy(100, 0);
-}
-
 // Tests that windows that are floated on non-primary displays are onscreen.
 // Regression test for b/261860554.
 TEST_F(WindowFloatTest, FloatOnOtherDisplay) {

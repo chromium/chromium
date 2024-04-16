@@ -68,7 +68,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
-  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
