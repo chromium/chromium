@@ -1431,16 +1431,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "clipboard-unsanitized-content",
-    "owners": [
-      "ansollan@microsoft.com",
-      "asully@chromium.org",
-      "snianu@microsoft.com",
-      "chrome-owp-storage@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "clipboard-well-formed-html-sanitization-write",
     "owners": [
       "ansollan@microsoft.com",
