@@ -6693,13 +6693,13 @@
   },
   {
     "name": "pdf-portfolio",
-    "owners": [ "nigi@chromium.org", "//pdf/OWNERS" ],
+    "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
     "expiry_milestone": 130
   },
   {
     "name": "pdf-use-skia-renderer",
-    "owners": [ "nigi@chromium.org", "//pdf/OWNERS" ],
-    "expiry_milestone": 126
+    "owners": [ "thestig@chromium.org", "//pdf/OWNERS" ],
+    "expiry_milestone": 129
   },
   {
     "name": "pdf-xfa-forms",
