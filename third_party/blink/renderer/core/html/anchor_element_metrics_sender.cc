@@ -46,6 +46,16 @@ bool ShouldHaveAnchorElementMetricsSender(Document& document) {
          document.GetExecutionContext()->IsSecureContext();
 }
 
+wtf_size_t GetMaxNumberOfObservations() {
+  static const wtf_size_t max_observations = []() {
+    const base::FeatureParam<int> max_number_of_observations{
+        &features::kNavigationPredictor, "max_intersection_observations", -1};
+    int value = max_number_of_observations.Get();
+    return value >= 0 ? value : std::numeric_limits<wtf_size_t>::max();
+  }();
+  return max_observations;
+}
+
 }  // namespace
 
 // static
@@ -238,6 +248,11 @@ void AnchorElementMetricsSender::FireUpdateTimerForTesting() {
   UpdateMetrics(&update_timer_);
 }
 
+IntersectionObserver*
+AnchorElementMetricsSender::GetIntersectionObserverForTesting() {
+  return intersection_observer_;
+}
+
 void AnchorElementMetricsSender::SetShouldSkipUpdateDelays(
     bool should_skip_for_testing) {
   if (!should_skip_for_testing) {
@@ -425,6 +440,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     return;
   }
 
+  const wtf_size_t max_num_observations = GetMaxNumberOfObservations();
   for (const auto& member_element : anchor_elements_to_report_) {
     HTMLAnchorElement& anchor_element = *member_element;
 
@@ -434,14 +450,29 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       continue;
     }
 
-    int random = base::RandInt(1, random_anchor_sampling_period_);
-    if (random == 1) {
-      // This anchor element is sampled in.
-      const auto anchor_id = AnchorElementId(anchor_element);
-      anchor_elements_timing_stats_.insert(anchor_id,
-                                           AnchorElementTimingStats{});
-      // Observe the element to collect time_in_viewport stats.
-      intersection_observer_->observe(&anchor_element);
+    if (!intersection_observer_limit_exceeded_) {
+      int random = base::RandInt(1, random_anchor_sampling_period_);
+      if (random == 1) {
+        // This anchor element is sampled in.
+        const auto anchor_id = AnchorElementId(anchor_element);
+        anchor_elements_timing_stats_.insert(anchor_id,
+                                             AnchorElementTimingStats{});
+        // Observe the element to collect time_in_viewport stats.
+        intersection_observer_->observe(&anchor_element);
+        // If we've exceeded the limit of anchors observed by the intersection
+        // observer, disconnect the observer (stop observing all anchors).
+        // We disconnect instead of keeping previous observations alive as a
+        // viewport based heuristic is unlikely to be useful in pages with
+        // a large number of anchors (too many false positives, or no
+        // predictions made at all), and we might be better off saving CPU time
+        // by avoiding intersection computations altogether in such pages. This
+        // could be revisited in the future.
+        if (intersection_observer_->Observations().size() >
+            max_num_observations) {
+          intersection_observer_limit_exceeded_ = true;
+          intersection_observer_->disconnect();
+        }
+      }
     }
 
     metrics_.push_back(std::move(anchor_element_metrics));

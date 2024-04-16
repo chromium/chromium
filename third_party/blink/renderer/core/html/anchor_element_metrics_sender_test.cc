@@ -959,4 +959,46 @@ TEST_F(AnchorElementMetricsSenderTest,
       mock_host->pointer_data_on_hover_[0]->pointer_data->mouse_velocity, 0.5);
 }
 
+TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "10"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete("");
+
+  auto add_anchor = [&]() {
+    auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+    anchor->setInnerText("foo");
+    anchor->setHref("https://foo.com");
+    GetDocument().body()->appendChild(anchor);
+  };
+
+  // Add 10 anchors; they should all be observed by the IntersectionObserver.
+  for (int i = 0; i < 10; i++) {
+    add_anchor();
+  }
+  ProcessEvents(10);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
+                                    ->GetIntersectionObserverForTesting();
+  EXPECT_EQ(hosts_[0]->elements_.size(), 10u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 10u);
+
+  // Add another anchor; the IntersectionObserver should be disconnected.
+  add_anchor();
+  ProcessEvents(11);
+  EXPECT_EQ(hosts_[0]->elements_.size(), 11u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 0u);
+
+  // Add another anchor; it should not be observed by the IntersectionObserver.
+  add_anchor();
+  ProcessEvents(12);
+  EXPECT_EQ(hosts_[0]->elements_.size(), 12u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 0u);
+}
+
 }  // namespace blink

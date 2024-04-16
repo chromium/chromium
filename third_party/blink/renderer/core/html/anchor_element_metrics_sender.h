@@ -97,6 +97,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void SetTickClockForTesting(const base::TickClock* clock);
   void SetNowAsNavigationStartForTesting();
   void FireUpdateTimerForTesting();
+  IntersectionObserver* GetIntersectionObserverForTesting();
 
   // Creates AnchorElementMetrics from anchor element if possible. Then records
   // the metrics, and sends them to the browser process.
@@ -200,6 +201,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
   const base::TickClock* clock_;
 
   bool is_registered_for_lifecycle_notifications_ = false;
+
+  bool intersection_observer_limit_exceeded_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
