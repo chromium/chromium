@@ -492,7 +492,7 @@ std::string GetSiteId(Site site) {
   return base::NumberToString(base::to_underlying(site));
 }
 
-web_package::WebBundleSigner::KeyPair GetKeyPairForSite(Site site) {
+web_package::WebBundleSigner::Ed25519KeyPair GetKeyPairForSite(Site site) {
   std::string site_id = GetSiteId(site);
   size_t seed_length = 32;
   site_id.resize(seed_length, 'a');
@@ -501,7 +501,7 @@ web_package::WebBundleSigner::KeyPair GetKeyPairForSite(Site site) {
   uint8_t public_key[ED25519_PUBLIC_KEY_LEN];
   uint8_t private_key[ED25519_PRIVATE_KEY_LEN];
   ED25519_keypair_from_seed(public_key, private_key, seed.data());
-  return web_package::WebBundleSigner::KeyPair(public_key, private_key);
+  return web_package::WebBundleSigner::Ed25519KeyPair(public_key, private_key);
 }
 
 std::string GetFileExtension(FileExtension file_extension) {
@@ -4102,7 +4102,7 @@ void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
 
 webapps::AppId GetAppIdForIsolatedSite(Site site) {
   auto parent_site = GetSiteConfiguration(site).parent_site;
-  web_package::WebBundleSigner::KeyPair key_pair =
+  web_package::WebBundleSigner::Ed25519KeyPair key_pair =
       GetKeyPairForSite(parent_site ? parent_site.value() : site);
 
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(

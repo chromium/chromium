@@ -210,7 +210,7 @@ SignedWebBundleAndKeys SignBundle(
     size_t num_signatures = 1) {
   std::vector<WebBundleSigner::KeyPair> key_pairs;
   for (size_t i = 0; i < num_signatures; ++i) {
-    key_pairs.push_back(WebBundleSigner::KeyPair::CreateRandom());
+    key_pairs.push_back(WebBundleSigner::Ed25519KeyPair::CreateRandom());
   }
 
   return {
@@ -762,7 +762,9 @@ TEST_F(WebBundleParserTest, SignedBundleIntegrityBlockIsParsedCorrectly) {
   EXPECT_EQ(integrity_block->signature_stack.size(), 1ul);
   auto& entry = integrity_block->signature_stack[0];
   EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
-      entry, bundle_and_keys.key_pairs[0].public_key));
+      entry,
+      absl::get<WebBundleSigner::Ed25519KeyPair>(bundle_and_keys.key_pairs[0])
+          .public_key));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithMultipleEntries) {
@@ -789,7 +791,8 @@ TEST_F(WebBundleParserTest, SignedBundleSignatureStackWithMultipleEntries) {
   for (unsigned long i = 0; i < num_signatures; ++i) {
     EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
         integrity_block->signature_stack[i],
-        bundle_and_keys.key_pairs[i].public_key));
+        absl::get<WebBundleSigner::Ed25519KeyPair>(bundle_and_keys.key_pairs[i])
+            .public_key));
   }
 }
 

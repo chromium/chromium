@@ -59,7 +59,7 @@ TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparison) {
   std::vector<uint8_t> unsigned_bundle = builder.CreateBundle();
   std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
       unsigned_bundle,
-      {WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey)});
+      {WebBundleSigner::Ed25519KeyPair(kTestPublicKey, kTestPrivateKey)});
 
   std::vector<uint8_t> expected_bundle = GetStringAsBytes(GetTestFileContents(
       base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn"))));

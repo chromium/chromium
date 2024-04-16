@@ -65,13 +65,13 @@ TestSignedWebBundle::TestSignedWebBundle(TestSignedWebBundle&&) = default;
 TestSignedWebBundle::~TestSignedWebBundle() = default;
 
 TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
-    web_package::WebBundleSigner::KeyPair key_pair,
+    web_package::WebBundleSigner::Ed25519KeyPair key_pair,
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing)
     : key_pair_(key_pair), errors_for_testing_(errors_for_testing) {}
 
 TestSignedWebBundleBuilder::BuildOptions::BuildOptions()
-    : key_pair_(web_package::WebBundleSigner::KeyPair(kTestPublicKey,
-                                                      kTestPrivateKey)),
+    : key_pair_(web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
+                                                             kTestPrivateKey)),
       version_(base::Version("1.0.0")),
       app_name_("Simple Isolated App"),
       errors_for_testing_({}) {}

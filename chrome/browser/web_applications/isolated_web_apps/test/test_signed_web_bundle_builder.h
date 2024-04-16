@@ -56,8 +56,8 @@ struct TestSignedWebBundle {
 class TestSignedWebBundleBuilder {
  public:
   explicit TestSignedWebBundleBuilder(
-      web_package::WebBundleSigner::KeyPair key_pair =
-          web_package::WebBundleSigner::KeyPair::CreateRandom(),
+      web_package::WebBundleSigner::Ed25519KeyPair key_pair =
+          web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
       web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
   static constexpr std::string_view kTestManifestUrl =
@@ -74,7 +74,8 @@ class TestSignedWebBundleBuilder {
     BuildOptions(BuildOptions&&);
     ~BuildOptions();
 
-    BuildOptions& SetKeyPair(web_package::WebBundleSigner::KeyPair key_pair) {
+    BuildOptions& SetKeyPair(
+        web_package::WebBundleSigner::Ed25519KeyPair key_pair) {
       key_pair_ = std::move(key_pair);
       return *this;
     }
@@ -110,7 +111,7 @@ class TestSignedWebBundleBuilder {
       return *this;
     }
 
-    web_package::WebBundleSigner::KeyPair key_pair_;
+    web_package::WebBundleSigner::Ed25519KeyPair key_pair_;
     base::Version version_;
     std::string app_name_;
     std::optional<GURL> primary_url_;
@@ -146,7 +147,7 @@ class TestSignedWebBundleBuilder {
       BuildOptions build_options = BuildOptions());
 
  private:
-  web_package::WebBundleSigner::KeyPair key_pair_;
+  web_package::WebBundleSigner::Ed25519KeyPair key_pair_;
   web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   web_package::WebBundleBuilder builder_;
 };

@@ -1184,7 +1184,7 @@ class ExtensionWindowCreateIwaTest
   void InstallAndTrustBundle() {
     auto bundle = web_app::TestSignedWebBundleBuilder::BuildDefault(
         web_app::TestSignedWebBundleBuilder::BuildOptions()
-            .SetKeyPair(web_package::WebBundleSigner::KeyPair(
+            .SetKeyPair(web_package::WebBundleSigner::Ed25519KeyPair(
                 web_app::kTestPublicKey, web_app::kTestPrivateKey))
             .SetIndexHTMLContent("Hello Extensions!"));
 

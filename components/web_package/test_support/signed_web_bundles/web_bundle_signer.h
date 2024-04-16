@@ -39,20 +39,20 @@ class WebBundleSigner {
                                          ErrorForTesting::kMinValue,
                                          ErrorForTesting::kMaxValue>;
 
-  struct KeyPair {
-    static KeyPair CreateRandom(bool produce_invalid_signature = false);
+  struct Ed25519KeyPair {
+    static Ed25519KeyPair CreateRandom(bool produce_invalid_signature = false);
 
-    KeyPair(
+    Ed25519KeyPair(
         base::span<const uint8_t, Ed25519PublicKey::kLength> public_key_bytes,
         base::span<const uint8_t, 64> private_key_bytes,
         bool produce_invalid_signature = false);
-    KeyPair(const KeyPair&);
-    KeyPair& operator=(const KeyPair&);
+    Ed25519KeyPair(const Ed25519KeyPair&);
+    Ed25519KeyPair& operator=(const Ed25519KeyPair&);
 
-    KeyPair(KeyPair&&) noexcept;
-    KeyPair& operator=(KeyPair&&) noexcept;
+    Ed25519KeyPair(Ed25519KeyPair&&) noexcept;
+    Ed25519KeyPair& operator=(Ed25519KeyPair&&) noexcept;
 
-    ~KeyPair();
+    ~Ed25519KeyPair();
 
     Ed25519PublicKey public_key;
     // We don't have a wrapper for private keys since they are only used in
@@ -60,6 +60,8 @@ class WebBundleSigner {
     std::array<uint8_t, 64> private_key;
     bool produce_invalid_signature;
   };
+
+  using KeyPair = absl::variant<Ed25519KeyPair>;
 
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
@@ -77,17 +79,6 @@ class WebBundleSigner {
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
-      ErrorsForTesting errors_for_testing = {});
-
- private:
-  // Creates a signature stack entry for the given public key and signature.
-  static cbor::Value CreateSignatureStackEntry(
-      const Ed25519PublicKey& public_key,
-      std::vector<uint8_t> signature,
-      ErrorsForTesting errors_for_testing = {});
-
-  static cbor::Value CreateSignatureStackEntryAttributes(
-      std::vector<uint8_t> public_key,
       ErrorsForTesting errors_for_testing = {});
 };
 

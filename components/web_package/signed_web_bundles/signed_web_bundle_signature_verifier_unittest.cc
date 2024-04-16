@@ -314,18 +314,22 @@ INSTANTIATE_TEST_SUITE_P(
     SignedWebBundleSignatureVerifierTest,
     ::testing::Values(
         // one signature
-        std::make_pair(std::vector{WebBundleSigner::KeyPair::CreateRandom()},
-                       std::nullopt),
         std::make_pair(
-            std::vector{WebBundleSigner::KeyPair::CreateRandom(
-                /*produce_invalid_signature=*/true)},
+            std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
+            std::nullopt),
+        std::make_pair(
+            std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::Ed25519KeyPair::CreateRandom(
+                    /*produce_invalid_signature=*/true)},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "The signature is invalid.")),
 
         // two signatures
         std::make_pair(
-            std::vector{WebBundleSigner::KeyPair::CreateRandom(),
-                        WebBundleSigner::KeyPair::CreateRandom()},
+            std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::Ed25519KeyPair::CreateRandom(),
+                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "Only a single signature is currently supported, got 2 "
                 "signatures."))),

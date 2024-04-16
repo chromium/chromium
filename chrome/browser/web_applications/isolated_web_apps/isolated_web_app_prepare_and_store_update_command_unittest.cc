@@ -193,8 +193,9 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 
-  web_package::WebBundleSigner::KeyPair key_pair_ =
-      web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey);
+  web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
+      web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
+                                                   kTestPrivateKey);
   web_package::SignedWebBundleId web_bundle_id_ =
       *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId);
   IsolatedWebAppUrlInfo url_info_ =

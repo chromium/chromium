@@ -259,7 +259,7 @@ class IsolatedWebAppUpdateManagerDevModeUpdateTest
 
 TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
        DiscoversLocalDevModeUpdate) {
-  auto key_pair = web_package::WebBundleSigner::KeyPair::CreateRandom();
+  auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
   TestSignedWebBundle update_bundle = TestSignedWebBundleBuilder::BuildDefault(
       TestSignedWebBundleBuilder::BuildOptions()
           .SetVersion(base::Version("2.0.0"))
@@ -316,7 +316,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
  protected:
   struct IwaInfo {
-    IwaInfo(web_package::WebBundleSigner::KeyPair key_pair,
+    IwaInfo(web_package::WebBundleSigner::Ed25519KeyPair key_pair,
             IsolatedWebAppStorageLocation installed_location,
             base::Version installed_version,
             GURL update_manifest_url,
@@ -335,7 +335,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
           update_app_name(std::move(update_app_name)) {}
 
     IsolatedWebAppUrlInfo url_info;
-    web_package::WebBundleSigner::KeyPair key_pair;
+    web_package::WebBundleSigner::Ed25519KeyPair key_pair;
     IsolatedWebAppStorageLocation installed_location;
     base::Version installed_version;
 
@@ -355,20 +355,22 @@ class IsolatedWebAppUpdateManagerUpdateTest
     command_scheduler->DelegateToRealImpl();
     fake_provider().SetScheduler(std::move(command_scheduler));
 
-    iwa_info1_ = IwaInfo(web_package::WebBundleSigner::KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
-                         base::Version("1.0.0"),
-                         GURL("https://example.com/update_manifest1.json"),
-                         GURL("https://example.com/bundle1.swbn"),
-                         base::Version("2.0.0"), "updated app 1");
+    iwa_info1_ =
+        IwaInfo(web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
+                IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
+                base::Version("1.0.0"),
+                GURL("https://example.com/update_manifest1.json"),
+                GURL("https://example.com/bundle1.swbn"),
+                base::Version("2.0.0"), "updated app 1");
     SetUpIwaInfo(*iwa_info1_);
 
-    iwa_info2_ = IwaInfo(web_package::WebBundleSigner::KeyPair::CreateRandom(),
-                         IwaStorageOwnedBundle{"iwa2", /*dev_mode=*/false},
-                         base::Version("4.0.0"),
-                         GURL("https://example.com/update_manifest2.json"),
-                         GURL("https://example.com/bundle2.swbn"),
-                         base::Version("7.0.0"), "updated app 2");
+    iwa_info2_ =
+        IwaInfo(web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom(),
+                IwaStorageOwnedBundle{"iwa2", /*dev_mode=*/false},
+                base::Version("4.0.0"),
+                GURL("https://example.com/update_manifest2.json"),
+                GURL("https://example.com/bundle2.swbn"),
+                base::Version("7.0.0"), "updated app 2");
     SetUpIwaInfo(*iwa_info2_);
 
     SetTrustedWebBundleIdsForTesting({iwa_info1_->url_info.web_bundle_id(),
@@ -411,7 +413,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
   TestSignedWebBundle CreateBundle(
       const base::Version& version,
-      const web_package::WebBundleSigner::KeyPair& key_pair) const {
+      const web_package::WebBundleSigner::Ed25519KeyPair& key_pair) const {
     return TestSignedWebBundleBuilder::BuildDefault(
         TestSignedWebBundleBuilder::BuildOptions()
             .SetVersion(version)

@@ -145,6 +145,17 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
   return url_info;
 }
 
+web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
+    const web_package::WebBundleSigner::KeyPair& key_pair) {
+  return absl::visit(
+      base::Overloaded{[](const web_package::WebBundleSigner::Ed25519KeyPair&
+                              ed25519_key_pair) {
+        return web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+            ed25519_key_pair.public_key);
+      }},
+      key_pair);
+}
+
 }  // namespace
 
 BundledIsolatedWebApp::BundledIsolatedWebApp(
@@ -659,29 +670,29 @@ IsolatedWebAppBuilder::BuildAndStartProxyServer() {
 
 std::unique_ptr<ScopedBundledIsolatedWebApp>
 IsolatedWebAppBuilder::BuildBundle() {
-  return BuildBundle(web_package::WebBundleSigner::KeyPair::CreateRandom());
+  return BuildBundle(
+      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom());
 }
 
 std::unique_ptr<ScopedBundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
   return ScopedBundledIsolatedWebApp::Create(
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair.public_key),
+      CreateSignedWebBundleIdFromKeyPair(key_pair),
       BuildInMemoryBundle(key_pair), manifest_builder_);
 }
 
 std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const base::FilePath& bundle_path) {
-  return BuildBundle(bundle_path,
-                     web_package::WebBundleSigner::KeyPair::CreateRandom());
+  return BuildBundle(
+      bundle_path,
+      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom());
 }
 
 std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
     const base::FilePath& bundle_path,
     const web_package::WebBundleSigner::KeyPair& key_pair) {
   return std::make_unique<BundledIsolatedWebApp>(
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair.public_key),
+      CreateSignedWebBundleIdFromKeyPair(key_pair),
       BuildInMemoryBundle(key_pair), bundle_path, manifest_builder_);
 }
 

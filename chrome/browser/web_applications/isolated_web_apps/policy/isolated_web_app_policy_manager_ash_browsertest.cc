@@ -249,8 +249,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       web_app::TestSignedWebBundleBuilder::BuildDefault(
           TestSignedWebBundleBuilder::BuildOptions()
               .SetVersion(base::Version("7.0.6"))
-              .SetKeyPair(
-                  web_package::WebBundleSigner::KeyPair::CreateRandom()));
+              .SetKeyPair(web_package::WebBundleSigner::Ed25519KeyPair::
+                              CreateRandom()));
   const web_app::TestSignedWebBundle iwa_bundle_2_ =
       web_app::TestSignedWebBundleBuilder::BuildDefault(
           TestSignedWebBundleBuilder::BuildOptions().SetVersion(

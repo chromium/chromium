@@ -829,7 +829,7 @@ class InstallIsolatedWebAppCommandBundleInstallSourceTest
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        InstallationFinalizedWithCorrectInstallSurface) {
   IsolatedWebAppBuilder builder{ManifestBuilder()};
-  auto app = builder.BuildBundle(web_package::WebBundleSigner::KeyPair(
+  auto app = builder.BuildBundle(web_package::WebBundleSigner::Ed25519KeyPair(
       base::make_span(kTestPublicKey), base::make_span(kTestPrivateKey)));
   app->FakeInstallPageState(profile());
   app->TrustSigningKey();

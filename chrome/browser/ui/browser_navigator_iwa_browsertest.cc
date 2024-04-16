@@ -114,14 +114,14 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
     web_app::TestSignedWebBundle bundle1 =
         web_app::TestSignedWebBundleBuilder::BuildDefault(
             web_app::TestSignedWebBundleBuilder::BuildOptions()
-                .SetKeyPair(
-                    web_package::WebBundleSigner::KeyPair::CreateRandom())
+                .SetKeyPair(web_package::WebBundleSigner::Ed25519KeyPair::
+                                CreateRandom())
                 .SetIndexHTMLContent("Hello BrowserNavigator 1!"));
     web_app::TestSignedWebBundle bundle2 =
         web_app::TestSignedWebBundleBuilder::BuildDefault(
             web_app::TestSignedWebBundleBuilder::BuildOptions()
-                .SetKeyPair(
-                    web_package::WebBundleSigner::KeyPair::CreateRandom())
+                .SetKeyPair(web_package::WebBundleSigner::Ed25519KeyPair::
+                                CreateRandom())
                 .SetIndexHTMLContent("Hello BrowserNavigator 2!"));
 
     base::FilePath bundle1_path =

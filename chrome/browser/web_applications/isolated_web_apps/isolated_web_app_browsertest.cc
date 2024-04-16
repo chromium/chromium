@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NewManifestPathPreferred) {
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, FallsBackToOldManifestPath) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  auto key_pair = web_package::WebBundleSigner::KeyPair::CreateRandom();
+  auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
   auto web_bundle_id =
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           key_pair.public_key);

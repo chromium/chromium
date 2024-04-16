@@ -52,8 +52,8 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
                         "Hello World");
     auto unsigned_bundle = builder.CreateBundle();
 
-    web_package::WebBundleSigner::KeyPair key_pair(kTestPublicKey,
-                                                   kTestPrivateKey);
+    web_package::WebBundleSigner::Ed25519KeyPair key_pair(kTestPublicKey,
+                                                          kTestPrivateKey);
     auto signed_bundle =
         web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair});
 

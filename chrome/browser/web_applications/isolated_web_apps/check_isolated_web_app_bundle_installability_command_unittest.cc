@@ -81,7 +81,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
       features::kIsolatedWebApps};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   web_package::WebBundleSigner::KeyPair key_pair_ =
-      web_package::WebBundleSigner::KeyPair::CreateRandom();
+      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
 };
 
 TEST_F(CheckIsolatedWebAppBundleInstallabilityCommandTest,

@@ -134,8 +134,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
     iwa_server_.ServeFilesFromDirectory(temp_dir_);
     EXPECT_TRUE(iwa_server_.Start());
 
-    auto key_pair =
-        web_package::WebBundleSigner::KeyPair(kTestPublicKey, kTestPrivateKey);
+    auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair(
+        kTestPublicKey, kTestPrivateKey);
     auto bundle_id = web_package::SignedWebBundleId::CreateForEd25519PublicKey(
         key_pair.public_key);
     url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);

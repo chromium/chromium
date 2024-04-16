@@ -338,7 +338,7 @@ class IsolatedWebAppPolicyManagerTestBase : public WebAppTest {
     web_app::TestSignedWebBundle swbn_app2 =
         web_app::TestSignedWebBundleBuilder::BuildDefault(
             TestSignedWebBundleBuilder::BuildOptions().SetKeyPair(
-                web_package::WebBundleSigner::KeyPair::CreateRandom()));
+                web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom()));
 
     lazy_app1_id_ = swbn_app1.id;
     lazy_app2_id_ = swbn_app2.id;
