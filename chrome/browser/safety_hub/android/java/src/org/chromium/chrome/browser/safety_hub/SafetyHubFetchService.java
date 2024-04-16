@@ -95,6 +95,8 @@ public class SafetyHubFetchService implements BackgroundTask {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 accountEmail,
                 count -> {
+                    // TODO(b/324562205): Find another way to store the data tied to the signed in
+                    // account or clear the pref when the user signs out.
                     prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
                     callback.taskFinished(/* needsReschedule= */ false);
                 },

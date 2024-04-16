@@ -9,11 +9,8 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Account-level passwords -->
-    <org.chromium.chrome.browser.safety_check.SafetyCheckElementPreference
-        android:key="passwords_account"
-        android:title="@string/safety_check_passwords_safe"
-        android:icon="@drawable/ic_vpn_key_grey"
-        app:iconTint="@macro/default_icon_color"
-        app:allowDividerBelow="false" />
+    <Preference
+        android:key="passwords_account" 
+        android:title="@string/safety_check_passwords_safe" />
 
 </PreferenceScreen>
