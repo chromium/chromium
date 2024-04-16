@@ -97,14 +97,43 @@ class OSSettingsMochaTestRevampDisabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsMochaTestApnRevampEnabled : public OSSettingsMochaTest {
+class OSSettingsMochaTestApnRevamp : public OSSettingsRevampMochaTest {
  protected:
-  OSSettingsMochaTestApnRevampEnabled() {
+  OSSettingsMochaTestApnRevamp() {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(RevampParameterized,
+                         OSSettingsMochaTestApnRevamp,
+                         testing::Bool(),
+                         OSSettingsMochaTestApnRevamp::DescribeParams);
+
+class OSSettingsCrostiniTestRevamp : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsCrostiniTestRevamp() { fake_crostini_features_.SetAll(true); }
+
+ private:
+  crostini::FakeCrostiniFeatures fake_crostini_features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(RevampParameterized,
+                         OSSettingsCrostiniTestRevamp,
+                         testing::Bool(),
+                         OSSettingsCrostiniTestRevamp::DescribeParams);
+
+class OSSettingsCrostiniTestRevampDisabled
+    : public OSSettingsMochaTestRevampDisabled {
+ protected:
+  OSSettingsCrostiniTestRevampDisabled() {
+    fake_crostini_features_.SetAll(true);
+  }
+
+ private:
+  crostini::FakeCrostiniFeatures fake_crostini_features_;
 };
 
 class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
@@ -225,65 +254,23 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, PrefControlMixinInternal) {
   RunSettingsTest("controls/v2/pref_control_mixin_internal_test.js");
 }
 
-class OSSettingsCrostiniTestRevampEnabled
-    : public OSSettingsMochaTestRevampEnabled {
- protected:
-  OSSettingsCrostiniTestRevampEnabled() {
-    fake_crostini_features_.SetAll(true);
-  }
-
- private:
-  crostini::FakeCrostiniFeatures fake_crostini_features_;
-};
-
-class OSSettingsCrostiniTestRevampDisabled
-    : public OSSettingsMochaTestRevampDisabled {
- protected:
-  OSSettingsCrostiniTestRevampDisabled() {
-    fake_crostini_features_.SetAll(true);
-  }
-
- private:
-  crostini::FakeCrostiniFeatures fake_crostini_features_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageBruschettaSubpage) {
   RunSettingsTest("crostini_page/bruschetta_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageBruschettaSubpageRevamp) {
-  RunSettingsTest("crostini_page/bruschetta_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniArcAdb) {
   RunSettingsTest("crostini_page/crostini_arc_adb_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniArcAdbRevamp) {
-  RunSettingsTest("crostini_page/crostini_arc_adb_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniExportImport) {
   RunSettingsTest("crostini_page/crostini_export_import_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniExportImportRevamp) {
-  RunSettingsTest("crostini_page/crostini_export_import_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniExtraContainersSubpage) {
-  RunSettingsTest("crostini_page/crostini_extra_containers_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniExtraContainersSubpageRevamp) {
   RunSettingsTest("crostini_page/crostini_extra_containers_subpage_test.js");
 }
 
@@ -291,47 +278,27 @@ IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled, CrostiniPage) {
   RunSettingsTest("crostini_page/crostini_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniPortForwarding) {
   RunSettingsTest("crostini_page/crostini_port_forwarding_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniPortForwardingRevamp) {
-  RunSettingsTest("crostini_page/crostini_port_forwarding_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniSettingsCard) {
   RunSettingsTest("crostini_page/crostini_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       AboutPageCrostiniSettingsCardRevamp) {
-  RunSettingsTest("crostini_page/crostini_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniSharedUsbDevices) {
   RunSettingsTest("crostini_page/crostini_shared_usb_devices_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniSharedUsbDevicesRevamp) {
-  RunSettingsTest("crostini_page/crostini_shared_usb_devices_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsCrostiniTestRevamp,
                        CrostiniPageCrostiniSubpage) {
   RunSettingsTest("crostini_page/crostini_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTestRevampEnabled,
-                       CrostiniPageCrostiniSubpageRevamp) {
-  RunSettingsTest("crostini_page/crostini_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, DateTimePage) {
   RunSettingsTest("date_time_page/date_time_page_test.js");
 }
 
@@ -340,11 +307,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
   RunSettingsTest("date_time_page/date_time_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePageTimezoneSelector) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       DateTimePageTimezoneSelector) {
   RunSettingsTest("date_time_page/timezone_selector_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePageTimezoneSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, DateTimePageTimezoneSubpage) {
   RunSettingsTest("date_time_page/timezone_subpage_test.js");
 }
 
@@ -699,8 +667,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
   RunSettingsTest("device_page/stylus_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled,
-                       InternetPageApnSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsMochaTestApnRevamp, InternetPageApnSubpage) {
   RunSettingsTest("internet_page/apn_subpage_test.js");
 }
 
