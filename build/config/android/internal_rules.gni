@@ -1248,6 +1248,7 @@ if (enable_java_templates) {
         "chromium-$_mapping_basename-$android_channel-$_version_code"
 
     _args = [
+      "--min-api=${invoker.min_sdk_version}",
       "--mapping-output",
       rebase_path(_mapping_path, root_build_dir),
       "--classpath",
@@ -1261,6 +1262,7 @@ if (enable_java_templates) {
       "--package-name=$_package_name",
       "--source-file",
       _source_file_template,
+      "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
     ]
     if (treat_warnings_as_errors) {
       _args += [ "--warnings-as-errors" ]
@@ -1272,6 +1274,19 @@ if (enable_java_templates) {
     }
     if (defined(invoker.repackage_classes)) {
       _args += [ "--repackage-classes=" + invoker.repackage_classes ]
+    }
+    if (defined(invoker.apply_mapping)) {
+      _inputs += [ invoker.apply_mapping ]
+      _rebased_apply_mapping_path =
+          rebase_path(invoker.apply_mapping, root_build_dir)
+      args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
+    }
+
+    if (defined(invoker.proguard_configs)) {
+      _inputs += invoker.proguard_configs
+      _rebased_proguard_configs =
+          rebase_path(invoker.proguard_configs, root_build_dir)
+      _args += [ "--proguard-configs=$_rebased_proguard_configs" ]
     }
 
     if (defined(invoker.modules)) {
@@ -1552,6 +1567,7 @@ if (enable_java_templates) {
         forward_variables_from(invoker,
                                TESTONLY_AND_VISIBILITY + [
                                      "add_view_trace_events",
+                                     "apply_mapping",
                                      "input_art_profile",
                                      "output_art_profile",
                                      "enable_startup_profile",
@@ -1564,8 +1580,10 @@ if (enable_java_templates) {
                                      "expected_proguard_config",
                                      "expected_proguard_config_base",
                                      "ignore_desugar_missing_deps",
+                                     "inputs",
                                      "modules",
                                      "package_name",
+                                     "proguard_configs",
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
@@ -1573,21 +1591,9 @@ if (enable_java_templates) {
                                      "top_target_name",
                                      "version_code",
                                    ])
-        args = [
-          "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
-          "--min-api=$_min_sdk_version",
-        ]
-        inputs = []
-        if (defined(invoker.inputs)) {
-          inputs += invoker.inputs
-        }
-        if (defined(invoker.proguard_configs)) {
-          inputs += invoker.proguard_configs
-          _rebased_proguard_configs =
-              rebase_path(invoker.proguard_configs, root_build_dir)
-          args += [ "--proguard-configs=$_rebased_proguard_configs" ]
-        }
+        min_sdk_version = _min_sdk_version
 
+        args = []
         if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
           args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath_extended)" ]
         } else if (defined(invoker.add_view_trace_events) &&
@@ -1598,12 +1604,6 @@ if (enable_java_templates) {
         }
         if (defined(invoker.proguard_args)) {
           args += invoker.proguard_args
-        }
-
-        if (defined(invoker.apply_mapping)) {
-          _rebased_apply_mapping_path =
-              rebase_path(invoker.apply_mapping, root_build_dir)
-          args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
         }
 
         if (defined(invoker.output)) {
