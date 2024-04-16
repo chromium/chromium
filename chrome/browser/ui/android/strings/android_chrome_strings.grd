@@ -1720,6 +1720,20 @@ Your Google account may have other forms of browsing history like searches and a
         Learn more about <ph name="BEGIN_LINK">&lt;link&gt;</ph>how Chrome keeps your data private<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
 
+      <!-- History App filter -->
+      <message name="IDS_HISTORY_APP_FILTER_SHEET_HEADER" desc="Title in the header of history app filter sheet.">
+        Filter by app
+      </message>
+      <message name="IDS_HISTORY_APP_FILTER_SHEET_DESCRIPTION" desc="The content description of history app filter where an app id to filter the history with can be chosen.">
+        App filter sheet
+      </message>
+      <message name="IDS_HISTORY_APP_FILTER_SHEET_OPENED" desc="The accessibility string read when the app filter sheet is fully opened.">
+        App filter sheet is opened.
+      </message>
+      <message name="IDS_HISTORY_APP_FILTER_SHEET_CLOSED" desc="The accessibility string read when the app filter sheet is closed.">
+        App filter sheet is closed.
+      </message>
+
       <!-- Safe Browsing standard protection preferences -->
       <message name="IDS_SAFE_BROWSING_STANDARD_PROTECTION_SUBTITLE" desc="Subtitle for Safe Browsing standard protection mode.">
         Standard protection:

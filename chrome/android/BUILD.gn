@@ -2857,6 +2857,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/intents:unit_device_javatests",
       "//chrome/browser/back_press/android:unit_device_javatests",
       "//chrome/browser/download/internal/android:unit_device_javatests",
+      "//chrome/browser/history:unit_device_javatests",
       "//chrome/browser/hub:unit_device_javatests",
       "//chrome/browser/hub/internal:unit_device_javatests",
       "//chrome/browser/image_descriptions:unit_device_javatests",
