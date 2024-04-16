@@ -385,7 +385,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
               prefs::kUserTimezone);
       return std::make_unique<base::Value>(timezone->GetValue()->Clone());
     }
-    // TODO(crbug.com/697817): Convert CrosSettings::Get to take a unique_ptr.
+    // TODO(crbug.com/40508978): Convert CrosSettings::Get to take a unique_ptr.
     return base::Value::ToUniquePtrValue(
         ash::CrosSettings::Get()->GetPref(ash::kSystemTimezone)->Clone());
   }

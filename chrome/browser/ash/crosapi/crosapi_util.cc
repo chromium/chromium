@@ -242,7 +242,8 @@ constexpr std::string_view kAshCapabilities[] = {
     "crbug/1490336",
 
     // Support feedback dialog ai flow.
-    // TODO(crbug/1501057): Remove this capability once Ash and Lacros are both
+    // TODO(crbug.com/40941303): Remove this capability once Ash and Lacros are
+    // both
     // past M123.
     "crbug/1501057",
 
@@ -749,7 +750,7 @@ void InjectBrowserInitParams(
   params->device_mode = GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
 
-  // TODO(crbug.com/1093194): This should be updated to a new value when
+  // TODO(crbug.com/40134922): This should be updated to a new value when
   // the long term fix is made in ash-chrome, atomically.
   params->exo_ime_support =
       crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
@@ -762,7 +763,7 @@ void InjectBrowserInitParams(
   // Syncing the randomization seed ensures that the group membership of the
   // limited entropy synthetic trial will be the same between Ash Chrome and
   // Lacros.
-  // TODO(crbug.com/1508150): Remove after completing the trial.
+  // TODO(crbug.com/40948861): Remove after completing the trial.
   variations::LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(
       local_state);
   params->limited_entropy_synthetic_trial_seed =

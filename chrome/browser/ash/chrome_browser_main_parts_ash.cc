@@ -1582,7 +1582,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   DemoSession::ShutDownIfInitialized();
 
   // Inform |NetworkCertLoader| that it should not notify observers anymore.
-  // TODO(https://crbug.com/894867): Remove this when the root cause of the
+  // TODO(crbug.com/41420425): Remove this when the root cause of the
   // crash is found.
   if (NetworkCertLoader::IsInitialized()) {
     NetworkCertLoader::Get()->set_is_shutting_down();

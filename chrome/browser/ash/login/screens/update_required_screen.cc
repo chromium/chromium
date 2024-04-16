@@ -104,7 +104,7 @@ void UpdateRequiredScreen::ShowImpl() {
 
 void UpdateRequiredScreen::OnGetEolInfo(
     const UpdateEngineClient::EolInfo& info) {
-  //  TODO(crbug.com/1020616) : Handle if the device is left on this screen
+  //  TODO(crbug.com/40105880) : Handle if the device is left on this screen
   //  for long enough to reach Eol.
   if (switches::IsAueReachedForUpdateRequiredForTest() ||
       (!info.eol_date.is_null() && info.eol_date <= clock_->Now())) {

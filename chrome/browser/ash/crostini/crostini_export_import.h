@@ -61,7 +61,7 @@ enum class ImportContainerResult {
 // importing containers with crostini.  It manages a file dialog for selecting
 // files and a notification to show the progress of export/import.
 //
-// TODO(crbug.com/932339): Ensure we have enough free space before doing
+// TODO(crbug.com/41441501): Ensure we have enough free space before doing
 // backup or restore.
 class CrostiniExportImport : public KeyedService,
                              public ui::SelectFileDialog::Listener,

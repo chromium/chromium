@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   utils()->WaitForFocusRing("primary", "button", "Keyboard");
 }
 
-// TODO(crbug.com/1472440): Enable after fixing flakiness.
+// TODO(crbug.com/40926594): Enable after fixing flakiness.
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);

@@ -165,7 +165,7 @@ class ZeroStateDriveProviderTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1348339): Add a test for a file mount-triggered update at
+// TODO(crbug.com/40855240): Add a test for a file mount-triggered update at
 // construction time.
 
 // Test that each of the trigger events causes an update.

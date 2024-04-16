@@ -530,8 +530,8 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
                                  proxy_ime_engine_.get());
 
   // Enable IMEs that are already enabled in the container.
-  // TODO(crbug.com/845079): We should keep the order of the IMEs as same as in
-  // chrome://settings
+  // TODO(crbug.com/40577268): We should keep the order of the IMEs as same as
+  // in chrome://settings
   prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
 
   for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())

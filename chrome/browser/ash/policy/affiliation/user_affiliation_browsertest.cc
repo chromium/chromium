@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(UserAffiliationBrowserTest, TestAffiliation) {
   ASSERT_NO_FATAL_FAILURE(VerifyAffiliationExpectations());
 }
 
-// TODO(https://crbug.com/946024): PRE_ test is flakily timing out.
+// TODO(crbug.com/41449122): PRE_ test is flakily timing out.
 INSTANTIATE_TEST_SUITE_P(DISABLED_AffiliationCheck,
                          UserAffiliationBrowserTest,
                          ::testing::Values(Params(true), Params(false)),

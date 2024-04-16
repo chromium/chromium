@@ -10,4 +10,4 @@ managed and have a matching affiliation ID, they are said to be
 affiliated. This influences the behavior of some policies that only
 apply in the affiliated or the unaffiliated case.
 
-TODO(https://crbug.com/1217632): Add more information about affiliation.
+TODO(crbug.com/40185259): Add more information about affiliation.

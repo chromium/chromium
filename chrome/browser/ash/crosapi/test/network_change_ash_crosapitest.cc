@@ -77,7 +77,7 @@ TEST_F(NetworkChangeCrosapiTest, OnNetworkChanged) {
     // Ignore OnNetworkChange() calls and only check the last result which
     // overrides all results passed before. The first called
     // DisconnectFromNetwork() causes a few network chaneges for some reason.
-    // TODO(crbug.com/1374276): Modify network change crosapi specification.
+    // TODO(crbug.com/40242393): Modify network change crosapi specification.
     EXPECT_CALL(observer_, OnNetworkChanged(_, _, _, _, _, _))
         .Times(AnyNumber());
     // Check if eventually disconnected from Ethernet and connected to Wifi.

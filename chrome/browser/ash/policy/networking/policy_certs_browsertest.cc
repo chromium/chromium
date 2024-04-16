@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedClientCertsTest, ClientCertsImported) {
       IsCertInNSSDatabase(browser()->profile(), kClientCertSubjectCommonName));
 }
 
-// TODO(https://crbug.com/874937): Add a test case for a kiosk session.
+// TODO(crbug.com/40589684): Add a test case for a kiosk session.
 
 // Class for testing policy-provided extensions in the sign-in profile.
 // Sets a device policy which applies the |kRootCaCert| for

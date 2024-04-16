@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
 
     // Check app's install_url and start_url are from the same origin.
     //
-    // TODO(https://crbug.com/1111171): Include OS Settings in this check.
+    // TODO(crbug.com/40709016): Include OS Settings in this check.
     //
     // OS Settings uses a different install_url origin (by mistake) which are
     // persisted to disk. We can't fix it until the above crbug is fixed.

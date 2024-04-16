@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-// TODO(https://crbug.com/1497648): Test is flaky on multiple CrOS builders.
+// TODO(crbug.com/40939150): Test is flaky on multiple CrOS builders.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Default DISABLED_Default
 #else

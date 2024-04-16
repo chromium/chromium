@@ -197,7 +197,7 @@ namespace crosapi {
 namespace {
 
 // Assumptions:
-// 1. TODO(crbug.com/1102768): Multi-Signin / Fast-User-Switching is disabled.
+// 1. TODO(crbug.com/40704278): Multi-Signin / Fast-User-Switching is disabled.
 // 2. ash-chrome has 1 and only 1 "regular" `Profile`.
 Profile* GetAshProfile() {
 #if DCHECK_IS_ON()

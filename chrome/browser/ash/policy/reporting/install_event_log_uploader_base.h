@@ -25,7 +25,7 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
 
   // Will construct a non-CloudPolicyClient::Observer version of
   // InstallEventLogUploaderBase.
-  // TODO(crbug.com/1078512) This exists to support the move to using
+  // TODO(crbug.com/40689377) This exists to support the move to using
   // reporting::ReportQueue, which owns its own CloudPolicyClient. Once
   // ArcInstallEventLogUploader is ready to move to using
   // reporting::ReportQueue, we can likely do a small refactor removing all

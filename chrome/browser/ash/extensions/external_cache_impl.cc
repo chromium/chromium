@@ -247,7 +247,7 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
 
       // Don't try to DownloadMissingExtensions() from here,
       // since it can cause a fail/retry loop.
-      // TODO(crbug.com/1121546) trigger re-installation mechanism with
+      // TODO(crbug.com/40715565) trigger re-installation mechanism with
       // exponential back-off.
       return;
     }

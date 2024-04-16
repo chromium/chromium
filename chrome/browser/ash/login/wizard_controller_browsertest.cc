@@ -1271,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
 }
 
-// TODO(crbug.com/911661) Flaky time outs on Linux ChromiumOS ASan LSan bot.
+// TODO(crbug.com/41429868) Flaky time outs on Linux ChromiumOS ASan LSan bot.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ControlFlowDeviceDisabled DISABLED_ControlFlowDeviceDisabled
 #else

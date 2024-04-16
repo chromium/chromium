@@ -133,7 +133,7 @@ class UserImageRequest : public ImageDecoder::ImageRequest {
       const std::string& image_data,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
       : image_info_(std::move(image_info)),
-        // TODO(crbug.com/593251): Remove the data copy here.
+        // TODO(crbug.com/41243179): Remove the data copy here.
         image_data_(new base::RefCountedBytes(
             reinterpret_cast<const unsigned char*>(image_data.data()),
             image_data.size())),

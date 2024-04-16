@@ -3103,7 +3103,7 @@ bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
   return report_app_info_;
 }
 
-// TODO(https://crbug.com/1364428)
+// TODO(crbug.com/40239083)
 // Make this function fallible when the optional received is empty
 void DeviceStatusCollector::OnOSVersion(
     const std::optional<std::string>& version) {

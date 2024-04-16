@@ -57,7 +57,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kPluginVmAllowed, false);
   registry->RegisterDictionaryPref(kPluginVmImage);
   registry->RegisterBooleanPref(kPluginVmImageExists, false);
-  // TODO(crbug.com/1066760): For convenience this currently defaults to true,
+  // TODO(crbug.com/40124674): For convenience this currently defaults to true,
   // but we'll need to revisit before launch.
   registry->RegisterBooleanPref(kPluginVmPrintersAllowed, true);
   registry->RegisterBooleanPref(kPluginVmCameraAllowed, false);

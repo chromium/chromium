@@ -133,7 +133,7 @@ void AppServiceAppResult::Launch(int event_flags,
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
-  // TODO(crbug.com/1026730): Move this special case to ExtensionApps,
+  // TODO(crbug.com/40659878): Move this special case to ExtensionApps,
   // when AppService Instance feature is done.
   bool is_active_app = false;
   proxy->AppRegistryCache().ForOneApp(

@@ -729,7 +729,7 @@ void PluginVmInstaller::OnImportDiskImage(std::optional<ReplyType> reply) {
       VLOG(1) << "Disk image creation/import is now in progress";
       current_import_command_uuid_ = response.command_uuid();
       // Image in progress. Waiting for progress signals...
-      // TODO(https://crbug.com/966398): think about adding a timeout here,
+      // TODO(crbug.com/41460680): think about adding a timeout here,
       //   i.e. what happens if concierge dies and does not report any signal
       //   back, not even an error signal. Right now, the user would see
       //   the "Configuring Plugin VM" screen forever. Maybe that's OK

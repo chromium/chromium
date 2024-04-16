@@ -984,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
 // Verify that switching to clamshell mode when the fade out animation in tablet
 // mode is running works as expected.
-// TODO(crbug.com/1302924): Flaky.
+// TODO(crbug.com/40217187): Flaky.
 IN_PROC_BROWSER_TEST_F(
     AppListSortBrowserTest,
     DISABLED_TransitionToClamshellModeDuringFadeOutAnimation) {

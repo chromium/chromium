@@ -95,12 +95,12 @@ void AshCrosapiTestEnv::Initialize() {
                                  socket_path);
 
   // Waits for socket connection to establish.
-  // TODO(crbug.com/1368029): Separate logs generated during setup from those
+  // TODO(crbug.com/40240169): Separate logs generated during setup from those
   // generated during test.
   base::FilePathWatcher watcher;
   base::RunLoop run_loop;
-  // TODO(crbug.com/1371015): Terminate runloop if the passed chrome couldn't be
-  // exec.
+  // TODO(crbug.com/40241195): Terminate runloop if the passed chrome couldn't
+  // be exec.
   CHECK(watcher.Watch(base::FilePath(socket_path),
                       base::FilePathWatcher::Type::kNonRecursive,
                       base::BindLambdaForTesting(

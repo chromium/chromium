@@ -95,7 +95,7 @@ void CertDatabaseAsh::GetCertDatabaseInfo(
     GetCertDatabaseInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(crbug.com/1146430): For now Lacros-Chrome will initialize certificate
+  // TODO(crbug.com/40156265): For now Lacros-Chrome will initialize certificate
   // database only in session. Revisit later to decide what to do on the login
   // screen.
   if (!ash::LoginState::Get()->IsUserLoggedIn()) {

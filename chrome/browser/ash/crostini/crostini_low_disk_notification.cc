@@ -52,7 +52,7 @@ CrostiniLowDiskNotification::~CrostiniLowDiskNotification() {
 void CrostiniLowDiskNotification::OnLowDiskSpaceTriggered(
     const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {
   if (signal.vm_name() != kCrostiniDefaultVmName) {
-    // TODO(crbug/1189009): Support VMs with different names
+    // TODO(crbug.com/40755190): Support VMs with different names
     return;
   }
   ShowNotificationIfAppropriate(signal.free_bytes());

@@ -37,7 +37,7 @@ namespace crosapi {
 class PrimaryProfileCreationWaiter;
 
 // Manages launching and terminating Lacros process.
-// TODO(crbug.com/1495590): Extract launching logic from BrowserManager to
+// TODO(crbug.com/40286595): Extract launching logic from BrowserManager to
 // BrowserLauncher.
 class BrowserLauncher {
  public:

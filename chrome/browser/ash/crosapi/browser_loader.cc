@@ -164,7 +164,7 @@ void BrowserLoader::LoadNow(LoadCompletionCallback callback) {
   stateful_lacros_loader_.reset();
 
   lacros_start_load_time_ = base::TimeTicks::Now();
-  // TODO(crbug.com/1078607): Remove non-error logging from this class.
+  // TODO(crbug.com/40689435): Remove non-error logging from this class.
   LOG(WARNING) << "Starting lacros component load.";
 
   // If the user has specified a path for the lacros-chrome binary, use that

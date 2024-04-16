@@ -37,7 +37,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
 
   // Launch but don't wait for page load here because we want to check the
   // browser window's title is set before the page loads.
-  // TODO(crbug.com/1107285): This isn't a strong guarantee that we check the
+  // TODO(crbug.com/40140789): This isn't a strong guarantee that we check the
   // title before the page loads. We should improve this.
   Browser* app_browser;
   LaunchAppWithoutWaiting(app_type, &app_browser);

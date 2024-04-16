@@ -1450,7 +1450,7 @@ void UserSessionManager::InitProfilePreferences(
     DCHECK(account_manager->IsTokenAvailable(account_key));
 
     // 2. Seed it into `IdentityManager`.
-    // TODO(https://crbug.com/1196784): Check whether we should use
+    // TODO(crbug.com/40176615): Check whether we should use
     //     GetAccountId().GetUserEmail() instead of GetDisplayEmail() here.
     signin::AccountsMutator* accounts_mutator =
         identity_manager->GetAccountsMutator();
@@ -2409,7 +2409,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   // Mark login host for deletion after browser starts.  This
   // guarantees that the message loop will be referenced by the
   // browser before it is dereferenced by the login host.
-  // TODO(crbug.com/1267769): `login_host` Finalize called twice, but it
+  // TODO(crbug.com/40803027): `login_host` Finalize called twice, but it
   // shouldn't. Remove DumpWithoutCrashing when we know the root cause.
   if (LoginDisplayHost::default_host()) {
     if (!LoginDisplayHost::default_host()->IsFinalizing()) {

@@ -74,7 +74,7 @@ void LoginWebDialog::Show() {
 // LoginWebDialog, protected:
 
 void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
-  // TODO(https://crbug.com/1022774): Fix for the lock screen.
+  // TODO(crbug.com/40657776): Fix for the lock screen.
   if (!parent_window_) {
     *size = kMaxSize;
     return;

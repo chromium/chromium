@@ -1145,7 +1145,7 @@ class EphemeralUserOobeTest : public OobeBaseTest,
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-// TODO(crbug.com/1396268): Flaky on Linux Chrome OS ASan LSan and dbg.
+// TODO(crbug.com/40882667): Flaky on Linux Chrome OS ASan LSan and dbg.
 // Re-enable this test.
 #if BUILDFLAG(IS_CHROMEOS) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
 #define MAYBE_RegularEphemeralUser DISABLED_RegularEphemeralUser

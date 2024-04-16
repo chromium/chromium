@@ -83,7 +83,7 @@ class CrostiniFeatures {
   // Returns true if user is allowed to use multiple (non-default) containers.
   virtual bool IsMultiContainerAllowed(Profile*);
 
-  // TODO(crbug.com/1004708): Move other functions from crostini_util to here.
+  // TODO(crbug.com/40647881): Move other functions from crostini_util to here.
 
  protected:
   static void SetForTesting(CrostiniFeatures* features);

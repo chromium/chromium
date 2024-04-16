@@ -55,7 +55,7 @@ void NativeInputMethodEngine::Initialize(
     std::unique_ptr<InputMethodEngineObserver> observer,
     const char* extension_id,
     Profile* profile) {
-  // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
+  // TODO(crbug.com/40154142): refactor the mix of unique and raw ptr here.
   std::unique_ptr<AssistiveSuggester> assistive_suggester =
       std::make_unique<AssistiveSuggester>(
           this, profile,

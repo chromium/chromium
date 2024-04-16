@@ -129,7 +129,7 @@ class DemoModeResourcesRemover
   // Method used to determine whether a domain is associated with legacy demo
   // retail mode, where demo mode sessions are implemented as public sessions.
   // Exposed so the matching can be tested.
-  // TODO(crbug.com/874778): Remove after legacy retail mode domains have been
+  // TODO(crbug.com/40589626): Remove after legacy retail mode domains have been
   // disabled.
   static bool IsLegacyDemoRetailModeDomain(const std::string& domain);
 

@@ -389,7 +389,7 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // Creates or updates a SyncItem from |specifics|. Returns true if a new item
   // was created.
-  // TODO(crbug.com/1057577): Change return type to void.
+  // TODO(crbug.com/40677489): Change return type to void.
   bool ProcessSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
 
   // Handles a newly created sync item (e.g. creates a new AppItem and adds it

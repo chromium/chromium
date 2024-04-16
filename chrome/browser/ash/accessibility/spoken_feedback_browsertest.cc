@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextGraphic) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/1312004): Re-enable this test
+// TODO(crbug.com/40831399): Re-enable this test
 // Verify that enable chromeVox won't end overview.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        DISABLED_EnableChromeVoxOnOverviewMode) {
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
-// TODO(https://crbug.com/1333373): Flaky on Linux ChromiumOS MSan.
+// TODO(crbug.com/40845611): Flaky on Linux ChromiumOS MSan.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_ChromeVoxFindInPage DISABLED_ChromeVoxFindInPage
 #else
@@ -1261,7 +1261,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxFindInPage) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/1177140) Re-enable test
+// TODO(crbug.com/40748296) Re-enable test
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        DISABLED_ChromeVoxNavigateAndSelect) {
   EnableChromeVox();
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxStickyModeRawKeys) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/752427): Test is flaky.
+// TODO(crbug.com/41337748): Test is flaky.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_TouchExploreStatusTray) {
   EnableChromeVox();
 
@@ -2038,7 +2038,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
-  // TODO(crbug.com/1228418) - Improve the generation of summaries across
+  // TODO(crbug.com/40777708) - Improve the generation of summaries across
   // ChromeOS. Expect the content to be spoken once it has been improved.
   /*sm_.ExpectSpeech(
       "Turn off screen? This improves privacy by turning off your screen so it "
@@ -2119,7 +2119,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/1481691): Re-enable this test
+// TODO(crbug.com/40930988): Re-enable this test
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ClipboardCopySpeech) {
   EnableChromeVox();
   sm_.Call([this]() {

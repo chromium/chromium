@@ -773,7 +773,7 @@ void AppListClientImpl::RecordViewShown(bool is_app_collections_shown) {
   // initial account-> show the launcher
   // In this case, when showing the launcher, the current user is not
   // new anymore.
-  // TODO(https://crbug.com/1211620): If this bug is fixed, we might need to
+  // TODO(crbug.com/40767698): If this bug is fixed, we might need to
   // do some changes here.
   if (!user_manager::UserManager::Get()->IsCurrentUserNew()) {
     DCHECK(!state_for_new_user_);
@@ -781,7 +781,7 @@ void AppListClientImpl::RecordViewShown(bool is_app_collections_shown) {
   }
 
   // Record launcher usage only when the session is active.
-  // TODO(https://crbug.com/1248250): handle ui events during OOBE in a more
+  // TODO(crbug.com/40790443): handle ui events during OOBE in a more
   // elegant way. For example, do not bother showing the app list when handling
   // the app list toggling event because the app list is not visible in OOBE.
   if (!IsSessionActive()) {
@@ -789,7 +789,7 @@ void AppListClientImpl::RecordViewShown(bool is_app_collections_shown) {
   }
 
   // Return early if `state_for_new_user_` is null.
-  // TODO(https://crbug.com/1278947): Theoretically, `state_for_new_user_`
+  // TODO(crbug.com/40208386): Theoretically, `state_for_new_user_`
   // should be meaningful when the current user is new. However, it is not hold
   // under some edge cases. When the root issue gets fixed, replace it with a
   // check statement.

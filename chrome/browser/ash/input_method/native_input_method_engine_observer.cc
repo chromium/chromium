@@ -1104,7 +1104,7 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
           ash::ime::AssistiveWindowType::kEmojiSuggestion) {
         base::RecordAction(base::UserMetricsAction(
             "ChromeOS.Settings.SmartInputs.EmojiSuggestions.Open"));
-        // TODO(crbug/1101689): Add subpath for emoji suggestions settings.
+        // TODO(crbug.com/40138453): Add subpath for emoji suggestions settings.
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
             SettingToQueryString(

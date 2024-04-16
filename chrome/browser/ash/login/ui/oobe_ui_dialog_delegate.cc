@@ -406,7 +406,7 @@ void OobeUIDialogDelegate::OnDialogClosed(const std::string& json_retval) {
 }
 
 std::vector<ui::Accelerator> OobeUIDialogDelegate::GetAccelerators() {
-  // TODO(crbug.com/809648): Adding necessary accelerators.
+  // TODO(crbug.com/40561667): Adding necessary accelerators.
   std::vector<ui::Accelerator> output;
 
   for (const auto& pair : accel_map_)

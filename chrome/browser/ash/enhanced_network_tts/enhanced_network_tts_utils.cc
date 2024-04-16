@@ -183,7 +183,7 @@ std::vector<uint16_t> FindTextBreaks(const std::u16string& utterance,
 
 mojom::TtsResponsePtr GetResultOnError(
     const mojom::TtsRequestError error_code) {
-  // TODO(crbug.com/1217301): Log errors.
+  // TODO(crbug.com/40771006): Log errors.
   return mojom::TtsResponse::NewErrorCode(error_code);
 }
 

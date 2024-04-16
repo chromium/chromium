@@ -202,7 +202,7 @@ void StatefulLacrosLoader::GetVersion(
 
   state_ = State::kLoading;
 
-  // TODO(crbug.com/1455070): There's KI that the current implementation
+  // TODO(crbug.com/40917231): There's KI that the current implementation
   // occasionally wrongly identifies there exists. Fix the logic.
   // If there currently isn't a stateful lacros-chrome binary, set `verison_`
   // null to proceed to use the rootfs lacros-chrome binary and start the

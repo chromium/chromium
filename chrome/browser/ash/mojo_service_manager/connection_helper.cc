@@ -68,7 +68,7 @@ base::ScopedClosureRunner CreateConnectionAndPassCloser() {
 #if BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
   return CreateRealConnectionAndPassCloser();
 #else
-  // TODO(crbug.com/952745): Always use fakes after adding
+  // TODO(crbug.com/41452889): Always use fakes after adding
   // use_real_chromeos_services=true to where needed.
   if (base::SysInfo::IsRunningOnChromeOS()) {
     return CreateRealConnectionAndPassCloser();

@@ -271,8 +271,8 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
   highlighted_index_ = kNoneHighlighted;
 
   std::string error;
-  // TODO(crbug/1099495): Move suggestion_show_ after checking for error and fix
-  // tests.
+  // TODO(crbug.com/40137521): Move suggestion_show_ after checking for error
+  // and fix tests.
   suggestion_shown_ = true;
   candidates_ = emoji_map_.at(text);
   properties_.visible = true;

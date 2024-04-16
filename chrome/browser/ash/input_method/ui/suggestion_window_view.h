@@ -122,13 +122,13 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
   raw_ptr<CompletionSuggestionView> completion_view_;
 
   // The setting link, positioned below candidate_area_.
-  // TODO(crbug/1102175): Rename setting to settings since there can be multiple
-  // things to set.
+  // TODO(crbug.com/40138671): Rename setting to settings since there can be
+  // multiple things to set.
   raw_ptr<views::Link> setting_link_;
 
   raw_ptr<views::ImageButton> learn_more_button_;
 
-  // TODO(crbug/1099062): Add tests for mouse hovered and pressed.
+  // TODO(crbug.com/40137305): Add tests for mouse hovered and pressed.
   base::flat_map<views::View*, base::CallbackListSubscription> subscriptions_;
 
   std::unique_ptr<base::OneShotTimer> delay_timer_;

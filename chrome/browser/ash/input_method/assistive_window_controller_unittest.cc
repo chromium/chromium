@@ -80,8 +80,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         delegate_.get(), profile_.get(), announcement_view_.get());
     IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
-    // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
-    // SuggestionWindowView's implementation.
+    // TODO(crbug.com/40138718): Create MockSuggestionWindowView to be
+    // independent of SuggestionWindowView's implementation.
     static_cast<views::TestViewsDelegate*>(views::ViewsDelegate::GetInstance())
         ->set_layout_provider(ChromeLayoutProvider::CreateLayoutProvider());
   }

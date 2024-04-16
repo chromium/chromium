@@ -30,8 +30,8 @@ void MultiCaptureServiceAsh::BindReceiver(
 
 void MultiCaptureServiceAsh::MultiCaptureStarted(const std::string& label,
                                                  const std::string& host) {
-  // TODO(crbug.com/1399594): Origin cannot be used in a crosapi interface as it
-  // is not stable. Currently, only the host of the origin is used. Pass the
+  // TODO(crbug.com/40249909): Origin cannot be used in a crosapi interface as
+  // it is not stable. Currently, only the host of the origin is used. Pass the
   // complete origin when the `Origin` interface becomes stable.
   GetMultiCaptureClient()->MultiCaptureStarted(
       label, url::Origin::CreateFromNormalizedTuple(/*scheme=*/"https", host,

@@ -101,7 +101,7 @@ AppServiceShortcutItem::AppServiceShortcutItem(
       profile_(profile) {
   SetName(shortcut_name);
   SetAccessibleName(GetAccessibilityLabel(profile, shortcut_id, shortcut_name));
-  // TODO(crbug.com/1412708): Consider renaming this interface.
+  // TODO(crbug.com/40255408): Consider renaming this interface.
   SetAppStatus(ash::AppStatus::kReady);
 
   if (sync_item && sync_item->item_ordinal.IsValid()) {

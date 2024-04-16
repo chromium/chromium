@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
 }
 
 // Tests the multiple password scraped flow.
-// TODO(crbug.com/1295294): This feature was deprioritized in mid-2022.
+// TODO(crbug.com/40214270): This feature was deprioritized in mid-2022.
 // Restore test once work resumes, or feel free to clean it up if you
 // step on it past mid-2024.
 IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, DISABLED_ScrapedMultiple) {

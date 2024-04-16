@@ -61,7 +61,7 @@ class BrowserDataMigrator {
     std::optional<uint64_t> required_size;
   };
 
-  // TODO(crbug.com/1296174): Currently, dependency around callback is not
+  // TODO(crbug.com/40214666): Currently, dependency around callback is not
   // clean enough. Clean it up.
   using MigrateCallback = base::OnceCallback<void(Result)>;
 

@@ -140,7 +140,7 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
 
   // Unload all extensions that could possibly leak the SigninProfile for
   // unauthorized usage.
-  // TODO(https://crbug.com/1045929): This also can be fixed by restricting URLs
+  // TODO(crbug.com/40116250): This also can be fixed by restricting URLs
   //                                  or browser windows from opening.
   const std::set<std::string> allowed_ids_hashes(
       std::begin(kNonRiskyExtensionsIdsHashes),

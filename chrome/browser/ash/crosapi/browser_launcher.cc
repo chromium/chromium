@@ -498,9 +498,9 @@ void SetUpLogging(bool launching_at_login_screen,
 
   parameters.command_line.AppendSwitchASCII(
       switches::kVModule,
-      // TODO(crbug.com/1371493): Remove after fix.
+      // TODO(crbug.com/40061238): Remove after fix.
       "wayland_window_drag_controller=1,wayland_data_source=1,tab_drag_"
-      // TODO(crbug.com/1472682): Remove after fix.
+      // TODO(crbug.com/40069512): Remove after fix.
       "controller=1, wayland_data_drag_controller=1");
 
   if (launching_at_login_screen &&
@@ -929,7 +929,7 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
     browser_util::LacrosSelection lacros_selection) {
   // Static configuration should be enabled from Lacros rather than Ash. This
   // vector should only be used for dynamic configuration.
-  // TODO(https://crbug.com/1145713): Remove existing static configuration.
+  // TODO(crbug.com/40729628): Remove existing static configuration.
   LaunchParams parameters(CreateCommandLine(chrome_path),
                           CreateLaunchOptions());
 

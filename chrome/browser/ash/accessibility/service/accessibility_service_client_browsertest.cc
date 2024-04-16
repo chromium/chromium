@@ -374,8 +374,8 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
       client->automation_client_->Disable();
   }
 
-  // TODO(crbug.com/1493545): Toggle features on AccessibilityManager for client
-  // test.
+  // TODO(crbug.com/40936728): Toggle features on AccessibilityManager for
+  // client test.
   void TurnOnAccessibilityService(AssistiveTechnologyType type) {
     switch (type) {
       case ax::mojom::AssistiveTechnologyType::kUnknown:

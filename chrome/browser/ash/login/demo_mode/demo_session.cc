@@ -784,8 +784,8 @@ void DemoSession::RemoveSplashScreen() {
 }
 
 bool DemoSession::ShouldRemoveSplashScreen() {
-  // TODO(crbug.com/934979): Launch screensaver after active session starts, so
-  // that there's no need to check session state here.
+  // TODO(crbug.com/40615242): Launch screensaver after active session starts,
+  // so that there's no need to check session state here.
   return session_manager::SessionManager::Get()->session_state() ==
              session_manager::SessionState::ACTIVE &&
          screensaver_activated_;

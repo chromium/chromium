@@ -68,7 +68,7 @@ void TaskManagerAsh::SetRefreshFlags(int64_t refresh_flags) {
 }
 
 void TaskManagerAsh::GetTaskManagerTasks(GetTaskManagerTasksCallback callback) {
-  // TODO(crbug.com/1188426): Although the task manager model supports multiple
+  // TODO(crbug.com/40173304): Although the task manager model supports multiple
   // task manager providers, currently, there will only be one lacros instance
   // running. The task manager logic supports only one provider. We will add
   // support to handle multiple providers in the future when multiple lacros

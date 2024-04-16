@@ -172,8 +172,8 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
         ConvertPolicyType(state.next_state_active_policy);
     if (notification_type.has_value()) {
       // Schedule notification based on the remaining screen time until lock.
-      // TODO(crbug.com/898000): Dismiss a shown notification when it no longer
-      // applies.
+      // TODO(crbug.com/41422189): Dismiss a shown notification when it no
+      // longer applies.
       const base::TimeDelta remaining_time = state.next_state_change_time - now;
       time_limit_notifier_.MaybeScheduleLockNotifications(
           notification_type.value(), remaining_time);
@@ -374,7 +374,7 @@ ScreenTimeController::GetLastStateFromPref() {
   // Verify active policy type is a value of usage_time_limit::PolicyType.
   const base::Value* active_policy =
       last_state.Find(kScreenStateCurrentPolicyType);
-  // TODO(crbug.com/823536): Add kCount in usage_time_limit::PolicyType
+  // TODO(crbug.com/40567736): Add kCount in usage_time_limit::PolicyType
   // instead of checking kUsageLimit here.
   if (!active_policy || !active_policy->is_int() ||
       active_policy->GetInt() < 0 ||

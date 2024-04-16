@@ -210,7 +210,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // types. The keys are result IDs, and the values are wrapped in an optional
   // because Result is not default-constructable.
   //
-  // TODO(crbug.com/1216097): This can be removed once SearchResultListView has
+  // TODO(crbug.com/40184658): This can be removed once SearchResultListView has
   // its notifier calls updated.
   base::flat_map<std::string, std::optional<Result>> list_results_;
 

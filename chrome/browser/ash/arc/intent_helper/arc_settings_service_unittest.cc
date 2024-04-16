@@ -216,7 +216,7 @@ TEST_F(ArcSettingsServiceTest,
 // Initial settings applied in case intent helper instance is set before
 // provisioning.
 
-// TODO(crbug.com/1004630) Disabled due to flake.
+// TODO(crbug.com/40099107) Disabled due to flake.
 TEST_F(ArcSettingsServiceTest,
        DISABLED_InitialSettingsAppliedForInstanceBeforeProvisioning) {
   arc_session_manager()->RequestEnable();

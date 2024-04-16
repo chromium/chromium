@@ -214,7 +214,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   setting_link_ = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_SUGGESTION_LEARN_MORE)));
   setting_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(crbug/1102215): Implement proper UI layout using Insets constant.
+  // TODO(crbug.com/40138695): Implement proper UI layout using Insets constant.
   constexpr auto insets = gfx::Insets::TLBR(0, kPadding, kPadding, kPadding);
   setting_link_->SetBorder(views::CreateEmptyBorder(insets));
   constexpr int kSettingLinkFontSize = 11;

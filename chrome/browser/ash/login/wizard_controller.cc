@@ -276,7 +276,7 @@ const unsigned int kResolveTimeZoneTimeoutSeconds = 60;
 constexpr const char kDefaultExitReason[] = "Next";
 constexpr const char kResetScreenExitReason[] = "Cancel";
 
-// TODO(https://crbug.com/1161535) Remove after stepping stone is set after M87.
+// TODO(crbug.com/40738890) Remove after stepping stone is set after M87.
 constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
@@ -420,7 +420,7 @@ WizardController::WizardController(WizardContext* wizard_context)
       GetOobeUI()->GetOobeScreensHandlerFactory()->BindScreensHandlerFactory();
     }
     // OOBE UI can be recreated in case of CrossOriginOpenerPolicyByDefault.
-    // TODO(crbug.com/1100879): Remove this logic after WebUI split is done,
+    // TODO(crbug.com/40138102): Remove this logic after WebUI split is done,
     // as screens should work with late binding/early unbinding in that case.
     oobe_ui_observation_.Observe(GetOobeUI());
   }

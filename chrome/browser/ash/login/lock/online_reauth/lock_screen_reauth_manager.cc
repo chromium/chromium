@@ -189,7 +189,7 @@ void LockScreenReauthManager::UpdateUserPassword(
                      weak_factory_.GetWeakPtr()));
 }
 
-// TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
+// TODO(crbug.com/40163256): Add UMA histograms for lockscreen online
 // re-authentication.
 void LockScreenReauthManager::OnAuthFailure(const AuthFailure& error) {
   password_changed_callback_.Run();

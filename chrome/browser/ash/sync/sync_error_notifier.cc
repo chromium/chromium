@@ -63,7 +63,7 @@ void ShowSyncSetup(Profile* profile) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
   } else {
-    // TODO(crbug.com/1286405): remove this once it's not possible to use ash
+    // TODO(crbug.com/40210838): remove this once it's not possible to use ash
     // as a primary browser.
     chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
   }

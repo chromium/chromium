@@ -99,7 +99,7 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
         false /* allow_scheduled_updates */);
   }
 
-  // TODO(crbug.com/991453): In offline Demo Mode, this would overwrite the
+  // TODO(crbug.com/40639272): In offline Demo Mode, this would overwrite the
   // prefs from the Offline Demo Resources, so we don't call LoadApp() if the
   // enrollment is offline. Instead, we should merge these prefs or treat the
   // cache as a separate provider.

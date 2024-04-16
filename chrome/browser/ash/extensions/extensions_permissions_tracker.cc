@@ -195,7 +195,7 @@ ExtensionsPermissionsTracker::ExtensionsPermissionsTracker(
 ExtensionsPermissionsTracker::~ExtensionsPermissionsTracker() = default;
 
 void ExtensionsPermissionsTracker::OnForcedExtensionsPrefChanged() {
-  // TODO(crbug.com/1015378): handle pref_names::kExtensionManagement with
+  // TODO(crbug.com/40103683): handle pref_names::kExtensionManagement with
   // installation_mode: forced.
   const base::Value& value =
       pref_service_->GetValue(pref_names::kInstallForceList);

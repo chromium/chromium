@@ -721,7 +721,7 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
     return;
   }
 
-  // TODO(crbug.com/1102047): Split up Chrome OS reporting code into its own
+  // TODO(crbug.com/40703888): Split up Chrome OS reporting code into its own
   // delegates, then use the Chrome OS delegate factory here.
   enterprise_reporting::ReportingDelegateFactoryDesktop delegate_factory;
   enterprise_reporting::ReportScheduler::CreateParams params;

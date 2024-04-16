@@ -463,7 +463,7 @@ void CrostiniInstaller::RunProgressCallback() {
     state_fraction =
         0.5 * (state_fraction + 0.01 * container_download_percent_);
   }
-  // TODO(https://crbug.com/1000173): Calculate configure container step
+  // TODO(crbug.com/40645509): Calculate configure container step
   // progress based on real progress.
 
   double progress = state_start_mark + std::clamp(state_fraction, 0.0, 1.0) *

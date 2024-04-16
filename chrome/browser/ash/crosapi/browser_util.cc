@@ -110,7 +110,7 @@ constexpr auto kLacrosSelectionPolicyMap =
 
 // Returns primary user's User instance.
 const user_manager::User* GetPrimaryUser() {
-  // TODO(crbug.com/1185813): TaskManagerImplTest is not ready to run with
+  // TODO(crbug.com/40753373): TaskManagerImplTest is not ready to run with
   // Lacros enabled.
   // UserManager is not initialized for unit tests by default, unless a fake
   // user manager is constructed.
@@ -132,7 +132,7 @@ const user_manager::User* GetPrimaryUser() {
 //    kLacrosGooglePolicyRollout trial and they did not have the
 //    kLacrosDisallowed policy.
 LacrosAvailability GetCachedLacrosAvailability() {
-  // TODO(crbug.com/1286340): add DCHECK for production use to avoid the
+  // TODO(crbug.com/40210811): add DCHECK for production use to avoid the
   // same inconsistency for the future.
   if (g_lacros_availability_cache.has_value())
     return g_lacros_availability_cache.value();
@@ -408,7 +408,7 @@ bool DoesMetadataSupportNewAccountManager(base::Value* metadata) {
   if (!base::StringToInt(versions_str[2], &minor_version))
     return false;
 
-  // TODO(https://crbug.com/1197220): Come up with more appropriate major/minor
+  // TODO(crbug.com/40176822): Come up with more appropriate major/minor
   // version numbers.
   return major_version >= 1000 && minor_version >= 0;
 }

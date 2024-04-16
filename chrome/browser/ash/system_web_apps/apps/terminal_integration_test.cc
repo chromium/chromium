@@ -23,7 +23,7 @@ class TerminalIntegrationTest : public AshIntegrationTest {
   // This handles uppercase and lowercase ASCII letters and numbers, plus maps
   // "\n" to return, but no symbols or other shifted things.
   //
-  // TODO(crbug.com/1495154) have a more supported way to do this and remove
+  // TODO(crbug.com/40286410) have a more supported way to do this and remove
   // this function.
   auto SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
                            const std::string& text) {

@@ -247,7 +247,7 @@ void ShowLoginWizardFinish(
     MaybeShutdownLoginDisplayHostWebUI();
   }
 
-  // TODO(crbug.com/781402): Move LoginDisplayHost creation out of
+  // TODO(crbug.com/41353468): Move LoginDisplayHost creation out of
   // LoginDisplayHostWebUI, it is not specific to a particular implementation.
 
   // Create the LoginDisplayHost. Use the views-based implementation only for
@@ -645,7 +645,7 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
       "ui", "WaitForScreenStateInitialize",
       TRACE_ID_WITH_SCOPE(kShowLoginWebUIid, TRACE_ID_GLOBAL(1)));
 
-  // TODO(crbug.com/784495): Make sure this is ported to views.
+  // TODO(crbug.com/40549648): Make sure this is ported to views.
   BootTimesRecorder::Get()->RecordCurrentStats(
       "login-wait-for-signin-state-initialize");
 }

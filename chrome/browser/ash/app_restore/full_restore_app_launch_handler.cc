@@ -363,7 +363,7 @@ void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
     return;
   }
 
-  // TODO(https://crbug.com/1239984):
+  // TODO(crbug.com/40194081):
   // 1. Modify the restore conditions, e.g. check web apps ready, etc.
   // 2. Handle the migration scenario, e.g. from flag disable to enable.
   // 3. Add metrics to check whether the Lacros is restored successfully.

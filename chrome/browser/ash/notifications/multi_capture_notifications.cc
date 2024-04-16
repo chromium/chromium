@@ -227,7 +227,7 @@ void MultiCaptureNotifications::MultiCaptureStartedInternal(
       gfx::TruncateString(base::UTF8ToUTF16(app_name), kAppMaxNameLength,
                           gfx::BreakType::WORD_BREAK);
 
-  // TODO(crbug.com/1356102): Make sure the notification does not disappear
+  // TODO(crbug.com/40236161): Make sure the notification does not disappear
   // automatically after some time.
   CreateAndShowNotification(
       kNotifierMultiCapture, notification_id,

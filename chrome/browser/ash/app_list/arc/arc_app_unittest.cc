@@ -3051,7 +3051,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidation) {
   EXPECT_TRUE(app_instance()->icon_requests().empty());
 }
 
-// TODO(crbug.com/1345154): Flaky.
+// TODO(crbug.com/40853365): Flaky.
 TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnFrameworkUpdate) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
@@ -3104,7 +3104,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnFrameworkUpdate) {
 
 // This verifies that app icons are invalidated in case icon version was
 // changed which means ARC sends icons using updated processing.
-// TODO(crbug.com/1364812): Flaky.
+// TODO(crbug.com/40865778): Flaky.
 TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnIconVersionUpdate) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
@@ -3574,7 +3574,7 @@ TEST_P(ArcDefaultAppTest, DisableDefaultApps) {
   EXPECT_FALSE(prefs->GetApp(app_id));
 }
 
-// TODO(crbug.com/1112319): Flaky.
+// TODO(crbug.com/40709649): Flaky.
 TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);

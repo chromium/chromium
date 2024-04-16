@@ -812,7 +812,7 @@ void EnrollmentScreen::ShowSigninScreen() {
 
 void EnrollmentScreen::RecordEnrollmentErrorMetrics() {
   enrollment_failed_once_ = true;
-  //  TODO(crbug.com/896793): Have other metrics for each auth mechanism.
+  //  TODO(crbug.com/40598749): Have other metrics for each auth mechanism.
   if (elapsed_timer_ && current_auth_ == next_auth_) {
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeFailure, elapsed_timer_);
   }

@@ -174,7 +174,7 @@ void StartUserSession(user_manager::UserManager* user_manager,
                          command_line->HasSwitch(::switches::kTestType);
 
   if (command_line->HasSwitch(switches::kLoginUser)) {
-    // TODO(https://crbug.com/977489): There's a lot of code duplication with
+    // TODO(crbug.com/41467249): There's a lot of code duplication with
     // UserSessionManager::FinalizePrepareProfile, which is (only!) run for
     // regular session starts. This needs to be refactored.
 

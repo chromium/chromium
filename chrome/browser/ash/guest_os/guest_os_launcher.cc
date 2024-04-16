@@ -177,7 +177,7 @@ void LaunchApplication(
     const std::vector<std::string>& files,
     SuccessCallback callback) {
   if (registration.Terminal()) {
-    // TODO(crbug.com/853560): This could be improved by using garcon
+    // TODO(crbug.com/41395054): This could be improved by using garcon
     // DesktopFile::GenerateArgvWithFiles().
     std::vector<std::string> terminal_args = {
         registration.ExecutableFileName()};

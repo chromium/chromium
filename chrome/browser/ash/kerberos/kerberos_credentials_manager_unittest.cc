@@ -1125,7 +1125,7 @@ TEST_F(KerberosCredentialsManagerTest, UpdateAccountsFromPrefClearAccounts) {
 
 // UpdateAccountsFromPref retries to add account if addition fails for network
 // related errors.
-// TODO(https://crbug.com/1121383): Disabled due to flakiness.
+// TODO(crbug.com/40715458): Disabled due to flakiness.
 TEST_F(KerberosCredentialsManagerTest, DISABLED_UpdateAccountsFromPrefRetry) {
   // Starting with Kerberos enabled.
   SetPref(prefs::kKerberosEnabled, base::Value(true));

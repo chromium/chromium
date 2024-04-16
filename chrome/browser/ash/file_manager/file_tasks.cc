@@ -759,8 +759,8 @@ bool ExecuteFileTask(Profile* profile,
                               task.task_type, NUM_TASK_TYPE);
   }
 
-  // TODO(crbug.com/1005640): Move recording this metric to the App Service when
-  // file handling is supported there.
+  // TODO(crbug.com/40099553): Move recording this metric to the App Service
+  // when file handling is supported there.
   apps::RecordAppLaunch(task.app_id, apps::LaunchSource::kFromFileManager);
   RecordDriveOfflineUMAs(profile, file_urls);
 

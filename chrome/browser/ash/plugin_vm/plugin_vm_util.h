@@ -81,7 +81,7 @@ std::string GetPluginVmUserIdForProfile(const Profile* profile);
 // will still be used by the PluginVmService. This function also makes the
 // installer skip its license check.
 // This sets global state, not per-profile state.
-// TODO(crbug.com/1025136): Set policy directly from tast instead of using a
+// TODO(crbug.com/40107731): Set policy directly from tast instead of using a
 // test helper function.
 void SetFakePluginVmPolicy(Profile* profile,
                            const std::string& image_path,

@@ -26,7 +26,7 @@ namespace crosapi {
 
 namespace {
 
-// TODO(crbug.com/1124494): Refactor the code to share with ARC.
+// TODO(crbug.com/40147422): Refactor the code to share with ARC.
 base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
   auto endpoint = mojo::NamedPlatformChannel({socket_path.value()});
   base::ScopedFD socket_fd =

@@ -2070,7 +2070,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchHierarchy"),
         TestCase("hideSearchInTrash"),
 // TODO(b/287169303): test is flaky on ChromiumOS MSan
-// TODO(crbug.com/1493224): Test is flaky on ChromiumOS Asan / Lsan.
+// TODO(crbug.com/40285759): Test is flaky on ChromiumOS Asan / Lsan.
 #if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER) && \
     !defined(MEMORY_SANITIZER)
         TestCase("searchTrashedFiles"),
@@ -2254,7 +2254,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
         TestCase("trashPermanentlyDelete"),
         TestCase("trashRestoreFromToast"),
-// TODO(crbug.com/1425820): Re-enable this test on ChromiumOS MSAN.
+// TODO(crbug.com/40261044): Re-enable this test on ChromiumOS MSAN.
 #if !defined(MEMORY_SANITIZER)
         TestCase("trashRestoreFromToast").EnableCrosComponents(),
 #endif

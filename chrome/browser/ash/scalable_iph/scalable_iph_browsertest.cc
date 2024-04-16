@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, NoTimeTickEventWithLockScreen) {
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
-// TODO(crbug.com/1468580): Flaky test.
+// TODO(crbug.com/40924957): Flaky test.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_UnlockedEvent) {
   // We test unlocked event inside ScalableIph service. Make sure that
   // ScalableIph service is running.

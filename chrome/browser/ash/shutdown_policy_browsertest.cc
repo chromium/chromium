@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, TestBasic) {
 // menu is open during the policy change -- that's a rare condition and
 // supporting it would add complexity.
 //
-// TODO(crbug.com/851208): Disabled test due to flakiness.
+// TODO(crbug.com/41393655): Disabled test due to flakiness.
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, DISABLED_PolicyChange) {
   // Change the policy to reboot and let it propagate over mojo to ash.
   UpdateRebootOnShutdownPolicy(true);

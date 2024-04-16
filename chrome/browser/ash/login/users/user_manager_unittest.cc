@@ -150,7 +150,7 @@ class UserManagerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
-    // TODO(crbug.com/1466777): UserManager must be initialized before
+    // TODO(crbug.com/40276503): UserManager must be initialized before
     // ProfileManager to align with the production behavior, but it currently
     // cannot do so since ProfileManager is initialized by ChromeUserManagerImpl
     // constroctor if ProfileManager is not initialized yet so

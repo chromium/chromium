@@ -66,7 +66,7 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
 
     // urgent_warning_days_ = -1: This means we only ever show a standard
     // notification, instead of an urgent one, because it is simpler to test.
-    // TODO(https://crbug.com/930109): Test both types of notification.
+    // TODO(crbug.com/40613129): Test both types of notification.
     manager_->urgent_warning_days_ = -1;
     InSessionPasswordChangeManager::SetForTesting(manager_.get());
   }

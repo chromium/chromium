@@ -117,7 +117,8 @@ bool MigratePathFromOldFormat(Profile* profile,
 // undefined.
 //
 // Introduced in M73.  This code updates values stored in prefs.
-// TODO(crbug.com/911946) Remove this when no users are running M72 or earlier.
+// TODO(crbug.com/41430020) Remove this when no users are running M72 or
+// earlier.
 bool MigrateFromDownloadsToMyFiles(Profile* profile,
                                    const base::FilePath& old_path,
                                    base::FilePath* new_path);

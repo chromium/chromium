@@ -2632,7 +2632,7 @@ void AccessibilityManager::OnSodaInstallUpdated(int progress) {
   const std::string dictation_locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
   // Update the Dictation button tray.
-  // TODO(https://crbug.com/1266491): Ensure we use combined progress instead
+  // TODO(crbug.com/40802157): Ensure we use combined progress instead
   // of just the language pack progress.
   AccessibilityController::Get()
       ->UpdateDictationButtonOnSpeechRecognitionDownloadChanged(progress);

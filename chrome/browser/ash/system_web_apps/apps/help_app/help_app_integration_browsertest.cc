@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
 //
 // Flaky on Linux Chromium OS ASan LSan Tests (1)
 //
-// TODO(1499768): Reenable it.
+// TODO(crbug.com/40940376): Reenable it.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        DISABLED_HelpAppV2OpenFeedbackDialog) {
   WaitForTestSystemAppInstall();

@@ -191,7 +191,7 @@ void AppServiceAppItem::Activate(int event_flags) {
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
-  // TODO(crbug.com/1022541): Move the Chrome special case to ExtensionApps,
+  // TODO(crbug.com/40106663): Move the Chrome special case to ExtensionApps,
   // when AppService Instance feature is done.
   bool is_active_app = false;
   apps::AppServiceProxyFactory::GetForProfile(profile())

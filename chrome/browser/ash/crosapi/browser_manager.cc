@@ -112,7 +112,7 @@
 #include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-// TODO(crbug.com/1101667): Currently, this source has log spamming
+// TODO(crbug.com/40703689): Currently, this source has log spamming
 // by LOG(WARNING) for non critical errors to make it easy
 // to debug and develop. Get rid of the log spamming
 // when it gets stable enough.
@@ -1148,7 +1148,7 @@ void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
   lacros_selection_ = std::optional<LacrosSelection>(selection);
   const bool success = !path.empty();
   SetState(success ? State::STOPPED : State::UNAVAILABLE);
-  // TODO(crbug.com/1266010): In the event the load operation failed, we should
+  // TODO(crbug.com/40801829): In the event the load operation failed, we should
   // launch the last successfully loaded image.
   for (auto& observer : observers_) {
     observer.OnLoadComplete(success, version);

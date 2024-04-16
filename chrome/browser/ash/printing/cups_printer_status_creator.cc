@@ -23,7 +23,7 @@ CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
   CupsPrinterStatus cups_printer_status(printer_id);
 
   for (const auto& reason : printer_status.reasons) {
-    // TODO(crbug.com/1027400): Remove log once bug is confirmed fix.
+    // TODO(crbug.com/40660201): Remove log once bug is confirmed fix.
     PRINTER_LOG(DEBUG) << "Printer status received for printer " << printer_id
                        << " reason: " << static_cast<int>(reason.reason)
                        << " severity: " << static_cast<int>(reason.severity);

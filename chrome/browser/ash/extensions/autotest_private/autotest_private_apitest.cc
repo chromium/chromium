@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, MAYBE_AutotestPrivate) {
 }
 
 // Set of tests where ARC is enabled and test apps and packages are registered.
-// TODO(https://crbug.com/1514431): re-enable the following test.
+// TODO(crbug.com/41486987): re-enable the following test.
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_AutotestPrivateArcEnabled DISABLED_AutotestPrivateArcEnabled
 #else

@@ -426,7 +426,7 @@ bool ChildStatusCollector::IsReportingAppInfoAndActivity() const {
   return false;
 }
 
-// TODO(https://crbug.com/1364425)
+// TODO(crbug.com/40239081)
 // Make this function fallible when the optional passed in evaluated to
 // nullptr, instead of returning a dummy string.
 void ChildStatusCollector::OnOSVersion(

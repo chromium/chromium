@@ -145,7 +145,7 @@ void AssistiveWindowController::Announce(const std::u16string& message) {
   announcement_view_->AnnounceAfterDelay(message, kAnnouncementDelay);
 }
 
-// TODO(crbug/1119570): Update AcceptSuggestion signature (either use
+// TODO(crbug.com/40145550): Update AcceptSuggestion signature (either use
 // announce_string, or no string)
 void AssistiveWindowController::AcceptSuggestion(
     const std::u16string& suggestion) {

@@ -140,7 +140,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Opens the browser window in lacros-chrome.
   // If lacros-chrome is not yet launched, it triggers to launch.
   // This needs to be called after loading.
-  // TODO(crbug.com/1101676): Notify callers the result of opening window
+  // TODO(crbug.com/40703695): Notify callers the result of opening window
   // request. Because of asynchronous operations crossing processes,
   // there's no guarantee that the opening window request succeeds.
   // Currently, its condition and result are completely hidden behind this
@@ -515,7 +515,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
   friend class apps::AppServiceProxyAsh;
-  // TODO(crbug.com/1311501): ApkWebAppService does not yet support app
+  // TODO(crbug.com/40220252): ApkWebAppService does not yet support app
   // installation when lacros-chrome starts at arbitrary points of time, so it
   // needs to be kept alive.
   friend class ash::ApkWebAppService;

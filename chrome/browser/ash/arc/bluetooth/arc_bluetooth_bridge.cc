@@ -2652,7 +2652,7 @@ ArcBluetoothBridge::GetDeviceProperties(mojom::BluetoothPropertyType type,
 std::vector<mojom::BluetoothPropertyPtr>
 ArcBluetoothBridge::GetAdapterProperties(
     mojom::BluetoothPropertyType type) const {
-  // TODO(crbug.com/1227855): Since this function is invoked from ARC side, it
+  // TODO(crbug.com/40189401): Since this function is invoked from ARC side, it
   // is possible that adapter is not present or powered here. It's not
   // meaningful to return any property when that happens.
   const std::string adapter_address = bluetooth_adapter_->GetAddress();
@@ -2725,7 +2725,7 @@ ArcBluetoothBridge::GetAdapterProperties(
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::LOCAL_LE_FEATURES) {
-    // TODO(crbug.com/637171) Investigate all the le_features.
+    // TODO(crbug.com/40480399) Investigate all the le_features.
     mojom::BluetoothLocalLEFeaturesPtr le_features =
         mojom::BluetoothLocalLEFeatures::New();
     le_features->version_supported = kAndroidMBluetoothVersionNumber;

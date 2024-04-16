@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(attr.value(), kAttributeValue);
 }
 
-// TODO(https://crbug.com/1073515): Add a test for an unset key attribute when
+// TODO(crbug.com/40686352): Add a test for an unset key attribute when
 // simulating chaps behavior is possible.
 
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,

@@ -36,7 +36,8 @@ void BrowserServiceHostAsh::AddRemote(
   // we have no way to obtain Remote<BrowserService> so cannot call
   // QueryVersion. Thus, first we call QueryVersion with keeping the instance on
   // the heap, and register when the version gets ready.
-  // TODO(crbug.com/1171707): Nice to clean up this trick. Under the discussion.
+  // TODO(crbug.com/40166270): Nice to clean up this trick. Under the
+  // discussion.
   auto new_remote =
       std::make_unique<mojo::Remote<mojom::BrowserService>>(std::move(remote));
   // Preserve the pointer, because new_remote will be bound to the callback.

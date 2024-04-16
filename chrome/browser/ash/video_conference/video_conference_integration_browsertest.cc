@@ -266,7 +266,7 @@ class VideoConferenceIntegrationTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
-    // TODO(crbug.com/1459164): Use a less error-prone flag.
+    // TODO(crbug.com/40274188): Use a less error-prone flag.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
                                     "Display");
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   EXPECT_TRUE(found_noise_cancellation_buttion);
 }
 
-// TODO(crbug.com/1479984): re-enable once the bug is fixed.
+// TODO(crbug.com/40071631): re-enable once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        DISABLED_StopAllScreenShare) {
   // Open a tab.

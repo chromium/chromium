@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
 }
 
 // TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-// TODO(crbug.com/1455506): Flaky on linux-chromeos-rel.
+// TODO(crbug.com/40272814): Flaky on linux-chromeos-rel.
 #if defined(MEMORY_SANITIZER) || \
     (defined(NDEBUG) && !defined(ADDRESS_SANITIZER))
 #define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled

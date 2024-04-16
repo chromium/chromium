@@ -477,7 +477,7 @@ bool GuestOsSharePath::GetAndSetFirstForSession(const std::string& vm_name) {
 std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
     const std::string& vm_name) {
   std::vector<base::FilePath> result;
-  // TODO(crbug.com/1057591): Unexpected crashes here.
+  // TODO(crbug.com/40677501): Unexpected crashes here.
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
   // |shared_paths| format is {'path': ['vm1', vm2']}.

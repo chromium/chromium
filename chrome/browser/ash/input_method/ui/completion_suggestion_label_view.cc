@@ -49,7 +49,7 @@ void CompletionSuggestionLabelView::SetPrefixAndPrediction(
       gfx::Range(prefix.length(), prefix.length() + prediction.length()),
       prediction_style);
 
-  // TODO(crbug/1099146): Add tests to check view's height and width with
+  // TODO(crbug.com/40137343): Add tests to check view's height and width with
   // a non-empty prefix.
   // Maximum width for suggestion.
   SizeToFit(448);

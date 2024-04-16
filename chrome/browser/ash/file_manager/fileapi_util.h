@@ -89,7 +89,7 @@ typedef base::OnceCallback<void(FileChooserFileInfoList)>
 // Manager ID or URL, use this function instead. This function guarantees that
 // the correct and current URL is returned. If you need to access just the ID
 // of the system File Manager, call host() method on the returned URL.
-// TODO(crbug/1184927): Replace with dynamic listener URL.
+// TODO(crbug.com/40752851): Replace with dynamic listener URL.
 const GURL GetFileManagerURL();
 
 // Returns whether the given URL identifies the File Manager as a source. This

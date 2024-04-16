@@ -900,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
   test::WaitForWelcomeScreen();
 }
 
-// TODO(crbug.com/1399073): Flaky on ChromeOS.
+// TODO(crbug.com/40249751): Flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_RetryOnErrorScreen DISABLED_RetryOnErrorScreen
 #else

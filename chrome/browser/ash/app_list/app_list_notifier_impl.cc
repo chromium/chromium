@@ -12,7 +12,7 @@
 
 namespace {
 
-// TODO(crbug.com/1076270): Finalize a value for this, and possibly use
+// TODO(crbug.com/40128586): Finalize a value for this, and possibly use
 // different values for different UI surfaces.
 constexpr base::TimeDelta kImpressionTimer = base::Seconds(1);
 

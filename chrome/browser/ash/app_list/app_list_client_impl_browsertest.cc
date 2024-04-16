@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   // Needed to let AppLaunchEventLogger finish its work on worker thread.
   // Otherwise, its |weak_factory_| is released on UI thread and causing
   // the bound WeakPtr to fail sequence check on a worker thread.
-  // TODO(crbug.com/965065): Remove after fixing AppLaunchEventLogger.
+  // TODO(crbug.com/41459944): Remove after fixing AppLaunchEventLogger.
   content::RunAllTasksUntilIdle();
 }
 

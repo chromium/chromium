@@ -138,10 +138,9 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
-  // Unretained(this) is safe here because the callback is invoked directly by
-  // |host_resolver_| which is owned by |this|.
+  // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
+  // HTTPS DNS resource record query. Unretained(this) is safe here because the
+  // callback is invoked directly by |host_resolver_| which is owned by |this|.
   host_resolver_->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair::FromURL(url)),

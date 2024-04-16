@@ -419,7 +419,7 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     case storage::kFileSystemTypeArcDocumentsProvider:
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeArcContent:
-    // TODO(crbug.com/939235): Implement in-place copy in SmbFs.
+    // TODO(crbug.com/41445433): Implement in-place copy in SmbFs.
     case storage::kFileSystemTypeSmbFs:
     case storage::kFileSystemTypeFuseBox:
       return false;

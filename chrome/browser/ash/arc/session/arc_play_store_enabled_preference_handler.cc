@@ -133,7 +133,7 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
       // Tell Consent Auditor that the Play Store consent was revoked.
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile_);
-      // TODO(crbug.com/850297): Fix unrelated tests that are not properly
+      // TODO(crbug.com/40579665): Fix unrelated tests that are not properly
       // setting up the state of identity_manager and enable the DCHECK instead
       // of the conditional below.
       // DCHECK(identity_manager->HasPrimaryAccount(

@@ -265,7 +265,7 @@ std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   return std::string();
 }
 
-// TODO(crbug.com/675868): Consolidate with the similar logic for Drive.
+// TODO(crbug.com/40498938): Consolidate with the similar logic for Drive.
 base::FilePath::StringType GetFileNameForDocument(
     const mojom::DocumentPtr& document) {
   base::FilePath::StringType filename = document->display_name;

@@ -52,7 +52,7 @@ const char kVmManagementCliAllowedByPolicy[] =
     "crostini.vm_management_cli_allowed_by_policy";
 // A boolean preference representing a user level enterprise policy to allow
 // Crostini root access in the default Crostini VM.
-// TODO(https://crbug.com/983998): The features that have to be implemented.
+// TODO(crbug.com/41470758): The features that have to be implemented.
 const char kUserCrostiniRootAccessAllowedByPolicy[] =
     "crostini.user_root_access_allowed_by_policy";
 // A file path preference representing a user level enterprise policy that

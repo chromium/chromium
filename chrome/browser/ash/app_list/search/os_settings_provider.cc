@@ -301,7 +301,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
 
   LogIconLoadStatus(IconLoadStatus::kOnAppUpdateGetCalled);
 
-  // TODO(crbug.com/1068851): We previously disabled this search provider until
+  // TODO(crbug.com/40125676): We previously disabled this search provider until
   // the app service signalled that the settings app is ready. But this signal
   // is flaky, so sometimes search provider was permanently disabled. Once the
   // signal is reliable, we should re-add the check.

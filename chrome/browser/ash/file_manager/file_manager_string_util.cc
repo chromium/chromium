@@ -102,7 +102,7 @@ constexpr auto kGoogleOneOfferBannerSupportedCountries =
   dict->Set(id, l10n_util::GetPluralStringFUTF16(idr, n))
 
 void AddStringsForFileTypes(base::Value::Dict* dict) {
-  // TODO(crbug.com/438921): Rename string IDs to something like
+  // TODO(crbug.com/41146170): Rename string IDs to something like
   // FILE_TYPE_WHATEVER.
   SET_STRING("ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_ARCHIVE_FILE_TYPE);
   SET_STRING("AUDIO_FILE_TYPE", IDS_FILE_BROWSER_AUDIO_FILE_TYPE);

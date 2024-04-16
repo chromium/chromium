@@ -28,8 +28,8 @@ struct AssistiveWindowButton {
   ButtonId id = ButtonId::kNone;
   ash::ime::AssistiveWindowType window_type =
       ash::ime::AssistiveWindowType::kNone;
-  // TODO(crbug/1101852): Rename index to suggestion_index for further clarity.
-  // Currently index is only considered when ButtonId is kSuggestion.
+  // TODO(crbug.com/40138533): Rename index to suggestion_index for further
+  // clarity. Currently index is only considered when ButtonId is kSuggestion.
   size_t index = -1;
   std::u16string announce_string;
 
