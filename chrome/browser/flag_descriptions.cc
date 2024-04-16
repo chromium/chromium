@@ -4413,6 +4413,10 @@ const char kTabGroupParityAndroidDescription[] =
     "Enables cross-platform tab group feature parity on Android, which "
     "includes colors and required titles.";
 
+const char kTabGroupSyncAndroidName[] = "Tab Group Sync on Android";
+const char kTabGroupSyncAndroidDescription[] =
+    "Enables syncing of tab groups on Android with other devices.";
+
 const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";

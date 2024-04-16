@@ -11083,6 +11083,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabGroupStableIdsName,
      flag_descriptions::kAndroidTabGroupStableIdsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabGroupStableIds)},
+
+    {"tab-group-sync-android", flag_descriptions::kTabGroupSyncAndroidName,
+     flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the view mode for (history) sync screen.

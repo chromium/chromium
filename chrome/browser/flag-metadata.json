@@ -7935,6 +7935,14 @@
     "expiry_milestone": 128
   },
   {
+    "name": "tab-group-sync-android",
+    "owners": [
+      "shaktisahu@chromium.org",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "tab-groups-in-grid",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

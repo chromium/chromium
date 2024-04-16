@@ -16761,6 +16761,7 @@ from previous Chrome versions.
       label="ShowSyncPausedReasonCookiesClearedOnExit:enabled"/>
   <int value="-1963427770" label="EmojiHandwritingVoiceInput:disabled"/>
   <int value="-1963402827" label="enable-topchrome-md"/>
+  <int value="-1963199363" label="TabGroupSyncAndroid:enabled"/>
   <int value="-1962749353" label="SimplifiedNTP:enabled"/>
   <int value="-1962588488" label="SpeculativePreconnect:disabled"/>
   <int value="-1962394664"
@@ -23002,6 +23003,7 @@ from previous Chrome versions.
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
   <int value="813120521" label="ProjectorUseUSMForS3:enabled"/>
+  <int value="813162118" label="TabGroupSyncAndroid:disabled"/>
   <int value="813211869" label="ScrollCapture:disabled"/>
   <int value="813302293" label="RemoveStatusBarInWebApps:disabled"/>
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
