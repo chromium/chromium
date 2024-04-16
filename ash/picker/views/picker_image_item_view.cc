@@ -23,7 +23,8 @@ constexpr int kPickerImageItemCornerRadius = 8;
 PickerImageItemView::PickerImageItemView(
     SelectItemCallback select_item_callback,
     std::unique_ptr<views::ImageView> image)
-    : PickerItemView(std::move(select_item_callback)) {
+    : PickerItemView(std::move(select_item_callback),
+                     FocusIndicatorStyle::kFocusRingWithInsetGap) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerImageItemCornerRadius);
 

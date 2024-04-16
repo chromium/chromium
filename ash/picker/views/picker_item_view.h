@@ -36,6 +36,9 @@ class ASH_EXPORT PickerItemView : public views::Button {
   enum class FocusIndicatorStyle {
     // Indicate focus using a rounded rectangular ring around the item.
     kFocusRing,
+    // Similar to `kFocusRing`, but clips the PickerItemView with a 1dp border
+    // as well as adding a rounded rectangular ring.
+    kFocusRingWithInsetGap,
     // Indicate focus using a vertical bar with half rounded corners at the left
     // edge of the item.
     kFocusBar,
@@ -56,6 +59,7 @@ class ASH_EXPORT PickerItemView : public views::Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void SelectItem();
 
@@ -65,6 +69,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
   void SetItemState(ItemState item_state);
 
  private:
+  void UpdateClipPathForFocusRingWithInsetGap();
+
   SelectItemCallback select_item_callback_;
 
   ItemState item_state_ = ItemState::kNormal;

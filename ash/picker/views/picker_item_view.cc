@@ -19,9 +19,11 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -29,6 +31,13 @@
 
 namespace ash {
 namespace {
+
+// How much to clip the focused PickerItemView by. Inset by at least the default
+// focus ring inset so the clipping is actually visible, then clip by the actual
+// desired amount. It would be better to absolute value the halo inset here, but
+// to keep this constexpr, also multiply by -1 to keep it positive.
+constexpr float kPseudoFocusClipInset =
+    views::FocusRing::kDefaultHaloInset * -1.0f + 2.0f;
 
 constexpr auto kPickerItemFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
@@ -58,6 +67,8 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
       base::TimeDelta());
 
   switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRingWithInsetGap:
+      [[fallthrough]];
     case FocusIndicatorStyle::kFocusRing:
       views::FocusRing::Get(this)->SetHasFocusPredicate(
           base::BindRepeating([](const View* view) {
@@ -118,6 +129,10 @@ void PickerItemView::OnMouseExited(const ui::MouseEvent&) {
   }
 }
 
+void PickerItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  UpdateClipPathForFocusRingWithInsetGap();
+}
+
 void PickerItemView::SetCornerRadius(int corner_radius) {
   if (corner_radius_ == corner_radius) {
     return;
@@ -141,6 +156,9 @@ void PickerItemView::SetItemState(ItemState item_state) {
   item_state_ = item_state;
   SetBackground(GetPickerItemBackground(item_state_, corner_radius_));
   switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRingWithInsetGap:
+      UpdateClipPathForFocusRingWithInsetGap();
+      [[fallthrough]];
     case FocusIndicatorStyle::kFocusRing:
       views::FocusRing::Get(this)->SchedulePaint();
       break;
@@ -148,6 +166,22 @@ void PickerItemView::SetItemState(ItemState item_state) {
       SchedulePaint();
       break;
   }
+}
+
+void PickerItemView::UpdateClipPathForFocusRingWithInsetGap() {
+  if (focus_indicator_style_ != FocusIndicatorStyle::kFocusRingWithInsetGap) {
+    return;
+  }
+
+  SkPath clip_path;
+  if (item_state_ == ItemState::kPseudoFocused) {
+    gfx::RectF inset_bounds(GetLocalBounds());
+    const SkScalar radius =
+        SkIntToScalar(corner_radius_ - kPseudoFocusClipInset);
+    inset_bounds.Inset(kPseudoFocusClipInset);
+    clip_path.addRoundRect(gfx::RectFToSkRect(inset_bounds), radius, radius);
+  }
+  SetClipPath(clip_path);
 }
 
 BEGIN_METADATA(PickerItemView)
