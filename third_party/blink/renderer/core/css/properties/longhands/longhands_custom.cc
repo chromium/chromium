@@ -5434,7 +5434,7 @@ const CSSValue* LineClamp::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.HasStandardLineClamp()) {
+  if (style.StandardLineClamp() == 0) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
   return CSSNumericLiteralValue::Create(style.StandardLineClamp(),

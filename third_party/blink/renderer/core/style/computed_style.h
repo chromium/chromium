@@ -614,15 +614,21 @@ class ComputedStyle final : public ComputedStyleBase {
   // content
   ContentData* GetContentData() const { return ContentInternal().Get(); }
 
-  // line-clamp and -webkit-line-clamp
-  bool HasStandardLineClamp() const { return StandardLineClamp() != 0; }
+  // Returns the value of `line-clamp` or of `-webkit-line-clamp`, whichever
+  // applies (i.e. `-webkit-line-clamp` doesn't apply without
+  // `display: -webkit-box`). To get the raw value of the properties, use
+  // `StandardLineClamp()` or `WebkitLineClamp()`.
   int LineClamp() const {
-    if (HasStandardLineClamp()) {
+    if (StandardLineClamp() != 0) {
       DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
       return StandardLineClamp();
     }
-    return WebkitLineClamp();
+    if (IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical) {
+      return WebkitLineClamp();
+    }
+    return 0;
   }
+  // Returns whether `line-clamp` or `-webkit-line-clamp` are set and apply.
   bool HasLineClamp() const { return LineClamp() != 0; }
 
   bool OpacityChangedStackingContext(const ComputedStyle& other) const {

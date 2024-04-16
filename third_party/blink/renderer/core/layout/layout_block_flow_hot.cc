@@ -23,8 +23,7 @@ bool LayoutBlockFlow::CreatesNewFormattingContext() const {
       StyleRef().Display() == EDisplay::kFlowRoot ||
       StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
-      StyleRef().IsDeprecatedWebkitBoxWithVerticalLineClamp() ||
-      StyleRef().HasStandardLineClamp() || StyleRef().SpecifiesColumns() ||
+      StyleRef().HasLineClamp() || StyleRef().SpecifiesColumns() ||
       StyleRef().GetColumnSpan() == EColumnSpan::kAll) {
     // The specs require this object to establish a new formatting context.
     return true;

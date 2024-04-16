@@ -648,11 +648,9 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     abort_when_bfc_block_offset_updated_ = true;
   }
 
-  if (Style().HasLineClamp() &&
-      (Style().HasStandardLineClamp() ||
-       Style().IsDeprecatedWebkitBoxWithVerticalLineClamp())) {
+  if (Style().HasLineClamp()) {
     line_clamp_data_.UpdateLinesFromStyle(Style().LineClamp());
-  } else if (Style().HasLineClamp()) {
+  } else if (Style().WebkitLineClamp() != 0) {
     UseCounter::Count(Node().GetDocument(),
                       WebFeature::kWebkitLineClampWithoutWebkitBox);
   }
