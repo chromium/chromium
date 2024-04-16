@@ -13,6 +13,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -30,7 +31,6 @@ namespace sessions {
 
 class LiveTab;
 class SerializedNavigationEntry;
-class PlatformSpecificTabData;
 
 // An interface representing the context in which LiveTab instances exist in the
 // embedder. As a concrete example, desktop Chrome has an implementation that
@@ -82,7 +82,7 @@ class SESSIONS_EXPORT LiveTabContext {
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
-      const PlatformSpecificTabData* tab_platform_data,
+      const tab_restore::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const std::map<std::string, std::string>& extra_data,
       const SessionID* tab_id) = 0;
@@ -95,7 +95,7 @@ class SESSIONS_EXPORT LiveTabContext {
       std::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
       const std::string& extension_app_id,
-      const PlatformSpecificTabData* tab_platform_data,
+      const tab_restore::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const std::map<std::string, std::string>& extra_data) = 0;
   virtual void CloseTab() = 0;

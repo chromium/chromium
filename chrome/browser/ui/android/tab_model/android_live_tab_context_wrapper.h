@@ -136,7 +136,7 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
-      const sessions::PlatformSpecificTabData* storage_namespace,
+      const sessions::tab_restore::PlatformSpecificTabData* storage_namespace,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const std::map<std::string, std::string>& extra_data,
       const SessionID* tab_id) override;

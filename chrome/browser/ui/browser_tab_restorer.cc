@@ -145,7 +145,7 @@ std::unordered_set<std::string> GetUrlsInSavedTabGroup(
 
 content::WebContents* OpenTabWithNavigationStack(
     Browser* browser,
-    const sessions::TabRestoreService::Tab& restored_tab) {
+    const sessions::tab_restore::Tab& restored_tab) {
   const sessions::SerializedNavigationEntry& entry =
       restored_tab.navigations.at(restored_tab.normalized_navigation_index());
   const GURL tab_url = entry.virtual_url();
@@ -178,7 +178,7 @@ void AddMissingTabToGroup(
     Browser* const browser,
     tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
     const base::Uuid& saved_id,
-    const sessions::TabRestoreService::Tab& restored_tab,
+    const sessions::tab_restore::Tab& restored_tab,
     std::unordered_set<std::string>* const saved_urls) {
   const tab_groups::SavedTabGroup* const saved_group =
       saved_tab_group_service.model()->Get(saved_id);
@@ -211,7 +211,7 @@ void UpdateGroupVisualData(const tab_groups::TabGroupId& group_id,
 
 void OpenSavedTabGroupAndAddRestoredTabs(
     Browser* browser,
-    const sessions::TabRestoreService::Group& group,
+    const sessions::tab_restore::Group& group,
     tab_groups::SavedTabGroupKeyedService& saved_tab_group_service) {
   // service, saved id, group
   std::optional<tab_groups::TabGroupId> new_group_id =
@@ -224,7 +224,7 @@ void OpenSavedTabGroupAndAddRestoredTabs(
   // tabs that are not in the saved group are added to it.
   std::unordered_set<std::string> urls_in_saved_group = GetUrlsInSavedTabGroup(
       saved_tab_group_service, group.saved_group_id.value());
-  for (const std::unique_ptr<sessions::TabRestoreService::Tab>& grouped_tab :
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& grouped_tab :
        group.tabs) {
     AddMissingTabToGroup(browser, saved_tab_group_service,
                          group.saved_group_id.value(), *grouped_tab.get(),
@@ -235,7 +235,7 @@ void OpenSavedTabGroupAndAddRestoredTabs(
 }
 
 void OpenTabGroup(sessions::TabRestoreService& tab_restore_service,
-                  const sessions::TabRestoreService::Group& group,
+                  const sessions::tab_restore::Group& group,
                   Browser* browser) {
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -269,7 +269,7 @@ void OpenTabGroup(sessions::TabRestoreService& tab_restore_service,
 }
 
 void OpenTab(sessions::TabRestoreService& tab_restore_service,
-             const sessions::TabRestoreService::Tab& tab,
+             const sessions::tab_restore::Tab& tab,
              Browser* browser) {
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -367,9 +367,8 @@ bool ShouldCreateAppWindowForAppName(Profile* profile,
   return apps::IsInstalledApp(profile, app_id);
 }
 
-Browser* CreateBrowserWindow(
-    Profile* profile,
-    const sessions::TabRestoreService::Window& window) {
+Browser* CreateBrowserWindow(Profile* profile,
+                             const sessions::tab_restore::Window& window) {
   std::unique_ptr<Browser::CreateParams> create_params;
   if (ShouldCreateAppWindowForAppName(profile, window.app_name)) {
     // Only trusted app popup windows should ever be restored.
@@ -399,7 +398,7 @@ Browser* CreateBrowserWindow(
 
 void RecreateAndSaveTabGroup(
     Browser* browser,
-    const sessions::TabRestoreService::Group& group,
+    const sessions::tab_restore::Group& group,
     tab_groups::SavedTabGroupKeyedService& saved_tab_group_service) {
   // If the group is not saved:
   //  0. Generate a new tab group id to avoid conflicts.
@@ -408,8 +407,7 @@ void RecreateAndSaveTabGroup(
   //  3. Save the group.
   tab_groups::TabGroupId new_id = tab_groups::TabGroupId::GenerateNew();
   std::vector<int> indices_of_tabs;
-  for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
-       group.tabs) {
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : group.tabs) {
     content::WebContents* opened_tab =
         OpenTabWithNavigationStack(browser, *tab.get());
     int index = browser->tab_strip_model()->GetIndexOfWebContents(opened_tab);
@@ -422,7 +420,7 @@ void RecreateAndSaveTabGroup(
 }
 
 void OpenWindow(sessions::TabRestoreService& tab_restore_service,
-                const sessions::TabRestoreService::Window& window,
+                const sessions::tab_restore::Window& window,
                 Browser* browser) {
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -434,8 +432,7 @@ void OpenWindow(sessions::TabRestoreService& tab_restore_service,
   // This should only be created when we actually need to open a new window.
   Browser* new_browser = nullptr;
 
-  for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
-       window.tabs) {
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : window.tabs) {
     if (!tab->group.has_value()) {
       if (!new_browser) {
         // Create a new browser window.
@@ -453,7 +450,7 @@ void OpenWindow(sessions::TabRestoreService& tab_restore_service,
     // Process all of the tabs in this group.
     seen_groups.emplace(tab->group.value().ToString());
 
-    const std::unique_ptr<sessions::TabRestoreService::Group>& group =
+    const std::unique_ptr<sessions::tab_restore::Group>& group =
         window.groups.at(tab->group.value());
     const tab_groups::SavedTabGroup* saved_group =
         group->saved_group_id.has_value()
@@ -518,26 +515,26 @@ void RestoreTab(Browser* browser) {
       return;
     }
 
-    const std::unique_ptr<sessions::TabRestoreService::Entry>&
-        most_recent_entry = service->entries().front();
+    const std::unique_ptr<sessions::tab_restore::Entry>& most_recent_entry =
+        service->entries().front();
     switch (most_recent_entry->type) {
-      case sessions::TabRestoreService::TAB: {
-        OpenTab(*service,
-                static_cast<sessions::TabRestoreService::Tab&>(
-                    *most_recent_entry.get()),
-                browser);
+      case sessions::tab_restore::Type::TAB: {
+        OpenTab(
+            *service,
+            static_cast<sessions::tab_restore::Tab&>(*most_recent_entry.get()),
+            browser);
         return;
       }
-      case sessions::TabRestoreService::WINDOW: {
+      case sessions::tab_restore::Type::WINDOW: {
         OpenWindow(*service,
-                   static_cast<sessions::TabRestoreService::Window&>(
+                   static_cast<sessions::tab_restore::Window&>(
                        *most_recent_entry.get()),
                    browser);
         return;
       }
-      case sessions::TabRestoreService::GROUP: {
+      case sessions::tab_restore::Type::GROUP: {
         OpenTabGroup(*service,
-                     static_cast<sessions::TabRestoreService::Group&>(
+                     static_cast<sessions::tab_restore::Group&>(
                          *most_recent_entry.get()),
                      browser);
         return;

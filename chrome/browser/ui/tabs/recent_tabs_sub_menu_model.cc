@@ -376,21 +376,19 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
         break;
       }
       switch (entry->type) {
-        case sessions::TabRestoreService::TAB: {
-          auto& tab =
-              static_cast<const sessions::TabRestoreService::Tab&>(*entry);
+        case sessions::tab_restore::Type::TAB: {
+          auto& tab = static_cast<const sessions::tab_restore::Tab&>(*entry);
           BuildLocalTabItem(tab, ++last_local_model_index_);
           break;
         }
-        case sessions::TabRestoreService::WINDOW: {
-          auto& window =
-              static_cast<sessions::TabRestoreService::Window&>(*entry);
+        case sessions::tab_restore::Type::WINDOW: {
+          auto& window = static_cast<sessions::tab_restore::Window&>(*entry);
           BuildLocalWindowItem(window, ++last_local_model_index_);
           break;
         }
-        case sessions::TabRestoreService::GROUP: {
+        case sessions::tab_restore::Type::GROUP: {
           auto& group =
-              static_cast<const sessions::TabRestoreService::Group&>(*entry);
+              static_cast<const sessions::tab_restore::Group&>(*entry);
           BuildLocalGroupItem(group, ++last_local_model_index_);
           break;
         }
@@ -461,7 +459,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 }
 
 void RecentTabsSubMenuModel::BuildLocalTabItem(
-    const sessions::TabRestoreService::Tab& tab,
+    const sessions::tab_restore::Tab& tab,
     size_t curr_model_index) {
   const int command_id = GetAndIncrementNextMenuID();
   const sessions::SerializedNavigationEntry& current_navigation =
@@ -495,7 +493,7 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
 }
 
 void RecentTabsSubMenuModel::BuildLocalWindowItem(
-    const sessions::TabRestoreService::Window& window,
+    const sessions::tab_restore::Window& window,
     size_t curr_model_index) {
   const int command_id = GetAndIncrementNextMenuID();
   std::unique_ptr<ui::SimpleMenuModel> window_model =
@@ -511,7 +509,7 @@ void RecentTabsSubMenuModel::BuildLocalWindowItem(
 }
 
 void RecentTabsSubMenuModel::BuildLocalGroupItem(
-    const sessions::TabRestoreService::Group& group,
+    const sessions::tab_restore::Group& group,
     size_t curr_model_index) {
   // Set the item label to the name of the group and the number of
   // tabs.
@@ -567,7 +565,7 @@ RecentTabsSubMenuModel::CreateOtherDeviceSubMenu(
 
 std::unique_ptr<ui::SimpleMenuModel>
 RecentTabsSubMenuModel::CreateWindowSubMenuModel(
-    const sessions::TabRestoreService::Window& window) {
+    const sessions::tab_restore::Window& window) {
   std::unique_ptr<ui::SimpleMenuModel> window_model =
       std::make_unique<ui::SimpleMenuModel>(this);
   const int restore_all_command_id = GetAndIncrementNextMenuID();
@@ -580,8 +578,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
   std::optional<tab_groups::TabGroupId> last_group;
   tab_groups::TabGroupVisualData current_group_visual_data;
   std::unique_ptr<ui::SimpleMenuModel> current_group_model;
-  for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
-       window.tabs) {
+  for (const std::unique_ptr<sessions::tab_restore::Tab>& tab : window.tabs) {
     const int tab_command_id = GetAndIncrementNextMenuID();
     if (tab->group != last_group && current_group_model) {
       AddGroupItemToModel(window_model.get(), std::move(current_group_model),
@@ -618,7 +615,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
 
 std::unique_ptr<ui::SimpleMenuModel>
 RecentTabsSubMenuModel::CreateGroupSubMenuModel(
-    const sessions::TabRestoreService::Group& group) {
+    const sessions::tab_restore::Group& group) {
   std::unique_ptr<ui::SimpleMenuModel> group_model =
       std::make_unique<ui::SimpleMenuModel>(this);
   int command_id = GetAndIncrementNextMenuID();
@@ -661,7 +658,7 @@ void RecentTabsSubMenuModel::AddGroupItemToModel(
 }
 
 void RecentTabsSubMenuModel::AddTabItemToModel(
-    const sessions::TabRestoreService::Tab* tab,
+    const sessions::tab_restore::Tab* tab,
     ui::SimpleMenuModel* model,
     int command_id) {
   const sessions::SerializedNavigationEntry& current_navigation =

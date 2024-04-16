@@ -290,11 +290,11 @@ using base::UserMetricsAction;
     return;
   }
 
-  const std::unique_ptr<sessions::TabRestoreService::Entry>& entry =
+  const std::unique_ptr<sessions::tab_restore::Entry>& entry =
       tabRestoreService->entries().front();
   // Only handle the TAB type.
   // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  if (entry->type != sessions::TabRestoreService::TAB) {
+  if (entry->type != sessions::tab_restore::Type::TAB) {
     return;
   }
 

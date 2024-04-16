@@ -64,7 +64,7 @@ void PrepareTabs(
     std::vector<ScopedJavaLocalRef<jobject>>& urls,
     std::vector<std::optional<base::Token>>& group_ids) {
   while (it.CurrentEntry() == current_entry) {
-    const sessions::TabRestoreService::Tab& tab = *it;
+    const sessions::tab_restore::Tab& tab = *it;
     const sessions::SerializedNavigationEntry& current_navigation =
         tab.navigations.at(tab.current_navigation_index);
     ids.push_back(tab.id.id());
@@ -82,7 +82,7 @@ void PrepareTabs(
 // Add a tab entry to the main entries list.
 void JNI_RecentlyClosedBridge_AddTabToEntries(
     JNIEnv* env,
-    const sessions::TabRestoreService::Tab& tab,
+    const sessions::tab_restore::Tab& tab,
     const JavaRef<jobject>& jentries) {
   const sessions::SerializedNavigationEntry& current_navigation =
       tab.navigations.at(tab.current_navigation_index);
@@ -98,7 +98,7 @@ void JNI_RecentlyClosedBridge_AddGroupToEntries(
     JNIEnv* env,
     TabIterator& it,
     const sessions::TabRestoreService::Entries::const_iterator& current_entry,
-    const sessions::TabRestoreService::Group& group,
+    const sessions::tab_restore::Group& group,
     const JavaRef<jobject>& jentries) {
   std::vector<int32_t> ids;
   std::vector<int64_t> timestamps;
@@ -124,7 +124,7 @@ void JNI_RecentlyClosedBridge_AddBulkEventToEntries(
     JNIEnv* env,
     TabIterator& it,
     const sessions::TabRestoreService::Entries::const_iterator& current_entry,
-    const sessions::TabRestoreService::Window& window,
+    const sessions::tab_restore::Window& window,
     const JavaRef<jobject>& jentries) {
   std::vector<int> ids;
   std::vector<int64_t> timestamps;
@@ -175,16 +175,16 @@ void JNI_RecentlyClosedBridge_AddEntriesToList(
     }
 
     auto entry = it.CurrentEntry();
-    if ((*entry)->type == sessions::TabRestoreService::GROUP) {
+    if ((*entry)->type == sessions::tab_restore::Type::GROUP) {
       const auto& group =
-          static_cast<const sessions::TabRestoreService::Group&>(**entry);
+          static_cast<const sessions::tab_restore::Group&>(**entry);
       JNI_RecentlyClosedBridge_AddGroupToEntries(env, it, entry, group,
                                                  jentries);
       continue;
     }
-    if ((*entry)->type == sessions::TabRestoreService::WINDOW) {
+    if ((*entry)->type == sessions::tab_restore::Type::WINDOW) {
       const auto& window =
-          static_cast<const sessions::TabRestoreService::Window&>(**entry);
+          static_cast<const sessions::tab_restore::Window&>(**entry);
       JNI_RecentlyClosedBridge_AddBulkEventToEntries(env, it, entry, window,
                                                      jentries);
       continue;
@@ -216,7 +216,7 @@ TabIterator TabIterator::end(
 }
 
 bool TabIterator::IsCurrentEntryTab() const {
-  return (*current_entry_)->type == sessions::TabRestoreService::TAB;
+  return (*current_entry_)->type == sessions::tab_restore::Type::TAB;
 }
 
 sessions::TabRestoreService::Entries::const_iterator TabIterator::CurrentEntry()
@@ -266,15 +266,15 @@ bool TabIterator::operator!=(TabIterator other) const {
   return !(*this == other);
 }
 
-const sessions::TabRestoreService::Tab& TabIterator::operator*() const {
-  return current_tab_ ? ***current_tab_
-                      : static_cast<const sessions::TabRestoreService::Tab&>(
-                            **current_entry_);
+const sessions::tab_restore::Tab& TabIterator::operator*() const {
+  return current_tab_
+             ? ***current_tab_
+             : static_cast<const sessions::tab_restore::Tab&>(**current_entry_);
 }
 
-const sessions::TabRestoreService::Tab* TabIterator::operator->() const {
+const sessions::tab_restore::Tab* TabIterator::operator->() const {
   return current_tab_ ? (*current_tab_)->get()
-                      : static_cast<const sessions::TabRestoreService::Tab*>(
+                      : static_cast<const sessions::tab_restore::Tab*>(
                             current_entry_->get());
 }
 
@@ -283,13 +283,13 @@ void TabIterator::SetupInnerTabList() {
     return;
   }
 
-  if ((*current_entry_)->type == sessions::TabRestoreService::GROUP) {
-    tabs_ = &static_cast<const sessions::TabRestoreService::Group*>(
-                 current_entry_->get())
-                 ->tabs;
+  if ((*current_entry_)->type == sessions::tab_restore::Type::GROUP) {
+    tabs_ =
+        &static_cast<const sessions::tab_restore::Group*>(current_entry_->get())
+             ->tabs;
   }
-  if ((*current_entry_)->type == sessions::TabRestoreService::WINDOW) {
-    tabs_ = &static_cast<const sessions::TabRestoreService::Window*>(
+  if ((*current_entry_)->type == sessions::tab_restore::Type::WINDOW) {
+    tabs_ = &static_cast<const sessions::tab_restore::Window*>(
                  current_entry_->get())
                  ->tabs;
   }

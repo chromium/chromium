@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -147,14 +148,14 @@ api::sessions::Session CreateSessionModelHelper(
   return session_struct;
 }
 
-bool is_window_entry(const sessions::TabRestoreService::Entry& entry) {
-  return entry.type == sessions::TabRestoreService::WINDOW;
+bool is_window_entry(const sessions::tab_restore::Entry& entry) {
+  return entry.type == sessions::tab_restore::Type::WINDOW;
 }
 
 }  // namespace
 
 api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
-    const sessions::TabRestoreService::Tab& tab,
+    const sessions::tab_restore::Tab& tab,
     bool active) {
   return CreateTabModelHelper(tab.navigations[tab.current_navigation_index],
                               base::NumberToString(tab.id.id()),
@@ -163,7 +164,7 @@ api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
 }
 
 api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
-    const sessions::TabRestoreService::Window& window) {
+    const sessions::tab_restore::Window& window) {
   DCHECK(!window.tabs.empty());
 
   std::vector<api::tabs::Tab> tabs;
@@ -178,7 +179,7 @@ api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
 }
 
 api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
-    const sessions::TabRestoreService::Group& group) {
+    const sessions::tab_restore::Group& group) {
   DCHECK(!group.tabs.empty());
 
   return tab_groups_util::CreateTabGroupObject(group.group_id,
@@ -186,22 +187,22 @@ api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
 }
 
 api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
-    const sessions::TabRestoreService::Entry& entry) {
+    const sessions::tab_restore::Entry& entry) {
   std::optional<api::tabs::Tab> tab;
   std::optional<api::windows::Window> window;
   std::optional<api::tab_groups::TabGroup> group;
   switch (entry.type) {
-    case sessions::TabRestoreService::TAB:
+    case sessions::tab_restore::Type::TAB:
       tab = CreateTabModel(
-          static_cast<const sessions::TabRestoreService::Tab&>(entry), false);
+          static_cast<const sessions::tab_restore::Tab&>(entry), false);
       break;
-    case sessions::TabRestoreService::WINDOW:
+    case sessions::tab_restore::Type::WINDOW:
       window = CreateWindowModel(
-          static_cast<const sessions::TabRestoreService::Window&>(entry));
+          static_cast<const sessions::tab_restore::Window&>(entry));
       break;
-    case sessions::TabRestoreService::GROUP:
+    case sessions::tab_restore::Type::GROUP:
       group = CreateGroupModel(
-          static_cast<const sessions::TabRestoreService::Group&>(entry));
+          static_cast<const sessions::tab_restore::Group&>(entry));
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
                                   std::move(window), std::move(group));
@@ -237,9 +238,8 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   for (const auto& entry : tab_restore_service->entries()) {
     // TODO(crbug.com/1192309): Support group entries in the Sessions API,
     // rather than sharding the group out into individual tabs.
-    if (entry->type == sessions::TabRestoreService::GROUP) {
-      auto& group =
-          static_cast<const sessions::TabRestoreService::Group&>(*entry);
+    if (entry->type == sessions::tab_restore::Type::GROUP) {
+      auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);
       for (const auto& tab : group.tabs)
         if (counter++ < max_results)
           result.push_back(CreateSessionModel(*tab));

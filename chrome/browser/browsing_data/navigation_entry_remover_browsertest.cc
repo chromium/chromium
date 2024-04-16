@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
       DeletionInfo::ForUrls({history::URLResult(url_c_, base::Time())}, {}));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1U, tab_service->entries().size());
-  auto* tab = static_cast<sessions::TabRestoreService::Tab*>(
+  auto* tab = static_cast<sessions::tab_restore::Tab*>(
       tab_service->entries().front().get());
   EXPECT_EQ(url_d_, tab->navigations.front().virtual_url());
   EXPECT_TRUE(tab_service->IsLoaded());
@@ -331,9 +331,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
   sessions::TabRestoreService* tab_service =
       TabRestoreServiceFactory::GetForProfile(profile());
   EXPECT_EQ(1U, tab_service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW,
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW,
             tab_service->entries().front()->type);
-  auto* window = static_cast<sessions::TabRestoreService::Window*>(
+  auto* window = static_cast<sessions::tab_restore::Window*>(
       tab_service->entries().front().get());
   EXPECT_EQ(3U, window->tabs.size());
   ExpectDeleteLastSessionCalled(0);
@@ -346,9 +346,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
                             {}));
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(1U, tab_service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW,
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW,
             tab_service->entries().front()->type);
-  window = static_cast<sessions::TabRestoreService::Window*>(
+  window = static_cast<sessions::tab_restore::Window*>(
       tab_service->entries().front().get());
   EXPECT_EQ(2U, window->tabs.size());
   EXPECT_EQ(2U, window->tabs.size());
@@ -364,9 +364,9 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
       profile(),
       DeletionInfo::ForUrls({history::URLResult(url_a_, base::Time())}, {}));
   EXPECT_EQ(1U, tab_service->entries().size());
-  ASSERT_EQ(sessions::TabRestoreService::TAB,
+  ASSERT_EQ(sessions::tab_restore::Type::TAB,
             tab_service->entries().front()->type);
-  auto* tab = static_cast<sessions::TabRestoreService::Tab*>(
+  auto* tab = static_cast<sessions::tab_restore::Tab*>(
       tab_service->entries().front().get());
   EXPECT_EQ(url_c_, tab->navigations.front().virtual_url());
   EXPECT_EQ(0, tab->tabstrip_index);

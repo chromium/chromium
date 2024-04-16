@@ -191,14 +191,14 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Adds an item for the window entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddWindowEntryToMenu(sessions::TabRestoreService::Window* window,
+  bool AddWindowEntryToMenu(sessions::tab_restore::Window* window,
                             NSMenu* menu,
                             NSInteger tag,
                             NSInteger index);
 
   // Adds an item for the group entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+  bool AddGroupEntryToMenu(sessions::tab_restore::Group* group,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index);
@@ -209,8 +209,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   int AddTabsToSubmenu(
       NSMenu* submenu,
       HistoryItem* item,
-      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-          tabs);
+      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs);
 
   // Called by the ctor if |service_| is ready at the time, or by a
   // notification receiver. Finishes initialization tasks by subscribing for
@@ -229,7 +228,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Creates a HistoryItem* for the given tab entry.
   std::unique_ptr<HistoryItem> HistoryItemForTab(
-      const sessions::TabRestoreService::Tab& entry);
+      const sessions::tab_restore::Tab& entry);
 
   // Helper function that sends an async request to the FaviconService to get
   // an icon. The callback will update the NSMenuItem directly.

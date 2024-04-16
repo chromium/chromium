@@ -48,10 +48,9 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   sessions::TabRestoreService* const service =
       TabRestoreServiceFactory::GetForProfile(profile());
   ASSERT_GT(service->entries().size(), 0U);
-  sessions::TabRestoreService::Entry* entry = service->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  const auto* entry_win =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  sessions::tab_restore::Entry* entry = service->entries().front().get();
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  const auto* entry_win = static_cast<sessions::tab_restore::Window*>(entry);
   EXPECT_EQ(bounds, entry_win->bounds);
 
   service->RestoreMostRecentEntry(nullptr);

@@ -76,7 +76,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,
-      const sessions::PlatformSpecificTabData* storage_namespace,
+      const sessions::tab_restore::PlatformSpecificTabData* storage_namespace,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const std::map<std::string, std::string>& extra_data,
       const SessionID* tab_id) override;
@@ -85,7 +85,7 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
       std::optional<tab_groups::TabGroupId> group,
       int selected_navigation,
       const std::string& extension_app_id,
-      const sessions::PlatformSpecificTabData* tab_platform_data,
+      const sessions::tab_restore::PlatformSpecificTabData* tab_platform_data,
       const sessions::SerializedUserAgentOverride& user_agent_override,
       const std::map<std::string, std::string>& extra_data) override;
   void CloseTab() override;

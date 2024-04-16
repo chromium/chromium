@@ -222,7 +222,7 @@ class TabRestorer : public sessions::TabRestoreServiceObserver {
   static void RestoreMostRecent(Profile* profile);
 
   // Restore a specific tab in |profile|, e.g. for a History menu item.
-  // |session_id| can be a |TabRestoreService::Entry::id|, or a
+  // |session_id| can be a |tab_restore::Entry::id|, or a
   // |TabRestoreEntryService::Entry::original_id|.
   static void RestoreByID(Profile* profile, SessionID session_id);
 

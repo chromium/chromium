@@ -145,24 +145,24 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
   for (const auto& entry : entries) {
     if (added_count >= kRecentlyClosedCount)
       break;
-    if (entry->type == sessions::TabRestoreService::WINDOW) {
+    if (entry->type == sessions::tab_restore::Type::WINDOW) {
       bool added = AddWindowEntryToMenu(
-          static_cast<sessions::TabRestoreService::Window*>(entry.get()), menu,
+          static_cast<sessions::tab_restore::Window*>(entry.get()), menu,
           kRecentlyClosed, index);
       if (added) {
         ++index;
         ++added_count;
       }
-    } else if (entry->type == sessions::TabRestoreService::TAB) {
-      const auto& tab = static_cast<sessions::TabRestoreService::Tab&>(*entry);
+    } else if (entry->type == sessions::tab_restore::Type::TAB) {
+      const auto& tab = static_cast<sessions::tab_restore::Tab&>(*entry);
       std::unique_ptr<HistoryItem> item = HistoryItemForTab(tab);
       if (item) {
         AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
         ++added_count;
       }
-    } else if (entry->type == sessions::TabRestoreService::GROUP) {
+    } else if (entry->type == sessions::tab_restore::Type::GROUP) {
       bool added = AddGroupEntryToMenu(
-          static_cast<sessions::TabRestoreService::Group*>(entry.get()), menu,
+          static_cast<sessions::tab_restore::Group*>(entry.get()), menu,
           kRecentlyClosed, index);
       if (added) {
         ++index;
@@ -303,11 +303,11 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
 }
 
 bool HistoryMenuBridge::AddWindowEntryToMenu(
-    sessions::TabRestoreService::Window* window,
+    sessions::tab_restore::Window* window,
     NSMenu* menu,
     NSInteger tag,
     NSInteger index) {
-  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+  const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs =
       window->tabs;
   if (tabs.empty())
     return false;
@@ -339,12 +339,11 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
   return true;
 }
 
-bool HistoryMenuBridge::AddGroupEntryToMenu(
-    sessions::TabRestoreService::Group* group,
-    NSMenu* menu,
-    NSInteger tag,
-    NSInteger index) {
-  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
+                                            NSMenu* menu,
+                                            NSInteger tag,
+                                            NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs =
       group->tabs;
   if (tabs.empty())
     return false;
@@ -389,8 +388,7 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
 int HistoryMenuBridge::AddTabsToSubmenu(
     NSMenu* submenu,
     HistoryItem* item,
-    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-        tabs) {
+    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs) {
   // Create standard items within the submenu.
   // Duplicate the HistoryItem otherwise the different NSMenuItems will
   // point to the same HistoryItem, which would then be double-freed when
@@ -504,8 +502,7 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
 }
 
 std::unique_ptr<HistoryMenuBridge::HistoryItem>
-HistoryMenuBridge::HistoryItemForTab(
-    const sessions::TabRestoreService::Tab& entry) {
+HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry) {
   DCHECK(!entry.navigations.empty());
 
   const sessions::SerializedNavigationEntry& current_navigation =

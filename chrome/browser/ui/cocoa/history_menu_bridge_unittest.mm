@@ -47,10 +47,10 @@ class MockTRS : public sessions::TabRestoreServiceImpl {
   MOCK_CONST_METHOD0(entries, const sessions::TabRestoreService::Entries&());
 };
 
-MockTRS::Tab* CreateSessionTab(SessionID::id_type id,
-                               const std::string& url,
-                               const std::string& title) {
-  auto* tab = new MockTRS::Tab;
+sessions::tab_restore::Tab* CreateSessionTab(SessionID::id_type id,
+                                             const std::string& url,
+                                             const std::string& title) {
+  auto* tab = new sessions::tab_restore::Tab;
   tab->id = SessionID::FromSerializedValue(id);
   tab->current_navigation_index = 0;
   tab->navigations.push_back(
@@ -59,17 +59,17 @@ MockTRS::Tab* CreateSessionTab(SessionID::id_type id,
 }
 
 MockTRS::Entries CreateSessionEntries(
-    std::initializer_list<MockTRS::Entry*> entries) {
+    std::initializer_list<sessions::tab_restore::Entry*> entries) {
   MockTRS::Entries ret;
   for (auto* entry : entries)
     ret.emplace_back(entry);
   return ret;
 }
 
-MockTRS::Window* CreateSessionWindow(
+sessions::tab_restore::Window* CreateSessionWindow(
     SessionID::id_type id,
-    std::initializer_list<MockTRS::Tab*> tabs) {
-  auto* window = new MockTRS::Window;
+    std::initializer_list<sessions::tab_restore::Tab*> tabs) {
+  auto* window = new sessions::tab_restore::Window;
   window->id = SessionID::FromSerializedValue(id);
   window->tabs.reserve(tabs.size());
   for (auto* tab : tabs)
@@ -77,10 +77,11 @@ MockTRS::Window* CreateSessionWindow(
   return window;
 }
 
-MockTRS::Group* CreateSessionGroup(SessionID::id_type id,
-                                   tab_groups::TabGroupVisualData visual_data,
-                                   std::initializer_list<MockTRS::Tab*> tabs) {
-  auto* group = new MockTRS::Group;
+sessions::tab_restore::Group* CreateSessionGroup(
+    SessionID::id_type id,
+    tab_groups::TabGroupVisualData visual_data,
+    std::initializer_list<sessions::tab_restore::Tab*> tabs) {
+  auto* group = new sessions::tab_restore::Group;
   group->id = SessionID::FromSerializedValue(id);
   group->visual_data = visual_data;
   group->tabs.reserve(tabs.size());

@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/live_tab.h"
+#import "components/sessions/core/tab_restore_types.h"
 
 FakeTabRestoreService::FakeTabRestoreService() = default;
 
@@ -33,7 +34,7 @@ void FakeTabRestoreService::RemoveObserver(
 std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     sessions::LiveTab* live_tab,
     int index) {
-  auto tab = std::make_unique<Tab>();
+  auto tab = std::make_unique<sessions::tab_restore::Tab>();
   int entry_count =
       live_tab->IsInitialBlankNavigation() ? 0 : live_tab->GetEntryCount();
   tab->navigations.resize(static_cast<int>(entry_count));

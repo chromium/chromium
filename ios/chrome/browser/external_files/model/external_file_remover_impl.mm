@@ -77,8 +77,8 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
           browser->GetBrowserState());
   DCHECK(restore_service);
   for (const auto& entry : restore_service->entries()) {
-    sessions::TabRestoreService::Tab* tab =
-        static_cast<sessions::TabRestoreService::Tab*>(entry.get());
+    sessions::tab_restore::Tab* tab =
+        static_cast<sessions::tab_restore::Tab*>(entry.get());
     int navigation_index = tab->current_navigation_index;
     sessions::SerializedNavigationEntry navigation =
         tab->navigations[navigation_index];

@@ -38,9 +38,9 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-
 namespace sessions {
 namespace {
 
@@ -126,7 +126,7 @@ void TabRestoreServiceHelper::Observer::OnAddEntry() {}
 TabRestoreServiceHelper::TabRestoreServiceHelper(
     TabRestoreService* tab_restore_service,
     TabRestoreServiceClient* client,
-    TabRestoreService::TimeFactory* time_factory)
+    tab_restore::TimeFactory* time_factory)
     : tab_restore_service_(tab_restore_service),
       observer_(nullptr),
       client_(client),
@@ -249,7 +249,7 @@ void TabRestoreServiceHelper::BrowserClosed(LiveTabContext* context) {
   closing_contexts_.erase(context);
 }
 
-std::unique_ptr<TabRestoreService::Group>
+std::unique_ptr<tab_restore::Group>
 TabRestoreServiceHelper::CreateHistoricalGroupImpl(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
@@ -394,14 +394,14 @@ void TabRestoreServiceHelper::DeleteNavigationEntries(
   Entries new_entries;
   for (std::unique_ptr<Entry>& entry : entries_) {
     switch (entry->type) {
-      case TabRestoreService::TAB: {
+      case tab_restore::Type::TAB: {
         Tab* tab = static_cast<Tab*>(entry.get());
         if (!DeleteFromTab(predicate, tab)) {
           new_entries.push_back(std::move(entry));
         }
         break;
       }
-      case TabRestoreService::WINDOW: {
+      case tab_restore::Type::WINDOW: {
         Window* window = static_cast<Window*>(entry.get());
         if (!DeleteFromWindow(predicate, window)) {
           // If only a single tab is left, just keep the tab.
@@ -413,7 +413,7 @@ void TabRestoreServiceHelper::DeleteNavigationEntries(
         }
         break;
       }
-      case TabRestoreService::GROUP: {
+      case tab_restore::Type::GROUP: {
         Group* group = static_cast<Group*>(entry.get());
         if (!DeleteFromGroup(predicate, group)) {
           new_entries.push_back(std::move(entry));
@@ -478,7 +478,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
   // new browser into which we restore the tabs.
   std::vector<LiveTab*> live_tabs;
   switch (entry.type) {
-    case TabRestoreService::TAB: {
+    case tab_restore::Type::TAB: {
       auto& tab = static_cast<const Tab&>(entry);
 
       if (tab.timestamp != base::Time() &&
@@ -493,7 +493,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       context->ShowBrowserWindow();
       break;
     }
-    case TabRestoreService::WINDOW: {
+    case tab_restore::Type::WINDOW: {
       LiveTabContext* current_context = context;
       auto& window = static_cast<Window&>(entry);
 
@@ -624,7 +624,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       }
       break;
     }
-    case TabRestoreService::GROUP: {
+    case tab_restore::Type::GROUP: {
       auto& group = static_cast<Group&>(entry);
 
       if (group.timestamp != base::Time() &&
@@ -749,14 +749,14 @@ TabRestoreServiceHelper::GetEntryIteratorById(SessionID id) {
 
     // For Window and Group entries, see if the ID matches a tab. If so, report
     // the window or group as the Entry.
-    if ((*i)->type == TabRestoreService::WINDOW) {
+    if ((*i)->type == tab_restore::Type::WINDOW) {
       const auto& window = static_cast<const Window&>(**i);
       for (const auto& tab : window.tabs) {
         if (tab->id == id || tab->original_id == id) {
           return i;
         }
       }
-    } else if ((*i)->type == TabRestoreService::GROUP) {
+    } else if ((*i)->type == tab_restore::Type::GROUP) {
       const auto& group = static_cast<const Group&>(**i);
       for (const auto& tab : group.tabs) {
         if (tab->id == id || tab->original_id == id) {
@@ -793,13 +793,13 @@ bool TabRestoreServiceHelper::OnMemoryDump(
   for (const auto& entry : entries_) {
     const char* type_string = "";
     switch (entry->type) {
-      case TabRestoreService::WINDOW:
+      case tab_restore::Type::WINDOW:
         type_string = "window";
         break;
-      case TabRestoreService::TAB:
+      case tab_restore::Type::TAB:
         type_string = "tab";
         break;
-      case TabRestoreService::GROUP:
+      case tab_restore::Type::GROUP:
         type_string = "group";
         break;
     }
@@ -828,11 +828,11 @@ bool TabRestoreServiceHelper::OnMemoryDump(
 // static
 bool TabRestoreServiceHelper::ValidateEntry(const Entry& entry) {
   switch (entry.type) {
-    case TabRestoreService::TAB:
+    case tab_restore::Type::TAB:
       return ValidateTab(static_cast<const Tab&>(entry));
-    case TabRestoreService::WINDOW:
+    case tab_restore::Type::WINDOW:
       return ValidateWindow(static_cast<const Window&>(entry));
-    case TabRestoreService::GROUP:
+    case tab_restore::Type::GROUP:
       return ValidateGroup(static_cast<const Group&>(entry));
   }
   NOTREACHED();
@@ -1017,11 +1017,11 @@ bool TabRestoreServiceHelper::FilterEntry(const Entry& entry) {
   }
 
   switch (entry.type) {
-    case TabRestoreService::TAB:
+    case tab_restore::Type::TAB:
       return IsTabInteresting(static_cast<const Tab&>(entry));
-    case TabRestoreService::WINDOW:
+    case tab_restore::Type::WINDOW:
       return IsWindowInteresting(static_cast<const Window&>(entry));
-    case TabRestoreService::GROUP:
+    case tab_restore::Type::GROUP:
       return IsGroupInteresting(static_cast<const Group&>(entry));
   }
   NOTREACHED();
@@ -1031,7 +1031,7 @@ bool TabRestoreServiceHelper::FilterEntry(const Entry& entry) {
 void TabRestoreServiceHelper::UpdateTabBrowserIDs(SessionID::id_type old_id,
                                                   SessionID new_id) {
   for (const auto& entry : entries_) {
-    if (entry->type == TabRestoreService::TAB) {
+    if (entry->type == tab_restore::Type::TAB) {
       auto& tab = static_cast<Tab&>(*entry);
       if (tab.browser_id == old_id) {
         tab.browser_id = new_id.id();

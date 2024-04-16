@@ -543,10 +543,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
       TabRestoreServiceFactory::GetForProfile(browser->profile());
   const sessions::TabRestoreService::Entries& entries = service->entries();
   EXPECT_EQ(1u, entries.size());
-  sessions::TabRestoreService::Entry* entry = entries.front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* entry_win =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  sessions::tab_restore::Entry* entry = entries.front().get();
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* entry_win =
+      static_cast<sessions::tab_restore::Window*>(entry);
   EXPECT_EQ(bounds, entry_win->bounds);
   auto& tabs = entry_win->tabs;
   EXPECT_EQ(2u, tabs.size());
@@ -796,10 +796,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabFromClosedWindowByID) {
       TabRestoreServiceFactory::GetForProfile(browser->profile());
   const sessions::TabRestoreService::Entries& entries = service->entries();
   EXPECT_EQ(1u, entries.size());
-  sessions::TabRestoreService::Entry* entry = entries.front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* entry_win =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  sessions::tab_restore::Entry* entry = entries.front().get();
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* entry_win =
+      static_cast<sessions::tab_restore::Window*>(entry);
   auto& tabs = entry_win->tabs;
   EXPECT_EQ(3u, tabs.size());
   EXPECT_EQ(url::kAboutBlankURL, tabs[0]->navigations.front().virtual_url());
@@ -1198,7 +1198,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_GetRestoreTabType) {
 
   // We now should see a Tab as the restore type.
   ASSERT_EQ(1u, service->entries().size());
-  EXPECT_EQ(sessions::TabRestoreService::TAB, service->entries().front()->type);
+  EXPECT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreTabType) {
@@ -1214,7 +1214,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, GetRestoreTabType) {
 
   // When we start this time we should get a Tab.
   ASSERT_GE(service->entries().size(), 1u);
-  EXPECT_EQ(sessions::TabRestoreService::TAB, service->entries().front()->type);
+  EXPECT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
@@ -1846,7 +1846,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   // We should have a restore entry for the window.
   const sessions::TabRestoreService::Entries& entries = service->entries();
   ASSERT_GE(entries.size(), 1u);
-  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::WINDOW);
+  ASSERT_EQ(entries.front()->type, sessions::tab_restore::Type::WINDOW);
 
   // Restore the window.
   std::vector<sessions::LiveTab*> restored_window_tabs =
@@ -1894,10 +1894,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
   // We should have a restore entry for the window.
   const sessions::TabRestoreService::Entries& entries = service->entries();
   ASSERT_GE(entries.size(), 1u);
-  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::WINDOW);
+  ASSERT_EQ(entries.front()->type, sessions::tab_restore::Type::WINDOW);
 
   const auto* const window_entry =
-      static_cast<sessions::TabRestoreService::Window*>(entries.front().get());
+      static_cast<sessions::tab_restore::Window*>(entries.front().get());
   ASSERT_NE(window_entry->tab_groups.find(single_entry_group),
             window_entry->tab_groups.end());
   ASSERT_NE(window_entry->tab_groups.find(double_entry_group),

@@ -18,6 +18,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_types.h"
 
 namespace sessions {
 
@@ -34,11 +35,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
  public:
   typedef TabRestoreService::DeletionPredicate DeletionPredicate;
   typedef TabRestoreService::Entries Entries;
-  typedef TabRestoreService::Entry Entry;
-  typedef TabRestoreService::Tab Tab;
-  typedef TabRestoreService::TimeFactory TimeFactory;
-  typedef TabRestoreService::Window Window;
-  typedef TabRestoreService::Group Group;
+  typedef tab_restore::Entry Entry;
+  typedef tab_restore::Tab Tab;
+  typedef tab_restore::TimeFactory TimeFactory;
+  typedef tab_restore::Window Window;
+  typedef tab_restore::Group Group;
 
   // Provides a way for the client to add behavior to the tab restore service
   // helper (e.g. implementing tabs persistence).

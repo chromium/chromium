@@ -29,9 +29,10 @@ class SESSIONS_EXPORT LiveTab {
   virtual int GetEntryCount() = 0;
 
   // Returns any platform-specific data that should be associated with the
-  // TabRestoreService::Tab corresponding to this instance. The default
+  // tab_restore::Tab corresponding to this instance. The default
   // implementation returns null.
-  virtual std::unique_ptr<PlatformSpecificTabData> GetPlatformSpecificTabData();
+  virtual std::unique_ptr<tab_restore::PlatformSpecificTabData>
+  GetPlatformSpecificTabData();
 
   // Returns the user agent override, if any.
   virtual SerializedUserAgentOverride GetUserAgentOverride() = 0;

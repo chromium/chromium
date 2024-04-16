@@ -82,8 +82,7 @@ std::string GetLastActiveElapsedText(const base::Time& last_active_time) {
 // If Tab Group has no timestamp, we find the tab in the tab group with
 // the most recent navigation last active time.
 base::Time GetTabGroupTimeStamp(
-    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-        tabs) {
+    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs) {
   base::Time last_active_time;
   for (const auto& tab : tabs) {
     const sessions::SerializedNavigationEntry& entry =
@@ -98,7 +97,7 @@ base::Time GetTabGroupTimeStamp(
 // open we create a TabGroup entry with the required fields to support
 // rendering the tab's associated group information in the UI.
 void CreateTabGroupIfNotPresent(
-    sessions::TabRestoreService::Tab* tab,
+    sessions::tab_restore::Tab* tab,
     std::set<tab_groups::TabGroupId>& tab_group_ids,
     std::vector<tab_search::mojom::TabGroupPtr>& tab_groups) {
   if (tab->group.has_value() &&
@@ -793,13 +792,13 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
       return;
     }
 
-    if (entry->type == sessions::TabRestoreService::Type::WINDOW) {
-      sessions::TabRestoreService::Window* window =
-          static_cast<sessions::TabRestoreService::Window*>(entry.get());
+    if (entry->type == sessions::tab_restore::Type::WINDOW) {
+      sessions::tab_restore::Window* window =
+          static_cast<sessions::tab_restore::Window*>(entry.get());
 
       for (auto& window_tab : window->tabs) {
-        sessions::TabRestoreService::Tab* tab =
-            static_cast<sessions::TabRestoreService::Tab*>(window_tab.get());
+        sessions::tab_restore::Tab* tab =
+            static_cast<sessions::tab_restore::Tab*>(window_tab.get());
         if (AddRecentlyClosedTab(tab, entry->timestamp, recently_closed_tabs,
                                  tab_dedup_keys, tab_group_ids, tab_groups)) {
           recently_closed_tab_count += 1;
@@ -811,18 +810,18 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
           return;
         }
       }
-    } else if (entry->type == sessions::TabRestoreService::Type::TAB) {
-      sessions::TabRestoreService::Tab* tab =
-          static_cast<sessions::TabRestoreService::Tab*>(entry.get());
+    } else if (entry->type == sessions::tab_restore::Type::TAB) {
+      sessions::tab_restore::Tab* tab =
+          static_cast<sessions::tab_restore::Tab*>(entry.get());
 
       if (AddRecentlyClosedTab(tab, entry->timestamp, recently_closed_tabs,
                                tab_dedup_keys, tab_group_ids, tab_groups)) {
         recently_closed_tab_count += 1;
         recently_closed_item_count += 1;
       }
-    } else if (entry->type == sessions::TabRestoreService::Type::GROUP) {
-      sessions::TabRestoreService::Group* group =
-          static_cast<sessions::TabRestoreService::Group*>(entry.get());
+    } else if (entry->type == sessions::tab_restore::Type::GROUP) {
+      sessions::tab_restore::Group* group =
+          static_cast<sessions::tab_restore::Group*>(entry.get());
 
       const tab_groups::TabGroupVisualData* tab_group_visual_data =
           &group->visual_data;
@@ -858,7 +857,7 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
 }
 
 bool TabSearchPageHandler::AddRecentlyClosedTab(
-    sessions::TabRestoreService::Tab* tab,
+    sessions::tab_restore::Tab* tab,
     const base::Time& close_time,
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::set<DedupKey>& tab_dedup_keys,
@@ -960,9 +959,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 }
 
 tab_search::mojom::RecentlyClosedTabPtr
-TabSearchPageHandler::GetRecentlyClosedTab(
-    sessions::TabRestoreService::Tab* tab,
-    const base::Time& close_time) {
+TabSearchPageHandler::GetRecentlyClosedTab(sessions::tab_restore::Tab* tab,
+                                           const base::Time& close_time) {
   auto recently_closed_tab = tab_search::mojom::RecentlyClosedTab::New();
   DCHECK(tab->navigations.size() > 0);
   sessions::SerializedNavigationEntry& entry =
@@ -1017,13 +1015,13 @@ void TabSearchPageHandler::OnTabStripModelChanged(
       // Loops through at most (TabRestoreServiceHelper) kMaxEntries.
       // Recently closed entries appear first in the list.
       for (auto& entry : tab_restore_service->entries()) {
-        if (entry->type == sessions::TabRestoreService::Type::TAB &&
+        if (entry->type == sessions::tab_restore::Type::TAB &&
             base::Contains(tab_restore_ids, entry->id)) {
           // The associated tab group visual data for the recently closed tab is
           // already present at the client side from the initial GetProfileData
           // call.
-          sessions::TabRestoreService::Tab* tab =
-              static_cast<sessions::TabRestoreService::Tab*>(entry.get());
+          sessions::tab_restore::Tab* tab =
+              static_cast<sessions::tab_restore::Tab*>(entry.get());
           tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
               GetRecentlyClosedTab(tab, entry->timestamp);
           tabs_removed_info->recently_closed_tabs.push_back(

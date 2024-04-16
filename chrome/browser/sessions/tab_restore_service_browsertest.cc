@@ -15,7 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
-using Window = sessions::TabRestoreService::Window;
+using Window = sessions::tab_restore::Window;
 
 class TabRestoreServiceImplBrowserTest : public InProcessBrowserTest {
  public:
@@ -39,11 +39,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest, RestoreApp) {
 
   // One entry should be created.
   ASSERT_EQ(1U, trs->entries().size());
-  const sessions::TabRestoreService::Entry* restored_entry =
+  const sessions::tab_restore::Entry* restored_entry =
       trs->entries().front().get();
 
   // It should be a window with an app.
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, restored_entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, restored_entry->type);
   const Window* restored_window = static_cast<const Window*>(restored_entry);
   EXPECT_EQ(app_name, restored_window->app_name);
 }
@@ -67,16 +67,15 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
   chrome::CloseTab(app_browser);
   ASSERT_EQ(1U, trs->entries().size());
-  const sessions::TabRestoreService::Entry* tab_entry =
-      trs->entries().front().get();
-  EXPECT_EQ(sessions::TabRestoreService::TAB, tab_entry->type);
+  const sessions::tab_restore::Entry* tab_entry = trs->entries().front().get();
+  EXPECT_EQ(sessions::tab_restore::Type::TAB, tab_entry->type);
 
   // Close last tab, WINDOW entry should be created.
   chrome::CloseTab(app_browser);
   EXPECT_EQ(2U, trs->entries().size());
-  const sessions::TabRestoreService::Entry* window_entry =
+  const sessions::tab_restore::Entry* window_entry =
       trs->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, window_entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, window_entry->type);
   const Window* restored_window = static_cast<const Window*>(window_entry);
   EXPECT_EQ(app_browser->app_name(), restored_window->app_name);
   EXPECT_EQ(1U, restored_window->tabs.size());

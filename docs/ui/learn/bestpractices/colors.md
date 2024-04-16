@@ -640,7 +640,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Adds an item for the group entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+  bool AddGroupEntryToMenu(sessions::tab_restore::Group* group,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index);
@@ -648,7 +648,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 ...
 
 bool HistoryMenuBridge::AddGroupEntryToMenu(
-    sessions::TabRestoreService::Group* group,
+    sessions::tab_restore::Group* group,
     NSMenu* menu,
     NSInteger tag,
     NSInteger index) {

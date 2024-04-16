@@ -416,15 +416,15 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     std::vector<RecentlyClosedTableViewItemPair> recentlyClosedItems;
     for (auto iter = self.tabRestoreService->entries().begin();
          iter != self.tabRestoreService->entries().end(); ++iter) {
-      const sessions::TabRestoreService::Entry* entry = iter->get();
+      const sessions::tab_restore::Entry* entry = iter->get();
       DCHECK(entry);
       // Only TAB type is handled.
       // TODO(crbug.com/1056596) : Support WINDOW restoration under
       // multi-window.
-      DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
+      DCHECK_EQ(sessions::tab_restore::Type::TAB, entry->type);
 
-      const sessions::TabRestoreService::Tab* tab =
-          static_cast<const sessions::TabRestoreService::Tab*>(entry);
+      const sessions::tab_restore::Tab* tab =
+          static_cast<const sessions::tab_restore::Tab*>(entry);
       const sessions::SerializedNavigationEntry& navigationEntry =
           tab->navigations[tab->current_navigation_index];
 

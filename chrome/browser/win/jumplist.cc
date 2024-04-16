@@ -427,17 +427,16 @@ void JumpList::ProcessTabRestoreServiceNotification() {
     if (recently_closed_pages_.size() >= kRecentlyClosedItems)
       break;
     switch (entry->type) {
-      case sessions::TabRestoreService::TAB:
-        AddTab(static_cast<const sessions::TabRestoreService::Tab&>(*entry),
+      case sessions::tab_restore::Type::TAB:
+        AddTab(static_cast<const sessions::tab_restore::Tab&>(*entry),
                profile_dir, kRecentlyClosedItems);
         break;
-      case sessions::TabRestoreService::WINDOW:
-        AddWindow(
-            static_cast<const sessions::TabRestoreService::Window&>(*entry),
-            profile_dir, kRecentlyClosedItems);
+      case sessions::tab_restore::Type::WINDOW:
+        AddWindow(static_cast<const sessions::tab_restore::Window&>(*entry),
+                  profile_dir, kRecentlyClosedItems);
         break;
-      case sessions::TabRestoreService::GROUP:
-        AddGroup(static_cast<const sessions::TabRestoreService::Group&>(*entry),
+      case sessions::tab_restore::Type::GROUP:
+        AddGroup(static_cast<const sessions::tab_restore::Group&>(*entry),
                  profile_dir, kRecentlyClosedItems);
         break;
     }
@@ -482,7 +481,7 @@ void JumpList::OnMostVisitedURLsAvailable(
   StartLoadingFavicon();
 }
 
-bool JumpList::AddTab(const sessions::TabRestoreService::Tab& tab,
+bool JumpList::AddTab(const sessions::tab_restore::Tab& tab,
                       const base::FilePath& cmd_line_profile_dir,
                       size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -508,7 +507,7 @@ bool JumpList::AddTab(const sessions::TabRestoreService::Tab& tab,
   return true;
 }
 
-void JumpList::AddWindow(const sessions::TabRestoreService::Window& window,
+void JumpList::AddWindow(const sessions::tab_restore::Window& window,
                          const base::FilePath& cmd_line_profile_dir,
                          size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -520,7 +519,7 @@ void JumpList::AddWindow(const sessions::TabRestoreService::Window& window,
   }
 }
 
-void JumpList::AddGroup(const sessions::TabRestoreService::Group& group,
+void JumpList::AddGroup(const sessions::tab_restore::Group& group,
                         const base::FilePath& cmd_line_profile_dir,
                         size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

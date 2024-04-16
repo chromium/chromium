@@ -209,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   chrome::CloseWindow(second_browser);
   ui_test_utils::WaitForBrowserToClose(second_browser);
   EXPECT_TRUE(base::Contains(tab_restore_service->entries(),
-                             sessions::TabRestoreService::WINDOW,
-                             &sessions::TabRestoreService::Entry::type));
+                             sessions::tab_restore::Type::WINDOW,
+                             &sessions::tab_restore::Entry::type));
 
   // Show the AppMenu.
   menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);

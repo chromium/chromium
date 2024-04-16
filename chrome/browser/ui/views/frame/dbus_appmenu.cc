@@ -321,7 +321,7 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
 }
 
 std::unique_ptr<DbusAppmenu::HistoryItem> DbusAppmenu::HistoryItemForTab(
-    const sessions::TabRestoreService::Tab& entry) {
+    const sessions::tab_restore::Tab& entry) {
   const sessions::SerializedNavigationEntry& current_navigation =
       entry.navigations.at(entry.current_navigation_index);
   auto item = std::make_unique<HistoryItem>();
@@ -350,8 +350,7 @@ void DbusAppmenu::AddEntryToHistoryMenu(
     SessionID id,
     std::u16string title,
     int index,
-    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-        tabs) {
+    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs) {
   // Create the item for the parent/window.
   auto item = std::make_unique<HistoryItem>();
   item->session_id = id;
@@ -502,11 +501,11 @@ void DbusAppmenu::TabRestoreServiceChanged(
   unsigned int added_count = 0;
   for (auto it = entries.begin();
        it != entries.end() && added_count < kRecentlyClosedCount; ++it) {
-    sessions::TabRestoreService::Entry* entry = it->get();
+    sessions::tab_restore::Entry* entry = it->get();
 
-    if (entry->type == sessions::TabRestoreService::WINDOW) {
-      sessions::TabRestoreService::Window* window =
-          static_cast<sessions::TabRestoreService::Window*>(entry);
+    if (entry->type == sessions::tab_restore::Type::WINDOW) {
+      sessions::tab_restore::Window* window =
+          static_cast<sessions::tab_restore::Window*>(entry);
 
       auto& tabs = window->tabs;
       if (tabs.empty())
@@ -517,14 +516,14 @@ void DbusAppmenu::TabRestoreServiceChanged(
 
       AddEntryToHistoryMenu(window->id, title, index++, tabs);
       ++added_count;
-    } else if (entry->type == sessions::TabRestoreService::TAB) {
-      sessions::TabRestoreService::Tab* tab =
-          static_cast<sessions::TabRestoreService::Tab*>(entry);
+    } else if (entry->type == sessions::tab_restore::Type::TAB) {
+      sessions::tab_restore::Tab* tab =
+          static_cast<sessions::tab_restore::Tab*>(entry);
       AddHistoryItemToMenu(HistoryItemForTab(*tab), history_menu_, index++);
       ++added_count;
-    } else if (entry->type == sessions::TabRestoreService::GROUP) {
-      sessions::TabRestoreService::Group* group =
-          static_cast<sessions::TabRestoreService::Group*>(entry);
+    } else if (entry->type == sessions::tab_restore::Type::GROUP) {
+      sessions::tab_restore::Group* group =
+          static_cast<sessions::tab_restore::Group*>(entry);
 
       auto& tabs = group->tabs;
       if (tabs.empty())
