@@ -142,8 +142,7 @@ class TabListRecyclerView extends RecyclerView
     private ImageView mShadowImageView;
     private int mShadowTopOffset;
     private TabListOnScrollListener mScrollListener;
-    // It is null when gts-tab animation is disabled or switching from Start surface to GTS.
-    @Nullable private RecyclerView.ItemAnimator mOriginalAnimator;
+    private RecyclerView.ItemAnimator mOriginalAnimator;
     // Null unless item animations are disabled.
     @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
     // Null if there is no runnable to execute on the next layout.
@@ -300,12 +299,7 @@ class TabListRecyclerView extends RecyclerView
                         mSuppressCapture = true;
                         mListener.finishedShowing();
                         // Restore the original value.
-                        // TODO(crbug.com/1315676): Remove the null check after decoupling Start
-                        // surface layout and grid tab switcher layout.
-                        if (mOriginalAnimator != null) {
-                            setItemAnimator(mOriginalAnimator);
-                            mOriginalAnimator = null;
-                        }
+                        setItemAnimator(mOriginalAnimator);
                         setShadowVisibility(computeVerticalScrollOffset() > 0);
                         if (mDynamicView != null) {
                             unregisterDynamicView();
