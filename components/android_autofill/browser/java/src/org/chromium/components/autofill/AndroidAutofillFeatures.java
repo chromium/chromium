@@ -36,10 +36,6 @@ public class AndroidAutofillFeatures extends Features {
             new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES =
             new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME);
-    public static final AndroidAutofillFeatures
-            ANDROID_AUTOFILL_PREFILL_REQUEST_FOR_CHANGE_PASSWORD =
-                    new AndroidAutofillFeatures(
-                            3, ANDROID_AUTOFILL_USE_PWM_PREDICTIONS_FOR_OVERRIDES_NAME);
     private final int mOrdinal;
 
     private AndroidAutofillFeatures(int ordinal, String name) {
