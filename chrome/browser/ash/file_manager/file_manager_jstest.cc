@@ -320,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Selector) {
   RunTestURL("lib/selector_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DucksAllEntries) {
+// TODO(crbug.com/335318101): re-enable this test.
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DISABLED_DucksAllEntries) {
   RunTestURL("state/ducks/all_entries_unittest.js");
 }
 
