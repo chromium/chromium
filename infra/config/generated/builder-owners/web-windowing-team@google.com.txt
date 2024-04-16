@@ -1,2 +1,0 @@
-ci/win10-multiscreen-fyi-rel
-try/win10-multiscreen-fyi-rel

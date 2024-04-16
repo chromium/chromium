@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -38,7 +38,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "win11-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -63,7 +63,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "win-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m125"
               }
             }
           }
@@ -73,14 +73,14 @@
         {
           "bucket": "ci",
           "builder": "win-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "win11-arm64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -117,6 +117,6 @@
   "builder_group": "chromium.win",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

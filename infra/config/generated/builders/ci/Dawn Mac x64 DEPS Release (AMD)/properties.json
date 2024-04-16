@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -33,7 +33,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac x64 DEPS Release (AMD)",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -55,7 +55,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Mac x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m125"
               },
               "run_tests_serially": true
             }
@@ -66,7 +66,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Mac x64 DEPS Release (AMD)",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -97,6 +97,6 @@
   "builder_group": "chromium.dawn",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }

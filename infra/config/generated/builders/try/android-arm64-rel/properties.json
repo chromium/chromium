@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android Release (Nexus 5X)",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -45,7 +45,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-pie-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -78,12 +78,12 @@
         {
           "bucket": "ci",
           "builder": "Android Release (Nexus 5X)",
-          "project": "chromium"
+          "project": "chromium-m125"
         },
         {
           "bucket": "ci",
           "builder": "android-pie-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ]
     }

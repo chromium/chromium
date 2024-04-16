@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -41,7 +41,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win x64 Builder",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -68,7 +68,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 Tests x64",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-win-archive",
@@ -92,7 +92,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m125"
               }
             }
           },
@@ -100,7 +100,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Win10 x64 Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-gpu-archive",
@@ -124,7 +124,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Win x64 Builder",
-                "project": "chromium"
+                "project": "chromium-m125"
               }
             }
           }
@@ -134,24 +134,24 @@
         {
           "bucket": "ci",
           "builder": "GPU Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m125"
         },
         {
           "bucket": "ci",
           "builder": "Win x64 Builder",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Win10 Tests x64",
-          "project": "chromium"
+          "project": "chromium-m125"
         },
         {
           "bucket": "ci",
           "builder": "Win10 x64 Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ]
     }

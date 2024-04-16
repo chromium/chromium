@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-jacuzzi-rel",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -48,7 +48,7 @@
         {
           "bucket": "ci",
           "builder": "chromeos-jacuzzi-rel",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -85,6 +85,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromiumos"
+    "chrome_browser_release"
   ]
 }

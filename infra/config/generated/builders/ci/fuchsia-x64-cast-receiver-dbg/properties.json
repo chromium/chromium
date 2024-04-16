@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-x64-cast-receiver-dbg",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -39,16 +39,12 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-x64-cast-receiver-dbg",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "fuchsia-x64-cast-receiver-dbg",
-          "group": "tryserver.chromium.fuchsia"
-        },
-        {
-          "builder": "fuchsia-x64-cast-receiver-dbg-compile",
           "group": "tryserver.chromium.fuchsia"
         }
       ]
@@ -78,6 +74,6 @@
   "builder_group": "chromium.fuchsia",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

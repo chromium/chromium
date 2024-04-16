@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "ios-simulator",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-mac-archive",
@@ -40,7 +40,7 @@
         {
           "bucket": "ci",
           "builder": "ios-simulator",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -77,8 +77,7 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium",
-    "ios"
+    "chrome_browser_release"
   ],
   "xcode_build_version": "15e204a"
 }

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-octopus-rel",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -48,7 +48,7 @@
         {
           "bucket": "ci",
           "builder": "chromeos-octopus-rel",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ]
     }

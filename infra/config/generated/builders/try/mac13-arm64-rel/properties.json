@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -38,7 +38,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac13-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m125"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -59,7 +59,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "mac-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m125"
               }
             }
           }
@@ -69,14 +69,14 @@
         {
           "bucket": "ci",
           "builder": "mac-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "mac13-arm64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m125"
         }
       ]
     }
