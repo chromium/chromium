@@ -226,7 +226,11 @@
     white-space: nowrap;
     /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
     direction: rtl;
-    text-align: left;
+    text-align: end;
+  }
+
+  :host-context([dir=rtl]) #url {
+    direction: ltr;
   }
 
   .is-active #url {
@@ -279,28 +283,23 @@
   .more-options {
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
   cr-icon-button {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-margin-end: 12px;
+    --cr-icon-button-margin-start: 12px;
     margin-top: 12px;
   }
 
   #incognito {
     -webkit-mask-image: url(images/incognito_marker.svg);
-    align-self: flex-end;
     background-color: var(--cr-secondary-text-color);
     height: 16px;
     margin-block-end: 20px;
     margin-block-start: auto;
-    margin-inline-end: 16px;
     width: 16px;
-  }
-
-  :host-context([dir='rtl']) #incognito {
-    left: 16px;
-    right: initial;
   }
 
   #pauseOrResume,
