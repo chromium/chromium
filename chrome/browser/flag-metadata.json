@@ -3782,7 +3782,7 @@
   {
     "name": "enable-speculation-rules-prerendering-target-hint",
     "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "enable-standard-device-bound-session-credentials",
