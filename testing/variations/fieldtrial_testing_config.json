@@ -11737,12 +11737,13 @@
             ],
             "experiments": [
                 {
-                    "name": "LowDeadline",
+                    "name": "Deadline1500_20240415_M124+",
                     "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "1000"
+                        "MinorModeRestrictionsFetchDeadlineMs": "1500"
                     },
                     "enable_features": [
-                        "MinorModeRestrictionsForHistorySyncOptIn"
+                        "MinorModeRestrictionsForHistorySyncOptIn",
+                        "UseSystemCapabilitiesForMinorModeRestrictions"
                     ]
                 }
             ]
