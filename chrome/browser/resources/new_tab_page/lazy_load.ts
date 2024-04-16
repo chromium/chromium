@@ -46,7 +46,7 @@ export {ModuleWrapperElement} from './modules/module_wrapper.js';
 export {DisableModuleEvent, DismissModuleEvent, ModulesElement} from './modules/modules.js';
 export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js';
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
-export {googleCalendarDescriptor, CalendarModuleElement} from './modules/v2/calendar/module.js';
+export {CalendarModuleElement, googleCalendarDescriptor, outlookCalendarDescriptor} from './modules/v2/calendar/module.js';
 // <if expr="not is_official_build">
 export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.js';

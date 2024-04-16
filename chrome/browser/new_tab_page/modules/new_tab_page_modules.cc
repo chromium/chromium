@@ -33,6 +33,11 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
                          IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
   }
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpOutlookCalendarModule)) {
+    details.emplace_back("outlook_calendar",
+                         IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE);
+  }
+
   if (drive_module_enabled) {
     details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }

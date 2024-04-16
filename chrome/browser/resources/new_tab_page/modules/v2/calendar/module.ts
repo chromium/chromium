@@ -11,6 +11,11 @@ import {ModuleDescriptor} from '../../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 
+export enum CalendarSource {
+  GOOGLE,
+  OUTLOOK,
+}
+
 /**
  * The Calendar module, which serves as an inside look in to upcoming events on
  * a user's Google Calendar or Microsoft Outlook.
@@ -26,16 +31,31 @@ export class CalendarModuleElement extends I18nMixin
   }
 
   static get properties() {
-    return {};
+    return {
+      calendarSource_: Object,
+    };
+  }
+
+  private calendarSource_: CalendarSource;
+
+  constructor(calendarSource: CalendarSource) {
+    super();
+    this.calendarSource_ = calendarSource;
   }
 }
 
 customElements.define(CalendarModuleElement.is, CalendarModuleElement);
 
-async function createCalendarElement(): Promise<CalendarModuleElement|null> {
+async function createCalendarElement(calendarSource: CalendarSource):
+    Promise<CalendarModuleElement|null> {
   return new Promise<CalendarModuleElement>(
-      (resolve) => resolve(new CalendarModuleElement()));
+      (resolve) => resolve(new CalendarModuleElement(calendarSource)));
 }
 
 export const googleCalendarDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id*/ 'google_calendar', createCalendarElement);
+    /*id*/ 'google_calendar',
+    () => createCalendarElement(CalendarSource.GOOGLE));
+
+export const outlookCalendarDescriptor: ModuleDescriptor = new ModuleDescriptor(
+    /*id*/ 'outlook_calendar',
+    () => createCalendarElement(CalendarSource.OUTLOOK));

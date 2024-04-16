@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {CalendarModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {googleCalendarDescriptor} from 'chrome://new-tab-page/lazy_load.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {googleCalendarDescriptor, outlookCalendarDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -13,7 +13,7 @@ suite('NewTabPageModulesCalendarModuleTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('creates module', async () => {
+  test('creates google calendar module', async () => {
     const module =
         await googleCalendarDescriptor.initialize(0) as CalendarModuleElement;
     assertTrue(!!module);
@@ -23,5 +23,19 @@ suite('NewTabPageModulesCalendarModuleTest', () => {
     // Assert.
     assertTrue(
         isVisible(module.shadowRoot!.querySelector('ntp-module-header-v2')));
+    assertEquals(module.shadowRoot!.querySelector('p')!.innerText, '0');
+  });
+
+  test('creates outlook calendar module', async () => {
+    const module =
+        await outlookCalendarDescriptor.initialize(0) as CalendarModuleElement;
+    assertTrue(!!module);
+    document.body.append(module);
+    await waitAfterNextRender(module);
+
+    // Assert.
+    assertTrue(
+        isVisible(module.shadowRoot!.querySelector('ntp-module-header-v2')));
+    assertEquals(module.shadowRoot!.querySelector('p')!.innerText, '1');
   });
 });
