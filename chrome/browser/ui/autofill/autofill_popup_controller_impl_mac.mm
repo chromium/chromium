@@ -50,7 +50,6 @@ AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
                                   web_contents,
                                   std::move(controller_common),
                                   form_control_ax_id,
-                                  base::DoNothing(),
                                   std::nullopt),
       touch_bar_controller_(nil),
       is_credit_card_popup_(delegate->GetMainFillingProduct() ==

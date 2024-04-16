@@ -19,11 +19,8 @@
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-class Profile;
 
 namespace content {
 struct NativeWebKeyboardEvent;
@@ -127,11 +124,6 @@ class AutofillPopupControllerImpl
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
       int32_t form_control_ax_id,
-      base::RepeatingCallback<void(
-          gfx::NativeWindow,
-          Profile*,
-          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          show_pwd_migration_warning_callback,
       std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent =
           std::nullopt);
   ~AutofillPopupControllerImpl() override;
@@ -223,15 +215,6 @@ class AutofillPopupControllerImpl
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
-
-  // Callback invoked to try to show the password migration warning on Android.
-  // Used to facilitate testing.
-  // TODO(crbug.com/40272324): Remove when the warning isn't needed anymore.
-  base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-      show_pwd_migration_warning_callback_;
 
   // Timer to close a fading popup.
   base::OneShotTimer fading_popup_timer_;

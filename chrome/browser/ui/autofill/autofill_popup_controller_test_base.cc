@@ -20,12 +20,12 @@ AutofillExternalDelegateForPopupTest::~AutofillExternalDelegateForPopupTest() =
 AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
     base::WeakPtr<AutofillExternalDelegate> external_delegate,
     content::WebContents* web_contents,
-    const gfx::RectF& element_bounds,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        show_pwd_migration_warning_callback)
+    const gfx::RectF& element_bounds
+#if BUILDFLAG(IS_ANDROID)
+    ,
+    ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
+#endif
+    )
     : AutofillPopupControllerForPopupTestBase(
           external_delegate,
           web_contents,
@@ -33,9 +33,11 @@ AutofillPopupControllerForPopupTest::AutofillPopupControllerForPopupTest(
                                 base::i18n::UNKNOWN_DIRECTION,
                                 nullptr),
 #if !BUILDFLAG(IS_ANDROID)
-          /*form_control_ax_id=*/0,
+          /*form_control_ax_id=*/0
+#else
+          std::move(show_pwd_migration_warning_callback)
 #endif
-          std::move(show_pwd_migration_warning_callback)) {
+      ) {
 }
 
 AutofillPopupControllerForPopupTest::~AutofillPopupControllerForPopupTest() =

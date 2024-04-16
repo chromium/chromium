@@ -277,8 +277,12 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
     if (!popup_controller_) {
       popup_controller_ =
           (new Controller(manager.external_delegate().GetWeakPtrForTest(),
-                          &GetWebContents(), gfx::RectF(),
-                          show_pwd_migration_warning_callback_.Get()))
+                          &GetWebContents(), gfx::RectF()
+#if BUILDFLAG(IS_ANDROID)
+                                                 ,
+                          show_pwd_migration_warning_callback_.Get()
+#endif
+                              ))
               ->GetWeakPtr();
       cast_popup_controller().SetViewForTesting(popup_view_->GetWeakPtr());
       manager_of_last_controller_ = manager.GetWeakPtr();
@@ -293,10 +297,7 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
   MockAutofillPopupView& sub_popup_view() { return *sub_popup_view_; }
 
 #if BUILDFLAG(IS_ANDROID)
-  base::MockCallback<base::RepeatingCallback<
-      void(gfx::NativeWindow,
-           Profile*,
-           password_manager::metrics_util::PasswordMigrationWarningTriggers)>>&
+  base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>&
   show_pwd_migration_warning_callback() {
     return show_pwd_migration_warning_callback_;
   }
@@ -326,11 +327,10 @@ class AutofillPopupControllerTestBase<Controller, Driver>::TestClient
       std::make_unique<::testing::NiceMock<MockAutofillPopupView>>();
   std::unique_ptr<MockAutofillPopupView> sub_popup_view_ =
       std::make_unique<::testing::NiceMock<MockAutofillPopupView>>();
-  base::MockCallback<base::RepeatingCallback<void(
-      gfx::NativeWindow,
-      Profile*,
-      password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
+#if BUILDFLAG(IS_ANDROID)
+  base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>
       show_pwd_migration_warning_callback_;
+#endif
 };
 
 using AutofillPopupControllerForPopupTestBase =
@@ -346,12 +346,12 @@ class AutofillPopupControllerForPopupTest
   AutofillPopupControllerForPopupTest(
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
-      const gfx::RectF& element_bounds,
-      base::RepeatingCallback<void(
-          gfx::NativeWindow,
-          Profile*,
-          password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          show_pwd_migration_warning_callback);
+      const gfx::RectF& element_bounds
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
+#endif
+  );
   ~AutofillPopupControllerForPopupTest() override;
 
   // Making protected functions public for testing

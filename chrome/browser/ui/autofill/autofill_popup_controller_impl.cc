@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -51,17 +53,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-
-using FillingSource = ManualFillingController::FillingSource;
-#else
-#include "chrome/browser/user_education/user_education_service.h"
-#include "components/compose/core/browser/compose_features.h"
-#endif
 
 namespace autofill {
 
@@ -92,7 +83,7 @@ base::WeakPtr<AutofillPopupController> AutofillPopupController::GetOrCreate(
   }
   auto* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, std::move(controller_common), form_control_ax_id,
-      base::DoNothing(), /*parent=*/std::nullopt);
+      /*parent=*/std::nullopt);
   return controller->GetWeakPtr();
 }
 #endif
@@ -102,17 +93,10 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
     int32_t form_control_ax_id,
-    base::RepeatingCallback<
-        void(gfx::NativeWindow,
-             Profile*,
-             password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        show_pwd_migration_warning_callback,
     std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
     : web_contents_(web_contents->GetWeakPtr()),
       controller_common_(std::move(controller_common)),
       delegate_(delegate),
-      show_pwd_migration_warning_callback_(
-          std::move(show_pwd_migration_warning_callback)),
       parent_controller_(parent) {
   ClearState();
 }
@@ -194,15 +178,7 @@ void AutofillPopupControllerImpl::Show(
       Hide(PopupHidingReason::kViewDestroyed);
       return;
     }
-
-#if BUILDFLAG(IS_ANDROID)
-    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-            ManualFillingController::GetOrCreate(web_contents_.get())) {
-      manual_filling_controller->UpdateSourceAvailability(
-          FillingSource::AUTOFILL, !suggestions_.empty());
-    }
-#endif
-    if (!view_ || !view_->Show(autoselect_first_suggestion)) {
+    if (!view_->Show(autoselect_first_suggestion)) {
       return;
     }
 
@@ -315,17 +291,6 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-#if BUILDFLAG(IS_ANDROID)
-  // Assume that suggestions are (still) available. If this is wrong, the method
-  // |HideViewAndDie| will be called soon after and will hide all suggestions.
-  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-          ManualFillingController::GetOrCreate(web_contents_.get())) {
-    manual_filling_controller->UpdateSourceAvailability(
-        FillingSource::AUTOFILL,
-        /*has_suggestions=*/true);
-  }
-#endif
-
   if (view_) {
     view_->OnSuggestionsChanged();
   }
@@ -374,28 +339,14 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   UserEducationService::MaybeNotifyPromoFeatureUsed(
       web_contents_->GetBrowserContext(),
       compose::features::kEnableComposeNudge);
-#endif
 
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
   // reference.
   Suggestion suggestion = suggestions_[index];
-#if BUILDFLAG(IS_ANDROID)
-  if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-          ManualFillingController::GetOrCreate(web_contents_.get())) {
-    // Accepting a suggestion should hide all suggestions. To prevent them from
-    // coming up in Multi-Window mode, mark the source as unavailable.
-    manual_filling_controller->UpdateSourceAvailability(
-        FillingSource::AUTOFILL,
-        /*has_suggestions=*/false);
-    manual_filling_controller->Hide();
-  }
-#endif
-
   NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
                                    suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
@@ -405,18 +356,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillPopupDelegate::SuggestionPosition{
                       .row = index, .sub_popup_level = GetPopupLevel()});
-#if BUILDFLAG(IS_ANDROID)
-  if ((suggestion.popup_item_id == PopupItemId::kPasswordEntry) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_pwd_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kKeyboardAcessoryBar);
-  }
-#endif
 }
 
 void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
@@ -454,7 +393,7 @@ AutofillPopupControllerImpl::OpenSubPopup(
   new_controller_common.element_bounds = anchor_bounds;
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate_, web_contents_.get(), std::move(new_controller_common),
-      /*form_control_ax_id=*/form_control_ax_id_, base::DoNothing(),
+      /*form_control_ax_id=*/form_control_ax_id_,
       /*parent=*/GetWeakPtr());
 
   // Show() can fail and cause controller deletion. Therefore store the weak
@@ -699,20 +638,6 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   // prevents recursive calls triggered by `view_->Hide()`
   // (crbug.com/1267047).
   weak_ptr_factory_.InvalidateWeakPtrs();
-
-#if BUILDFLAG(IS_ANDROID)
-  // Mark the popup-like filling sources as unavailable.
-  // Note: We don't invoke ManualFillingController::Hide() here, as we might
-  // switch between text input fields.
-  if (web_contents_) {
-    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
-            ManualFillingController::GetOrCreate(web_contents_.get())) {
-      manual_filling_controller->UpdateSourceAvailability(
-          FillingSource::AUTOFILL,
-          /*has_suggestions=*/false);
-    }
-  }
-#endif
 
   // TODO(crbug.com/1341374, crbug.com/1277218): Move this into the asynchronous
   // call?
