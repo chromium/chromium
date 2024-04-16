@@ -1183,16 +1183,6 @@ chromium-metrics-reviews@google.com.
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCMarkingSum" units="ms" expires_after="2024-04-28">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Sum of all durations of all marking phases (incremental and non-incremental)
-    within one V8 garbage collection cycle. Reported once per garbage collection
-    at the end.
-  </summary>
-</histogram>
-
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
     expires_after="2024-09-15">
   <owner>ecmziegler@chromium.org</owner>
