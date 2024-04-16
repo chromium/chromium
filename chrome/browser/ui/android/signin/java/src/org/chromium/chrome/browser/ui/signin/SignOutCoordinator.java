@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ThreadUtils;
@@ -18,12 +17,17 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -57,8 +61,9 @@ public class SignOutCoordinator {
             ModalDialogManager dialogManager,
             SnackbarManager snackbarManager,
             @SignoutReason int signOutReason,
-            @Nullable Runnable onSignOut) {
+            Runnable onSignOut) {
         ThreadUtils.assertOnUiThread();
+        assert onSignOut != null;
         validateSignOutReason(profile, signOutReason);
 
         IdentityManager identityManager =
@@ -67,15 +72,24 @@ public class SignOutCoordinator {
             throw new IllegalStateException("There is no signed-in account");
         }
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        switch (getUiState(identityManager)) {
-            case UiState.SNACK_BAR -> signOutAndShowSnackbar(
-                    context, snackbarManager, signinManager, signOutReason, onSignOut);
-            case UiState.UNSAVED_DATA -> showUnsavedDataDialog(
-                    context, dialogManager, signinManager, signOutReason);
-            case UiState.CLEAR_CHROME_DATA -> showSignOutDialog(context, dialogManager);
-            case UiState.LEGACY_DIALOG -> SignOutDialogCoordinator.show(
-                    context, profile, fragmentManager, dialogManager, signOutReason, onSignOut);
-        }
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        syncService.getTypesWithUnsyncedData(
+                unsyncedTypes -> {
+                    switch (getUiState(identityManager, !unsyncedTypes.isEmpty())) {
+                        case UiState.SNACK_BAR -> signOutAndShowSnackbar(
+                                context, snackbarManager, signinManager, signOutReason, onSignOut);
+                        case UiState.UNSAVED_DATA -> showUnsavedDataDialog(
+                                context, dialogManager, signinManager, signOutReason, onSignOut);
+                        case UiState.CLEAR_CHROME_DATA -> showSignOutDialog(context, dialogManager);
+                        case UiState.LEGACY_DIALOG -> SignOutDialogCoordinator.show(
+                                context,
+                                profile,
+                                fragmentManager,
+                                dialogManager,
+                                signOutReason,
+                                onSignOut);
+                    }
+                });
     }
 
     @IntDef({
@@ -108,23 +122,19 @@ public class SignOutCoordinator {
         }
     }
 
-    private static @UiState int getUiState(IdentityManager identityManager) {
+    private static @UiState int getUiState(
+            IdentityManager identityManager, boolean hasUnsavedData) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                 || identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             return UiState.LEGACY_DIALOG;
         }
-        if (hasUnsavedData()) {
+        if (hasUnsavedData) {
             return UiState.UNSAVED_DATA;
         }
         if (shouldShowSignOutDialog()) {
             return UiState.CLEAR_CHROME_DATA;
         }
         return UiState.SNACK_BAR;
-    }
-
-    private static boolean hasUnsavedData() {
-        // TODO(crbug.com/41493791): Implement logic for checking unsaved data.
-        return false;
     }
 
     private static boolean shouldShowSignOutDialog() {
@@ -136,8 +146,52 @@ public class SignOutCoordinator {
             Context context,
             ModalDialogManager dialogManager,
             SigninManager signinManager,
-            @SignoutReason int signOutReason) {
-        // TODO(crbug.com/41493791): Implement unsaved data dialog.
+            @SignoutReason int signOutReason,
+            Runnable onSignOut) {
+        final PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(R.string.sign_out_unsaved_data_title))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                context.getString(R.string.sign_out_unsaved_data_message))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getString(R.string.sign_out_unsaved_data_primary_button))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
+                                createController(
+                                        dialogManager, signinManager, signOutReason, onSignOut))
+                        .build();
+        dialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
+    }
+
+    private static ModalDialogProperties.Controller createController(
+            ModalDialogManager dialogManager,
+            SigninManager signinManager,
+            @SignoutReason int signOutReason,
+            Runnable onSignOut) {
+        return new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                    signOut(signinManager, signOutReason, onSignOut);
+                    dialogManager.dismissDialog(
+                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
+                    dialogManager.dismissDialog(
+                            model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                }
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        };
     }
 
     private static void showSignOutDialog(Context context, ModalDialogManager dialogManager) {
@@ -149,7 +203,7 @@ public class SignOutCoordinator {
             SnackbarManager snackbarManager,
             SigninManager signinManager,
             @SignoutReason int signOutReason,
-            @Nullable Runnable onSignOut) {
+            Runnable onSignOut) {
         signOut(
                 signinManager,
                 signOutReason,
@@ -160,9 +214,7 @@ public class SignOutCoordinator {
                                     /* controller= */ null,
                                     Snackbar.TYPE_ACTION,
                                     Snackbar.UMA_SIGN_OUT));
-                    if (onSignOut != null) {
-                        onSignOut.run();
-                    }
+                    onSignOut.run();
                 });
     }
 

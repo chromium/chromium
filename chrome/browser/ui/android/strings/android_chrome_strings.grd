@@ -2169,6 +2169,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_SNACKBAR_MESSAGE" desc="to be added" translateable="false">
           Signed out. Sign back in to use the bookmarks, passwords and more in your account.
       </message>
+      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_TITLE" desc="to be added" translateable="false">
+        Unsaved data
+      </message>
+      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE" desc="to be added" translateable="false">
+        Some of your Chrome data hasn\u2019t been saved in your Google Account yet.\nTry waiting a few minutes before signing out. If you sign out now, this data will be deleted.
+      </message>
+      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="to be added" translateable="false">
+        Delete and sign out
+      </message>
       <message name="IDS_SIGN_IN_GETTING_ACCOUNT_MANAGEMENT_POLICY" desc="Title of progress bar dialog for getting management policy">
         Contacting Google. This may take a minute…
       </message>
