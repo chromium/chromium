@@ -1357,6 +1357,15 @@ class WizardControllerDeviceStateExplicitRequirementTest
     }
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
+
+    // Explicitly test legacy state determination flow.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
+
   // Returns true if forced re-enrollment was explicitly required (which
   // corresponds to the check_enrollment VPD value being set to "1").
   bool IsFREExplicitlyRequired() { return GetParam(); }
