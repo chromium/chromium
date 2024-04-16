@@ -257,6 +257,10 @@ sequence:
 LoggerImpl impl(std::move(receiver));
 ```
 
+If `LoggerImpl` is in another process, see
+[Sending Interfaces Over Interfaces](#sending-interfaces-over-interfaces)
+([Sending Remotes](#sending-remotes) specifically).
+
 The diagram below illustrates the following sequence of events, all set in
 motion by the above line of code:
 
