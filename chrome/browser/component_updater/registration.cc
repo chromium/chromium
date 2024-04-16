@@ -139,10 +139,7 @@ void RegisterComponentsForUpdate() {
   RegisterFirstPartySetsComponent(cus);
   RegisterMaskedDomainListComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
-  if (base::FeatureList::IsEnabled(
-          features::kEnableFingerprintingProtectionBlocklist)) {
-    RegisterAntiFingerprintingBlockedDomainListComponent(cus);
-  }
+  RegisterAntiFingerprintingBlockedDomainListComponent(cus);
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
@@ -150,13 +147,6 @@ void RegisterComponentsForUpdate() {
 
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
-
-    // Clean up any existing versions of the blocklist if the feature is
-    // disabled.
-    if (!base::FeatureList::IsEnabled(
-            features::kEnableFingerprintingProtectionBlocklist)) {
-      DeleteAntiFingerprintingBlockedDomainListComponent(path);
-    }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (base::SysInfo::IsRunningOnChromeOS()) {

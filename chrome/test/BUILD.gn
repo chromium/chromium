@@ -6887,6 +6887,7 @@ test("unit_tests") {
     "//components/feed/mojom:mojo_bindings",
     "//components/feedback",
     "//components/feedback/redaction_tool",
+    "//components/fingerprinting_protection_filter/browser",
     "//components/flags_ui",
     "//components/flags_ui:test_support",
     "//components/history/content/browser",

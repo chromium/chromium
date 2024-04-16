@@ -621,6 +621,11 @@ void TestingBrowserProcess::SetRulesetService(
   subresource_filter_ruleset_service_.swap(ruleset_service);
 }
 
+void TestingBrowserProcess::SetFingerprintingProtectionRulesetService(
+    std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
+  fingerprinting_protection_ruleset_service_.swap(ruleset_service);
+}
+
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {
   is_shutting_down_ = is_shutting_down;
 }

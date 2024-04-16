@@ -175,6 +175,8 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetWebRtcLogUploader(std::unique_ptr<WebRtcLogUploader> uploader);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
+  void SetFingerprintingProtectionRulesetService(
+      std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)

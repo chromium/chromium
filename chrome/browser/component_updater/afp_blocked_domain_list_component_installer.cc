@@ -18,22 +18,16 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_constants.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 
 using component_updater::ComponentUpdateService;
 
-namespace {
-
-using ListReadyRepeatingCallback = component_updater::
-    AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
-        ListReadyRepeatingCallback;
-
-const base::FilePath::CharType kAfpBlockedDomainListBinaryPbFileName[] =
-    FILE_PATH_LITERAL("rules.pb");
-
-const base::FilePath::CharType kAfpBlockedDomainListRelativeInstallDirName[] =
-    FILE_PATH_LITERAL("AfpBlockedDomainList");
+namespace component_updater {
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The CRX ID is: kgdbnmlfakkebekbaceapiaenjgmlhan.
@@ -43,48 +37,31 @@ const uint8_t kAfpBlockedDomainListPublicKeySHA256[32] = {
     0x6e, 0x9b, 0x83, 0x7a, 0x3a, 0xfd, 0xd1, 0xc8, 0x40, 0xe3};
 
 const char kAfpBlockedDomainListManifestName[] =
-    "Anti-Fingerprinting Blocked Domain List";
+    "Fingerprinting Protection Filter Rules";
 
-// Runs on a thread pool and reads the component file from disk to a string.
-std::optional<std::string> ReadComponentFromDisk(
-    const base::FilePath& file_path) {
-  std::string contents;
-  if (!base::ReadFileToString(file_path, &contents)) {
-    VLOG(1) << "Failed reading from " << file_path.value();
-    return std::nullopt;
-  }
-  return contents;
-}
+// static
+const char AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
+    kManifestRulesetFormatKey[] = "ruleset_format";
 
-base::TaskPriority GetTaskPriority() {
-  return base::FeatureList::IsEnabled(
-             features::kEnableFingerprintingProtectionBlocklist)
-             ? base::TaskPriority::USER_BLOCKING
-             : base::TaskPriority::BEST_EFFORT;
-}
-
-}  // namespace
-
-namespace component_updater {
+// static
+const int AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
+    kCurrentRulesetFormat = 1;
 
 AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
-    AntiFingerprintingBlockedDomainListComponentInstallerPolicy(
-        ListReadyRepeatingCallback on_list_ready)
-    : on_list_ready_(on_list_ready) {
-  CHECK(on_list_ready);
-}
+    AntiFingerprintingBlockedDomainListComponentInstallerPolicy() = default;
 
 AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     ~AntiFingerprintingBlockedDomainListComponentInstallerPolicy() = default;
 
 bool AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
+  // Allow enterprise admins to disable updates to this component.
   return true;
 }
 
 bool AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     RequiresNetworkEncryption() const {
-  // No encryption required since the Blocklist will be public and identical for
+  // No encryption required since the blocklist will be public and identical for
   // all users.
   return false;
 }
@@ -99,54 +76,48 @@ AntiFingerprintingBlockedDomainListComponentInstallerPolicy::OnCustomInstall(
 void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     OnCustomUninstall() {}
 
-base::FilePath
-AntiFingerprintingBlockedDomainListComponentInstallerPolicy::GetInstalledPath(
-    const base::FilePath& base) {
-  return base.Append(kAfpBlockedDomainListBinaryPbFileName);
-}
-
 void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     ComponentReady(const base::Version& version,
                    const base::FilePath& install_dir,
                    base::Value::Dict manifest) {
-  VLOG(1) << "Anti-Fingerprinting Blocked Domain List Component ready, version "
-          << version.GetString() << " in " << install_dir.value();
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), GetTaskPriority()},
-      base::BindOnce(&ReadComponentFromDisk, GetInstalledPath(install_dir)),
-      base::BindOnce(
-          [](ListReadyRepeatingCallback on_list_ready,
-             const std::optional<std::string>& maybe_contents) {
-            if (maybe_contents.has_value()) {
-              on_list_ready.Run(maybe_contents.value());
-            }
-          },
-          on_list_ready_));
+  CHECK(!install_dir.empty());
+  DVLOG(1)
+      << "Anti-Fingerprinting Blocked Domain List Component ready, version "
+      << version.GetString() << " in " << install_dir.value();
+  subresource_filter::UnindexedRulesetInfo ruleset_info;
+  ruleset_info.content_version = version.GetString();
+  ruleset_info.ruleset_path =
+      install_dir.Append(subresource_filter::kUnindexedRulesetDataFileName);
+  ruleset_info.license_path =
+      install_dir.Append(subresource_filter::kUnindexedRulesetLicenseFileName);
+  subresource_filter::RulesetService* ruleset_service =
+      g_browser_process->fingerprinting_protection_ruleset_service();
+  if (ruleset_service != nullptr) {
+    ruleset_service->IndexAndStoreAndPublishRulesetIfNeeded(ruleset_info);
+  }
 }
 
 // Called during startup and installation before ComponentReady().
 bool AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     VerifyInstallation(const base::Value::Dict& manifest,
                        const base::FilePath& install_dir) const {
-  if (!base::PathExists(GetInstalledPath(install_dir))) {
+  std::optional<int> ruleset_format =
+      manifest.FindInt(kManifestRulesetFormatKey);
+  if (!ruleset_format.has_value() || *ruleset_format != kCurrentRulesetFormat) {
+    DVLOG(1) << "Ruleset formats don't match.";
+    DVLOG_IF(1, ruleset_format)
+        << "Future ruleset version: " << *ruleset_format;
     return false;
   }
-
-  std::string contents;
-  if (!base::ReadFileToString(GetInstalledPath(install_dir), &contents)) {
-    return false;
-  }
-
-  // TODO(thesalsa): Perform more validation of the proto file where it gets
-  // deserialized for use.
-
-  return true;
+  return base::PathExists(install_dir);
 }
 
 base::FilePath AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
     GetRelativeInstallDir() const {
-  return base::FilePath(kAfpBlockedDomainListRelativeInstallDirName);
+  return base::FilePath(
+             fingerprinting_protection_filter::
+                 kFingerprintingProtectionRulesetConfig.top_level_directory)
+      .Append(subresource_filter::kUnindexedRulesetBaseDirectoryName);
 }
 
 void AntiFingerprintingBlockedDomainListComponentInstallerPolicy::GetHash(
@@ -168,25 +139,16 @@ AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
 
 void RegisterAntiFingerprintingBlockedDomainListComponent(
     ComponentUpdateService* cus) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnableFingerprintingProtectionBlocklist)) {
+    return;
+  }
+
   VLOG(1) << "Registering Anti-Fingerprinting Blocked Domain List Component.";
-  auto policy = std::make_unique<
-      AntiFingerprintingBlockedDomainListComponentInstallerPolicy>(
-      /*on_list_ready=*/base::DoNothing());
-
-  base::MakeRefCounted<ComponentInstaller>(
-      std::move(policy), /*action_handler=*/nullptr, GetTaskPriority())
-      ->Register(cus, base::OnceClosure());
-}
-
-// Deletes the install directory for the Anti-Fingerprinting Blocklist. Used to
-// clean up any existing versions if the component is disabled.
-void DeleteAntiFingerprintingBlockedDomainListComponent(
-    const base::FilePath& user_data_dir) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(
-          base::IgnoreResult(&base::DeletePathRecursively),
-          user_data_dir.Append(kAfpBlockedDomainListRelativeInstallDirName)));
+  auto policy = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<
+          AntiFingerprintingBlockedDomainListComponentInstallerPolicy>());
+  policy->Register(cus, base::OnceClosure());
 }
 
 }  // namespace component_updater
