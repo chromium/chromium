@@ -21,6 +21,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
@@ -43,6 +44,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -61,6 +63,10 @@ using testing::StrictMock;
 
 namespace extensions {
 namespace {
+
+constexpr char kValidTrialToken1[] = "valid_token_1";
+constexpr char kValidTrialToken2[] = "valid_token_2";
+constexpr char kTrialTokensHeaderValue[] = "valid_token_1, valid_token_2";
 
 base::FilePath GetTestPath(const std::string& name) {
   base::FilePath path;
@@ -111,23 +117,31 @@ scoped_refptr<const Extension> CreateWebStoreExtension(int manifest_version) {
 
 scoped_refptr<const Extension> CreateTestResponseHeaderExtension(
     int manifest_version) {
+  if (manifest_version == 3) {
+    return ExtensionBuilder("An extension with web-accessible resources")
+        .SetManifestVersion(3)
+        .SetManifestKey(
+            "web_accessible_resources",
+            base::Value::List().Append(
+                base::Value::Dict()
+                    .Set("resources", base::Value::List().Append("test.dat"))
+                    .Set("matches", base::Value::List().Append("*://*/*"))))
+        .SetManifestKey("background", base::Value::Dict().Set("service_worker",
+                                                              "background.js"))
+        .SetManifestKey("trial_tokens", base::Value::List()
+                                            .Append(kValidTrialToken1)
+                                            .Append(kValidTrialToken2))
+        .SetPath(GetTestPath("response_headers"))
+        .Build();
+  }
   return ExtensionBuilder("An extension with web-accessible resources")
       .SetManifestVersion(manifest_version)
-      .SetManifestKey(
-          "web_accessible_resources",
-          manifest_version == 3
-              ? base::Value::List().Append(
-                    base::Value::Dict()
-                        .Set("resources",
-                             base::Value::List().Append("test.dat"))
-                        .Set("matches", base::Value::List().Append("*://*/*")))
-              : base::Value::List().Append("test.dat"))
+      .SetManifestKey("web_accessible_resources",
+                      base::Value::List().Append("test.dat"))
       .SetManifestKey(
           "background",
-          manifest_version == 3
-              ? base::Value::Dict().Set("service_worker", "background.js")
-              : base::Value::Dict().Set(
-                    "scripts", base::Value::List().Append("background.js")))
+          base::Value::Dict().Set("scripts",
+                                  base::Value::List().Append("background.js")))
       .SetPath(GetTestPath("response_headers"))
       .Build();
 }
@@ -144,6 +158,18 @@ scoped_refptr<const Extension> CreateTestModuleResponseHeaderExtension(
 scoped_refptr<const Extension> CreateTestModuleImporterResponseHeaderExtension(
     int manifest_version,
     const std::string& module_extension_id) {
+  if (manifest_version == 3) {
+    return ExtensionBuilder("A module importer extension")
+        .SetManifestVersion(3)
+        .SetManifestKey("import",
+                        base::Value::List().Append(
+                            base::Value::Dict().Set("id", module_extension_id)))
+        .SetManifestKey("trial_tokens", base::Value::List()
+                                            .Append(kValidTrialToken1)
+                                            .Append(kValidTrialToken2))
+        .SetPath(GetTestPath("response_headers"))
+        .Build();
+  }
   return ExtensionBuilder("A module importer extension")
       .SetManifestVersion(manifest_version)
       .SetManifestKey("import",
@@ -356,6 +382,18 @@ class ExtensionProtocolsIncognitoTest : public ExtensionProtocolsTestBase {
       : ExtensionProtocolsTestBase(true /*force_incognito*/) {}
 };
 
+// TODO(crbug.com/1484767): remove this class before launch to stable.
+class ExtensionProtocolsOriginTrial : public ExtensionProtocolsTestBase {
+ public:
+  ExtensionProtocolsOriginTrial()
+      : ExtensionProtocolsTestBase(false /*force_incognito*/) {}
+
+ private:
+  // This override must match value of trial_tokens.channel in
+  // extensions/common/api/_manifest_features.json
+  ScopedCurrentChannel channel_{version_info::Channel::CANARY};
+};
+
 INSTANTIATE_TEST_SUITE_P(MV2, ExtensionProtocolsTest, ::testing::Values(2));
 INSTANTIATE_TEST_SUITE_P(MV3, ExtensionProtocolsTest, ::testing::Values(3));
 INSTANTIATE_TEST_SUITE_P(MV2,
@@ -363,6 +401,9 @@ INSTANTIATE_TEST_SUITE_P(MV2,
                          ::testing::Values(2));
 INSTANTIATE_TEST_SUITE_P(MV3,
                          ExtensionProtocolsIncognitoTest,
+                         ::testing::Values(3));
+INSTANTIATE_TEST_SUITE_P(MV3,
+                         ExtensionProtocolsOriginTrial,
                          ::testing::Values(3));
 
 // Tests that making a chrome-extension request in an incognito context is
@@ -484,6 +525,9 @@ TEST_P(ExtensionProtocolsTest, ResourceRequestResponseHeaders) {
 
     // COOP header does not make sense in non-document responses.
     EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+
+    // Origin Trials header does not make sense in video resource responses.
+    EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
   }
 }
 
@@ -541,14 +585,27 @@ TEST_P(ExtensionProtocolsTest, BackgroundScriptRequestResponseHeaders) {
 
     // COOP header does not make sense in non-document responses.
     EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+  }
+}
 
-    if (manifest_version == 3) {
-      // TODO(crbug.com/40282364): Add check for Origin-Trial header.
-    } else {
-      // In MV2 Origin-Trial token is included in background page responses and
-      // omitted for the actual scripts.
-      EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
-    }
+// Tests that request for background service worker returns Origin-Trial
+// response header.
+TEST_P(ExtensionProtocolsOriginTrial, BackgroundScriptRequestResponseHeaders) {
+  EXPECT_EQ(3, GetParam());
+  scoped_refptr<const Extension> extension =
+      CreateTestResponseHeaderExtension(3);
+  AddExtension(extension, false, false);
+
+  {
+    auto get_result =
+        RequestOrLoad(extension->GetResourceURL("background.js"),
+                      network::mojom::RequestDestination::kServiceWorker);
+    EXPECT_EQ(net::OK, get_result.result());
+
+    // In MV3-style service workers origin trail tokens are served via service
+    // worker Origin-Trial header.
+    EXPECT_EQ(kTrialTokensHeaderValue,
+              get_result.GetResponseHeaderByName("Origin-Trial"));
   }
 }
 
@@ -598,9 +655,6 @@ TEST_P(ExtensionProtocolsTest, BackgroundPageRequestResponseHeaders) {
 
     // COOP header does not make sense in non-document responses.
     EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
-
-    // TODO(crbug.com/40282364): Add check for Origin-Trial header.
-    EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
   }
 }
 
@@ -669,10 +723,34 @@ TEST_P(ExtensionProtocolsTest, ModuleRequestResponseHeaders) {
 
     // COOP header does not make sense in non-document responses.
     EXPECT_FALSE(get_result.HeaderIsPresent("Cross-Origin-Opener-Policy"));
+  }
+}
 
-    // TODO(crbug.com/40282364): Add check for Origin-Trial header
-    // it should be inherited from importer.
-    EXPECT_FALSE(get_result.HeaderIsPresent("Origin-Trial"));
+// Tests that request for background service worker returns Origin-Trial
+// response header.
+TEST_P(ExtensionProtocolsOriginTrial, ModuleRequestResponseHeaders) {
+  EXPECT_EQ(3, GetParam());
+  const int manifest_version = GetParam();
+  scoped_refptr<const Extension> module_extension =
+      CreateTestModuleResponseHeaderExtension(manifest_version);
+  scoped_refptr<const Extension> importer_extension =
+      CreateTestModuleImporterResponseHeaderExtension(manifest_version,
+                                                      module_extension->id());
+  AddExtension(module_extension, false, false);
+  AddExtension(importer_extension, false, false);
+
+  // Imported resources get loaded with proper headers (inherited from
+  // importer).
+  {
+    auto get_result =
+        RequestOrLoad(importer_extension->GetResourceURL(
+                          "_modules/" + module_extension->id() + "/test.dat"),
+                      network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, get_result.result());
+
+    // Origin-Trial header should contain trials inherited from importer.
+    EXPECT_EQ(kTrialTokensHeaderValue,
+              get_result.GetResponseHeaderByName("Origin-Trial"));
   }
 }
 

@@ -78,6 +78,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/manifest_handlers/trial_tokens_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -117,6 +118,7 @@ void GenerateBackgroundPageContents(const Extension* extension,
                                     std::string* mime_type,
                                     std::string* charset,
                                     std::string* data) {
+  DCHECK(extension);
   *mime_type = "text/html";
   *charset = "utf-8";
   *data = "<!DOCTYPE html>\n<body>\n";
@@ -315,10 +317,30 @@ bool IsBackgroundPageURL(const GURL& url) {
   return IsPathEqualTo(url, kGeneratedBackgroundPageFilename);
 }
 
+bool IsBackgroundServiceWorker(const Extension& extension,
+                               const network::ResourceRequest& request) {
+  return request.destination ==
+             network::mojom::RequestDestination::kServiceWorker &&
+         BackgroundInfo::IsServiceWorkerBased(&extension) &&
+         request.url ==
+             extension.GetResourceURL(
+                 BackgroundInfo::GetBackgroundServiceWorkerScript(&extension));
+}
+
+bool IsExtensionDocument(const Extension& extension,
+                         const network::ResourceRequest& request) {
+  const network::mojom::RequestDestination destination = request.destination;
+  return destination == network::mojom::RequestDestination::kDocument ||
+         destination == network::mojom::RequestDestination::kIframe ||
+         destination == network::mojom::RequestDestination::kFrame ||
+         destination == network::mojom::RequestDestination::kFencedframe;
+}
+
 scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
     const std::string& content_security_policy,
     const std::string* cross_origin_embedder_policy,
     const std::string* cross_origin_opener_policy,
+    const std::set<std::string>* origin_trial_tokens,
     bool send_cors_header,
     bool include_allow_service_worker_header) {
   std::string raw_headers;
@@ -330,15 +352,32 @@ scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
   }
 
   if (cross_origin_embedder_policy) {
+    DCHECK(!cross_origin_embedder_policy->empty());
     raw_headers.append(1, '\0');
     raw_headers.append("Cross-Origin-Embedder-Policy: ");
     raw_headers.append(*cross_origin_embedder_policy);
   }
 
   if (cross_origin_opener_policy) {
+    DCHECK(!cross_origin_opener_policy->empty());
     raw_headers.append(1, '\0');
     raw_headers.append("Cross-Origin-Opener-Policy: ");
     raw_headers.append(*cross_origin_opener_policy);
+  }
+
+  if (origin_trial_tokens) {
+    // TrialTokens::GetTrialTokens() never returns an empty set.
+    DCHECK(!origin_trial_tokens->empty());
+    std::set<std::string>::iterator token_it = origin_trial_tokens->begin();
+    raw_headers.append(1, '\0');
+    raw_headers.append("Origin-Trial: ");
+    raw_headers.append(*token_it);
+    token_it++;
+    while (token_it != origin_trial_tokens->end()) {
+      raw_headers.append(", ");
+      raw_headers.append(*token_it);
+      token_it++;
+    }
   }
 
   if (send_cors_header) {
@@ -643,6 +682,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     std::string content_security_policy;
     const std::string* cross_origin_embedder_policy = nullptr;
     const std::string* cross_origin_opener_policy = nullptr;
+    const std::set<std::string>* origin_trial_tokens = nullptr;
     bool send_cors_header = false;
     bool follow_symlinks_anywhere = false;
     bool include_allow_service_worker_header = false;
@@ -670,14 +710,14 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
           request_, *extension, is_web_view_request_, &content_security_policy,
           &cross_origin_embedder_policy, &cross_origin_opener_policy,
           &send_cors_header, &follow_symlinks_anywhere);
-      if (BackgroundInfo::IsServiceWorkerBased(extension.get())) {
-        include_allow_service_worker_header =
-            request_.destination ==
-                network::mojom::RequestDestination::kServiceWorker &&
-            request_.url ==
-                extension->GetResourceURL(
-                    BackgroundInfo::GetBackgroundServiceWorkerScript(
-                        extension.get()));
+      if (IsBackgroundServiceWorker(*extension, request_)) {
+        // Manifest version 3-style background service workers need
+        // "Service-Worker-Allowed" and "Origin-Trial" headers.
+        include_allow_service_worker_header = true;
+        origin_trial_tokens = TrialTokens::GetTrialTokens(*extension);
+      } else if (IsExtensionDocument(*extension, request_)) {
+        // Any top-level or embedded document can receive the tokens.
+        origin_trial_tokens = TrialTokens::GetTrialTokens(*extension);
       }
     }
 
@@ -691,8 +731,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       auto head = network::mojom::URLResponseHead::New();
       head->headers = BuildHttpHeaders(
           content_security_policy, cross_origin_embedder_policy,
-          cross_origin_opener_policy, false /* send_cors_headers */,
-          include_allow_service_worker_header);
+          cross_origin_opener_policy, origin_trial_tokens,
+          false /* send_cors_headers */, include_allow_service_worker_header);
       if (is_background_page_url) {
         std::string contents;
         GenerateBackgroundPageContents(extension.get(), &head->mime_type,
@@ -710,8 +750,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
 
     auto headers =
         BuildHttpHeaders(content_security_policy, cross_origin_embedder_policy,
-                         cross_origin_opener_policy, send_cors_header,
-                         include_allow_service_worker_header);
+                         cross_origin_opener_policy, origin_trial_tokens,
+                         send_cors_header, include_allow_service_worker_header);
     // Component extension resources may be part of the embedder's resource
     // files, for example component_extension_resources.pak in Chrome.
     int resource_id = 0;
