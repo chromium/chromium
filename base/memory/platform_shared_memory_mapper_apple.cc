@@ -4,10 +4,11 @@
 
 #include "base/memory/platform_shared_memory_mapper.h"
 
-#include "base/logging.h"
-
 #include <mach/vm_map.h>
+
 #include "base/apple/mach_logging.h"
+#include "base/containers/span.h"
+#include "base/logging.h"
 
 namespace base {
 
@@ -32,7 +33,10 @@ std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     return std::nullopt;
   }
 
-  return make_span(reinterpret_cast<uint8_t*>(address), size);
+  // SAFETY: vm_map() maps a memory segment of `size` bytes. Since
+  // `VM_FLAGS_ANYWHERE` is used, the address will be chosen by vm_map() and
+  // returned in `address`.
+  return UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(address), size));
 }
 
 void PlatformSharedMemoryMapper::Unmap(span<uint8_t> mapping) {
