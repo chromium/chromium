@@ -122,8 +122,10 @@ void AppInstallDialog::OnIconDownloaded(int icon_width,
   icon_value->uncompressed = icon.AsImageSkia();
 
   apps::ApplyIconEffects(profile_.get(), /*app_id=*/std::nullopt,
-                         apps::IconEffects::kCrOsStandardIcon, icon_width,
-                         std::move(icon_value),
+                         is_icon_maskable
+                             ? apps::IconEffects::kCrOsStandardMask
+                             : apps::IconEffects::kCrOsStandardIcon,
+                         icon_width, std::move(icon_value),
                          base::BindOnce(&AppInstallDialog::OnLoadIcon,
                                         weak_factory_.GetWeakPtr()));
 }
