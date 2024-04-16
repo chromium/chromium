@@ -1431,17 +1431,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "clipboard-well-formed-html-sanitization-write",
-    "owners": [
-      "ansollan@microsoft.com",
-      "asully@chromium.org",
-      "estade@chromium.org",
-      "snianu@microsoft.com",
-      "chrome-owp-storage@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "cloud-gaming-device",
     "owners": [
       "dgrebenyuk@chromium.org",
