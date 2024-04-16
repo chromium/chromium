@@ -313,6 +313,13 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 
 // Hides the current view without doing anything else.
 - (void)cancelButtonTapped {
+  if (_tabGroup) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserCanceledGroupEdition"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGroupUserCanceledNewGroupCreation"));
+  }
   [self dismissViewController];
 }
 
