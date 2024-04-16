@@ -150,20 +150,20 @@ class LegacyRunner:
     }
     self._input_props = input_props
 
-  def _run(self, adapter, additional_props=None):
+  def _run(self, adapter, rerun_props=None):
     """Internal implementation of invoking `recipes.py run`.
 
     Args:
       adapter: A output_adapter.Adapter for parsing recipe output.
-      additional_props: Dict containing additional props to pass to the recipe.
+      rerun_props: Dict containing additional props to pass to the recipe.
     Returns:
       Tuple of
         exit code of the `recipes.py` invocation,
         summary markdown of the `recipes.py` invocation,
-        a dict of additional_props the recipe should be re-invoked with
+        a dict of rerun_props the recipe should be re-invoked with
     """
     input_props = self._input_props.copy()
-    input_props.update(additional_props or {})
+    input_props['rerun_options'] = rerun_props or {}
     with tempfile.TemporaryDirectory() as tmp_dir:
 
       # TODO(crbug.com/41492688): Support both chrome and chromium realms. Just
@@ -255,7 +255,7 @@ class LegacyRunner:
     Returns:
       Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
-    props_to_use = None
+    rerun_props = None
     if filter_stdout:
       adapter = output_adapter.LegacyOutputAdapter()
     else:
@@ -264,7 +264,7 @@ class LegacyRunner:
     # final result. Put a cap on the amount of re-runs though, just in case.
     for _ in range(10):
       exit_code, failure_md, rerun_prop_options = self._run(
-          adapter, props_to_use)
+          adapter, rerun_props)
       # For in-line code snippets in markdown, style them as python. This
       # seems the least weird-looking.
       pretty_md = markdown.Markdown(failure_md, inline_code_lexer='python')
@@ -287,7 +287,7 @@ class LegacyRunner:
       self._console_printer.print(pretty_md)
       logging.warning('')
       if not self._skip_prompts:
-        props_to_use = get_prompt_resp(rerun_prop_options)
+        rerun_props = get_prompt_resp(rerun_prop_options)
       else:
         logging.warning(
             '[yellow]Proceeding despite the recipe warning due to the presence '
@@ -295,7 +295,7 @@ class LegacyRunner:
         if len(rerun_prop_options) < 1 or len(rerun_prop_options[0]) < 2:
           return 1, 'Received bad run options from the recipe'
         # Properties of the first option is the default path
-        props_to_use = rerun_prop_options[0].properties
-      if not props_to_use:
+        rerun_props = rerun_prop_options[0].properties
+      if not rerun_props:
         return exit_code, 'User-aborted due to warning'
     return 1, 'Exceeded too many recipe re-runs'
