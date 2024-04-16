@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
-#import <objc/NSObjCRuntime.h>
-
 #import "base/apple/foundation_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller+Testing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -52,7 +52,7 @@ static_assert(
 }  // namespace
 
 @interface TimeRangeSelectorTableViewController () {
-  browsing_data::TimePeriod _timePeriod;
+  IntegerPrefMember _timeRangePref;
 }
 
 @end
@@ -61,13 +61,13 @@ static_assert(
 
 #pragma mark Initialization
 
-- (instancetype)initWithTimePeriod:(browsing_data::TimePeriod)timePeriod {
+- (instancetype)initWithPrefs:(PrefService*)prefs {
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     self.title = l10n_util::GetNSString(
         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
-    _timePeriod = timePeriod;
+    _timeRangePref.Init(browsing_data::prefs::kDeleteTimePeriod, prefs);
     self.shouldHideDoneButton = YES;
   }
   return self;
@@ -108,16 +108,16 @@ static_assert(
 }
 
 - (void)updateCheckedState {
+  int timeRangePrefValue = _timeRangePref.GetValue();
   TableViewModel* model = self.tableViewModel;
 
   NSMutableArray* modifiedItems = [NSMutableArray array];
   for (TableViewItem* item in
        [model itemsInSectionWithIdentifier:SectionIdentifierOptions]) {
-    NSInteger timePeriodType =
-        static_cast<NSInteger>(_timePeriod) + kItemTypeEnumZero;
+    NSInteger itemPrefValue = item.type - kItemTypeEnumZero;
     UITableViewCellAccessoryType desiredType =
-        item.type == timePeriodType ? UITableViewCellAccessoryCheckmark
-                                    : UITableViewCellAccessoryNone;
+        itemPrefValue == timeRangePrefValue ? UITableViewCellAccessoryCheckmark
+                                            : UITableViewCellAccessoryNone;
     if (item.accessoryType != desiredType) {
       item.accessoryType = desiredType;
       [modifiedItems addObject:item];
@@ -127,12 +127,8 @@ static_assert(
   [self reconfigureCellsForItems:modifiedItems];
 }
 
-- (void)updateTimePeriod:(browsing_data::TimePeriod)timePeriod {
-  if (_timePeriod == timePeriod) {
-    return;
-  }
-  _timePeriod = timePeriod;
-  [self.consumer updateTimePeriod:timePeriod];
+- (void)updatePrefValue:(int)prefValue {
+  _timeRangePref.SetValue(prefValue);
   [self updateCheckedState];
 }
 
@@ -150,23 +146,25 @@ static_assert(
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  [self updateTimePeriod:static_cast<browsing_data::TimePeriod>(
-                             itemType - kItemTypeEnumZero)];
+  int timePeriod = itemType - kItemTypeEnumZero;
+  DCHECK_LE(timePeriod,
+            static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
+  [self updatePrefValue:timePeriod];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - Class methods
 
-+ (NSString*)timePeriodLabel:(browsing_data::TimePeriod)timePeriod {
-  int indexTimePeriod = static_cast<int>(timePeriod);
-
-  // Check if the cast returned a valid index inside the bounds of `kStringIDS`.
-  if (indexTimePeriod < 0 ||
-      static_cast<size_t>(timePeriod) >= std::size(kStringIDS)) {
++ (NSString*)timePeriodLabelForPrefs:(PrefService*)prefs {
+  if (!prefs) {
     return nil;
   }
-
-  return l10n_util::GetNSString(kStringIDS[indexTimePeriod]);
+  int prefValue = prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod);
+  if (prefValue < 0 ||
+      static_cast<size_t>(prefValue) >= std::size(kStringIDS)) {
+    return nil;
+  }
+  return l10n_util::GetNSString(kStringIDS[prefValue]);
 }
 
 @end
