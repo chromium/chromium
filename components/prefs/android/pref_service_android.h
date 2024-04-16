@@ -25,7 +25,7 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
 
   // Returns the native counterpart of a Java `PrefService`.
   static PrefService* FromPrefServiceAndroid(
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

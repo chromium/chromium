@@ -8,10 +8,23 @@
 
 #include "components/prefs/android/jni_headers/PrefService_jni.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/prefs_export.h"
 
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
+
+namespace jni_zero {
+
+template <>
+COMPONENTS_PREFS_EXPORT PrefService* FromJniType<PrefService*, jobject>(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  return PrefServiceAndroid::FromPrefServiceAndroid(obj);
+}
+
+}  // namespace jni_zero
 
 PrefServiceAndroid::PrefServiceAndroid(PrefService* pref_service)
     : pref_service_(pref_service) {}
@@ -25,7 +38,7 @@ PrefServiceAndroid::~PrefServiceAndroid() {
 
 // static
 PrefService* PrefServiceAndroid::FromPrefServiceAndroid(
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   if (obj.is_null()) {
     return nullptr;
   }

@@ -4,6 +4,7 @@
 
 package org.chromium.components.supervised_user;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.prefs.PrefService;
@@ -17,6 +18,6 @@ public class SupervisedUserPreferences {
 
     @NativeMethods
     public interface Natives {
-        boolean isSubjectToParentalControls(PrefService prefService);
+        boolean isSubjectToParentalControls(@JniType("PrefService*") PrefService prefService);
     }
 }
