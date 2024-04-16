@@ -189,6 +189,6 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
 
   // Navigate to content settings page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL("chrome://settings/content")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContentSettingsURL)));
 }
