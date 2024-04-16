@@ -5,11 +5,13 @@
 
 :root {
   --header-text-color: rgb(92, 97, 102);
+  --tabs-border-color: #c8c8c8;
 }
 
 header {
   /*padding-bottom: 10px;*/
   color: var(--header-text-color);
+  border-bottom: 1px solid var(--tabs-border-color);
 }
 
 h1, h2, h3, h4 {

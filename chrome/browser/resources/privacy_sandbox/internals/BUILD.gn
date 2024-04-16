@@ -14,6 +14,7 @@ build_webui("build") {
     "value_display.ts",
     "mojo_timedelta.ts",
     "mojo_timestamp.ts",
+    "cr_frame_list.ts",
   ]
   non_web_component_files = [ "index.ts" ]
   html_to_wrapper_template = "native"
