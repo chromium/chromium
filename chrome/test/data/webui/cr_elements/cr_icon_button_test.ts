@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -68,29 +68,29 @@ suite('cr-icon-button', function() {
     assertEquals('0', button.getAttribute('tabindex'));
   });
 
-  test('iron-icon created, reused, removed based on |ironIcon|', async () => {
-    assertFalse(!!button.shadowRoot!.querySelector('iron-icon'));
+  test('cr-icon created, reused, removed based on |ironIcon|', async () => {
+    assertFalse(!!button.shadowRoot!.querySelector('cr-icon'));
     button.ironIcon = 'icon-key';
     await button.updateComplete;
 
-    assertTrue(!!button.shadowRoot!.querySelector('iron-icon'));
-    button.shadowRoot!.querySelector('iron-icon')!.icon = 'icon-key';
+    assertTrue(!!button.shadowRoot!.querySelector('cr-icon'));
+    button.shadowRoot!.querySelector('cr-icon')!.icon = 'icon-key';
     button.ironIcon = 'another-icon-key';
     await button.updateComplete;
 
-    assertEquals(1, button.shadowRoot!.querySelectorAll('iron-icon').length);
-    button.shadowRoot!.querySelector('iron-icon')!.icon = 'another-icon-key';
+    assertEquals(1, button.shadowRoot!.querySelectorAll('cr-icon').length);
+    button.shadowRoot!.querySelector('cr-icon')!.icon = 'another-icon-key';
     button.ironIcon = '';
     await button.updateComplete;
 
-    assertFalse(!!button.shadowRoot!.querySelector('iron-icon'));
+    assertFalse(!!button.shadowRoot!.querySelector('cr-icon'));
   });
 
-  test('iron-icon children svg and img elements role set to none', async () => {
+  test('cr-icon children svg and img elements role set to none', async () => {
     button.ironIcon = 'cr:clear';
-    await button.updateComplete;
+    await microtasksFinished();
     assertTrue(!!button.shadowRoot);
-    const ironIcons = button.shadowRoot!.querySelectorAll('iron-icon');
+    const ironIcons = button.shadowRoot!.querySelectorAll('cr-icon');
     assertEquals(1, ironIcons.length);
     const iconChildren = ironIcons[0]!.shadowRoot!.querySelectorAll('svg, img');
     assertEquals(1, iconChildren.length);
@@ -163,7 +163,7 @@ suite('cr-icon-button', function() {
   test('multiple iron icons', async () => {
     button.ironIcon = 'icon1,icon2';
     await button.updateComplete;
-    const elements = button.shadowRoot!.querySelectorAll('iron-icon');
+    const elements = button.shadowRoot!.querySelectorAll('cr-icon');
     assertEquals(2, elements.length);
     assertEquals('icon1', elements[0]!.icon);
     assertEquals('icon2', elements[1]!.icon);

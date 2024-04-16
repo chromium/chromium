@@ -1,0 +1,26 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  position: relative;
+
+  vertical-align: middle;
+
+  /* TODO (rbpotter): Change variable names after migration. */
+  fill: var(--iron-icon-fill-color, currentcolor);
+  stroke: var(--iron-icon-stroke-color, none);
+
+  width: var(--iron-icon-width, 24px);
+  height: var(--iron-icon-height, 24px);
+}

@@ -76,7 +76,7 @@
 }
 
 :host-context([dir=rtl]):host(:not([dir=ltr])[multiple-icons_])
-    iron-icon {
+    cr-icon {
   transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
 }
 
@@ -110,7 +110,7 @@
   width: 100%;
 }
 
-iron-icon {
+cr-icon {
   --iron-icon-fill-color: var(--cr-icon-button-fill-color);
   --iron-icon-stroke-color: var(--cr-icon-button-stroke-color, none);
   --iron-icon-height: var(--cr-icon-button-icon-size);

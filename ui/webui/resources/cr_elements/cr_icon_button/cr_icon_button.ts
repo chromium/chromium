@@ -9,9 +9,9 @@
  *
  * There are two sources to icons, cr-icons and iron-iconset-svg. The cr-icon's
  * are defined as background images with a reference to a resource file
- * associated with a CSS class name. The iron-icon's are defined as inline SVG's
+ * associated with a CSS class name. The cr-icon's are defined as inline SVG's
  * under a key that is stored in a global map that is accessible to the
- * iron-icon element.
+ * cr-icon element.
  *
  * Example of using a cr-icon:
  * <link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
@@ -25,7 +25,7 @@
  * In general when an icon is specified using a class, the expectation is the
  * class will set an image to the --cr-icon-image variable.
  *
- * Example of using an iron-icon:
+ * Example of using a cr-icon:
  * In the TS file:
  * import 'chrome://resources/cr_elements/icons.html.js';
  *
@@ -37,15 +37,14 @@
  * --cr-icon-button-fill-color
  * --cr-icon-button-stroke-color
  *
- * When not using iron-icon (ie. specifying --cr-icon-image), the icons support
+ * When not using cr-icon (ie. specifying --cr-icon-image), the icons support
  * one color and the 'stroke' variables are ignored.
  *
- * When using iron-icon's, more than one icon can be specified by setting
+ * When using cr-icon's, more than one icon can be specified by setting
  * the |ironIcon| property to a comma-delimited list of keys.
  */
 
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-
+import '../cr_icon/cr_icon.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -169,18 +168,19 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  private onIronIconChanged_() {
-    this.shadowRoot!.querySelectorAll('iron-icon').forEach(el => el.remove());
+  private async onIronIconChanged_() {
+    this.shadowRoot!.querySelectorAll('cr-icon').forEach(el => el.remove());
     if (!this.ironIcon) {
       return;
     }
     const icons = (this.ironIcon || '').split(',');
-    icons.forEach(icon => {
-      const ironIcon = document.createElement('iron-icon');
-      ironIcon.icon = icon;
-      this.$.icon.appendChild(ironIcon);
-      if (ironIcon.shadowRoot) {
-        ironIcon.shadowRoot.querySelectorAll('svg, img')
+    icons.forEach(async icon => {
+      const crIcon = document.createElement('cr-icon');
+      crIcon.icon = icon;
+      this.$.icon.appendChild(crIcon);
+      await crIcon.updateComplete;
+      if (crIcon.shadowRoot) {
+        crIcon.shadowRoot.querySelectorAll('svg, img')
             .forEach(child => child.setAttribute('role', 'none'));
       }
     });

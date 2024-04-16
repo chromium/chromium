@@ -35,6 +35,9 @@ Local Modifications:
 - Re-implemented <paper-ripple> using Web Animations API (which, as of
   2/21/2017 does not work in Safari or IE). This is a complete fork from
   Polymer's <paper-ripple>.
+- Modified iron-iconset-svg to apply icons to an element's shadowRoot if
+  it exists, instead of always using Polymer's dom() method on element.root.
+  This allows elements written in Lit to use icons from an iron-iconset-svg.
 - Removed CSS properties that are not needed in Chromium using
   css_strip_prefixes.py script.
 - Bundled and minified Polymer 3 with minify_polymer.py, since Polymer 3 repo

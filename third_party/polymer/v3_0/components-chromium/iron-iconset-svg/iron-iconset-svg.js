@@ -127,7 +127,8 @@ Polymer({
         iconName, this.rtlMirroring && this._targetIsRTL(element));
     if (svg) {
       // insert svg element into shadow root, if it exists
-      var pde = dom(element.root || element);
+      var pde = element.shadowRoot ?
+          element.shadowRoot : dom(element.root || element);
       pde.insertBefore(svg, pde.childNodes[0]);
       return element._svgIcon = svg;
     }
@@ -155,7 +156,9 @@ Polymer({
   removeIcon: function(element) {
     // Remove old svg element
     if (element._svgIcon) {
-      dom(element.root || element).removeChild(element._svgIcon);
+      var root = element.shadowRoot ?
+          element.shadowRoot : dom(element.root || element);
+      root.removeChild(element._svgIcon);
       element._svgIcon = null;
     }
   },
