@@ -14,7 +14,6 @@
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -66,10 +65,8 @@ class ObjectPermissionContextBaseTest : public testing::Test {
   ObjectPermissionContextBaseTest()
       : url1_("https://google.com"),
         url2_("https://chromium.org"),
-        url3_("https://www.google.com"),
         origin1_(url::Origin::Create(url1_)),
         origin2_(url::Origin::Create(url2_)),
-        origin3_(url::Origin::Create(url3_)),
         context_(ContentSettingsType::USB_GUARD,
                  ContentSettingsType::USB_CHOOSER_DATA,
                  browser_context()),
@@ -81,8 +78,6 @@ class ObjectPermissionContextBaseTest : public testing::Test {
     object1_.Set(kRequiredKey2, "value2");
     object2_.Set(kRequiredKey1, "value3");
     object2_.Set(kRequiredKey2, "value4");
-    object3_.Set(kRequiredKey1, "value5");
-    object3_.Set(kRequiredKey2, "value6");
   }
 
   ~ObjectPermissionContextBaseTest() override = default;
@@ -97,13 +92,10 @@ class ObjectPermissionContextBaseTest : public testing::Test {
  protected:
   const GURL url1_;
   const GURL url2_;
-  const GURL url3_;
   const url::Origin origin1_;
   const url::Origin origin2_;
-  const url::Origin origin3_;
   base::Value::Dict object1_;
   base::Value::Dict object2_;
-  base::Value::Dict object3_;
   TestObjectPermissionContext context_;
   TestObjectPermissionContext file_system_access_context_;
 };
@@ -287,48 +279,6 @@ TEST_F(ObjectPermissionContextBaseTest, GetGrantedObjectsWithGuardBlocked) {
   auto objects2 = context_.GetGrantedObjects(origin2_);
   ASSERT_EQ(1u, objects2.size());
   EXPECT_EQ(object2_, objects2[0]->value);
-}
-
-TEST_F(ObjectPermissionContextBaseTest, GetGrantedObjects_SchemefulSite) {
-  MockPermissionObserver mock_observer;
-  context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(3);
-  context_.GrantObjectPermission(origin1_, object1_.Clone());
-  context_.GrantObjectPermission(origin2_, object2_.Clone());
-  context_.GrantObjectPermission(origin3_, object3_.Clone());
-
-  ASSERT_EQ(net::SchemefulSite(origin1_), net::SchemefulSite(origin3_));
-
-  EXPECT_THAT(
-      context_.GetGrantedObjects(net::SchemefulSite(origin1_)),
-      ElementsAre(Pointee(Field(&ObjectPermissionContextBase::Object::value,
-                                IsJson(std::ref(object1_)))),
-                  Pointee(Field(&ObjectPermissionContextBase::Object::value,
-                                IsJson(std::ref(object3_))))));
-}
-
-TEST_F(ObjectPermissionContextBaseTest,
-       GetGrantedObjects_SchemefulSiteWithGuardBlocked) {
-  PermissionsClient::Get()
-      ->GetSettingsMap(browser_context())
-      ->SetContentSettingDefaultScope(
-          url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
-
-  MockPermissionObserver mock_observer;
-  context_.AddObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(3);
-  context_.GrantObjectPermission(origin1_, object1_.Clone());
-  context_.GrantObjectPermission(origin2_, object2_.Clone());
-  context_.GrantObjectPermission(origin3_, object3_.Clone());
-
-  ASSERT_EQ(net::SchemefulSite(origin1_), net::SchemefulSite(origin3_));
-
-  EXPECT_THAT(
-      context_.GetGrantedObjects(net::SchemefulSite(origin1_)),
-      ElementsAre(Pointee(Field(&ObjectPermissionContextBase::Object::value,
-                                IsJson(std::ref(object3_))))));
 }
 
 TEST_F(ObjectPermissionContextBaseTest, GetAllGrantedObjectsWithGuardBlocked) {

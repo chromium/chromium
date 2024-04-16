@@ -24,10 +24,6 @@
 
 class HostContentSettingsMap;
 
-namespace net {
-class SchemefulSite;
-}
-
 namespace url {
 class Origin;
 }
@@ -107,12 +103,6 @@ class ObjectPermissionContextBase : public KeyedService {
   // stored in |host_content_settings_map_|.
   virtual std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin);
-
-  // Returns a list of objects that |site| has been granted permission to
-  // access. This method may be extended by a subclass to return objects not
-  // stored in |host_content_settings_map_|.
-  virtual std::vector<std::unique_ptr<Object>> GetGrantedObjects(
-      const net::SchemefulSite& site);
 
   // Returns a set of all origins that have granted permission(s).
   // This method may be extended by a subclass to return origins with objects
