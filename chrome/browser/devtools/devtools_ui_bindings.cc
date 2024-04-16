@@ -1994,6 +1994,10 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                                             const std::string& request,
                                             int stream_id) {
   if (AidaClient::CanUseAida(profile_).blocked) {
+    base::Value::Dict response_dict;
+    response_dict.Set("error", "AIDA request was blocked");
+    base::Value response = base::Value(std::move(response_dict));
+    std::move(callback).Run(&response);
     return;
   }
   if (!aida_client_) {
