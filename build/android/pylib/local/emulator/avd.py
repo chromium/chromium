@@ -593,6 +593,8 @@ class AvdConfig:
                                         check_return=True)
 
       if snapshot:
+        logging.info('Wait additional 60 secs before saving snapshot for AVD')
+        time.sleep(60)
         instance.SaveSnapshot()
 
       instance.Stop()
