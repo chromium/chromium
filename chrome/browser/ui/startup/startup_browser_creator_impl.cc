@@ -79,6 +79,9 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/app_controller_mac.h"
+#if BUILDFLAG(ENABLE_UPDATER)
+#include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
+#endif
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -203,6 +206,14 @@ void StartupBrowserCreatorImpl::Launch(
     install_chrome_app::InstallChromeApp(
         command_line_->GetSwitchValueASCII(switches::kInstallChromeApp));
   }
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+  if (process_startup == chrome::startup::IsProcessStartup::kYes) {
+    // Check whether the auto-update system needs to be promoted from user
+    // to system.
+    KeystoneInfoBar::PromotionInfoBar(profile);
+  }
+#endif
 
   // It's possible for there to be no browser window, e.g. if someone
   // specified a non-sensical combination of options

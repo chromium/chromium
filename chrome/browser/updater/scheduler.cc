@@ -29,7 +29,7 @@ void SchedulePeriodicTasks() {
        base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
       ->PostDelayedTask(FROM_HERE, base::BindOnce(&RunAndReschedule),
-                        base::Seconds(19));
+                        base::Minutes(5));
 }
 
 }  // namespace updater
