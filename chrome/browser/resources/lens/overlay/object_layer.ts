@@ -8,10 +8,16 @@ import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
+import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
+import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {GestureEvent} from './selection_utils.js';
+
+// The percent of the selection layer width and height the object needs to take
+// up to be considered full page.
+const FULLSCREEN_OBJECT_THRESHOLD_PERCENT = 0.95;
 
 // Takes the value between 0-1 and returns a string in the from '__%';
 function toPercent(value: number): string {
@@ -29,8 +35,18 @@ function isObjectRenderable(object: OverlayObject): boolean {
     return false;
   }
 
-  return objectBoundingBox.coordinateType ===
-      CenterRotatedBox_CoordinateType.kNormalized;
+  // Filter out objects covering the entire screen.
+  if (objectBoundingBox.box.width >= FULLSCREEN_OBJECT_THRESHOLD_PERCENT &&
+      objectBoundingBox.box.height >= FULLSCREEN_OBJECT_THRESHOLD_PERCENT) {
+    return false;
+  }
+
+  // TODO(b/334940363): CoordinateType is being incorrectly set to
+  // kUnspecified instead of kNormalized. Once this is fixed, change this
+  // check back to objectBoundingBox.coordinateType ===
+  // CenterRotatedBox_CoordinateType.kNormalized.
+  return objectBoundingBox.coordinateType !==
+      CenterRotatedBox_CoordinateType.kImage;
 }
 
 // Orders objects with larger areas before objects with smaller areas.
@@ -101,8 +117,19 @@ export class ObjectLayerElement extends PolymerElement {
       return false;
     }
 
-    BrowserProxyImpl.getInstance().handler.issueLensRequest(
-        this.renderedObjects[objectIndex].geometry!.boundingBox);
+    const selectionRegion =
+        this.renderedObjects[objectIndex].geometry!.boundingBox;
+
+    // Issue the query
+    BrowserProxyImpl.getInstance().handler.issueLensRequest(selectionRegion);
+
+    // Send the region to be rendered on the page.
+    this.dispatchEvent(new CustomEvent('render-post-selection', {
+      bubbles: true,
+      composed: true,
+      detail: this.getPostSelectionRegion(selectionRegion),
+    }));
+
     return true;
   }
 
@@ -122,8 +149,12 @@ export class ObjectLayerElement extends PolymerElement {
     // TODO(b/330183480): Currently, we are assuming that object
     // coordinates are normalized. We should still implement
     // rendering in case this assumption is ever violated.
-    if (objectBoundingBox.coordinateType !==
-        CenterRotatedBox_CoordinateType.kNormalized) {
+    // TODO(b/334940363): CoordinateType is being incorrectly set to
+    // kUnspecified instead of kNormalized. Once this is fixed, change this
+    // check back to objectBoundingBox.coordinateType !==
+    // CenterRotatedBox_CoordinateType.kNormalized.
+    if (objectBoundingBox.coordinateType ===
+        CenterRotatedBox_CoordinateType.kImage) {
       return '';
     }
 
@@ -140,6 +171,19 @@ export class ObjectLayerElement extends PolymerElement {
       `transform: rotate(${objectBoundingBox.rotation}rad)`,
     ];
     return styles.join(';');
+  }
+
+  private getPostSelectionRegion(box: CenterRotatedBox):
+      PostSelectionBoundingBox {
+    const boundingBox = box.box;
+    const top = boundingBox.y - (boundingBox.height / 2);
+    const left = boundingBox.x - (boundingBox.width / 2);
+    return {
+      top,
+      left,
+      width: boundingBox.width,
+      height: boundingBox.height,
+    };
   }
 
   /**

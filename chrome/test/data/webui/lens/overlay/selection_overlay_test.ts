@@ -11,7 +11,7 @@ import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webu
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
-import {assertDeepEquals, assertEquals, assertNotEquals, assertNull} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -233,6 +233,41 @@ suite('SelectionOverlay', function() {
     assertEquals(
         `${expectedLeft}%`,
         postSelectionStyles.getPropertyValue('--selection-left'));
+  });
+
+  test('verify that tapping an object triggers post selection', async () => {
+    await addObjects();
+    const objectEl = selectionOverlayElement.$.objectSelectionLayer
+                         .getObjectNodesForTesting()[1]!;
+    const objectBoundingBox = objectEl.getBoundingClientRect();
+
+    await simulateClick(
+        selectionOverlayElement,
+        {x: objectBoundingBox.left + 2, y: objectBoundingBox.top + 2});
+
+    const postSelectionStyles =
+        selectionOverlayElement.$.postSelectionRenderer.style;
+    const parentBoundingRect = selectionOverlayElement.getBoundingClientRect();
+
+    // Based on box coordinates of {x: 70, y: 35, width: 20, height: 10},
+    const expectedHeight = 10 / parentBoundingRect.height * 100;
+    const expectedWidth = 20 / parentBoundingRect.width * 100;
+    const expectedTop = 30 / parentBoundingRect.height * 100;
+    const expectedLeft = 60 / parentBoundingRect.width * 100;
+
+    // Only look at first 5 digits to account for rounding errors.
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-height'),
+        expectedHeight.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-width'),
+        expectedWidth.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-top'),
+        expectedTop.toString().substring(0, 6));
+    assertStringContains(
+        postSelectionStyles.getPropertyValue('--selection-left'),
+        expectedLeft.toString().substring(0, 6));
   });
 
   test('verify that resizing renders image with padding', async () => {

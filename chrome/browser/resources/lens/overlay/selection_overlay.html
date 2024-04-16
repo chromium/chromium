@@ -10,6 +10,11 @@
   #selectionOverlay {
     display: grid;
     position: relative;
+
+    /* Disable native dragging */
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
   }
 
   :host([is-resized]) #selectionOverlay {
@@ -21,10 +26,8 @@
   #selectionOverlay > * {
     grid-column: 1;
     grid-row: 1;
-
-    user-select: none;
-    -webkit-user-drag: none;
-    -webkit-user-select: none;
+    /* Allow each full size element to not interfere with each other. */
+    pointer-events: none;
   }
 
   #backgroundImage {
