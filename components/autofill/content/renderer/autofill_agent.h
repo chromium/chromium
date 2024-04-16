@@ -25,6 +25,7 @@
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -51,7 +52,6 @@ namespace autofill {
 class FormCache;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
-class FieldDataManager;
 
 // AutofillAgent deals with Autofill related communications between Blink and
 // the browser.
