@@ -662,7 +662,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(new_avatar_button->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SyncPaused DISABLED_SyncPaused
+#else
+#define MAYBE_SyncPaused SyncPaused
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_SyncPaused) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -675,7 +682,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SyncError DISABLED_SyncError
+#else
+#define MAYBE_SyncError SyncError
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_SyncError) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -690,8 +704,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
 }
 
 // Explicit text over sync paused/error.
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SyncPausedThenExplicitText DISABLED_SyncPausedThenExplicitText
+#else
+#define MAYBE_SyncPausedThenExplicitText SyncPausedThenExplicitText
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       SyncPausedThenExplicitText) {
+                       MAYBE_SyncPausedThenExplicitText) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -710,9 +731,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ExpectSyncPaused(avatar_button);
 }
 
+// TODO(crbug/327688158): Flaky on chromium/ci/win-asan. Disable for Windows.
+// TODO(b/331746545): Check windows issues with time duration/delays.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ExplicitTextThenSyncPause DISABLED_ExplicitTextThenSyncPause
+#else
+#define MAYBE_ExplicitTextThenSyncPause ExplicitTextThenSyncPause
+#endif
 // Explicit text over sync paused/error.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       ExplicitTextThenSyncPause) {
+                       MAYBE_ExplicitTextThenSyncPause) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
