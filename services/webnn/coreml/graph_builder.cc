@@ -102,6 +102,7 @@ constexpr char kOpClipTypeName[] = "clip";
 constexpr char kOpConcatTypeName[] = "concat";
 constexpr char kOpConv2dTypeName[] = "conv";
 constexpr char kOpReluTypeName[] = "relu";
+constexpr char kOpSigmoidTypeName[] = "sigmoid";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTanhTypeName[] = "tanh";
 constexpr char kOpTransposeTypeName[] = "transpose";
@@ -589,6 +590,11 @@ GraphBuilder::BuildCoreMLModel() {
             AddOperationForResample2d(*operation->get_resample2d(), block));
         break;
       }
+      case mojom::Operation::Tag::kSigmoid: {
+        RETURN_IF_ERROR(
+            AddOperationForSigmoid(*operation->get_sigmoid(), block));
+      break;
+      }
       case mojom::Operation::Tag::kSoftsign: {
         RETURN_IF_ERROR(
             AddOperationForSoftsign(*operation->get_softsign(), block));
@@ -624,7 +630,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kReshape:
-      case mojom::Operation::Tag::kSigmoid:
       case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSoftplus:
@@ -1189,6 +1194,26 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForResample2d(
        {kParamScaleFactorWidth, CreateScalarImmediateValue(scales[1])}});
 
   PopulateNamedValueType(operation.output_operand_id, *op.add_outputs());
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSigmoid(
+    const mojom::Sigmoid& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+
+  if (!kFloatDataTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpSigmoidTypeName);
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
