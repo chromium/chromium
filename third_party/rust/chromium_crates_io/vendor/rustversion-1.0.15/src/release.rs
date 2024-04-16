@@ -10,7 +10,7 @@ pub struct Release {
 }
 
 pub fn parse(paren: Group, iter: Iter) -> Result<Release> {
-    try_parse(iter).map_err(|_| Error::group(paren, "expected rustc release number, like 1.31"))
+    try_parse(iter).map_err(|()| Error::group(paren, "expected rustc release number, like 1.31"))
 }
 
 fn try_parse(iter: Iter) -> Result<Release, ()> {

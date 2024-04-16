@@ -57,9 +57,9 @@ fn parse_words(words: &mut dyn Iterator<Item = &str>) -> Option<Version> {
 
     let channel = match channel {
         None => Stable,
-        Some(channel) if channel == "dev" => Dev,
+        Some("dev") => Dev,
         Some(channel) if channel.starts_with("beta") => Beta,
-        Some(channel) if channel == "nightly" => match words.next() {
+        Some("nightly") => match words.next() {
             Some(hash) if hash.starts_with('(') => match words.next() {
                 None if hash.ends_with(')') => Dev,
                 Some(date) if date.ends_with(')') => {

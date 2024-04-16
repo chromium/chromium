@@ -9,6 +9,7 @@ mod rustc;
 use std::env;
 use std::ffi::OsString;
 use std::fs;
+use std::iter;
 use std::path::Path;
 use std::process::{self, Command};
 
@@ -16,10 +17,14 @@ fn main() {
     println!("cargo:rerun-if-changed=build/build.rs");
 
     let rustc = env::var_os("RUSTC").unwrap_or_else(|| OsString::from("rustc"));
+    let rustc_wrapper = env::var_os("RUSTC_WRAPPER").filter(|wrapper| !wrapper.is_empty());
+    let wrapped_rustc = rustc_wrapper.iter().chain(iter::once(&rustc));
 
     let mut is_clippy_driver = false;
     let version = loop {
-        let mut command = Command::new(&rustc);
+        let mut wrapped_rustc = wrapped_rustc.clone();
+        let mut command = Command::new(wrapped_rustc.next().unwrap());
+        command.args(wrapped_rustc);
         if is_clippy_driver {
             command.arg("--rustc");
         }

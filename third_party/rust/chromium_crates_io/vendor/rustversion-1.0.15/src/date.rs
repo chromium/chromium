@@ -22,7 +22,7 @@ impl Display for Date {
 }
 
 pub fn parse(paren: Group, iter: Iter) -> Result<Date> {
-    try_parse(iter).map_err(|_| {
+    try_parse(iter).map_err(|()| {
         let msg = format!("expected nightly date, like {}", time::today());
         Error::group(paren, msg)
     })
