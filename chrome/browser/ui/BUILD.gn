@@ -536,6 +536,7 @@ static_library("ui") {
     "//components/feedback/content",
     "//components/feedback/redaction_tool",
     "//components/find_in_page",
+    "//components/fingerprinting_protection_filter/browser",
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/google/core/common",

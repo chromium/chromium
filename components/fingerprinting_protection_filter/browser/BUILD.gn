@@ -6,7 +6,21 @@ static_library("browser") {
   sources = [
     "fingerprinting_protection_filter_constants.cc",
     "fingerprinting_protection_filter_constants.h",
+    "fingerprinting_protection_filter_features.cc",
+    "fingerprinting_protection_filter_features.h",
+    "fingerprinting_protection_page_activation_throttle.cc",
+    "fingerprinting_protection_page_activation_throttle.h",
+    "fingerprinting_protection_web_contents_helper.cc",
+    "fingerprinting_protection_web_contents_helper.h",
   ]
-  deps = [ "//base" ]
-  public_deps = [ "//components/subresource_filter/core/browser" ]
+  public_deps = [
+    "//base",
+    "//components/subresource_filter/content/shared/browser",
+    "//components/subresource_filter/core/browser",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//components/subresource_filter/core/common",
+    "//components/subresource_filter/core/mojom",
+  ]
 }
