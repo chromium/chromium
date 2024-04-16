@@ -294,6 +294,7 @@ public class HistoryManager
             String searchEmptyString = getSearchEmptyString();
             mSelectableListLayout.onStartSearch(searchEmptyString);
             mUmaRecorder.recordSearchHistory();
+            mIsSearching = true;
             return true;
         } else if (item.getItemId() == R.id.info_menu_id) {
             toggleInfoHeaderVisibility();
