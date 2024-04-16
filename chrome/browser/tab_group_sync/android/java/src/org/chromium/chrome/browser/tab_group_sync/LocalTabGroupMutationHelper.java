@@ -74,7 +74,7 @@ public final class LocalTabGroupMutationHelper {
                 tabs, tabs.get(0), /* isSameGroup= */ true, /* notify= */ false);
 
         // Notify sync backend about IDs of the newly created group and tabs.
-        mTabGroupSyncService.updateLocalTabGroupId(tabGroup.syncId, groupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, groupId);
         for (String syncTabId : tabIdMappings.keySet()) {
             mTabGroupSyncService.updateLocalTabId(groupId, syncTabId, tabIdMappings.get(syncTabId));
         }

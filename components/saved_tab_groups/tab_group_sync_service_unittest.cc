@@ -208,10 +208,10 @@ TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {
   EXPECT_EQ(group->color(), visual_data.color());
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupId) {
+TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {
   LocalTabGroupID local_id_2 = test::GenerateRandomTabGroupID();
-  tab_group_sync_service_->UpdateLocalTabGroupId(group_1_.saved_guid(),
-                                                 local_id_2);
+  tab_group_sync_service_->UpdateLocalTabGroupMapping(group_1_.saved_guid(),
+                                                      local_id_2);
 
   auto retrieved_group = tab_group_sync_service_->GetGroup(local_id_2);
   EXPECT_TRUE(retrieved_group.has_value());

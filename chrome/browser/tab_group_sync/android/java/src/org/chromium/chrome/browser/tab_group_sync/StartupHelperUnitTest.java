@@ -78,7 +78,7 @@ public class StartupHelperUnitTest {
         when(mTabGroupModelFilter.getTabGroupSyncId(1)).thenReturn(SYNC_ID_1);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID_1});
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService).updateLocalTabGroupId(eq(SYNC_ID_1), eq(1));
+        verify(mTabGroupSyncService).updateLocalTabGroupMapping(eq(SYNC_ID_1), eq(1));
     }
 
     @Test

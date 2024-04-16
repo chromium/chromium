@@ -88,7 +88,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
                 .mergeListOfTabsToGroup(anyList(), any(), anyBoolean(), anyBoolean());
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
-        verify(mTabGroupSyncService).updateLocalTabGroupId(any(), anyInt());
+        verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), anyInt());
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(anyInt(), any(), anyInt());
     }
 

@@ -107,9 +107,16 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void updateLocalTabGroupId(String syncId, int localId) {
+    public void updateLocalTabGroupMapping(String syncId, int localId) {
         if (mNativePtr == 0) return;
-        TabGroupSyncServiceImplJni.get().updateLocalTabGroupId(mNativePtr, this, syncId, localId);
+        TabGroupSyncServiceImplJni.get()
+                .updateLocalTabGroupMapping(mNativePtr, this, syncId, localId);
+    }
+
+    @Override
+    public void removeLocalTabGroupMapping(int localId) {
+        if (mNativePtr == 0) return;
+        TabGroupSyncServiceImplJni.get().removeLocalTabGroupMapping(mNativePtr, this, localId);
     }
 
     @Override
@@ -212,11 +219,14 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 int localGroupId);
 
-        void updateLocalTabGroupId(
+        void updateLocalTabGroupMapping(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
                 String syncId,
                 int localId);
+
+        void removeLocalTabGroupMapping(
+                long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller, int localId);
 
         void updateLocalTabId(
                 long nativeTabGroupSyncServiceAndroid,

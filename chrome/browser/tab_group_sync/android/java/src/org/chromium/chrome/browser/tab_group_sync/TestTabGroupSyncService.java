@@ -65,7 +65,10 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public void updateLocalTabGroupId(String syncId, int localId) {}
+    public void updateLocalTabGroupMapping(String syncId, int localId) {}
+
+    @Override
+    public void removeLocalTabGroupMapping(int localId) {}
 
     @Override
     public void updateLocalTabId(int localGroupId, String syncTabId, int localTabId) {}

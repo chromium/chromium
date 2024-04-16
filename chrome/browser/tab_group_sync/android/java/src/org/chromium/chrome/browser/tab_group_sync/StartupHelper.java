@@ -98,7 +98,7 @@ public class StartupHelper {
             Integer localGroupId = idMappingsFromPref.get(syncGroupId);
             if (localGroupId == null) continue;
 
-            mTabGroupSyncService.updateLocalTabGroupId(syncGroupId, localGroupId);
+            mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
         }
     }
 

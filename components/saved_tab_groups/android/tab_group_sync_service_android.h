@@ -90,10 +90,13 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
       jint j_group_id);
 
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
-  void UpdateLocalTabGroupId(JNIEnv* env,
-                             const JavaParamRef<jobject>& j_caller,
-                             const JavaParamRef<jstring>& j_sync_id,
-                             jint j_local_id);
+  void UpdateLocalTabGroupMapping(JNIEnv* env,
+                                  const JavaParamRef<jobject>& j_caller,
+                                  const JavaParamRef<jstring>& j_sync_id,
+                                  jint j_local_id);
+  void RemoveLocalTabGroupMapping(JNIEnv* env,
+                                  const JavaParamRef<jobject>& j_caller,
+                                  jint j_local_id);
   void UpdateLocalTabId(JNIEnv* env,
                         const JavaParamRef<jobject>& j_caller,
                         jint j_group_id,

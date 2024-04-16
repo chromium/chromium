@@ -57,8 +57,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   std::vector<SavedTabGroup> GetAllGroups() override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) override;
   std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) override;
-  void UpdateLocalTabGroupId(const base::Uuid& sync_id,
-                             const LocalTabGroupID& local_id) override;
+  void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
+                                  const LocalTabGroupID& local_id) override;
+  void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;

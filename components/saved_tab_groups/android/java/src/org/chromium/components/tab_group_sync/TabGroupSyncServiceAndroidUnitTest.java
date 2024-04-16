@@ -132,8 +132,13 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testUpdateLocalTabGroupId(String syncId, int localId) {
-        mService.updateLocalTabGroupId(syncId, localId);
+    public void testUpdateLocalTabGroupMapping(String syncId, int localId) {
+        mService.updateLocalTabGroupMapping(syncId, localId);
+    }
+
+    @CalledByNative
+    public void testRemoveLocalTabGroupMapping(int localId) {
+        mService.removeLocalTabGroupMapping(localId);
     }
 
     @CalledByNative

@@ -114,8 +114,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual std::optional<SavedTabGroup> GetGroup(LocalTabGroupID& local_id) = 0;
 
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
-  virtual void UpdateLocalTabGroupId(const base::Uuid& sync_id,
-                                     const LocalTabGroupID& local_id) = 0;
+  virtual void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
+                                          const LocalTabGroupID& local_id) = 0;
+  virtual void RemoveLocalTabGroupMapping(const LocalTabGroupID& local_id) = 0;
   virtual void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                                 const base::Uuid& sync_tab_id,
                                 const LocalTabID& local_tab_id) = 0;

@@ -159,7 +159,14 @@ public interface TabGroupSyncService {
      * @param syncId The remote tab group ID.
      * @param localId The local tab group ID.
      */
-    void updateLocalTabGroupId(String syncId, int localId);
+    void updateLocalTabGroupMapping(String syncId, int localId);
+
+    /**
+     * Removes the in-memory mapping between sync and local tab group IDs.
+     *
+     * @param localId The local tab group ID whose mapping is to be forgotten.
+     */
+    void removeLocalTabGroupMapping(int localId);
 
     /**
      * Updates the in-memory mapping between sync and local IDs for a given tab.

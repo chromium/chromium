@@ -142,10 +142,15 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
                    : std::nullopt;
 }
 
-void TabGroupSyncServiceImpl::UpdateLocalTabGroupId(
+void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
     const base::Uuid& sync_id,
     const LocalTabGroupID& local_id) {
   model_->OnGroupOpenedInTabStrip(sync_id, local_id);
+}
+
+void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
+    const LocalTabGroupID& local_id) {
+  model_->OnGroupClosedInTabStrip(local_id);
 }
 
 void TabGroupSyncServiceImpl::UpdateLocalTabId(

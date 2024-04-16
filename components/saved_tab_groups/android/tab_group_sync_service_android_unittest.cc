@@ -58,8 +58,9 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (LocalTabGroupID&));
 
   MOCK_METHOD(void,
-              UpdateLocalTabGroupId,
+              UpdateLocalTabGroupMapping,
               (const base::Uuid&, const LocalTabGroupID&));
+  MOCK_METHOD(void, RemoveLocalTabGroupMapping, (const LocalTabGroupID&));
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
@@ -226,15 +227,21 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
       env, j_test_, j_uuid1, j_uuid2);
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupId) {
+TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
   auto* env = AttachCurrentThread();
   base::Uuid group_id = base::Uuid::GenerateRandomV4();
   auto j_group_id = UuidToJavaString(env, group_id);
 
+  // Update the mapping.
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateLocalTabGroupId(Eq(group_id), Eq(4)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateLocalTabGroupId(
+              UpdateLocalTabGroupMapping(Eq(group_id), Eq(4)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateLocalTabGroupMapping(
       AttachCurrentThread(), j_test_, j_group_id, 4);
+
+  // Remove the mapping.
+  EXPECT_CALL(tab_group_sync_service_, RemoveLocalTabGroupMapping(Eq(4)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveLocalTabGroupMapping(
+      AttachCurrentThread(), j_test_, 4);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
