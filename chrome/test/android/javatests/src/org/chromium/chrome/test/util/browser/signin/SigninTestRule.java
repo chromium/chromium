@@ -21,6 +21,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -166,6 +167,19 @@ public class SigninTestRule extends AccountManagerTestRule {
     /** Adds a child account, and waits for auto-signin to complete. */
     public CoreAccountInfo addChildTestAccountThenWaitForSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
+        addAccountAndWaitForSeeding(TEST_CHILD_ACCOUNT);
+
+        // The child will be force signed in (by SigninChecker).
+        // Wait for this to complete before enabling sync.
+        waitForSignin(TEST_CHILD_ACCOUNT);
+        return TEST_CHILD_ACCOUNT;
+    }
+
+    /** Adds a child account, and waits for auto-signin to complete with specified capabilities. */
+    public AccountInfo addChildTestAccountThenWaitForSignin(AccountCapabilitiesBuilder builder) {
+        assert !mIsSignedIn : "An account is already signed in!";
+        TEST_CHILD_ACCOUNT.setAccountCapabilities(
+                builder.setIsSubjectToParentalControls(true).build());
         addAccountAndWaitForSeeding(TEST_CHILD_ACCOUNT);
 
         // The child will be force signed in (by SigninChecker).

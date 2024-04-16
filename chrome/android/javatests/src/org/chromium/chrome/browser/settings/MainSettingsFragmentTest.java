@@ -126,6 +126,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -638,16 +639,8 @@ public class MainSettingsFragmentTest {
         // Account set up.
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         AccountInfo accountInfo =
-                new AccountInfo.Builder(
-                                AccountManagerTestRule.generateChildEmail("test@gmail.com"),
-                                FakeAccountManagerFacade.toGaiaId("test-gaia-id"))
-                        .fullName("ChildTest Full")
-                        .givenName("ChildTest Given")
-                        .accountCapabilities(
-                                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES)
-                        .build();
-        signinTestRule.addAccountAndWaitForSeeding(accountInfo);
-        signinTestRule.waitForSignin(accountInfo);
+                signinTestRule.addChildTestAccountThenWaitForSignin(
+                        new AccountCapabilitiesBuilder().setCanHaveEmailAddressDisplayed(false));
 
         // Force update the preference so that NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES is
         // actually utilized. This is to replicate downstream implementation behavior, where
