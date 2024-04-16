@@ -106,6 +106,7 @@ void SetTabGroupCreationName(NSString* group_name) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
+  config.features_enabled.push_back(kModernTabStrip);
   return config;
 }
 
