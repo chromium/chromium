@@ -96,7 +96,7 @@ public final class TabGroupSyncLocalObserver {
             public void onFinishingMultipleTabClosure(List<Tab> tabs) {
                 if (!mIsObserving || tabs.isEmpty()) return;
 
-                // TODO(b/331466817): Differentiate between close group and close tab.
+                mRemoteTabGroupMutationHelper.handleMultipleTabClosure(tabs);
             }
         };
     }
@@ -157,10 +157,7 @@ public final class TabGroupSyncLocalObserver {
 
             @Override
             public void didRemoveTabGroup(int oldRootId) {
-                mTabGroupModelFilter.setTabGroupSyncId(oldRootId, null);
-                if (!mIsObserving) return;
-
-                mRemoteTabGroupMutationHelper.removeGroup(oldRootId);
+                mRemoteTabGroupMutationHelper.unmapTabGroupId(oldRootId);
             }
 
             @Override

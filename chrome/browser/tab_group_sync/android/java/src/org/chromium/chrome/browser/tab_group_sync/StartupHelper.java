@@ -116,6 +116,7 @@ public class StartupHelper {
         }
 
         for (int tabGroupId : localTabGroups) {
+            // Skip if the group is already added to sync.
             String syncId = mTabGroupModelFilter.getTabGroupSyncId(tabGroupId);
             if (!TextUtils.isEmpty(syncId)) continue;
 

@@ -184,7 +184,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testDidRemoveGroup() {
         mTabGroupModelFilterObserverCaptor.getValue().didRemoveTabGroup(3);
         verify(mTabGroupModelFilter).setTabGroupSyncId(eq(3), eq(null));
-        verify(mTabGroupSyncService, times(1)).removeGroup(eq(3));
+        verify(mTabGroupSyncService, times(1)).removeLocalTabGroupMapping(eq(3));
     }
 
     @Test

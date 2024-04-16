@@ -12,7 +12,10 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Helper class to create a {@link SavedTabGroup} based on a local tab group. It's a wrapper around
@@ -51,7 +54,7 @@ public class RemoteTabGroupMutationHelper {
         }
 
         // Persist sync ID mapping for the tab group in shared preference.
-        mTabGroupModelFilter.setTabGroupSyncId(groupId, syncId);
+        mapTabGroupId(groupId, syncId);
     }
 
     /**
@@ -86,14 +89,10 @@ public class RemoteTabGroupMutationHelper {
      * @param newGroupId The new local tab group ID.
      */
     public void onLocalGroupIdChanged(int oldGroupId, int newGroupId) {
-        // Delete the old mapping from shared prefs.
-        mTabGroupModelFilter.setTabGroupSyncId(oldGroupId, null);
+        unmapTabGroupId(oldGroupId);
         SavedTabGroup group = mTabGroupSyncService.getGroup(oldGroupId);
         if (group == null) return;
-
-        // Store the new mapping in-memory in the service and in shared prefs.
-        mTabGroupSyncService.updateLocalTabGroupMapping(group.syncId, newGroupId);
-        mTabGroupModelFilter.setTabGroupSyncId(newGroupId, group.syncId);
+        mapTabGroupId(newGroupId, group.syncId);
     }
 
     public void addTab(int tabGroupId, Tab tab, int position) {
@@ -131,5 +130,73 @@ public class RemoteTabGroupMutationHelper {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
             mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));
         }
+    }
+
+    /** Adds mapping for a tab group ID to the service and persistence. */
+    public void mapTabGroupId(int groupId, String syncId) {
+        mTabGroupSyncService.updateLocalTabGroupMapping(syncId, groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId, syncId);
+    }
+
+    /** Removes mapping for a tab group ID from service and persistence. */
+    public void unmapTabGroupId(int groupId) {
+        mTabGroupSyncService.removeLocalTabGroupMapping(groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId, null);
+    }
+
+    /**
+     * Handle tab closure and notifies sync. Note, tab groups that are closed as part of close
+     * group, or close all tabs, or close multiple tabs shouldn't be removed from sync. However,
+     * individual tab closures should be treated as tab removal from they synced group. This is done
+     * by checking if the tabs being closed contains an entire group.
+     */
+    public void handleMultipleTabClosure(List<Tab> tabs) {
+        // Filter out tabs that weren't in a group.
+        List<Tab> tabsInGroups =
+                tabs.stream()
+                        .filter(tab -> tab.getTabGroupId() != null)
+                        .collect(Collectors.toList());
+
+        // Find out tab groups being closed. Don't remove them from sync, only drop the local
+        // mapping from shared prefs and the service.
+        Set<Integer> groupsClosing = findCompleteGroups(tabsInGroups);
+        for (int groupId : groupsClosing) {
+            unmapTabGroupId(groupId);
+        }
+
+        // The rest of the tabs are the ones that are being removed from their groups. Remove them
+        // from sync.
+        Set<Tab> tabsToRemove = findTabsNotInCompleteGroups(tabsInGroups, groupsClosing);
+        for (Tab tab : tabsToRemove) {
+            mTabGroupSyncService.removeTab(tab.getRootId(), tab.getId());
+        }
+    }
+
+    private Set<Integer> findCompleteGroups(List<Tab> tabs) {
+        Set<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toSet());
+
+        Set<Integer> completeGroups = new HashSet<>();
+        for (Tab tab : tabs) {
+            if (completeGroups.contains(tab.getRootId())) continue;
+
+            List<Tab> relatedTabs =
+                    mTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
+            if (areAllTabsInGroup(relatedTabs, tabIds)) {
+                completeGroups.add(tab.getRootId());
+            }
+        }
+
+        return completeGroups;
+    }
+
+    private static Set<Tab> findTabsNotInCompleteGroups(
+            List<Tab> tabs, Set<Integer> completeGroups) {
+        return tabs.stream()
+                .filter(tab -> !completeGroups.contains(tab.getRootId()))
+                .collect(Collectors.toSet());
+    }
+
+    private static boolean areAllTabsInGroup(List<Tab> tabs, Set<Integer> tabIdsInGroups) {
+        return tabs.stream().allMatch(tab -> tabIdsInGroups.contains(tab.getId()));
     }
 }
