@@ -156,7 +156,7 @@ void SetRuntimeFeatureFromChromiumFeature(const base::Feature& chromium_feature,
   using FeatureList = base::FeatureList;
   const bool feature_enabled = FeatureList::IsEnabled(chromium_feature);
   const bool is_overridden =
-      FeatureList::GetInstance()->IsFeatureOverridden(chromium_feature.name);
+      FeatureList::GetStateIfOverridden(chromium_feature).has_value();
   switch (option) {
     case kSetOnlyIfOverridden:
       if (is_overridden) {
