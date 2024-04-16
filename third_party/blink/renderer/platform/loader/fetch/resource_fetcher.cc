@@ -2191,7 +2191,8 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     }
     UpdateServiceWorkerSubresourceMetrics(
         resource->GetType(),
-        resource->GetResponse().WasFetchedViaServiceWorker());
+        resource->GetResponse().WasFetchedViaServiceWorker(),
+        resource->GetResponse().GetServiceWorkerRouterInfo());
   }
 
   context_->UpdateSubresourceLoadMetrics(subresource_load_metrics_);
@@ -2908,7 +2909,8 @@ void ResourceFetcher::RecordResourceHistogram(
 
 void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
     ResourceType resource_type,
-    bool handled_by_serviceworker) {
+    bool handled_by_serviceworker,
+    const blink::ServiceWorkerRouterInfo* router_info) {
   if (!subresource_load_metrics_.service_worker_subresource_load_metrics) {
     subresource_load_metrics_.service_worker_subresource_load_metrics =
         blink::ServiceWorkerSubresourceLoadMetrics{};
@@ -3014,12 +3016,33 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
         metrics.mock_fallback |= true;
       }
       break;
-    case ResourceType::kDictionary:  // 14
+    case ResourceType::kDictionary:  // 15
       if (handled_by_serviceworker) {
         metrics.dictionary_handled |= true;
       } else {
         metrics.dictionary_fallback |= true;
       }
+      break;
+  }
+
+  // Count the matched route info of static routing API for sub-resources
+  // if it exists.
+  if (!router_info) {
+    return;
+  }
+
+  switch (router_info->MatchedSourceType()) {
+    case network::mojom::ServiceWorkerRouterSourceType::kCache:
+      metrics.matched_cache_router_source_count++;
+      break;
+    case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+      metrics.matched_fetch_event_router_source_count++;
+      break;
+    case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+      metrics.matched_network_router_source_count++;
+      break;
+    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+      metrics.matched_race_network_and_fetch_router_source_count++;
       break;
   }
 }

@@ -55,6 +55,14 @@ bool StructTraits<
   out->mock_fallback = data.mock_fallback();
   out->dictionary_handled = data.dictionary_handled();
   out->dictionary_fallback = data.dictionary_fallback();
+  out->matched_cache_router_source_count =
+      data.matched_cache_router_source_count();
+  out->matched_fetch_event_router_source_count =
+      data.matched_fetch_event_router_source_count();
+  out->matched_network_router_source_count =
+      data.matched_network_router_source_count();
+  out->matched_race_network_and_fetch_router_source_count =
+      data.matched_race_network_and_fetch_router_source_count();
   return true;
 }
 

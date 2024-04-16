@@ -24504,6 +24504,38 @@ be describing additional metrics about the same event.
       in the page. (boolean value. true: 1 or false: 0)
     </summary>
   </metric>
+  <metric name="MatchedCacheRouterSourceCount">
+    <summary>
+      Total number of sub-resources which were matched to
+      `RouterSourceEnum.cache` in ServiceWorker Static Routing API, from
+      navigation start until onload event. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
+  <metric name="MatchedFetchEventRouterSourceCount">
+    <summary>
+      Total number of sub-resources which were matched to
+      `RouterSourceEnum.fetch-event` in ServiceWorker Static Routing API, from
+      navigation start until onload event. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
+  <metric name="MatchedNetworkRouterSourceCount">
+    <summary>
+      Total number of sub-resources which were matched to
+      `RouterSourceEnum.network` in ServiceWorker Static Routing API, from
+      navigation start until onload event. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
+  <metric name="MatchedRaceNetworkAndFetchRouterSourceCount">
+    <summary>
+      Total number of sub-resources which were matched to the
+      `RouterSourceEnum.race-network-and-fetch-handler` in ServiceWorker Static
+      Routing API, from navigation start till onload event. This is rounded down
+      to the nearest exponential bucket (with a bucket ratio on 1.15).
+    </summary>
+  </metric>
   <metric name="ScriptFallback">
     <summary>
       True if there are network fallback sub-resources of CSSStyleSheet in the

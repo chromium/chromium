@@ -534,7 +534,20 @@ void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
         .SetSpeculationRulesHandled(sw_metrics.speculation_rules_handled)
         .SetSpeculationRulesFallback(sw_metrics.speculation_rules_fallback)
         .SetDictionaryHandled(sw_metrics.dictionary_handled)
-        .SetDictionaryFallback(sw_metrics.dictionary_fallback);
+        .SetDictionaryFallback(sw_metrics.dictionary_fallback)
+        .SetMatchedCacheRouterSourceCount(
+            ukm::GetExponentialBucketMinForCounts1000(
+                sw_metrics.matched_cache_router_source_count))
+        .SetMatchedFetchEventRouterSourceCount(
+            ukm::GetExponentialBucketMinForCounts1000(
+                sw_metrics.matched_fetch_event_router_source_count))
+        .SetMatchedNetworkRouterSourceCount(
+            ukm::GetExponentialBucketMinForCounts1000(
+                sw_metrics.matched_network_router_source_count))
+        .SetMatchedRaceNetworkAndFetchRouterSourceCount(
+            ukm::GetExponentialBucketMinForCounts1000(
+                sw_metrics.matched_race_network_and_fetch_router_source_count));
+    ;
   }
   builder.Record(ukm::UkmRecorder::Get());
 }

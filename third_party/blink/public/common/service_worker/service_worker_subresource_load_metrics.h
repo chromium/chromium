@@ -114,6 +114,26 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // i.e. the service worker did not call `respondWith`, and network fallback.
   bool dictionary_fallback = false;
 
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.cache` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32_t matched_network_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.fetch-event` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32_t matched_fetch_event_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.network` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32_t matched_cache_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to the
+  // `RouterSourceEnum.race-network-and-fetch-handler` in ServiceWorker Static
+  // Routing API, from navigation start till onload event.
+  uint32_t matched_race_network_and_fetch_router_source_count = 0;
+
   bool operator==(const ServiceWorkerSubresourceLoadMetrics& other) const {
     return image_handled == other.image_handled &&
            image_fallback == other.image_fallback &&
@@ -144,7 +164,15 @@ struct ServiceWorkerSubresourceLoadMetrics {
            mock_handled == other.mock_handled &&
            mock_fallback == other.mock_fallback &&
            dictionary_handled == other.dictionary_handled &&
-           dictionary_fallback == other.dictionary_fallback;
+           dictionary_fallback == other.dictionary_fallback &&
+           matched_network_router_source_count ==
+               other.matched_network_router_source_count &&
+           matched_fetch_event_router_source_count ==
+               other.matched_fetch_event_router_source_count &&
+           matched_cache_router_source_count ==
+               other.matched_cache_router_source_count &&
+           matched_race_network_and_fetch_router_source_count ==
+               other.matched_race_network_and_fetch_router_source_count;
   }
 };
 

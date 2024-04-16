@@ -156,6 +156,26 @@ class StructTraits<
     return d.dictionary_fallback;
   }
 
+  static uint32_t matched_cache_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_cache_router_source_count;
+  }
+
+  static uint32_t matched_fetch_event_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_fetch_event_router_source_count;
+  }
+
+  static uint32_t matched_network_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_network_router_source_count;
+  }
+
+  static uint32_t matched_race_network_and_fetch_router_source_count(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.matched_race_network_and_fetch_router_source_count;
+  }
+
   static bool Read(
       page_load_metrics::mojom::ServiceWorkerSubresourceLoadMetricsDataView
           data,

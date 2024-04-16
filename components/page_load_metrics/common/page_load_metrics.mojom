@@ -410,6 +410,26 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // e.g. if there are two resources, and one is handed by the service worker,
   // and one did not, this flag will be true because one was network fallback.
   bool dictionary_fallback;
+
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.cache` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32 matched_cache_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.fetch-event` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32 matched_fetch_event_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to
+  // `RouterSourceEnum.network` in ServiceWorker Static Routing API, from
+  // navigation start until onload event.
+  uint32 matched_network_router_source_count = 0;
+
+  // Total number of sub-resources which were matched to the
+  // `RouterSourceEnum.race-network-and-fetch-handler` in ServiceWorker Static
+  // Routing API, from navigation start till onload event.
+  uint32 matched_race_network_and_fetch_router_source_count = 0;
 };
 
 // Enumeration of distinct cache types.
