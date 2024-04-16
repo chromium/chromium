@@ -26,7 +26,6 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
   auto writing_direction = GetConstraintSpace().GetWritingDirection();
   const BlockBreakToken* break_token = nullptr;
-  LayoutUnit intrinsic_block_size;
   LogicalOffset page_offset;
   uint32_t page_index = 0;
   AtomicString page_name;
@@ -59,19 +58,15 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
 
     LayoutUnit page_block_size =
         LogicalFragment(writing_direction, *page).BlockSize();
-    intrinsic_block_size = std::max(intrinsic_block_size,
-                                    page_offset.block_offset + page_block_size);
     page_offset.block_offset += page_block_size;
     break_token = page->GetBreakToken();
     page_index++;
   } while (break_token);
 
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
-
   // Compute the block-axis size now that we know our content size.
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), /* border_padding */ BoxStrut(),
-      intrinsic_block_size, kIndefiniteSize);
+      GetConstraintSpace(), Style(), /*border_padding=*/BoxStrut(),
+      /*intrinsic_size=*/LayoutUnit(), kIndefiniteSize);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
