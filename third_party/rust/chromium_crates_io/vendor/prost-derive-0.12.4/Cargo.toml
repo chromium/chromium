@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.70"
 name = "prost-derive"
-version = "0.12.3"
+version = "0.12.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
@@ -32,7 +32,7 @@ proc_macro = true
 version = "1.0.1"
 
 [dependencies.itertools]
-version = ">=0.10, <0.12"
+version = ">=0.10, <=0.12"
 features = ["use_alloc"]
 default-features = false
 

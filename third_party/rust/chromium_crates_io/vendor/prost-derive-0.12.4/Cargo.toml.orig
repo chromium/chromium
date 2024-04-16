@@ -1,6 +1,6 @@
 [package]
 name = "prost-derive"
-version = "0.12.3"
+version = "0.12.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
@@ -12,14 +12,14 @@ documentation = "https://docs.rs/prost-derive"
 readme = "README.md"
 description = "A Protocol Buffers implementation for the Rust Language."
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.70"
 
 [lib]
 proc_macro = true
 
 [dependencies]
 anyhow = "1.0.1"
-itertools = { version = ">=0.10, <0.12", default-features = false, features = ["use_alloc"] }
+itertools = { version = ">=0.10, <=0.12", default-features = false, features = ["use_alloc"] }
 proc-macro2 = "1"
 quote = "1"
 syn = { version = "2", features = [ "extra-traits" ] }
