@@ -26,6 +26,6 @@ found in the LICENSE file.
         android:layout_marginStart="24dp"
         android:layout_gravity="bottom"
         android:textDirection="locale"
-        android:text="@string/history_app_filter_sheet_header"
+        android:text="@string/history_filter_by_app"
         style="@style/TextAppearance.TextAccentMediumThick.Primary" />
 </LinearLayout>
