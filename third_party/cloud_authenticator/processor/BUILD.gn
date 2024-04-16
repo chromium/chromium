@@ -11,6 +11,7 @@ rust_static_library("processor") {
     "src/lib.rs",
     "src/macros.rs",
     "src/passkeys.rs",
+    "src/pin.rs",
     "src/recovery_key_store.rs",
     "src/spki.rs",
   ]

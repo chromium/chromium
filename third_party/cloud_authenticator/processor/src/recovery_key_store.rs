@@ -15,8 +15,12 @@
 //! recovery_key_store contains functions for working with Google's
 //! recovery key store, also called Vault internally.
 
-use crate::{debug, AuthLevel, Authentication, DirtyFlag, ParsedState, Reauth, RequestError};
+use crate::{
+    debug, get_secret_from_request, pin, AuthLevel, Authentication, DirtyFlag, ParsedState, Reauth,
+    RequestError, COUNTER_ID_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
+};
 use alloc::collections::BTreeMap;
+use alloc::string::String;
 use alloc::vec::Vec;
 use bytes::Bytes;
 use cbor::{cbor, MapKey, MapKeyRef, MapLookupKey, Value};
@@ -726,9 +730,15 @@ mod key_distribution {
     #[cfg(feature = "chromium_integration_test")]
     use super::TEST_ROOT_CERTIFICATE;
 
-    /// Return an ECDH public key, and certificate path, from an arbitrary
-    /// recovery key store cohort, given the published XML files. These XML
-    /// files are found at
+    /// A Cohort represents a specific recovery key store cohort. It includes:
+    ///   * The public key of the cohort.
+    ///   * It's certificate chain.
+    ///   * The serial number of the public key update.
+    type Cohort = ([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>, i64);
+
+    /// Return an ECDH public key, a certificate path, and the serial
+    /// number, from an arbitrary recovery key store cohort, given the published
+    /// XML files. These XML files are found at
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.xml
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml
     ///
@@ -740,7 +750,7 @@ mod key_distribution {
         sig_xml: &[u8],
         current_time_epoch_millis: i64,
         cohort_selector: u32,
-    ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
+    ) -> Result<Cohort, &'static str> {
         // The cert.sig.xml contains:
         //   a) a leaf X.509 certificate.
         //   b) a signature of the `cert.xml` file by that certificate.
@@ -796,9 +806,9 @@ mod key_distribution {
         get_public_keys_from_certs(cert_xml, current_time_epoch_millis, root_cert, cohort_selector)
     }
 
-    /// Return an ECDH public key, and certificate path, from an arbitrary
-    /// recovery key store cohort, given the `cert.xml` file, which must
-    /// already have been validated.
+    /// Return an ECDH public key, a certificate path, and the serial number
+    /// from an arbitrary recovery key store cohort, given the `cert.xml` file,
+    /// which must already have been validated.
     ///
     /// The `current_time` is used for certificate validation and also to
     /// "randomly" pick a cohort.
@@ -807,7 +817,7 @@ mod key_distribution {
         current_time_epoch_millis: i64,
         root_cert: &[u8],
         cohort_selector: u32,
-    ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
+    ) -> Result<Cohort, &'static str> {
         let (certs_toplevel, certs_value) =
             xml::parse(cert_xml).ok_or("failed to parse certs XML")?;
         if certs_toplevel != "certificate" {
@@ -816,6 +826,16 @@ mod key_distribution {
         let xml::Value::Object(certs_value) = certs_value else {
             return Err("no child elements in certs XML");
         };
+
+        let Some(xml::Element::Single(xml::Value::Object(metadata))) = certs_value.get("metadata")
+        else {
+            return Err("missing or incorrectly structured <metadata>");
+        };
+
+        let Some(xml::Element::Single(xml::Value::String(serial))) = metadata.get("serial") else {
+            return Err("missing or incorrectly structured <serial>");
+        };
+        let serial = serial.parse::<i64>().map_err(|_| "cannot parse serial number")?;
         let Some(xml::Element::Single(xml::Value::Object(endpoints))) =
             certs_value.get("endpoints")
         else {
@@ -858,6 +878,7 @@ mod key_distribution {
             // Thus it might seem that checking `cert.sig.xml` is superfluous
             // but the Android implementation does it and so this code does too.
             build_path(&endpoint_cert, certs_value, root_cert, current_time_epoch_millis)?,
+            serial,
         ))
     }
 
@@ -1041,7 +1062,7 @@ mod key_distribution {
 
         #[test]
         fn test_get_public_keys() {
-            let (_key, path) = get_cohort_key(
+            let (_key, path, serial) = get_cohort_key(
                 SAMPLE_CERTS_XML,
                 SAMPLE_SIG_XML,
                 SAMPLE_VALIDATION_EPOCH_MILLIS,
@@ -1049,6 +1070,7 @@ mod key_distribution {
             )
             .unwrap();
             assert_eq!(path.len(), 2);
+            assert_eq!(serial, 10016);
         }
 
         #[test]
@@ -1247,21 +1269,28 @@ fn cohort_selector_from_handle(handle: &[u8; VAULT_HANDLE_LEN]) -> u32 {
 const MAX_ATTEMPTS: u32 = 10;
 
 /// The length, in bytes, of a Vault handle.
-const VAULT_HANDLE_LEN: usize = 17;
+pub const VAULT_HANDLE_LEN: usize = 17;
+
+/// This identifies a GPM PIN vault.
+pub const VAULT_HANDLE_FIRST_BYTE: u8 = 3;
+
+/// The length, in bytes, of a Vault handle.
+pub const COUNTER_ID_LEN: usize = 8;
 
 /// This structure holds the many values that result from wrapping a knowledge
 /// factor. All these values need to be placed into a `Vault` protobuf for
 /// submission to the service.
 struct Wrapped {
     encrypted_recovery_key: Vec<u8>,
-    vault_handle: [u8; 17],
-    counter_id: [u8; 8],
+    vault_handle: [u8; VAULT_HANDLE_LEN],
+    counter_id: [u8; COUNTER_ID_LEN],
     cohort_public_key: [u8; crypto::P256_X962_LENGTH],
     max_attempts: u32,
     certs_in_path: Vec<Vec<u8>>,
     app_public_key: [u8; crypto::P256_X962_LENGTH],
     wrapped_app_private_key: Vec<u8>,
     wrapped_wrapping_key: Vec<u8>,
+    serial: i64,
 }
 
 impl From<Wrapped> for cbor::Value {
@@ -1280,34 +1309,83 @@ impl From<Wrapped> for cbor::Value {
     }
 }
 
+/// The Vault parameters. These must be constant when renewing a Vault so that
+/// renewal doesn't reset the attempt counters.
+struct Parameters {
+    vault_handle: [u8; VAULT_HANDLE_LEN],
+    counter_id: [u8; COUNTER_ID_LEN],
+}
+
+impl Parameters {
+    /// Generate a random set of Parameters.
+    fn random() -> Self {
+        let mut params = Parameters { vault_handle: [0u8; VAULT_HANDLE_LEN], counter_id: [0u8; 8] };
+        params.vault_handle[0] = VAULT_HANDLE_FIRST_BYTE;
+        crypto::rand_bytes(&mut params.vault_handle[1..]);
+        crypto::rand_bytes(&mut params.counter_id);
+        params
+    }
+
+    fn from_pin_data(pin_data: &pin::Data) -> Self {
+        let mut params =
+            Parameters { counter_id: pin_data.counter_id, vault_handle: [0u8; VAULT_HANDLE_LEN] };
+        params.vault_handle[0] = VAULT_HANDLE_FIRST_BYTE;
+        params.vault_handle[1..].copy_from_slice(&pin_data.vault_handle_without_type);
+        params
+    }
+
+    fn from_request(request: &BTreeMap<cbor::MapKey, cbor::Value>) -> Result<Self, RequestError> {
+        let Some(Value::Bytestring(counter_id)) = request.get(COUNTER_ID_KEY) else {
+            return debug("counter ID required");
+        };
+        if counter_id.len() != COUNTER_ID_LEN {
+            return debug("bad counter ID length");
+        }
+
+        let Some(Value::Bytestring(vault_handle_without_type)) =
+            request.get(VAULT_HANDLE_WITHOUT_TYPE_KEY)
+        else {
+            return debug("vault handle required");
+        };
+        if vault_handle_without_type.len() != VAULT_HANDLE_LEN - 1 {
+            return debug("bad vault handle length");
+        }
+
+        let mut params = Parameters {
+            counter_id: counter_id
+                .as_ref()
+                .try_into()
+                .map_err(|_| RequestError::Debug("incorrect length counter ID"))?,
+            vault_handle: [0u8; VAULT_HANDLE_LEN],
+        };
+        params.vault_handle[0] = VAULT_HANDLE_FIRST_BYTE;
+        params.vault_handle[1..].copy_from_slice(vault_handle_without_type);
+        Ok(params)
+    }
+}
+
 fn wrap(
     pin_hash: &[u8],
     cert_xml: &[u8],
     sig_xml: &[u8],
+    params: Parameters,
     current_time_epoch_millis: i64,
 ) -> Result<Wrapped, &'static str> {
-    let mut vault_handle = [0u8; VAULT_HANDLE_LEN];
-    vault_handle[0] = 3; // a type byte that indicates a GPM PIN.
-    crypto::rand_bytes(&mut vault_handle[1..]);
-
-    let (cohort_public_key, certs_in_path) = key_distribution::get_cohort_key(
+    let (cohort_public_key, certs_in_path, serial) = key_distribution::get_cohort_key(
         cert_xml,
         sig_xml,
         current_time_epoch_millis,
-        cohort_selector_from_handle(&vault_handle),
+        cohort_selector_from_handle(&params.vault_handle),
     )?;
-
-    let mut counter_id = [0u8; 8];
-    crypto::rand_bytes(&mut counter_id);
 
     let max_attempts = MAX_ATTEMPTS.to_le_bytes();
 
     let vault_params = [
         b"V1 THM_encrypted_recovery_key".as_ref(),
         cohort_public_key.as_ref(),
-        counter_id.as_ref(),
+        &params.counter_id,
         max_attempts.as_ref(),
-        vault_handle.as_ref(),
+        &params.vault_handle,
     ]
     .concat();
 
@@ -1361,20 +1439,77 @@ fn wrap(
     Ok(Wrapped {
         cohort_public_key,
         encrypted_recovery_key,
-        vault_handle,
-        counter_id,
+        vault_handle: params.vault_handle,
+        counter_id: params.counter_id,
         max_attempts: MAX_ATTEMPTS,
         certs_in_path,
         app_public_key,
         wrapped_app_private_key,
         wrapped_wrapping_key,
+        serial,
     })
+}
+
+/// Return a CBOR response for `wrapped` which includes the fields needed to
+/// insert the virtual member into a security domain.
+fn include_security_domain_member_fields(
+    wrapped: Wrapped,
+    security_domain_secret: &[u8; 32],
+) -> Result<cbor::Value, RequestError> {
+    let header = b"V1 shared_key";
+    let Some(wrapped_sds) =
+        securebox::encrypt(Some(&wrapped.app_public_key), &[], header, security_domain_secret)
+    else {
+        return debug("generated public key was invalid");
+    };
+    let member_proof = crypto::hmac_sha256(security_domain_secret, &wrapped.app_public_key);
+    let wrapped_cbor: cbor::Value = wrapped.into();
+
+    Ok(cbor!({
+        "wrapped_sds": wrapped_sds,
+        "member_proof": (&member_proof),
+        "wrapped": wrapped_cbor,
+    }))
+}
+
+/// Check that the given serial number is at least equal to the greatest serial
+/// number used by the given device before. This is done so that devices cannot
+/// request rewrapping of PIN hashes under older recovery key store cohorts,
+/// which may allow an attacker additional guesses against a PIN.
+fn enforce_cert_highwater(
+    state: &mut DirtyFlag<ParsedState>,
+    device_id: &[u8],
+    serial: i64,
+) -> Result<(), RequestError> {
+    let device = state.get_device(device_id).ok_or(RequestError::Debug("missing device"))?;
+    let current_value: Option<i64> =
+        device.get(RECOVERY_KEY_STORE_SERIAL_HIGHWATER_KEY).and_then(|v| match v {
+            Value::Int(current) => Some(*current),
+            _ => None,
+        });
+
+    // If the serial matches the current highwater exactly, we're done.
+    match current_value {
+        Some(current) if current == serial => return Ok(()),
+        Some(current) if current > serial => return Err(RequestError::RecoveryKeyStoreDowngrade),
+        _ => (),
+    }
+
+    // Need to update the highwater.
+    let device =
+        state.get_mut().get_mut_device(device_id).ok_or(RequestError::Debug("missing device"))?;
+    device.insert(
+        MapKey::String(String::from(RECOVERY_KEY_STORE_SERIAL_HIGHWATER)),
+        Value::Int(serial),
+    );
+    Ok(())
 }
 
 map_keys! {
     PIN_HASH, PIN_HASH_KEY = "pin_hash",
     CERT_XML, CERT_XML_KEY = "cert_xml",
     SIG_XML, SIG_XML_KEY = "sig_xml",
+    RECOVERY_KEY_STORE_SERIAL_HIGHWATER, RECOVERY_KEY_STORE_SERIAL_HIGHWATER_KEY = "recovery_key_store_serial_highwater",
 }
 
 /// Encrypts a PIN hash to a Vault public key. This is a purely public operation
@@ -1394,8 +1529,9 @@ pub(crate) fn do_wrap(
     let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
         return debug("cert.sig.xml required");
     };
-    let wrapped = wrap(pin_hash, cert_xml, sig_xml, current_time_epoch_millis)
-        .map_err(RequestError::Debug)?;
+    let wrapped =
+        wrap(pin_hash, cert_xml, sig_xml, Parameters::random(), current_time_epoch_millis)
+            .map_err(RequestError::Debug)?;
     Ok(wrapped.into())
 }
 
@@ -1409,10 +1545,11 @@ pub(crate) fn do_wrap_as_member(
     current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    // Either UV or else reauth is required to perform this command.
+    // Either UV or else reauth is required to perform this command. The one-time
+    // UV is not enough.
     let device_id = match auth {
-        Authentication::Device(device_id, AuthLevel::UserVerification, _) => device_id,
-        Authentication::Device(device_id, _, Reauth::Done) => device_id,
+        Authentication::Device(device_id, AuthLevel::UserVerification, _, _) => device_id,
+        Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
         _ => return debug("not authenticated"),
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
@@ -1424,32 +1561,49 @@ pub(crate) fn do_wrap_as_member(
     let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
         return debug("cert.sig.xml required");
     };
-    let Some(Value::Bytestring(wrapped_secret)) = request.get(crate::passkeys::WRAPPED_SECRET_KEY)
-    else {
-        return debug("wrapped secret required");
-    };
-    let security_domain_secret = state.unwrap(
-        device_id,
-        wrapped_secret,
-        crate::passkeys::KEY_PURPOSE_SECURITY_DOMAIN_SECRET,
-    )?;
-    let wrapped = wrap(pin_hash, cert_xml, sig_xml, current_time_epoch_millis)
-        .map_err(RequestError::Debug)?;
+    let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
+    let wrapped = wrap(
+        pin_hash,
+        cert_xml,
+        sig_xml,
+        Parameters::from_request(&request)?,
+        current_time_epoch_millis,
+    )
+    .map_err(RequestError::Debug)?;
+    include_security_domain_member_fields(wrapped, &security_domain_secret)
+}
 
-    let header = b"V1 shared_key";
-    let Some(wrapped_sds) =
-        securebox::encrypt(Some(&wrapped.app_public_key), &[], header, &security_domain_secret)
-    else {
-        return debug("generated public key was invalid");
+pub(crate) fn do_rewrap(
+    auth: &Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    current_time_epoch_millis: i64,
+    request: BTreeMap<MapKey, Value>,
+) -> Result<cbor::Value, RequestError> {
+    let device_id = match auth {
+        Authentication::Device(device_id, _, _, _) => device_id,
+        _ => return debug("not authenticated"),
     };
-    let member_proof = crypto::hmac_sha256(&security_domain_secret, &wrapped.app_public_key);
-    let wrapped_cbor: cbor::Value = wrapped.into();
-
-    Ok(cbor!({
-        "wrapped_sds": wrapped_sds,
-        "member_proof": (&member_proof),
-        "wrapped": wrapped_cbor,
-    }))
+    let Some(Value::Bytestring(cert_xml)) = request.get(CERT_XML_KEY) else {
+        return debug("cert.xml required");
+    };
+    let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
+        return debug("cert.sig.xml required");
+    };
+    let Some(Value::Bytestring(wrapped_pin_data)) = request.get(WRAPPED_PIN_DATA_KEY) else {
+        return debug("wrapped PIN required");
+    };
+    let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
+    let pin_data = pin::Data::from_wrapped(wrapped_pin_data, &security_domain_secret)?;
+    let wrapped = wrap(
+        &pin_data.pin_hash,
+        cert_xml,
+        sig_xml,
+        Parameters::from_pin_data(&pin_data),
+        current_time_epoch_millis,
+    )
+    .map_err(RequestError::Debug)?;
+    enforce_cert_highwater(state, device_id, wrapped.serial)?;
+    include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
 #[cfg(test)]
@@ -1460,8 +1614,14 @@ mod tests {
     fn test_wrap() {
         let pin_hash = [1u8; 32];
         assert!(
-            wrap(&pin_hash, SAMPLE_CERTS_XML, SAMPLE_SIG_XML, SAMPLE_VALIDATION_EPOCH_MILLIS)
-                .is_ok()
+            wrap(
+                &pin_hash,
+                SAMPLE_CERTS_XML,
+                SAMPLE_SIG_XML,
+                Parameters::random(),
+                SAMPLE_VALIDATION_EPOCH_MILLIS
+            )
+            .is_ok()
         );
     }
 }

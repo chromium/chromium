@@ -33,6 +33,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedEnclaveOverride {
   const std::unique_ptr<EnclaveIdentity> enclave_identity_;
 };
 
+// The length of a recovery key store counter ID.
+inline constexpr size_t kCounterIDLen = 8;
+// The length of a recovery key store "vault handle" value.
+inline constexpr size_t kVaultHandleLen = 17;
+
 // Keys in the top-level request message.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandEncodedRequestsKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandDeviceIdKey[];
@@ -43,6 +48,9 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandAuthLevelKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestCommandKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestWrappedSecretKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestSecretKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRequestCounterIDKey[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRequestVaultHandleWithoutTypeKey[];
 
 // Keys in the top-level of each response.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kResponseSuccessKey[];

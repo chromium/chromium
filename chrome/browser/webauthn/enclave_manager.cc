@@ -423,6 +423,9 @@ cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
     base::span<const uint8_t> hashed_pin,
     int64_t generation,
     base::span<const uint8_t, 32> claim_key,
+    base::span<const uint8_t, enclave::kCounterIDLen> counter_id,
+    base::span<const uint8_t, enclave::kVaultHandleLen - 1>
+        vault_handle_without_type,
     base::span<const uint8_t> wrapped_secret) {
   cbor::Value::MapValue request;
   request.emplace(enclave::kRequestCommandKey,
@@ -431,6 +434,9 @@ cbor::Value::ArrayValue BuildPINWrappingEnclaveRequest(
   request.emplace(enclave::kGeneration, generation);
   request.emplace(enclave::kClaimKey, claim_key);
   request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
+  request.emplace(enclave::kRequestCounterIDKey, counter_id);
+  request.emplace(enclave::kRequestVaultHandleWithoutTypeKey,
+                  vault_handle_without_type);
 
   cbor::Value::ArrayValue requests;
   requests.emplace_back(std::move(request));
@@ -443,6 +449,9 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINChangeEnclaveRequest(
     base::span<const uint8_t> hashed_pin,
     std::string cert_xml,
     std::string sig_xml,
+    base::span<const uint8_t, enclave::kCounterIDLen> counter_id,
+    base::span<const uint8_t, enclave::kVaultHandleLen - 1>
+        vault_handle_without_type,
     base::span<const uint8_t> wrapped_secret) {
   cbor::Value::MapValue request;
   request.emplace(enclave::kRequestCommandKey,
@@ -451,6 +460,9 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINChangeEnclaveRequest(
   request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
   request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
   request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
+  request.emplace(enclave::kRequestCounterIDKey, counter_id);
+  request.emplace(enclave::kRequestVaultHandleWithoutTypeKey,
+                  vault_handle_without_type);
 
   cbor::Value::ArrayValue requests;
   requests.emplace_back(std::move(request));
@@ -1653,6 +1665,10 @@ class EnclaveManager::StateMachine {
 
   void SendPINChangeRequest(std::string token) {
     const bool has_rapt = rapt_.has_value();
+    uint8_t counter_id[enclave::kCounterIDLen];
+    crypto::RandBytes(counter_id);
+    uint8_t vault_handle_without_type[enclave::kVaultHandleLen - 1];
+    crypto::RandBytes(vault_handle_without_type);
 
     state_ = State::kChangingPIN;
     std::vector<uint8_t> wrapped_secret =
@@ -1669,11 +1685,12 @@ class EnclaveManager::StateMachine {
         ConcatEnclaveRequests(
             BuildPINWrappingEnclaveRequest(
                 hashed_pin_->hashed, wrapped_pin_proto_->generation(),
-                ToSizedSpan<32>(wrapped_pin_proto_->claim_key()),
-                wrapped_secret),
+                ToSizedSpan<32>(wrapped_pin_proto_->claim_key()), counter_id,
+                vault_handle_without_type, wrapped_secret),
             BuildRecoveryKeyStorePINChangeEnclaveRequest(
                 hashed_pin_->hashed, std::move(*cert_xml_),
-                std::move(*sig_xml_), wrapped_secret)),
+                std::move(*sig_xml_), counter_id, vault_handle_without_type,
+                wrapped_secret)),
         // These operations require more authentication than just the hardware
         // key. Thus either we have a reauthentication proof token to send to
         // the enclave, or else we need to use the UV key.
@@ -2018,7 +2035,9 @@ class EnclaveManager::StateMachine {
     map.emplace(2, generation);
     map.emplace(3, claim_key);
     map.emplace(4, ToSpan(vault->vault_parameters().counter_id()));
-    map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()));
+    // The vault handle in the wrapped PIN doesn't include the first byte,
+    // which is the type of the vault entry.
+    map.emplace(5, ToSpan(vault->vault_parameters().vault_handle()).subspan(1));
     const std::vector<uint8_t> cbor_bytes =
         cbor::Writer::Write(cbor::Value(std::move(map))).value();
     return VecToString(EncryptWrappedPIN(security_domain_secret, cbor_bytes));

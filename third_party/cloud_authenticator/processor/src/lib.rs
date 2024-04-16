@@ -51,6 +51,7 @@ mod der;
 #[macro_use]
 mod macros;
 mod passkeys;
+mod pin;
 mod recovery_key_store;
 mod spki;
 
@@ -148,9 +149,14 @@ pub struct ExternalContext {
 const OK: &str = "ok";
 const ERR: &str = "err";
 
+// The "purpose" value of a security domain secret. Used when the client
+// presents a wrapped secret that will be used as such.
+pub(crate) const KEY_PURPOSE_SECURITY_DOMAIN_SECRET: &str = "security domain secret";
+
 map_keys! {
     AUTH_LEVEL, AUTH_LEVEL_KEY = "auth_level",
     CMD, CMD_KEY = "cmd",
+    COUNTER_ID, COUNTER_ID_KEY = "counter_id",
     DEVICE_ID, DEVICE_ID_KEY = "device_id",
     DEVICES, DEVICES_KEY = "devices",
     ENCODED_REQUESTS, ENCODED_REQUESTS_KEY = "encoded_requests",
@@ -164,8 +170,13 @@ map_keys! {
     PUB_KEYS, PUB_KEYS_KEY = "pub_keys",
     PURPOSE, PURPOSE_KEY = "purpose",
     REGISTER_TIME, REGISTER_TIME_KEY = "register_time",
+    SECRET, SECRET_KEY = "secret",
     SIG, SIG_KEY = "sig",
     TO, TO_KEY = "to",
+    UV_KEY_PENDING, UV_KEY_PENDING_KEY = "uv_key_pending",
+    VAULT_HANDLE_WITHOUT_TYPE, VAULT_HANDLE_WITHOUT_TYPE_KEY = "vault_handle_without_type",
+    WRAPPED_PIN_DATA, WRAPPED_PIN_DATA_KEY = "wrapped_pin_data",
+    WRAPPED_SECRET, WRAPPED_SECRET_KEY = "wrapped_secret",
     WRAPPING_KEYS, WRAPPING_KEYS_KEY = "wrapping_keys",
 }
 
@@ -223,6 +234,48 @@ fn unwrap(wrapping_key: &[u8], data: &[u8], purpose: &str) -> Result<Vec<u8>, Re
         Vec::from(ciphertext),
     )
     .map_err(|_| RequestError::Debug("decryption failed"))
+}
+
+fn open_aes_256_gcm(key: &[u8; 32], nonce_and_ciphertext: &[u8], aad: &[u8]) -> Option<Vec<u8>> {
+    if nonce_and_ciphertext.len() < crypto::NONCE_LEN {
+        return None;
+    }
+    let (nonce, ciphertext) = nonce_and_ciphertext.split_at(crypto::NONCE_LEN);
+    // unwrap: the length is correct because it just came from `split_at`.
+    let nonce: [u8; crypto::NONCE_LEN] = nonce.try_into().unwrap();
+    crypto::aes_256_gcm_open_in_place(key, &nonce, aad, ciphertext.to_vec()).ok()
+}
+
+enum SourceOfSecret {
+    Wrapped,
+    Direct,
+}
+
+/// Get the security domain secret for a client's request, either because it's
+/// wrapped, or because the client provided it directly.
+fn get_secret_from_request(
+    state: &DirtyFlag<ParsedState>,
+    request: &BTreeMap<MapKey, Value>,
+    device_id: &[u8],
+) -> Result<([u8; 32], SourceOfSecret), RequestError> {
+    let (secret, source) =
+        if let Some(Value::Bytestring(wrapped_secret)) = request.get(WRAPPED_SECRET_KEY) {
+            if request.get(SECRET_KEY).is_some() {
+                return debug("both wrapped and unwrapped secret provided");
+            } else {
+                (
+                    state.unwrap(device_id, wrapped_secret, KEY_PURPOSE_SECURITY_DOMAIN_SECRET)?,
+                    SourceOfSecret::Wrapped,
+                )
+            }
+        } else if let Some(Value::Bytestring(secret)) = request.get(SECRET_KEY) {
+            (secret.to_vec(), SourceOfSecret::Direct)
+        } else {
+            return debug("must provide secret or wrapped secret");
+        };
+    let secret =
+        secret.as_slice().try_into().map_err(|_| RequestError::Debug("wrong length secret"))?;
+    Ok((secret, source))
 }
 
 pub struct PINState {
@@ -369,7 +422,7 @@ impl Default for ParsedState {
 }
 
 /// Represents the type of public key that authenticates a request.
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 enum AuthLevel {
     /// The key is hardware bound to the device.
     Hardware,
@@ -379,7 +432,7 @@ enum AuthLevel {
 }
 
 impl AuthLevel {
-    fn to_str(&self) -> &'static str {
+    fn as_str(&self) -> &'static str {
         match self {
             AuthLevel::Hardware => "hw",
             AuthLevel::UserVerification => "uv",
@@ -401,17 +454,28 @@ impl core::str::FromStr for AuthLevel {
 /// Represents whether a client has very recently reauthenticated. This is a
 /// feature of Google Accounts and so the host simply tells this enclave whether
 /// it's true or not for a given client.
+#[derive(Copy, Clone)]
 enum Reauth {
     None,
     Done,
 }
 
+/// Represents whether the client is using its declared option to register a UV
+/// key after registration. In this case, it is able to make UV assertions if
+/// the assertion command is in the same batch.
+#[derive(Copy, Clone)]
+enum OneTimeUV {
+    Consumed,
+    None,
+}
+
 /// Represents which device a request is coming from.
 enum Authentication {
     None,
-    // Contains the device ID, authentication level, and whether the client reauthenticated very
+    // Contains the device ID, authentication level, whether the client is using
+    // a one-time UV assertion, and whether the client reauthenticated very
     // recently.
-    Device(Vec<u8>, AuthLevel, Reauth),
+    Device(Vec<u8>, AuthLevel, OneTimeUV, Reauth),
     // Requests processed after a registration will observe this special
     // authentication level. Duplicate registrations are silently accepted so
     // one must be very careful with this authentication level since it can be
@@ -513,7 +577,7 @@ pub fn process_client_msg(
             return Err(Error::Str("client is missing pub_keys"));
         };
         let Some(Value::Bytestring(pub_key)) =
-            pub_keys.get(&MapKeyRef::Str(auth_level.to_str()) as &dyn MapLookupKey)
+            pub_keys.get(&MapKeyRef::Str(auth_level.as_str()) as &dyn MapLookupKey)
         else {
             return Err(Error::Str("no such public key at that auth level"));
         };
@@ -531,6 +595,7 @@ pub fn process_client_msg(
         auth = Authentication::Device(
             device_id,
             auth_level,
+            OneTimeUV::None,
             if ext_ctx.is_reauthenticated { Reauth::Done } else { Reauth::None },
         );
     }
@@ -564,7 +629,7 @@ pub fn process_client_msg(
     // This is a "minor" state update and may be discarded.
     let has_minor_update = state_with_dirty_flag.minor_change
         || match auth {
-            Authentication::Device(device_id, _, _) => {
+            Authentication::Device(device_id, _, _, _) => {
                 if let Some(device) = state.get_mut_device(&device_id) {
                     device.insert(
                         MapKey::String(String::from(LAST_USED)),
@@ -621,6 +686,10 @@ enum RequestError {
     /// information.
     PINOutdated,
 
+    /// Client provided recovery key store keys that had a lower version than
+    /// those previously used.
+    RecoveryKeyStoreDowngrade,
+
     /// An error that should never happen and thus is only reported for
     /// debugging purposes. Clients are not expected to handle these errors
     /// other than to log them.
@@ -635,6 +704,7 @@ impl RequestError {
             RequestError::IncorrectPIN => Value::Int(3),
             RequestError::PINLocked => Value::Int(4),
             RequestError::PINOutdated => Value::Int(5),
+            RequestError::RecoveryKeyStoreDowngrade => Value::Int(6),
             RequestError::Debug(s) => Value::String(String::from(*s)),
         }
     }
@@ -656,6 +726,7 @@ fn do_request(
     };
     match cmd.as_str() {
         "device/register" => do_device_register(ext_ctx, auth, state, request),
+        "device/add_uv_key" => do_device_add_uv_key(auth, state, request),
         "device/forget" => do_device_forget(auth, state, request),
         "debug/success" => Ok(Value::Boolean(true)),
         "debug/dump" => do_debug_dump(ext_ctx, state, request),
@@ -673,6 +744,9 @@ fn do_request(
             ext_ctx.current_time_epoch_millis,
             request,
         ),
+        "recovery_key_store/rewrap" => {
+            recovery_key_store::do_rewrap(auth, state, ext_ctx.current_time_epoch_millis, request)
+        }
         _ => debug("unknown command"),
     }
 }
@@ -701,6 +775,9 @@ fn do_device_register(
         Value::Bytestring(Bytes::from(ext_ctx.client_device_identifier.clone())),
     );
 
+    let mut has_uv_key = false;
+    let mut has_uv_key_pending = false;
+
     for (key, value) in request {
         let MapKey::String(key) = key else {
             continue;
@@ -714,31 +791,39 @@ fn do_device_register(
                     return debug("pub_keys cannot be empty");
                 }
                 for (k, v) in &pub_keys {
-                    if !matches!(k, MapKey::String(_)) {
+                    let MapKey::String(k) = k else {
                         return debug("pub_keys contains non-string key");
-                    }
+                    };
                     let Value::Bytestring(spki) = v else {
                         return debug("pub_keys contains non-bytestring value");
                     };
-                    let Some(_) = spki::parse(spki) else {
-                        return debug("cannot not parse SPKI from pub_key entry");
+                    if spki::parse(spki).is_none() {
+                        return debug("cannot parse SPKI from pub_key entry");
                     };
+                    if k == AuthLevel::UserVerification.as_str() {
+                        has_uv_key = true;
+                    }
                 }
                 device.insert(MapKey::String(key), Value::Map(pub_keys));
             }
-            _ => {
-                continue;
+            UV_KEY_PENDING => {
+                device.insert(MapKey::String(String::from(UV_KEY_PENDING)), Value::Boolean(true));
+                has_uv_key_pending = true;
             }
+            _ => continue,
         }
     }
 
     if !device.contains_key(PUB_KEYS_KEY) {
         return debug("missing pub_keys");
     }
+    if has_uv_key && has_uv_key_pending {
+        return debug("can't defer UV key creation when also setting one");
+    }
 
-    /// Check if the public keys from the existing device (given as a `Value`)
-    /// matching those from the proposed new device record.
-    fn pub_keys_match(existing: &Value, new: &BTreeMap<MapKey, Value>) -> bool {
+    /// Check if an existing device (given as a `Value`) matches the proposed
+    /// new device record.
+    fn entry_matches(existing: &Value, new: &BTreeMap<MapKey, Value>) -> bool {
         let Value::Map(existing) = existing else {
             return false;
         };
@@ -748,7 +833,17 @@ fn do_device_register(
         let Some(Value::Map(new_pub_keys)) = new.get(PUB_KEYS_KEY) else {
             return false;
         };
-        existing_pub_keys == new_pub_keys
+        let Value::Boolean(existing_uv_key_pending) =
+            existing.get(UV_KEY_PENDING_KEY).unwrap_or(&Value::Boolean(false))
+        else {
+            return false;
+        };
+        let Value::Boolean(new_uv_key_pending) =
+            new.get(UV_KEY_PENDING_KEY).unwrap_or(&Value::Boolean(false))
+        else {
+            return false;
+        };
+        existing_pub_keys == new_pub_keys && existing_uv_key_pending == new_uv_key_pending
     }
 
     let did_insert = match state.get_mut().get_device_entry(device_id.to_vec())? {
@@ -758,8 +853,8 @@ fn do_device_register(
         }
         btree_map::Entry::Occupied(entry) => {
             // Entry already exists. The registration will be a no-op success if
-            // the public keys match, otherwise a failure.
-            if !pub_keys_match(entry.get(), &device) {
+            // the device matches, otherwise a failure.
+            if !entry_matches(entry.get(), &device) {
                 return Err(RequestError::Duplicate);
             }
             false
@@ -780,6 +875,69 @@ fn do_device_register(
     if let Authentication::None = *auth {
         *auth = Authentication::NewlyRegistered(device_id.to_vec());
     }
+    Ok(Value::Boolean(true))
+}
+
+fn do_device_add_uv_key(
+    auth: &mut Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    request: BTreeMap<MapKey, Value>,
+) -> Result<cbor::Value, RequestError> {
+    let (device_id, auth_level, reauth) = match auth {
+        Authentication::Device(device_id, auth_level, _, reauth) => (device_id, auth_level, reauth),
+        _ => {
+            return debug("device identity required");
+        }
+    };
+    let Some(Value::Bytestring(spki)) = request.get(PUB_KEY_KEY) else {
+        return debug("need pub_key");
+    };
+    if spki::parse(spki).is_none() {
+        return debug("invalid SPKI");
+    }
+
+    // Check whether the device already has a UV key.
+    let Some(device) = state.get_device(device_id) else {
+        return debug("no device record");
+    };
+    let Some(Value::Map(pub_keys)) = device.get(PUB_KEYS_KEY) else {
+        return debug("device missing pub_keys");
+    };
+    let uv = MapKey::String(String::from(AuthLevel::UserVerification.as_str()));
+    match pub_keys.get(&uv) {
+        Some(Value::Bytestring(existing_uv_key)) => {
+            if existing_uv_key == spki {
+                return Ok(Value::Boolean(true));
+            } else {
+                return debug("different UV key already registered");
+            }
+        }
+        Some(_) => {
+            return debug("UV key is wrong type");
+        }
+        None => (),
+    }
+    // Check that  `uv_key_pending` is set.
+    match device.get(UV_KEY_PENDING_KEY) {
+        Some(Value::Boolean(uv_key_pending)) if *uv_key_pending => (),
+        _ => return debug("uv_key_pending is missing"),
+    }
+
+    // Requirements have been checked. Now get a mutable reference and update
+    // the device record.
+    let Some(device) = state.get_mut().get_mut_device(device_id) else {
+        return debug("no device record");
+    };
+    device.remove(UV_KEY_PENDING_KEY);
+    let Some(Value::Map(pub_keys)) = device.get_mut(PUB_KEYS_KEY) else {
+        // Impossible since the structure of "pub_keys" was checked above.
+        return debug("internal error");
+    };
+    pub_keys.insert(uv, Value::Bytestring(spki.clone()));
+
+    // Allow some subsequent commands in this request to act as if UV was asserted.
+    *auth = Authentication::Device(device_id.clone(), *auth_level, OneTimeUV::Consumed, *reauth);
+
     Ok(Value::Boolean(true))
 }
 
@@ -805,7 +963,7 @@ fn do_keys_genpair(
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     let device_id: &Vec<u8> = match auth {
-        Authentication::Device(device_id, _, _) => device_id,
+        Authentication::Device(device_id, _, _, _) => device_id,
         Authentication::NewlyRegistered(device_id) => device_id,
         Authentication::None => {
             return debug("device identity required");
@@ -829,7 +987,7 @@ fn do_keys_wrap(
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     let device_id: &Vec<u8> = match auth {
-        Authentication::Device(device_id, _, _) => device_id,
+        Authentication::Device(device_id, _, _, _) => device_id,
         Authentication::NewlyRegistered(device_id) => device_id,
         Authentication::None => {
             return debug("device identity required");
@@ -868,9 +1026,8 @@ mod tests {
     use cbor::cbor;
     use crypto::EcdsaKeyPair;
     use passkeys::{
-        CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, KEY_PURPOSE_SECURITY_DOMAIN_SECRET,
-        PIN_CLAIM_KEY, PIN_GENERATION, PIN_HASH, PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID, SECRET,
-        WEBAUTHN_REQUEST, WRAPPED_PIN_DATA, WRAPPED_SECRET,
+        CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, PIN_CLAIM_KEY, PIN_GENERATION, PIN_HASH,
+        PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID, WEBAUTHN_REQUEST,
     };
     use prost::Message;
     use recovery_key_store::{CERT_XML, SIG_XML};
@@ -955,6 +1112,27 @@ mod tests {
             };
             wrapped.to_vec()
         };
+        static ref REGISTERED_STATE_UV_PENDING: ClientState = {
+            let encoded_register = cbor!([{
+                CMD: "device/register",
+                DEVICE_ID: (TEST_DEVICE_ID.clone()),
+                PUB_KEYS: {"hw": (SPKI.as_slice())},
+                UV_KEY_PENDING: true,
+            }])
+            .to_bytes();
+            let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let (output, StateUpdate::Major(state)) = process_client_msg(
+                ClientState::Initial,
+                EXTERNAL_CONTEXT.clone(),
+                TEST_HANDSHAKE_HASH.as_slice(),
+                msg,
+            )
+            .unwrap() else {
+                panic!("");
+            };
+            assert_eq!(output, cbor!([{"ok": true}]));
+            ClientState::Explicit(state)
+        };
         static ref ENTITY_PROTOBUF_BYTES: Vec<u8> = {
             let msg = sign_request(cbor!({
                 CMD: "passkeys/create",
@@ -1033,7 +1211,11 @@ mod tests {
         cbor!({ENCODED_REQUESTS: encoded_requests}).to_bytes()
     }
 
-    fn sign_authenticated_request<F>(cmd: BTreeMap<MapKey, Value>, sign: F) -> Vec<u8>
+    fn sign_authenticated_request<F>(
+        cmd: BTreeMap<MapKey, Value>,
+        auth_level: &str,
+        sign: F,
+    ) -> Vec<u8>
     where
         F: FnOnce(&[u8]) -> Vec<u8>,
     {
@@ -1043,7 +1225,7 @@ mod tests {
             vec![TEST_HANDSHAKE_HASH.as_slice(), encoded_requests_hash.as_ref()].concat();
         cbor!({
             DEVICE_ID: (TEST_DEVICE_ID.clone()),
-            AUTH_LEVEL: "hw",
+            AUTH_LEVEL: auth_level,
             SIG: (sign(&signed_message).as_slice()),
             ENCODED_REQUESTS: encoded_requests,
         })
@@ -1051,7 +1233,7 @@ mod tests {
     }
 
     fn authenticated_request(cmd: BTreeMap<MapKey, Value>) -> Vec<u8> {
-        sign_authenticated_request(cmd, |to_be_signed| {
+        sign_authenticated_request(cmd, "hw", |to_be_signed| {
             KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
         })
     }
@@ -1130,7 +1312,7 @@ mod tests {
         let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
             panic!("!");
         };
-        let msg = sign_authenticated_request(cmd, |to_be_signed| {
+        let msg = sign_authenticated_request(cmd, "hw", |to_be_signed| {
             RSA_KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
         });
         let (output, _state) = process_client_msg(
@@ -1183,6 +1365,111 @@ mod tests {
         )
         .unwrap();
         assert_eq!(output, cbor!([{"err": 2}]));
+    }
+
+    #[test]
+    fn test_device_register_uv_and_uv_pending() {
+        // Can't register both a UV key and a UV-pending signal.
+        let encoded_register = cbor!([{
+            CMD: "device/register",
+            DEVICE_ID: (TEST_DEVICE_ID.clone()),
+            PUB_KEYS: {"uv": (SPKI.as_slice())},
+            UV_KEY_PENDING: true,
+        }])
+        .to_bytes();
+        let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let (output, _) = process_client_msg(
+            ClientState::Initial,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+    }
+
+    #[test]
+    fn test_device_add_uv_key_without_uv_pending() {
+        // add_uv_key should fail if the device didn't opt to later add a UV
+        // key at registration time.
+        let encoded_register = cbor!([{
+            CMD: "device/add_uv_key",
+            PUB_KEY: (SPKI.as_slice()),
+        }])
+        .to_bytes();
+        let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+
+        assert!(!is_ok(&output));
+    }
+
+    #[test]
+    fn test_subsequent_uv() {
+        let msg = sign_request(cbor!({
+            CMD: "device/add_uv_key",
+            PUB_KEY: (SPKI.as_slice()),
+        }));
+        let (output, StateUpdate::Major(state)) = process_client_msg(
+            REGISTERED_STATE_UV_PENDING.clone(),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap() else {
+            panic!("")
+        };
+        assert!(is_ok(&output));
+
+        // Doing the same command a second time is fine if the public key
+        // matches.
+        let msg = sign_request(cbor!({
+            CMD: "device/add_uv_key",
+            PUB_KEY: (SPKI.as_slice()),
+        }));
+        let (output, _update) = process_client_msg(
+            ClientState::Explicit(state.clone()),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(is_ok(&output));
+
+        // ... but it fails if the public key is different.
+        let msg = sign_request(cbor!({
+            CMD: "device/add_uv_key",
+            PUB_KEY: RSA_SPKI,
+        }));
+        let (output, _update) = process_client_msg(
+            ClientState::Explicit(state.clone()),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+
+        // The UV key should work now.
+        let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
+            panic!("!");
+        };
+        let msg = sign_authenticated_request(cmd, "uv", |to_be_signed| {
+            KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
+        });
+        let (output, _update) = process_client_msg(
+            ClientState::Explicit(state),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        )
+        .unwrap();
+        assert!(is_ok(&output), "{:?}", output);
     }
 
     #[test]
@@ -1352,10 +1639,14 @@ mod tests {
 
     #[test]
     fn test_use_pin() {
-        let pin_data =
-            passkeys::PinData { pin_hash: [1u8; 32], generation: 1, claim_key: [2u8; 32] };
-        let wrapped_pin_data =
-            passkeys::encrypt_pin_data(pin_data.to_bytes(), SAMPLE_SECURITY_DOMAIN_SECRET);
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            generation: 1,
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
         let pin_claim =
             seal_aes_256_gcm(&pin_data.claim_key, &pin_data.pin_hash, passkeys::PIN_CLAIM_AAD);
 
@@ -1390,11 +1681,9 @@ mod tests {
 
         // Trying to submit an older generation PIN should fail without updating the
         // attempts counter.
-        let older_generation_pin_data = passkeys::PinData { generation: 0, ..pin_data };
-        let older_generation_wrapped_pin_data = passkeys::encrypt_pin_data(
-            older_generation_pin_data.to_bytes(),
-            SAMPLE_SECURITY_DOMAIN_SECRET,
-        );
+        let older_generation_pin_data = pin::Data { generation: 0, ..pin_data };
+        let older_generation_wrapped_pin_data =
+            older_generation_pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
         let (error, pin_state, state) =
             attempt_pin(state, &older_generation_wrapped_pin_data, &pin_claim);
         assert_eq!(error, Some(Value::Int(5)));
@@ -1428,11 +1717,15 @@ mod tests {
         // Wrap a PIN and then attempt to use it.
         let pin_hash = [1u8; 32];
         let claim_key = [2u8; 32];
+        let counter_id = [3u8; recovery_key_store::COUNTER_ID_LEN];
+        let vault_handle_without_type = [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1];
         let msg = sign_request(cbor!({
             CMD: "passkeys/wrap_pin",
             PIN_HASH: (&pin_hash),
             PIN_GENERATION: 1,
             PIN_CLAIM_KEY: (&claim_key),
+            COUNTER_ID: (&counter_id),
+            VAULT_HANDLE_WITHOUT_TYPE: (&vault_handle_without_type),
             WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
         }));
         let (output, _) = process_client_msg(
@@ -1725,6 +2018,22 @@ mod tests {
     }
 
     #[test]
+    fn test_invalid_device_add_uv_key() {
+        let request = cbor!({
+            CMD: "device/add_uv_key",
+            PUB_KEY: (SPKI.as_slice()),
+        });
+        let configs = BTreeMap::from([]);
+
+        test_invalid_requests(
+            &request,
+            REGISTERED_STATE_UV_PENDING.clone(),
+            RequestAuthentication::Required,
+            &configs,
+        );
+    }
+
+    #[test]
     fn test_invalid_passkeys_assert() {
         let request = cbor!({
             CMD: "passkeys/assert",
@@ -1788,11 +2097,15 @@ mod tests {
     fn test_invalid_passkeys_wrap_pin() {
         let pin_hash = [1u8; 32];
         let claim_key = [2u8; 32];
+        let counter_id = [3u8; recovery_key_store::COUNTER_ID_LEN];
+        let vault_handle_without_type = [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1];
         let request = cbor!({
             CMD: "passkeys/wrap_pin",
             PIN_HASH: (&pin_hash),
             PIN_GENERATION: 1,
             PIN_CLAIM_KEY: (&claim_key),
+            COUNTER_ID: (&counter_id),
+            VAULT_HANDLE_WITHOUT_TYPE: (&vault_handle_without_type),
             WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
         });
         let configs = BTreeMap::from([]);
@@ -1833,6 +2146,34 @@ mod tests {
             CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
             SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
             WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+        });
+        let configs = BTreeMap::from([]);
+
+        test_invalid_requests(
+            &request,
+            REGISTERED_STATE.clone(),
+            RequestAuthentication::Required,
+            &configs,
+        );
+    }
+
+    #[test]
+    fn test_invalid_recovery_key_store_rewrap() {
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            generation: 1,
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+
+        let request = cbor!({
+            CMD: "recovery_key_store/rewrap",
+            CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+            SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+            WRAPPED_PIN_DATA: wrapped_pin_data,
         });
         let configs = BTreeMap::from([]);
 

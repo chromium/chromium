@@ -85,6 +85,8 @@ const char kCommandAuthLevelKey[] = "auth_level";
 const char kRequestCommandKey[] = "cmd";
 const char kRequestWrappedSecretKey[] = "wrapped_secret";
 const char kRequestSecretKey[] = "secret";
+const char kRequestCounterIDKey[] = "counter_id";
+const char kRequestVaultHandleWithoutTypeKey[] = "vault_handle_without_type";
 
 const char kResponseSuccessKey[] = "ok";
 const char kResponseErrorKey[] = "err";

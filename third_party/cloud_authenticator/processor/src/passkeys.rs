@@ -20,14 +20,17 @@ extern crate crypto;
 extern crate prost;
 
 use super::{
-    debug, AuthLevel, Authentication, DirtyFlag, PINState, ParsedState, Reauth, RequestError,
-    PUB_KEY,
+    debug, get_secret_from_request, open_aes_256_gcm, AuthLevel, Authentication, DirtyFlag,
+    OneTimeUV, PINState, ParsedState, Reauth, RequestError, SourceOfSecret, COUNTER_ID_KEY,
+    KEY_PURPOSE_SECURITY_DOMAIN_SECRET, PUB_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY,
+    WRAPPED_PIN_DATA_KEY, WRAPPED_SECRET_KEY,
 };
+use crate::pin;
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec;
 use alloc::vec::Vec;
-use cbor::{cbor, MapKey, MapKeyRef, MapLookupKey, Value};
+use cbor::{MapKey, MapKeyRef, MapLookupKey, Value};
 use chromesync::pb::webauthn_credential_specifics::EncryptedData;
 use chromesync::pb::WebauthnCredentialSpecifics;
 use core::ops::Deref;
@@ -45,11 +48,8 @@ map_keys! {
     PROTOBUF, PROTOBUF_KEY = "protobuf",
     PUB_KEY_CRED_PARAMS, PUB_KEY_CRED_PARAMS_KEY = "pubKeyCredParams",
     RP_ID, RP_ID_KEY = "rpId",
-    SECRET, SECRET_KEY = "secret",
     VERSION, VERSION_KEY = "version",
     WEBAUTHN_REQUEST, WEBAUTHN_REQUEST_KEY = "request",
-    WRAPPED_PIN_DATA, WRAPPED_PIN_DATA_KEY = "wrapped_pin_data",
-    WRAPPED_SECRET, WRAPPED_SECRET_KEY = "wrapped_secret",
 }
 
 // The encrypted part of a WebauthnCredentialSpecifics sync entity is encrypted
@@ -58,15 +58,6 @@ map_keys! {
 const PRIVATE_KEY_FIELD_AAD: &[u8] = b"";
 const ENCRYPTED_FIELD_AAD: &[u8] = b"WebauthnCredentialSpecifics.Encrypted";
 pub(crate) const PIN_CLAIM_AAD: &[u8] = b"PIN claim";
-
-// The "purpose" value of a security domain secret. Used when the client
-// presents a wrapped secret that will be used as such.
-pub(crate) const KEY_PURPOSE_SECURITY_DOMAIN_SECRET: &str = "security domain secret";
-
-// The HKDF "info" parameter used when deriving a PIN data key from a security
-// domain secret.
-pub(crate) const KEY_PURPOSE_PIN_DATA_KEY: &[u8] =
-    b"KeychainApplicationKey:chrome:GPM PIN data wrapping key";
 
 // These constants are CTAP flags.
 // See https://w3c.github.io/webauthn/#authdata-flags
@@ -91,44 +82,12 @@ fn key(k: &str) -> MapKey {
     MapKey::String(String::from(k))
 }
 
-enum SourceOfSecret {
-    Wrapped,
-    Direct,
-}
-
-/// Get the security domain secret for a client's request, either because it's
-/// wrapped, or because the client provided it directly.
-fn get_secret_from_request(
-    state: &mut DirtyFlag<ParsedState>,
-    request: &BTreeMap<MapKey, Value>,
-    device_id: &[u8],
-) -> Result<([u8; 32], SourceOfSecret), RequestError> {
-    let (secret, source) =
-        if let Some(Value::Bytestring(wrapped_secret)) = request.get(WRAPPED_SECRET_KEY) {
-            if request.get(SECRET_KEY).is_some() {
-                return debug("both wrapped and unwrapped secret provided");
-            } else {
-                (
-                    state.unwrap(device_id, wrapped_secret, KEY_PURPOSE_SECURITY_DOMAIN_SECRET)?,
-                    SourceOfSecret::Wrapped,
-                )
-            }
-        } else if let Some(Value::Bytestring(secret)) = request.get(SECRET_KEY) {
-            (secret.to_vec(), SourceOfSecret::Direct)
-        } else {
-            return debug("must provide secret or wrapped secret");
-        };
-    let secret =
-        secret.as_slice().try_into().map_err(|_| RequestError::Debug("wrong length secret"))?;
-    Ok((secret, source))
-}
-
 pub(crate) fn do_assert(
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    let Authentication::Device(device_id, auth_level, _) = auth else {
+    let Authentication::Device(device_id, auth_level, one_time_uv, _) = auth else {
         return debug("device identity required");
     };
     let Some(Value::Bytestring(proto_bytes)) = request.get(PROTOBUF_KEY) else {
@@ -161,7 +120,10 @@ pub(crate) fn do_assert(
         || pin_verified
         // If the client provided the security domain secret itself, then it could have
         // done the signing itself too. Thus this is sufficient to claim UV.
-        || matches!(secret_source, SourceOfSecret::Direct);
+        || matches!(secret_source, SourceOfSecret::Direct)
+        // A client can also nominate to get one free UV when registering their
+        // UV key, which is also sufficient for an assertion.
+        || matches!(one_time_uv, OneTimeUV::Consumed);
 
     let flags = [FLAG_BACKUP_ELIGIBLE
         | FLAG_BACKED_UP
@@ -191,7 +153,7 @@ pub(crate) fn do_create(
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    let Authentication::Device(device_id, _, _) = auth else {
+    let Authentication::Device(device_id, _, _, _) = auth else {
         return debug("device identity required");
     };
     let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
@@ -369,58 +331,6 @@ fn security_domain_secret_to_encryption_key(
     .unwrap();
 }
 
-/// A representation of the PIN data after unwrapping with the
-/// security domain secret.
-#[derive(PartialEq, Debug)]
-pub(crate) struct PinData {
-    /// The hash of the PIN. Usually hashed with scrypt, but this code only
-    /// deals with hashes and so isn't affected by the choice of algorithm so
-    /// long as the output is 256 bits long.
-    pub pin_hash: [u8; 32],
-    /// The generation number. Starts at zero and is incremented for each
-    /// PIN change.
-    pub generation: i64,
-    /// An AES-256-GCM key used to encrypt claimed PIN hashes.
-    pub claim_key: [u8; 32],
-}
-
-impl TryFrom<Vec<u8>> for PinData {
-    type Error = ();
-
-    /// Parse a `PinData` from CBOR bytes.
-    fn try_from(pin_data: Vec<u8>) -> Result<PinData, Self::Error> {
-        let parsed = cbor::parse(pin_data).map_err(|_| ())?;
-        let Value::Map(map) = parsed else {
-            return Err(());
-        };
-        let Some(Value::Bytestring(pin_hash)) = map.get(&MapKey::Int(1)) else {
-            return Err(());
-        };
-        let Some(Value::Int(generation)) = map.get(&MapKey::Int(2)) else {
-            return Err(());
-        };
-        let Some(Value::Bytestring(claim_key)) = map.get(&MapKey::Int(3)) else {
-            return Err(());
-        };
-        Ok(PinData {
-            pin_hash: pin_hash.as_ref().try_into().map_err(|_| ())?,
-            generation: *generation,
-            claim_key: claim_key.as_ref().try_into().map_err(|_| ())?,
-        })
-    }
-}
-
-impl PinData {
-    pub fn to_bytes(&self) -> Vec<u8> {
-        cbor!({
-            1: (&self.pin_hash),
-            2: (self.generation),
-            3: (&self.claim_key),
-        })
-        .to_bytes()
-    }
-}
-
 /// Compares two secrets for equality.
 fn constant_time_compare(a: &[u8], b: &[u8]) -> bool {
     if a.len() != b.len() {
@@ -453,11 +363,7 @@ fn validate_pin(
         return Err(RequestError::PINLocked);
     }
 
-    let pin_data = decrypt_pin_data(wrapped_pin_data, security_domain_secret)?;
-    let Ok(pin_data): Result<PinData, ()> = pin_data.try_into() else {
-        return debug("invalid PIN data");
-    };
-
+    let pin_data = pin::Data::from_wrapped(wrapped_pin_data, security_domain_secret)?;
     if pin_data.generation < generation_high_water {
         return Err(RequestError::PINOutdated);
     }
@@ -494,56 +400,16 @@ fn validate_pin(
     Ok(())
 }
 
-fn open_aes_256_gcm(key: &[u8; 32], nonce_and_ciphertext: &[u8], aad: &[u8]) -> Option<Vec<u8>> {
-    if nonce_and_ciphertext.len() < crypto::NONCE_LEN {
-        return None;
-    }
-    let (nonce, ciphertext) = nonce_and_ciphertext.split_at(crypto::NONCE_LEN);
-    // unwrap: the length is correct because it just came from `split_at`.
-    let nonce: [u8; crypto::NONCE_LEN] = nonce.try_into().unwrap();
-    crypto::aes_256_gcm_open_in_place(key, &nonce, aad, ciphertext.to_vec()).ok()
-}
-
-/// Decrypt the PIN data, i.e. the data that is stored as metadata in the PIN
-/// virtual member of the security domain.
-fn decrypt_pin_data(
-    wrapped_pin_data: &[u8],
-    security_domain_secret: &[u8],
-) -> Result<Vec<u8>, RequestError> {
-    let mut pin_data_key = [0u8; 32];
-    // unwrap: this only fails if the output is too long, but the output length
-    // is fixed at 32.
-    crypto::hkdf_sha256(security_domain_secret, &[], KEY_PURPOSE_PIN_DATA_KEY, &mut pin_data_key)
-        .unwrap();
-    open_aes_256_gcm(&pin_data_key, wrapped_pin_data, &[])
-        .ok_or(RequestError::Debug("PIN data decryption failed"))
-}
-
-pub(crate) fn encrypt_pin_data(
-    mut serialized_pin_data: Vec<u8>,
-    security_domain_secret: &[u8],
-) -> Vec<u8> {
-    let mut pin_data_key = [0u8; 32];
-    // unwrap: this only fails if the output is too long, but the output length
-    // is fixed at 32.
-    crypto::hkdf_sha256(security_domain_secret, &[], KEY_PURPOSE_PIN_DATA_KEY, &mut pin_data_key)
-        .unwrap();
-
-    let mut nonce = [0u8; crypto::NONCE_LEN];
-    crypto::rand_bytes(&mut nonce);
-    crypto::aes_256_gcm_seal_in_place(&pin_data_key, &nonce, &[], &mut serialized_pin_data);
-    [nonce.as_ref(), &serialized_pin_data].concat()
-}
-
 pub(crate) fn do_wrap_pin(
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    // Either UV or reauth is required to perform this command.
+    // Either UV or reauth is required to perform this command. The one-time
+    // UV is not enough.
     let device_id = match auth {
-        Authentication::Device(device_id, AuthLevel::UserVerification, _) => device_id,
-        Authentication::Device(device_id, _, Reauth::Done) => device_id,
+        Authentication::Device(device_id, AuthLevel::UserVerification, _, _) => device_id,
+        Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
         _ => return debug("not authenticated"),
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
@@ -558,10 +424,18 @@ pub(crate) fn do_wrap_pin(
     let Some(Value::Bytestring(wrapped_secret)) = request.get(WRAPPED_SECRET_KEY) else {
         return debug("wrapped secret required");
     };
+    let Some(Value::Bytestring(counter_id)) = request.get(COUNTER_ID_KEY) else {
+        return debug("counter ID required");
+    };
+    let Some(Value::Bytestring(vault_handle_without_type)) =
+        request.get(VAULT_HANDLE_WITHOUT_TYPE_KEY)
+    else {
+        return debug("vault handle required");
+    };
     let security_domain_secret =
         state.unwrap(device_id, wrapped_secret, KEY_PURPOSE_SECURITY_DOMAIN_SECRET)?;
 
-    let pin_data = PinData {
+    let pin_data = pin::Data {
         pin_hash: pin_hash
             .as_ref()
             .try_into()
@@ -571,13 +445,22 @@ pub(crate) fn do_wrap_pin(
             .as_ref()
             .try_into()
             .map_err(|_| RequestError::Debug("incorrect length claim key"))?,
+        counter_id: counter_id
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length counter id"))?,
+        vault_handle_without_type: vault_handle_without_type
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
     };
-    Ok(Value::from(encrypt_pin_data(pin_data.to_bytes(), &security_domain_secret)))
+    Ok(Value::from(pin_data.encrypt(&security_domain_secret)))
 }
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
+    use crate::recovery_key_store;
     use crate::tests::{
         PROTOBUF2_BYTES, PROTOBUF_BYTES, SAMPLE_SECURITY_DOMAIN_SECRET,
         WEBAUTHN_SECRETS_ENCRYPTION_KEY,
@@ -669,14 +552,19 @@ pub mod tests {
 
     #[test]
     fn test_pin_data() {
-        let pin_data = PinData { pin_hash: [1u8; 32], generation: 42, claim_key: [2u8; 32] };
-        let pin_data2: PinData = pin_data.to_bytes().try_into().unwrap();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            generation: 42,
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+        };
+        let pin_data2: pin::Data = pin_data.to_bytes().try_into().unwrap();
         assert_eq!(pin_data, pin_data2);
 
         let security_domain_secret = [3u8; 32];
-        let encrypted = encrypt_pin_data(pin_data.to_bytes(), &security_domain_secret);
-        let decrypted =
-            decrypt_pin_data(&encrypted, &security_domain_secret).unwrap().try_into().unwrap();
+        let encrypted = pin_data.encrypt(&security_domain_secret);
+        let decrypted = pin::Data::from_wrapped(&encrypted, &security_domain_secret).unwrap();
         assert_eq!(pin_data, decrypted);
     }
 
