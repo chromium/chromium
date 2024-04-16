@@ -135,13 +135,10 @@ bool MultitaskMenuNudgeController::Delegate::IsUserNew() const {
 #endif
 }
 
-MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
-  display::Screen::GetScreen()->AddObserver(this);
-}
+MultitaskMenuNudgeController::MultitaskMenuNudgeController() = default;
 
 MultitaskMenuNudgeController::~MultitaskMenuNudgeController() {
   DismissNudge();
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -201,6 +198,7 @@ void MultitaskMenuNudgeController::DismissNudge() {
 
   window_ = nullptr;
   window_observation_.Reset();
+  widget_observation_.Reset();
 
   anchor_view_ = nullptr;
   pulse_layer_.reset();
@@ -252,15 +250,6 @@ void MultitaskMenuNudgeController::OnWindowVisibilityChanged(
   }
 }
 
-void MultitaskMenuNudgeController::OnWindowBoundsChanged(
-    aura::Window* window,
-    const gfx::Rect& old_bounds,
-    const gfx::Rect& new_bounds,
-    ui::PropertyChangeReason reason) {
-  CHECK_EQ(window_, window);
-  UpdateWidgetAndPulse();
-}
-
 void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
     aura::Window* window,
     const gfx::Transform& new_transform) {
@@ -297,6 +286,13 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
   CHECK_EQ(window_, window);
   DismissNudge();
+}
+
+void MultitaskMenuNudgeController::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  CHECK_EQ(window_, widget->GetNativeWindow());
+  UpdateWidgetAndPulse();
 }
 
 void MultitaskMenuNudgeController::OnDisplayTabletStateChanged(
@@ -390,6 +386,10 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   // Note that order matters because in some cases, creating the widget may
   // trigger some window observations.
   window_observation_.Observe(window_.get());
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window_);
+  CHECK(widget);
+  widget_observation_.Observe(widget);
 
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.

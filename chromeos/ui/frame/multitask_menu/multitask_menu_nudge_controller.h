@@ -15,6 +15,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 class PrefRegistrySimple;
 
@@ -32,6 +33,7 @@ namespace chromeos {
 // Controller for showing the user education nudge for the multitask menu.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     : public aura::WindowObserver,
+      public views::WidgetObserver,
       public display::DisplayObserver {
  public:
   // `tablet_mode` refers to the tablet state when the prefs are fetched. If
@@ -93,15 +95,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
   void OnWindowTargetTransformChanging(
       aura::Window* window,
       const gfx::Transform& new_transform) override;
   void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
@@ -160,6 +162,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<MultitaskMenuNudgeController> weak_ptr_factory_{this};
 };
