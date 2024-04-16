@@ -9870,21 +9870,6 @@
             ]
         }
     ],
-    "IOSSaveToPhotos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSSaveToPhotos"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
