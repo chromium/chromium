@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -412,6 +413,14 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
+}
+
+const base::Value* GetLanguageInputMethodSpecificSetting(
+    PrefService& prefs,
+    const std::string& engine_id,
+    const std::string& preference_name) {
+  return prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
+      .FindByDottedPath(base::StrCat({engine_id, ".", preference_name}));
 }
 
 void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
