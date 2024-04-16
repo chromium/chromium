@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/encoder_status.h"
@@ -394,9 +395,23 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
 
   const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
 
+  unsigned int opus_signal_from_config;
+  switch (opus_options.value().signal) {
+    case AudioEncoder::OpusSignal::kAuto:
+      opus_signal_from_config = OPUS_AUTO;
+      break;
+    case AudioEncoder::OpusSignal::kMusic:
+      opus_signal_from_config = OPUS_SIGNAL_MUSIC;
+      break;
+    case AudioEncoder::OpusSignal::kVoice:
+      opus_signal_from_config = OPUS_SIGNAL_VOICE;
+      break;
+  }
+
   // For some reason, DTX doesn't work without setting the `OPUS_SIGNAL_VOICE`
   // hint. Set or unset the signal type accordingly before using DTX.
-  const unsigned int opus_signal = use_dtx ? OPUS_SIGNAL_VOICE : OPUS_AUTO;
+  const unsigned int opus_signal =
+      use_dtx ? OPUS_SIGNAL_VOICE : opus_signal_from_config;
 
   if (opus_encoder_ctl(encoder.get(), OPUS_SET_SIGNAL(opus_signal)) !=
       OPUS_OK) {
@@ -409,6 +424,27 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
     return EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf("Failed to set Opus DTX: %d", use_dtx));
+  }
+
+  unsigned int opus_application;
+  switch (opus_options.value().application) {
+    case AudioEncoder::OpusApplication::kVoip:
+      opus_application = OPUS_APPLICATION_VOIP;
+      break;
+    case AudioEncoder::OpusApplication::kAudio:
+      opus_application = OPUS_APPLICATION_AUDIO;
+      break;
+    case AudioEncoder::OpusApplication::kLowDelay:
+      opus_application = OPUS_APPLICATION_RESTRICTED_LOWDELAY;
+      break;
+  }
+
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_APPLICATION(opus_application)) !=
+      OPUS_OK) {
+    return EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        base::StringPrintf("Failed to set Opus application hint: %d",
+                           opus_application));
   }
 
   return encoder;

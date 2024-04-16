@@ -29,7 +29,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_application.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_opus_encoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_signal.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
@@ -144,8 +146,36 @@ AudioEncoderTraits::ParsedConfig* ParseOpusConfigStatic(
     return nullptr;
   }
 
+  media::AudioEncoder::OpusSignal opus_signal;
+  switch (opus_config->signal().AsEnum()) {
+    case blink::V8OpusSignal::Enum::kAuto:
+      opus_signal = media::AudioEncoder::OpusSignal::kAuto;
+      break;
+    case blink::V8OpusSignal::Enum::kMusic:
+      opus_signal = media::AudioEncoder::OpusSignal::kMusic;
+      break;
+    case blink::V8OpusSignal::Enum::kVoice:
+      opus_signal = media::AudioEncoder::OpusSignal::kVoice;
+      break;
+  }
+
+  media::AudioEncoder::OpusApplication opus_application;
+  switch (opus_config->application().AsEnum()) {
+    case blink::V8OpusApplication::Enum::kVoip:
+      opus_application = media::AudioEncoder::OpusApplication::kVoip;
+      break;
+    case blink::V8OpusApplication::Enum::kAudio:
+      opus_application = media::AudioEncoder::OpusApplication::kAudio;
+      break;
+    case blink::V8OpusApplication::Enum::kLowdelay:
+      opus_application = media::AudioEncoder::OpusApplication::kLowDelay;
+      break;
+  }
+
   result->options.opus = {
       .frame_duration = base::Microseconds(frame_duration),
+      .signal = opus_signal,
+      .application = opus_application,
       .complexity = complexity,
       .packet_loss_perc = packet_loss_perc,
       .use_in_band_fec = opus_config->useinbandfec(),
@@ -317,6 +347,8 @@ AacEncoderConfig* CopyAacConfig(const AacEncoderConfig& config) {
 OpusEncoderConfig* CopyOpusConfig(const OpusEncoderConfig& config) {
   auto* opus_result = OpusEncoderConfig::Create();
   opus_result->setFormat(config.format());
+  opus_result->setSignal(config.signal());
+  opus_result->setApplication(config.application());
   opus_result->setFrameDuration(config.frameDuration());
   opus_result->setComplexity(config.getComplexityOr(kDefaultOpusComplexity));
   opus_result->setPacketlossperc(config.packetlossperc());

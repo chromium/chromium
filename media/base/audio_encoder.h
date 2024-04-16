@@ -62,8 +62,12 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
 // Defines an interface for audio encoders.
 class MEDIA_EXPORT AudioEncoder {
  public:
+  enum class OpusSignal { kAuto, kMusic, kVoice };
+  enum class OpusApplication { kVoip, kAudio, kLowDelay };
   struct MEDIA_EXPORT OpusOptions {
     base::TimeDelta frame_duration;
+    OpusSignal signal;
+    OpusApplication application;
     unsigned int complexity;
     unsigned int packet_loss_perc;
     bool use_in_band_fec;
