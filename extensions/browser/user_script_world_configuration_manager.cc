@@ -127,6 +127,26 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
                                                  enable_messaging);
 }
 
+void UserScriptWorldConfigurationManager::ClearUserScriptWorldInfo(
+    const Extension& extension,
+    const std::optional<std::string>& world_id) {
+  ExtensionPrefs::ScopedDictionaryUpdate update(
+      extension_prefs_, extension.id(), kUserScriptsWorldsConfiguration.name);
+  std::unique_ptr<prefs::DictionaryValueUpdate> update_dict = update.Get();
+
+  if (!update_dict) {
+    return;  // No configs.
+  }
+
+  std::string_view world_key = GetUserScriptWorldKeyForWorldId(world_id);
+  if (!update_dict->HasKey(world_key)) {
+    return;  // No config for this world ID.
+  }
+
+  update_dict->Remove(world_key);
+  renderer_helper_->ClearUserScriptWorldProperties(extension, world_id);
+}
+
 mojom::UserScriptWorldInfoPtr
 UserScriptWorldConfigurationManager::GetUserScriptWorldInfo(
     const ExtensionId& extension_id,

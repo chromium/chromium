@@ -102,6 +102,23 @@ void IsolatedWorldManager::SetUserScriptWorldProperties(
   }
 }
 
+void IsolatedWorldManager::ClearUserScriptWorldProperties(
+    const std::string& host_id,
+    const std::optional<std::string>& world_id) {
+  // Clear the pending world registration.
+  pending_worlds_info_.erase(std::make_pair(host_id, world_id));
+
+  // Determine if there's already an IsolatedWorldInfo for this world. If there
+  // is, reset it to the default values from the user script configuration. This
+  // ensures future worlds created from this config will have the proper state.
+  IsolatedWorldInfo* world_info = FindIsolatedWorldInfo(
+      host_id, mojom::ExecutionWorld::kUserScript, world_id);
+  if (world_info) {
+    world_info->csp = std::nullopt;
+    world_info->enable_messaging = false;
+  }
+}
+
 bool IsolatedWorldManager::IsMessagingEnabledInUserScriptWorld(
     int blink_world_id) {
   auto iter = isolated_worlds_.find(blink_world_id);

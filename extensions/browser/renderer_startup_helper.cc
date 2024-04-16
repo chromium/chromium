@@ -387,6 +387,25 @@ void RendererStartupHelper::SetUserScriptWorldProperties(
   }
 }
 
+void RendererStartupHelper::ClearUserScriptWorldProperties(
+    const Extension& extension,
+    const std::optional<std::string>& world_id) {
+  for (auto& process_entry : process_mojo_map_) {
+    content::RenderProcessHost* process = process_entry.first;
+    mojom::Renderer* renderer = GetRenderer(process);
+    if (!renderer) {
+      continue;
+    }
+
+    if (!util::IsExtensionVisibleToContext(extension,
+                                           process->GetBrowserContext())) {
+      continue;
+    }
+
+    renderer->ClearUserScriptWorldConfig(extension.id(), world_id);
+  }
+}
+
 mojo::PendingAssociatedRemote<mojom::Renderer>
 RendererStartupHelper::BindNewRendererRemote(
     content::RenderProcessHost* process) {

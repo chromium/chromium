@@ -1058,6 +1058,13 @@ void Dispatcher::UpdateUserScriptWorlds(
   }
 }
 
+void Dispatcher::ClearUserScriptWorldConfig(
+    const std::string& extension_id,
+    const std::optional<std::string>& world_id) {
+  IsolatedWorldManager::GetInstance().ClearUserScriptWorldProperties(
+      extension_id, world_id);
+}
+
 void Dispatcher::UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
                                             URLPatternSet user_allowed_hosts) {
   PermissionsData::SetUserHostRestrictions(kRendererProfileId,

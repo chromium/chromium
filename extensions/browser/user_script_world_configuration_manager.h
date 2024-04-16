@@ -52,6 +52,12 @@ class UserScriptWorldConfigurationManager
                               std::optional<std::string> csp,
                               bool enable_messaging);
 
+  // Clears any stored configuration for a user script world indicated by
+  // `world_id`. If `world_id` is omitted, removes the configuration for the
+  // default user script world.
+  void ClearUserScriptWorldInfo(const Extension& extension,
+                                const std::optional<std::string>& world_id);
+
   // Retrieve a configuration for a user script world indicated by `world_id`.
   // If `world_id` is omitted, retrieves the configuration for the default user
   // script world. If there is no registration for the given user script world,

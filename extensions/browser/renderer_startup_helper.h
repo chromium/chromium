@@ -106,6 +106,12 @@ class RendererStartupHelper : public KeyedService,
                                     std::optional<std::string> csp,
                                     bool enable_messaging);
 
+  // Notifies renderers to clear any properties for the user script world
+  // associated with the given `extension` and `world_id`.
+  void ClearUserScriptWorldProperties(
+      const Extension& extension,
+      const std::optional<std::string>& world_id);
+
   // Returns mojom::Renderer* corresponding to |process|. This would return
   // nullptr when it's called before |process| is inserted to
   // |process_mojo_map_| or after it's deleted. Note that the callers should

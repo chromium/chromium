@@ -163,6 +163,13 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
                                        std::move(csp), enable_messaging);
   }
 
+  // Clears associated user script world properties in the renderer(s).
+  void ClearUserScriptWorldProperties(const Extension& extension,
+                                      std::optional<std::string> world_id) {
+    RendererStartupHelperFactory::GetForBrowserContext(profile())
+        ->ClearUserScriptWorldProperties(extension, std::move(world_id));
+  }
+
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -620,6 +627,46 @@ IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
             "allowed eval");
   EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
                                            *extension, "world 2"),
+            "disallowed eval");
+}
+
+// Tests clearing configurations for user script worlds.
+IN_PROC_BROWSER_TEST_F(UserScriptWorldBrowserTest,
+                       ClearingUserScriptWorldConfigurations) {
+  // Load a simple extension with permission to example.com.
+  const Extension* extension =
+      LoadExtensionWithHostPermission("http://example.com/*");
+
+  // Allow eval in "world 1".
+  SetUserScriptWorldProperties(*extension, "world 1",
+                               "script-src 'unsafe-eval'",
+                               /*enable_messaging=*/false);
+
+  // Navigate to example.com and check the world's CSP.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  NavigateToURL(url);
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 1"),
+            "allowed eval");
+
+  // Now, clear the configuration for "world 1".
+  ClearUserScriptWorldProperties(*extension, "world 1");
+  // Ensure the roundtrip to the renderer completes by sending another script
+  // to inject. Otherwise, the call to clear the configuration may race with the
+  // new document creation and, as described in
+  // `CspMayBeGreedilyInitializedOnDocumentCreation`, this may initialize the
+  // CSP to the old one.
+  EXPECT_EQ("foo",
+            ExecuteScriptInUserScriptWorld("'foo';", *extension, "world 1"));
+
+  // Navigate to create a new isolated world.
+  NavigateToURL(url);
+
+  // Eval should be disallowed (the default) since the configuration was
+  // cleared.
+  EXPECT_EQ(ExecuteScriptInUserScriptWorld(kCheckIfEvalAllowedScriptSource,
+                                           *extension, "world 1"),
             "disallowed eval");
 }
 

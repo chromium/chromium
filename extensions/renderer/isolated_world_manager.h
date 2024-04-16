@@ -64,6 +64,12 @@ class IsolatedWorldManager {
                                     std::optional<std::string> csp,
                                     bool enable_messaging);
 
+  // Clears any properties associated with the given `host_id` and `world_id`.
+  // Note this does *not* update any existing worlds.
+  void ClearUserScriptWorldProperties(
+      const std::string& host_id,
+      const std::optional<std::string>& world_id);
+
   // Returns whether messaging APIs should be enabled in worlds for the given
   // `host_id`.
   bool IsMessagingEnabledInUserScriptWorld(int blink_world_id);
