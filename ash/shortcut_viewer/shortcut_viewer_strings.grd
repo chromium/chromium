@@ -784,7 +784,7 @@
     Open home page
   </message>
   <message name="IDS_KSV_DESCRIPTION_SHOW_IDC_CLEAR_BROWSING_DATA" desc="Description of the command in keyboard shortcut viewer.">
-    Clear browsing data
+    Delete browsing data
   </message>
   <message name="IDS_KSV_DESCRIPTION_SHOW_IDC_SHOW_BOOKMARK_MANAGER" desc="Description of the command in keyboard shortcut viewer.">
     Show bookmark manager

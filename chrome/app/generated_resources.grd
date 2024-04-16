@@ -1712,8 +1712,8 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_FULLSCREEN" desc="Switches into fullscreen mode">
           &amp;Full screen
         </message>
-        <message name="IDS_CLEAR_BROWSING_DATA" desc="The text label for the menu item for clearing of browsing data">
-          &amp;Clear browsing data...
+        <message name="IDS_CLEAR_BROWSING_DATA" desc="The text label for the menu item for deleting of browsing data">
+          &amp;Delete browsing data...
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="The show downloads menu in the app menu">
           &amp;Downloads
@@ -1768,8 +1768,8 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_FULLSCREEN" desc="In Title Case: Switches into fullscreen mode">
           &amp;Full Screen
         </message>
-        <message name="IDS_CLEAR_BROWSING_DATA" desc="In Title Case: The text label for the menu item for clearing of browsing data">
-          &amp;Clear Browsing Data...
+        <message name="IDS_CLEAR_BROWSING_DATA" desc="In Title Case: The text label for the menu item for deleting of browsing data">
+          &amp;Delete Browsing Data...
         </message>
         <message name="IDS_SHOW_DOWNLOADS" desc="In Title Case: The show downloads menu in the app menu">
           &amp;Downloads
@@ -10434,15 +10434,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
-      <!-- Clear Browsing Data -->
+      <!-- Delete Browsing Data -->
       <message name="IDS_CLEAR_BROWSING_DATA_TITLE" desc="Dialog title">
-        Clear browsing data
+        Delete browsing data
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE" desc="A dialog informing the user that their Chrome browsing history was deleted, but other forms of history can still be found on Google My Activity.">
         The selected data has been removed from Chrome and synced devices. Your Google Account may have other forms of browsing history like searches and activity from other Google services at <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE" desc="Title of a dialog that informs the user that the deletion of Chrome's browsing data has been completed.">
-        Cleared Chrome data
+        Deleted Chrome data
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_OK" desc="Button in a dialog that informs the user that the deletion of Chrome's browsing data has been completed.">
         Ok, got it
@@ -15956,9 +15956,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close Incognito
     </message>
 
-    <!-- Incognito Clear Browsing Data dialog bubble. -->
-    <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT" desc ="The primary text of the clear browsing data dialog which is shown in Incognito when users invokes a clear browsing data action in Incognito. The text describes how Incognito users can clear the browsing data by closing all Incognito windows.">
-      To clear data, close all Incognito windows
+    <!-- Incognito Delete Browsing Data dialog bubble. -->
+    <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_PRIMARY_TEXT" desc ="The primary text of the delete browsing data dialog which is shown in Incognito when users invokes a delete browsing data action in Incognito. The text describes how Incognito users can delete the browsing data by closing all Incognito windows.">
+      To delete data, close all Incognito windows
     </message>
     <message name="IDS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_SECONDARY_TEXT" desc ="The secondary text of the clear browsing data dialog which is shown in Incognito when users invokes a clear browsing data action in Incognito. The text describes how the clear browsing data action affects only the Incognito windows.">
       This only affects Incognito windows
@@ -15967,12 +15967,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Close windows
     </message>
 
-<!-- Incognito History Disclaimer dialog bubble. -->
-      <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
+  <!-- Incognito History Disclaimer dialog bubble. -->
+  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_PRIMARY_TEXT" desc="Header in bubble view that states visited sites aren't saved in Incognito mode.">
     Sites you visit aren’t saved in Incognito
   </message>
-  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to clear Incognito browsing history from the device,">
-    To clear Incognito browsing history from your device, close all Incognito tabs
+  <message name="IDS_INCOGNITO_HISTORY_BUBBLE_SECONDARY_TEXT" desc="Description in bubble view that states closing all Incognito tabs is necessary to delete Incognito browsing history from the device,">
+    To delete Incognito browsing history from your device, close all Incognito tabs
   </message>
   <message name="IDS_INCOGNITO_HISTORY_BUBBLE_CLOSE_INCOGNITO_BUTTON_TEXT" desc="Text of button in bubble view for calling to the close all incognito tabs action.">
     Close Incognito
@@ -16249,12 +16249,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- App uninstall prompt for non-Google -->
     <message name="IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_NON_GOOGLE" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
-      Also clear browsing data (<ph name="URL">$1<ex>pinterest.com</ex></ph>) which will sign you out of <ph name="DOMAIN">$2<ex>Pinterest.com</ex></ph>. <ph name="LEARN_MORE">$3<ex>Learn more</ex></ph>
+      Also delete browsing data (<ph name="URL">$1<ex>pinterest.com</ex></ph>) which will sign you out of <ph name="DOMAIN">$2<ex>Pinterest.com</ex></ph>.<ph name="LEARN_MORE">$3<ex>Learn more</ex></ph>
     </message>
 
     <!-- App uninstall prompt for Google -->
     <message name="IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time for Google hostnames. Only used when uninstalling an app associated with a Google hostname.">
-      Also clear browsing data (<ph name="URL">$1<ex>www.google.com</ex></ph>) which may sign you out of Google.com. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+      Also delete browsing data (<ph name="URL">$1<ex>www.google.com</ex></ph>) which may sign you out of Google.com. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
     </message>
 
     <message name="IDS_APP_UNINSTALL_PROMPT_LEARN_MORE" desc="The label that the user can click to learn more about removing associated data at uninstall time.">

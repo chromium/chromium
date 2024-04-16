@@ -223,7 +223,7 @@
         The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history like searches and activity from other Google services at history.google.com.
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE" desc="Title of a dialog that informs the user that the deletion of Chromium's browsing data has been completed.">
-        Cleared Chromium data
+        Deleted Chromium data
       </message>
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL" desc="Dialog label to invite the user to sign-in on the web. [iOS only]">
         Sign in to this site and Chromium.
@@ -412,11 +412,11 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_ADD_READING_LIST_ITEM_TITLE" desc="Shortcut name to add a reading list item to Chrome [iOS only].">
         Add Reading List Item to Chromium
       </message>
-      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_DESCRIPTION" desc="Shortcut description to open Clear Browsing Data dialog in Chrome [iOS only].">
-        Clear Browsing Data in Chromium.
+      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_DESCRIPTION" desc="Shortcut description to open Delete Browsing Data dialog in Chrome [iOS only].">
+        Delete Browsing Data in Chromium.
       </message>
-      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE" desc="Siri Shortcut for open Clear Browsing Data dialog [iOS only]">
-        Clear Browsing Data in Chromium
+      <message name="IDS_IOS_INTENTS_CLEAR_BROWSING_DATA_TITLE" desc="Siri Shortcut for open Delete Browsing Data dialog [iOS only]">
+        Delete Browsing Data in Chromium
       </message>
       <message name="IDS_IOS_INTENTS_MANAGE_PASSWORDS_DESCRIPTION" desc="Siri Shortcut description to manage passwords [iOS only]">
         Opens The Password Manager in Chromium.

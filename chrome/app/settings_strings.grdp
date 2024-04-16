@@ -448,8 +448,8 @@
   <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION" desc="Label text of an indicator that a setting's value is being controlled by an extension.">
     <ph name="NAME">$1<ex>Adblocker plusplus</ex></ph> is controlling this setting
   </message>
-  <message name="IDS_SETTINGS_CLEAR" desc="Label used on a menu item or button to clear an item.">
-    Clear
+  <message name="IDS_SETTINGS_CLEAR" desc="Label used on a menu item or button to delete an item.">
+    Delete
   </message>
   <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
     Custom
@@ -1050,21 +1050,21 @@
     </if>
   </if>
 
-  <!-- Clear Browsing Data -->
+  <!-- Delete Browsing Data -->
   <message name="IDS_SETTINGS_CLEAR_PERIOD_TITLE" desc="Label of the dropdown that selects the time range for which browsing data will be deleted.">
     Time range
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC" desc="Description in the footer of the Clear Browsing Data dialog when the user is syncing.">
-    To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC" desc="Description in the footer of the Delete Browsing Data dialog when the user is syncing.">
+    To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_ERROR" desc="Description in the footer of the Clear Browsing Data dialog when there is a sync error.">
-    To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>visit sync settings<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_ERROR" desc="Description in the footer of the Delete Browsing Data dialog when there is a sync error.">
+    To delete browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>visit sync settings<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PASSPHRASE_ERROR" desc="Description in the footer of the Clear Browsing Data dialog when there is a sync passphrase error.">
-    To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>enter your passphrase<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PASSPHRASE_ERROR" desc="Description in the footer of the Delete Browsing Data dialog when there is a sync passphrase error.">
+    To delete browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>enter your passphrase<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PAUSED" desc="Description in the footer of the Clear Browsing Data dialog when sync is paused.">
-    To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign in<ph name="END_LINK">&lt;/a&gt;</ph>.
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_WITH_SYNC_PAUSED" desc="Description in the footer of the Delete Browsing Data dialog when sync is paused.">
+    To delete browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign in<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY" desc="Checkbox for deleting Browsing History">
     Browsing history
@@ -1072,8 +1072,8 @@
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites.">
     Signs you out of most sites
   </message>
-  <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
-    Signs you out of most sites. You'll stay signed in to your Google Account so your synced data can be cleared.
+  <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION" desc="A summary for the 'Cookies and site data' option in the 'Delete Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
+    Signs you out of most sites. You'll stay signed in to your Google Account so your synced data can be deleted.
   </message>
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
     Signs you out of most sites. You won't be signed out of your Google Account.
@@ -1085,10 +1085,10 @@
     Signs you out of most sites. You'll stay signed in to your Google Account.
   </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A subtext for the basic tab explaining browsing history.">
-    Clears history, including in the search box
+    Deletes history, including in the search box
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN_NO_LINK" desc="A description explaining from which devices history will be cleared.">
-    Clears history from all synced devices
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN_NO_LINK" desc="A description explaining from which devices history will be deleted.">
+    Deletes history from all synced devices
   </message>
   <message name="IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_GOOGLE_DSE" desc="A description explaining that search history and other forms of activity can be cleared through the Google account.">
     <ph name="BEGIN_LINK_SEARCH">&lt;a target="_blank" href="$1"&gt;</ph>Search history<ph name="END_LINK_SEARCH">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_GOOGLE">&lt;a target="_blank" href="$2"&gt;</ph>other forms of activity<ph name="END_LINK_GOOGLE">&lt;/a&gt;</ph> may be saved in your Google Account when you're signed in. You can delete them anytime.
@@ -2341,20 +2341,20 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DESCRIPTION" desc="Secondary, continued explanation of what content settings in Chrome do">
     Control what information websites can use and what content they can show you
   </message>
-  <message name="IDS_SETTINGS_CLEAR_DATA" desc="Text for clear browsing data button in Privacy options in the tabbed UI">
-    Clear data
+  <message name="IDS_SETTINGS_CLEAR_DATA" desc="Text for delete browsing data button in Privacy options in the tabbed UI">
+    Delete data
   </message>
-  <message name="IDS_SETTINGS_CLEARING_DATA" desc="Accessibility text for after the clear browsing data button is clicked and while the data is being cleared">
-    Clearing data...
+  <message name="IDS_SETTINGS_CLEARING_DATA" desc="Accessibility text for after the delete browsing data button is clicked and while the data is being deleted">
+    Deleting data...
   </message>
-  <message name="IDS_SETTINGS_CLEARED_DATA" desc="Accessibility text for after the data has been cleared">
-    Data cleared.
+  <message name="IDS_SETTINGS_CLEARED_DATA" desc="Accessibility text for after the data has been deleted">
+    Data deleted.
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA" desc="Text for clear browsing data button in Privacy options">
-    Clear browsing data
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA" desc="Text for delete browsing data button in Privacy options">
+    Delete browsing data
   </message>
-  <message name="IDS_SETTINGS_CLEAR_DATA_DESCRIPTION" desc="Description for clear browsing data button in Privacy options. 'History' refers to browsing history. 'Cookies' refers to the technical meaning of a cookie, i.e. data saved by a website on the user's computer, as in when a website saves your preferences.">
-    Clear history, cookies, cache, and more
+  <message name="IDS_SETTINGS_CLEAR_DATA_DESCRIPTION" desc="Description for delete browsing data button in Privacy options. 'History' refers to browsing history. 'Cookies' refers to the technical meaning of a cookie, i.e. data saved by a website on the user's computer, as in when a website saves your preferences.">
+    Delete history, cookies, cache, and more
   </message>
   <message name="IDS_SETTINGS_TITLE_AND_COUNT" desc="The title of a section in the settings page with a count of the total number of items in the section">
     <ph name="TITLE">$1<ex>Block</ex></ph> - <ph name="COUNT">$2<ex>42</ex></ph>
@@ -3574,8 +3574,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by a site.">
     All data stored by <ph name="SITE">$1<ex>www.example.com</ex></ph> will be deleted.
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_CONFIRMATION_NEW" desc="Text for the dialog that warns about clearing storage used by a site.">
-    All data and cookies stored by <ph name="SITE">$1<ex>www.example.com</ex></ph> will be cleared.
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_CONFIRMATION_NEW" desc="Text for the dialog that warns about deleting storage used by a site.">
+    All data and cookies stored by <ph name="SITE">$1<ex>www.example.com</ex></ph> will be deleted.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out of site when clearing storage used by a site.">
     You’ll be signed out of this site, including in open tabs

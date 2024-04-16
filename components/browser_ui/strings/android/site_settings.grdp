@@ -201,8 +201,8 @@
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
       Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
-  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
-    Clear browsing data…
+  <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the delete browsing data dialog.">
+    Delete browsing data…
   </message>
   <message name="IDS_SUMMARY_WITH_ONE_BULLET" desc="Used to generate a summary that consists of two parts, separated by a bullet.">
     <ph name="FIRST_PART">%1$s<ex>http</ex></ph> • <ph name="SECOND_PART">%2$s<ex>10 MB</ex></ph>
@@ -252,8 +252,8 @@
     Expires today
   </message>
   <message name="IDS_SITE_SETTINGS_EXPIRES_LABEL" desc="Third party cookies exception label, shown in the Third-Party cookies site settings exception list.">
-    {COUNT, plural, 
-      =1 {Expires tomorrow} 
+    {COUNT, plural,
+      =1 {Expires tomorrow}
       other {Expires in # days}
     }
   </message>
@@ -288,7 +288,7 @@
     Select an option for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
   </message>
 
-  <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->
+  <!-- Site settings Delete Data Dialog and other ways of resetting permissions -->
 
   <message name="IDS_WEBSTORAGE_DELETE_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to delete all data for an origin">
     Delete site data?

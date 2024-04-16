@@ -1205,14 +1205,14 @@ For example, some websites may respond to this request by showing you ads that a
         Please verify that this is a valid provider or try again later
       </message>
 
-      <message name="IDS_CLEAR_BROWSING_DATA_TITLE" desc="Title of the Clear Browsing Data screen. [CHAR_LIMIT=32]">
-        Clear browsing data
+      <message name="IDS_CLEAR_BROWSING_DATA_TITLE" desc="Title of the Delete Browsing Data screen. [CHAR_LIMIT=32]">
+        Delete browsing data
       </message>
-      <message name="IDS_CLEAR_BROWSING_DATA_SUMMARY" desc="Summary of the settings item that opens the Clear Browsing Data dialog.">
-        Clear history, cookies, site data, cache…
+      <message name="IDS_CLEAR_BROWSING_DATA_SUMMARY" desc="Summary of the settings item that opens the Delete Browsing Data dialog.">
+        Delete history, cookies, site data, cache…
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_DIALOG_TITLE" desc="Title of a dialog that is shown after the deletion of browsing history finished.">
-        Cleared Chrome data
+        Deleted Chrome data
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_HISTORY_DIALOG_DATA_TEXT" desc="Text of the dialog that is shown after the deletion of browsing history items finished, indicating that the selected data has been removed, but there may be other forms of browsing history still present in user's Google account.">
         The selected data has been removed from Chrome and your synced devices.
@@ -1235,10 +1235,10 @@ Your Google account may have other forms of browsing history like searches and a
         Signs you out of most sites. You won't be signed out of your Google Account.
       </message>
       <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A text for the basic tab explaining browsing history.">
-        Clears history, including in the search box
+        Deletes history, including in the search box
       </message>
       <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED_NO_LINK" desc="A text for the basic tab explaining browsing history for users with history sync. This version is shown when the link to MyActivity is displayed separately.">
-        Clears history from all synced devices
+        Deletes history from all synced devices
       </message>
       <message name="IDS_CLEAR_SEARCH_HISTORY_LINK" desc="Text informing the user that they can clear search history and other data using MyActivity.">
         <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Search history<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>other forms of activity<ph name="END_LINK2">&lt;/link2&gt;</ph> may be saved in your Google Account when you’re signed in. You can delete them anytime.
@@ -1249,8 +1249,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_OUT_OF_CHROME_LINK" desc="The text is displayed in a footer in a dialog to clear browsing data. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
           To sign out of your Google Account on all websites, <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>sign out of Chrome<ph name="END_LINK1">&lt;/link1&gt;</ph>.
       </message>
-      <message name="IDS_SIGN_OUT_OF_CHROME_LINK_ADVANCED" desc="The text is displayed in a footer in the advanced option of clear browsing data dialog. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
-          Clearing your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>sign out of Chrome<ph name="END_LINK1">&lt;/link1&gt;</ph>.
+      <message name="IDS_SIGN_OUT_OF_CHROME_LINK_ADVANCED" desc="The text is displayed in a footer in the advanced option of delete browsing data dialog. The link ‘sign out of Chrome’ opens a dialog where the user can confirm if they want to sign out of Chrome.">
+          Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>sign out of Chrome<ph name="END_LINK1">&lt;/link1&gt;</ph>.
       </message>
       <message name="IDS_CLEAR_SEARCH_HISTORY_NON_GOOGLE_DSE" desc="Text informing the user about the way to clear their search history when their Default Search Engine is not Google.">
         Your search engine is <ph name="dse">%1$s<ex>Bing</ex></ph>. See their instructions for deleting your search history, if applicable.
@@ -1267,11 +1267,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_TABS_TITLE" desc="Title for Clear Tabs in Clear Browsing Data preference">
         Tabs on this device
       </message>
-      <message name="IDS_CLEAR_BROWSING_DATA_PROGRESS_TITLE" desc='Title for the progress dialog used when waiting for "clear browsing data" to complete.'>
-        Clearing browsing data
+      <message name="IDS_CLEAR_BROWSING_DATA_PROGRESS_TITLE" desc='Title for the progress dialog used when waiting for "delete browsing data" to complete.'>
+        Deleting browsing data
       </message>
-      <message name="IDS_CLEAR_DATA_DELETE" desc="Button that allows the user to clear their browsing data. [CHAR_LIMIT=30]">
-        Clear data
+      <message name="IDS_CLEAR_DATA_DELETE" desc="Button that allows the user to delete their browsing data. [CHAR_LIMIT=30]">
+        Delete data
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_PROGRESS_MESSAGE" desc='Message on the progress dialog used when waiting for "clear browsing data" to complete.'>
         Please wait…
@@ -1310,7 +1310,7 @@ Your Google account may have other forms of browsing history like searches and a
         These sites and apps seem important to you:
       </message>
       <message name="IDS_CLEAR_BROWSING_DATA_IMPORTANT_DIALOG_BUTTON" desc="The text of the button to perform the clear action in the dialog presenting the user with 'important' sites that they can exclude from clearing.">
-        Clear
+        Delete
       </message>
       <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON" desc="Title of the button that will open the clear browsing data dialog.">
         Clear browsing data…
@@ -3099,8 +3099,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">
         You’ll find your history here
       </message>
-      <message name="IDS_HISTORY_MANAGER_EMPTY_STATE_VIEW_OR_CLEAR_PAGE_VISITED" desc="Indicates that users can view or clear page visited here">
-        You can see the pages you’ve visited or clear them from your history
+      <message name="IDS_HISTORY_MANAGER_EMPTY_STATE_VIEW_OR_CLEAR_PAGE_VISITED" desc="Indicates that users can view or delete page visited here">
+        You can see the pages you’ve visited or delete them from your history
       </message>
       <message name="IDS_HISTORY_MANAGER_NO_RESULTS" desc="Text explaining that no browsing history items match a search query.">
         Can’t find that page. Check your spelling or try a search on <ph name="SEARCH_ENGINE">%1$s<ex>Google</ex></ph>.
@@ -3114,8 +3114,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_TITLE" desc="Title that states sites the users visit are not saved in Incognito mode.">
         Sites you visit aren’t saved in Incognito
       </message>
-      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_DESCRIPTION" desc="Description that states to clear Incognito browsing history from the device, users need to close all incognito tabs.">
-        To clear Incognito browsing history from your device, close all Incognito tabs.
+      <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_DESCRIPTION" desc="Description that states to delete Incognito browsing history from the device, users need to close all incognito tabs.">
+        To delete Incognito browsing history from your device, close all Incognito tabs.
       </message>
 
       <!-- Close Incognito tabs notification messages -->
@@ -3828,7 +3828,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         History
       </message>
       <message name="IDS_MENU_QUICK_DELETE" desc="Menu item for quick delete functionality that allows users to delete their browsing data. [CHAR_LIMIT=27]">
-        Clear browsing data
+        Delete browsing data
       </message>
       <message name="IDS_MENU_DOWNLOADS" desc="Menu item for opening the downloads page. [CHAR_LIMIT=27]">
         Downloads
@@ -4772,8 +4772,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_TWA_CLEAR_DATA_DIALOG_TITLE" desc="Title of the clear data dialog showing after user uninstalls or clears data of an app hosting a Trusted Web Activity">
         <ph name="APP_NAME">%1$s<ex>YouTube</ex></ph> also has data in Chrome
       </message>
-      <message name="IDS_TWA_CLEAR_DATA_DIALOG_MESSAGE" desc="Message of the clear data dialog">
-        You can clear the data in Chrome Settings
+      <message name="IDS_TWA_CLEAR_DATA_DIALOG_MESSAGE" desc="Message of the delete data dialog">
+        You can delete the data in Chrome Settings
       </message>
       <message name="IDS_TWA_CLEAR_DATA_DIALOG_KEEP_DATA" desc="Text on the negative button of the clear data dialog">
         Keep Data
@@ -5890,7 +5890,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
 
        <!-- Quick Delete strings -->
       <message name="IDS_QUICK_DELETE_DIALOG_TITLE" desc="Title of the dialog when asking users to confirm deleting browsing data.">
-        Clear browsing data
+        Delete browsing data
       </message>
       <message name="IDS_QUICK_DELETE_DIALOG_TABS_CLOSED_TEXT" desc="Text indicating that the tabs which a user recently used to visit a website within the specified time range would be closed.">
         {NUM_TABS, plural, =1 {1 tab on this device} other {# tabs on this device}}
@@ -5924,8 +5924,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_QUICK_DELETE_DIALOG_MORE_OPTIONS_BUTTON_TEXT" desc="Text inside the more options button which redirects users to the advanced page of 'Clear Browsing Data' where the users can customize more deletion options.">
         More options
       </message>
-      <message name="IDS_QUICK_DELETE_DIALOG_MORE_OPTIONS_BUTTON_TEXT_A11Y" desc="A11y text for Talkback, in order to give more context to the button that redirects users to the advanced page of 'Clear Browsing Data'.">
-        More options to clear browsing data
+      <message name="IDS_QUICK_DELETE_DIALOG_MORE_OPTIONS_BUTTON_TEXT_A11Y" desc="A11y text for Talkback, in order to give more context to the button that redirects users to the advanced page of 'Delete Browsing Data'.">
+        More options to delete browsing data
       </message>
       <message name="IDS_QUICK_DELETE_DIALOG_DATA_PENDING" desc="Text that is shown when data in the dialog is being fetched.">
         Calculating...

@@ -5,16 +5,16 @@
 <!--   * Invisible screen reader text for screen readers -->
 <grit-part>
   <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="The button text contents to suggest pedal action, CLEAR_BROWSING_DATA">
-    Clear browsing data
+    Delete browsing data
   </message>
   <message name="IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, CLEAR_BROWSING_DATA">
-    Clear your browsing history, cookies, cache, and more in Chrome settings
+    Delete your browsing history, cookies, cache, and more in Chrome settings
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to CLEAR_BROWSING_DATA.">
-    <ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Clear your browsing history, cookies, cache, and more in Chrome settings
+    <ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to delete your browsing history, cookies, cache, and more in Chrome settings
   </message>
   <message name="IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA" desc="Announcement when pedal action button is focused, CLEAR_BROWSING_DATA">
-    Clear browsing data button, activate to clear your browsing history, cookies, cache, and more in Chrome settings
+    Delete browsing data button, activate to delete your browsing history, cookies, cache, and more in Chrome settings
   </message>
 
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="The button text contents to suggest pedal action, MANAGE_PASSWORDS">
@@ -518,7 +518,7 @@
   <!-- Note: iOS Omnibox Actions titles (*_HINT) use title case. -->
   <!-- Same as IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT, but title case instead of sentence case -->
   <message name="IDS_IOS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="In Title Case: The button text contents to suggest pedal action, CLEAR_BROWSING_DATA">
-    Clear Browsing Data
+    Delete Browsing Data
   </message>
   <!-- Same as IDS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_HINT, but title case instead of sentence case -->
   <message name="IDS_IOS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_HINT" desc="In Title Case: The button text contents to suggest pedal action, SET_CHROME_AS_DEFAULT_BROWSER">

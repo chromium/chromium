@@ -54,13 +54,13 @@
     No search results found
   </message>
   <if expr="not use_titlecase">
-  <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="Title of the button that will open the clear browsing data dialog [Length: 16em].">
-    Clear browsing data...
+  <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="Title of the button that will open the delete browsing data dialog [Length: 16em].">
+    Delete browsing data...
   </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="In Title Case: Title of the button that will open the clear browsing data dialog [Length: 16em].">
-      Clear Browsing Data...
+    <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="In Title Case: Title of the button that will open the delete browsing data dialog [Length: 16em].">
+      Delete Browsing Data...
     </message>
   </if>
   <if expr="not is_android">

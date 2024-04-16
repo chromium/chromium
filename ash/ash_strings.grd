@@ -4426,8 +4426,8 @@ No devices connected.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TAB_SEARCH" desc="Label for accelerator action - Search tabs.">
         Search tabs
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLEAR_BROWSING_DATA" desc="Label for accelerator action - Clear browsing data.">
-        Clear browsing data
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLEAR_BROWSING_DATA" desc="Label for accelerator action - Delete browsing data.">
+        Delete browsing data
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_BOOKMARKS" desc="Label for accelerator action - Focus on or highlight bookmarks bar (if shown).">
         Focus on or highlight bookmarks bar (if shown)

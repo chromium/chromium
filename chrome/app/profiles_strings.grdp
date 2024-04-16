@@ -9,7 +9,7 @@
     }
   </message>
   <message name="IDS_AVATAR_BUTTON_GUEST_TOOLTIP" desc="Tooltip for the avatar button when the user is in Guest mode.">
-    To clear Guest mode history, close all Guest windows.
+    To delete Guest mode history, close all Guest windows.
   </message>
   <message name="IDS_GUEST_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in guest mode. The message also shows the number of open guest windows if they are more than one. [ICU Syntax]">
       {0, plural,

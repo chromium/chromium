@@ -98,7 +98,7 @@ public class AllSiteSettingsTest {
     public void testAllSitesViewEmpty() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         View view =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -127,7 +127,7 @@ public class AllSiteSettingsTest {
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         View view =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -162,7 +162,7 @@ public class AllSiteSettingsTest {
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettings(SiteSettingsCategory.Type.ALL_SITES);
-        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
 
@@ -193,7 +193,7 @@ public class AllSiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettingsForRws(
                         SiteSettingsCategory.Type.ALL_SITES, C_GITHUB_IO);
-        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
         onView(withText(relatedFilter)).check(matches(isDisplayed()));
         onView(withText(A_GITHUB_IO)).check(doesNotExist());
         onView(withText(B_GITHUB_IO)).check(doesNotExist());
@@ -236,7 +236,8 @@ public class AllSiteSettingsTest {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startAllSitesSettingsForRws(
                         SiteSettingsCategory.Type.ALL_SITES, C_GITHUB_IO);
-        onViewWaiting(withText(containsString("Clear browsing"))).check(matches(isDisplayed()));
+        onViewWaiting(withText(containsString("Delete browsing"))).check(matches(isDisplayed()));
+
         onView(withText(relatedFilter)).check(matches(isDisplayed()));
         onView(withText(A_GITHUB_IO)).check(matches(isDisplayed()));
         onView(withText(B_GITHUB_IO)).check(matches(isDisplayed()));
