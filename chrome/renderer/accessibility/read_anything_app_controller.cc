@@ -1018,6 +1018,19 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   return "";
 }
 
+void ReadAnythingAppController::SendGetVoicePackInfoRequest(
+    const std::string& language) const {
+  page_handler_->GetVoicePackInfo(
+      language,
+      base::BindOnce(&ReadAnythingAppController::OnGetVoicePackInfoResponse,
+                     weak_ptr_factory_.GetSafeRef()));
+}
+
+void ReadAnythingAppController::OnGetVoicePackInfoResponse(
+    read_anything::mojom::VoicePackInfoPtr voice_pack_info) const {
+  // TODO (b/40927698) Send the voice_pack_info to the read-aloud UI
+}
+
 std::string ReadAnythingAppController::GetAltText(
     ui::AXNodeID ax_node_id) const {
   return model_.GetAltText(ax_node_id);

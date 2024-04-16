@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 #include "gin/wrappable.h"
@@ -148,6 +149,9 @@ class ReadAnythingAppController
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
+  void SendGetVoicePackInfoRequest(const std::string& language) const;
+  void OnGetVoicePackInfoResponse(
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info) const;
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   bool IsLeafNode(ui::AXNodeID ax_node_id) const;

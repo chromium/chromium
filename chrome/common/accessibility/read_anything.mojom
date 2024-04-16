@@ -35,6 +35,19 @@ struct ReadAnythingTheme {
   read_anything.mojom.LetterSpacing letter_spacing;
 };
 
+[Extensible]
+enum VoicePackState {
+  [Default] UNKNOWN = 0,
+  NOT_INSTALLED = 1,
+  INSTALLING = 2,
+  INSTALLED = 3
+};
+
+struct VoicePackInfo {
+  VoicePackState pack_state;
+  string language;
+};
+
 // Used by the untrusted WebUI page to bootstrap bidirectional communication.
 interface UntrustedPageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -85,6 +98,9 @@ enum HighlightGranularity {
 
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
+  // Called by the renderer to see if a voice is installed, or being installed.
+  GetVoicePackInfo(string language) => (VoicePackInfo voice_pack_info);
+
   // Informs the browser controller that a user tried to copy text from the
   // WebUI. If the main page allows copy commands, then the current selection
   // on the main page will be copied to the user's clipboard. Note that even

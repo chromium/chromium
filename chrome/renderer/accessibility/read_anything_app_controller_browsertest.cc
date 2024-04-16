@@ -39,6 +39,11 @@ class MockReadAnythingUntrustedPageHandler
   MockReadAnythingUntrustedPageHandler() = default;
 
   MOCK_METHOD(void,
+              GetVoicePackInfo,
+              (const std::string& language,
+               GetVoicePackInfoCallback mojo_callback),
+              (override));
+  MOCK_METHOD(void,
               OnLinkClicked,
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
               (override));

@@ -108,6 +108,8 @@ class ReadAnythingUntrustedPageHandler
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
   // read_anything::mojom::UntrustedPageHandler:
+  void GetVoicePackInfo(const std::string& language,
+                        GetVoicePackInfoCallback mojo_remote_callback) override;
   void OnCopy() override;
   void OnLineSpaceChange(
       read_anything::mojom::LineSpacing line_spacing) override;

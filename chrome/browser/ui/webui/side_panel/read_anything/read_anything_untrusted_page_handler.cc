@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "chrome/common/accessibility/read_anything.mojom-forward.h"
+#include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/pdf/common/pdf_util.h"
@@ -43,9 +45,16 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
+using ash::language_packs::LanguagePackManager;
+using ash::language_packs::PackResult;
+#endif
+
 using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
+using read_anything::mojom::VoicePackState;
 
 namespace {
 
@@ -62,6 +71,40 @@ int GetNormalizedFontScale(double font_scale) {
   return (font_scale - kReadAnythingMinimumFontScale) *
          (1 / kReadAnythingFontScaleIncrement);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+VoicePackState GetPackStateFromStatusCode(
+    const PackResult::StatusCode status_code) {
+  switch (status_code) {
+    case PackResult::StatusCode::kNotInstalled:
+      return VoicePackState::NOT_INSTALLED;
+    case PackResult::StatusCode::kInProgress:
+      return VoicePackState::INSTALLING;
+    case PackResult::StatusCode::kInstalled:
+      return VoicePackState::INSTALLED;
+    case PackResult::StatusCode::kUnknown:
+      return VoicePackState::UNKNOWN;
+  }
+}
+
+// Called when LanguagePackManager::GetPackState is complete.
+void OnLanguagePackManagerResponse(
+    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
+        mojo_remote_callback,
+    const PackResult& pack_result) {
+  // Convert the LanguagePackManager's response object into a mojo object
+  read_anything::mojom::VoicePackInfoPtr voicePackInfo =
+      read_anything::mojom::VoicePackInfo::New();
+  voicePackInfo->pack_state =
+      GetPackStateFromStatusCode(pack_result.pack_state);
+  voicePackInfo->language = pack_result.language_code;
+
+  // Call the callback sent from the mojo remote
+  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+}
+
+#endif
 
 class PersistentAccessibilityHelper
     : public content::WebContentsUserData<PersistentAccessibilityHelper> {
@@ -266,6 +309,26 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 ///////////////////////////////////////////////////////////////////////////////
 // read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
+
+void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
+    const std::string& language,
+    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
+        mojo_remote_callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  LanguagePackManager::GetPackState(
+      ash::language_packs::kTtsFeatureId, language,
+      base::BindOnce(&OnLanguagePackManagerResponse,
+                     std::move(mojo_remote_callback)));
+#else
+  //  TODO (b/40927698) Implement high quality voice support for non ChromeOS
+  //  platforms. For now, just return that all high quality voices are
+  //  unavailable.
+  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
+  voicePackInfo->language = language;
+  voicePackInfo->pack_state = VoicePackState::UNKNOWN;
+  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+#endif
+}
 
 void ReadAnythingUntrustedPageHandler::OnCopy() {
   if (main_observer_ && main_observer_->web_contents()) {
