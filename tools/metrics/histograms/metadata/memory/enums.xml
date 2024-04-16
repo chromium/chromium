@@ -109,6 +109,8 @@ src/platform2/vm_tools/concierge/mm/resize_priority.h -->
   <int value="9" label="Aggressive Balloon"/>
   <int value="10" label="Cached App"/>
   <int value="11" label="MGLRU Reclaim"/>
+  <int value="12" label="Stale Cached Tab"/>
+  <int value="13" label="Stale Cached App"/>
 </enum>
 
 <enum name="VmmSwapDisableReason">
