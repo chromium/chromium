@@ -52,6 +52,8 @@ class EnclaveLocalState_WrappedPIN;
 
 namespace trusted_vault {
 struct GpmPinMetadata;
+class RecoveryKeyStoreConnection;
+class TrustedVaultAccessTokenFetcherFrontend;
 }
 
 // EnclaveManager stores and manages the passkey enclave state. One instance
@@ -287,6 +289,10 @@ class EnclaveManager : public KeyedService {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::unique_ptr<trusted_vault::TrustedVaultConnection>
       trusted_vault_conn_;
+  const std::unique_ptr<trusted_vault::TrustedVaultAccessTokenFetcherFrontend>
+      trusted_vault_access_token_fetcher_frontend_;
+  const std::unique_ptr<trusted_vault::RecoveryKeyStoreConnection>
+      recovery_key_store_conn_;
 
   std::unique_ptr<webauthn_pb::EnclaveLocalState> local_state_;
   bool loading_ = false;

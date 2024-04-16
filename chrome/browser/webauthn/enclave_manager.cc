@@ -36,7 +36,11 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
+#include "components/trusted_vault/recovery_key_store_connection.h"
+#include "components/trusted_vault/recovery_key_store_connection_impl.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
+#include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
@@ -920,7 +924,6 @@ class EnclaveManager::StateMachine {
     kDownloadingRecoveryKeyStoreKeys,
     kWaitingForEnclaveTokenForPINWrapping,
     kWrappingPIN,
-    kWaitingForRecoveryKeyStoreTokenForUpload,
     kWaitingForRecoveryKeyStore,
     kJoiningPINToDomain,
     kJoiningUpdatedPINToDomain,
@@ -961,7 +964,8 @@ class EnclaveManager::StateMachine {
                               JoinStatus,
                               FileFetched,
                               PINHashed,
-                              Response>;
+                              Response,
+                              trusted_vault::UpdateRecoveryKeyStoreStatus>;
 
   void Process(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1022,10 +1026,6 @@ class EnclaveManager::StateMachine {
 
       case State::kWrappingPIN:
         DoWrappingPIN(std::move(event));
-        break;
-
-      case State::kWaitingForRecoveryKeyStoreTokenForUpload:
-        DoWaitingForRecoveryKeyStoreTokenForUpload(std::move(event));
         break;
 
       case State::kWaitingForRecoveryKeyStore:
@@ -1102,8 +1102,6 @@ class EnclaveManager::StateMachine {
         return "WaitingForEnclaveTokenForPINWrapping";
       case State::kWrappingPIN:
         return "WrappingPIN";
-      case State::kWaitingForRecoveryKeyStoreTokenForUpload:
-        return "WaitingForRecoveryKeyStoreTokenForUpload";
       case State::kWaitingForRecoveryKeyStore:
         return "WaitingForRecoveryKeyStore";
       case State::kJoiningPINToDomain:
@@ -1112,6 +1110,27 @@ class EnclaveManager::StateMachine {
         return "ChangingPIN";
       case State::kJoiningUpdatedPINToDomain:
         return "JoiningUpdatedPINToDomain";
+    }
+  }
+
+  static const char* ToString(
+      trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+    switch (status) {
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess:
+        return "Success";
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+          kTransientAccessTokenFetchError:
+        return "TransientError";
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+          kPersistentAccessTokenFetchError:
+        return "AccessTokenError";
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+          kPrimaryAccountChangeAccessTokenFetchError:
+        return "AccountChangedError";
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::kNetworkError:
+        return "NetworkError";
+      case trusted_vault::UpdateRecoveryKeyStoreStatus::kOtherError:
+        return "OtherError";
     }
   }
 
@@ -1147,7 +1166,12 @@ class EnclaveManager::StateMachine {
               const std::string& response_str = response.value();
               return base::StringPrintf("Response(%zu bytes)",
                                         response_str.size());
-            }},
+            },
+            [](const trusted_vault::UpdateRecoveryKeyStoreStatus& status) {
+              return base::StrCat(
+                  {"UpdateRecoveryKeyStoreStatus(", ToString(status), ")"});
+            },
+        },
         event);
   }
 
@@ -1700,74 +1724,34 @@ class EnclaveManager::StateMachine {
 
     wrapping_response_ = std::move(response);
 
-    state_ = State::kWaitingForRecoveryKeyStoreTokenForUpload;
-    GetAccessTokenInternal(GaiaConstants::kCryptAuthOAuth2Scope);
-  }
-
-  void DoWaitingForRecoveryKeyStoreTokenForUpload(Event event) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
-      FIDO_LOG(ERROR) << "Failed to get access token for cryptauth";
-      state_ = State::kStop;
-      return;
-    }
-    CHECK(absl::holds_alternative<AccessToken>(event)) << ToString(event);
-
-    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
-    auto request = std::make_unique<network::ResourceRequest>();
-    GURL base_url(device::enclave::kRecoveryKeyStoreURL);
-    request->url = net::AppendQueryParameter(base_url, "alt", "proto");
-    request->method = "PATCH";
-    request->headers.SetHeader("Authorization",
-                               base::StrCat({"Bearer ", token}));
-
-    upload_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                      kTrafficAnnotation);
-    upload_loader_->SetTimeoutDuration(base::Seconds(10));
-    upload_loader_->SetURLLoaderFactoryOptions(
-        network::mojom::kURLLoadOptionBlockAllCookies);
-    std::string serialized_vault;
-    CHECK(vault_->SerializeToString(&serialized_vault));
-    upload_loader_->AttachStringForUpload(serialized_vault,
-                                          "application/x-protobuf");
-
     state_ = State::kWaitingForRecoveryKeyStore;
-    upload_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        manager_->url_loader_factory_.get(),
-        base::BindOnce(
-            [](base::WeakPtr<StateMachine> machine,
-               std::optional<std::string> response) {
-              if (!machine) {
-                return;
-              }
-              if (response) {
-                machine->Process(Response(std::move(*response)));
-              } else {
-                machine->Process(Failure());
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+    recovery_key_store_request_ =
+        manager_->recovery_key_store_conn_->UpdateRecoveryKeyStore(
+            *primary_account_info_, *vault_,
+            base::BindOnce(
+                [](base::WeakPtr<StateMachine> machine,
+                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                  if (!machine) {
+                    return;
+                  }
+                  machine->Process(status);
+                },
+                weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoWaitingForRecoveryKeyStore(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    access_token_fetcher_.reset();
-    if (absl::holds_alternative<Failure>(event)) {
-      FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
-      state_ = State::kNextAction;
-      return;
-    }
-    CHECK(absl::holds_alternative<Response>(event)) << ToString(event);
+    recovery_key_store_request_.reset();
+    CHECK(absl::holds_alternative<trusted_vault::UpdateRecoveryKeyStoreStatus>(
+        event))
+        << ToString(event);
 
-    const std::string& response_str = absl::get_if<Response>(&event)->value();
-    trusted_vault_pb::Vault vault;
-    if (!vault.ParseFromString(response_str)) {
-      FIDO_LOG(ERROR) << "Failed to parse Vault: "
-                      << base::HexEncode(base::as_byte_span(response_str));
-      state_ = State::kNextAction;
+    const auto* status =
+        absl::get_if<trusted_vault::UpdateRecoveryKeyStoreStatus>(&event);
+    if (*status != trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess) {
+      FIDO_LOG(ERROR) << "Failed to upload to recovery key store";
+      state_ = State::kStop;
       return;
     }
 
@@ -1937,8 +1921,19 @@ class EnclaveManager::StateMachine {
     member_keys_source_ = trusted_vault::PrecomputedMemberKeys(
         key_version, wrapped_sds, member_proof);
 
-    state_ = State::kWaitingForRecoveryKeyStoreTokenForUpload;
-    GetAccessTokenInternal(GaiaConstants::kCryptAuthOAuth2Scope);
+    state_ = State::kWaitingForRecoveryKeyStore;
+    recovery_key_store_request_ =
+        manager_->recovery_key_store_conn_->UpdateRecoveryKeyStore(
+            *primary_account_info_, *vault_,
+            base::BindOnce(
+                [](base::WeakPtr<StateMachine> machine,
+                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                  if (!machine) {
+                    return;
+                  }
+                  machine->Process(status);
+                },
+                weak_ptr_factory_.GetWeakPtr()));
   }
 
   void JoinSecurityDomain() {
@@ -2056,6 +2051,8 @@ class EnclaveManager::StateMachine {
   std::optional<std::string> sig_xml_;
   std::unique_ptr<HashedPIN> hashed_pin_;
   std::unique_ptr<trusted_vault_pb::Vault> vault_;
+  std::unique_ptr<trusted_vault::RecoveryKeyStoreConnection::Request>
+      recovery_key_store_request_;
   std::optional<cbor::Value> wrapping_response_;
   // True if a PIN is being hashed in order to change it, rather than to set
   // a new PIN on an account.
@@ -2091,6 +2088,15 @@ EnclaveManager::EnclaveManager(
           trusted_vault::SecurityDomainId::kPasskeys,
           identity_manager,
           url_loader_factory_)),
+      trusted_vault_access_token_fetcher_frontend_(
+          std::make_unique<
+              trusted_vault::TrustedVaultAccessTokenFetcherFrontend>(
+              identity_manager_)),
+      recovery_key_store_conn_(std::make_unique<
+                               trusted_vault::RecoveryKeyStoreConnectionImpl>(
+          url_loader_factory_->Clone(),
+          std::make_unique<trusted_vault::TrustedVaultAccessTokenFetcherImpl>(
+              trusted_vault_access_token_fetcher_frontend_->GetWeakPtr()))),
       identity_observer_(
           std::make_unique<IdentityObserver>(identity_manager_, this)) {}
 
