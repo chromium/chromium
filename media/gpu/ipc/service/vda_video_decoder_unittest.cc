@@ -98,14 +98,6 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
     // In either case, vda_->Destroy() should be called once.
     EXPECT_CALL(*vda_, Destroy());
 
-#if BUILDFLAG(IS_APPLE)
-    constexpr auto texture_allocation_mode =
-        VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures;
-#else
-    constexpr auto texture_allocation_mode =
-        VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures;
-#endif
-
     auto* vdavd = new VdaVideoDecoder(
         parent_task_runner, gpu_task_runner, media_log_.Clone(),
         gfx::ColorSpace(),
@@ -116,8 +108,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
         base::BindRepeating(&VdaVideoDecoderTest::CreateAndInitializeVda,
                             base::Unretained(this)),
         GetCapabilities(),
-        VideoDecodeAccelerator::Config::OutputMode::kAllocate,
-        texture_allocation_mode);
+        VideoDecodeAccelerator::Config::OutputMode::kAllocate);
     vdavd_ = std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
         base::WrapUnique(vdavd));
     client_ = vdavd;
@@ -209,6 +200,10 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
                                                                       1080)) {
     Picture picture(picture_buffer_id, bitstream_buffer_id, visible_rect,
                     gfx::ColorSpace::CreateSRGB(), true);
+    picture.set_scoped_shared_image(
+        base::MakeRefCounted<Picture::ScopedSharedImage>(
+            gpu::Mailbox::GenerateForSharedImage(), GL_TEXTURE_2D,
+            base::DoNothing()));
     EXPECT_CALL(output_cb_, Run(_)).WillOnce(SaveArg<0>(out_frame));
     if (GetParam()) {
       // TODO(sandersd): The first time a picture is output, VDAs will do so on
