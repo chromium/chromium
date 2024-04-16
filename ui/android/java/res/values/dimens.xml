@@ -55,7 +55,7 @@ found in the LICENSE file.
 
     <!-- Use arbitrary high number so that if the button text spans multiple
      lines with XL text, the corners will still look fully rounded
-     TODO(crbug/1217139): Determine the corner radius based on button height-->
+     TODO(crbug.com/40770875): Determine the corner radius based on button height-->
     <dimen name="button_compat_corner_radius">500dp</dimen>
 
     <dimen name="chrome_bullet_gap">12dp</dimen>
@@ -79,7 +79,7 @@ found in the LICENSE file.
          cannot be retrieved by name.
          Note: Constants taken directly from Android's core/res/values/config.xml.
     -->
-    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
 
     <!-- Elevation levels -->

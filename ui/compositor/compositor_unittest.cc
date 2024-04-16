@@ -470,7 +470,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/608436): Flaky on windows trybots
+// TODO(crbug.com/40467610): Flaky on windows trybots
 #define MAYBE_CreateAndReleaseOutputSurface \
   DISABLED_CreateAndReleaseOutputSurface
 #else

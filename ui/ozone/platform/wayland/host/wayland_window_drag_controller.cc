@@ -258,7 +258,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 
   DVLOG(1) << "OnEnter. widget=" << window->GetWidget();
 
-  // TODO(crbug.com/1102946): Exo does not support custom mime types. In this
+  // TODO(crbug.com/40704369): Exo does not support custom mime types. In this
   // case, |data_offer_| will hold an empty mime_types list and, at this point,
   // it's safe just to skip the offer checks and requests here.
   if (!base::Contains(data_offer_->mime_types(), kMimeTypeChromiumWindow)) {
@@ -353,7 +353,7 @@ void WaylandWindowDragController::OnDragLeave(base::TimeTicks timestamp) {
   // they properly handle platforms that do not support global screen
   // coordinates, like Wayland.
   //
-  // TODO(https://crbug.com/1282186): Find a better solution for upwards tab
+  // TODO(crbug.com/40209502): Find a better solution for upwards tab
   // detaching.
   if (state_ != State::kAttached)
     return;
@@ -571,7 +571,7 @@ void WaylandWindowDragController::HandleDropAndResetState(
   // function for a single drop event. That results in ILL_ILLOPN crashes in
   // below code, because |drag_source_| is null after the first call to this
   // function. So, early out here in that case.
-  // TODO(crbug.com/1280981): Revert this once Exo-side issue gets solved.
+  // TODO(crbug.com/40209138): Revert this once Exo-side issue gets solved.
   if (!drag_source_.has_value())
     return;
 

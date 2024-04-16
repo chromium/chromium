@@ -126,7 +126,7 @@ class EVENTS_EXPORT EventRewriter {
 
   // Tells if this rewriter supports processing located events with location !=
   // root_location as well as honors event target when rewriting an event.
-  // TODO(crbug.com/1459680): Remove once all rewriters honor event target.
+  // TODO(crbug.com/40274398): Remove once all rewriters honor event target.
   virtual bool SupportsNonRootLocation() const;
 
   // Potentially rewrites (replaces) an event, or requests it be discarded.

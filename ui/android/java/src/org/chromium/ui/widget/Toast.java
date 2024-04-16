@@ -152,7 +152,7 @@ public class Toast {
 
     @SuppressLint("RtlHardcoded")
     private void anchor(Context context, View anchoredView) {
-        // TODO(https://crbug.com/1313565): The follow logic has several problems, especially that
+        // TODO(crbug.com/40832378): The follow logic has several problems, especially that
         // Toast#setGravity requires screen coordinates. Would probably be better if reworked to use
         // something like AnchoredPopupWindow.
 

@@ -1141,7 +1141,7 @@ test("ui_base_unittests") {
     sources += [ "accelerators/menu_label_accelerator_util_linux_unittest.cc" ]
   }
 
-  # TODO(crbug.com/1091985): Support CrOS.
+  # TODO(crbug.com/40134424): Support CrOS.
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "test/skia_gold_matching_algorithm_unittest.cc",

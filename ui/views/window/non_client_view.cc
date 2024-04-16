@@ -292,7 +292,8 @@ void NonClientView::Layout(PassKey) {
 }
 
 void NonClientView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(crbug.com/1366294): Should this be pruned from the accessibility tree?
+  // TODO(crbug.com/40866857): Should this be pruned from the accessibility
+  // tree?
   node_data->role = ax::mojom::Role::kClient;
 }
 

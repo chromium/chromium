@@ -2745,7 +2745,7 @@ void View::Focus() {
   OnFocus();
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1492220) - Get this working on Lacros as well.
+  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
   UpdateTooltipForFocus();
 #endif
 
@@ -3077,7 +3077,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   CHECK_NE(view, this) << "You cannot add a view as its own child";
   DCHECK_LE(index, children_.size());
 
-  // TODO(https://crbug.com/942298): Should just DCHECK(!view->parent_);.
+  // TODO(crbug.com/41447071): Should just DCHECK(!view->parent_);.
   View* parent = view->parent_;
   if (parent == this) {
     ReorderChildView(view, index);

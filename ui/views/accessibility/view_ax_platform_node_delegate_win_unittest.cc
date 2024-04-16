@@ -352,7 +352,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
 }
 
 // Test trying to retrieve child widgets during window close does not crash.
-// TODO(crbug.com/1218885): Remove this after WIDGET_OWNS_NATIVE_WIDGET is gone.
+// TODO(crbug.com/40185858): Remove this after WIDGET_OWNS_NATIVE_WIDGET is
+// gone.
 TEST_F(ViewAXPlatformNodeDelegateWinTest, GetAllOwnedWidgetsCrash) {
   Widget widget;
   Widget::InitParams init_params =

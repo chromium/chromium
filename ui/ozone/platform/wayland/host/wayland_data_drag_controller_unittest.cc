@@ -1060,7 +1060,7 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
     ASSERT_TRUE(server->data_device_manager()->data_source());
   });
 
-  // TODO(crbug.com/1022722): Double-check if this should return false instead.
+  // TODO(crbug.com/40050639): Double-check if this should return false instead.
   EXPECT_TRUE(result);
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());

@@ -552,7 +552,7 @@ class EventGenerator {
 
 // This generates key events for moidfiers as well as the key with
 // modifiers.
-// TODO(crbug.com/1415115): Remove this once the EventGenerator is
+// TODO(crbug.com/40256427): Remove this once the EventGenerator is
 // modified to generate the same sequence.
 void EmulateFullKeyPressReleaseSequence(test::EventGenerator* generator,
                                         KeyboardCode key,

@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
 #endif
 
   // Adds a DataTransferEndpoint to represent the source of the data.
-  // TODO(crbug.com/1142406): Update all drag-and-drop references to set the
+  // TODO(crbug.com/40727723): Update all drag-and-drop references to set the
   // source of the data.
   void SetSource(std::unique_ptr<DataTransferEndpoint> data_source);
   DataTransferEndpoint* GetSource() const;

@@ -126,7 +126,7 @@ gfx::Font::Weight TypographyProvider::MediumWeightForUI() {
 }
 
 bool TypographyProvider::StyleAllowedForContext(int context, int style) const {
-  // TODO(https://crbug.com/1352340): Limit emphasizing text to contexts where
+  // TODO(crbug.com/40234831): Limit emphasizing text to contexts where
   // it's obviously correct. chrome_typography_provider.cc implements this
   // correctly, but that does not cover uses outside of //chrome or //ash.
   return true;

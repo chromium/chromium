@@ -137,7 +137,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 int oldRight,
                 int oldBottom) {
             cacheWindowVisibleDisplayFrameRect();
-            // TODO(crbug.com/1408360): call notifyRectChanged() if consumers don't do it.
+            // TODO(crbug.com/40253505): call notifyRectChanged() if consumers don't do it.
         }
 
         private void cacheWindowVisibleDisplayFrameRect() {
@@ -693,7 +693,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
         // Position the popup in the largest available space where it can fit.  This will bias the
         // popups to show below the anchor if it will not fit in either place.
-        // TODO(https://crbug.com/1311849): Address cases where spaceBelowAnchor = 0, popup is still
+        // TODO(crbug.com/40831291): Address cases where spaceBelowAnchor = 0, popup is still
         // biased to anchored below the rect.
         boolean isPositionBelow =
                 (idealFitsBelow && spaceBelowAnchor >= spaceAboveAnchor) || !idealFitsAbove;
@@ -855,7 +855,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         if (mDismissOnTouchInteraction) {
             // Pass down the touch event to child views. If the content view has clickable children,
             // make sure we give them the opportunity to trigger.
-            // TODO(crbug.com/1273021): Revisit handling touches on content when
+            // TODO(crbug.com/40806699): Revisit handling touches on content when
             // mDismissOnTouchInteraction is true.
             boolean touchInterceptedByChild =
                     !touchInterceptedByClient

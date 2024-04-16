@@ -1040,7 +1040,7 @@ TEST_F(TextfieldTest, KeyTestControlModifier) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_KeysWithModifiersTest KeysWithModifiersTest
 #else
-// TODO(crbug.com/645104): Implement keyboard layout changing for other
+// TODO(crbug.com/41274325): Implement keyboard layout changing for other
 //                         platforms.
 #define MAYBE_KeysWithModifiersTest DISABLED_KeysWithModifiersTest
 #endif
@@ -3795,7 +3795,7 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   EXPECT_LT(GetTextfieldTestApi().GetDisplayOffsetX(), 0);
 }
 
-// TODO(crbug.com/1465767): Rewrite these long press tests when EventGenerator
+// TODO(crbug.com/40276114): Rewrite these long press tests when EventGenerator
 // can generate long press gestures.
 TEST_F(TextfieldTest, LongPressSelection) {
   base::test::ScopedFeatureList feature_list;

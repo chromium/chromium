@@ -13,7 +13,7 @@ namespace wl {
 
 namespace {
 
-// TODO(https://crbug.com/1395061): Replace NOTREACHED() by NOTIMPLEMENTED() for
+// TODO(crbug.com/40881920): Replace NOTREACHED() by NOTIMPLEMENTED() for
 // all methods?
 void set_frame(struct wl_client* client,
                struct wl_resource* resource,

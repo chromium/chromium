@@ -147,7 +147,7 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
 
   connection()->Flush();
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1454893): Revisit to resolve the correct impl.
+  // TODO(crbug.com/40917147): Revisit to resolve the correct impl.
   connection()->event_source()->ResetPointerFlags();
 #endif
 }
@@ -251,7 +251,7 @@ void WaylandToplevelWindow::Maximize() {
 
 void WaylandToplevelWindow::Minimize() {
   if (!shell_toplevel_) {
-    // TODO(crbug.com/1466385): Store `PlatformWindowState::kMinimized` to a
+    // TODO(crbug.com/40276379): Store `PlatformWindowState::kMinimized` to a
     // pending state.
     return;
   }
@@ -270,8 +270,8 @@ void WaylandToplevelWindow::Minimize() {
     // synchronous minimize because a minimized window cannot ack configure.
     // This can happen if a minimized window is restored by a session restore.
     //
-    // TODO(crbug.com/1293740): Verify that the claim about a window initialized
-    // as a minimized window cannot ack configure. If not
+    // TODO(crbug.com/40058672): Verify that the claim about a window
+    // initialized as a minimized window cannot ack configure. If not
     // `IsSurfaceConfigured()` condition can be removed.
     //
     // TODO(crbug.com/40276379): Use `GetLatestRequestedState().window_state`
@@ -591,7 +591,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
         IsPinnedOrFullscreen(window_states))
       << "Immersive state should not be set when it's not fullscreen.";
 
-  // TODO(crbug.com/1512518): Refer to window_states.is_pinned_fullscreen and
+  // TODO(crbug.com/41485096): Refer to window_states.is_pinned_fullscreen and
   // is_trusted_window_fullscreen and set kPinned/kTrustedPinned as a fullscreen
   // type when it's supported.
   PlatformFullscreenType fullscreen_type =

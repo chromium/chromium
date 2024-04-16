@@ -284,7 +284,7 @@ void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
     }
     if (wl_server_version >=
         ZCR_EXTENDED_TEXT_INPUT_V1_DEPRECATED_SET_INPUT_TYPE_SINCE_VERSION) {
-      // TODO(crbug.com/1420448) This deprecated method is used here only to
+      // TODO(crbug.com/40258785) This deprecated method is used here only to
       // maintain backwards compatibility with an older version of Exo. Once
       // Exo has stabilized on the new set_input_type, remove this call.
       zcr_extended_text_input_v1_deprecated_set_input_type(

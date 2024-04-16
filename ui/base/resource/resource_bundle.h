@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Delegate class that allows interception of pack file loading and resource
   // requests. The methods of this class may be called on multiple threads.
-  // TODO(crbug.com/1146446): The interface and usage model of this class are
+  // TODO(crbug.com/40730080): The interface and usage model of this class are
   // clunky; it would be good to clean them up.
   class Delegate {
    public:

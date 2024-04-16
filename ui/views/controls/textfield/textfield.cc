@@ -1837,7 +1837,7 @@ bool Textfield::ChangeTextDirectionAndLayoutAlignment(
 void Textfield::ExtendSelectionAndDelete(size_t before, size_t after) {
   gfx::Range range = GetRenderText()->selection();
   // Discard out-of-bound operations.
-  // TODO(crbug.com/1344096): this is a temporary fix to prevent the
+  // TODO(crbug.com/40852753): this is a temporary fix to prevent the
   // checked_cast failure in gfx::Range. There does not seem to be any
   // observable bad behaviors before checked_cast was added. However, range
   // clipping or dropping should be the last resort because a checkfail
@@ -2023,7 +2023,7 @@ bool Textfield::AddGrammarFragments(
     base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Count",
                                   TextInputClient::SubClass::kTextField);
   }
-  // TODO(crbug/1201454): Implement this method for CrOS Grammar.
+  // TODO(crbug.com/40178699): Implement this method for CrOS Grammar.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -2938,7 +2938,7 @@ void Textfield::StopBlinkingCursor() {
 
 void Textfield::OnCursorBlinkTimerFired() {
   DCHECK(ShouldBlinkCursor());
-  // TODO(crbug.com/1294712): The cursor position is not updated appropriately
+  // TODO(crbug.com/40820702): The cursor position is not updated appropriately
   // when locale changes from a left-to-right script to a right-to-left script.
   // Thus the cursor is displayed at a wrong position immediately after the
   // locale change. As a band-aid solution, we update the cursor here, so that

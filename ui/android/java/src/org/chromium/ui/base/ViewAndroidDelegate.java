@@ -589,7 +589,7 @@ public class ViewAndroidDelegate {
 
     /** Destroy and clean up dependencies (e.g. drag state tracker if set). */
     public void destroy() {
-        // TODO(https://crbug.com/1297354): Call this in when destroying WebContents.
+        // TODO(crbug.com/40215126): Call this in when destroying WebContents.
         mDragAndDropDelegateImpl.destroy();
     }
 

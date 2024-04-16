@@ -118,7 +118,7 @@ void GtkUiPlatformWayland::ClearTransientFor(gfx::AcceleratedWidget parent) {
 }
 
 void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
-  // TODO(crbug.com/1008755): Check if gtk_window_present_with_time is needed
+  // TODO(crbug.com/40650162): Check if gtk_window_present_with_time is needed
   // here as well, similarly to what is done in X11 impl.
   gtk_window_present(window);
 }

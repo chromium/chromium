@@ -475,7 +475,7 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
       if (crtc_request.plane_list())
         disable_planes_lists.insert(crtc_request.plane_list());
 
-      // TODO(crbug/1135291): Use atomic APIs to reset cursor plane.
+      // TODO(crbug.com/40151802): Use atomic APIs to reset cursor plane.
       if (!drm_->SetCursor(crtc_request.crtc_id(), 0, gfx::Size())) {
         PLOG(ERROR) << "Failed to drmModeSetCursor: device:"
                     << drm_->device_path().value()

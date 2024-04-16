@@ -194,7 +194,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   // handle the unexpected situations were the angle is not a multiple of 90.
   display.SetRotationAsDegree(static_cast<int>(CGDisplayRotation(display_id)));
 
-  // TODO(crbug.com/1078903): Support multiple internal displays.
+  // TODO(crbug.com/40129700): Support multiple internal displays.
   // CGDisplayIsBuiltin may return -1 on [dis]connect; see crbug.com/1457025.
   if (CGDisplayIsBuiltin(display_id) == YES) {
     SetInternalDisplayIds({display_id});

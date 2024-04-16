@@ -173,7 +173,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
               window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
 
-  // TODO(crbug.com/1116431): Support extended-drag in test compositor.
+  // TODO(crbug.com/40711933): Support extended-drag in test compositor.
 
   void SendTouchDown(WaylandWindow* window,
                      MockPlatformWindowDelegate* delegate,
@@ -1393,7 +1393,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
 
-        // TODO(crbug.com/1498170): Remove window's origin here once the
+        // TODO(crbug.com/40939396): Remove window's origin here once the
         // non-Lacros motion events handling in detached mode gets fixed.
         gfx::Point expected_point{20, 20};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();

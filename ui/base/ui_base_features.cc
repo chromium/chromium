@@ -193,7 +193,7 @@ BASE_FEATURE(kSystemCaptionStyle,
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
 // blink. Currently enabled by default on Windows only.
-// TODO(crbug.com/1333523) - Implement for other platforms.
+// TODO(crbug.com/40845719) - Implement for other platforms.
 BASE_FEATURE(kSystemCursorSizeSupported,
              "SystemCursorSizeSupported",
 #if BUILDFLAG(IS_WIN)
@@ -626,7 +626,7 @@ BASE_FEATURE(kBubbleMetricsApi,
 // and a PNG (as opposed to just a TIFF). This requires encoding the sanitized
 // bitmap to a PNG on the UI thread on copy, which may cause jank. This matches
 // the behavior of other platforms.
-// TODO(https://crbug.com/1443646): Remove this flag eventually.
+// TODO(crbug.com/40267438): Remove this flag eventually.
 BASE_FEATURE(kMacClipboardWriteImageWithPng,
              "MacClipboardWriteImageWithPng",
              base::FEATURE_ENABLED_BY_DEFAULT);

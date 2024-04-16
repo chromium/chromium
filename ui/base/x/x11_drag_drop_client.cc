@@ -634,7 +634,8 @@ x11::Window XDragDropClient::FindWindowFor(const gfx::Point& screen_point) {
     return x11::Window::None;
   }
 
-  // TODO(crbug/651775): The proxy window should be reported separately from the
+  // TODO(crbug.com/41278320): The proxy window should be reported separately
+  // from the
   //     target window. XDND messages should be sent to the proxy, and their
   //     window field should point to the target.
 

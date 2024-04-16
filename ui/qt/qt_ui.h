@@ -96,7 +96,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
 
   std::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
 
-  // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
+  // TODO(crbug.com/40222643): This is a fallback for any unimplemented
   // functionality in the QT backend and should eventually be removed.
   ui::LinuxUi* const fallback_linux_ui_;
 

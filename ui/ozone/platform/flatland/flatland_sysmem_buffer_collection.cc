@@ -593,7 +593,7 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
   VkImageCreateInfo image_create_info;
   InitializeImageCreateInfo(&image_create_info, min_size_);
 
-  // TODO(crbug.com/1289315): Instead of always allowing protected memory,
+  // TODO(crbug.com/42050415): Instead of always allowing protected memory,
   // Chrome should query if the Vulkan physical device supports protected
   // memory and only set the flag if it is supported.
   auto image_constraints_info = InitializeImageConstraintsInfo(

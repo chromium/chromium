@@ -628,7 +628,7 @@ bool X11Window::HasCapture() const {
 }
 
 void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
-  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
+  // TODO(crbug.com/40111909) Support `target_display_id` on this platform.
   DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
   if (fullscreen) {
     CancelResize();
@@ -1285,7 +1285,7 @@ bool X11Window::HandleAsAtkEvent(const x11::KeyEvent& key_event,
                                  bool send_event,
                                  bool transient) {
 #if !BUILDFLAG(USE_ATK)
-  // TODO(crbug.com/1014934): Support ATK in Ozone/X11.
+  // TODO(crbug.com/40653448): Support ATK in Ozone/X11.
   NOTREACHED();
   return false;
 #else
@@ -1389,8 +1389,8 @@ void X11Window::DispatchUiEvent(ui::Event* event, const x11::Event& xev) {
 
   // If after CoalescePendingMotionEvents the type of xev is resolved to
   // UNKNOWN, i.e: xevent translation returns nullptr, don't dispatch the
-  // event. TODO(804418): investigate why ColescePendingMotionEvents can
-  // include mouse wheel events as well. Investigation showed that events on
+  // event. TODO(crbug.com/40559202): investigate why ColescePendingMotionEvents
+  // can include mouse wheel events as well. Investigation showed that events on
   // Linux are checked with cmt-device path, and can include DT_CMT_SCROLL_
   // data. See more discussion in https://crrev.com/c/853953
   UpdateWMUserTime(event);

@@ -185,7 +185,7 @@ class AnimatedImageDragShadowBuilder extends View.DragShadowBuilder {
 
     /**
      * Return the {@link DragShadowSpec} based on the image size and window size.
-     * TODO(crbug.com/1295868): Scale image in C++ before passing into Java.
+     * TODO(crbug.com/40214518): Scale image in C++ before passing into Java.
      */
     static DragShadowSpec getDragShadowSpec(
             Context context, int imageWidth, int imageHeight, int windowWidth, int windowHeight) {

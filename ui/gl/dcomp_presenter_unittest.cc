@@ -661,7 +661,7 @@ TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
 
 // Check that there is no crash when building the layer tree if
 // there are no overlays.
-// TODO(crbug.com/1519186): Change this test to check whether delegated
+// TODO(crbug.com/41492167): Change this test to check whether delegated
 // ink still works when root_surface_visual does not exist.
 TEST_F(DCompPresenterTest, BuildTreeNoCrashWithRootSurfaceVisualNull) {
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =

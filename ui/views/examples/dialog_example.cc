@@ -320,7 +320,7 @@ void DialogExample::OtherCheckboxPressed() {
   // Buttons other than show and bubble are pressed. They are all checkboxes.
   // Update the dialog if there is one.
   if (last_dialog_) {
-    // TODO(crbug.com/1261666): This can segfault.
+    // TODO(crbug.com/40799020): This can segfault.
     last_dialog_->DialogModelChanged();
     ResizeDialog();
   }

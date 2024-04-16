@@ -40,7 +40,7 @@ mojom("mojom") {
   cpp_typemaps += [
     {
       types = [
-        # TODO(crbug.com/617167): Map directly to ui::Event.
+        # TODO(crbug.com/41257096): Map directly to ui::Event.
         {
           mojom = "ui.mojom.Event"
           cpp = "::std::unique_ptr<::ui::Event>"

@@ -663,7 +663,7 @@ bool GtkUi::GetTextEditCommandsForEvent(
     return false;
   }
 
-  // TODO(crbug.com/963419): Use delegate's |GetGdkKeymap| here to
+  // TODO(crbug.com/40627552): Use delegate's |GetGdkKeymap| here to
   // determine if GtkUi's key binding handling implementation is used or not.
   // Ozone/Wayland was unintentionally using GtkUi for keybinding handling, so
   // early out here, for now, until a proper solution for ozone is implemented.

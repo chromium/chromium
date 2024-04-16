@@ -668,7 +668,7 @@ TEST_F(WidgetTestInteractive, ZOrderCheckBetweenTopWindows) {
 }
 
 // Test z-order of child widgets relative to their parent.
-// TODO(crbug.com/1227009): Disabled on Mac due to flake
+// TODO(crbug.com/40776787): Disabled on Mac due to flake
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ChildStackedRelativeToParent DISABLED_ChildStackedRelativeToParent
 #else
@@ -1214,7 +1214,8 @@ TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
 }
 
 TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
-  // TODO(crbug/1217331): This test fails if put under NativeWidgetAuraTest.
+  // TODO(crbug.com/40185137): This test fails if put under
+  // NativeWidgetAuraTest.
   WidgetAutoclosePtr anchor_widget(CreateTopLevelNativeWidget());
 
   anchor_widget->Show();

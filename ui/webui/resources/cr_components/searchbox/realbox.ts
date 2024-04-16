@@ -460,7 +460,7 @@ export class RealboxElement extends RealboxElementBase {
     }
 
     if (inputValue.trim()) {
-      // TODO(crbug.com/1149769): Rather than disabling inline autocompletion
+      // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
       // mechanism via which inline autocompletion is shown in the realbox.
       this.queryAutocomplete_(inputValue, e.isComposing);

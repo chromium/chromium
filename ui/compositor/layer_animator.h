@@ -450,7 +450,7 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
 
   // Observers are notified when layer animations end, are scheduled or are
   // aborted.
-  // TODO(crbug.com/1248132): Once all references to Add/RemoveObserver
+  // TODO(crbug.com/40197146): Once all references to Add/RemoveObserver
   // functions are removed, delete these, the associated methods other internal
   // related code.
   base::ObserverList<LayerAnimationObserver>::UncheckedAndDanglingUntriaged

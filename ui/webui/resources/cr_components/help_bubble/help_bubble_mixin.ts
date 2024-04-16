@@ -379,7 +379,7 @@ export const HelpBubbleMixin = dedupingMixin(
          * e.g. cause a Tutorial or interactive test to advance to the next
          * step.
          *
-         * TODO(crbug.com/1376262): Figure out how to automatically send the
+         * TODO(crbug.com/40243127): Figure out how to automatically send the
          * activated event when an anchor element is clicked.
          */
         notifyHelpBubbleAnchorActivated(nativeId: string): boolean {

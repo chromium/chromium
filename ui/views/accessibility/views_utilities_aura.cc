@@ -64,7 +64,7 @@ std::vector<int32_t> ComputeTextOffsets(gfx::RenderText* render_text) {
     return offsets;
   }
 
-  // TODO(https://crbug.com/1505805): Add a maximum length check to avoid hangs.
+  // TODO(crbug.com/40946445): Add a maximum length check to avoid hangs.
   size_t begin_position = 0;
   int last_x = 0;
 

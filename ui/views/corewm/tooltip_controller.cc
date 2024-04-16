@@ -224,7 +224,7 @@ void TooltipController::OnKeyEvent(ui::KeyEvent* event) {
   HideAndReset();
 }
 
-// TODO(crbug.com/1492222): Figure out why we have code both here and
+// TODO(crbug.com/40285439): Figure out why we have code both here and
 // in DesktopNativeWidgetAura to handle mouse (and key?) events. Seems like we
 // should only need one set of them.
 void TooltipController::OnMouseEvent(ui::MouseEvent* event) {

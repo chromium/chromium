@@ -54,7 +54,7 @@
 // are typedefs for native event types on different platforms, but they're
 // slightly different and used in different places. They should be merged.
 //
-// TODO(https://crbug.com/1149906): gfx::NativeCursor is ui::Cursor in Aura;
+// TODO(crbug.com/40157665): gfx::NativeCursor is ui::Cursor in Aura;
 // perhaps remove gfx::NativeCursor and use ui::Cursor everywhere?
 
 #if defined(USE_AURA)

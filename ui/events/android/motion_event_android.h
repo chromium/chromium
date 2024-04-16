@@ -126,11 +126,10 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   float GetTwist(size_t pointer_index) const override;
   float GetTangentialPressure(size_t pointer_index) const override;
 
-  // TODO(1520879): Cleanup GetEventTime method to have same semantics as
-  // Android side of MotionEvent.GetEventTime().
-  // On Android side GetEventTime() gives timestamp of the most recent input
-  // event, while in chromium it gives timestamp of the oldest input event for
-  // batched inputs.
+  // TODO(crbug.com/41493853): Cleanup GetEventTime method to have same
+  // semantics as Android side of MotionEvent.GetEventTime(). On Android side
+  // GetEventTime() gives timestamp of the most recent input event, while in
+  // chromium it gives timestamp of the oldest input event for batched inputs.
   base::TimeTicks GetEventTime() const override;
   base::TimeTicks GetLatestEventTime() const override;
   size_t GetHistorySize() const override;

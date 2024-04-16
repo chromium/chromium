@@ -1489,7 +1489,7 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
   // Construct string to be committed.
   const std::u16string& new_committed_string = string_buffer_document_.substr(
       new_committed_string_offset, new_committed_string_size);
-  // TODO(crbug.com/978678): Unify the behavior of
+  // TODO(crbug.com/41467857): Unify the behavior of
   //     |TextInputClient::InsertText(text)| for the empty text.
   if (!new_committed_string.empty()) {
     // If composition was started and committed in one edit session, we still

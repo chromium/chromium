@@ -638,9 +638,9 @@ void ViewAccessibility::SetIsEnabled(bool is_enabled) {
     data_.SetRestriction(ax::mojom::Restriction::kNone);
   }
 
-  // TODO(crbug.com/1421682): We need a specific enabled-changed event for this.
-  // Some platforms have specific state-changed events and this generic event
-  // does not suggest what changed.
+  // TODO(crbug.com/40896388): We need a specific enabled-changed event for
+  // this. Some platforms have specific state-changed events and this generic
+  // event does not suggest what changed.
   view()->NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 }
 

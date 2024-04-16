@@ -338,7 +338,7 @@ void TransformToWlArray(
 
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
 #if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/1499638): `milliseconds` comes from Weston that
+  // TODO(crbug.com/40287874): `milliseconds` comes from Weston that
   // uses timestamp from libinput, which is different from TimeTicks.
   // Use EventTimeForNow(), for now.
   return ui::EventTimeForNow();

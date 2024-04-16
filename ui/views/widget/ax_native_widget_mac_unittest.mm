@@ -715,7 +715,7 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
     EXPECT_TRUE(AXObjectHandlesSelector(cocoa_secure_textfield, sel));
   }
 
-  // TODO(https://crbug.com/939965): This should assert the same behavior of
+  // TODO(crbug.com/41445794): This should assert the same behavior of
   // Views textfields and NSSecureTextField, but right now it can't.
   EXPECT_TRUE(
       AXObjectHandlesSelector(ax_node, @selector(setAccessibilityValue:)));

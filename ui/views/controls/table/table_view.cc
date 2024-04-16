@@ -625,7 +625,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
     case ui::VKEY_RIGHT:
-      // TODO(crbug.com/1221001): Update TableView to support keyboard
+      // TODO(crbug.com/40773239): Update TableView to support keyboard
       // navigation to table cells on Mac when "Full keyboard access" is
       // specified.
       if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {

@@ -243,7 +243,7 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
   // from the system clipboard will cause clipboard access notification popping
   // up.
   JNIEnv* env = AttachCurrentThread();
-  // TODO(crbug.com/1194601): Create a single method for the follow JNI calls.
+  // TODO(crbug.com/40175699): Create a single method for the follow JNI calls.
   if (format == ClipboardFormatType::PlainTextType()) {
     return Java_Clipboard_hasCoercedText(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::HtmlType()) {
@@ -359,7 +359,7 @@ void ClipboardMap::CommitToAndroidClipboard() {
     ScopedJavaLocalRef<jstring> image_extension =
         ConvertUTF8ToJavaString(env, kPngExtension);
     DCHECK(image_data.obj());
-    // TODO(crbug.com/1223215) In unit tests, `jimageuri` is empty.
+    // TODO(crbug.com/40187527) In unit tests, `jimageuri` is empty.
     Java_Clipboard_setImage(env, clipboard_manager_, image_data,
                             image_extension);
     ScopedJavaLocalRef<jstring> jimageuri =

@@ -24,7 +24,7 @@ void DisplayUtil::DisplayToScreenInfo(ScreenInfo* screen_info,
   screen_info->is_monochrome = display.is_monochrome();
   screen_info->display_frequency = display.display_frequency();
 
-  // TODO(https://crbug.com/998131): Expose panel orientation via a proper web
+  // TODO(crbug.com/41478398): Expose panel orientation via a proper web
   // API instead of window.screen.orientation.angle.
   screen_info->orientation_angle = display.PanelRotationAsDegree();
 #if defined(USE_AURA)

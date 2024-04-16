@@ -132,7 +132,7 @@ EventType GetEventTypeFromTouchEventPhase(
   }
 }
 
-// TODO(crbug.com/1271730): Check if chrome gestures require strict boundaries.
+// TODO(crbug.com/40805737): Check if chrome gestures require strict boundaries.
 std::array<float, 2> ClampToViewSpace(
     const float x,
     const float y,
@@ -170,7 +170,7 @@ TouchEvent CreateTouchEventDraft(
   auto timestamp = base::TimeTicks::FromZxTime(event.timestamp().value());
   auto event_type = GetEventTypeFromTouchEventPhase(sample->phase().value());
 
-  // TODO(crbug.com/1276571): Consider packing device_id field into PointerId.
+  // TODO(crbug.com/40808970): Consider packing device_id field into PointerId.
   DCHECK_LE(interaction->pointer_id(), 31U);
   PointerDetails pointer_details(EventPointerType::kTouch,
                                  interaction->pointer_id());

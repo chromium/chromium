@@ -1401,7 +1401,7 @@ void DesktopNativeWidgetAura::OnWindowActivated(
   // will be notified of the change there directly.
   const bool content_window_activated = content_window_ == gained_active;
   const bool tree_host_active = desktop_window_tree_host_->IsActive();
-  // TODO(crbug.com/1300567): Update focus rules to avoid focusing the desktop
+  // TODO(crbug.com/40216323): Update focus rules to avoid focusing the desktop
   // widget's content window if its window tree host is not active.
   if (native_widget_delegate_ && !should_activate_.has_value() &&
       (tree_host_active || !content_window_activated)) {

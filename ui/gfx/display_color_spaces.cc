@@ -44,7 +44,7 @@ size_t GetIndex(ContentColorUsage color_usage, bool needs_alpha) {
 }  // namespace
 
 DisplayColorSpaces::DisplayColorSpaces() {
-  // TODO(crbug/1309228): Revert back to range-based for loops if possible
+  // TODO(crbug.com/40219387): Revert back to range-based for loops if possible
   for (size_t i = 0; i < kConfigCount; i++) {
     color_spaces_[i] = gfx::ColorSpace::CreateSRGB();
     buffer_formats_[i] = DefaultBufferFormat();

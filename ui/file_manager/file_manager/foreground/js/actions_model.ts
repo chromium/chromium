@@ -129,7 +129,7 @@ class DriveToggleOfflineAction implements Action {
       },
 
       // Show an error.
-      // TODO(crbug.com/1138744): Migrate this error message to a visual signal.
+      // TODO(crbug.com/40725624): Migrate this error message to a visual signal.
       showError: () => {
         this.ui_.alertDialog.show(
             strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)),

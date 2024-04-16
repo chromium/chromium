@@ -261,7 +261,7 @@ bool Contains(const SubmenuView& submenu, const gfx::Point& location) {
 
 // Recurses through the child views of |view| returning the first view starting
 // at |pos| that is focusable. Children are considered first to last.
-// TODO(https://crbug.com/942358): This can also return |view|, which seems
+// TODO(crbug.com/41447095): This can also return |view|, which seems
 // incorrect.
 View* GetFirstFocusableViewForward(View* view,
                                    View::Views::const_iterator pos) {

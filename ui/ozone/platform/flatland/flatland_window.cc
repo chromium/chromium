@@ -206,7 +206,7 @@ void FlatlandWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
 }
 
 gfx::Rect FlatlandWindow::GetBoundsInDIP() const {
-  // TODO(crbug.com/1382849): Remove the hardcoded values and return
+  // TODO(crbug.com/42050542): Remove the hardcoded values and return
   // |logical_size_|.
   return platform_window_delegate_->ConvertRectToDIP(bounds_);
 }

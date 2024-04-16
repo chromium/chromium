@@ -174,7 +174,7 @@ component("events_base") {
   if (ozone_platform_x11) {
     public_deps += [ "//ui/events/keycodes:x11" ]
 
-    # TODO(https://crbug.com/1076277): This dependency on //ui/gfx/x
+    # TODO(crbug.com/40688148): This dependency on //ui/gfx/x
     # is unnecessary and should be removed.  It is included for now
     # to work around a bug in lld that introduces unnecessary
     # nondeterminism in the DSO (see c#6 on the bug for an
@@ -356,7 +356,7 @@ component("events") {
       "android/key_event_utils.h",
       "android/motion_event_android.h",
 
-      # TODO(crbug.com/1413521): Move this outside is_android block when
+      # TODO(crbug.com/40255699): Move this outside is_android block when
       # consuming cross-platform code which uses it lands.
       "back_gesture_event.h",
     ]

@@ -43,10 +43,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
   // - works around Flash content which expects to have the size updated
   //   synchronously.
   // See https://crbug.com/361408
-  // TODO(1096425): remove this and let this managed by X11ScreenOzone that
-  // Ozone's X11Window should be able to access instead. This delegate method
-  // is required as non-Ozone/X11 is not able to determine matching display
-  // as it requires to know bounds in dip.
+  // TODO(crbug.com/40136193): remove this and let this managed by
+  // X11ScreenOzone that Ozone's X11Window should be able to access instead.
+  // This delegate method is required as non-Ozone/X11 is not able to determine
+  // matching display as it requires to know bounds in dip.
   virtual gfx::Rect GetGuessedFullScreenSizeInPx() const = 0;
 
  protected:

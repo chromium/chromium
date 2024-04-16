@@ -39,7 +39,7 @@ class InProcessContextFactory : public ContextFactory {
  public:
   // Both |host_frame_sink_manager| and |frame_sink_manager| must outlive the
   // ContextFactory.
-  // TODO(crbug.com/657959): |frame_sink_manager| should go away and we should
+  // TODO(crbug.com/40489946): |frame_sink_manager| should go away and we should
   // use the LayerTreeFrameSink from the HostFrameSinkManager.
   // The default for |output_to_window| will create an OutputSurface that does
   // not display anything. Set to true if you want to see results on the screen.

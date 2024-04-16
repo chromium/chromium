@@ -514,7 +514,7 @@ ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
 
 int DialogDelegate::GetCornerRadius() const {
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1116680): On Mac MODAL_TYPE_WINDOW is implemented using
+  // TODO(crbug.com/40144839): On Mac MODAL_TYPE_WINDOW is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.
   if (GetModalType() == ui::MODAL_TYPE_WINDOW)

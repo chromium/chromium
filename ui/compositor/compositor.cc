@@ -441,7 +441,7 @@ void Compositor::DisableSwapUntilResize() {
     // Otherwise when we return from WM_WINDOWPOSCHANGING message handler and
     // receive a WM_WINDOWPOSCHANGED the resize is finalized and any swaps of
     // wrong size by Viz can cause the swapped content to get scaled.
-    // TODO(crbug.com/859168): Investigate nonblocking ways for solving.
+    // TODO(crbug.com/40583169): Investigate nonblocking ways for solving.
     TRACE_EVENT0("viz", "Blocked UI for DisableSwapUntilResize");
     mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call;
     display_private_->DisableSwapUntilResize();

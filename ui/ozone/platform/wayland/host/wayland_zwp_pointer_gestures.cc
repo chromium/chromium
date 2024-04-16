@@ -131,7 +131,7 @@ void WaylandZwpPointerGestures::OnPinchUpdate(
   self->current_scale_ = new_scale;
 
 #else
-  // TODO(crbug.com/1298099): Remove this code when exo is fixed.
+  // TODO(crbug.com/40215394): Remove this code when exo is fixed.
   // Exo currently sends relative scale values so it should be passed along to
   // Chrome without modification until exo can be fixed.
   const auto scale_delta = wl_fixed_to_double(scale);

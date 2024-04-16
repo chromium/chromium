@@ -1212,7 +1212,8 @@ void AutomationV8Bindings::AddV8Routes() {
           }
         }
 
-        // TODO(crbug/955633): Set doDefault, increment, and decrement directly
+        // TODO(crbug.com/41454524): Set doDefault, increment, and decrement
+        // directly
         //     on the AXNode.
         // The doDefault action is implied by having a default action verb.
         int default_action_verb =

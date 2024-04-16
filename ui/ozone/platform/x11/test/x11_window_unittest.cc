@@ -474,7 +474,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 }
 
-// TODO(crbug.com/1294066): Flaky on both Linux and ChromeOS.
+// TODO(crbug.com/40820331): Flaky on both Linux and ChromeOS.
 // Tests that the minimization information is propagated to the
 // PlatformWindowDelegate.
 TEST_F(X11WindowTest,

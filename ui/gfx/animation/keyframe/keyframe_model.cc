@@ -96,7 +96,7 @@ KeyframeModel::Phase KeyframeModel::CalculatePhase(
       (local_time == before_active_boundary_time && playback_rate_ < 0)) {
     return KeyframeModel::Phase::BEFORE;
   }
-  // TODO(crbug.com/909794): By spec end time = max(start delay + duration +
+  // TODO(crbug.com/41428771): By spec end time = max(start delay + duration +
   // end delay, 0). The logic should be updated once "end delay" is supported.
   base::TimeDelta active_after_boundary_time = base::TimeDelta::Max();
   if (std::isfinite(iterations_)) {

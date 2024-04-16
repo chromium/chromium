@@ -558,7 +558,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
   EXPECT_TRUE(widget()->IsClosed());
 }
 
-// TODO(https://crbug.com/1449221): investigate the tests on ChromeOS and
+// TODO(crbug.com/40269697): investigate the tests on ChromeOS and
 // fuchsia
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 class DesktopDialogClientViewTest : public DialogClientViewTest {

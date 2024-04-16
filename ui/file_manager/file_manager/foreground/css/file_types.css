@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* TODO(crbug.com/992819): unify root-type-icon and volume-type-icon into one
+/* TODO(crbug.com/40639927): unify root-type-icon and volume-type-icon into one
  type if possible, called file-type-icon or entry-type-icon say, since there
  is no real need for the root/volume icon distinction for the directory tree
  noting that file-type-icon is also used in lists and menus ;) */

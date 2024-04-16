@@ -96,7 +96,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
     return hdr_max_luminance_relative_;
   }
 
-  // TODO(https://crbug.com/1116870): These helper functions exist temporarily
+  // TODO(crbug.com/40144904): These helper functions exist temporarily
   // to handle the transition of display::ScreenInfo off of ColorSpace. All
   // calls to these functions are to be eliminated.
   ColorSpace GetScreenInfoColorSpace() const;

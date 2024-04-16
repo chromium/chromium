@@ -507,7 +507,7 @@ void DesktopWindowTreeHostPlatform::StackAtTop() {
 }
 
 bool DesktopWindowTreeHostPlatform::IsStackedAbove(aura::Window* window) {
-  // TODO(https://crbug.com/1363218) Implement Window layer check
+  // TODO(crbug.com/40238598) Implement Window layer check
   NOTREACHED_NORETURN();
 }
 
@@ -587,7 +587,7 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetWorkAreaBoundsInScreen() const {
 
 void DesktopWindowTreeHostPlatform::SetShape(
     std::unique_ptr<Widget::ShapeRects> native_shape) {
-  // TODO(crbug.com/1158733) : When supporting PlatformWindow::SetShape,
+  // TODO(crbug.com/40737127) : When supporting PlatformWindow::SetShape,
   // Calls ui::Layer::SetAlphaShape and sets |is_shape_explicitly_set_| to true.
   platform_window()->SetShape(std::move(native_shape), GetRootTransform());
 }
@@ -1022,7 +1022,7 @@ gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
   // lacros should not use this.
   NOTREACHED_NORETURN();
 #else
-  // TODO(crbug.com/1318279): DIP should use gfx::PointF. Fix this as
+  // TODO(crbug.com/40222832): DIP should use gfx::PointF. Fix this as
   // a part of cleanup work(crbug.com/1318279).
   gfx::Point local_dip(screen_in_pixels);
   ConvertScreenInPixelsToDIP(&local_dip);

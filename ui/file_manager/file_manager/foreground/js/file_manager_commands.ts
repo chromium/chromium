@@ -2374,7 +2374,7 @@ export class BrowserBackCommand extends FilesCommand {
     // TODO(fukino): It should be better to minimize Files app only when there
     // is no back stack, and otherwise use BrowserBack for history navigation.
     // https://crbug.com/624100.
-    // TODO(https://crbug.com/1097066): Implement minimize for files SWA, then
+    // TODO(crbug.com/40701086): Implement minimize for files SWA, then
     // call its minimize() function here.
   }
 }

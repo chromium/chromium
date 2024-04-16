@@ -298,8 +298,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   using PassKey = base::NonCopyablePassKey<View>;
   using Views = std::vector<raw_ptr<View, VectorExperimental>>;
 
-  // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
-  // new callers.
+  // TODO(crbug.com/40212171): The |event| parameter is being removed. Do not
+  // add new callers.
   using DropCallback = base::OnceCallback<void(
       const ui::DropTargetEvent& event,
       ui::mojom::DragOperation& output_drag_op,

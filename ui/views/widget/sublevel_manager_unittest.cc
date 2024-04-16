@@ -307,7 +307,7 @@ TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
                                                      children[1].get()));
 }
 
-// TODO(crbug.com/1333445): We should also test NativeWidgetType::kDesktop,
+// TODO(crbug.com/40227915): We should also test NativeWidgetType::kDesktop,
 // but currently IsWindowStackedAbove() does not work for desktop widgets.
 INSTANTIATE_TEST_SUITE_P(
     ,

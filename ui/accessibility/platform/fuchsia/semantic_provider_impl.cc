@@ -87,8 +87,8 @@ AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
 
   auto semantics_manager_client_end = base::fuchsia_component::Connect<
       fuchsia_accessibility_semantics::SemanticsManager>();
-  // TODO(crbug.com/1431519): Create a path for gracefully failing to connect to
-  // SemanticsManager instead of CHECKing.
+  // TODO(crbug.com/40263576): Create a path for gracefully failing to connect
+  // to SemanticsManager instead of CHECKing.
   CHECK(semantics_manager_client_end.is_ok())
       << base::FidlConnectionErrorMessage(semantics_manager_client_end);
   fidl::Client semantics_manager(

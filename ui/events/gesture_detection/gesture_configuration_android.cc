@@ -75,7 +75,7 @@ class GestureConfigurationAndroid : public GestureConfiguration {
     // using the heuristic that it would be 100ms less than the long-press
     // provided this is not too close with show-press.
     //
-    // TODO(https://crbug.com/1294280): Replace this with platform-defined
+    // TODO(crbug.com/40820457): Replace this with platform-defined
     // timeout when available.
     set_short_press_time(base::Milliseconds(
         std::max(long_press_time_in_ms() - 100, long_press_time_in_ms() / 2)));

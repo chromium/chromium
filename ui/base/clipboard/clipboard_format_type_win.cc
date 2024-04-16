@@ -236,7 +236,7 @@ const ClipboardFormatType& ClipboardFormatType::FileContentZeroType() {
   // used with CFSTR_FILECONTENTS (but used in Chromium--see
   // OSExchangeDataProviderWin::SetFileContents). Use FileContentAtIndexType
   // if TYMED_ISTREAM and TYMED_ISTORAGE are needed.
-  // TODO(https://crbug.com/950756): Should TYMED_ISTREAM / TYMED_ISTORAGE be
+  // TODO(crbug.com/41451800): Should TYMED_ISTREAM / TYMED_ISTORAGE be
   // used instead of TYMED_HGLOBAL in
   // OSExchangeDataProviderWin::SetFileContents.
   // The 0 constructor argument is used with CFSTR_FILECONTENTS to specify file

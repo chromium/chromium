@@ -500,7 +500,7 @@ TEST_F(NotificationViewBaseTest, TestActionButtonClick) {
   EXPECT_EQ(1, delegate_->clicked_button_index());
 }
 
-// TODO(crbug.com/1232197): Test failing on linux-lacros-tester-rel and ozone.
+// TODO(crbug.com/40780100): Test failing on linux-lacros-tester-rel and ozone.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_OZONE)
 #define MAYBE_TestInlineReply DISABLED_TestInlineReply
 #else

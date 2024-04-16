@@ -681,7 +681,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   // but Windows prevented it, and the user clicks on the task bar to bring the
   // window forward. See https://crbug.com/1137982. This is the only event I
   // could find that always gets sent in this scenario, and isn't too common.
-  // TODO(crbug.com/1297684): See if we can make handling this event cheaper,
+  // TODO(crbug.com/40215249): See if we can make handling this event cheaper,
   // since we typically don't need it, e.g., by using a longer timer interval
   // for starting the occlusion calculation for this event, to batch subsequent
   // events.

@@ -30,7 +30,7 @@ void GLEGLUtilityX11::ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
 void GLEGLUtilityX11::CollectGpuExtraInfo(
     bool enable_native_gpu_memory_buffers,
     gfx::GpuExtraInfo& gpu_extra_info) const {
-  // TODO(https://crbug.com/1031269): Enable by default.
+  // TODO(crbug.com/40110388): Enable by default.
   if (enable_native_gpu_memory_buffers) {
     gpu_extra_info.gpu_memory_buffer_support_x11 =
         ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();

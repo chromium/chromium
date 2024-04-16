@@ -150,7 +150,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
 };
 
-// TODO(crbug.com/1021774): Find a better home and merge with
+// TODO(crbug.com/40657251): Find a better home and merge with
 //     ash::metris_util::ForSmoothness.
 using SmoothnessCallback = base::RepeatingCallback<void(int smoothness)>;
 ui::AnimationThroughputReporter::ReportCallback ForSmoothness(

@@ -101,7 +101,7 @@ public final class ResourceBundle {
             return assetPath;
         } catch (IOException e) {
             // Fallback for apk targets.
-            // TODO(crbug.com/1176290): Remove the need for this fallback logic.
+            // TODO(crbug.com/40168285): Remove the need for this fallback logic.
             String fallbackPath = "assets/locales/" + locale + ".pak";
             try (AssetFileDescriptor afd = manager.openNonAssetFd(fallbackPath)) {
                 return fallbackPath;

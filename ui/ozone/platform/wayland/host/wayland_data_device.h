@@ -69,7 +69,7 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   void ResetDragDelegate();
   // Resets the drag delegate, only under certain conditions, eg: if it is set
   // and running an incoming dnd session.
-  // TODO(crbug.com/1401598): Drop once drag delegate improvements are done.
+  // TODO(crbug.com/40884328): Drop once drag delegate improvements are done.
   void ResetDragDelegateIfNotDragSource();
 
   // Returns the underlying wl_data_device singleton object.

@@ -33,7 +33,7 @@ const int kMaxDetectedLanguagesPerPage = 3;
 const int kMaxDetectedLanguagesPerSpan = 3;
 
 const int kShortTextIdentifierMinByteLength = 1;
-// TODO(https://crbug.com/971360): Determine appropriate value for
+// TODO(crbug.com/41463459): Determine appropriate value for
 // |kShortTextIdentifierMaxByteLength|.
 const int kShortTextIdentifierMaxByteLength = 1000;
 }  // namespace

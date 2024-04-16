@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * one start icon or one end icon but not both.
  */
 public class ListMenuItemProperties {
-    // TODO(crbug.com/1161388): Consider passing menu item title through TITLE property instead of
+    // TODO(crbug.com/40738791): Consider passing menu item title through TITLE property instead of
     // TITLE_ID.
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();

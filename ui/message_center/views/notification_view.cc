@@ -38,7 +38,7 @@ namespace message_center {
 
 namespace {
 
-// TODO(crbug/1243889): Move the padding and spacing definition from
+// TODO(crbug.com/40787532): Move the padding and spacing definition from
 // NotificationViewBase to this class.
 
 constexpr auto kContentRowPadding = gfx::Insets::TLBR(0, 12, 16, 12);
@@ -367,8 +367,8 @@ void NotificationView::CreateOrUpdateTitleView(
       notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
   if (!title_view_) {
     auto title_view = GenerateTitleView(title);
-    // TODO(crbug.com/682266): multiline should not be required, but we need to
-    // set the width of |title_view_|, which only works in multiline mode.
+    // TODO(crbug.com/41295639): multiline should not be required, but we need
+    // to set the width of |title_view_|, which only works in multiline mode.
     title_view->SetMultiLine(true);
     title_view->SetMaxLines(kMaxLinesForTitleView);
     title_view_ = AddViewToLeftContent(std::move(title_view));
@@ -394,7 +394,7 @@ void NotificationView::CreateOrUpdateSmallIconView(
           accent_color, GetNotificationHeaderViewBackgroundColor())
           .color;
 
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // TODO(crbug.com/40541732): figure out if this has a performance impact and
   // cache images if so.
   gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
       kSmallImageSizeMD, icon_color,
@@ -547,7 +547,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
 
   bool inline_settings_visible = !inline_settings_row()->GetVisible();
 
-  // TODO(crbug/1233670): In later refactor, `block_all_button_` and
+  // TODO(crbug.com/40781007): In later refactor, `block_all_button_` and
   // `dont_block_button_` should be moved from NotificationViewBase to this
   // class, since AshNotificationView will use a different UI for inline
   // settings.

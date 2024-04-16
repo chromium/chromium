@@ -268,7 +268,7 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
                                         float scale) {
   if (size_ == viewport_size)
     return;
-  // TODO(https://crbug.com/930667): We could implement more efficient resizes
+  // TODO(crbug.com/41440520): We could implement more efficient resizes
   // by allocating buffers rounded up to larger sizes, and then reusing them if
   // the new size still fits (but still reallocate if the new size is much
   // smaller than the old size).

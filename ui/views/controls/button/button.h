@@ -95,7 +95,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // allow callers to specify a OnceClosure or RepeatingClosure if they don't
   // care about the callback arg.
   //
-  // TODO(crbug.com/772945): Re-evaluate if this class can/should be converted
+  // TODO(crbug.com/41348855): Re-evaluate if this class can/should be converted
   // to a type alias + various helpers or overloads to support the
   // RepeatingClosure case.
   class VIEWS_EXPORT PressedCallback {
@@ -209,7 +209,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   void SetHotTracked(bool is_hot_tracked);
   bool IsHotTracked() const;
 
-  // TODO(crbug/1266066): These property accessors and tag_ field should be
+  // TODO(crbug.com/40801855): These property accessors and tag_ field should be
   // removed and use SetID()/GetID from the ancestor View class.
   void SetTag(int value);
   int GetTag() const;
@@ -221,8 +221,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Menus, bubbles, and IPH should call this when they anchor. This ensures
   // that highlighting is handled correctly with multiple anchored elements.
-  // TODO(crbug/1428097): Migrate callers of SetHighlighted to this function,
-  // where appropriate.
+  // TODO(crbug.com/40262104): Migrate callers of SetHighlighted to this
+  // function, where appropriate.
   ScopedAnchorHighlight AddAnchorHighlight();
 
   base::CallbackListSubscription AddStateChangedCallback(

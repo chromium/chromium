@@ -459,7 +459,7 @@ TEST_F(MessagePopupCollectionTest, UpdateContents) {
   EXPECT_TRUE(GetPopup(id)->updated());
 }
 
-// TODO(crbug.com/1403996): Flaky on all platforms.
+// TODO(crbug.com/40885754): Flaky on all platforms.
 TEST_F(MessagePopupCollectionTest, DISABLED_UpdateContentsCausesPopupClose) {
   std::string id = AddNotification();
   AnimateToEnd();

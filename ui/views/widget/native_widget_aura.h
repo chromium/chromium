@@ -284,7 +284,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // work properly. CloseNow can destroy the aura::Window
   // which will not destroy the NativeWidget if WIDGET_OWNS_NATIVE_WIDGET, and
   // we need to make sure we do not attempt to destroy the aura::Window twice.
-  // TODO(1346381): The two factories can be combined if the
+  // TODO(crbug.com/40232479): The two factories can be combined if the
   // WIDGET_OWNS_NATIVE_WIDGET is removed.
   base::WeakPtrFactory<NativeWidgetAura> weak_factory{this};
 };

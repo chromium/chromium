@@ -472,8 +472,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
 
     /**
      * Return the {@link DragTargetType} based on the content of DropDataAndroid. The result will
-     * bias plain text > image > link.
-     * TODO(https://crbug.com/1299994): Manage the ClipData bias with EventForwarder in one place.
+     * bias plain text > image > link. TODO(crbug.com/40823936): Manage the ClipData bias with
+     * EventForwarder in one place.
      */
     static @DragTargetType int getDragTargetType(DropDataAndroid dropDataAndroid) {
         if (dropDataAndroid.hasBrowserContent()) {

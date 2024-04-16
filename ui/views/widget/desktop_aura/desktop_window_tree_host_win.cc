@@ -1092,7 +1092,7 @@ void DesktopWindowTreeHostWin::HandleTouchEvent(ui::TouchEvent* event) {
       FinishTouchDrag(screen_point);
     }
   }
-  // TODO(crbug.com/229301) Calling ::SetCursorPos for ui::ET_TOUCH_PRESSED
+  // TODO(crbug.com/40312079) Calling ::SetCursorPos for ui::ET_TOUCH_PRESSED
   // events here would fix web ui tab strip drags when the cursor is not over
   // the Chrome window - The TODO is to figure out if that's reasonable, since
   // it would change the cursor pos on every touch event. Or figure out if there

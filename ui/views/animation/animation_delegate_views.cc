@@ -87,7 +87,7 @@ void AnimationDelegateViews::ClearAnimationRunner() {
   // we need to release it before `container_` actually releases the memory it
   // points to.
   compositor_animation_runner_ = nullptr;
-  // TODO(https://crbug.com/960621): make sure the container has a correct
+  // TODO(crbug.com/41457352): make sure the container has a correct
   // compositor-assisted runner.
   if (container_)
     container_->SetAnimationRunner(nullptr);

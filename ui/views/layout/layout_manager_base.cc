@@ -110,7 +110,7 @@ void LayoutManagerBase::OnViewPropertyChanged(View* observed_view,
 
   if (key == kViewIgnoredByLayoutKey) {
     const bool ignored = observed_view->GetProperty(kViewIgnoredByLayoutKey);
-    // TODO(crbug.com/1524149): Shouldn't need to check this, the framework
+    // TODO(crbug.com/41497094): Shouldn't need to check this, the framework
     // should avoid calling us when the value hasn't changed.
     if (ignored == ui::ClassPropertyCaster<bool>::FromInt64(old_value)) {
       return;

@@ -204,7 +204,7 @@ class SnapshotAuraTest : public testing::Test {
 #endif
 TEST_F(SnapshotAuraTest, MAYBE_FullScreenWindow) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/1143031): Fix this test to run in < action_timeout()
+  // TODO(crbug.com/40154923): Fix this test to run in < action_timeout()
   // on the Linux Debug & TSAN bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());

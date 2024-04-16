@@ -448,7 +448,7 @@ class VIEWS_EXPORT Label : public View,
   bool ShouldShowDefaultTooltip() const;
 
   // Clears |display_text_| and updates |stored_selection_range_|.
-  // TODO(crbug.com/1103804) Most uses of this function are inefficient; either
+  // TODO(crbug.com/40704805) Most uses of this function are inefficient; either
   // replace with setting attributes on both RenderTexts or collapse them to one
   // RenderText.
   void ClearDisplayText();

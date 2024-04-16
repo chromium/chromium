@@ -25,7 +25,7 @@ namespace {
 
 // When one of these properties is animated, a window is considered non-occluded
 // and cannot occlude other windows.
-// TODO(crbug.com/1057024): Mark a window VISIBLE when COLOR animation starts.
+// TODO(crbug.com/40677173): Mark a window VISIBLE when COLOR animation starts.
 constexpr ui::LayerAnimationElement::AnimatableProperties
     kSkipWindowWhenPropertiesAnimated =
         ui::LayerAnimationElement::TRANSFORM |
@@ -324,7 +324,7 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
               Window::OcclusionState::OCCLUDED) {
             SetWindowAndDescendantsAreOccluded(
                 root_window, /* is_occluded */ true, root_window->IsVisible());
-// TODO(crbug.com/1429517): Enable for other platforms in a separate CL.
+// TODO(crbug.com/40262710): Enable for other platforms in a separate CL.
 #if BUILDFLAG(IS_CHROMEOS)
           } else if (root_window_pair.second.occlusion_state ==
                      Window::OcclusionState::HIDDEN) {

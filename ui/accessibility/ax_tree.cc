@@ -625,7 +625,7 @@ struct AXTreeUpdateState {
   std::optional<AXTreeData> new_tree_data;
 
   // Keep track of the pending tree update to help create useful error messages.
-  // TODO(crbug.com/1156601) Revert this once we have the crash data we need
+  // TODO(crbug.com/40736019) Revert this once we have the crash data we need
   // (crrev.com/c/2892259).
   const raw_ref<const AXTreeUpdate> pending_tree_update;
 

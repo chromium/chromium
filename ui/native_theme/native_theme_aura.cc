@@ -228,7 +228,7 @@ void NativeThemeAura::PaintArrowButton(
   }
   if (extra_params.thumb_color.has_value() &&
       extra_params.thumb_color.value() == gfx::kPlaceholderColor) {
-    // TODO(crbug.com/1473075): Remove this and the below checks for
+    // TODO(crbug.com/40278836): Remove this and the below checks for
     // placeholderColor.
     DLOG(ERROR) << "thumb_color with a placeholderColor value encountered";
   }

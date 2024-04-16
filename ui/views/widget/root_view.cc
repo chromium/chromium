@@ -128,7 +128,7 @@ class AnnounceTextView : public View {
     // On ChromeOS, kAlert role can invoke an unnecessary event on reparenting.
     node_data->role = ax::mojom::Role::kStaticText;
 #elif BUILDFLAG(IS_LINUX)
-    // TODO(crbug.com/1024898): Use live regions (do not use alerts).
+    // TODO(crbug.com/40658933): Use live regions (do not use alerts).
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     node_data->role = ax::mojom::Role::kAlert;
 #else

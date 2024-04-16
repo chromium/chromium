@@ -51,7 +51,7 @@ export class XfPasswordDialog extends HTMLElement {
 
   /**
    * Password dialog.
-   * TODO(https://crbug.com/1353205): This type should be CrDialogElement, and
+   * TODO(crbug.com/40858292): This type should be CrDialogElement, and
    * an import of that type from cr_dialog.js should be added to this file.
    */
   private dialog_: CrDialogElement;

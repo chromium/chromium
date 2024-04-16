@@ -658,7 +658,7 @@ gfx::Rect WindowTreeHost::GetTransformedRootWindowBoundsFromPixelSize(
 
 void WindowTreeHost::SetNativeWindowOcclusionEnabled(bool enable) {
   native_window_occlusion_enabled_ = enable;
-  // TODO(crbug.com/1051306) If enabled is false, make this
+  // TODO(crbug.com/40118412) If enabled is false, make this
   // turn off native window occlusion on this window.
 }
 

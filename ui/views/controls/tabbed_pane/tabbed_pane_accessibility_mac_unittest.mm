@@ -29,7 +29,7 @@ int IdToInt(id value) {
   return base::apple::ObjCCastStrict<NSNumber>(value).intValue;
 }
 
-// TODO(https://crbug.com/936990): NSTabItemView is not an NSView (despite the
+// TODO(crbug.com/41444230): NSTabItemView is not an NSView (despite the
 // name) and doesn't conform to NSAccessibility, so we have to fall back to the
 // legacy NSObject accessibility API to get its accessibility properties.
 id GetLegacyA11yAttributeValue(id obj, NSString* attribute) {

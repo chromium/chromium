@@ -264,7 +264,7 @@ void PrintDialogGtk::UpdateSettings(
     // the Resolution PPD attribute. For this reason "cups-Resolution"
     // makes the most sense here.
     //
-    // TODO(crbug.com/1119956): Since PrintBackendCUPS parses the PPD file in
+    // TODO(crbug.com/40714448): Since PrintBackendCUPS parses the PPD file in
     // Chromium, it should be possible to store the resolution attribute name
     // as well as a map from the gfx::Size resolution to the std::string
     // serialized value (in case a non-standard value such as 500x500dpi is

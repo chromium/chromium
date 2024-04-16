@@ -49,7 +49,7 @@ size_t FlatlandSysmemNativePixmap::GetNumberOfPlanes() const {
 
 bool FlatlandSysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
   NOTREACHED();
-  // TODO(crbug.com/1304490): Figure out how to import multi-planar pixmap into
+  // TODO(crbug.com/40217759): Figure out how to import multi-planar pixmap into
   // WebGPU without copy.
   return false;
 }

@@ -533,7 +533,7 @@ component("views") {
   # Other targets in this file (e.g. tests) get access to the internal headers.
   friend = [ ":*" ]
 
-  # Internal sources. TODO(https://crbug.com/871123): Move more headers from
+  # Internal sources. TODO(crbug.com/41406123): Move more headers from
   # public into this list, along with the implementation file.
   sources += [
     "controls/button/label_button_label.cc",

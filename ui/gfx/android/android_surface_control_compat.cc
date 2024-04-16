@@ -806,7 +806,7 @@ void SurfaceControl::Transaction::SetBuffer(const Surface& surface,
       fence_fd.is_valid() ? fence_fd.release() : -1);
   // In T OS, setBuffer call setOnComplete internally, so Apply() is required to
   // decrease ref count of SurfaceControl.
-  // TODO(crbug.com/1395271): remove this if AOSP fix the issue
+  // TODO(crbug.com/40249006): remove this if AOSP fix the issue
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_T) {
     need_to_apply_ = true;

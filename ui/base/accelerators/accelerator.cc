@@ -233,7 +233,7 @@ std::u16string Accelerator::GetShortcutText() const {
   // RTL context because the punctuation no longer appears at the end of the
   // string.
   //
-  // TODO(crbug.com/1194340): This hack of doing the RTL adjustment here was
+  // TODO(crbug.com/40175605): This hack of doing the RTL adjustment here was
   // intended to be removed when the menu system moved to MenuItemView. That was
   // crbug.com/2822, closed in 2010. Can we finally remove all of this?
   if (adjust_shortcut_for_rtl) {
@@ -441,7 +441,7 @@ std::u16string Accelerator::ApplyShortFormModifiers(
     // -[NSKeyboardShortcut localizedModifierMaskDisplayName] for an example of
     // this.
     //
-    // TODO(https://crbug.com/1263737): Implement all of this when text-style
+    // TODO(crbug.com/40800376): Implement all of this when text-style
     // presentations are implemented for Views in https://crbug.com/1099591.
     result.append(u"(fn) ");
   }

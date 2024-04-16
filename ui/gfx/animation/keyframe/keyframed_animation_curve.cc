@@ -53,7 +53,7 @@ std::unique_ptr<AnimationCurve> RetargettedCurve(
   // Ensure that `t` happens between the last two keyframes.
   DCHECK_GE(keyframes[keyframes.size() - 1]->Time() * scaled_duration, t);
 
-  // TODO(crbug.com/1198305): This can be changed to a different / special
+  // TODO(crbug.com/40177284): This can be changed to a different / special
   // interpolation curve type to maintain c2 continuity.
   auto curve = AnimationTraits<ValueType>::KeyframedCurveType::Create();
   curve->set_scaled_duration(scaled_duration);

@@ -241,7 +241,7 @@ TEST_F(AccessiblePaneViewTest, PaneFocusTraversal) {
   widget.reset();
 }
 
-// TODO(crbug.com/1314275): Re-enable this test
+// TODO(crbug.com/40832756): Re-enable this test
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_DoesntCrashOnEscapeWithRemovedView \
   DISABLED_DoesntCrashOnEscapeWithRemovedView

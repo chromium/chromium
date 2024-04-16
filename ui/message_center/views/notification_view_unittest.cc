@@ -701,7 +701,7 @@ TEST_F(NotificationViewTest, UpdateType) {
 }
 
 TEST_F(NotificationViewTest, InlineSettingsInkDropAnimation) {
-  // TODO(crbug/1264498): This test is currently broken.
+  // TODO(crbug.com/40203399): This test is currently broken.
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   std::unique_ptr<Notification> notification = CreateSimpleNotification();

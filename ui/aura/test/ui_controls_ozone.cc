@@ -47,7 +47,7 @@ bool UIControlsOzone::SendKeyEventsNotifyWhenDone(
   WindowTreeHost* optional_host = nullptr;
   // Send the key event to the window's host, which may not match |host_|.
   // This logic should probably exist for the non-aura path as well.
-  // TODO(https://crbug.com/1116649) Support non-aura path.
+  // TODO(crbug.com/40144825) Support non-aura path.
 #if defined(USE_AURA)
   if (window != nullptr && window->GetHost() != nullptr &&
       window->GetHost() != host_)
@@ -348,7 +348,7 @@ void UIControlsOzone::PostMouseEventTask(ui::EventType type,
   // For drag-ending left-mouse-button release events, the closure must be
   // posted after the event is processed to ensure zcr_ui_controls::
   // request_processed is sent after wl_data_source::dnd_finished.
-  // TODO(https://crbug.com/1516999): Desired synchronization semantics should
+  // TODO(crbug.com/41489982): Desired synchronization semantics should
   // be declared explicitly, not decided by test framework heuristics.
   bool post_task_after_dispatch =
       changed_button_flags == ui::EF_LEFT_MOUSE_BUTTON &&

@@ -152,7 +152,7 @@ TEST_F(TotalAnimationThroughputReporterTest, StopAnimation) {
 }
 
 // Tests the longest animation will trigger the report.
-// TODO(crbug.com/1217783): Test is flaky.
+// TODO(crbug.com/40771278): Test is flaky.
 TEST_F(TotalAnimationThroughputReporterTest, DISABLED_MultipleAnimations) {
   Layer layer1;
   layer1.SetOpacity(0.5f);
@@ -209,7 +209,7 @@ TEST_F(TotalAnimationThroughputReporterTest, MultipleAnimationsOnSingleLayer) {
 }
 
 // Tests adding new animation will extends the duration.
-// TODO(crbug.com/1216715): Test is flaky.
+// TODO(crbug.com/40770648): Test is flaky.
 TEST_F(TotalAnimationThroughputReporterTest,
        DISABLED_AddAnimationWhileAnimating) {
   Layer layer1;

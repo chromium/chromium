@@ -77,8 +77,8 @@ void ValidateEventTimeClock(base::TimeTicks* timestamp) {
   // Some fraction of devices, across all platforms provide bogus event
   // timestamps. See https://crbug.com/650338#c1. Correct timestamps which are
   // clearly bogus.
-  // TODO(861855): Replace this with an approach that doesn't require an extra
-  // read of the current time per event.
+  // TODO(crbug.com/41400553): Replace this with an approach that doesn't
+  // require an extra read of the current time per event.
   base::TimeTicks now = EventTimeForNow();
   if (!IsValidTimebase(now, *timestamp))
     *timestamp = now;

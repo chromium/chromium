@@ -122,7 +122,7 @@ bool EscapeForJS(const std::string& in_string,
 // Checks whether the replacement has an unsubstituted placeholder, e.g. "$1".
 bool HasUnexpectedPlaceholder(const std::string& key,
                               const std::string& replacement) {
-  // TODO(crbug.com/988031): Fix display aria labels.
+  // TODO(crbug.com/41472975): Fix display aria labels.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (key == "displayResolutionText")
     return false;

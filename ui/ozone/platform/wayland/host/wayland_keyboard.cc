@@ -83,7 +83,7 @@ class WaylandKeyboardHook final : public PlatformKeyboardHook {
   // is done through zcr-keyboard-extension in Lacros), so it's not possible to
   // implement this until the protocol supports it.
   //
-  // TODO(crbug.com/1408927): Update once it is supported in the protocol.
+  // TODO(crbug.com/40888760): Update once it is supported in the protocol.
   bool IsKeyLocked(DomCode dom_code) const final {
     NOTIMPLEMENTED_LOG_ONCE();
     return true;
@@ -208,7 +208,7 @@ void WaylandKeyboard::OnUnhandledKeyEvent(const KeyEvent& key_event) {
 // and when a WaylandKeyboardHook is in place for a given widget. See
 // KeyboardLock spec for more details: https://wicg.github.io/keyboard-lock
 //
-// TODO(https://crbug.com/1338554): Revisit once this scenario changes.
+// TODO(crbug.com/40229635): Revisit once this scenario changes.
 std::unique_ptr<PlatformKeyboardHook> WaylandKeyboard::CreateKeyboardHook(
     WaylandWindow* window,
     std::optional<base::flat_set<DomCode>> dom_codes,

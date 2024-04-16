@@ -34,7 +34,7 @@ constexpr int64_t kUnifiedDisplayId = -10;
 constexpr int32_t kInvalidYearOfManufacture = -1;
 
 // Used to determine if the two scale factor values are considered the same.
-// TODO(crbug.com/1412420): Remove this when the scale factor precision issue
+// TODO(crbug.com/40255259): Remove this when the scale factor precision issue
 // in lacros is fixed.
 constexpr float kDeviceScaleFactorErrorTolerance = 0.01f;
 

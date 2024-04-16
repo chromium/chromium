@@ -100,7 +100,7 @@ void DisableMenuClosureAnimations() {
 
 void WaitForMenuClosureAnimation() {
 #if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/982815): Replace this with Quit+Run.
+  // TODO(crbug.com/41470127): Replace this with Quit+Run.
   base::RunLoop().RunUntilIdle();
 #endif
 }

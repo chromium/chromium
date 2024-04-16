@@ -43,7 +43,7 @@ namespace gtk {
 
 namespace {
 
-// TODO(https://crbug.com/981309): These getters will be unnecessary after
+// TODO(crbug.com/41469294): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
 const char* GettextPackage() {
   static base::NoDestructor<std::string> gettext_package(

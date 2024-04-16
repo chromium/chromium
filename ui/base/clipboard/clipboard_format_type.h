@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& SvgType();
   static const ClipboardFormatType& RtfType();
   static const ClipboardFormatType& PngType();
-  // TODO(crbug.com/1201018): Remove this type.
+  // TODO(crbug.com/40178509): Remove this type.
   static const ClipboardFormatType& BitmapType();
   static const ClipboardFormatType& WebCustomDataType();
 

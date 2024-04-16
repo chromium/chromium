@@ -23,7 +23,7 @@
 
 namespace gfx {
 
-// TODO(crbug.com/1142962): Make this a class instead of struct.
+// TODO(crbug.com/40728014): Make this a class instead of struct.
 struct GFX_EXPORT GpuFenceHandle {
 #if BUILDFLAG(IS_POSIX)
   using ScopedPlatformFence = base::ScopedFD;

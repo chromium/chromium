@@ -119,7 +119,7 @@ class DevToolsFrontend::AgentHostClient
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override {
     content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
-    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+    // TODO(crbug.com/40185886): With MPArch there may be multiple main
     // frames. This caller was converted automatically to the primary main frame
     // to preserve its semantics. Follow up to confirm correctness.
     if (navigation_handle->IsInPrimaryMainFrame()) {

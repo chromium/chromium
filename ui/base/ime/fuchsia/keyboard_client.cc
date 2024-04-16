@@ -213,7 +213,7 @@ bool KeyboardClient::ProcessKeyEvent(
 
     // Derive the legacy key_code. At present this only takes into account the
     // DOM Code, and event flags, so requires that key() be set.
-    // TODO(crbug.com/1187257): Take into account the KeyMeaning, similarly to
+    // TODO(crbug.com/42050247): Take into account the KeyMeaning, similarly to
     // the X11 event conversion implementation.
     // TODO(fxbug.dev/106600): Remove default-derivation of DOM Key, once the
     // platform defines the missing values.

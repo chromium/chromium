@@ -611,7 +611,7 @@ void NativeWidgetAura::SetBoundsInternal(const gfx::Rect& bounds,
                                          std::optional<int64_t> display_id) {
   display::Display dst_display;
   auto* screen = display::Screen::GetScreen();
-  // TODO(crbug.com/1480073): Call SetBoundsInScreen directly.
+  // TODO(crbug.com/40281188): Call SetBoundsInScreen directly.
   if (!display_id ||
       !screen->GetDisplayWithDisplayId(display_id.value(), &dst_display)) {
     dst_display = screen->GetDisplayMatching(bounds);

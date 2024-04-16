@@ -375,7 +375,7 @@ std::optional<base::TimeDelta> NativeThemeWin::GetPlatformCaretBlinkInterval()
 }
 
 NativeThemeWin::~NativeThemeWin() {
-  // TODO(https://crbug.com/787692): Calling CloseHandles() here breaks
+  // TODO(crbug.com/40551168): Calling CloseHandles() here breaks
   // certain tests and the reliability bots.
   // CloseHandles();
 }

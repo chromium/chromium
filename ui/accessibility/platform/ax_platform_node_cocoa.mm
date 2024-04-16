@@ -2301,7 +2301,7 @@ void CollectAncestorRoles(
   }
 
   // Don't allow calling AX setters on disabled elements.
-  // TODO(https://crbug.com/692362): Once the underlying bug in
+  // TODO(crbug.com/41301942): Once the underlying bug in
   // views::Textfield::SetSelectionRange() described in that bug is fixed,
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying

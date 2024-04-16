@@ -501,7 +501,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, DisplayOnOffHandling) {
 // Verifies that a window is not occluded if the only window occluding it is
 // being moved/dragged.
 //
-// TODO(crbug.com/1266124): Flaky on Windows.
+// TODO(crbug.com/40801894): Flaky on Windows.
 TEST_F(NativeWindowOcclusionTrackerTest,
        DISABLED_MovingWindowNotConsideredInCalculations) {
   // Needed as this test triggers a native nested message loop.
@@ -545,7 +545,7 @@ TEST_F(NativeWindowOcclusionTrackerTest,
 }
 
 // Test that a maximized aura window that is covered by a fullscreen window
-// is marked as occluded. TODO(https://crbug.com/1315398): Fix flakiness.
+// is marked as occluded. TODO(crbug.com/40833493): Fix flakiness.
 TEST_F(NativeWindowOcclusionTrackerTest,
        DISABLED_MaximizedOccludedByFullscreenWindow) {
   // Create an aura window that is maximized.

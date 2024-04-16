@@ -132,8 +132,8 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   // Wait a bit to ensure that report does not happen.
   Advance(base::Milliseconds(100));
 
-  // TODO(crbug.com/1158510): Test the scenario where the report exists when the
-  // layer is removed.
+  // TODO(crbug.com/40161328): Test the scenario where the report exists when
+  // the layer is removed.
 }
 
 // Tests no report and no leak when underlying layer is gone before reporter.

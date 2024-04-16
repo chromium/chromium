@@ -8894,7 +8894,7 @@ TEST_F(AXPositionTest,
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
-// TODO(crbug.com/1333970) It is not legal to call
+// TODO(crbug.com/40059879) It is not legal to call
 // AsLeafTextPositionBeforeCharacter or AsLeafTextPositionAfterCharacter with
 // a text position using out-of-range offsets. It's necessary to call
 // AsValidPosition() first. Therefore, this test currently triggers a DCHECK.

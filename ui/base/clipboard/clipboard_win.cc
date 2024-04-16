@@ -575,7 +575,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  // TODO(crbug.com/1178671): Refactor similar code in clipboard_utils_win:
+  // TODO(crbug.com/40749279): Refactor similar code in clipboard_utils_win:
   // clipboard_util::GetFilenames() and reuse rather than duplicate.
   HANDLE data = ::GetClipboardData(
       ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);

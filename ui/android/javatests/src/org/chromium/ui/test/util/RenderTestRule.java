@@ -271,7 +271,7 @@ public class RenderTestRule extends TestWatcher {
         Assert.assertTrue("Render Tests must have the RenderTest feature.", mHasRenderTestFeature);
 
         // De-flake by flushing the tasks that are already queued on the Looper's Handler.
-        // TODO(https://crbug.com/1424788): Remove this and properly fix flaky tests.
+        // TODO(crbug.com/40260566): Remove this and properly fix flaky tests.
         TestThreadUtils.flushNonDelayedLooperTasks();
         Bitmap testBitmap =
                 ThreadUtils.runOnUiThreadBlockingNoException(

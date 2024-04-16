@@ -199,7 +199,7 @@ template("build_webui") {
               [
                 "*.ts",
 
-                # TODO(crbug.com/1173575): Remove once we no longer pass JS
+                # TODO(crbug.com/40167175): Remove once we no longer pass JS
                 # files to build_webui.
                 "*.js",
               ])

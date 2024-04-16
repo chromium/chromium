@@ -439,7 +439,7 @@ void NotificationHeaderView::UpdateSummaryTextAndTimestampVisibility() {
   const bool timestamp_visible = !has_progress_ && timestamp_;
   SetTimestampVisible(timestamp_visible);
 
-  // TODO(crbug.com/991492): this should not be necessary.
+  // TODO(crbug.com/40639286): this should not be necessary.
   detail_views_->InvalidateLayout();
 }
 

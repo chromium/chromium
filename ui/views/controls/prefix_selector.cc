@@ -196,7 +196,7 @@ gfx::Rect PrefixSelector::GetAutocorrectCharacterBounds() const {
 }
 
 bool PrefixSelector::SetAutocorrectRange(const gfx::Range& range) {
-  // TODO(crbug.com/1091088): Implement SetAutocorrectRange.
+  // TODO(crbug.com/40134032): Implement SetAutocorrectRange.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

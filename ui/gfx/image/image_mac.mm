@@ -82,7 +82,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
                                                 context:nil
                                                   hints:hints];
   if (!cg_image) {
-    // TODO(crbug.com/1271762): Look at DumpWithoutCrashing() reports to figure
+    // TODO(crbug.com/40805758): Look at DumpWithoutCrashing() reports to figure
     // out what's going on here.
     return scoped_refptr<base::RefCountedMemory>();
   }

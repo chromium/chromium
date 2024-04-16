@@ -45,7 +45,7 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
 Link::~Link() = default;
 
 SkColor Link::GetColor() const {
-  // TODO(crbug.com/1446855): Use TypographyProvider::GetColorId().
+  // TODO(crbug.com/40268779): Use TypographyProvider::GetColorId().
   const ui::ColorProvider* color_provider = GetColorProvider();
   DCHECK(color_provider);
   if (!GetEnabled())

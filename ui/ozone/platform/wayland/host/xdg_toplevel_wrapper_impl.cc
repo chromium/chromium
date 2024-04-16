@@ -250,9 +250,9 @@ void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
 void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   DCHECK(xdg_toplevel_);
 
-  // TODO(crbug.com/1241097): find a better way to handle long titles, or change
-  // this logic completely (and at the platform-agnostic level) because a title
-  // that long does not make any sense.
+  // TODO(crbug.com/40785817): find a better way to handle long titles, or
+  // change this logic completely (and at the platform-agnostic level) because a
+  // title that long does not make any sense.
   //
   // A long title may exceed the maximum size of the Wayland event sent below
   // upon calling xdg_toplevel_set_title(), which results in a fatal Wayland

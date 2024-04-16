@@ -89,7 +89,7 @@ class VIEWS_EXPORT ClientView : public View {
   // pointed to by `contents_view_`, even though `contents_view_` was previously
   // a child view of `this`.
   //
-  // TODO(https://crbug.com/1475438): Fix that. Good luck!
+  // TODO(crbug.com/40279653): Fix that. Good luck!
   raw_ptr<View, DisableDanglingPtrDetection> contents_view_;
 };
 

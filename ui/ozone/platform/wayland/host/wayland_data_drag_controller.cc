@@ -436,7 +436,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
     return;
   }
 
-  // TODO(crbug.com/1519772): we should update the cursor position when some
+  // TODO(crbug.com/41492749): we should update the cursor position when some
   // data is dragged from another client. Currently `drag_source_` may be
   // nullopt in that case.
   if (drag_source_.has_value()) {
@@ -445,7 +445,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
       auto* cursor_position = connection_->wayland_cursor_position();
       if (cursor_position) {
         CHECK(window_);
-        // TODO(crbug.com/1521286): Once we enable the input region for
+        // TODO(crbug.com/41494257): Once we enable the input region for
         // subsurfaces, we need to update this part since the location will no
         // longer be relative to the window.
         auto location_in_screen =

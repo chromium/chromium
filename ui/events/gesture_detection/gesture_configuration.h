@@ -223,7 +223,7 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   bool gesture_begin_end_types_enabled_ = false;
 
   base::TimeDelta short_press_time_ = base::Milliseconds(400);
-  // TODO(https://crbug.com/1294244): All time fields here should be of type
+  // TODO(crbug.com/40820441): All time fields here should be of type
   // |base::TimeDiff| instead of |int|.
 
   int long_press_time_in_ms_ = 500;
@@ -254,7 +254,7 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   // https://crbug.com/376618 for details.
   float min_scaling_span_in_pixels_ = 125;
   float min_swipe_velocity_ = 20;
-  // TODO(https://crbug.com/353702): Disable and remove entirely when issues
+  // TODO(crbug.com/41095532): Disable and remove entirely when issues
   // with intermittent scroll end detection on the Pixel are resolved.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   int scroll_debounce_interval_in_ms_ = 30;

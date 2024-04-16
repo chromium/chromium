@@ -50,7 +50,7 @@ class FlatlandSysmemBufferManager {
                                                       gfx::BufferFormat format,
                                                       gfx::BufferUsage usage);
 
-  // TODO(crbug.com/1380090): Instead of an additional
+  // TODO(crbug.com/42050538): Instead of an additional
   // |register_with_flatland_allocator| bool, we can rely on |usage| to decide
   // if the buffers should be registered with Flatland or not.
   scoped_refptr<FlatlandSysmemBufferCollection> ImportSysmemBufferCollection(

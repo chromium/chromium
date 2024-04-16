@@ -3038,8 +3038,8 @@ TEST_F(ViewTest, ActivateAcceleratorOnMac) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/667757): these tests were initially commented out when getting
-// aura to run. Figure out if still valuable and either nuke or fix.
+// TODO(crbug.com/41287573): these tests were initially commented out when
+// getting aura to run. Figure out if still valuable and either nuke or fix.
 #if BUILDFLAG(IS_MAC)
 TEST_F(ViewTest, ActivateAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);

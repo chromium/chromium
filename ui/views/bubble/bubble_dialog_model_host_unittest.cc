@@ -243,7 +243,8 @@ TEST_F(BubbleDialogModelHostTest, TestFieldVisibility) {
   ASSERT_TRUE(bubble_widget->IsVisible());
 
   // Since the view is invisible, the tracker shouldn't know about it.
-  // TODO(1455549): It would be nice to have a means of accessing fields
+  // TODO(crbug.com/40272840): It would be nice to have a means of accessing
+  // fields
   //                regardless of state.
   EXPECT_EQ(
       views::ElementTrackerViews::GetInstance()->GetUniqueView(kField, context),

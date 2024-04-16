@@ -84,7 +84,7 @@ void DamageBuffer(struct wl_client* client,
 }
 
 void SetAcquireFence(wl_client* client, wl_resource* resource, int32_t fd) {
-  // TODO(crbug.com/1211240): Implement this.
+  // TODO(crbug.com/40182819): Implement this.
   NOTIMPLEMENTED();
 }
 

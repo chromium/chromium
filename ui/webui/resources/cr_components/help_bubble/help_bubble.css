@@ -12,7 +12,7 @@
 
 :host {
   /* Color declarations.
-   * TODO(crbug.com/1454258): Temporary fallback values for cases where
+   * TODO(crbug.com/40916868): Temporary fallback values for cases where
    * colors.css and its colors are not available within the WebUI. */
   --help-bubble-background: var(--color-feature-promo-bubble-background,
       var(--google-blue-700));

@@ -204,7 +204,7 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
   }
 
 #if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1476170): font fallback does not appear to be working
+  // TODO(crbug.com/40279916): font fallback does not appear to be working
   // consistently.
   if (fallback_font.GetFontName() == ".LastResort") {
     GTEST_SKIP() << ".LastResort is not currently behaving correctly.";

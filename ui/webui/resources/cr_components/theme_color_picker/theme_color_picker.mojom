@@ -47,7 +47,7 @@ struct ChromeColor {
   // The background color.
   skia.mojom.SkColor foreground;
   // The base color.
-  // TODO(crbug/1454868): Make base no longer optional once GM2 is removed.
+  // TODO(crbug.com/40917130): Make base no longer optional once GM2 is removed.
   skia.mojom.SkColor? base;
   // The color variant for this color palette.
   ui.mojom.BrowserColorVariant variant;

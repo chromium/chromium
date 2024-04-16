@@ -48,7 +48,7 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
       gfx::AcceleratedWidget window) override {
     // GL rendering to Flatland views is not supported. This function is
     // used only for unittests. Return an off-screen surface, so the tests pass.
-    // TODO(crbug.com/1271760): Use Vulkan in unittests and remove this hack.
+    // TODO(crbug.com/40205840): Use Vulkan in unittests and remove this hack.
     return gl::InitializeGLSurface(base::MakeRefCounted<gl::SurfacelessEGL>(
         display->GetAs<gl::GLDisplayEGL>(), gfx::Size(100, 100)));
   }

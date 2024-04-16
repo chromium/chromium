@@ -427,7 +427,7 @@ TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
 
 // This tests that we don't crash if WebView doesn't have a Widget or a
 // Webcontents. https://crbug.com/1191999
-// TODO(crbug.com/1465744): Re-enable this test
+// TODO(crbug.com/40923654): Re-enable this test
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_ChangeAXMode DISABLED_ChangeAXMode
 #else

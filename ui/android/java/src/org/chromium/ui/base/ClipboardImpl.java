@@ -307,7 +307,7 @@ public class ClipboardImpl extends Clipboard
             // Android system clipboard contains an image, but it is not a PNG.
             // Try reading it as a bitmap and encoding to a PNG.
             try {
-                // TODO(crbug.com/1280468): This uses the unsafe ImageDecoder class.
+                // TODO(crbug.com/40811473): This uses the unsafe ImageDecoder class.
                 Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(cr, uri);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 // |quality| is ignored since PNG encoding is lossless. See
@@ -397,7 +397,7 @@ public class ClipboardImpl extends Clipboard
     public void setPassword(final String password) {
         ClipData clipData = ClipData.newPlainText("password", password);
         PersistableBundle extras = new PersistableBundle();
-        // TODO(crbug.com/1334290): Replace to ClipDescription.EXTRA_IS_SENSITIVE once
+        // TODO(crbug.com/40228096): Replace to ClipDescription.EXTRA_IS_SENSITIVE once
         // chromium import Android T SDK.
         extras.putBoolean("android.content.extra.IS_SENSITIVE", true);
         clipData.getDescription().setExtras(extras);

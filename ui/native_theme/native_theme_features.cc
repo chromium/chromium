@@ -36,7 +36,7 @@ BASE_FEATURE(kFluentScrollbar,
 
 // Makes all native scrollbars behave as overlay scrollbars styled to fit the
 // Fluent design language.
-// TODO(crbug.com/1479156): Right now this feature flag will force Fluent
+// TODO(crbug.com/40280779): Right now this feature flag will force Fluent
 // overlay scrollbars on. We have yet to decide how we will expose this feature
 // once it is complete.
 BASE_FEATURE(kFluentOverlayScrollbar,

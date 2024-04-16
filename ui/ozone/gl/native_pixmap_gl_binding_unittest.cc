@@ -22,7 +22,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
-// TODO(crbug.com/969798): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/40630408): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
 #define MAYBE_Create DISABLED_Create
 #else

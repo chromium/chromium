@@ -98,7 +98,7 @@ class WEBVIEW_EXPORT WebView : public View,
   // if the web contents is changed. The passed-in overlay view must be owned by
   // the client; this method never takes ownership of it.
   //
-  // TODO(https://crbug.com/1471674): This method should take ownership of
+  // TODO(crbug.com/40278361): This method should take ownership of
   // `crashed_overlay_view`.
   void SetCrashedOverlayView(View* crashed_overlay_view);
 

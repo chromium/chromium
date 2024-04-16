@@ -108,7 +108,7 @@ x11::Pixmap XPixmapFromNativePixmap(const gfx::NativePixmap& native_pixmap,
     return x11::Pixmap::None;
   }
 
-  // TODO(https://crbug.com/1411749): this was made Sync() reportedly because
+  // TODO(crbug.com/40254955): this was made Sync() reportedly because
   // glXCreatePixmap() would fail on ChromeOS with "failed to create a drawable"
   // otherwise. Today, ChromeOS doesn't use X11, so that reason is obsolete. I
   // tried removing the Sync() for Linux, tested with hardware decoding a 4k

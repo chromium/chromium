@@ -163,7 +163,7 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
   // deleted. As an extra safity guard, keep track of |this| with a weak
   // pointer, and only call ReleaseCapture() if it still exists.
   //
-  // TODO(https://crbug.com/1289682): Consider removing capture set/unset
+  // TODO(crbug.com/40212051): Consider removing capture set/unset
   // during window drag 'n drop (detached).
   auto weak_this = weak_factory_.GetWeakPtr();
 

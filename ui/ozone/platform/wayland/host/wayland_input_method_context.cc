@@ -88,7 +88,7 @@ bool IsImeEnabled() {
   // On Lacros chrome, we check whether ash-chrome supports IME, then
   // enable IME if so. This allows us to control IME enabling state in
   // Lacros-chrome side, which helps us on releasing.
-  // TODO(crbug.com/1159237): In the future, we may want to unify the behavior
+  // TODO(crbug.com/40737321): In the future, we may want to unify the behavior
   // of ozone/wayland across platforms.
   const chromeos::BrowserParamsProxy* init_params =
       chromeos::BrowserParamsProxy::Get();
@@ -141,7 +141,7 @@ gfx::Range AdjustUtf8Alignment(base::StringPiece text_utf8, gfx::Range range) {
   // of |selection_range|. Since the text is in UTF8 form, we need to adjust
   // the text and selection range positions where all characters are valid.
   //
-  // TODO(crbug.com/1214957): We should use base::i18n::BreakIterator
+  // TODO(crbug.com/40184185): We should use base::i18n::BreakIterator
   // to get the offsets and convert it into UTF8 form instead of using
   // UTF8CharIterator.
   base::i18n::UTF8CharIterator iter(text_utf8);
@@ -400,7 +400,7 @@ void WaylandInputMethodContext::SetSurroundingText(
                << selection_range.ToString() << ", " << text_range.ToString();
     // Make a crash report for further investigation in the future.
     // Temporarily disabling crash dump for release.
-    // TODO(crbug.com/1457178): restore this.
+    // TODO(crbug.com/40066238): restore this.
     // base::debug::DumpWithoutCrashing();
     return;
   }
@@ -643,7 +643,7 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
       surrounding_text_tracker_.predicted_state();
   DCHECK(selection.IsValid());
 
-  // TODO(crbug.com/1227590): Currently data sent from delete surrounding text
+  // TODO(crbug.com/40189286): Currently data sent from delete surrounding text
   // from exo is broken. Currently this broken behavior is supported to prevent
   // visible regressions, but should be fixed in the future, specifically the
   // compatibility with non-exo wayland compositors.
@@ -684,7 +684,7 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   if (!layout_engine)
     return;
 
-  // TODO(crbug.com/1289236): This is for the backward compatibility with older
+  // TODO(crbug.com/40817413): This is for the backward compatibility with older
   // ash-chrome (M101 and earlier). In that version of ash-chrome didn't send
   // CapsLock so that we hit an issue on using it.
   // Because newer ash-chrome always sends CapsLock modifier map, as short term

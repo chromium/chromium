@@ -370,7 +370,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
           callback);
 
   // The margins between the content and the inside of the border.
-  // TODO(crbug.com/733040): Most subclasses assume they must set their own
+  // TODO(crbug.com/41325252): Most subclasses assume they must set their own
   // margins explicitly, so we set them to 0 here for now to avoid doubled
   // margins.
   gfx::Insets margins_{0};

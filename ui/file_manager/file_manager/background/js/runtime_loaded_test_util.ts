@@ -997,7 +997,7 @@ test.util.async.getFilesUnderVolume = async (
 
 
   const filesPromise = names.map(name => {
-    // TODO(crbug.com/880130): Remove this conditional.
+    // TODO(crbug.com/40591990): Remove this conditional.
     if (volumeType === VolumeType.DOWNLOADS) {
       name = 'Downloads/' + name;
     }

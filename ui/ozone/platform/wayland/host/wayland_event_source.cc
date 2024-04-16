@@ -632,7 +632,7 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     bool update_cursor_position = cursor_position && event->IsMouseEvent();
 #else
-    // TODO(crbug.com/1488644): Touch event should not update the cursor
+    // TODO(crbug.com/40934709): Touch event should not update the cursor
     // position.
     bool update_cursor_position = cursor_position;
 #endif
@@ -860,7 +860,7 @@ void WaylandEventSource::OnPointerStylusToolChanged(
   // When the reported pointer stylus type is `mouse`, handle it as a regular
   // pointer event.
   //
-  // TODO(https://crbug.com/1298504): Better handle the `touch` type, which
+  // TODO(crbug.com/40822980): Better handle the `touch` type, which
   // seems mis-specified in
   // //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml.
   if (pointer_type == ui::EventPointerType::kMouse) {

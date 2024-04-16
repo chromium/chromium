@@ -267,7 +267,7 @@ class CopyPasteOnlyClipboardTest : public WaylandClipboardTestBase {
 // Wayland{Pointer,Keyboard,Touch}, Serial tracker and WaylandClipboard.
 //
 // Regression test for https://crbug.com/1282220.
-// TODO(crbug.com/1522253): Flaky test.
+// TODO(crbug.com/41495216): Flaky test.
 TEST_P(WaylandClipboardTest, DISABLED_WriteToClipboard) {
   const base::RepeatingClosure send_input_event_closures[]{
       // Mouse button press

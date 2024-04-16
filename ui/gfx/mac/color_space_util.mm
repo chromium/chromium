@@ -254,7 +254,7 @@ gfx::ColorSpace ColorSpaceFromCVImageBufferKeys(CFTypeRef primaries_untyped,
   // It is specified to the decoder to use luma=[16,235] chroma=[16,240] via
   // the kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
   //
-  // TODO(crbug.com/1103432): We'll probably need support for more than limited
+  // TODO(crbug.com/40139254): We'll probably need support for more than limited
   // range content if we want this to be used for more than video sites.
   auto range_id = gfx::ColorSpace::RangeID::LIMITED;
 

@@ -1672,7 +1672,7 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
   EXPECT_EQ(u"drag word", GetSelectedText());
 }
 
-// TODO(crbug.com/1201128): LabelSelectionTest.SelectionClipboard is failing on
+// TODO(crbug.com/40762193): LabelSelectionTest.SelectionClipboard is failing on
 // linux-lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_SelectionClipboard DISABLED_SelectionClipboard

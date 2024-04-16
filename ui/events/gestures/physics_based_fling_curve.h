@@ -40,7 +40,7 @@ class EVENTS_BASE_EXPORT PhysicsBasedFlingCurve : public GestureCurve {
                            gfx::Vector2dF* offset,
                            gfx::Vector2dF* velocity) override;
 
-  // TODO(crbug.com/1028501): Use base::TimeDelta for curve_duration()
+  // TODO(crbug.com/40660860): Use base::TimeDelta for curve_duration()
   // once crrev.com/c/1865928 is merged.
   float curve_duration() const { return curve_duration_.InSecondsF(); }
   const gfx::PointF& p1_for_testing() const { return p1_; }

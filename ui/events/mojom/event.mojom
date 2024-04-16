@@ -51,7 +51,7 @@ union GestureDataDetails {
 };
 
 // Data to support gesture events.
-// TODO(crbug.com/767087): Expand GestureEvent and GestureEventDetails support.
+// TODO(crbug.com/41345694): Expand GestureEvent and GestureEventDetails support.
 struct GestureData {
   LocationData location;
   GestureDeviceType device_type;

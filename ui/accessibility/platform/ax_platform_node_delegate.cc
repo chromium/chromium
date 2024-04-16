@@ -67,7 +67,7 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   // compute the text of a non-leaf text field from the text contents of its
   // children, even though we currently know of no such text field in Views.
   //
-  // TODO(https://crbug.com/1030703): The check for `IsInvisibleOrIgnored()`
+  // TODO(crbug.com/40662009): The check for `IsInvisibleOrIgnored()`
   // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
   // supposed to skip over nodes that are invisible or ignored, but
   // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
@@ -142,7 +142,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNSWindow() {
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
-  // TODO(crbug.com/703369) On Windows, where we have started to migrate to an
+  // TODO(crbug.com/41308426) On Windows, where we have started to migrate to an
   // AXPlatformNode implementation, the BrowserAccessibilityWin subclass has
   // overridden this method. On all other platforms, this method should not be
   // called yet. In the future, when all subclasses have moved over to be
@@ -906,7 +906,7 @@ std::vector<ax::mojom::Action> AXPlatformNodeDelegate::GetSupportedActions()
   std::vector<ax::mojom::Action> supported_actions;
 
   // The default action must be listed at index 0.
-  // TODO(crbug.com/1370076): Do this only if (HasDefaultActionVerb()), After
+  // TODO(crbug.com/40869533): Do this only if (HasDefaultActionVerb()), After
   // some time tracking the DCHECK at
   // BrowserAccessibilityManager::DoDefaultAction()
   supported_actions.push_back(ax::mojom::Action::kDoDefault);

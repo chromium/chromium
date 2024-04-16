@@ -242,8 +242,8 @@ TYPED_TEST(ClipboardTest, SvgTest) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1064968): This test fails with ClipboardAndroid, but passes with
-// the TestClipboard as RTF isn't implemented in ClipboardAndroid.
+// TODO(crbug.com/40681589): This test fails with ClipboardAndroid, but passes
+// with the TestClipboard as RTF isn't implemented in ClipboardAndroid.
 TYPED_TEST(ClipboardTest, RTFTest) {
   std::string rtf =
       "{\\rtf1\\ansi{\\fonttbl\\f0\\fswiss Helvetica;}\\f0\\pard\n"
@@ -624,7 +624,8 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/815537): Re-enable this test once death tests work on Android.
+// TODO(crbug.com/41372437): Re-enable this test once death tests work on
+// Android.
 
 // Only kN32_SkColorType bitmaps are allowed into the clipboard to prevent
 // surprising buffer overflows due to bits-per-pixel assumptions.
@@ -895,7 +896,7 @@ TYPED_TEST(ClipboardTest, DataAndPortableFormatTest) {
 // the Windows implicitly converts this to UNICODE as expected.
 TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   // We're testing platform-specific behavior, so use PlatformClipboardTest.
-  // TODO(https://crbug.com/1083050): The template shouldn't know about its
+  // TODO(crbug.com/40692232): The template shouldn't know about its
   // instantiations. Move this information up using a flag, virtual method, or
   // creating separate test files for different platforms.
   std::string test_suite_name = ::testing::UnitTest::GetInstance()

@@ -52,7 +52,7 @@ struct DisplayLinkGlobals {
   void AssertLockNotHeldByCurrentThread() const {
     // The function base::Lock::AssertNotHeld asserts that no thread holds
     // the specified lock, not that the current thread does not hold it.
-    // TODO(https://crbug.com/1427235): Make this be a real DCHECK.
+    // TODO(crbug.com/40261700): Make this be a real DCHECK.
   }
 
   static DisplayLinkGlobals& Get() {

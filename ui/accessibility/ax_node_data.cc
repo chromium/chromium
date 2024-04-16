@@ -644,7 +644,7 @@ void AXNodeData::SetName(const std::string& name) {
   // Elements with role='presentation' have Role::kNone. They should not be
   // named. Objects with Role::kUnknown were never given a role. This check
   // is only relevant if the name is not empty.
-  // TODO(crbug.com/1361972): It would be nice to have a means to set the name
+  // TODO(crbug.com/40863978): It would be nice to have a means to set the name
   // and role at the same time to avoid this ordering requirement.
   DCHECK(name.empty() ||
          (role != ax::mojom::Role::kNone && role != ax::mojom::Role::kUnknown))

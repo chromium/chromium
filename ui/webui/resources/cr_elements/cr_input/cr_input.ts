@@ -242,7 +242,7 @@ export class CrInputElement extends CrLitElement {
 
   /**
    * Focuses the input element.
-   * TODO(crbug.com/882612): Replace this with focus() after resolving the text
+   * TODO(crbug.com/40593040): Replace this with focus() after resolving the text
    * selection issue described in onFocus_().
    * @return Whether the <input> element was focused.
    */

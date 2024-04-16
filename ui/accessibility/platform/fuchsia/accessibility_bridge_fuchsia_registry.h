@@ -12,7 +12,7 @@
 
 namespace ui {
 
-// TODO(https://crbug.com/1289708): Investigate using window ID instead of
+// TODO(crbug.com/40212066): Investigate using window ID instead of
 // Window*.
 // This class manages a mapping between aura root windows and their respective
 // accessibility bridge instances. This class does NOT own the accessibility

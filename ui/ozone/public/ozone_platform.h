@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
     // Wayland only: determines whether clip rects can be delegated via the
     // wayland protocol when some quads are out of window.
-    // TODO(crbug.com/1470024): The flag is currently disabled by default since
+    // TODO(crbug.com/40277728): The flag is currently disabled by default since
     // there is a bug. Set this flag to enabled in GPU process when the
     // remaining issues are resolved.
     bool supports_out_of_window_clip_rect = false;

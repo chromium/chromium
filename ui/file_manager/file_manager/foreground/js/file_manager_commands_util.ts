@@ -364,7 +364,7 @@ export function hasCapability(
   // if we create a new file in offline mode), or if there is a problem with the
   // cache and we don't have data yet. For this reason, we need to allow the
   // functionality even if it's not set.
-  // TODO(crbug.com/849999): Store restrictions instead of capabilities.
+  // TODO(crbug.com/41392991): Store restrictions instead of capabilities.
   const metadata = fileManager.metadataModel.getCache(entries, [capability]);
   return metadata.length === entries.length &&
       metadata.every(item => item[capability] !== false);

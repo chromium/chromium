@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
  public:
   // Create an instance that is a simple wrapper around the clipboard of the
   // given buffer with an optional parameter indicating the source of the data.
-  // TODO(crbug.com/1103193): change its references to use
+  // TODO(crbug.com/40704495): change its references to use
   // DataTransferEndpoint, if possible.
   explicit ScopedClipboardWriter(
       ClipboardBuffer buffer,

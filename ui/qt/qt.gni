@@ -7,7 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
 declare_args() {
-  # TODO(https://crbug.com/1424435): Allow QT in MSAN builds once QT is
+  # TODO(crbug.com/40260415): Allow QT in MSAN builds once QT is
   # added to the instrumented libraries.
   use_qt = is_linux && !is_castos && !is_msan
 }

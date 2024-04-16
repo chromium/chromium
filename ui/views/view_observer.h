@@ -41,7 +41,7 @@ class VIEWS_EXPORT ViewObserver {
   virtual void OnViewLayerBoundsSet(View* observed_view) {}
 
   // Called when the `observed_view`'s layer transform changes.
-  // TODO(crbug.com/1203386): This is temporarily added to support a migration.
+  // TODO(crbug.com/40763515): This is temporarily added to support a migration.
   // Do not use for new call sites, we should instead figure out how to
   // migrate this method (and possibly others) into callbacks.
   virtual void OnViewLayerTransformed(View* observed_view) {}

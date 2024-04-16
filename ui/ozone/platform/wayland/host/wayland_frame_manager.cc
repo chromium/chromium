@@ -312,7 +312,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
-      // TODO(crbug.com/1457446): Remove clip_rect when
+      // TODO(crbug.com/40273618): Remove clip_rect when
       // augmented_surface_set_clip_rect become supported widely enough.
       bool needs_commit = subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,

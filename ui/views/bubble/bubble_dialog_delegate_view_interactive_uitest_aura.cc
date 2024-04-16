@@ -84,7 +84,7 @@ TEST_F(BubbleDialogDelegateViewInteractiveTest,
   EXPECT_FALSE(anchor_widget->IsActive());
   EXPECT_TRUE(bubble_widget->IsActive());
 
-  // TODO(crbug.com/1213139): We are not checking anchor_widget's
+  // TODO(crbug.com/40183517): We are not checking anchor_widget's
   // aura::Window because it might not get focus. This happens in test
   // suites that don't use FocusController on NativeWidgetAura.
 

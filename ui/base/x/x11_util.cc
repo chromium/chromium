@@ -114,7 +114,7 @@ void DrawPixmap(x11::Connection* connection,
 
   auto color_type = ColorTypeForVisual(visual);
   if (color_type == kUnknown_SkColorType) {
-    // TODO(https://crbug.com/1066670): Add a fallback path in case any users
+    // TODO(crbug.com/40124639): Add a fallback path in case any users
     // are running a server that uses visual types for which Skia doesn't have
     // a corresponding color format.
     return;

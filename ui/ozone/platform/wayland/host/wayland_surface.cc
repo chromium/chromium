@@ -790,7 +790,7 @@ bool WaylandSurface::ApplyPendingState() {
         wl_fixed_from_double(viewport_src_dip.y()) < 0) {
       LOG(ERROR) << "Sending viewport src with width/height zero or negative "
                     "origin will result in wayland disconnection";
-      // TODO(crbug.com/1325344): Resolve why this viewport size ends up being
+      // TODO(crbug.com/40839779): Resolve why this viewport size ends up being
       // zero and remove the fix below.
       LOG(ERROR) << "viewport_src_dip=" << viewport_src_dip.ToString()
                  << " crop=" << crop.ToString()

@@ -224,7 +224,7 @@ Widget::~Widget() {
     owned_native_widget_.reset();
     DCHECK(!native_widget_);
   } else if (ownership_ == InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
-    // TODO(crbug.com/937381): Revert to DCHECK once we figure out the reason.
+    // TODO(crbug.com/41444457): Revert to DCHECK once we figure out the reason.
     CHECK(!native_widget_)
         << "Destroying a widget with a live native widget. "
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
@@ -2076,7 +2076,7 @@ void Widget::SetColorModeOverride(
 ui::ColorProviderKey Widget::GetColorProviderKey() const {
   // Generally all Widgets should inherit the key of their parent, falling back
   // to the key set by the NativeTheme otherwise.
-  // TODO(crbug.com/1455535): `parent_` does not always resolve to the logical
+  // TODO(crbug.com/40272831): `parent_` does not always resolve to the logical
   // parent as expected here (e.g. bubbles). This should be addressed and the
   // use of parent_ below replaced with something like GetLogicalParent().
   ui::ColorProviderKey key =

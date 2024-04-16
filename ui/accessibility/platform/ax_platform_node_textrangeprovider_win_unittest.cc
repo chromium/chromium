@@ -2663,7 +2663,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMove) {
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
-  // TODO(https://crbug.com/928948): test intermixed unit types
+  // TODO(crbug.com/41439481): test intermixed unit types
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,

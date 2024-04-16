@@ -56,7 +56,7 @@ std::optional<size_t> CountGraphemeCluster(base::StringPiece16 text) {
   return result;
 }
 
-// TODO(crbug.com/1370046): Subclass FakeTextInputClient after pruning deps.
+// TODO(crbug.com/40240866): Subclass FakeTextInputClient after pruning deps.
 class MockTextInputClient : public TextInputClient {
  public:
   explicit MockTextInputClient(TextInputType text_input_type) {

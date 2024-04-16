@@ -9,7 +9,7 @@ import type {ThemeColorPickerElement} from './theme_color_picker.js';
 export function getHtml(this: ThemeColorPickerElement) {
   // clang-format off
   return html`
-<!-- TODO(crbug.com/1395210): Make grid adaptive. -->
+<!-- TODO(crbug.com/40881996): Make grid adaptive. -->
 <cr-grid columns="${this.columns}" role="radiogroup"
     aria-label="${this.i18n('colorsContainerLabel')}">
   <cr-theme-color

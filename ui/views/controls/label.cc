@@ -1083,7 +1083,7 @@ bool Label::IsReadOnly() const {
 }
 
 bool Label::SupportsDrag() const {
-  // TODO(crbug.com/661379): Labels should support dragging selected text.
+  // TODO(crbug.com/40491606): Labels should support dragging selected text.
   return false;
 }
 
@@ -1257,7 +1257,7 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
                           : 0;
     // SetDisplayRect() has side-effect. The text height will change to respect
     // width.
-    // TODO(crbug.com/1347330): `width` should respect insets, but doing so
+    // TODO(crbug.com/40232910): `width` should respect insets, but doing so
     // will break LabelTest.MultiLineSizing. Fix that.
     full_text_->SetDisplayRect(gfx::Rect(0, 0, width, 0));
     size = full_text_->GetStringSize();

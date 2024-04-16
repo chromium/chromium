@@ -103,7 +103,7 @@ base::TimeDelta ComputeTickInterval(
     const std::unique_ptr<gfx::TimingFunction>& timing_function,
     double scaled_duration,
     const std::vector<std::unique_ptr<KeyframeType>>& keyframes) {
-  // TODO(crbug.com/1140603): include animation progress in order to pinpoint
+  // TODO(crbug.com/40726710): include animation progress in order to pinpoint
   // which keyframe's timing function is in effect at any point in time.
   DCHECK_LT(0u, keyframes.size());
   gfx::TimingFunction::Type timing_function_type =

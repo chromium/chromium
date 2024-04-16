@@ -13,10 +13,10 @@
 
 namespace ui {
 
-// TODO(crbug.com/1123230): Investigate creating a new clipboard_format_type_x11
-// as a wrapper around an X11 ::Atom. This wasn't possible in the past, because
-// unit tests spawned a new X11 server for each test, meaning Atom numeric
-// values didn't persist across tests.
+// TODO(crbug.com/40716597): Investigate creating a new
+// clipboard_format_type_x11 as a wrapper around an X11 ::Atom. This wasn't
+// possible in the past, because unit tests spawned a new X11 server for each
+// test, meaning Atom numeric values didn't persist across tests.
 ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::~ClipboardFormatType() = default;

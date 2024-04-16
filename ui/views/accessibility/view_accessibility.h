@@ -296,7 +296,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // instead of just "hello", and may interrupt any existing text being spoken.
   // However, the screen reader may also treat the two calls the same.
   // AnnounceText() is a deprecated alias for AnnounceAlert().
-  // TODO(crbug.com/1499368) - Migrate all callers of AnnounceText() to
+  // TODO(crbug.com/40287811) - Migrate all callers of AnnounceText() to
   // one of the other two methods.
   virtual void AnnounceAlert(const std::u16string& text);
   virtual void AnnouncePolitely(const std::u16string& text);

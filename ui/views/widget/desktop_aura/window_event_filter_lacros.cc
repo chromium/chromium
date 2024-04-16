@@ -85,7 +85,7 @@ void WindowEventFilterLacros::MaybeToggleMaximizedState(aura::Window* window) {
     return;
   }
 
-  // TODO(crbug.com/1299310): send toggle event to ash-chrome.
+  // TODO(crbug.com/40215883): send toggle event to ash-chrome.
   if (desktop_window_tree_host_->IsMaximized())
     desktop_window_tree_host_->Restore();
   else

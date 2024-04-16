@@ -130,7 +130,7 @@ export async function createVolumeInfo(
         console.warn(`Cannot mount file system '${volumeMetadata.volumeId}': ${
             error.stack || error}`);
 
-        // TODO(crbug/847729): Report a mount error via UMA.
+        // TODO(crbug.com/41391739): Report a mount error via UMA.
 
         return new VolumeInfo(
             volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,

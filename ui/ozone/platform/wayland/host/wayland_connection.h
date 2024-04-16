@@ -406,7 +406,7 @@ class WaylandConnection {
   // support such, so the devices are derived from the connected interfaces.
   // Also, currently, Wayland doesn't expose InputDeviceType so marked as
   // UNKNOWN.
-  // TODO(crbug.com/1409793): We need further investigation and proper design
+  // TODO(crbug.com/40254071): We need further investigation and proper design
   // how to model these input devices.
   void UpdateInputDevices();
   std::vector<InputDevice> CreateMouseDevices() const;

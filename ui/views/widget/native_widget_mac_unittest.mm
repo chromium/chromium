@@ -322,7 +322,7 @@ class MouseTrackingWidget : public Widget {
 };
 
 // Test visibility states triggered externally.
-// TODO(crbug.com/1450876): Flaky.
+// TODO(crbug.com/40270349): Flaky.
 TEST_F(NativeWidgetMacTest, DISABLED_HideAndShowExternally) {
   Widget* widget = CreateTopLevelPlatformWidget();
   NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
@@ -988,7 +988,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
     // versions of AppKit get upset if things are released inside -[NSWindow
     // close]. This test tries to establish a situation where the last reference
     // to the child window is released inside WidgetOwnerNSWindowAdapter::
-    // OnWindowWillClose(). TODO(https://crbug.com/1280317): Is this still a
+    // OnWindowWillClose(). TODO(crbug.com/40208881): Is this still a
     // useful test? There is no such thing as "WidgetOwnerNSWindowAdapter" any
     // more.
     [native_parent close];

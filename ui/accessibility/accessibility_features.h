@@ -77,7 +77,8 @@ AX_BASE_EXPORT bool IsAccessibilityLanguageDetectionEnabled();
 
 // Restrict AXModes to web content related modes only when an IA2
 // query is performed on a web content node.
-// TODO(1441211): Remove flag once the change has been confirmed safe.
+// TODO(crbug.com/40266474): Remove flag once the change has been confirmed
+// safe.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityRestrictiveIA2AXModes);
 AX_BASE_EXPORT bool IsAccessibilityRestrictiveIA2AXModesEnabled();
 

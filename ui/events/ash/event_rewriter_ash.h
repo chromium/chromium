@@ -265,7 +265,7 @@ class EventRewriterAsh : public EventRewriter {
 
   // Returns true when the input |state| has key |DomKey::ALT_GRAPH_LATCH| and
   // is remapped.
-  // TODO(crbug.com/1440147): Remove this function.
+  // TODO(crbug.com/40265877): Remove this function.
   bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state) {
     return RewriteModifierKeys(event, last_keyboard_device_id_, state);
   }

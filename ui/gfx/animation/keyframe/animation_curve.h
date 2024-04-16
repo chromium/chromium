@@ -22,7 +22,7 @@ class KeyframeModel;
 // An animation curve is a function that returns a value given a time.
 class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
  public:
-  // TODO(crbug.com/1176334): we shouldn't need the curve type, long term.
+  // TODO(crbug.com/40747850): we shouldn't need the curve type, long term.
   //
   // In the meanime, external clients of the animation machinery will have
   // other curve types and should be added to this enum to ensure uniqueness

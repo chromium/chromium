@@ -251,7 +251,7 @@ class ClipboardOzone::AsyncClipboardOzone {
 
       DCHECK_EQ(state_, State::kStarted);
 
-      // TODO(crbug.com/913422): this is known to be dangerous, and may cause
+      // TODO(crbug.com/40605786): this is known to be dangerous, and may cause
       // blocks in ui thread. But ui::Clipboard was designed with synchronous
       // APIs rather than asynchronous ones, which platform clipboards can
       // provide. E.g: X11 and Wayland.

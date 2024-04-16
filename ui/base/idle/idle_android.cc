@@ -79,7 +79,7 @@ bool CheckIdleStateIsLocked() {
 }
 
 IdleState CalculateIdleState(int idle_threshold) {
-  // TODO(crbug.com/878979): implementation pending.
+  // TODO(crbug.com/40591477): implementation pending.
   NOTIMPLEMENTED();
   return IdleState::IDLE_STATE_UNKNOWN;
 }

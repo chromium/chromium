@@ -37,9 +37,9 @@ class VIEWS_EXPORT SizeBound {
   // explicitly inline because Clang currently doesn't realize that "constexpr"
   // explicitly means "inline" and thus should count as "intentionally inlined
   // and thus shouldn't be warned about".
-  // TODO(crbug.com/1045568): Remove "inline" if Clang's isInlineSpecified()
+  // TODO(crbug.com/40116092): Remove "inline" if Clang's isInlineSpecified()
   // learns about constexpr.
-  // TODO(crbug.com/1045570): Put method bodies here if complex constructor
+  // TODO(crbug.com/40116093): Put method bodies here if complex constructor
   // heuristic learns to peer into types to discover that e.g. Optional is not
   // complex.
   inline constexpr SizeBound();

@@ -22,7 +22,7 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // The closing notification is sent immediately in response to (i.e. in the
   // same call stack as) a request to close the Widget (via Close() or
   // CloseNow()).
-  // TODO(crbug.com/1240365): Remove this, this API is too scary. Users of this
+  // TODO(crbug.com/40194222): Remove this, this API is too scary. Users of this
   // API can expect it to always be called, but it's only called on the same
   // stack as a close request. If the Widget closes due to OS native-widget
   // destruction this is never called. Replace existing uses with

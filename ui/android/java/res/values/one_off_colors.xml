@@ -12,7 +12,7 @@ found in the LICENSE file.
     <!-- Background color for dark mode animations and images-->
     <color name="header_background_dark" tools:ignore="UnusedResources">#28282B</color>
 
-    <!-- TODO(https://crbug.com/1020436): Update the highlight colors to meet accessibility
+    <!-- TODO(crbug.com/40105797): Update the highlight colors to meet accessibility
          contrast ratio. -->
     <color name="highlight_color_on_light_text" tools:ignore="UnusedResources">#CC5595FE</color>
     <color name="highlight_color_on_dark_text" tools:ignore="UnusedResources">#C6DAFC</color>

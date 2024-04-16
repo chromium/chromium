@@ -79,7 +79,7 @@ bool WaylandOverlayManager::CanHandleCandidate(
   // restriction and display the buffer at full size. The function
   // 'set_destination_size' in augmenter will accept empty sizes without
   // protocol error but interprets this as a clear.
-  // TODO(https://crbug.com/1306230) : Move and generalize this fix in wayland
+  // TODO(crbug.com/40218274) : Move and generalize this fix in wayland
   // host.
   constexpr int kAssumedMaxDeviceScaleFactor = 8;
   if (wl_fixed_from_double(candidate.display_rect.width() /
