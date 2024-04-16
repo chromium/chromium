@@ -8550,6 +8550,35 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CreateDesktopShortcutDialogAccepted">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The redesigned `Create Shortcut` dialog for a site was accepted by the end
+    user, leading to the creation of a desktop shortcut that launches the site
+    in a new tab in Chrome.
+  </description>
+</action>
+
+<action name="CreateDesktopShortcutDialogCancelled">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    The redesigned `Create Shortcut` dialog for a site was cancelled by the end
+    user.
+  </description>
+</action>
+
+<action name="CreateDesktopShortcutDialogShown">
+  <owner>dibyapal@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>
+    Shortcut creation triggered via &quot;Menu &gt; More Tools &gt; Create
+    Shortcut...&quot; to a site. Creates a shortcut entity that is fire and
+    forget, and not an actual web app.
+  </description>
+</action>
+
 <action name="CreateHostedApp">
   <obsolete>
     Deprecated as of 06/2019 (replaced by InstallWebAppFromMenu and

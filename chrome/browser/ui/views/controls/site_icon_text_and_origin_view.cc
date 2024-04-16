@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/layout_provider.h"
@@ -29,6 +30,7 @@
 #include "url/gurl.h"
 
 namespace {
+
 std::u16string NormalizeSuggestedTitle(std::u16string title) {
   if (base::StartsWith(title, u"https://")) {
     title = title.substr(8);
@@ -43,6 +45,7 @@ std::u16string GetTrimmedTitle(std::u16string title) {
   base::TrimWhitespace(title, base::TRIM_ALL, &title);
   return title;
 }
+
 }  // namespace
 
 SiteIconTextAndOriginView::SiteIconTextAndOriginView(
@@ -97,9 +100,10 @@ SiteIconTextAndOriginView::SiteIconTextAndOriginView(
   // should stay empty.
   AddChildView(views::Builder<views::View>().Build());
 
-  AddChildView(web_app::CreateOriginLabelFromStartUrl(url,
-                                                      /*is_primary_text=*/false)
-                   .release());
+  // TODO(dibyapal): Modify to support full urls for Create Shortcut dialog.
+  AddChildView(
+      web_app::CreateOriginLabelFromStartUrl(url, /*is_primary_text=*/false)
+          .release());
   title_field_->SelectAll(true);
 }
 

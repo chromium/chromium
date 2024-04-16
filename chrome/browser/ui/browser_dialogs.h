@@ -143,6 +143,21 @@ std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
     const gfx::RectF& element_bounds_in_screen);
 #endif
 
+using CreateShortcutDialogCallback =
+    base::OnceCallback<void(bool, std::u16string)>;
+
+// Shows the `Create Shortcut` dialog to create fire and forget entities on the
+// desktop of the OS. This API works only if kShortcutsNotApps is enabled.
+// Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
+// Callers of the API should pass a |CreateShortcutDialogCallback| so that the
+// user action on the dialog and the title in the dialog's text field can be
+// obtained.
+void ShowCreateShortcutDialog(
+    content::WebContents* web_contents,
+    const gfx::ImageSkia& icon,
+    std::u16string title,
+    CreateShortcutDialogCallback dialog_action_and_text_callback);
+
 }  // namespace chrome
 
 void ShowFolderUploadConfirmationDialog(

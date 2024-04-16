@@ -6599,6 +6599,9 @@ static_library("ui") {
         "views/screen_capture_notification_ui_views.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.cc",
         "views/sharing_hub/sharing_hub_bubble_view_impl.h",
+        "views/shortcuts/create_shortcut_delegate.cc",
+        "views/shortcuts/create_shortcut_delegate.h",
+        "views/shortcuts/create_shortcut_dialog_view.cc",
         "views/web_apps/isolated_web_apps/pref_observer.cc",
       ]
       deps += [ "//ui/views/window/vector_icons" ]

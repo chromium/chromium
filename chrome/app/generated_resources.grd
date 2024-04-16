@@ -3502,6 +3502,16 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
+      <message name="IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_TITLE" desc="Title of the updated Create Shortcut dialog">
+        Create a shortcut to this page
+      </message>
+      <message name="IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_SUBTITLE" desc="Subtitle of the updated Create Shortcut dialog about how the site opens">
+        Shortcuts open in Chrome
+      </message>
+      <message name="IDS_CREATE_SHORTCUT_NOT_APPS_AX_BUBBLE_LABEL" desc="Text preceding the name of a site for a shortcut to be created on, read by spoken feedback.">
+        Site name
+      </message>
+
       <!-- "Install web app" confirmation bubble for simple install dialog, detailed install dialog as well as DIY apps. -->
       <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE" desc="Title of the bubble for installing a web app to the operating system.">
         Install app?
