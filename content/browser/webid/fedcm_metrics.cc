@@ -475,8 +475,10 @@ void FedCmMetrics::RecordAccountsDialogShown(
   base::UmaHistogramBoolean("Blink.FedCm.AccountsDialogShown", true);
 }
 
-void FedCmMetrics::RecordMismatchDialogShown(bool has_shown_mismatch,
-                                             bool has_hints) {
+void FedCmMetrics::RecordSingleIdpMismatchDialogShown(
+    const IdentityProviderData& provider,
+    bool has_shown_mismatch,
+    bool has_hints) {
   MismatchDialogType type;
   if (!has_shown_mismatch) {
     type = has_hints ? MismatchDialogType::kFirstWithHints
@@ -495,7 +497,9 @@ void FedCmMetrics::RecordMismatchDialogShown(bool has_shown_mismatch,
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder((provider_source_id_));
+  DCHECK(provider.has_login_status_mismatch);
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+      GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogShown", true);

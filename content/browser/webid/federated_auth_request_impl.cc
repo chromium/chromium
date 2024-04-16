@@ -1855,7 +1855,9 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   if (!fedcm_metrics_) {
     return;
   }
-  fedcm_metrics_->RecordMismatchDialogShown(has_shown_mismatch, has_hints);
+  CHECK(idp_data_for_display_.size() == 1u);
+  fedcm_metrics_->RecordSingleIdpMismatchDialogShown(
+      idp_data_for_display_[0], has_shown_mismatch, has_hints);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
