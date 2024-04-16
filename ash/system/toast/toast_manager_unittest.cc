@@ -780,22 +780,18 @@ TEST_P(ToastManagerImplTest,
   EXPECT_EQ(3, GetToastSerial());
 }
 
-TEST_P(ToastManagerImplTest, ToastSupportedOnLockScreen) {
+TEST_P(ToastManagerImplTest, ToastDismissedOnSessionStateChanges) {
   // Show a toast supported on the lock screen in the unlocked screen.
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/true);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Simulate device lock, overlay should be visible.
+  // Simulate device lock, toast should be dismissed.
   ChangeLockState(true);
-  EXPECT_TRUE(GetCurrentOverlay());
+  EXPECT_FALSE(GetCurrentOverlay());
 
-  // Simulate device unlock, overlay should still be visible.
+  // Simulate device unlock, overlay should not be visible.
   ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
-
-  // Cancel toast.
-  CancelToast(id1);
   EXPECT_FALSE(GetCurrentOverlay());
 
   // Try to show a new toast from within the lock screen, toast should be
@@ -805,9 +801,9 @@ TEST_P(ToastManagerImplTest, ToastSupportedOnLockScreen) {
                               /*visible_on_lock_screen=*/true);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Unlock, overlay should still be visible.
-  ChangeLockState(true);
-  EXPECT_TRUE(GetCurrentOverlay());
+  // Unlock, toast should be dismissed.
+  ChangeLockState(false);
+  EXPECT_FALSE(GetCurrentOverlay());
 }
 
 TEST_P(ToastManagerImplTest, ToastNotSupportedOnLockScreen) {
@@ -816,28 +812,20 @@ TEST_P(ToastManagerImplTest, ToastNotSupportedOnLockScreen) {
                               /*visible_on_lock_screen=*/false);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Simulate device lock, overlay should be hidden.
+  // Simulate device lock, overlay should be dismissed.
   ChangeLockState(true);
   EXPECT_FALSE(GetCurrentOverlay());
 
-  // Simulate device unlock, overlay should be shown again.
-  ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
-
-  // Cancel toast.
-  CancelToast(id1);
-  EXPECT_FALSE(GetCurrentOverlay());
-
-  // Try to show a new toast from within the lock screen, toast should be hidden
-  // but queued.
+  // Try to show a new toast from within the lock screen, toast request will be
+  // ignored.
   ChangeLockState(true);
   std::string id2 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/false);
   EXPECT_FALSE(GetCurrentOverlay());
 
-  // Unlock, overlay should now be visible.
+  // Unlock, overlay should not be visible.
   ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
+  EXPECT_FALSE(GetCurrentOverlay());
 }
 
 TEST_P(ToastManagerImplTest, ShownCountMetric) {

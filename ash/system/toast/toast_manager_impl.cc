@@ -238,21 +238,9 @@ void ToastManagerImpl::OnToastHoverStateChanged(bool is_hovering) {
 
 void ToastManagerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {
-  const bool locked = state != session_manager::SessionState::ACTIVE;
-
-  if ((locked != locked_) && current_toast_data_) {
-    // Re-queue the currently visible toast which is not for lock screen.
-    queue_.push_front(std::move(*current_toast_data_));
-    current_toast_data_.reset();
-    // Hide the currently visible toast instances without any animation.
-    CloseAllToastsWithoutAnimation();
-  }
-
-  locked_ = locked;
-  if (!queue_.empty()) {
-    // Try to reshow a queued toast from a previous OnSessionStateChanged.
-    ShowLatest();
-  }
+  locked_ = state != session_manager::SessionState::ACTIVE;
+  current_toast_data_.reset();
+  CloseAllToastsWithoutAnimation();
 }
 
 void ToastManagerImpl::ShowLatest() {
