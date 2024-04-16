@@ -125,16 +125,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const gfx::Size& size,
       content::PreloadingAttempt* attempt);
 
-  // Adds a prerender for the prefetch url from IsolatedPrerender on
-  // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
-  // Uses the NavigationPredictor's browser context and the default
-  // SessionStorageNamespace. Returns a NoStatePrefetchHandle or nullptr. Does
-  // not fallback to preconnecting if the prerender isn't triggered.
-  std::unique_ptr<NoStatePrefetchHandle> AddIsolatedPrerender(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size);
-
   // Adds a NoStatePrefetch that only allows for same origin requests (i.e.,
   // requests that only redirect to the same origin).
   std::unique_ptr<NoStatePrefetchHandle> AddSameOriginSpeculation(

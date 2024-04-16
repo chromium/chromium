@@ -996,30 +996,6 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   EXPECT_NE(it, active_hints.end());
 }
 
-// Test that when prerender fails and the
-// kPrerenderFallbackToPreconnect experiment is enabled, a
-// prerender initiated by isolated prerender does not trigger a preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       IsolatedPrerenderDoesNotPreconnect) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prerender should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->AddIsolatedPrerender(
-      kURL, nullptr, kDefaultViewSize));
-
-  // Verify that the prerender request does not fall back to a preconnect.
-  EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
-}
-
 TEST_F(NoStatePrefetchTest, LinkRelStillAllowedWhenDisabled) {
   DisablePrerender();
   GURL url("http://www.google.com/");
