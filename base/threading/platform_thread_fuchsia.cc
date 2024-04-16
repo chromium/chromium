@@ -4,15 +4,15 @@
 
 #include "base/threading/platform_thread.h"
 
+#include <fidl/fuchsia.media/cpp/fidl.h>
+#include <lib/fdio/directory.h>
+#include <lib/sys/cpp/component_context.h>
 #include <pthread.h>
 #include <sched.h>
 #include <zircon/syscalls.h>
 
 #include <mutex>
-
-#include <fidl/fuchsia.media/cpp/fidl.h>
-#include <lib/fdio/directory.h>
-#include <lib/sys/cpp/component_context.h>
+#include <string_view>
 
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -41,7 +41,7 @@ fidl::SyncClient<fuchsia_media::ProfileProvider> ConnectProfileProvider() {
 // that period.
 // TODO(crbug.com/1365682): Migrate to the new fuchsia.scheduler.ProfileProvider
 // API when available.
-void SetThreadRole(StringPiece role_name,
+void SetThreadRole(std::string_view role_name,
                    TimeDelta period = {},
                    float capacity = 0.0f) {
   DCHECK_GE(capacity, 0.0);

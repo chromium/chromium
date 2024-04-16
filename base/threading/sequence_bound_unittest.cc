@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -30,7 +31,7 @@ class EventLogger {
  public:
   EventLogger() = default;
 
-  void AddEvent(StringPiece event) {
+  void AddEvent(std::string_view event) {
     AutoLock guard(lock_);
     events_.push_back(std::string(event));
   }
@@ -249,7 +250,7 @@ class BoxedValue {
   }
 
  private:
-  void AddEventIfNeeded(StringPiece event) const {
+  void AddEventIfNeeded(std::string_view event) const {
     if (logger_) {
       logger_->AddEvent(event);
     }
