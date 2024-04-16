@@ -15,21 +15,6 @@ bool AnchorQuery::operator==(const AnchorQuery& other) const {
          value_ == other.value_;
 }
 
-unsigned AnchorQuery::GetHash() const {
-  unsigned hash = 0;
-  WTF::AddIntToHash(hash, WTF::HashInt(query_type_));
-  WTF::AddIntToHash(hash, anchor_specifier_->GetHash());
-  WTF::AddIntToHash(hash, WTF::HashFloat(percentage_));
-  if (query_type_ == CSSAnchorQueryType::kAnchor) {
-    WTF::AddIntToHash(hash, WTF::HashInt(absl::get<CSSAnchorValue>(value_)));
-  } else {
-    CHECK_EQ(query_type_, CSSAnchorQueryType::kAnchorSize);
-    WTF::AddIntToHash(hash,
-                      WTF::HashInt(absl::get<CSSAnchorSizeValue>(value_)));
-  }
-  return hash;
-}
-
 void AnchorQuery::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_specifier_);
 }

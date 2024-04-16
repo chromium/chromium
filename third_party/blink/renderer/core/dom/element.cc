@@ -3606,9 +3606,15 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   StyleRecalcContext child_recalc_context = local_style_recalc_context;
   // If we're in StyleEngine::UpdateStyleForOutOfFlow, then anchor_evaluator
   // may be non-nullptr to allow evaluation of anchor() and anchor-size()
-  // queries. Descendants of the current out-of-flow element must not be
-  // allowed to evaluate such queries, however.
+  // queries, and the try sets may be non-nullptr if we're attempting
+  // some position option [1]. These are only supposed to apply to the
+  // interleaving root itself (i.e. the out-of-flow element being laid out),
+  // and not to descendants.
+  //
+  // [1] https://drafts.csswg.org/css-anchor-position-1/#fallback
   child_recalc_context.anchor_evaluator = nullptr;
+  child_recalc_context.try_set = nullptr;
+  child_recalc_context.try_tactics_set = nullptr;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {

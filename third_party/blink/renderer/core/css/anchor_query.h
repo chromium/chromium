@@ -59,7 +59,6 @@ class CORE_EXPORT AnchorQuery {
 
   bool operator==(const AnchorQuery& other) const;
   bool operator!=(const AnchorQuery& other) const { return !operator==(other); }
-  unsigned GetHash() const;
   void Trace(Visitor*) const;
 
  private:

@@ -813,29 +813,9 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
   }
 }
 
-// Declarations within @position-try rules match when ResolveStyle is invoked
-// with that rule explicitly specified to match.
-//
-// See OutOfFlowData::GetTryPropertyValueSet.
-// See StyleEngine::UpdateStyleForOutOfFlow.
-void StyleResolver::MatchPositionTryRules(const Element& element,
-                                          ElementRuleCollector& collector) {
-  // If StyleEngine::UpdateStyleForOutOfFlow was called with a PseudoElement,
-  // the CSSPropertyValueSet we need is stored on the OutOfFlowData of that
-  // pseudo element. However, when resolving the style of that pseudo element,
-  // `element` is the _originating element_, not the pseudo element itself.
-  PseudoId pseudo_id = collector.GetPseudoId();
-  const Element* try_element =
-      pseudo_id == kPseudoIdNone
-          ? &element
-          : element.GetPseudoElement(pseudo_id, collector.GetPseudoArgument());
-  if (try_element) {
-    if (OutOfFlowData* data = try_element->GetOutOfFlowData()) {
-      collector.AddTryStyleProperties(data->GetTryPropertyValueSet());
-      collector.AddTryTacticsStyleProperties(
-          data->GetTryTacticsPropertyValueSet());
-    }
-  }
+void StyleResolver::MatchPositionTryRules(ElementRuleCollector& collector) {
+  collector.AddTryStyleProperties();
+  collector.AddTryTacticsStyleProperties();
 }
 
 void StyleResolver::MatchAuthorRules(const Element& element,
@@ -844,7 +824,7 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
   MatchPseudoPartRules(element, collector);
-  MatchPositionTryRules(element, collector);
+  MatchPositionTryRules(collector);
 }
 
 void StyleResolver::MatchUserRules(ElementRuleCollector& collector) {

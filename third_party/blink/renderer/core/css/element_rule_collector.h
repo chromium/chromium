@@ -183,8 +183,8 @@ class CORE_EXPORT ElementRuleCollector {
                                  CascadeOrigin,
                                  bool is_cacheable = true,
                                  bool is_inline_style = false);
-  void AddTryStyleProperties(const CSSPropertyValueSet*);
-  void AddTryTacticsStyleProperties(const CSSPropertyValueSet*);
+  void AddTryStyleProperties();
+  void AddTryTacticsStyleProperties();
   void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
     current_matching_tree_scope_ = &tree_scope;
     result_.BeginAddingAuthorRulesForTreeScope(tree_scope);

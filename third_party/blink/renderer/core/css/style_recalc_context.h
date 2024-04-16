@@ -12,6 +12,7 @@ namespace blink {
 
 class AnchorEvaluator;
 class ComputedStyle;
+class CSSPropertyValueSet;
 class Element;
 class HTMLSlotElement;
 class StyleScopeFrame;
@@ -69,6 +70,19 @@ class CORE_EXPORT StyleRecalcContext {
   // For interleaved style updates from out-of-flow layout, this is
   // an instance of AnchorEvaluatorImpl.
   AnchorEvaluator* anchor_evaluator = nullptr;
+
+  // The declaration block from the current position option, if any.
+  // If present, this is added to the cascade at the "try layer"
+  // (CascadePriority::kIsTryStyleOffset).
+  //
+  // [1] https://drafts.csswg.org/css-anchor-position-1/#fallback
+  const CSSPropertyValueSet* try_set = nullptr;
+
+  // An internally generally declaration block, created from the "flips"
+  // specified by the current position option.
+  // If present, this is added to the cascade at the "try tactics layer"
+  // (CascadePriority::kIsTryTacticsStyleOffset).
+  const CSSPropertyValueSet* try_tactics_set = nullptr;
 
   StyleScopeFrame* style_scope_frame = nullptr;
 

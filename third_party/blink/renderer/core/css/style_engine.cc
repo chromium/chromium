@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
-#include "third_party/blink/renderer/core/css/result_caching_anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
@@ -3473,25 +3472,11 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   // use position-try-options. Therefore, it's important to return without
   // doing style recalc when anchor positioning features are not in use.
 
-  if (OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData()) {
-    out_of_flow_data->SetTryPropertyValueSet(nullptr);
-    out_of_flow_data->SetTryTacticsPropertyValueSet(nullptr);
-  }
-
   const CSSPropertyValueSet* try_tactics_set =
       try_value_flips_.FlipSet(tactic_list);
 
-  bool needs_update = false;
+  bool needs_update = try_set || try_tactics_set;
 
-  if (try_set) {
-    element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
-    needs_update = true;
-  }
-  if (try_tactics_set) {
-    element.EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(
-        try_tactics_set);
-    needs_update = true;
-  }
   if (element.ComputedStyleRef().PositionAnchor() ||
       element.ImplicitAnchorElement()) {
     // anchor-center offsets may need to be updated since the layout of the
@@ -3509,16 +3494,6 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
     return;
   }
 
-  // Creating a ResultCachingAnchorEvaluator means that:
-  //
-  // - The existing AnchorResults are immediately cleared, and
-  // - The result of any Evaluate() call made will be stored
-  //   in the AnchorResults.
-  //
-  // TODO(crbug.com/333608683): The results of ResultCachingAnchorEvaluator is
-  // currently not used outside of tests.
-  ResultCachingAnchorEvaluator result_caching_anchor_evaluator(
-      anchor_evaluator, element.EnsureOutOfFlowData().GetAnchorResults());
   base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
   UpdateViewportSize();
@@ -3526,7 +3501,9 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
   style_recalc_context.is_interleaved_oof = true;
-  style_recalc_context.anchor_evaluator = &result_caching_anchor_evaluator;
+  style_recalc_context.anchor_evaluator = anchor_evaluator;
+  style_recalc_context.try_set = try_set;
+  style_recalc_context.try_tactics_set = try_tactics_set;
 
   StyleRecalcChange change = StyleRecalcChange().ForceRecalcChildren();
 
