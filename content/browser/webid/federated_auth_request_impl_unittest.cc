@@ -6809,7 +6809,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull),
                            Optional(std::string(kAccountId))))
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
@@ -6834,8 +6835,128 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   RunAuthDontWaitForCallback(parameters, kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].browser_trusted_login_state,
+            LoginState::kSignIn);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that IdP claimed SignUp takes precedence over browser observed SignIn.
+TEST_F(FederatedAuthRequestImplTest,
+       IdPClaimedSignUpTakesPrecedenceOverBrowserObservedSignIn) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  // Pretend the sharing permission has been granted for all accounts.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(Return(true));
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  // Accounts are reordered to have sign-in users displayed first.
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
+  EXPECT_EQ(displayed_accounts()[0].browser_trusted_login_state,
+            LoginState::kSignIn);
+  EXPECT_EQ(displayed_accounts()[1].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[1].browser_trusted_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].browser_trusted_login_state,
+            LoginState::kSignUp);
+}
+
+// Test that IdP claimed SignIn does not affect browser observed SignUp.
+TEST_F(FederatedAuthRequestImplTest,
+       IdPClaimedSignInDoesNotAffectBrowserObservedSignUp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  // Pretend the sharing permission has NOT been granted for any account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(Return(false));
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
+  // This should be kSignUp regardless of IdP's claim.
+  EXPECT_EQ(displayed_accounts()[0].browser_trusted_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[1].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[1].browser_trusted_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].browser_trusted_login_state,
+            LoginState::kSignUp);
+}
+
+// Test that IdP claimed SignIn can affect browser observed SignUp if they have
+// third-party cookies access.
+TEST_F(FederatedAuthRequestImplTest,
+       IdPClaimedSignInAffectsBrowserObservedSignUpWith3PCAccess) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  // Pretend the sharing permission has NOT been granted for any account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), _))
+      .WillRepeatedly(Return(false));
+
+  // Pretend the IdP was given third-party cookies access.
+  EXPECT_CALL(*test_api_permission_delegate_,
+              HasThirdPartyCookiesAccess(_, GURL(kProviderUrlFull),
+                                         OriginFromString(kRpUrl)))
+      .WillRepeatedly(Return(true));
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+
+  RunAuthDontWaitForCallback(parameters, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
+  // This should be kSignIn to match IdP's claim due to it has 3PC access.
+  EXPECT_EQ(displayed_accounts()[0].browser_trusted_login_state,
+            LoginState::kSignIn);
+  EXPECT_EQ(displayed_accounts()[1].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[1].browser_trusted_login_state,
+            LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].login_state, LoginState::kSignUp);
+  EXPECT_EQ(displayed_accounts()[2].browser_trusted_login_state,
+            LoginState::kSignUp);
 }
 
 // Test button flow is exempted if the FedCM is disabled in  settings.

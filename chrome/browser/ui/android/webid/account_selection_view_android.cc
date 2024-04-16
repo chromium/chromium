@@ -109,13 +109,16 @@ Account ConvertFieldsToAccount(
 
   GURL picture_url = url::GURLAndroid::ToNativeGURL(env, picture_url_obj);
 
-  // The login hints and domain hints are only used before account selection.
+  // The following fields are only used before account selection.
   std::vector<std::string> login_hints;
   std::vector<std::string> domain_hints;
   std::vector<std::string> labels;
+  Account::LoginState browser_trusted_login_state =
+      Account::LoginState::kSignUp;
+
   return Account(account_id, email, name, given_name, picture_url,
                  std::move(login_hints), std::move(domain_hints),
-                 std::move(labels), login_state);
+                 std::move(labels), login_state, browser_trusted_login_state);
 }
 
 ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(

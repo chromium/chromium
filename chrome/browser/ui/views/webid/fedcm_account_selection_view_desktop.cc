@@ -161,23 +161,40 @@ void FedCmAccountSelectionView::Show(
     }
   } else if (new_account_idp) {
     // When we just logged in to an account, show that account right away.
-    state_ = State::REQUEST_PERMISSION;
     new_account_idp_display_data_ = IdentityProviderDisplayData(
         base::UTF8ToUTF16(new_account_idp->idp_for_display),
         new_account_idp->idp_metadata, new_account_idp->client_metadata,
         new_account_idp->accounts, new_account_idp->request_permission,
         new_account_idp->has_login_status_mismatch);
 
-    if (GetDialogType() == DialogType::MODAL) {
-      account_selection_view_->ShowRequestPermissionDialog(
-          top_frame_for_display_, new_account_idp_display_data_->accounts[0],
-          *new_account_idp_display_data_);
+    // We use the browser trusted login state because this boolean controls
+    // whether we'd skip the permission modal entirely whereas "login_state"
+    // only controls whether to show the disclosure text.
+    bool is_returning_account_on_modal =
+        GetDialogType() == DialogType::MODAL &&
+        new_account_idp_display_data_->accounts[0]
+                .browser_trusted_login_state != Account::LoginState::kSignUp;
+
+    if (is_returning_account_on_modal) {
+      state_ = State::VERIFYING;
+      // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
+      if (!ShowVerifyingSheet(new_account_idp_display_data_->accounts[0],
+                              *new_account_idp_display_data_)) {
+        return;
+      }
     } else {
-      account_selection_view_->ShowSingleAccountConfirmDialog(
-          top_frame_for_display_, iframe_for_display_,
-          new_account_idp_display_data_->accounts[0],
-          *new_account_idp_display_data_,
-          /*show_back_button=*/accounts_size > 1u ? true : false);
+      state_ = State::REQUEST_PERMISSION;
+      if (GetDialogType() == DialogType::MODAL) {
+        account_selection_view_->ShowRequestPermissionDialog(
+            top_frame_for_display_, new_account_idp_display_data_->accounts[0],
+            *new_account_idp_display_data_);
+      } else {
+        account_selection_view_->ShowSingleAccountConfirmDialog(
+            top_frame_for_display_, iframe_for_display_,
+            new_account_idp_display_data_->accounts[0],
+            *new_account_idp_display_data_,
+            /*show_back_button=*/accounts_size > 1u ? true : false);
+      }
     }
   } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u) {
     if (GetDialogType() == DialogType::MODAL) {
