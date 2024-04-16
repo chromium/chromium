@@ -117,11 +117,13 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_DEVICES)));
   } else if (sheet_->model()->IsForgotGPMPinButtonVisible()) {
-    SetExtraView(std::make_unique<views::MdTextButton>(
+    auto forgot_pin_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(
             &AuthenticatorRequestDialogView::ForgotGPMPinPressed,
             base::Unretained(this)),
-        u"Forgot PIN (UNTRANSLATED)"));
+        u"Forgot PIN (UNTRANSLATED)");
+    forgot_pin_button->SetEnabled(!model_->ui_disabled_);
+    SetExtraView(std::move(forgot_pin_button));
   } else if (sheet_->model()->IsGPMPinOptionsButtonVisible()) {
     PinOptionsButton::CommandId checked_command_id =
         model_->step() ==
