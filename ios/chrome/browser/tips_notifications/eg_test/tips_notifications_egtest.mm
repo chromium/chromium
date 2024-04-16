@@ -43,7 +43,7 @@ void MaybeTapAllowNotifications() {
   XCUIApplication* springboardApplication = [[XCUIApplication alloc]
       initWithBundleIdentifier:@"com.apple.springboard"];
   auto button = springboardApplication.buttons[@"Allow"];
-  if ([button waitForExistenceWithTimeout:2]) {
+  if ([button waitForExistenceWithTimeout:1.5]) {
     [button tap];
     [ChromeEarlGreyUI waitForAppToIdle];
   }
@@ -82,12 +82,10 @@ void MaybeDismissNotification() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  //  config.features_enabled.push_back(kIOSTipsNotifications);
 
   std::string triggerTime = "2.5s";
 
-  if ([self isRunningTest:@selector
-            (DISABLED_testToggleTipsNotificationsMenuItem)]) {
+  if ([self isRunningTest:@selector(testToggleTipsNotificationsMenuItem)]) {
     triggerTime = "72h";
   }
 
@@ -157,10 +155,9 @@ void MaybeDismissNotification() {
 
 // Tests the SetUpList long press menu item to toggle Tips Notifications.
 // TODO:(crbug.com/334134064) Fix and reenable test.
-- (void)DISABLED_testToggleTipsNotificationsMenuItem {
-  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  MaybeDismissNotification();
+- (void)testToggleTipsNotificationsMenuItem {
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [self optInToTipsNotifications];
   [self turnOffTipsNotifications];
 }
