@@ -12,7 +12,7 @@ ProductSpecificationsSet::ProductSpecificationsSet(
     const std::string& uuid,
     const int64_t creation_time_usec_since_epoch,
     const int64_t update_time_usec_since_epoch,
-    const std::vector<const GURL>& urls,
+    const std::vector<GURL>& urls,
     const std::string& name)
     : uuid_(base::Uuid::ParseLowercase(uuid)),
       creation_time_(base::Time::FromMillisecondsSinceUnixEpoch(
@@ -34,9 +34,9 @@ ProductSpecificationsSet::~ProductSpecificationsSet() = default;
 
 ProductSpecificationsSet ProductSpecificationsSet::FromProto(
     const sync_pb::CompareSpecifics& specifics) {
-  std::vector<const GURL> urls;
+  std::vector<GURL> urls;
   for (const sync_pb::ComparisonData& data : specifics.data()) {
-    urls.push_back(GURL(data.url()));
+    urls.emplace_back(data.url());
   }
   return ProductSpecificationsSet(
       specifics.uuid(), specifics.creation_time_unix_epoch_micros(),

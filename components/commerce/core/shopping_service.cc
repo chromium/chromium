@@ -1734,7 +1734,7 @@ void ShoppingService::GetProductIdentifierForUrl(
           std::move(callback)));
 }
 
-const std::vector<const ProductSpecificationsSet>
+const std::vector<ProductSpecificationsSet>
 ShoppingService::GetAllProductSpecificationSets() {
   return product_specifications_service_->GetAllProductSpecifications();
 }

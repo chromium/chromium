@@ -178,7 +178,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
 
   std::optional<sync_pb::CompareSpecifics> AddProductSpecifications(
       const std::string& name,
-      const std::vector<const GURL> urls) {
+      const std::vector<GURL> urls) {
     return bridge().AddProductSpecifications(name, urls);
   }
 

@@ -624,7 +624,7 @@ class ShoppingService : public KeyedService,
                                   UrlProductIdentifierTupleCallback callback);
 
   // Return all ProductSpecificationsSets from ProductSpecificationsService.
-  virtual const std::vector<const ProductSpecificationsSet>
+  virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecificationSets();
 
   // Updates the bookmark model used for sync (and shopping) if needed. Invoked

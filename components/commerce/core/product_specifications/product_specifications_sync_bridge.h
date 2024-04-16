@@ -64,7 +64,7 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   virtual const std::optional<sync_pb::CompareSpecifics>
   AddProductSpecifications(const std::string& name,
-                           const std::vector<const GURL>& urls);
+                           const std::vector<GURL>& urls);
 
   void DeleteProductSpecificationsSet(const std::string& uuid);
 

@@ -131,7 +131,7 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
 const std::optional<sync_pb::CompareSpecifics>
 ProductSpecificationsSyncBridge::AddProductSpecifications(
     const std::string& name,
-    const std::vector<const GURL>& urls) {
+    const std::vector<GURL>& urls) {
   if (!change_processor()->IsTrackingMetadata()) {
     return std::nullopt;
   }

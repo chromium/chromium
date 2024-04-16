@@ -24,11 +24,11 @@ ProductSpecificationsService::GetSyncControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
-const std::vector<const ProductSpecificationsSet>
+const std::vector<ProductSpecificationsSet>
 ProductSpecificationsService::GetAllProductSpecifications() {
-  std::vector<const ProductSpecificationsSet> product_specifications;
+  std::vector<ProductSpecificationsSet> product_specifications;
   for (auto& entry : bridge_->entries()) {
-    std::vector<const GURL> urls;
+    std::vector<GURL> urls;
     for (auto& data : entry.second.data()) {
       urls.emplace_back(data.url());
     }
@@ -43,7 +43,7 @@ ProductSpecificationsService::GetAllProductSpecifications() {
 const std::optional<const ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
-    const std::vector<const GURL>& urls) {
+    const std::vector<GURL>& urls) {
   // TODO(crbug.com/332545064) add for a product specification set being added.
   std::optional<sync_pb::CompareSpecifics> specifics =
       bridge_->AddProductSpecifications(name, urls);

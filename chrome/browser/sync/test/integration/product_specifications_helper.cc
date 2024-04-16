@@ -41,9 +41,9 @@ bool ProductSpecificationsChecker::IsExitConditionSatisfied(std::ostream* os) {
 bool ProductSpecificationsChecker::IsSpecificsAvailableAndEqual() {
   for (const ProductSpecificationsSet& product_specifications_set :
        service_->GetAllProductSpecifications()) {
-    std::vector<const GURL> specifics_urls;
+    std::vector<GURL> specifics_urls;
     for (sync_pb::ComparisonData data : compare_specifics_->data()) {
-      specifics_urls.push_back(GURL(data.url()));
+      specifics_urls.emplace_back(data.url());
     }
     if (product_specifications_set.uuid().AsLowercaseString() ==
             compare_specifics_->uuid() &&

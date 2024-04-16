@@ -82,9 +82,9 @@ void AddTestSpecifics(commerce::ProductSpecificationsSyncBridge* bridge) {
 }
 
 MATCHER_P(HasAllProductSpecs, compare_specifics, "") {
-  std::vector<const GURL> specifics_urls;
+  std::vector<GURL> specifics_urls;
   for (const sync_pb::ComparisonData& data : compare_specifics.data()) {
-    specifics_urls.push_back(GURL(data.url()));
+    specifics_urls.emplace_back(data.url());
   }
   return arg.uuid().AsLowercaseString() == compare_specifics.uuid() &&
          arg.creation_time() ==
@@ -217,7 +217,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
                   specifics.update_time_unix_epoch_micros()),
               specifications.update_time());
     EXPECT_EQ(specifics.name(), specifications.name());
-    std::vector<const GURL> urls;
+    std::vector<GURL> urls;
     for (const sync_pb::ComparisonData& data : specifics.data()) {
       urls.emplace_back(data.url());
     }
@@ -243,7 +243,7 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
   for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
     bridge()->AddCompareSpecifics(specifics);
   }
-  const std::vector<const ProductSpecificationsSet> specifications =
+  const std::vector<ProductSpecificationsSet> specifications =
       service()->GetAllProductSpecifications();
   EXPECT_EQ(2u, specifications.size());
   for (uint64_t i = 0; i < specifications.size(); i++) {
@@ -252,8 +252,8 @@ TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
-  std::vector<const GURL> expected_product_urls{GURL(kProductOneUrl),
-                                                GURL(kProductTwoUrl)};
+  std::vector<GURL> expected_product_urls{GURL(kProductOneUrl),
+                                          GURL(kProductTwoUrl)};
   EXPECT_CALL(*observer(),
               OnProductSpecificationsSetAdded(HasProductSpecsNameUrl(
                   kProductSpecsName, expected_product_urls)))
