@@ -76,8 +76,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController {
     kOperationFailed,
     // Wifi direct operation failed due to DBus error.
     kDBusError,
-    // Unknown error.
-    kUnknownError,
   };
 
   // Return callback for the CreateWifiP2PGroup or ConnectToWifiP2PGroup

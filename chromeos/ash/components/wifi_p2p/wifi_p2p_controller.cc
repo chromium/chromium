@@ -70,7 +70,28 @@ WifiP2PController::OperationResult ShillResultToEnum(
   }
 
   NET_LOG(ERROR) << "Unexpected result code: " << shill_result_code;
-  return WifiP2PController::OperationResult::kUnknownError;
+  return WifiP2PController::OperationResult::kInvalidResultCode;
+}
+
+bool IsDigitOrAlpha(char c) {
+  return std::isdigit(c) || std::isalpha(c);
+}
+
+// WiFi Direct ssid should follows WiFi Direct v1.9 3.2.1 (I.e. must begin with
+// DIRECT-xy where x and y are random letters/numbers). The passphrase must be
+// at least 8 character long.
+bool ValidateWifiDirectCredentails(const std::string& ssid,
+                                   const std::string& passphrase) {
+  if (ssid.length() != 9 || !ssid.starts_with("DIRECT-") ||
+      !IsDigitOrAlpha(ssid[7]) || !IsDigitOrAlpha(ssid[8])) {
+    NET_LOG(ERROR) << "Invalid SSID for WiFi Direct.";
+    return false;
+  }
+  if (passphrase.length() < 8) {
+    NET_LOG(ERROR) << "Invalid passphrase for WiFi Direct.";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -125,6 +146,12 @@ bool WifiP2PController::IsInitialized() {
 void WifiP2PController::CreateWifiP2PGroup(const std::string& ssid,
                                            const std::string& passphrase,
                                            WifiP2PGroupCallback callback) {
+  if (!ValidateWifiDirectCredentails(ssid, passphrase)) {
+    std::move(callback).Run(OperationResult::kInvalidArguments,
+                            /*metadata=*/std::nullopt);
+    return;
+  }
+
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->CreateP2PGroup(
       ShillManagerClient::CreateP2PGroupParameter{ssid, passphrase},

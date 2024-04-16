@@ -123,7 +123,7 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupSuccess) {
       ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
                                         shill::kCreateP2PGroupResultSuccess);
   const WifiP2POperationTestResult& result_arguments =
-      CreateP2PGroup("ssid", "passphrase");
+      CreateP2PGroup("DIRECT-1a", "passphrase");
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kSuccess);
   ASSERT_TRUE(result_arguments.metadata);
@@ -159,7 +159,7 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_DBusError) {
       ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kFailure,
                                         std::string());
   const WifiP2POperationTestResult& result_arguments =
-      CreateP2PGroup("ssid", "passphrase");
+      CreateP2PGroup("DIRECT-1a", "passphrase");
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kDBusError);
   EXPECT_FALSE(result_arguments.metadata);
@@ -176,7 +176,7 @@ TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
           FakeShillSimulatedResult::kSuccess,
           shill::kConnectToP2PGroupResultSuccess);
   const WifiP2POperationTestResult& result_arguments =
-      ConnectP2PGroup("ssid", "passphrase", /*frequency=*/5200u);
+      ConnectP2PGroup("DIRECT-1a", "passphrase", /*frequency=*/5200u);
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kSuccess);
   ASSERT_TRUE(result_arguments.metadata);
@@ -197,7 +197,7 @@ TEST_F(WifiP2PControllerTest,
           FakeShillSimulatedResult::kSuccess,
           shill::kConnectToP2PGroupResultConcurrencyNotSupported);
   const WifiP2POperationTestResult& result_arguments =
-      ConnectP2PGroup("ssid", "passphrase", /*frequency=*/5200u);
+      ConnectP2PGroup("DIRECT-1a", "passphrase", /*frequency=*/5200u);
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kConcurrencyNotSupported);
   EXPECT_FALSE(result_arguments.metadata);

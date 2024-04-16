@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/quick_pair:unit_tests",
     "//chromeos/ash/services/recording:unit_tests",
     "//chromeos/ash/services/secure_channel:unit_tests",
+    "//chromeos/ash/services/wifi_direct:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]
 

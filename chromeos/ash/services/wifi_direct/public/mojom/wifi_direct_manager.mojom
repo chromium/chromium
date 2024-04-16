@@ -1,0 +1,72 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.wifi_direct.mojom;
+
+enum WifiDirectOperationResult {
+  kSuccess,
+  // Wifi direct is disallowed in platform per Manager.P2PAllowed.
+  kNotAllowed,
+  // Wifi direct operation is not supported in the platform.
+  kNotSupported,
+  // Creating Wifi direct interface is not possible with existing interfaces.
+  kConcurrencyNotSupported,
+  // The requested frequency is not supported.
+  kFrequencyNotSupported,
+  // Wifi direct group rejects the authentication attempt.
+  kAuthFailure,
+  // Didn't discover the Wifi direct group.
+  kGroupNotFound,
+  // Already connected to the Wifi direct group.
+  kAlreadyConnected,
+  kOperationInProgress,
+  kInvalidArguments,
+  // Wifi direct operation timed out.
+  kTimeout,
+  // Wifi direct operation response has an invalid result code.
+  kInvalidResultCode,
+  // Wifi direct group miss or has invalid properties.
+  kInvalidGroupProperties,
+  kUnknownFailure,
+};
+
+// WifiDirectManager provides Wifi direct management methods. An instance of
+// this interface is owned in the browser process in Ash.
+interface WifiDirectManager {
+  // Creates a WifiDirectConnection as group owner and returns a result along
+  // with a pending remote of WifiDirectConnection object (a NullRemote will be
+  // returned if the result is anything but kSuccess). Disconnecting from the
+  // remote object will invoke the disconnect handler in WifiDirectConnection
+  // that will in turn tear down the WiFi direct group. Callers should also
+  // register a disconnect handler on the remote side to be notified and handle
+  // the case where the Wifi direct group is disconnected by Shill internally.
+  // The ssid should be a UTF8 string that must match the requirements for a
+  // WiFi Direct ssid per WiFi Direct v1.9 3.2.1 (i.e. must begin with DIRECT-xy
+  // where x and y are random letters/numbers). The passphrase must be at least
+  // 8 characters long.
+  CreateWifiDirectGroup(string ssid, string password) =>
+    (WifiDirectOperationResult result,
+     pending_remote<WifiDirectConnection>? wifi_direct_connection);
+
+  // Connects to the Wifi Direct Group as group client and returns a result
+  // along with a pending remote of WifiDirectConnection object (a NullRemote
+  // will be returned if the result is anything but kSuccess). Disconnecting
+  // from the remote object will invoke the disconnect handler in
+  // WifiDirectConnection that will in turn disconnect to the WiFi direct group.
+  // Callers should also register a disconnect handler on the remote side to be
+  // notified and handle the case where the Wifi direct group is disconnected by
+  // Shill internally. If the frequency is provided, the operation will fail
+  // when the group is not found at the specified frequency. If the frequency
+  // is omitted, system will scan all supported channels to find the group.
+  ConnectToWifiDirectGroup(string ssid, string password, uint32? frequency) =>
+    (WifiDirectOperationResult result,
+     pending_remote<WifiDirectConnection>? wifi_direct_connection);
+};
+
+// WifiDirectConnection represents an active Wifi direct group that was created
+// or connected to from WifiDirectManager.
+interface WifiDirectConnection {
+  // Returns the frequency of the Wifi direct network group.
+  GetFrequency() => (uint32 frequency);
+};

@@ -856,6 +856,7 @@
                   'chromeos/ash/components/network/|'\
                   'chromeos/ash/components/wifi_p2p/|'\
                   'chromeos/ash/services/network_config/|'\
+                  'chromeos/ash/services/wifi_direct/|'\
                   'chromeos/services/network_config/|'\
                   'components/onc/|'\
                   'extensions/browser/api/networking_private/',
