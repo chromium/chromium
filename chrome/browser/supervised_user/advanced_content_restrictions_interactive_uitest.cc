@@ -159,7 +159,7 @@ INSTANTIATE_TEST_SUITE_P(
     SupervisedUserFamilyLinkCookiesSwitchUiTest,
     testing::Combine(
         testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
-                        FamilyIdentifier("FAMILY_DMA_ELIGIBILE_NO_CONSENT"),
+                        FamilyIdentifier("FAMILY_DMA_ELIGIBLE_NO_CONSENT"),
                         FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
         /*cookies_switch_value=*/testing::Bool()),
     [](const auto& info) {
