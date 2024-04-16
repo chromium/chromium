@@ -317,5 +317,6 @@ third_party/rust/target/
 # b/328065301: This file is temporarily used as a migration toggle between
 # GCS hooks and first class deps.
 **/*_is_first_class_gcs
-# This file is created by first class GCS deps.
+# These files are created by first class GCS deps.
 **/*_hash
+**/*_content_names
