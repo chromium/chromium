@@ -76,7 +76,7 @@ public class MediaViewerUtils {
 
         if (allowExternalAppHandlers && !willExposeFileUri(contentUri)) {
             // Create a PendingIntent that can be used to view the file externally.
-            // TODO(https://crbug.com/795968): Check if this is problematic in multi-window mode,
+            // TODO(crbug.com/40555252): Check if this is problematic in multi-window mode,
             //                                 where two different viewers could be visible at the
             //                                 same time.
             Intent viewIntent = createViewIntentForUri(contentUri, mimeType, null, null);

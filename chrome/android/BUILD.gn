@@ -799,12 +799,12 @@ if (current_toolchain == default_toolchain) {
     sources += share_java_sources
     deps += share_java_deps
 
-    # TODO(crbug/1186003): Instead of adding source files, add it as a separate
+    # TODO(crbug.com/40172295): Instead of adding source files, add it as a separate
     # dependency when circular deps is resolved.
     sources += price_tracking_java_sources
     deps += price_tracking_java_deps
 
-    # TODO(crbug/1210158): Instead of adding source files, add it as a separate
+    # TODO(crbug.com/40182305): Instead of adding source files, add it as a separate
     # dependency when circular deps is resolved.
     sources += commerce_subscriptions_java_sources
     deps += commerce_subscriptions_java_deps
@@ -815,7 +815,7 @@ if (current_toolchain == default_toolchain) {
       deps += [ "//printing:printing_java" ]
     }
 
-    # TODO(crbug.com/1174713): This is temporary to not break downstream targets.
+    # TODO(crbug.com/40167648): This is temporary to not break downstream targets.
     public_deps = [ "//chrome/browser/notifications:java" ]
 
     if (password_manager_use_internal_android_resources) {

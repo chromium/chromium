@@ -19,7 +19,7 @@ public class SignalAccumulator {
     private static final long ACTION_PROVIDER_TIMEOUT_MS = 100;
 
     // List of signals to query. Modify hasAllSignals() when adding signals to this list.
-    // TODO(crbug/1373895): Introduce a key set and directly populate InputContext.
+    // TODO(crbug.com/40242243): Introduce a key set and directly populate InputContext.
     private Boolean mHasPriceTracking;
     private Boolean mHasReaderMode;
 

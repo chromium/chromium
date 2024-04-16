@@ -52,7 +52,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private static Callback<Fragment> sObserverForTest;
     private static final String EXPIRATION_DATE_SEPARATOR = "/";
     private static final String EXPIRATION_DATE_REGEX = "^(0[1-9]|1[0-2])\\/(\\d{2})$";
-    // TODO(crbug.com/1504662): Leverage the value from C++ code to have a single source of truth.
+    // TODO(crbug.com/40945216): Leverage the value from C++ code to have a single source of truth.
     private static final String AMEX_NETWORK_NAME = "amex";
     static final String CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded";
@@ -302,7 +302,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             card.setMonth(AutofillLocalCardEditor.getExpirationMonth(expirationDate));
             card.setYear(AutofillLocalCardEditor.getExpirationYear(expirationDate));
             card.setCvc(mCvc.getText().toString().trim());
-            // TODO(crbug.com/1511305): Move metric logging to a separate class.
+            // TODO(crbug.com/41483891): Move metric logging to a separate class.
             if (mIsNewEntry) {
                 if (!card.getCvc().isEmpty()) {
                     RecordUserAction.record("AutofillCreditCardsAddedWithCvc");

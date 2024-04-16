@@ -172,7 +172,8 @@ public abstract class TabModelSelectorBase
 
     @Override
     public Tab getCurrentTab() {
-        // TODO(crbug/1499464): Migrate this to use mCurrentTabSupplier.get(). Presently, a large
+        // TODO(crbug.com/40287823): Migrate this to use mCurrentTabSupplier.get(). Presently, a
+        // large
         // number of tests depend on using this from a non-UI thread.
         return TabModelUtils.getCurrentTab(getCurrentModel());
     }

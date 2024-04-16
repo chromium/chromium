@@ -282,7 +282,7 @@ public class ProcessInitializationHandler {
         }
 
         // Initialize UMA settings for survey component.
-        // TODO(crbug/1481316): Observe PrivacyPreferencesManagerImpl from SurveyClientFactory.
+        // TODO(crbug.com/40281638): Observe PrivacyPreferencesManagerImpl from SurveyClientFactory.
         ObservableSupplierImpl<Boolean> crashUploadPermissionSupplier =
                 new ObservableSupplierImpl<>();
         crashUploadPermissionSupplier.set(
@@ -493,7 +493,7 @@ public class ProcessInitializationHandler {
                     new OptimizationGuideBridgeFactory(registeredTypesAllowList)
                             .create()
                             .onDeferredStartup();
-                    // TODO(crbug.com/1355893) Move to PersistedTabData.onDeferredStartup
+                    // TODO(crbug.com/40236066) Move to PersistedTabData.onDeferredStartup
                     if (PriceTrackingFeatures.isPriceTrackingEligible(profile)
                             && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
                                     profile)) {

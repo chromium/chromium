@@ -1437,7 +1437,7 @@ public class RecentlyClosedBridgeTest {
                 });
     }
 
-    // TODO(crbug.com/1307345): Add a test a case where bulk closures remain in the native service,
+    // TODO(crbug.com/40218713): Add a test a case where bulk closures remain in the native service,
     // but the flag state is flipped.
 
     private Tab findTabWithUrlAndTitle(TabList list, String url, String title) {

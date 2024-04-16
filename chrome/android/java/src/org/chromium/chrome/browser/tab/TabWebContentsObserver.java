@@ -187,7 +187,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // The tab crashed in background or was killed by the OS out-of-memory killer.
                 mTab.setNeedsReload();
             } else {
-                // TODO(crbug.com/1074078): Remove the PostTask and call SadTab directly when
+                // TODO(crbug.com/40127852): Remove the PostTask and call SadTab directly when
                 // WebContentsObserverProxy observers' iterator concurrency issue is fixed.
                 // Showing the SadTab will cause the content view hosting WebContents to lose focus.
                 // Post the show in order to avoid immediately triggering

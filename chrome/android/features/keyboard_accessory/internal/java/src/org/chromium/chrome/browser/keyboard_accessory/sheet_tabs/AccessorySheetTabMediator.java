@@ -46,7 +46,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
     /**
      * Can be used to handle changes coming from the {@link OptionToggle}.
      *
-     * TODO(crbug.com/1099301): Remove the interface and the delegate field from this class and
+     * <p>TODO(crbug.com/40702406): Remove the interface and the delegate field from this class and
      * handle the toggle changes via the PasswordAccessorySheetMediator.
      */
     public interface ToggleChangeDelegate {

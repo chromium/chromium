@@ -71,7 +71,8 @@ public class StartupPaintPreviewHelper {
             sShouldShowOnRestore = false;
         }
 
-        // TODO(crbug/1074428): verify this doesn't cause a memory leak if the user exits Chrome
+        // TODO(crbug.com/40686845): verify this doesn't cause a memory leak if the user exits
+        // Chrome
         // prior to onTabStateInitialized being called.
         tabModelSelector.addObserver(
                 new TabModelSelectorObserver() {

@@ -162,7 +162,7 @@ public class OfflinePageDownloadBridge {
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.OFFLINE_PAGE);
-        // TODO(crbug.com/1148275): Pass isIncognito boolean here after finding a way not to
+        // TODO(crbug.com/40731212): Pass isIncognito boolean here after finding a way not to
         // reload the downloaded page for Incognito CCT.
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 

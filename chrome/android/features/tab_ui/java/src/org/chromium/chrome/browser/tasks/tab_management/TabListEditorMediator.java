@@ -140,7 +140,7 @@ class TabListEditorMediator
                         }
                     }
 
-                    // TODO(crbug.com/1504605): Revisit after adding the inactive tab model for
+                    // TODO(crbug.com/40945153): Revisit after adding the inactive tab model for
                     // using a custom click handler when selecting tabs.
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {

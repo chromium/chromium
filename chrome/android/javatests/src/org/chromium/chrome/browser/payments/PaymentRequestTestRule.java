@@ -232,7 +232,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
     /* package */ void setObserversAndWaitForInitialPageLoad() throws TimeoutException {
         try {
-            // TODO(crbug.com/1144303): Figure out what these tests need to wait on to not be flaky
+            // TODO(crbug.com/40728764): Figure out what these tests need to wait on to not be flaky
             // instead of sleeping.
             Thread.sleep(2000);
         } catch (Exception ex) {

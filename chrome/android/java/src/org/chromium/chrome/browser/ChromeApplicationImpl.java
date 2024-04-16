@@ -61,7 +61,7 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             // or not we are actually building with splits.
             AppHooks.get().registerProtoExtensions();
 
-            // TODO(crbug.com/1442347): Remove this after code changes allow for //components to
+            // TODO(crbug.com/40266922): Remove this after code changes allow for //components to
             // access cached flags.
             BrowserUiUtilsCachedFlags.getInstance()
                     .setVerticalAutomotiveBackButtonToolbarFlag(

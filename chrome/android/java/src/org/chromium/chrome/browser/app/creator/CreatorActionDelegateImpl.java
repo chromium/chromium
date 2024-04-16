@@ -84,13 +84,13 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             mCreatorCoordinator.requestOpenSheet(new GURL(params.getUrl()));
             return;
         }
-        // TODO(crbug.com/1395448) open in ephemeral tab or thin web view.
+        // TODO(crbug.com/40882120) open in ephemeral tab or thin web view.
         Log.w(TAG, "OpenSuggestionUrl: Unhandled disposition " + disposition);
     }
 
     @Override
     public void addToReadingList(String title, String url) {
-        // TODO(crbug/1399617) Eliminate code duplication with
+        // TODO(crbug.com/40883240) Eliminate code duplication with
         //     FeedActionDelegateImpl
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfile);
         bookmarkModel.finishLoadingBookmarkModel(

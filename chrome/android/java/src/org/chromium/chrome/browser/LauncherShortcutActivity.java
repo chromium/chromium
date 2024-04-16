@@ -78,7 +78,7 @@ public class LauncherShortcutActivity extends Activity {
 
         // Add the shortcut regardless of whether it was previously added in case the locale has
         // changed since the last addition.
-        // TODO(https://crbug.com/1068847): Investigate better locale change handling.
+        // TODO(crbug.com/40125673): Investigate better locale change handling.
         if (incognitoEnabled) {
             boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 

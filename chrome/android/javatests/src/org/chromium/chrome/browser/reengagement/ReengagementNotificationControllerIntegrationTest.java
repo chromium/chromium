@@ -384,7 +384,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     private static void setReengagementNotificationEnabled(boolean enabled) {
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, enabled);
-        // TODO(crbug.com/1111584): Remove these overrides when FeatureList#isInitialized() works
+        // TODO(crbug.com/40142646): Remove these overrides when FeatureList#isInitialized() works
         // as expected with test values.
         features.put(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
         FeatureList.setTestFeatures(features);

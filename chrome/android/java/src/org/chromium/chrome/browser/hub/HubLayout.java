@@ -117,7 +117,7 @@ public class HubLayout extends Layout implements HubLayoutController {
         // but in that case it is the animated object and is opaque. Here we will animate the
         // HubContainerView instead and just animate and just use this view as a transparent
         // container for z-indexing and geometry.
-        // TODO(crbug/1499984): Consider removing the tab_switcher_view_holder post launch.
+        // TODO(crbug.com/40288013): Consider removing the tab_switcher_view_holder post launch.
         mRootView = dependencyHolder.getHubRootView();
         mRootView.setBackgroundColor(Color.TRANSPARENT);
 
@@ -225,7 +225,8 @@ public class HubLayout extends Layout implements HubLayoutController {
                 bitmapPromise.fulfill(null);
             }
 
-            // TODO(crbug/1516760): This is a stop gap solution that will work until we have more
+            // TODO(crbug.com/41489743): This is a stop gap solution that will work until we have
+            // more
             // panes. While we only have tab switcher panes, selecting the pane based on the
             // currently selected tab model is correct. However, if we have more panes we likely
             // want to be able to "select" a pane to focus as part of the HubLayout show transition.
@@ -266,7 +267,7 @@ public class HubLayout extends Layout implements HubLayoutController {
             mRootView.setVisibility(View.VISIBLE);
             containerView.setVisibility(View.INVISIBLE);
             LayoutParams params = (LayoutParams) containerView.getLayoutParams();
-            // TODO(crbug/1523037): Change this to an assert and fix any broken tests.
+            // TODO(crbug.com/41495991): Change this to an assert and fix any broken tests.
             if (params == null) {
                 params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             }
@@ -485,7 +486,8 @@ public class HubLayout extends Layout implements HubLayoutController {
         int leftOffset = finalRect.left;
         finalRect.offset(-leftOffset, -containerViewRect.top);
 
-        // TODO(crbug/1492207): Supply this from HubController so it can look like the animation
+        // TODO(crbug.com/40285429): Supply this from HubController so it can look like the
+        // animation
         // originated from wherever on the Hub was clicked. This defaults to the top left of the
         // pane host view.
         int x = finalRect.left;

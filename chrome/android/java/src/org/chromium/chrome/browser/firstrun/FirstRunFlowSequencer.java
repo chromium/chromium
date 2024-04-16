@@ -148,11 +148,10 @@ public abstract class FirstRunFlowSequencer {
     }
 
     /**
-     * Starts determining parameters for the First Run.
-     * Once finished, calls onFlowIsKnown().
+     * Starts determining parameters for the First Run. Once finished, calls onFlowIsKnown().
      *
-     * TODO(https://crbug.com/1320487): Add Supplier to AccountManagerFacadeProvider and remove this
-     *                                  method.
+     * <p>TODO(crbug.com/40223527): Add Supplier to AccountManagerFacadeProvider and remove this
+     * method.
      */
     void start() {
         AccountManagerFacadeProvider.getInstance()

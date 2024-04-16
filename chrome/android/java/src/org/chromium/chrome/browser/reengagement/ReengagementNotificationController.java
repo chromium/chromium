@@ -32,7 +32,7 @@ import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Controller to manage when and how we show re-engagement notifications to users.
- * TODO(crbug.com/1107536): Modularize this file.
+ * TODO(crbug.com/40140907): Modularize this file.
  */
 public class ReengagementNotificationController {
     /** An {@link Intent} action to open Chrome to the NTP. */

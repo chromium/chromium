@@ -88,7 +88,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         BookmarkUiPrefs bookmarkUiPrefs =
                 new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
-        // TODO(crbug.com/1472832): Consider initializing this in #onCreateOptionsMenu to avoid the
+        // TODO(crbug.com/40278746): Consider initializing this in #onCreateOptionsMenu to avoid the
         // possibility that the menu is null when the first parent is set.
         mCoordinator =
                 new BookmarkFolderPickerCoordinator(

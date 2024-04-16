@@ -490,14 +490,15 @@ public class ChromeTabCreator extends TabCreator {
      * Opens the specified URL into a tab, potentially reusing a tab. Typically if a user opens
      * several link from the same application, we reuse the same tab so as to not open too many
      * tabs.
+     *
      * @param url the URL to open
      * @param appId the ID of the application that triggered that URL navigation.
      * @param forceNewTab whether the URL should be opened in a new tab. If false, an existing tab
-     *                    already opened by the same app will be reused.
+     *     already opened by the same app will be reused.
      * @param intent the source of url if it isn't null.
      * @return the tab the URL was opened in, could be a new tab or a reused one.
      */
-    // TODO(crbug.com/1081924): Clean up the launches from SearchActivity/Chrome.
+    // TODO(crbug.com/40691614): Clean up the launches from SearchActivity/Chrome.
     public Tab launchUrlFromExternalApp(
             LoadUrlParams loadUrlParams, String appId, boolean forceNewTab, Intent intent) {
         assert !mIncognito;
@@ -580,7 +581,7 @@ public class ChromeTabCreator extends TabCreator {
                                     mNativeWindow,
                                     createDefaultTabDelegateFactory()),
                             params.getFinalizeCallback());
-            // TODO(crbug.com/1108562): Photos/videos viewed in custom tabs aren't displayed
+            // TODO(crbug.com/40141359): Photos/videos viewed in custom tabs aren't displayed
             // properly after reparenting. This is a temporary fix for RBS issue crbug.com/1105810,
             // investigate and fix the root cause.
             if (tab.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) {

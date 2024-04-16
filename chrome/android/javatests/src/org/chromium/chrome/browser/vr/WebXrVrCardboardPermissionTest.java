@@ -36,7 +36,7 @@ import java.util.concurrent.Callable;
 /** End-to-end tests for various scenarios around when the permission prompt is expected. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
+// TODO(crbug.com/40756989): Remove --allow-pre-commit-input once the root cause of the
 // failures has been fixed.
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,

@@ -206,7 +206,7 @@ public final class DownloadUpdate {
 
         public Builder setOTRProfileID(@Nullable OTRProfileID otrProfileID) {
             this.mOTRProfileID = otrProfileID;
-            // TODO(crbug.com/1161132): Remove this after replacing |DownloadUpdate#isOffTheRecord|
+            // TODO(crbug.com/40162349): Remove this after replacing |DownloadUpdate#isOffTheRecord|
             // usages with |DownloadUpdate#getOTRProfileID|.
             this.mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileID);
             return this;

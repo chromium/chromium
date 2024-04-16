@@ -270,7 +270,8 @@ public class TabModelImpl extends TabModelJniBridge {
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         try {
             TraceEvent.begin("TabModelImpl.addTab");
-            // TODO(crbug/1466235): Technically this should trigger NPEs downstream. Adding out of
+            // TODO(crbug.com/40923859): Technically this should trigger NPEs downstream. Adding out
+            // of
             // an abundance of caution.
             assert tab != null : "Attempting to add a tab that is null to TabModel.";
 

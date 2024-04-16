@@ -263,7 +263,7 @@ public class TabListCoordinator
                     (holder) -> {
                         int holderItemViewType = holder.getItemViewType();
 
-                        // TODO(crbug.com/1508423): Convert this logic block to a callback.
+                        // TODO(crbug.com/40949143): Convert this logic block to a callback.
                         // If a custom message card item type is present, ensure that all attached
                         // child views are removed when the card is recycled.
                         if (holderItemViewType == UiType.CUSTOM_MESSAGE) {
@@ -709,7 +709,8 @@ public class TabListCoordinator
 
     private void registerLayoutChangeListener() {
         if (mListLayoutListener != null) {
-            // TODO(crbug/1500016): There might be a timing or race condition that LayoutListener
+            // TODO(crbug.com/40288028): There might be a timing or race condition that
+            // LayoutListener
             // has been registered while it shouldn't be with Start surface refactor is enabled.
             if (mLayoutListenerRegistered) return;
 

@@ -102,7 +102,7 @@ public class TabListEditorManager {
 
     /** Initializes the tab list editor. */
     public void initTabListEditor() {
-        // TODO(crbug.com/1504606): Permit a method of switching between selectable and closable
+        // TODO(crbug.com/40945154): Permit a method of switching between selectable and closable
         // modes (or create separate instances).
         if (mTabListEditorCoordinator == null) {
             assert mSnackbarManager != null

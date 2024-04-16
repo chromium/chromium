@@ -740,7 +740,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     private void hideSpinnerView() {
-        // TODO(crbug.com/1328555): Look into observing a view resize event to ensure the fade
+        // TODO(crbug.com/40226472): Look into observing a view resize event to ensure the fade
         // animation can always cover the transition artifact.
         if (isSpinnerVisible()) {
             mSpinnerView

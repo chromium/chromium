@@ -117,7 +117,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         mChildAccountStatusSupplier =
                 new ChildAccountStatusSupplier(accountManagerFacade, mFirstRunAppRestrictionInfo);
 
-        // TODO(crbug.com/1498708): Find the underlying issue causing the status bar not to be set
+        // TODO(crbug.com/40939710): Find the underlying issue causing the status bar not to be set
         //  during FRE, this is just a temporary visual fix.
         if (BuildInfo.getInstance().isAutomotive) {
             StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);

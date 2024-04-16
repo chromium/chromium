@@ -575,7 +575,7 @@ public class LayoutManagerImpl
             }
         }
 
-        // TODO(1100332): Once overlays are MVC, this should no longer be needed.
+        // TODO(crbug.com/40137900): Once overlays are MVC, this should no longer be needed.
         for (int i = 0; i < mSceneOverlays.size(); i++) {
             mSceneOverlays.get(i).updateOverlay(timeMs, dtMs);
         }
@@ -1123,7 +1123,8 @@ public class LayoutManagerImpl
      * @return The layout implementation for the provided type.
      */
     protected Layout getLayoutForType(@LayoutType int layoutType) {
-        // TODO(1248073): Register these types and look them up in a map rather than overriding this
+        // TODO(crbug.com/40790324): Register these types and look them up in a map rather than
+        // overriding this
         //                method in multiple places.
         // Use the static layout by default or if explicitly specified.
         if (layoutType == LayoutType.NONE || layoutType == LayoutType.BROWSING) {

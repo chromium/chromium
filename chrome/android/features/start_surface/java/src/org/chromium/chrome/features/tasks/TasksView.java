@@ -188,7 +188,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
                                 : ChromeColors.getSurfaceColor(
                                         mContext, R.dimen.toolbar_text_box_elevation);
                 shapeDrawable.mutate();
-                // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level
+                // TODO(crbug.com/40193794): Change back to #setTint once our min API level
                 // is 23.
                 shapeDrawable.setColorFilter(searchBackgroundColor, PorterDuff.Mode.SRC_IN);
             }
@@ -437,7 +437,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
     }
 
     private void forceHeaderScrollable() {
-        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
+        // TODO(crbug.com/40198436): Find out why scrolling was broken after
         // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();

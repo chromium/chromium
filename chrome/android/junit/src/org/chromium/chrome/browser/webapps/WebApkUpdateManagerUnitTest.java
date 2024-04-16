@@ -1174,8 +1174,7 @@ public class WebApkUpdateManagerUnitTest {
 
     /**
      * Test that an upgrade is not requested when the Web Manifest did not change and the Web
-     * Manifest scope is empty.
-     * TODO(crbug.com/1306225): Re-enable test.
+     * Manifest scope is empty. TODO(crbug.com/40827678): Re-enable test.
      */
     @Ignore
     @Test

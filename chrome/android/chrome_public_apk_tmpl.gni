@@ -335,7 +335,7 @@ template("chrome_common_apk_or_module_tmpl") {
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
 
     if (!is_java_debug) {
-      # TODO(crbug.com/993340): Update test goldens with webp versions of images.
+      # TODO(crbug.com/41475795): Update test goldens with webp versions of images.
       if (!_is_test) {
         png_to_webp = true
       }

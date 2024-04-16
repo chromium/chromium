@@ -47,7 +47,7 @@ import org.chromium.ui.util.ColorUtils;
 /**
  * Maintains the status bar color for a {@link Window}.
  *
- * <p>TODO(crbug.com/1450945): Prevent initialization of StatusBarColorController for automotive.
+ * <p>TODO(crbug.com/40915553): Prevent initialization of StatusBarColorController for automotive.
  */
 public class StatusBarColorController
         implements DestroyObserver,

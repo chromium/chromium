@@ -144,7 +144,7 @@ public class AccountBookmarkTest {
     }
 
     private void checkTopLevelAccountFoldersDisplayed() {
-        // TODO(crbug.com/1510547): This is currently broken because the account reading list
+        // TODO(crbug.com/41483140): This is currently broken because the account reading list
         // folder doesn't show up without a restart. This should be updated once that folder is
         // available.
         checkToolbarTitleMatches("Bookmarks");

@@ -192,13 +192,12 @@ class RequestThrottler {
     /**
      * Loads the SharedPreferences in the background.
      *
-     * SharedPreferences#edit() blocks until the preferences are loaded from disk. This results in a
-     * StrictMode violation as this may be called from the UI thread. This loads the preferences in
-     * the background to hopefully avoid the violation (if the next edit() call happens once the
-     * preferences are loaded).
-     *
+     * <p>SharedPreferences#edit() blocks until the preferences are loaded from disk. This results
+     * in a StrictMode violation as this may be called from the UI thread. This loads the
+     * preferences in the background to hopefully avoid the violation (if the next edit() call
+     * happens once the preferences are loaded).
      */
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("CommitPrefEdits")
     static void loadInBackground() {
         boolean alreadyDone = !sAccessedSharedPreferences.compareAndSet(false, true);

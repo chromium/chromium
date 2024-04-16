@@ -117,7 +117,7 @@ public class StatusIndicatorCoordinator {
             @ColorInt int backgroundColor,
             @ColorInt int textColor,
             @ColorInt int iconTint) {
-        // TODO(crbug.com/1081471): We should make sure #show, #hide, and #updateContent can't be
+        // TODO(crbug.com/40130539): We should make sure #show, #hide, and #updateContent can't be
         // called at the wrong time, or the call is ignored with a way to communicate this to the
         // caller, e.g. returning a boolean.
         if (mIsShowing) return;

@@ -338,7 +338,7 @@ public class FirstRunIntegrationTest {
                     Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
                     mAccountsPromise = new Promise<>();
                     // getCoreAccountInfos() is called by AccountTrackerService.seedAccounts();
-                    // TODO(https://crbug.com/1336704): Remove when account manager facade initiates
+                    // TODO(crbug.com/40228999): Remove when account manager facade initiates
                     //  seeding.
                     Mockito.when(mAccountManagerFacade.getCoreAccountInfos())
                             .thenReturn(new Promise<>());
@@ -407,10 +407,10 @@ public class FirstRunIntegrationTest {
         CriteriaHelper.pollInstrumentationThread(chromeLauncherActivity::isFinishing);
     }
 
-    // TODO(https://crbug.com/1240516): Add test cases for the new Welcome screen that includes the
+    // TODO(crbug.com/40785454): Add test cases for the new Welcome screen that includes the
     // Sign-in promo once the sign-in components can be disabled by policy.
 
-    // TODO(https://crbug.com/1254470): Add test cases for ToS page disabled by policy after the
+    // TODO(crbug.com/40794359): Add test cases for ToS page disabled by policy after the
     // user accepted ToS and aborted first run.
 
     @Test
@@ -676,7 +676,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    // TODO(https://crbug.com/1111490): Change this test case when policy can handle cases when ToS
+    // TODO(crbug.com/40142602): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
     public void testSkipTosPage_WithCctPolicy() throws Exception {
         skipTosDialogViaPolicy();

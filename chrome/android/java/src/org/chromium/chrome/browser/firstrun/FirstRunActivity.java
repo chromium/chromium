@@ -59,7 +59,8 @@ import java.util.function.BooleanSupplier;
 public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPageDelegate {
     /**
      * Alerted about various events when FirstRunActivity performs them.
-     * TODO(crbug.com/1114319): Rework and use a better testing setup.
+     * TODO(crbug.com/40710744): Rework and use a better testing setup.
+     * Rework and use a better testing setup.
      */
     public interface FirstRunActivityObserver {
         /** See {@link #createPostNativeAndPoliciesPageSequence}. */

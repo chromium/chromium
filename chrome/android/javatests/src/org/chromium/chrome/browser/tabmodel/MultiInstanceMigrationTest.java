@@ -73,7 +73,7 @@ public class MultiInstanceMigrationTest {
         // Cleanup filesystem changes, shared preference changes and reset sMigrationTask
         // between tests - otherwise changes to these in one test will interfere with the other
         // tests.
-        // TODO(crbug.com/1086663) Don't persist changes to SharedPreferences.
+        // TODO(crbug.com/40694404) Don't persist changes to SharedPreferences.
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);

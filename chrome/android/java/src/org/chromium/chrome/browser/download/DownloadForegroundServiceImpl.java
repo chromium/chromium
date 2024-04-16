@@ -54,10 +54,11 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
 
     /**
      * Start the foreground service with this given context.
+     *
      * @param context The context used to start service.
      */
     public static void startDownloadForegroundService(Context context) {
-        // TODO(crbug.com/770389): Grab a WakeLock here until the service has started.
+        // TODO(crbug.com/40542562): Grab a WakeLock here until the service has started.
         ForegroundServiceUtils.getInstance()
                 .startForegroundService(new Intent(context, DownloadForegroundService.class));
     }

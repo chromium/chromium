@@ -40,7 +40,7 @@ public class DividerLineMenuItemViewBinder implements CustomViewBinder {
         return CustomViewBinder.NOT_HANDLED;
     }
 
-    // TODO(crbug.com/1183227): create a PropertyModel only for divider line.
+    // TODO(crbug.com/40171104): create a PropertyModel only for divider line.
     @Override
     public void bind(PropertyModel model, View view, PropertyKey key) {
         AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);

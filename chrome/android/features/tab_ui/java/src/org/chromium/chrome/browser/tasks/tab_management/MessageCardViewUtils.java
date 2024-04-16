@@ -103,7 +103,7 @@ public class MessageCardViewUtils {
     /**
      * Set tint for close button.
      *
-     * TODO(crbug.com/1139194): Set action button ripple color.
+     * <p>TODO(crbug.com/40153325): Set action button ripple color.
      *
      * @param closeButton The close button image view whose tint we want to set.
      * @param isIncognito Whether the tint is used for incognito mode.

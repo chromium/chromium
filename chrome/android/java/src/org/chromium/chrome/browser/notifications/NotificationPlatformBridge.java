@@ -94,7 +94,7 @@ public class NotificationPlatformBridge {
 
     // The duration after which the "provisionally unsubscribed" service notification is auto-closed
     // and the permission revocation commits.
-    // TODO(crbug.com/1521424): Fine tune this duration, and possibly turn it off for A11Y users.
+    // TODO(crbug.com/41494393): Fine tune this duration, and possibly turn it off for A11Y users.
     private static final long PROVISIONAL_UNSUBSCRIBE_DURATION_MS = 10 * 1000;
 
     private static NotificationPlatformBridge sInstance;
@@ -503,7 +503,7 @@ public class NotificationPlatformBridge {
         }
 
         // This code parses the notification id that was generated in notification_id_generator.cc
-        // TODO(https://crbug.com/801164): Extract this to a separate class.
+        // TODO(crbug.com/41364310): Extract this to a separate class.
         String[] parts = tag.split(NotificationConstants.NOTIFICATION_TAG_SEPARATOR);
         assert parts.length >= 3;
         try {
@@ -849,7 +849,7 @@ public class NotificationPlatformBridge {
                                         origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
 
         if (shouldSetChannelId(forWebApk)) {
-            // TODO(crbug.com/773738): Channel ID should be retrieved from cache in native and
+            // TODO(crbug.com/40544272): Channel ID should be retrieved from cache in native and
             // passed through to here with other notification parameters.
             String channelId = SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
             notificationBuilder.setChannelId(channelId);
@@ -861,7 +861,7 @@ public class NotificationPlatformBridge {
         // notification will still "inherit" the original timeout. There is no way to specify "no
         // timeout" other than specifying a sufficiently long timeout instead (e.g. one week).
         //
-        // TODO(crbug.com/1521437): Find a more elegant solution to this problem.
+        // TODO(crbug.com/41494406): Find a more elegant solution to this problem.
         if (mNotificationIdsWithStaleTimeouts.contains(identifyingAttributes.notificationId)) {
             notificationBuilder.setTimeoutAfter(/* ms= */ 1000 * 3600 * 24 * 7);
             mNotificationIdsWithStaleTimeouts.remove(identifyingAttributes.notificationId);
@@ -940,7 +940,7 @@ public class NotificationPlatformBridge {
             notificationBuilder.setChannelId(channelId);
         }
 
-        // TODO(crbug.com/1521438): We are setting quite a few uncommon attributes here, consider
+        // TODO(crbug.com/41494407): We are setting quite a few uncommon attributes here, consider
         // just not using NotificationBuilderBase.
         notificationBuilder.setSuppressShowingLargeIcon(true);
         notificationBuilder.setTimeoutAfter(PROVISIONAL_UNSUBSCRIBE_DURATION_MS);
@@ -1030,7 +1030,7 @@ public class NotificationPlatformBridge {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
 
-        // TODO(crbug.com/1519634): Double check if this icon is actually used on any Android
+        // TODO(crbug.com/41492613): Double check if this icon is actually used on any Android
         // versions and/or flavors.
         notificationBuilder.addSettingsAction(
                 /* iconId= */ 0,

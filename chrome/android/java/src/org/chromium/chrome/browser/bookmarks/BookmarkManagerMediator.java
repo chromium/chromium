@@ -906,7 +906,7 @@ class BookmarkManagerMediator
             mStateStack.pop();
         }
 
-        // TODO(https://crbug.com/1467352): Delete this empty search mechanism.
+        // TODO(crbug.com/40276748): Delete this empty search mechanism.
         // In the old UI, when the search menu item is pressed, and the search box initially
         // appears, there is no query string yet. And the old folder bookmarks should still show
         // until text is typed into the search box. After this point, empty query strings should
@@ -1346,7 +1346,7 @@ class BookmarkManagerMediator
                 bookmarkItem.isEditable() ? ImageVisibility.MENU : ImageVisibility.NONE);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.POPUP_LISTENER, this::onBookmarkItemMenuOpened);
-        // TODO(crbug.com/1442044): Investigate caching ModelList for the menu.
+        // TODO(crbug.com/40266762): Investigate caching ModelList for the menu.
         propertyModel.set(
                 ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
@@ -1644,7 +1644,8 @@ class BookmarkManagerMediator
 
         for (int i = startIndex; i <= endIndex; i++) {
             // Section headers may be embedded in the list for reading list.
-            // TODO(crbug.com/1473108): Consider using RecyclerView decorations for section headers.
+            // TODO(crbug.com/40278854): Consider using RecyclerView decorations for section
+            // headers.
             if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
             PropertyModel model = mModelList.get(i).model;
 
@@ -1662,7 +1663,7 @@ class BookmarkManagerMediator
 
     // The shopping filter should only be visible if the shopping feature is enabled and
     // there's at least one price-tracked bookmark available.
-    // TODO(crbug.com/1476104): Make this method private when price-tracking utils are mocked
+    // TODO(crbug.com/40279892): Make this method private when price-tracking utils are mocked
     // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {

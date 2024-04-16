@@ -337,7 +337,7 @@ public class BookmarkUtils {
             @NonNull BookmarkModel bookmarkModel,
             @NonNull List<Tab> tabList,
             @NonNull SnackbarManager snackbarManager) {
-        // TODO(crbug.com/1385914): Refactor the bookmark folder select activity to allow for the
+        // TODO(crbug.com/40879467): Refactor the bookmark folder select activity to allow for the
         // view to display in a dialog implementation approach.
         assert bookmarkModel != null;
 
@@ -717,7 +717,7 @@ public class BookmarkUtils {
      * @param type The bookmark type of the folder.
      * @return The tint used on the bookmark folder icon.
      */
-    // TODO(crbug.com/1483510): This function isn't used in the new bookmarks manager, remove it
+    // TODO(crbug.com/40282037): This function isn't used in the new bookmarks manager, remove it
     // after android-improved-bookmarks is the default.
     public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()

@@ -121,7 +121,7 @@ public class SyncConsentFragmentTest {
     private static final int RENDER_REVISION = 2;
     private static final String RENDER_DESCRIPTION = "Change button style";
     private static final String NEW_ACCOUNT_NAME = "new.account@gmail.com";
-    // TODO(https://crbug.com/1414078): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
+    // TODO(crbug.com/40255946): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
     // here.
     private static final AccountCapabilities MINOR_MODE_NOT_REQUIRED =
             new AccountCapabilities(

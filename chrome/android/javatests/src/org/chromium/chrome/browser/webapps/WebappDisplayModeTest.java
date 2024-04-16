@@ -72,7 +72,7 @@ public class WebappDisplayModeTest {
     @Test
     @MediumTest
     @Feature({"Webapps"})
-    // TODO(crbug.com/1380463): Re-enable once test can be ran locally.
+    // TODO(crbug.com/40244717): Re-enable once test can be ran locally.
     @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     public void testFullScreenInFullscreen() {
         WebappActivity activity = startActivity(DisplayMode.FULLSCREEN, "fullscreen_on_click");

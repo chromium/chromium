@@ -192,7 +192,7 @@ public class TabGroupUiCoordinator
                                     mToolbarView, mTabStripCoordinator.getContainerView()),
                             TabGroupUiViewBinder::bind);
 
-            // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
+            // TODO(crbug.com/40631286): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
             if (mScrimCoordinator != null) {
                 mTabGridDialogControllerSupplier =
@@ -296,7 +296,7 @@ public class TabGroupUiCoordinator
     /** Destroy any members that needs clean up. */
     @Override
     public void destroy() {
-        // TODO(crbug.com/1208462): Add tests for destroy conditions.
+        // TODO(crbug.com/40766050): Add tests for destroy conditions.
         // Early return if the component hasn't initialized yet.
         if (mActivity == null) return;
 

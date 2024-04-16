@@ -583,7 +583,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             Intent intent, Bundle savedInstanceState) {
         // Detect if incoming intent is a result of Chrome recreating itself. For now, restrict this
         // path to reparenting to ensure the launching logic isn't disrupted.
-        // TODO(crbug.com/1065491): Unlock this codepath for all incoming intents once it's
+        // TODO(crbug.com/40681858): Unlock this codepath for all incoming intents once it's
         // confirmed working and stable.
         if (savedInstanceState != null
                 && AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()) {
@@ -798,7 +798,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContentForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            // TODO(crbug/1484592): Post Start Surface Refactor this now only creates Start Surface.
+            // TODO(crbug.com/40932816): Post Start Surface Refactor this now only creates Start
+            // Surface.
             // We should inline createStartSurface() (if enabled) once the refactor is launched.
             createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
 
@@ -1093,7 +1094,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             null,
                             showStartSurfaceSupplier);
 
-            // TODO(https://crbug.com/1306904): Fix this assert which is tripping on unrelated
+            // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
             // assert !(mOverviewModeController != null
             //         && mOverviewModeController.overviewVisible());
@@ -1169,7 +1170,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         TaskTraits.UI_DEFAULT,
                         mCallbackController.makeCancelable(this::initializeCompositorContent));
             } else {
-                // TODO(crbug.com/1344639): Enable split compositor task on tablets.
+                // TODO(crbug.com/40853081): Enable split compositor task on tablets.
                 initializeCompositorContent();
             }
 
@@ -2156,7 +2157,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // Activity.onCreate() to avoid recording navigation delays when they require user input to
         // proceed. Having an uninitialized native library has been taken as a sign of starting
         // Chrome with an immediate navigation without user input.
-        // TODO(crbug.com/1471136): Native library initialization was moved to another thread, and
+        // TODO(crbug.com/40926074): Native library initialization was moved to another thread, and
         //  it now proceeds faster, making the metrics think that the start is not cold enough.
         //  To cover more startup cases change the heuristic detecting cold startup that happens
         //  without user interaction.

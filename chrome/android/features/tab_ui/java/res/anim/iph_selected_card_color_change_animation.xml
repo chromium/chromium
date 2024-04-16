@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:ordering="sequentially">
-    <!--TODO(crbug.com/1001666): The fillColor animation is not smooth on certain versions. Add real
+    <!--TODO(crbug.com/40646270): The fillColor animation is not smooth on certain versions. Add real
      color transition animation when figuring out solution.-->
     <objectAnimator
         android:propertyName="fillColor"

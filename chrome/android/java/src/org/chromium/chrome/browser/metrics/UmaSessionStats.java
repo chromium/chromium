@@ -233,7 +233,7 @@ public class UmaSessionStats {
     }
 
     public static void registerExternalExperiment(String fallbackStudyName, int[] experimentIds) {
-        // TODO(https://crbug.com/1111941): Remove this method once all callers have moved onto
+        // TODO(crbug.com/40142802): Remove this method once all callers have moved onto
         // the overload below.
         registerExternalExperiment(fallbackStudyName, experimentIds, true);
     }

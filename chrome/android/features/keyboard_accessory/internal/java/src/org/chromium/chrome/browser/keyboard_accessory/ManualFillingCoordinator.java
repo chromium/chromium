@@ -56,7 +56,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         if (barStub == null || sheetStub == null || context == null) {
             return; // The manual filling isn't needed.
         }
-        // TODO(crbug.com/1448820): Initialize in the xml resources file.
+        // TODO(crbug.com/40269514): Initialize in the xml resources file.
         barStub.setLayoutResource(R.layout.keyboard_accessory);
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);

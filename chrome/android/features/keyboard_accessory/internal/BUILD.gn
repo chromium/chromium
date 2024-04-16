@@ -24,7 +24,7 @@ android_library("internal_java") {
     "//components/favicon/android:java",
     "//third_party/jni_zero:jni_zero_java",
 
-    # TODO(crbug/951695): Cyclic dependency. Depend on public only when ready.
+    # TODO(crbug.com/41452318): Cyclic dependency. Depend on public only when ready.
     "//chrome/android:chrome_java",
     "//chrome/android/features/keyboard_accessory/public:public_java",
     "//chrome/browser/autofill/android:java",

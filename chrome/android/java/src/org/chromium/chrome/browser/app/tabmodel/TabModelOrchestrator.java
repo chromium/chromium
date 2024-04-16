@@ -76,7 +76,7 @@ public abstract class TabModelOrchestrator {
             return;
         }
 
-        // TODO(crbug.com/1169408): Set the members to null and mTabModelsInitialized to false.
+        // TODO(crbug.com/40743848): Set the members to null and mTabModelsInitialized to false.
         // Right now, it breaks destruction of VrShell, which relies on using TabModel after
         // its destruction.
 

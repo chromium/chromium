@@ -313,7 +313,7 @@ public class AutoFetchNotifier {
         Context context = ContextUtils.getApplicationContext();
         // Create an intent to handle tapping the notification.
         Intent clickIntent = new Intent(context, CompleteNotificationReceiver.class);
-        // TODO(crbug.com/937581): We're using the final URL here so that redirects can't break
+        // TODO(crbug.com/41444557): We're using the final URL here so that redirects can't break
         // the page load. This will result in opening a new tab if there was a redirect (because
         // the URL doesn't match the old dino page), which is not ideal.
         clickIntent.putExtra(EXTRA_URL, finalUrl);

@@ -567,7 +567,7 @@ public class CustomTabActivityAppMenuTest {
      * Test whether the custom menu is correctly shown and clicking it sends the right {@link
      * PendingIntent}.
      */
-    // TODO(crbug.com/1420991): Re-enable this test after fixing/diagnosing flakiness.
+    // TODO(crbug.com/40896028): Re-enable this test after fixing/diagnosing flakiness.
     @Test
     @SmallTest
     @DisabledTest(message = "https://crbug.com/1420991")

@@ -1368,7 +1368,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private void reportTabletAnimationPerf(boolean translatingUp) {
-        // TODO(crbug.com/1304926): Record metrics for tablet animations.
+        // TODO(crbug.com/40826761): Record metrics for tablet animations.
     }
 
     @Override

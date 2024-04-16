@@ -70,7 +70,7 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <!-- TODO(https://crbug.com/1421346): Remove this tools:ignore attribute once it's no longer necessary. -->
+    <!-- TODO(crbug.com/40259231): Remove this tools:ignore attribute once it's no longer necessary. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="android.permission.RUN_USER_INITIATED_JOBS" />
@@ -170,7 +170,7 @@ by a child template that "extends" this file.
         Official builds (stable, beta, dev, canary) handle this differently,
         this setting is for locally deployed ToT builds only.
 
-        TODO(https://crbug.com/1122210): remove if this is replaced by an
+        TODO(crbug.com/40715928): remove if this is replaced by an
         alternate mechanism.
       -->
       <queries>
@@ -566,7 +566,7 @@ by a child template that "extends" this file.
         </activity>
 
         <!--
-            TODO(crbug.com/1093292): investigate why
+            TODO(crbug.com/40698801): investigate why
             @android:style/Theme.NoDisplay can't be used here.
         -->
         <activity android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"

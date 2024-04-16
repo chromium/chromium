@@ -187,5 +187,5 @@ public final class ShareButtonControllerTest {
         }
     }
 
-    // TODO(crbug/1036023) Add a test that checks that expected intents are fired.
+    // TODO(crbug.com/40112496) Add a test that checks that expected intents are fired.
 }

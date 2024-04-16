@@ -19,8 +19,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
  * A UI coordinator that manages the system status bar and bottom navigation bar for
  * ChromeTabbedActivity.
  *
- * TODO(https://crbug.com/943371): Create a base SystemUiCoordinator to own the
- *     StatusBarColorController, and have this class extend that one.
+ * <p>TODO(crbug.com/40618996): Create a base SystemUiCoordinator to own the
+ * StatusBarColorController, and have this class extend that one.
  */
 public class TabbedSystemUiCoordinator {
     private @Nullable TabbedNavigationBarColorController mNavigationBarColorController;

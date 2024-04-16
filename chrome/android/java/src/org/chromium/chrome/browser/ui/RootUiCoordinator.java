@@ -867,7 +867,8 @@ public class RootUiCoordinator
                         mWindowAndroid, mActivity.findViewById(R.id.capture_overlay));
 
         // Ensure the bottom sheet's container has been laid out at least once before hiding it.
-        // TODO(1196804): This should be owned by the BottomSheetControllerImpl, but there are some
+        // TODO(crbug.com/40759801): This should be owned by the BottomSheetControllerImpl, but
+        // there are some
         //                complexities around the order of events resulting from waiting for layout.
         ViewGroup sheetContainer = mActivity.findViewById(R.id.sheet_container);
         if (!sheetContainer.isLaidOut()) {
@@ -924,7 +925,7 @@ public class RootUiCoordinator
                         getPrimaryDisplaySizeInInches(),
                         ProfileManager.getLastUsedRegularProfile(),
                         mActivity))) {
-            // TODO(crbug.com/1350274): Remove this explicit load when this bug is addressed.
+            // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
                 mActivityTabProvider
                         .get()
@@ -982,7 +983,7 @@ public class RootUiCoordinator
     }
 
     private void initMessagesInfra() {
-        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
+        // TODO(crbug.com/40753426): Move feature flag and parameters into a separate class in
         MessagesResourceMapperInitializer.init();
         MessageContainer container = mActivity.findViewById(R.id.message_container);
         mMessageContainerCoordinator =
@@ -1561,7 +1562,8 @@ public class RootUiCoordinator
                             // Attempt to show the promo sheet for the restore tabs feature.
                             // Do not attempt to show the promo if in incognito mode.
                             if (!mTabModelSelectorSupplier.get().isIncognitoSelected()) {
-                                // TODO(1458646): Add support for triggering in incognito mode.
+                                // TODO(crbug.com/40274033): Add support for triggering in incognito
+                                // mode.
                                 attemptToShowRestoreTabsPromo();
                             }
                         }
@@ -1727,7 +1729,8 @@ public class RootUiCoordinator
      * until content is requested in the sheet.
      */
     private void initializeBottomSheetController() {
-        // TODO(1093999): Componentize SnackbarManager so BottomSheetController can own this.
+        // TODO(crbug.com/40135254): Componentize SnackbarManager so BottomSheetController can own
+        // this.
         Callback<View> sheetInitializedCallback =
                 (view) -> {
                     mBottomSheetSnackbarManager =
@@ -1749,7 +1752,8 @@ public class RootUiCoordinator
                     return null;
                 };
 
-        // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
+        // TODO(crbug.com/40135255): Initialize after inflation so we don't need to pass in view
+        // suppliers.
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> mScrimCoordinator,
@@ -1862,8 +1866,10 @@ public class RootUiCoordinator
         return mBrowserControlsManager;
     }
 
-    /** @return The {@link ScrimCoordinator} to control activity's primary scrim. */
-    // TODO(crbug.com/1064140): This method is used to pass ScrimCoordinator to StartSurface. We
+    /**
+     * @return The {@link ScrimCoordinator} to control activity's primary scrim.
+     */
+    // TODO(crbug.com/40123584): This method is used to pass ScrimCoordinator to StartSurface. We
     // should be able to create StartSurface in this class so that we don't need to expose this
     // getter.
     public ScrimCoordinator getScrimCoordinator() {

@@ -141,7 +141,7 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement View.OnLayoutChangeListener:
     // This is the Tab View's layout change listener, invoked in response to phone rotation.
-    // TODO(crbug.com/1057825): It should listen to the BottomSheet container's layout change
+    // TODO(crbug.com/40120866): It should listen to the BottomSheet container's layout change
     // instead of the Tab View layout change for better encapsulation.
     @Override
     public void onLayoutChange(
@@ -249,7 +249,7 @@ import java.lang.annotation.RetentionPolicy;
                 // No need to notify ServiceWorkerPaymentAppBridge when merchant aborts the
                 // payment request (and thus {@link ChromePaymentRequestService} closes
                 // PaymentHandlerMediator). "OTHERS" category includes this cases.
-                // TODO(crbug.com/1091957): we should explicitly list merchant aborting payment
+                // TODO(crbug.com/40134410): we should explicitly list merchant aborting payment
                 // request as a {@link CloseReason}, renames "OTHERS" as "UNKNOWN" and asserts
                 // that PaymentHandler wouldn't be closed for unknown reason.
         }

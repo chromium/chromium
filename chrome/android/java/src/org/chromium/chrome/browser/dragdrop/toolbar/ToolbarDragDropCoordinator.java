@@ -56,7 +56,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
         int NUM_ENTRIES = 5;
     }
 
-    // TODO(crbug.com/1469224): Swap error message to a translated string.
+    // TODO(crbug.com/40277406): Swap error message to a translated string.
     private static final String ERROR_MESSAGE = "Unable to handle drop";
     private AutocompleteDelegate mAutocompleteDelegate;
     private PropertyModelChangeProcessor mModelChangeProcessor;
@@ -146,7 +146,7 @@ public class ToolbarDragDropCoordinator implements OnDragListener {
                 return;
             }
             String[] postData = urlService.getImageUrlAndPostContent();
-            // TODO(crbug.com/1473127): Pass in correct imageByteArray to AutocompleteDelegate
+            // TODO(crbug.com/40278861): Pass in correct imageByteArray to AutocompleteDelegate
             byte[] imageByteArray = new byte[0];
             mAutocompleteDelegate.loadUrl(
                     new OmniboxLoadUrlParams.Builder(postData[0], PageTransition.GENERATED)

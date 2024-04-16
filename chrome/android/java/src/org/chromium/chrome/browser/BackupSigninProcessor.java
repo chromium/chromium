@@ -26,9 +26,9 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
  * Helps sign in and enable sync in the background if appropriate after a backup restore.
- * Usage:
- * BackupSigninProcessor.start(activity).
- * TODO(crbug.com/1318463): Consider signing in immediately instead of lazily.
+ * Usage: BackupSigninProcessor.start(activity).
+ * TODO(crbug.com/40835404): Consider signing in immediately instead of lazily.
+ * instead of lazily.
  */
 public final class BackupSigninProcessor {
     /**
@@ -40,7 +40,7 @@ public final class BackupSigninProcessor {
     public static void start(final Activity activity) {
         // Warning, another layer relies on SigninManager being instantiated at this moment, don't
         // move this call around.
-        // TODO(crbug.com/1336196): Delete comment above once the dependency is gone.
+        // TODO(crbug.com/40228827): Delete comment above once the dependency is gone.
         SigninManager signinManager =
                 IdentityServicesProvider.get()
                         .getSigninManager(ProfileManager.getLastUsedRegularProfile());

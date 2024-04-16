@@ -447,7 +447,7 @@ public class RecentTabsManager
             return SyncPromoState.NO_PROMO;
         }
 
-        // TODO(crbug.com/1341324): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
+        // TODO(crbug.com/40850972): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
         // be returned if mSyncService.getSelectedTypes().isEmpty(). Otherwise,
         // LegacySyncPromoView incorrectly displays a promo with string
         // R.string.ntp_recent_tabs_sync_promo_instructions.

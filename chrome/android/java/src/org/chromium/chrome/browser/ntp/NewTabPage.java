@@ -1214,8 +1214,9 @@ public class NewTabPage
 
     /**
      * Shows the home surface UI on this NTP.
-     * TODO(crbug.com/1430906): Investigate better solution to show Home surface UI on NTP upon
+     * TODO(crbug.com/40263286): Investigate better solution to show Home surface UI on NTP upon
      * creation.
+     * to show Home surface UI on NTP upon creation.
      */
     public void showHomeSurfaceUi(Tab mostRecentTab) {
         if (mSingleTabSwitcherCoordinator == null) {

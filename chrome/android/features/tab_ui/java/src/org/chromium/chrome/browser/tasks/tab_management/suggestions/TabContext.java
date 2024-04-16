@@ -184,7 +184,7 @@ public class TabContext {
 
             assert currentTab != null : "currentTab should not be null";
 
-            // TODO(crbug.com/1146320): Investigate the NPE.
+            // TODO(crbug.com/40729994): Investigate the NPE.
             if (currentTab == null) continue;
 
             List<Tab> relatedTabs = tabModelFilter.getRelatedTabList(currentTab.getId());

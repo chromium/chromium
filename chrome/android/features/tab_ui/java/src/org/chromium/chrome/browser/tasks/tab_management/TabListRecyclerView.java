@@ -311,7 +311,7 @@ class TabListRecyclerView extends RecyclerView
                             unregisterDynamicView();
                             mDynamicView.dropCachedBitmap();
                         }
-                        // TODO(crbug.com/972157): remove this band-aid after we know why GTS is
+                        // TODO(crbug.com/40631247): remove this band-aid after we know why GTS is
                         // invisible.
                         if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
                             ViewUtils.requestLayout(
@@ -422,7 +422,8 @@ class TabListRecyclerView extends RecyclerView
         // If there is no resource loader it isn't necessary to create a dynamic view.
         if (loader == null) return;
 
-        // TODO(crbug/1409886): Consider reducing capture frequency or only capturing once. There
+        // TODO(crbug.com/40254111): Consider reducing capture frequency or only capturing once.
+        // There
         // was some discussion about this in crbug/1386265. However, it was punted on due to mid-end
         // devices having difficulty producing thumbnails before the first capture to avoid the
         // transition being jarring. This is exacerbated by multi-thumbnails which need to be
@@ -705,7 +706,7 @@ class TabListRecyclerView extends RecyclerView
     }
 
     // TabGridAccessibilityHelper implementation.
-    // TODO(crbug.com/1032095): Add e2e tests for implementation below when tab grid is enabled for
+    // TODO(crbug.com/40110745): Add e2e tests for implementation below when tab grid is enabled for
     // accessibility mode.
     @Override
     @SuppressLint("NewApi")

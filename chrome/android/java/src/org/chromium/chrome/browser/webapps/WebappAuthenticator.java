@@ -49,7 +49,8 @@ public class WebappAuthenticator {
      */
     public static boolean isUrlValid(String url, byte[] mac) {
         byte[] goodMac;
-        // TODO(crbug.com/525785): Temporarily allowing disk access until more permanent fix is in.
+        // TODO(crbug.com/41198030): Temporarily allowing disk access until more permanent fix is
+        // in.
         goodMac = getMacForUrl(url);
         if (goodMac == null) {
             return false;

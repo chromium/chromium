@@ -340,7 +340,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testDialog_ZoomInZoomOut() {
-        // TODO(crbug.com/1075677): figure out a stable way to separate different stages of the
+        // TODO(crbug.com/40687819): figure out a stable way to separate different stages of the
         // animation so that we can verify the alpha and view hierarchy of the animation-related
         // views.
         AtomicReference<ViewGroup> parentViewReference = new AtomicReference<>();

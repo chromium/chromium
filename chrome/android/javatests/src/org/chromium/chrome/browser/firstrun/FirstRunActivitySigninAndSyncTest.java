@@ -94,12 +94,13 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    // TODO(https://crbug.com/1352119): Use IdentityIntegrationTestRule instead.
+    // TODO(crbug.com/40234741): Use IdentityIntegrationTestRule instead.
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeAccountManagerFacade(), null);
 
-    // TODO(crbug.com/1311260): Consider using a test rule to ensure this gets terminated correctly.
+    // TODO(crbug.com/40830950): Consider using a test rule to ensure this gets terminated
+    // correctly.
     public FirstRunActivity mFirstRunActivity;
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;

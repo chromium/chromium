@@ -80,7 +80,7 @@ public class IPHInfoBarSupportTest {
         when(mItem.getInfoBarIdentifier()).thenReturn(1);
         when(mDelegate.createStateForInfoBar(mView, 1)).thenReturn(state);
         when(infoBar.getView()).thenReturn(mView);
-        // TODO(crbug.com/782796): Clang formatted this incorrectly.
+        // TODO(crbug.com/41354193): Clang formatted this incorrectly.
         doAnswer(
                         (invocation) -> {
                             support.onDismiss();

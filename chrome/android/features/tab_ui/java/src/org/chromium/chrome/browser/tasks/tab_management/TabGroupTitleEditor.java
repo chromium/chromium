@@ -41,7 +41,7 @@ public abstract class TabGroupTitleEditor {
      * @return whether the newTitle is a match for the default string.
      */
     public boolean isDefaultTitle(String newTitle, int numRelatedTabs) {
-        // TODO(crbug/1419842): Consider broadening this check for differing numbers of related
+        // TODO(crbug.com/40895368): Consider broadening this check for differing numbers of related
         // tabs. This is difficult due to this being a translated plural string.
         return newTitle.equals(getDefaultTitle(mContext, numRelatedTabs));
     }

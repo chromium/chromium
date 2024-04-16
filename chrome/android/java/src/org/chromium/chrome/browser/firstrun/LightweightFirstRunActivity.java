@@ -33,7 +33,7 @@ import org.chromium.ui.widget.LoadingView;
 /** Lightweight FirstRunActivity. It shows ToS dialog only. */
 public class LightweightFirstRunActivity extends FirstRunActivityBase
         implements LoadingView.Observer {
-    // TODO(https://crbug.com/1148081) Clean this boolean when releasing this feature, and remove
+    // TODO(crbug.com/40156897) Clean this boolean when releasing this feature, and remove
     // @Nullable from members below.
     private static boolean sSupportSkippingTos = true;
 

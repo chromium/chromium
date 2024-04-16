@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-  <!-- TODO(crbug.com/1048859): Change to the exact style TextMessagePreference is using. -->
+  <!-- TODO(crbug.com/40672235): Change to the exact style TextMessagePreference is using. -->
   <TextView
       android:id="@+id/title"
       style="@style/PreferenceTitle"
@@ -30,7 +30,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:focusableInTouchMode="true">
 
-    <!-- TODO(crbug.com/1048863): Remove android:background for radio buttons here and below after enhancement. -->
+    <!-- TODO(crbug.com/40117411): Remove android:background for radio buttons here and below after enhancement. -->
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
         android:id="@+id/radio_button_chrome_ntp"
         android:layout_width="match_parent"

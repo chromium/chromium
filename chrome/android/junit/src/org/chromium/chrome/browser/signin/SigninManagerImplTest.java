@@ -781,7 +781,7 @@ public class SigninManagerImplTest {
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
 
-    // TODO(crbug.com/1294761): add test for revokeSyncConsentFromJavaWithManagedDomain() and
+    // TODO(crbug.com/40820738): add test for revokeSyncConsentFromJavaWithManagedDomain() and
     // revokeSyncConsentFromJavaWipeData() - this requires making the BookmarkModel mockable in
     // SigninManagerImpl.
 

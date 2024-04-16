@@ -296,7 +296,7 @@ public class MultiWindowUtilsTest {
      * Tests that {@link MultiWindowUtils#areMultipleChromeInstancesRunning} behaves correctly in
      * the case the first instance is killed first.
      *
-     * <p>TODO(crbug/1077249): This testcase is restricted to O+ as on Android N calling {@link
+     * <p>TODO(crbug.com/40129069): This testcase is restricted to O+ as on Android N calling {@link
      * Activity#finishAndRemoveTask()} on the backgrounded activity1 will not cause it to be
      * DESTROYED it until after activity2 is PAUSED. On O+ activity1 will be DESTROYED immediately.
      * This test should be changed such that it works on N.

@@ -71,7 +71,7 @@ class BookmarkSearchBoxRowViewBinder {
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES) {
             final @DrawableRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES);
-            // TODO(https://crbug.com/1466583): Use tintWithTextColor because the drawable tint
+            // TODO(crbug.com/40924045): Use tintWithTextColor because the drawable tint
             // is broken.
             shoppingChip.setIcon(res, /* tintWithTextColor= */ true);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES) {

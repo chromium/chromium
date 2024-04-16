@@ -2516,7 +2516,7 @@ public class TabListMediatorUnitTest {
         assertThat(showQuickly, equalTo(true));
     }
 
-    // TODO(crbug.com/1177036): the assertThat in fetch callback is never reached.
+    // TODO(crbug.com/40168614): the assertThat in fetch callback is never reached.
     @Test
     public void testPriceTrackingProperty() {
         setPriceTrackingEnabledForTesting(true);

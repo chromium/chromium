@@ -444,7 +444,7 @@ public class StartSurfaceBackButtonTest {
     }
 
     private void verifySwipeBackOnStartSurfaceHomePage() {
-        // TODO(https://crbug.com/1093632): Requires 2 back press/gesture events now. Make this
+        // TODO(crbug.com/40135108): Requires 2 back press/gesture events now. Make this
         // work with a single event.
         Assume.assumeFalse(mImmediateReturn);
         StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());

@@ -537,7 +537,7 @@ public class TabGroupUiMediatorUnitTest {
         verifyResetStrip(true, mTabGroup2);
     }
 
-    // TODO(988199): Ignore this test until we have a conclusion from the attached bug.
+    // TODO(crbug.com/40637854): Ignore this test until we have a conclusion from the attached bug.
     @Ignore
     @Test
     public void tabClosure_LastTabInGroup_GroupUiVisible() {

@@ -1052,7 +1052,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/1380489): Re-enable once test is no longer flaky locally.
+    // TODO(crbug.com/40876294): Re-enable once test is no longer flaky locally.
     @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testSelectionEditorPosition() {
@@ -1541,7 +1541,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "TODO(crbug.com/1128345): Fix flakiness.")
+    @DisabledTest(message = "TODO(crbug.com/40148943): Fix flakiness.")
     public void testAccessibilityString() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);

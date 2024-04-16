@@ -1123,5 +1123,6 @@ public class PageInfoViewTest {
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).check(doesNotExist());
     }
 
-    // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.
+    // TODO(crbug.com/40685274): Add tests for preview pages, offline pages, offline state and other
+    // states.
 }

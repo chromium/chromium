@@ -251,7 +251,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                 new TabModelSelectorTabObserver(mTabModelSelector) {
                     @Override
                     public void onPageLoadStarted(Tab tab, GURL url) {
-                        // TODO(crbug.com/1087826) This is a band-aid fix for M84. The root cause is
+                        // TODO(crbug.com/40695094) This is a band-aid fix for M84. The root cause
+                        // is
                         // probably a leaked observer. Remove this when the TabObservers are removed
                         // during tab reparenting.
                         if (mTabModelSelector.getTabById(tab.getId()) == null) return;
@@ -398,15 +399,16 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     /**
      * Update the tab strip based on given tab ID.
-     * @param id  If the ID is set to Tab.INVALID_TAB_ID, this method will hide the tab strip. If
-     *            not, associated tabs from #getTabsToShowForID will be showing in the tab strip.
+     *
+     * @param id If the ID is set to Tab.INVALID_TAB_ID, this method will hide the tab strip. If
+     *     not, associated tabs from #getTabsToShowForID will be showing in the tab strip.
      */
     private void resetTabStripWithRelatedTabsForId(int id) {
-        // TODO(crbug/1449465): PseudoTab#getRelatedTabList() requires the tab state to be
+        // TODO(crbug.com/40064910): PseudoTab#getRelatedTabList() requires the tab state to be
         // initialized. If this is called before tab state is initialized just skip.
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        // TODO(crbug.com/1090655): We should be able to guard this call behind some checks so that
+        // TODO(crbug.com/40133857): We should be able to guard this call behind some checks so that
         // we can assert here that 1) mIsShowingOverViewMode is false 2) mIsTabGroupUiVisible with
         // valid id is false.
         // When overview mode is showing keep the tab strip hidden.
@@ -450,7 +452,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     public boolean onBackPressed() {
-        // TODO(crbug.com/1006421): add a regression test to make sure that the back button closes
+        // TODO(crbug.com/40099884): add a regression test to make sure that the back button closes
         // the dialog when the dialog is showing.
         return mTabGridDialogControllerSupplier != null
                 && mTabGridDialogControllerSupplier.hasValue()

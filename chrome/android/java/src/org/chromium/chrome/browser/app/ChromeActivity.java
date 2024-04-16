@@ -299,7 +299,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
             new ManualFillingComponentSupplier();
-    // TODO(crbug.com/1209864): Move ownership to RootUiCoordinator.
+    // TODO(crbug.com/40182241): Move ownership to RootUiCoordinator.
     private final UnownedUserDataSupplier<BrowserControlsManager> mBrowserControlsManagerSupplier =
             new BrowserControlsManagerSupplier();
 
@@ -389,7 +389,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private GSAAccountChangeListener mGSAAccountChangeListener;
 
-    // TODO(972867): Pull MenuOrKeyboardActionController out of ChromeActivity.
+    // TODO(crbug.com/40631552): Pull MenuOrKeyboardActionController out of ChromeActivity.
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
 
@@ -553,7 +553,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         getWindow().setBackgroundDrawable(getBackgroundDrawable());
 
-        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        // TODO(crbug.com/40160784): Transition this::method refs to dedicated suppliers.
         if (supportsTabModalDialogs()) {
             mTabModalLifetimeHandler =
                     new TabModalLifetimeHandler(
@@ -829,7 +829,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * This function implements the actual layout inflation, Subclassing Activities that override
      * this method without calling super need to call {@link #onInitialLayoutInflationComplete()}.
      */
-    // TODO(crbug.com/1336778): Remove the @SuppressLint.
+    // TODO(crbug.com/40229021): Remove the @SuppressLint.
     @SuppressLint("MissingInflatedId")
     protected void doLayoutInflation() {
         try (TraceEvent te = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
@@ -1048,7 +1048,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 .get()
                 .onNativeLibraryReady(getWindowAndroid(), getTabContentManager(), prefs);
 
-        // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
+        // TODO(crbug.com/40141057): Move contextual search initialization to the RootUiCoordinator.
         if (ContextualSearchFieldTrial.isEnabled()) {
             mContextualSearchManagerSupplier.set(
                     new ContextualSearchManager(
@@ -1333,8 +1333,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * received because the Activity was put in picture-in-picture by the Minimized Custom Tabs
      * feature. The other reason the Activity may be in PiP is because a fullscreen video was
      * playing. The return value of this method is used to separate the handling of these cases.
-     * TODO(https://crbug.com/1507985): We should refactor how we handle PiP across different
-     * features.
+     * TODO(crbug.com/40948691): We should refactor how we handle PiP across different features.
      */
     protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
         return false;
@@ -2735,7 +2734,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     usingDesktopUserAgent,
                     /* forcedByUser= */ false,
                     UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
-            // TODO(crbug.com/1456560): Remove this IPH when the usage is low.
+            // TODO(crbug.com/40917998): Remove this IPH when the usage is low.
             RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
                     profile, this, getModalDialogManager());
             TrackerFactory.getTrackerForProfile(profile)

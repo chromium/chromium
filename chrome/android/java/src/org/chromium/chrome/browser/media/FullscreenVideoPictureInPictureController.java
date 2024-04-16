@@ -117,7 +117,7 @@ public class FullscreenVideoPictureInPictureController {
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
 
-        // TODO(crbug.com/1345586): Auto-enter seems to be causing a very bad
+        // TODO(crbug.com/40853653): Auto-enter seems to be causing a very bad
         // display issue on S (31 or 32), so turn this off for S.
         mListenForAutoEnterability = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
         if (mListenForAutoEnterability) addObserversIfNeeded();

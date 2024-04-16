@@ -1207,7 +1207,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * initialized.
      */
     private void prepareEmptyPlaceholderStripLayout() {
-        // TODO(crbug.com/1524166): Investigate if we can update for tab group indicators.
+        // TODO(crbug.com/41497111): Investigate if we can update for tab group indicators.
         if (mPlaceholderStripReady || mTabStateInitialized) return;
 
         // 1. Fill with placeholder tabs.
@@ -2636,7 +2636,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         tab.setIsPlaceholder(true);
         tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
 
-        // TODO(https://crbug.com/1502238): Added placeholder a11y descriptions to prevent crash due
+        // TODO(crbug.com/40942588): Added placeholder a11y descriptions to prevent crash due
         //  to invalid a11y node. Replace with official strings when available.
         String description = "Placeholder Tab";
         String title = "Placeholder";

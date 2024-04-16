@@ -142,21 +142,21 @@ public class PaymentUiService
         void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail);
 
         /**
-         * @return Whether {@link ChromePaymentRequestService#onRetry} has been
-         *         called.
+         * @return Whether {@link ChromePaymentRequestService#onRetry} has been called.
          */
         boolean wasRetryCalled();
 
-        // TODO(crbug.com/1144165): The return semantics is not intuitive for this method; the
+        // TODO(crbug.com/40728675): The return semantics is not intuitive for this method; the
         // method should not take the selectedShippingAddress, selectedShippingOption parameters of
         // UI and autofill semantics.
         /**
          * Invokes the selected payment app.
+         *
          * @param selectedShippingAddress the shipping address selected from the payment request UI.
          * @param selectedShippingOption The shipping option selected from the payment request UI.
          * @param selectedPaymentApp The selected payment app.
          * @return Whether the spinner should be displayed. Autofill cards show a CVC prompt, so the
-         *         spinner is hidden in that case. Other payment apps typically show a spinner.
+         *     spinner is hidden in that case. Other payment apps typically show a spinner.
          */
         boolean invokePaymentApp(
                 EditableOption selectedShippingAddress,
@@ -445,7 +445,7 @@ public class PaymentUiService
         PaymentPreferencesUtil.setPaymentAppLastUseDate(
                 selectedPaymentMethod, System.currentTimeMillis());
 
-        // TODO(https://crbug.com/1188895): The caller should execute the function at onUiCompleted
+        // TODO(crbug.com/40173498): The caller should execute the function at onUiCompleted
         // directly instead of passing the Runnable here, because there are no asynchronous
         // operations in this code path.
         onUiCompleted.run();

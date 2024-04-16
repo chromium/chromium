@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Responsible for hosting properties of BookmarkToolbar views. TODO(https://crbug.com/1435024)
- * Remove all skipEquality=true usage.
+ * Responsible for hosting properties of BookmarkToolbar views. TODO(crbug.com/40265005) Remove all
+ * skipEquality=true usage.
  */
 class BookmarkToolbarProperties {
     /** Dependencies */

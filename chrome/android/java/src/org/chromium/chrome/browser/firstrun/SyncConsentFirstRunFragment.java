@@ -31,7 +31,7 @@ import java.util.List;
 public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         implements FirstRunFragment {
     // Per-page parameters:
-    // TODO(crbug/1168516): Remove IS_CHILD_ACCOUNT
+    // TODO(crbug.com/40165044): Remove IS_CHILD_ACCOUNT
     public static final String IS_CHILD_ACCOUNT = "IsChildAccount";
 
     private final SyncConsentDelegate mSyncConsentDelegate;
@@ -74,7 +74,7 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         final @Nullable String accountEmail =
                 defaultAccount == null ? null : defaultAccount.getEmail();
         boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
-        // TODO(crbug.com/1491387): Avoid sending `accountEmail` to create arguments. This class
+        // TODO(crbug.com/40285057): Avoid sending `accountEmail` to create arguments. This class
         // uses the primary account from IdentityManager.
         setArguments(createArguments(SigninAccessPoint.START_PAGE, accountEmail, isChild));
     }
@@ -89,7 +89,8 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
     @Override
     protected void onSyncAccepted(
             String accountName, boolean settingsClicked, SigninManager.SignInCallback callback) {
-        // TODO(crbug.com/1302635): Once ENABLE_SYNC_IMMEDIATELY_IN_FRE launches, move these metrics
+        // TODO(crbug.com/40217047): Once ENABLE_SYNC_IMMEDIATELY_IN_FRE launches, move these
+        // metrics
         // elsewhere, so onSyncAccepted() is replaced with signinAndEnableSync() (common code).
         getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
         if (settingsClicked) {

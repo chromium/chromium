@@ -376,7 +376,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (item.hasSubMenu()) {
                 // Only support top level menu items have SUBMENU, and a SUBMENU item cannot have a
                 // SUBMENU.
-                // TODO(crbug.com/1183234) : Create a new SubMenuItemProperties property key set for
+                // TODO(crbug.com/40171109) : Create a new SubMenuItemProperties property key set
+                // for
                 // SUBMENU items.
                 ModelList subList = new ModelList();
                 for (int j = 0; j < item.getSubMenu().size(); ++j) {

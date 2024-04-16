@@ -383,7 +383,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mThumbnailFramePaint.setColor(SemanticColorUtils.getDividerLineBgColor(context));
         mThumbnailFramePaint.setAntiAlias(true);
 
-        // TODO(996048): Use pre-defined styles to avoid style out of sync if any text/color styles
+        // TODO(crbug.com/41477335): Use pre-defined styles to avoid style out of sync if any
+        // text/color styles
         // changes.
         mTextPaint = new Paint();
         mTextPaint.setTextSize(resources.getDimension(R.dimen.compositor_tab_title_text_size));

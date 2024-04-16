@@ -494,7 +494,7 @@ public class CustomTabActivityTest {
         assertEquals(
                 expectedStatusBarColor,
                 mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
-        // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
+        // TODO(crbug.com/40588353): Use helper class to determine whether dark status icons
         // are supported.
 
         MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
@@ -1438,7 +1438,7 @@ public class CustomTabActivityTest {
         Assert.assertFalse(tab.canGoForward());
         Assert.assertFalse(tab.canGoBack());
 
-        // TODO(https://crbug.com/1467857):
+        // TODO(crbug.com/40276951):
         // Fragment misses will trigger two history entries
         // - url#speculated and url#actual are both inserted
         // This should ideally not be the case.

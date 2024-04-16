@@ -406,7 +406,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    // TODO(crbug.com/1489226): Wait for AccountManagerFacade to load accounts.
+                    // TODO(crbug.com/40283943): Wait for AccountManagerFacade to load accounts.
                     // Chrome library loading depends on PathUtils.
                     PathUtils.setPrivateDataDirectorySuffix(
                             SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);

@@ -239,7 +239,7 @@ public class WarmupManager {
         TabDelegateFactory delegateFactory = CustomTabDelegateFactory.createEmpty();
         WindowAndroid window = new WindowAndroid(context);
 
-        // TODO(crbug.com/1190971): Set isIncognito flag here if spare tabs are allowed for
+        // TODO(crbug.com/40174356): Set isIncognito flag here if spare tabs are allowed for
         // incognito mode.
         // Creates a tab with renderer initialized for spareTab. See https://crbug.com/1412572.
         Tab tab =

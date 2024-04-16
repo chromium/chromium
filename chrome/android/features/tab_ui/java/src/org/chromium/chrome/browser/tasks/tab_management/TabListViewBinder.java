@@ -126,12 +126,13 @@ class TabListViewBinder {
 
     /**
      * Bind color updates.
+     *
      * @param view The root view of the item.
      * @param isIncognito Whether the model is in incognito mode.
      * @param isSelected Whether the item is selected.
      */
     private static void updateColors(ViewGroup view, boolean isIncognito, boolean isSelected) {
-        // TODO(crbug.com/1455397): isSelected is ignored as the selected row is only outlined not
+        // TODO(crbug.com/40272756): isSelected is ignored as the selected row is only outlined not
         // colored so it should use the unselected color. This will be addressed in a fixit.
 
         View cardView = view.findViewById(R.id.content_view);

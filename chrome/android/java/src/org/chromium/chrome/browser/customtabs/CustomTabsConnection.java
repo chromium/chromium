@@ -1292,7 +1292,7 @@ public class CustomTabsConnection {
         if (height != mPrevHeight) {
             args.putInt(ON_RESIZED_SIZE_EXTRA, height);
 
-            // TODO(crbug.com/1366844): Deprecate the extra callback.
+            // TODO(crbug.com/40867201): Deprecate the extra callback.
             if (safeExtraCallback(session, ON_RESIZED_CALLBACK, args) && mLogRequests) {
                 logCallback("extraCallback(" + ON_RESIZED_CALLBACK + ")", args);
             }
@@ -1447,7 +1447,7 @@ public class CustomTabsConnection {
 
     @VisibleForTesting
     boolean setupDynamicFeaturesInternal(Intent intent) {
-        // TODO(https://crbug.com/1401098) Add support for separate dynamic experiments per session!
+        // TODO(crbug.com/40884078) Add support for separate dynamic experiments per session!
         // Early exits if any CCT client app has already set or cleared dynamic experiments.
         if (mDynamicEnabledFeatures != null || mDynamicDisabledFeatures != null) return false;
 
@@ -1488,9 +1488,10 @@ public class CustomTabsConnection {
         return false;
     }
 
-    // TODO(https://crbug.com/1458640): Remove this and other dynamic feature related methods.
+    // TODO(crbug.com/40274032): Remove this and other dynamic feature related methods.
     /**
      * Determines if the given Feature is enabled after factoring in active Intent overrides.
+     *
      * @see #setupDynamicFeatures
      * @param featureName The Feature to check if it's enabled.
      * @return Whether the given Feature is effectively enabled given active overrides.
@@ -1541,7 +1542,7 @@ public class CustomTabsConnection {
 
         // Notifies all the sessions, as warmup() is tied to a UID, not a session.
         for (CustomTabsSessionToken session : mClientManager.uidToSessions(uid)) {
-            // TODO(crbug.com/1484676): Remove extra callback after its usage dwindles down.
+            // TODO(crbug.com/40932858): Remove extra callback after its usage dwindles down.
             safeExtraCallback(session, ON_WARMUP_COMPLETED, null);
 
             CustomTabsCallback callback = mClientManager.getCallbackForSession(session);

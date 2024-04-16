@@ -78,7 +78,7 @@ public abstract class AsyncInitTaskRunner {
             if (VersionInfo.isDevBuild()) {
                 return "dev";
             }
-            // TODO(crbug.com/1493502): Remove this if block after automotive beta ends.
+            // TODO(crbug.com/40936710): Remove this if block after automotive beta ends.
             if (VersionInfo.isBetaBuild() && BuildInfo.getInstance().isAutomotive) {
                 return "stable";
             }

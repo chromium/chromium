@@ -48,7 +48,7 @@ import org.chromium.ui.test.util.UiRestriction;
 /**
  * Instrumentation tests for the incognito re-auth promo component.
  *
- * <p>TODO(crbug.com/1227656): Remove the restriction on only phone type and make it available for
+ * <p>TODO(crbug.com/40056462): Remove the restriction on only phone type and make it available for
  * tablets. Also, remove the restriction on running this suite only for high end phones when GTS is
  * available for them.
  */

@@ -39,7 +39,7 @@ import org.chromium.ui.test.util.UiRestriction;
 /**
  * Tests overview mode app menu popup.
  *
- * <p>TODO(crbug.com/1031958): Add more required tests.
+ * <p>TODO(crbug.com/40662624): Add more required tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({

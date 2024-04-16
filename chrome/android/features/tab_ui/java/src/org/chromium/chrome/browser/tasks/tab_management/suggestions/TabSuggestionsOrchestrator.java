@@ -109,7 +109,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions {
                     break;
             }
         }
-        // TODO(crbug.com/1085452): Sort the suggestion based on priority.
+        // TODO(crbug.com/40132207): Sort the suggestion based on priority.
         Collections.sort(aggregated, (t1, t2) -> Integer.compare(t1.getAction(), t2.getAction()));
         return aggregated;
     }
@@ -159,7 +159,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions {
     }
 
     private boolean isBackoffEnabled() {
-        // TODO(crbug.com/1051709) expand to record/read and respond
+        // TODO(crbug.com/40118562) expand to record/read and respond
         // to close/group separately and determine if we can use
         // shared prefs folder.
         synchronized (mSharedPreferences) {

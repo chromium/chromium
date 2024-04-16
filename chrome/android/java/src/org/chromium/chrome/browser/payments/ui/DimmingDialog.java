@@ -37,9 +37,10 @@ import java.util.Collection;
  * dialog/CCT or an alert dialog on top of it. FLAG_DIM_BEHIND is not being used because it causes
  * the web contents of a payment handler CCT to also dim on some versions of Android (e.g., Nougat).
  *
- * Note: Do not use this class outside of the payments.ui package!
- * TODO(crbug.com/806868): Revert the visibility to package default again when it is no longer used
- * by Autofill Assistant.
+ * <p>Note: Do not use this class outside of the payments.ui package!
+ * TODO(crbug.com/40560343): Revert the visibility to package default again when it is no longer
+ * used by Autofill Assistant.
+ * Revert the visibility to package default again when it is no longer used by Autofill Assistant.
  */
 /* package */ class DimmingDialog {
     /**

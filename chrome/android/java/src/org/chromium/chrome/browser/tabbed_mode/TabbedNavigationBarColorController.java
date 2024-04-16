@@ -156,7 +156,7 @@ class TabbedNavigationBarColorController {
                 };
         mEdgeToEdgeControllerSupplier.addObserver(mEdgeToEdgeRegisterChangeObserverCallback);
 
-        // TODO(https://crbug.com/806054): Observe tab loads to restrict black bottom nav to
+        // TODO(crbug.com/40560014): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
 
         updateNavigationBarColor();

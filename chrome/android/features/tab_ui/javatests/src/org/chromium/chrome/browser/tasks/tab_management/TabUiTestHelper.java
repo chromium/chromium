@@ -134,11 +134,12 @@ public class TabUiTestHelper {
 
     /**
      * Enter tab switcher from a tab page.
-     * @param cta  The current running activity.
+     *
+     * @param cta The current running activity.
      */
     public static void enterTabSwitcher(ChromeTabbedActivity cta) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        // TODO(crbug.com/1145271): Replace this with clicking tab switcher button via espresso.
+        // TODO(crbug.com/40155797): Replace this with clicking tab switcher button via espresso.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.findViewById(R.id.tab_switcher_button).performClick();

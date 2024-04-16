@@ -189,7 +189,7 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnRenderedPage() {
-        // TODO(crbug.com/1426201): Write a test variation running with
+        // TODO(crbug.com/40899221): Write a test variation running with
         //     ChromeFeatureList.BACK_FORWARD_TRANSITIONS enabled when the feature is completed.
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(

@@ -723,7 +723,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void updateInMotion() {
-        // TODO(https://crbug.com/1378716): Track fling as well.
+        // TODO(crbug.com/40244051): Track fling as well.
         boolean inMotion = mInGesture || mContentViewScrolling;
         mInMotionSupplier.set(inMotion);
         if (mContentView != null) {
@@ -887,7 +887,7 @@ public class CompositorViewHolder extends FrameLayout
 
         // The view size takes into account of the browser controls whose height should be
         // subtracted from the view if they are visible, therefore shrink Blink-side view size.
-        // TODO(https://crbug.com/1211066): Centralize the logic for calculating bottom insets by
+        // TODO(crbug.com/40767446): Centralize the logic for calculating bottom insets by
         // merging them into ApplicationBottomInsetSupplier.
         int controlsInsets = 0;
         if (mBrowserControlsManager != null) {

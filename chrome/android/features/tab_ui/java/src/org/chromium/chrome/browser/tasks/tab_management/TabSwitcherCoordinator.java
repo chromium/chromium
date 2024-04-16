@@ -107,7 +107,7 @@ public class TabSwitcherCoordinator
     private final @NonNull BottomSheetController mBottomSheetController;
 
     /**
-     * TODO(crbug.com/1227656): Refactor this to pass a supplier instead to ensure we re-use the
+     * TODO(crbug.com/40056462): Refactor this to pass a supplier instead to ensure we re-use the
      * same instance of {@link IncognitoReauthManager} across the codebase.
      */
     private IncognitoReauthManager mIncognitoReauthManager;
@@ -473,7 +473,7 @@ public class TabSwitcherCoordinator
 
     @Override
     public void requestFocusOnCurrentTab() {
-        // TODO(crbug.com/1447564): Ideally, this shouldn't be called directly and instead mediator
+        // TODO(crbug.com/40269022): Ideally, this shouldn't be called directly and instead mediator
         // should listen for |requestFocusOnCurrentTab| signal implicitly and apply changes. This
         // would require refactoring TabSwitcher.TabListDelegate and its implementation.
         mMediator.requestAccessibilityFocusOnCurrentTab();

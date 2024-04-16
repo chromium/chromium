@@ -63,11 +63,11 @@ public class UpdateMenuItemHelper {
             };
 
     /**
-     * The current state of updates for Chrome.  This can change during runtime and may be {@code
+     * The current state of updates for Chrome. This can change during runtime and may be {@code
      * null} if the status hasn't been determined yet.
      *
-     * TODO(924011): Handle state bug where the state here and the visible state of the UI can be
-     * out of sync.
+     * <p>TODO(crbug.com/40610457): Handle state bug where the state here and the visible state of
+     * the UI can be out of sync.
      */
     private @Nullable UpdateStatus mStatus;
 

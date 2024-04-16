@@ -149,7 +149,7 @@ public class PaymentRequestNoShippingTest {
         // must-call-complete timer, however the back button cancellation then tears down the
         // PaymentRequest state - including setting the must-call-complete timer to failed.
         //
-        // TODO(crbug.com/1375286): Avoid ending up in this state.
+        // TODO(crbug.com/40872814): Avoid ending up in this state.
         Assert.assertEquals(
                 "\"Failed to execute 'complete' on 'PaymentResponse': "
                         + "Timed out after 60 seconds, complete() called too late\"",

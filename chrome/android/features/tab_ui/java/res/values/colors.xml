@@ -16,7 +16,7 @@ found in the LICENSE file.
     <color name="favicon_background_color_incognito">@color/black_alpha_38</color>
 
     <!-- Incognito colors for theme refactor 2021. -->
-    <!-- TODO(https://crbug.com/1223976): Use semantic colors for incognito. -->
+    <!-- TODO(crbug.com/40774932): Use semantic colors for incognito. -->
     <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_80</color>
     <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_20</color>
 

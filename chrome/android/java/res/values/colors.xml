@@ -8,7 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
 
-    <!--  TODO(crbug.com/775198): move all hex color values to color_palette.xml  -->
+    <!--  TODO(crbug.com/40545033): move all hex color values to color_palette.xml  -->
     <!-- Other colors -->
     <color name="dark_action_bar_color">@color/google_blue_grey_900</color>
     <color name="dark_status_bar_color">#161E21</color>

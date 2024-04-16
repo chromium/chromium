@@ -149,7 +149,7 @@ public class MultiWindowIntegrationTest {
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
     })
-    // TODO(1298242): Enable this test for tablet once the tab switcher is supported.
+    // TODO(crbug.com/40822813): Enable this test for tablet once the tab switcher is supported.
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMovingLastTabKeepsActivityAlive() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

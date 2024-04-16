@@ -2740,7 +2740,8 @@ public class SiteSettingsTest {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.POPUPS);
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.DEVICE_LOCATION);
-        // TODO(crbug/1385889): add a test for sensors once crash in the sensors settings page is
+        // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
+        // is
         // resolved.
     }
 

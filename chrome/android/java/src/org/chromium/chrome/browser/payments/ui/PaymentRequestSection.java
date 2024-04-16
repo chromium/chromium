@@ -1485,7 +1485,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 mLabelsForTest.add(currentOptionRow.mLabel);
             }
 
-            // TODO(crbug.com/627186): Find another way to give access to this resource in tests.
+            // TODO(crbug.com/40476067): Find another way to give access to this resource in tests.
             // For testing.
             if (firstOptionIndex != INVALID_OPTION_INDEX) {
                 mOptionRows.get(firstOptionIndex).setButtonId(R.id.payments_first_radio_button);

@@ -172,7 +172,7 @@ public class WebXrVrCardboardTransitionTest {
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
     @CommandLineFlags.Add({"enable-features=WebXR,Cardboard"})
-    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // TODO(crbug.com/40791908): Re-enable this test on all activity types once
     // WAA/CCT versions no longer fail consistently.
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {

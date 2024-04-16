@@ -675,7 +675,7 @@ public class AutofillPaymentMethodsFragmentTest {
         optOutHistogram.assertExpected();
     }
 
-    // TODO(crbug/1470259): Tests for various FIDO toggle scenarios needs to be added here.
+    // TODO(crbug.com/40925675): Tests for various FIDO toggle scenarios needs to be added here.
     @Test
     @MediumTest
     public void testMandatoryReauthToggle_FidoToggleHiddenIfReauthFlagIsEnabled() throws Exception {
@@ -1111,7 +1111,7 @@ public class AutofillPaymentMethodsFragmentTest {
         onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
     }
 
-    // TODO(crbug/1497852): Test to verify the visibility of the delete saved CVCs button when
+    // TODO(crbug.com/40287195): Test to verify the visibility of the delete saved CVCs button when
     // the AutofillCreditCardEnabled policy is set to false. Currently, Android-x86-rel targets
     // are unable to store credit card information when the policy is set to false.
 

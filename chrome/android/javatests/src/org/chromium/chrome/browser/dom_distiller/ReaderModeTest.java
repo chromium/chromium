@@ -421,7 +421,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         testThemeColor(activity, tab);
         testFontSize(activity, tab);
-        // TODO(crbug/1069520): change font family as well.
+        // TODO(crbug.com/40125950): change font family as well.
     }
 
     /**

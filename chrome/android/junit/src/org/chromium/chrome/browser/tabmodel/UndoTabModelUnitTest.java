@@ -123,7 +123,7 @@ public class UndoTabModelUnitTest {
         TabModel tabModel;
         final boolean supportsUndo = !isIncognito;
         if (isIncognito) {
-            // TODO(crbug.com/1318046): Consider using an incognito tab model.
+            // TODO(crbug.com/40222755): Consider using an incognito tab model.
             tabModel =
                     new TabModelImpl(
                             mIncognitoProfile,

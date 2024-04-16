@@ -438,7 +438,7 @@ class StartSurfaceMediator
                         public void onUrlFocusChange(boolean hasFocus) {
                             if (hasFakeSearchBox()) {
                                 setFakeBoxVisibility(!hasFocus);
-                                // TODO(crbug.com/1365694): We should call
+                                // TODO(crbug.com/40239477): We should call
                                 // setLogoVisibility(!hasFocus) here.
                                 // However, AppBarLayout's getTotalScrollRange() eliminates the gone
                                 // child view's heights. Therefore, when focus is got, the
@@ -912,7 +912,7 @@ class StartSurfaceMediator
         // Because there are multiple upstream tab selection listeners that attempt to re-trigger
         // the onTabSelecting in response to TabModelObserver#didSelectTab it is necessary to treat
         // this as a non-rentrant method until the original operation finishes.
-        // TODO(crbug/1495121): This can be removed once StartSurfaceRefactor is cleaned up.
+        // TODO(crbug.com/40286397): This can be removed once StartSurfaceRefactor is cleaned up.
         if (mShouldIgnoreTabSelecting) return;
         mShouldIgnoreTabSelecting = true;
 
@@ -957,7 +957,7 @@ class StartSurfaceMediator
         mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
         updateBackgroundColor(mPropertyModel);
 
-        // TODO(crbug.com/1021399): This looks not needed since there is no way to change incognito
+        // TODO(crbug.com/40657059): This looks not needed since there is no way to change incognito
         // mode when focusing on the omnibox and incognito mode change won't affect the visibility
         // of the tab switcher toolbar.
         if (mPropertyModel.get(IS_SHOWING_OVERVIEW)) notifyStateChange();

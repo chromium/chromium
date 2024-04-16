@@ -85,7 +85,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the TabPersistentStore. */
 
-// TODO(crbug.com/1174662) reintroduce batching - batching was removed because introducing
+// TODO(crbug.com/40167624) reintroduce batching - batching was removed because introducing
 // parameterized tests caused cross-talk between tests.
 
 @RunWith(ChromeJUnit4ClassRunner.class)

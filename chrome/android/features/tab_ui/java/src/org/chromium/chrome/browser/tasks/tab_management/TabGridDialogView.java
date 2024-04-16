@@ -245,7 +245,7 @@ public class TabGridDialogView extends FrameLayout {
                         mDialogContainerView.requestFocus();
                         mDialogContainerView.sendAccessibilityEvent(
                                 AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                        // TODO(crbug.com/1101561): Move clear/restore accessibility importance
+                        // TODO(crbug.com/40138401): Move clear/restore accessibility importance
                         // logic to ScrimView so that it can be shared by all components using
                         // ScrimView.
                         clearBackgroundViewAccessibilityImportance();

@@ -97,7 +97,8 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
 
     @Override
     protected void showNormalView() {
-        // TODO(976523): This is a temporary way to force the toolbar always in the selection
+        // TODO(crbug.com/40632732): This is a temporary way to force the toolbar always in the
+        // selection
         // mode until the associated bug is addressed.
         showSelectionView(sEmptyIntegerList, true);
     }

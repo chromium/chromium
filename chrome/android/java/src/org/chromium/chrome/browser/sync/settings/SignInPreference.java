@@ -132,7 +132,7 @@ public class SignInPreference extends Preference
     private void update() {
         setVisible(!mIsShowingSigninPromo);
         if (mSigninManager.isSigninDisabledByPolicy()) {
-            // TODO(https://crbug.com/1133739): Clean up after revising isSigninDisabledByPolicy.
+            // TODO(crbug.com/40722691): Clean up after revising isSigninDisabledByPolicy.
             if (mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED)) {
                 setupSigninDisabledByPolicy();
             } else {

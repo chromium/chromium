@@ -216,7 +216,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             int hoveredTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
 
-        // TODO(https://crbug.com/1450380): Cleanup params, as some don't change and others are now
+        // TODO(crbug.com/40270147): Cleanup params, as some don't change and others are now
         //  unused.
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];

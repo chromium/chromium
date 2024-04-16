@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
  * Empty coordinator that is responsible for showing an empty state view in tab switcher when we are
  * in no tab state.
  */
-// @TODO(crbug.com/1442335) Add instrumentation test for TabListEmptyCoordinator class.
+// @TODO(crbug.com/40910476) Add instrumentation test for TabListEmptyCoordinator class.
 class TabListEmptyCoordinator {
     private ViewGroup mRootView;
     private View mEmptyView;

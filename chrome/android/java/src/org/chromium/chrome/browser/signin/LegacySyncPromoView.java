@@ -27,13 +27,13 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 
-// TODO(crbug/1319351): Extend the comment below to explain under which circumstances this class is
+// TODO(crbug.com/40223169): Extend the comment below to explain under which circumstances this
+// class is
 // still used
 /**
  * A View that shows the user the next step they must complete to start syncing their data (eg.
- * Recent Tabs or Bookmarks).
- * If inflated manually, {@link LegacySyncPromoView#init(int)} must be called before
- * attaching this View to a ViewGroup.
+ * Recent Tabs or Bookmarks). If inflated manually, {@link LegacySyncPromoView#init(int)} must be
+ * called before attaching this View to a ViewGroup.
  */
 public class LegacySyncPromoView extends FrameLayout
         implements SyncService.SyncStateChangedListener {
@@ -217,7 +217,7 @@ public class LegacySyncPromoView extends FrameLayout
         private final int mTextResource;
         private final OnClickListener mOnClickListener;
 
-        // TODO(crbug.com/1107904): Once Chrome is decoupled from auto-sync,
+        // TODO(crbug.com/40141050): Once Chrome is decoupled from auto-sync,
         // |onClickListener| can be inlined.
         public ButtonPresent(int textResource, OnClickListener onClickListener) {
             mTextResource = textResource;

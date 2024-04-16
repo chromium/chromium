@@ -499,7 +499,7 @@ public class ToolbarManager
      * @param findToolbarManager The manager for the find in page function.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
-     *     TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
+     *     TODO(crbug.com/40131776): Use OneShotSupplier once it is ready.
      * @param canAnimateNativeBrowserControls
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
@@ -1471,9 +1471,9 @@ public class ToolbarManager
 
     /**
      * Recreates ChromeTabbedActivity if Start surface is switched between enabled and disabled due
-     * to settings change.
-     * TODO(https://crbug.com/1263495): Recreate Start Surface and its toolbar without recreating
-     * ChromeTabbedActivity.
+     * to settings change. TODO(crbug.com/40202955): Recreate Start Surface and its toolbar without
+     * recreating ChromeTabbedActivity.
+     *
      * @return whether the activity will be recreated.
      */
     private boolean recreateActivityIfStartSurfaceEnableStateChanges() {
@@ -1769,7 +1769,7 @@ public class ToolbarManager
                     new TabStripHeightObserver() {
                         @Override
                         public void onTransitionRequested(int newHeight) {
-                            // TODO(crbug.com/1509013): Supplier can have an inconsistent value
+                            // TODO(crbug.com/41481630): Supplier can have an inconsistent value
                             //  with mToolbar.getTabStripHeight().
                             mTabStripHeightSupplier.set(newHeight);
                         }
@@ -2512,7 +2512,8 @@ public class ToolbarManager
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
 
-        // TODO(1222695): We shouldn't need to post this. Instead we should wait until the
+        // TODO(crbug.com/40187309): We shouldn't need to post this. Instead we should wait until
+        // the
         //                dependencies are ready. This logic was introduced to move asynchronous
         //                observer events from the infra (LayoutManager) into the feature using
         //                it.
@@ -2547,7 +2548,7 @@ public class ToolbarManager
      * @return The {@link OmniboxStub}.
      */
     public @Nullable OmniboxStub getOmniboxStub() {
-        // TODO(crbug.com/1000295): Split fakebox component out of ntp package.
+        // TODO(crbug.com/40097170): Split fakebox component out of ntp package.
         return mLocationBar.getOmniboxStub();
     }
 

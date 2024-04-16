@@ -44,7 +44,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/733324): Can be
+ * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/40525786): Can be
  * parametrized with a parametrized Robolectric test runner.
  */
 @RunWith(BaseRobolectricTestRunner.class)

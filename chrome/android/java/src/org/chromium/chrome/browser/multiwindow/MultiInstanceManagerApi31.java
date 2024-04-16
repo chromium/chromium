@@ -800,7 +800,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             // Close all tabs as the window is closing. This ensures the tabs are added to the
             // recent tabs page.
             //
-            // TODO(crbug/1304883): This only works for windows with live activities. It is
+            // TODO(crbug.com/40826734): This only works for windows with live activities. It is
             // non-trivial to add recent tab entries without an active {@link Tab} instance.
             selector.closeAllTabs(/* uponExit= */ true);
         }

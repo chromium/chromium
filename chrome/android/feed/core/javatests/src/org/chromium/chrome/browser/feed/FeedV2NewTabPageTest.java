@@ -112,8 +112,7 @@ import java.util.concurrent.Callable;
 
 /**
  * Tests for {@link NewTabPage}. Other tests can be found in {@link
- * org.chromium.chrome.browser.ntp.NewTabPageTest}. TODO(https://crbug.com/1069183): Combine test
- * suites.
+ * org.chromium.chrome.browser.ntp.NewTabPageTest}. TODO(crbug.com/40683883): Combine test suites.
  */
 @DoNotBatch(reason = "Complex tests, need to start fresh")
 @RunWith(ParameterizedRunner.class)

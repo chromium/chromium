@@ -175,7 +175,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mComponentName,
                             showColorPickerPopupRunnable);
 
-            // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
+            // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
             mTabListCoordinator =
                     new TabListCoordinator(
@@ -227,7 +227,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mModel.addObserver((source, key) -> mBackPressChangedSupplier.set(isVisible()));
 
             // This is always created post-native so calling these immediately is safe.
-            // TODO(crbug/1418690): Consider inlining these behaviors in their respective
+            // TODO(crbug.com/40894893): Consider inlining these behaviors in their respective
             // constructors if possible.
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
             mTabListCoordinator.initWithNative(mRegularTabModelSupplier.get().getProfile(), null);
@@ -419,7 +419,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public void postHiding() {
         mTabListCoordinator.postHiding();
-        // TODO(crbug/1366128): This shouldn't be required if resetWithListOfTabs(null) is called.
+        // TODO(crbug.com/40239632): This shouldn't be required if resetWithListOfTabs(null) is
+        // called.
         // Find out why this helps and fix upstream if possible.
         mTabListCoordinator.softCleanup();
     }

@@ -35,8 +35,8 @@ public class FakeServerHelper {
      * Creates the singleton FakeServerHelper and returns it. destroyInstance() must be called when
      * done to prevent the native object from leaking. If this is called before the previous
      * instance is destroyed, it will return null (just to avoid throwing ExecutionException).
-     * TODO(crbug.com/949504): When refactoring this method, throw an exception instead of returning
-     * null.
+     * TODO(crbug.com/41451146): When refactoring this method, throw an exception instead of
+     * returning null.
      */
     public static @Nullable FakeServerHelper createInstanceAndGet() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(

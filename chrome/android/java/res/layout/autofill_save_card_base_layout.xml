@@ -4,7 +4,7 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO(crbug.com/1479521): Write render test for autofill_save_card_base_layout.xml-->
+<!-- TODO(crbug.com/40929960): Write render test for autofill_save_card_base_layout.xml-->
 <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="match_parent"

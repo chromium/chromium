@@ -495,7 +495,7 @@ class TabListMediator {
                 @Override
                 public void onTitleUpdated(Tab updatedTab) {
                     int index = mModel.indexFromId(updatedTab.getId());
-                    // TODO(crbug.com/1098100) The null check for tab here should be redundant once
+                    // TODO(crbug.com/40136874) The null check for tab here should be redundant once
                     // we have resolved the bug.
                     if (index == TabModel.INVALID_TAB_INDEX
                             || TabModelUtils.getTabById(
@@ -1016,7 +1016,7 @@ class TabListMediator {
                 new TabActionListener() {
                     @Override
                     public void run(int tabId) {
-                        // TODO(crbug.com/990698): Consider disabling all touch events during
+                        // TODO(crbug.com/40638921): Consider disabling all touch events during
                         // animation.
                         if (mModel.indexFromId(tabId) == TabModel.INVALID_TAB_INDEX) return;
 
@@ -1516,7 +1516,8 @@ class TabListMediator {
         boolean forceUpdate = isSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
-        // TODO(crbug.com/1457653): Fetching thumbnail for group is expansive, we should consider to
+        // TODO(crbug.com/40273706): Fetching thumbnail for group is expansive, we should consider
+        // to
         // improve it.
         if (mThumbnailProvider != null
                 && mVisible
@@ -1835,7 +1836,8 @@ class TabListMediator {
                             pseudoTab.isIncognito()
                                     ? R.color.default_icon_color_light
                                     : R.color.default_icon_color_tint_list);
-            // TODO(995876): Update color baseline_primary_80 to active_color_dark when the
+            // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
+            // the
             // associated bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
                     ColorStateList.valueOf(
@@ -1904,7 +1906,7 @@ class TabListMediator {
             String domain = getDomain(relatedTabs.get(i));
             domainNames.add(domain);
         }
-        // TODO(1024925): Address i18n issue for the list delimiter.
+        // TODO(crbug.com/40107640): Address i18n issue for the list delimiter.
         return TextUtils.join(", ", domainNames);
     }
 
@@ -2031,7 +2033,7 @@ class TabListMediator {
 
     @VisibleForTesting
     protected static String getDomain(Tab tab) {
-        // TODO(crbug.com/1116613) Investigate how uninitialized Tabs are appearing
+        // TODO(crbug.com/40144810) Investigate how uninitialized Tabs are appearing
         // here.
         assert tab.isInitialized();
         if (!tab.isInitialized()) {

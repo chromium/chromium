@@ -95,10 +95,11 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
 
     /**
      * Will be called when the status of {@link #mRadioButtons} is changed.
-     * TODO(https://crbug.com/1127383): Record changes whenever user changes settings rather than
-     * homepage settings is stopped.
+     * TODO(crbug.com/40148533): Record changes whenever user changes settings rather than homepage
+     * settings is stopped.
+     *
      * @param newValue The {@link PreferenceValues} that the {@link
-     *         RadioButtonGroupHomepagePreference} is holding.
+     *     RadioButtonGroupHomepagePreference} is holding.
      */
     private void updateHomepageFromRadioGroupPreference(PreferenceValues newValue) {
         // When the preference is changed by code during initialization due to policy, ignore the

@@ -173,14 +173,13 @@ public class BackgroundSyncBackgroundTaskScheduler {
     }
 
     /**
-     * Method for rescheduling a background task to wake up Chrome for processing
-     * Background Sync events in the event of an OS upgrade or Google Play Services
-     * upgrade.
+     * Method for rescheduling a background task to wake up Chrome for processing Background Sync
+     * events in the event of an OS upgrade or Google Play Services upgrade.
      *
      * @param taskType The Background Sync task to reschedule.
      */
     public void reschedule(@BackgroundSyncTask int taskType) {
-        // TODO(crbug.com/1414627): Investigate if this can be deleted.
+        // TODO(crbug.com/40256221): Investigate if this can be deleted.
         scheduleOneOffTask(taskType, MIN_SYNC_RECOVERY_TIME);
     }
 

@@ -108,7 +108,7 @@ public class TabAttributeCache {
                             Tab tab, NavigationHandle navigationHandle) {
                         if (tab.isIncognito()) return;
                         if (tab.getWebContents() == null) return;
-                        // TODO(crbug.com/1048255): skip cacheLastSearchTerm() according to
+                        // TODO(crbug.com/40117193): skip cacheLastSearchTerm() according to
                         //  isValidSearchFormUrl() and PageTransition.GENERATED for optimization.
                         cacheLastSearchTerm(tab);
                     }

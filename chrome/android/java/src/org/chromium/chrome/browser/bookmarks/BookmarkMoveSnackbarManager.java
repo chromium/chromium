@@ -52,7 +52,7 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
                         return;
                     }
 
-                    // TODO(crbug.com/1523319): Consider handling the edge cases here where one or
+                    // TODO(crbug.com/41496270): Consider handling the edge cases here where one or
                     // multiple bookmarks fail to move. For now, just roll with any of the bookmarks
                     // being moved.
                     String message;
@@ -130,7 +130,7 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
         mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
-        // TODO(crbug.com/1465757): Record user action.
+        // TODO(crbug.com/40923660): Record user action.
         Intent intent = new Intent(mContext, BookmarkFolderPickerActivity.class);
         intent.putStringArrayListExtra(
                 BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,

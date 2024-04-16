@@ -428,7 +428,7 @@ public class StripLayoutTab extends StripLayoutView {
      *     have the same tint irrespective of its hover state.
      */
     public @ColorInt int getTint(boolean foreground, boolean hovered) {
-        // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
+        // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         return TabUiThemeUtil.getTabStripContainerColor(
                 mContext, mIncognito, foreground, mIsReordering, mIsPlaceholder, hovered);

@@ -31,7 +31,7 @@ public final class SigninCheckerProvider {
 
     private static SigninChecker buildForProfile(Profile profile) {
         // SyncErrorNotifier must be explicitly initialized.
-        // TODO(crbug.com/1156620): Move the initializations elsewhere.
+        // TODO(crbug.com/40736034): Move the initializations elsewhere.
         SyncErrorNotifier.getForProfile(profile);
         return new SigninChecker(
                 IdentityServicesProvider.get().getSigninManager(profile),

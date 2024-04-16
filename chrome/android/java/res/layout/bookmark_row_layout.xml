@@ -28,7 +28,7 @@ found in the LICENSE file.
     <!-- List menu button used for contextual options. -->
     <include layout="@layout/list_menu_button" />
 
-    <!-- TODO(crbug.com/1424837): Support dynamic colors for drag handle. -->
+    <!-- TODO(crbug.com/40260592): Support dynamic colors for drag handle. -->
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/drag_handle"
         android:visibility="gone"

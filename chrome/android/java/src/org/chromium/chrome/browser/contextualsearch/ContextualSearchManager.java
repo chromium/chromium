@@ -1453,7 +1453,7 @@ public class ContextualSearchManager
                         + "Please update crbug.com/1307267 with this repro.";
         assert (suggestionIndex - defaultSearchAdjustment) < mRelatedSearches.getQueries().size();
 
-        // TODO(crbug.com/1307267) remove this check once we figure out how this can happen.
+        // TODO(crbug.com/40828323) remove this check once we figure out how this can happen.
         if (mRelatedSearches == null) return;
 
         if (mSearchPanel.isPeeking()) {

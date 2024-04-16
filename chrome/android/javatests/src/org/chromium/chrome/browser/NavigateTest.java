@@ -288,7 +288,7 @@ public class NavigateTest {
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint, CriticalClientHint"})
     // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteCriticalClientHints() throws Exception {
-        // TODO(https://crbug.com/1138913): Move EchoCriticalHeader request handler here when
+        // TODO(crbug.com/40153192): Move EchoCriticalHeader request handler here when
         // implemented
         String url = mTestServer.getURL("/echocriticalheader");
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();

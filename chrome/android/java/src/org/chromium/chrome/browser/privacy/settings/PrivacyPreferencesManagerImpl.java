@@ -48,7 +48,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         mContext = context;
         mPrefs = ChromeSharedPreferences.getInstance();
         mNativeInitialized = false;
-        // TODO(https://crbug.com/1320040). Clean up deprecated preference migration.
+        // TODO(crbug.com/40836507). Clean up deprecated preference migration.
         migrateDeprecatedPreferences();
     }
 

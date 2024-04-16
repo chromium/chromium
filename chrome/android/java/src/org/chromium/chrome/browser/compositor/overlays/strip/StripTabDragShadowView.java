@@ -183,7 +183,7 @@ public class StripTabDragShadowView extends FrameLayout {
     }
 
     private void update() {
-        // TODO(https://crbug.com/1499119): Unify the shared code for creating the GTS-style card.
+        // TODO(crbug.com/40287709): Unify the shared code for creating the GTS-style card.
         // Set to final size. Even though the size will be animated, we need to initially set to the
         // final size, so that we allocate the appropriate amount of space when
         // #onProvideShadowMetrics is called on drag start.

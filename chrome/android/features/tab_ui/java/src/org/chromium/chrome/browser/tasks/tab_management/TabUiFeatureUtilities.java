@@ -140,7 +140,7 @@ public class TabUiFeatureUtilities {
 
     /**
      * @return whether tab drag is enabled (either via drag as window or drag as tab).
-     *     TODO(crbug.com/1485628) - merge both flags and use device property instead to
+     *     TODO(crbug.com/40933355) - merge both flags and use device property instead to
      *     differentiate.
      */
     public static boolean isTabDragEnabled() {

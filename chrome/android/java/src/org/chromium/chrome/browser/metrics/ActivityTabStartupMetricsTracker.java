@@ -232,7 +232,7 @@ public class ActivityTabStartupMetricsTracker {
     }
 
     /**
-     * TODO(crbug.com/1504020): This is exposed in order to investigate whether back press will
+     * TODO(crbug.com/40944523): This is exposed in order to investigate whether back press will
      * interrupt the recording of first visible content related histograms. Remove this once a
      * definitive conclusion is reached.
      *

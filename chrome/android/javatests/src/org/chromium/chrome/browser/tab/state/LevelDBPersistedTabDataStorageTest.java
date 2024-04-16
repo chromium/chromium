@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests relating to {@link LevelDBPersistedTabDataStorage} TODO(crbug.com/1146803) investigate
+ * Tests relating to {@link LevelDBPersistedTabDataStorage} TODO(crbug.com/40156392) investigate
  * batching tests
  */
 @RunWith(ChromeJUnit4ClassRunner.class)

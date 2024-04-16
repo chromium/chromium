@@ -19,8 +19,8 @@ import org.chromium.ui.text.EmptyTextWatcher;
 
 /**
  * Prompt that asks users to confirm the expiration date before saving card to Google.
- * TODO(crbug.com/848955)
- * - Confirm if the month and year needs to be pre-populated in case partial data is available.
+ * TODO(crbug.com/40579040) - Confirm if the month and year needs to be pre-populated in case
+ * partial data is available.
  */
 public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptBase
         implements EmptyTextWatcher {

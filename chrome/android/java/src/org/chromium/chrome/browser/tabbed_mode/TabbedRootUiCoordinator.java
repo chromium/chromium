@@ -634,7 +634,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mLayoutManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
-        // TODO(crbug.com/1505851): Consider register this drag listener to other views besides CVH.
+        // TODO(crbug.com/40946488): Consider register this drag listener to other views besides
+        // CVH.
         if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
                 && !TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD.getValue()) {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
@@ -722,7 +723,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mIntentMetadataOneshotSupplier,
                 mProfileSupplier);
 
-        // TODO(https://crbug.com/1157955): Investigate switching to per-Activity coordinator that
+        // TODO(crbug.com/40736706): Investigate switching to per-Activity coordinator that
         // uses signals from the current Tab to decide when to show the PWA install bottom sheet
         // rather than relying on unowned user data.
         mPwaBottomSheetController =
@@ -1019,7 +1020,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!didTriggerPromo
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
-            // TODO(crbug.com/1252965): Investigate locking feature engagement system during
+            // TODO(crbug.com/40793438): Investigate locking feature engagement system during
             // "second run promos" to avoid !didTriggerPromo check.
             WebContentsDarkModeMessageController.attemptToSendMessage(
                     mActivity,
@@ -1081,7 +1082,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // This method can be called when the toolbar didn't go through a layout pass (e.g. when
             // theme switches in settings, activity recreates), so getToolbar().getHeight() returns
             // 0.
-            // TODO(crbug.com/1503029): Remove the reference to toolbar_height_no_shadow.
+            // TODO(crbug.com/40943442): Remove the reference to toolbar_height_no_shadow.
             final int toolbarHeight =
                     mActivity
                             .getResources()

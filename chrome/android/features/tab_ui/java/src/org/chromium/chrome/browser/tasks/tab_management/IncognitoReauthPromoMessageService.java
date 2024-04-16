@@ -33,20 +33,17 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Message service class to show the Incognito re-auth promo inside the incognito
- * tab switcher.
- */
+/** Message service class to show the Incognito re-auth promo inside the incognito tab switcher. */
 public class IncognitoReauthPromoMessageService extends MessageService
         implements PauseResumeWithNativeObserver {
-    /** TODO(crbug.com/1227656): Remove this when we support all the Android versions. */
+    /** TODO(crbug.com/40056462): Remove this when we support all the Android versions. */
     public static Boolean sIsPromoEnabledForTesting;
 
     /**
-     * For instrumentation tests, we don't have the supported infrastructure to perform
-     * native re-authentication. Therefore, setting this variable would skip the re-auth
-     * triggering and simply call the next set of actions which would have been call, if
-     * the re-auth was indeed successful.
+     * For instrumentation tests, we don't have the supported infrastructure to perform native
+     * re-authentication. Therefore, setting this variable would skip the re-auth triggering and
+     * simply call the next set of actions which would have been call, if the re-auth was indeed
+     * successful.
      */
     private static Boolean sTriggerReviewActionWithoutReauthForTesting;
 
@@ -225,7 +222,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
                         /* controller= */ null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_INCOGNITO_REAUTH_ENABLED_FROM_PROMO);
-        // TODO(crbug.com/1227656):  Confirm with UX to see how the background color of the
+        // TODO(crbug.com/40056462):  Confirm with UX to see how the background color of the
         // snackbar needs to be revised.
         snackbar.setBackgroundColor(
                 mContext.getColor(R.color.snackbar_background_color_baseline_dark));
@@ -294,7 +291,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
         if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return false;
         // The promo relies on turning on the Incognito lock setting on user's behalf but after a
         // device level authentication, which must be setup beforehand.
-        // TODO(crbug.com/1227656): Remove the check on the API once all Android version is
+        // TODO(crbug.com/40056462): Remove the check on the API once all Android version is
         // supported.
         if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
                 || !IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()) {
@@ -322,10 +319,10 @@ public class IncognitoReauthPromoMessageService extends MessageService
      * A method that dismisses the promo card and *conditionally* disables it if the conditions
      * which were met before to show a promo card is not true any more.
      *
-     * For the case when it only dismisses the card but doesn't disable it, it would prepare
-     * the message again once it detects the promo card can now be enabled.
+     * <p>For the case when it only dismisses the card but doesn't disable it, it would prepare the
+     * message again once it detects the promo card can now be enabled.
      *
-     * TODO(crbug.com/1227656): This method can dismiss the promo card abruptly w/o stating any
+     * <p>TODO(crbug.com/40056462): This method can dismiss the promo card abruptly w/o stating any
      * user-visible reasoning. This needs to be revisited with UX to see how best can we provide
      * user education in such scenarios.
      */

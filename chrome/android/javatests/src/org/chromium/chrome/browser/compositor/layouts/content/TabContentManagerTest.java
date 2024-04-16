@@ -147,7 +147,7 @@ public class TabContentManagerTest {
                 () -> {
                     compositorView.onSelectionHandlesStateChanged(true);
                 });
-        // TODO(crbug.com/1402843): It unfortunately may take time for the SurfaceView buffer to
+        // TODO(crbug.com/40885026): It unfortunately may take time for the SurfaceView buffer to
         // contain anything and there is no signal to listen to.
         Thread.sleep(1000);
         // Capture the surface using PixelCopy repeating until it works.

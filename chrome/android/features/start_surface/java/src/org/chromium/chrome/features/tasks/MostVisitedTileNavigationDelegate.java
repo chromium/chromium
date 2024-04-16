@@ -75,7 +75,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
                 openUrlInNewWindow(new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK));
                 break;
             case WindowOpenDisposition.SAVE_TO_DISK:
-                // TODO(crbug.com/1202321): Downloading toast is not shown maybe due to the
+                // TODO(crbug.com/40179101): Downloading toast is not shown maybe due to the
                 // webContent is null for start surface.
                 saveUrlForOffline(url);
                 break;
@@ -85,7 +85,7 @@ public class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDele
     }
 
     private void saveUrlForOffline(String url) {
-        // TODO(crbug.com/1193816): Namespace shouldn't be NTP_SUGGESTIONS_NAMESPACE since it's
+        // TODO(crbug.com/40175383): Namespace shouldn't be NTP_SUGGESTIONS_NAMESPACE since it's
         // not on NTP.
         RequestCoordinatorBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
                 .savePageLater(

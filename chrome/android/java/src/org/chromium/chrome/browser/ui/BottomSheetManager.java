@@ -108,7 +108,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
         mSheetController.addObserver(this);
 
-        // TODO(1092686): We should wait to instantiate all of these observers until the bottom
+        // TODO(crbug.com/40134698): We should wait to instantiate all of these observers until the
+        // bottom
         //                sheet is actually used.
         mTabObserver =
                 new EmptyTabObserver() {

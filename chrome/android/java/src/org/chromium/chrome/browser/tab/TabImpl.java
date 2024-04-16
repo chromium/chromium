@@ -264,7 +264,7 @@ class TabImpl implements Tab {
         // Tab are inflated from activity context instead of application context. This is to
         // avoid getting the wrong night mode state when application context inherits a system UI
         // mode different from the UI mode we need.
-        // TODO(https://crbug.com/938641): Remove this once Tab UIs are all inflated from
+        // TODO(crbug.com/41445155): Remove this once Tab UIs are all inflated from
         // activity.
         mThemedApplicationContext =
                 NightModeUtils.wrapContextWithNightModeConfig(
@@ -788,7 +788,7 @@ class TabImpl implements Tab {
 
             loadIfNeeded(caller);
 
-            // TODO(crbug.com/1253938): We should provide a timestamp that apporoximates the input
+            // TODO(crbug.com/40199376): We should provide a timestamp that apporoximates the input
             // event timestamp. When presenting a Tablet UI, StripLayoutTab.handleClick does
             // receive a timestamp. When presenting a Phone UI
             // TabGridViewBinder.bindClosableTabProperties is called by Android.View.performClick,
@@ -1302,7 +1302,8 @@ class TabImpl implements Tab {
         // so we can't create the native page. The native page will be created once reparenting is
         // completed.
         if (isDetached()) return false;
-        // TODO(crbug/1503182): Remove the assert after determining why WebContents can be null.
+        // TODO(crbug.com/40943608): Remove the assert after determining why WebContents can be
+        // null.
         WebContents webContents = getWebContents();
         assert webContents != null;
         if (webContents == null) return false;
@@ -1393,7 +1394,7 @@ class TabImpl implements Tab {
         // crash the underlying tab. This is because it is safe to keep the spare tab around without
         // a renderer process, and since the tab is hidden, we don't need to show a sad tab. When
         // the spare tab is used for navigation it will create a new renderer process.
-        // TODO(crbug.com/1447250): Make this logic more robust for all hidden tab cases.
+        // TODO(crbug.com/40268909): Make this logic more robust for all hidden tab cases.
         if (!WarmupManager.getInstance().isSpareTab(this)) {
             while (observers.hasNext()) observers.next().onCrash(this);
         }
@@ -1579,7 +1580,8 @@ class TabImpl implements Tab {
 
             mWebContentsDelegate = createWebContentsDelegate();
 
-            // TODO(crbug/1501849): Find a better way of indicating this is a background tab (or
+            // TODO(crbug.com/40942165): Find a better way of indicating this is a background tab
+            // (or
             // move the logic elsewhere).
             boolean isBackgroundTab = isDetached();
 
@@ -2072,7 +2074,7 @@ class TabImpl implements Tab {
         return userAgentOverrideOption;
     }
 
-    // TODO(crbug.com/1243758): Confirm if a new histogram should be used.
+    // TODO(crbug.com/40195571): Confirm if a new histogram should be used.
     private void recordHistogramUseDesktopUserAgent(boolean value) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.RequestDesktopSite.UseDesktopUserAgent", value);

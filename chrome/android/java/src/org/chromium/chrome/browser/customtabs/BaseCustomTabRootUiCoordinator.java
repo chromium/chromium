@@ -263,7 +263,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
         mFeatureOverridesManagerSupplier = featureOverridesManagerSupplier;
-        // TODO(https://crbug.com/1509163): move this RootUiCoordinator once this flag is removed.
+        // TODO(crbug.com/41481778): move this RootUiCoordinator once this flag is removed.
         if (ChromeFeatureList.sCctTabModalDialog.isEnabled()) {
             getAppBrowserControlsVisibilityDelegate()
                     .addDelegate(browserControlsManager.getBrowserVisibilityDelegate());
@@ -549,7 +549,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     protected Rect getAppRectOnScreen() {
         // This is necessary if app handler cannot rely on the popup window that ensures the menu
         // will not be clipped off the screen, which can happen in partial CCT.
-        // TODO(crbug.com/1382010): Add a render test to prevent regressions.
+        // TODO(crbug.com/40877078): Add a render test to prevent regressions.
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             View coord = mActivity.findViewById(R.id.coordinator);
             int[] location = new int[2];

@@ -173,7 +173,7 @@ public class TabDragSource implements View.OnDragListener {
 
         // Do not allow drag if the tab is the only tab in non-split screen mode on a non-Samsung
         // device.
-        // @TODO(crbug.com/1520080): Make this configurable via Finch in case we find more OEMs
+        // @TODO(crbug.com/41493055): Make this configurable via Finch in case we find more OEMs
         // where this works.
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
                 && !shouldAllowTabDrag()) {

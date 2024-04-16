@@ -361,7 +361,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         updatePrivacyGuidePreferenceTitle();
     }
 
-    // TODO(crbug.com/1431101): This will be removed when the Privacy Guide is rolled out and no
+    // TODO(crbug.com/40263380): This will be removed when the Privacy Guide is rolled out and no
     //  longer a new feature.
     private void updatePrivacyGuidePreferenceTitle() {
         Preference privacyGuide = findPreference(PREF_PRIVACY_GUIDE);

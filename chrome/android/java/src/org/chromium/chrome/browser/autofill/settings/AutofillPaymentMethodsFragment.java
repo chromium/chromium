@@ -201,7 +201,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             getPreferenceScreen().addPreference(fidoAuthSwitch);
         }
 
-        // TODO(crbug.com/1427216): Confirm with Product on the order of the toggles.
+        // TODO(crbug.com/40261690): Confirm with Product on the order of the toggles.
         // Don't show the toggle to enable mandatory reauth on automotive,
         // as the feature is always enabled for automotive builds.
         if (BuildInfo.getInstance().isAutomotive) {

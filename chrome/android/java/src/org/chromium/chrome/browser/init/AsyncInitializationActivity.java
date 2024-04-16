@@ -171,7 +171,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected void performPreInflationStartup() {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         mHadWarmStart = LibraryLoader.getInstance().isInitialized();
-        // TODO(https://crbug.com/948745): Dispatch in #preInflationStartup instead so that
+        // TODO(crbug.com/40621278): Dispatch in #preInflationStartup instead so that
         // subclass's #performPreInflationStartup has executed before observers are notified.
         mLifecycleDispatcher.dispatchPreInflationStartup();
     }
@@ -691,7 +691,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     /** Return a supplier for the ProfileProvider. */
     public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
-        // TODO(crbug/1464647): Convert to a thrown exception if no asserts are discovered.
+        // TODO(crbug.com/40275690): Convert to a thrown exception if no asserts are discovered.
         assert mProfileProviderSupplier != null;
         return mProfileProviderSupplier;
     }

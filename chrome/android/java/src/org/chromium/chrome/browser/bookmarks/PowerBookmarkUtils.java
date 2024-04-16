@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Utilities for use in power bookmarks. */
-// TODO(1351830): We should add a JNI layer for the native version of these utilities in
+// TODO(crbug.com/40234642): We should add a JNI layer for the native version of these utilities in
 //                price_tracking_utils and use those instead.
 public class PowerBookmarkUtils {
     private static Boolean sPriceTrackingEligibleForTesting;

@@ -16,7 +16,7 @@ import org.chromium.chrome.R;
 
 /** The dialog content view for password generation dialog. */
 public class PasswordGenerationDialogCustomView extends LinearLayout {
-    // TODO(crbug.com/835234): Make the generated password editable.
+    // TODO(crbug.com/40572788): Make the generated password editable.
     private TextView mGeneratedPasswordTextView;
     private TextView mSaveExplantaionTextView;
 

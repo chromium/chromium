@@ -376,7 +376,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
 
-        // @TODO(crbug.com/1519592): Add test case for search box OnDragListener.
+        // @TODO(crbug.com/41492572): Add test case for search box OnDragListener.
         mSearchBoxCoordinator.setSearchBoxDragListener(
                 new OnDragListener() {
                     @Override

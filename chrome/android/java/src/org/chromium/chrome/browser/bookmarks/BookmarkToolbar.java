@@ -34,7 +34,7 @@ import java.util.function.Function;
  */
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
-    // TODO(crbug.com/1425201): Remove BookmarkModel reference.
+    // TODO(crbug.com/40898590): Remove BookmarkModel reference.
     private BookmarkModel mBookmarkModel;
     private BookmarkOpener mBookmarkOpener;
     private SelectionDelegate<BookmarkId> mSelectionDelegate;

@@ -281,7 +281,7 @@ class BookmarkToolbarMediator
     public void onUiModeChanged(@BookmarkUiMode int mode) {
         mCurrentUiMode = mode;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            // TODO(https://crbug.com/1439583): Update buttons.
+            // TODO(crbug.com/40265597): Update buttons.
         } else {
             mModel.set(
                     BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE,

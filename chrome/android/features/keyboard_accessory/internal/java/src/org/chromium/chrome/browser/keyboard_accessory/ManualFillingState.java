@@ -39,14 +39,14 @@ class ManualFillingState {
         @Nullable Provider<AccessorySheetData> mDataProvider;
 
         /**
-         *  @deprecated Storing a sheet per WebContents is too expensive. Instead, reuse the already
-         *              constructed, browser-scoped sheets in the {@link ManualFillingMediator}!
-         *              The state knows about {@link #mAvailableTabs} which is sufficient to request
-         *              updates via {@link #requestRecentSheets()} for browser-scoped sheets.
+         * @deprecated Storing a sheet per WebContents is too expensive. Instead, reuse the already
+         *     constructed, browser-scoped sheets in the {@link ManualFillingMediator}! The state
+         *     knows about {@link #mAvailableTabs} which is sufficient to request updates via {@link
+         *     #requestRecentSheets()} for browser-scoped sheets.
          */
         @Deprecated @Nullable AccessorySheetTabCoordinator mSheet;
 
-        // TODO(crbug.com/1169167): Remove this method when the legacy accessory is cleaned up.
+        // TODO(crbug.com/40165275): Remove this method when the legacy accessory is cleaned up.
         void notifyProviderObservers() {
             if (mDataProvider instanceof CachedProviderAdapter) {
                 ((CachedProviderAdapter<AccessorySheetData>) mDataProvider)

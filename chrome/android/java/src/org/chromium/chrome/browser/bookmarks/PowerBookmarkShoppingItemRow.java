@@ -231,7 +231,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         Callback<Boolean> subscriptionCallback =
                 (success) -> {
                     mSubscriptionChangeInProgress = false;
-                    // TODO(crbug.com/1243383): Handle the failure edge case.
+                    // TODO(crbug.com/40195402): Handle the failure edge case.
                     if (!success) return;
                     mIsPriceTrackingEnabled = !mIsPriceTrackingEnabled;
                     updatePriceTrackingImageForCurrentState();

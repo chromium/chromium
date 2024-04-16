@@ -152,7 +152,7 @@ public class ReparentingTask implements UserData {
         // with an activity, and will crash. crbug.com/657007
         WebContents webContents = mTab.getWebContents();
 
-        // TODO(crbug/1463737): We shouldn't be detaching tabs with null WebContents as it can
+        // TODO(crbug.com/40067160): We shouldn't be detaching tabs with null WebContents as it can
         // put the tab into an unexpected detached = false state if a navigation happens on the
         // detached tab.
         if (webContents != null) {

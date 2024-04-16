@@ -55,7 +55,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.function.Consumer;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
-// TODO(crbug.com/1446506): Add a new coordinator so this class doesn't own everything.
+// TODO(crbug.com/40268641): Add a new coordinator so this class doesn't own everything.
 public class BookmarkManagerCoordinator
         implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
@@ -340,7 +340,7 @@ public class BookmarkManagerCoordinator
     }
 
     /** Sets the listener that reacts upon the change of the UI state of bookmark manager. */
-    // TODO(crbug.com/1418859): Create abstraction between BookmarkManager & BasicNativePage.
+    // TODO(crbug.com/40257874): Create abstraction between BookmarkManager & BasicNativePage.
     public void setBasicNativePage(BasicNativePage nativePage) {
         mMediator.setBasicNativePage(nativePage);
     }

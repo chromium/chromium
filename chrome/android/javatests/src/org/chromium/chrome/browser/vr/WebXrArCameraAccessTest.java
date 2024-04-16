@@ -36,7 +36,7 @@ import java.util.concurrent.Callable;
 /** End-to-end tests for testing WebXR for AR's camera access behavior. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// TODO(https://crbug.com/1112356) Change this to Build.VERSION_CODES.N once N support is added.
+// TODO(crbug.com/40709670) Change this to Build.VERSION_CODES.N once N support is added.
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
 public class WebXrArCameraAccessTest {
     @ClassParameter

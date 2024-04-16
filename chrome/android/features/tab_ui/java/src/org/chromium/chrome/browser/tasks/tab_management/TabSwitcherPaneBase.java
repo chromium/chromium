@@ -161,7 +161,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
             createTabSwitcherPaneCoordinator();
             showAllTabs();
             setInitialScrollIndexOffset();
-            // TODO(crbug/1502201): This should only happen when the Pane becomes user visible which
+            // TODO(crbug.com/40942549): This should only happen when the Pane becomes user visible
+            // which
             // might only happen after the Hub animation finishes. Figure out how to handle that
             // since the load hint for hot will come before the animation is started. Panes likely
             // need to know an animation is going to play and when it is finished (possibly using
@@ -244,7 +245,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         if (mIsIncognito) {
             return ChromeColors.getPrimaryBackgroundColor(mRootView.getContext(), mIsIncognito);
         } else {
-            // TODO(crbug/1507839): Consider not getting the color from home surface.
+            // TODO(crbug.com/40948541): Consider not getting the color from home surface.
             return ChromeColors.getSurfaceColor(
                     mRootView.getContext(), R.dimen.home_surface_background_color_elevation);
         }
@@ -488,7 +489,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private void onTabClick(int tabId) {
         if (mPaneHubController == null) return;
 
-        // TODO(crbug/1516949): Consider using INVALID_TAB_ID if already selected to prevent a
+        // TODO(crbug.com/41489932): Consider using INVALID_TAB_ID if already selected to prevent a
         // repeat selection. For now this is required to ensure the tab gets marked as shown when
         // exiting the Hub. See if this can be updated/changed.
         mPaneHubController.selectTabAndHideHub(tabId);

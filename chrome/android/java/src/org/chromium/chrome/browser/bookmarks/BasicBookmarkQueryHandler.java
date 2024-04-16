@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /** Simple implementation of {@link BookmarkQueryHandler} that fetches children. */
 public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
-    // TODO(https://crbug.com/1441629): Support pagination.
+    // TODO(crbug.com/40266584): Support pagination.
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
 
     private final BookmarkModel mBookmarkModel;

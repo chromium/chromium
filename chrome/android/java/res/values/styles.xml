@@ -130,7 +130,7 @@ found in the LICENSE file.
     </style>
 
     <!-- First Run and Bookmark/recent-tabs dialogs.
-        TODO(https://crbug.com/819142): Remove textAppearance when all TextViews have text style
+        TODO(crbug.com/41374924): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
     <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
         parent="Theme.BrowserUI.DialogWhenLarge.DayNight">
@@ -360,7 +360,7 @@ found in the LICENSE file.
     <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textColor">@macro/default_text_color_link</item>
     </style>
-    <!-- TODO(crbug.com/1081933): Replace with a standard text appearance. -->
+    <!-- TODO(crbug.com/40691622): Replace with a standard text appearance. -->
     <style name="TextAppearance.ClearBrowsingDataText">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
@@ -491,7 +491,7 @@ found in the LICENSE file.
     </style>
 
     <!--
-        TODO(crbug.com/1429043): Tinting the drawable for the popup theme doesn't work in clank.
+        TODO(crbug.com/40900841): Tinting the drawable for the popup theme doesn't work in clank.
         The "colorAccent" attribute works in a standalone Android project, but it doesn't have any
         effect in clank.
     -->

@@ -161,7 +161,7 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If the bottom sheet is currently open, then do not use the Compositor based screenshot
         // so that the Android View for the bottom sheet will be captured.
-        // TODO(https://crbug.com/835862): When the sheet is partially opened both the compositor
+        // TODO(crbug.com/40573072): When the sheet is partially opened both the compositor
         // and Android views should be captured in the screenshot.
         if (BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()).isSheetOpen()) {
             return false;

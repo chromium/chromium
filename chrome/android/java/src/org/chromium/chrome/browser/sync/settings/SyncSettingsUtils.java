@@ -391,10 +391,11 @@ public class SyncSettingsUtils {
 
     /**
      * Opens web dashboard to manage sync in a custom tab.
+     *
      * @param activity The activity to use for starting the intent.
      */
     public static void openSyncDashboard(Activity activity) {
-        // TODO(https://crbug.com/948103): Create a builder for custom tab intents.
+        // TODO(crbug.com/41450409): Create a builder for custom tab intents.
         openCustomTabWithURL(activity, DASHBOARD_URL);
     }
 

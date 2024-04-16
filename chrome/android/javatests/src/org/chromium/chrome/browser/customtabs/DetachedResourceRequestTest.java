@@ -676,7 +676,7 @@ public class DetachedResourceRequestTest {
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
-            // TODO(crbug.com/1039443): For now, we check the presence of an interstitial through
+            // TODO(crbug.com/40666836): For now, we check the presence of an interstitial through
             // the title since isShowingInterstitialPage does not work with committed interstitials.
             // Once we fully migrate to committed interstitials, this should be changed to a more
             // robust check.

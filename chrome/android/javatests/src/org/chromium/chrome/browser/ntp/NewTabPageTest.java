@@ -135,7 +135,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Tests for the native android New Tab Page.
  *
- * <p>TODO(https://crbug.com/906151): Add new goldens and enable ExploreSites.
+ * <p>TODO(crbug.com/40602800): Add new goldens and enable ExploreSites.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)

@@ -99,7 +99,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
                 @Override
                 public void tabClosureCommitted(Tab tab) {
-                    // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
+                    // TODO(crbug.com/40160889): Auto update the PriceMessageService instead of
                     // updating it based on the client caller.
                     if (mPriceMessageService != null
                             && mPriceMessageService.getBindingTabId() == tab.getId()) {

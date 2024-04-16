@@ -107,7 +107,7 @@ public class TabGroupUiToolbarView extends FrameLayout {
         // This is equal to the animation duration of toolbar menu hiding.
         int showKeyboardDelay = 150;
         if (shouldShow) {
-            // TODO(crbug.com/1116644) Figure out why a call to show keyboard without delay still
+            // TODO(crbug.com/40144823) Figure out why a call to show keyboard without delay still
             // won't work when the window gets focus in onWindowFocusChanged call.
             // Wait until the current window has focus to show the keyboard. This is to deal with
             // the case where the keyboard showing is caused by toolbar menu. In this case, we need

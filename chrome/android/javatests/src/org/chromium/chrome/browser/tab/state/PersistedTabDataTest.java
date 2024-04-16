@@ -52,7 +52,8 @@ public class PersistedTabDataTest {
 
     @Before
     public void setUp() throws Exception {
-        // TODO(crbug.com/1337102): Remove runOnUiThreadBlocking call after code refactoring/cleanup
+        // TODO(crbug.com/40229155): Remove runOnUiThreadBlocking call after code
+        // refactoring/cleanup
         // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.

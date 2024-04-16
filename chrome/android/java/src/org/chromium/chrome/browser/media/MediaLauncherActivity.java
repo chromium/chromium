@@ -42,7 +42,7 @@ public class MediaLauncherActivity extends Activity {
         }
 
         boolean allowShareAction = !BuildInfo.getInstance().isAutomotive;
-        // TODO(https://crbug.com/800880): Determine file:// URI when possible.
+        // TODO(crbug.com/40557611): Determine file:// URI when possible.
         Intent intent =
                 MediaViewerUtils.getMediaViewerIntent(
                         contentUri,

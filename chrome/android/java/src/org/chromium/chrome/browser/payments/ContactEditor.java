@@ -383,7 +383,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     private static boolean isPhoneValid(@Nullable String phone) {
-        // TODO(crbug.com/999286): PhoneNumberUtils internally trigger
+        // TODO(crbug.com/41479087): PhoneNumberUtils internally trigger
         // disk reads for certain devices/configurations.
         return phone != null
                 && PhoneNumberUtils.isGlobalPhoneNumber(PhoneNumberUtils.stripSeparators(phone));

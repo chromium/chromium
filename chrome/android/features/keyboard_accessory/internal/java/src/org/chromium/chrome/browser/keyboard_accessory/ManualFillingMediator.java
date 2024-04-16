@@ -558,7 +558,7 @@ class ManualFillingMediator
         }
         if (requiresVisibleSheet(extensionState)) {
             mAccessorySheet.show();
-            // TODO(crbug.com/853768): Enable animation that works with sheet (if possible).
+            // TODO(crbug.com/40581202): Enable animation that works with sheet (if possible).
             mKeyboardAccessory.skipClosingAnimationOnce();
         } else if (requiresHiddenSheet(extensionState)) {
             mKeyboardAccessory.closeActiveTab();
@@ -683,7 +683,7 @@ class ManualFillingMediator
             boolean isEdgeToEdgeActive =
                     mEdgeToEdgeControllerSupplier.get() != null
                             && mEdgeToEdgeControllerSupplier.get().isEdgeToEdgeActive();
-            // TODO(crbug/1511220): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
+            // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
             if (mModel.get(IS_FULLSCREEN) // Hides UI and lets keyboard overlay webContents.
                     // No need to set the controls height to 0 in edge-to-edge since the content
                     // view will resize to account for the keyboard.
@@ -818,7 +818,8 @@ class ManualFillingMediator
 
         int minimumVerticalSpacePx = Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
 
-        // TODO(crbug.com/1491626): google-java-format did not introduce '{}'s as expected in the if
+        // TODO(crbug.com/40285164): google-java-format did not introduce '{}'s as expected in the
+        // if
         // construct below (see crbug.com/1505284 for failure). Investigate why and fix it or file a
         // corresponding bug.
         if (visibleViewportHeightPx >= minimumVerticalSpacePx) {

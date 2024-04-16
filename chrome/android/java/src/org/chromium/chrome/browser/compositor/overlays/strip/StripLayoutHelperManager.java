@@ -375,7 +375,7 @@ public class StripLayoutHelperManager
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull WindowAndroid windowAndroid,
-            // TODO(crbug.com/1498252): Avoid passing the ToolbarManager instance. Potentially
+            // TODO(crbug.com/40939440): Avoid passing the ToolbarManager instance. Potentially
             // implement an interface to manage strip transition states.
             @NonNull ToolbarManager toolbarManager,
             OneshotSupplier<AppHeaderCoordinator> appHeaderCoordinatorSupplier) {

@@ -1005,7 +1005,7 @@ public final class ReturnToChromeUtil {
         }
     }
 
-    // TODO(https://crbug.com/1450578): Removes this histogram once we understand the root cause of
+    // TODO(crbug.com/40270227): Removes this histogram once we understand the root cause of
     // the crash.
     private static void recordFailToShowHomeSurfaceReasonUma(
             @FailToShowHomeSurfaceReason int reason) {

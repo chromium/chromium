@@ -191,7 +191,7 @@ public class ContextualPageActionController {
             actionProvider.onActionShown(mTabSupplier.get(), action);
         }
 
-        // TODO(crbug/1373891): Add logic to inform reader mode backend.
+        // TODO(crbug.com/40242242): Add logic to inform reader mode backend.
         mAdaptiveToolbarButtonController.showDynamicAction(action);
     }
 

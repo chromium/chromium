@@ -887,7 +887,7 @@ public class ClearBrowsingDataFragmentTest {
                 });
     }
 
-    // TODO(https://crbug.com/1334586): Move this to a test util class.
+    // TODO(crbug.com/40846557): Move this to a test util class.
     private ViewAction clickOnSignOutLink() {
         return new ViewAction() {
             @Override

@@ -178,7 +178,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     @VisibleForTesting
     static ScrimCoordinator createScrimCoordinatorForTablet(Activity activity) {
         ViewGroup coordinator = activity.findViewById(R.id.coordinator);
-        // TODO(crbug/1464216): Because the show/hide animation already uses the RootUiCoordinator's
+        // TODO(crbug.com/40067282): Because the show/hide animation already uses the
+        // RootUiCoordinator's
         // ScrimCoordinator, a separate instance is needed. However, the way this is implemented the
         // status bar color is not updated. This should be fixed.
         SystemUiScrimDelegate delegate =
