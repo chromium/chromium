@@ -268,6 +268,16 @@ void PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTaskInternal(
 }
 
 // static
+void PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTask() {
+  Instance().SetDidRegisterTaskInternal();
+}
+
+void PreFreezeBackgroundMemoryTrimmer::SetDidRegisterTaskInternal() {
+  base::AutoLock locker(lock_);
+  did_register_task_ = true;
+}
+
+// static
 bool PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim() {
   return Instance().supports_modern_trim_;
 }
