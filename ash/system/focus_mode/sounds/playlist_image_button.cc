@@ -23,7 +23,7 @@ constexpr int kSelectedCurvycutoutSpacing = 4;
 std::unique_ptr<lottie::Animation> GetEqualizerAnimation() {
   std::optional<std::vector<uint8_t>> lottie_data =
       ui::ResourceBundle::GetSharedInstance().GetLottieData(
-          IDR_FOCUS_MODE_EQUALIZER_LIGHT_ANIMATION);
+          IDR_FOCUS_MODE_EQUALIZER_ANIMATION);
   CHECK(lottie_data.has_value());
 
   return std::make_unique<lottie::Animation>(

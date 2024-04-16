@@ -59,7 +59,7 @@
       <structure type="lottie" name="IDR_PINE_NUDGE_IMAGE_LM" file="unscaled_resources/pine_nudge_lm.json" compress="gzip" />
       <structure type="lottie" name="IDR_PINE_ONBOARDING_IMAGE" file="unscaled_resources/pine_onboarding.json" compress="gzip" />
       <!-- Focus Mode -->
-      <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_LIGHT_ANIMATION" file="unscaled_resources/equalizer_light.json" compress="gzip" />
+      <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_ANIMATION" file="unscaled_resources/equalizer.json" compress="gzip" />
       <!-- Birch -->
       <structure type="lottie" name="IDR_BIRCH_RELEASE_NOTES_ICON" file="unscaled_resources/birch_release_notes_icon.json" compress="gzip" />
       <!-- Mahi -->
