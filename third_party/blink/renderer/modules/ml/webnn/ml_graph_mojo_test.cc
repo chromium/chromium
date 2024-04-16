@@ -1408,6 +1408,493 @@ TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
   }
 }
 
+struct Conv2dTester {
+  OperandInfoBlink input;
+  OperandInfoBlink filter;
+  struct Conv2dOptions {
+    std::optional<Vector<uint32_t>> padding;
+    std::optional<Vector<uint32_t>> strides;
+    std::optional<Vector<uint32_t>> dilations;
+    std::optional<uint32_t> groups;
+    std::optional<blink::V8MLInputOperandLayout::Enum> input_layout;
+    std::optional<blink::V8MLConv2dFilterOperandLayout::Enum> filter_layout;
+    std::optional<OperandInfoBlink> bias;
+    std::optional<Activation> activation;
+  };
+  struct Conv2dAttributes {
+    Vector<uint32_t> padding = {0, 0, 0, 0};
+    Vector<uint32_t> strides = {1, 1};
+    Vector<uint32_t> dilations = {1, 1};
+    uint32_t groups = 1;
+    blink_mojom::InputOperandLayout input_layout =
+        blink_mojom::InputOperandLayout::kChannelsFirst;
+    std::optional<OperandInfoMojo> bias;
+    std::optional<Activation> activation;
+  };
+  Conv2dOptions options;
+  OperandInfoMojo expected_operand;
+  Conv2dAttributes expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* filter_operand =
+        BuildInput(builder, "filter", filter.dimensions, filter.data_type,
+                   scope.GetExceptionState());
+    MLConv2dOptions* ml_conv2d_options = MLConv2dOptions::Create();
+    if (options.padding) {
+      ml_conv2d_options->setPadding(options.padding.value());
+    }
+    if (options.strides) {
+      ml_conv2d_options->setStrides(options.strides.value());
+    }
+    if (options.dilations) {
+      ml_conv2d_options->setDilations(options.dilations.value());
+    }
+    if (options.groups) {
+      ml_conv2d_options->setGroups(options.groups.value());
+    }
+    if (options.input_layout) {
+      ml_conv2d_options->setInputLayout(options.input_layout.value());
+    }
+    if (options.filter_layout) {
+      ml_conv2d_options->setFilterLayout(options.filter_layout.value());
+    }
+    if (options.bias) {
+      ml_conv2d_options->setBias(
+          BuildInput(builder, "bias", options.bias->dimensions,
+                     options.bias->data_type, scope.GetExceptionState()));
+    }
+    if (options.activation) {
+      auto* activation =
+          CreateActivation(scope, builder, options.activation.value());
+      CHECK(activation);
+      ml_conv2d_options->setActivation(activation);
+    }
+    auto* output_operand =
+        builder->conv2d(input_operand, filter_operand, ml_conv2d_options,
+                        scope.GetExceptionState());
+    auto [graph, error_name, error_message] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_THAT(graph, testing::NotNull());
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_TRUE(operation->is_conv2d());
+    auto& conv2d = operation->get_conv2d();
+    // Validate explicit padding.
+    auto& expected_padding = expected_attributes.padding;
+    EXPECT_EQ(conv2d->padding->beginning->height, expected_padding[0]);
+    EXPECT_EQ(conv2d->padding->ending->height, expected_padding[1]);
+    EXPECT_EQ(conv2d->padding->beginning->width, expected_padding[2]);
+    EXPECT_EQ(conv2d->padding->ending->width, expected_padding[3]);
+    // Validate strides
+    EXPECT_EQ(conv2d->strides->height, expected_attributes.strides[0]);
+    EXPECT_EQ(conv2d->strides->width, expected_attributes.strides[1]);
+    // Validate dilations.
+    EXPECT_EQ(conv2d->dilations->height, expected_attributes.dilations[0]);
+    EXPECT_EQ(conv2d->dilations->width, expected_attributes.dilations[1]);
+    EXPECT_EQ(conv2d->groups, expected_attributes.groups);
+    EXPECT_EQ(conv2d->input_layout, expected_attributes.input_layout);
+    if (options.bias) {
+      auto bias_operand_iter =
+          graph_info->id_to_operand_map.find(conv2d->bias_operand_id.value());
+      ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(bias_operand_iter->value->data_type,
+                expected_attributes.bias->data_type);
+      EXPECT_EQ(bias_operand_iter->value->dimensions,
+                expected_attributes.bias->dimensions);
+    }
+    if (options.activation) {
+      CHECK(expected_attributes.activation);
+      CheckActivation(conv2d->activation,
+                      expected_attributes.activation.value());
+    }
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, Conv2dTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_THAT(builder, testing::NotNull());
+  {
+    // Test conv2d with default options.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes = {.padding = {0, 0, 0, 0},
+                                .strides = {1, 1},
+                                .dilations = {1, 1},
+                                .groups = 1}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with strides=2 and padding=1.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.padding = Vector<uint32_t>({1, 1, 1, 1}),
+                    .strides = Vector<uint32_t>({2, 2})},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes = {.padding = {1, 1, 1, 1},
+                                .strides = {2, 2},
+                                .dilations = {1, 1},
+                                .groups = 1}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test depthwise conv2d by setting groups to input channels.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 4, 2, 2}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {4, 1, 2, 2}},
+        .options = {.groups = 4},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 4, 1, 1}},
+        .expected_attributes = {.padding = {0, 0, 0, 0},
+                                .strides = {1, 1},
+                                .dilations = {1, 1},
+                                .groups = 4}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with clamp activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kClamp,
+                     .clamp_options =
+                         ClampTester::ClampOptions{.min_value = 1.0,
+                                                   .max_value = 6.0}}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with elu activation with default options.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kElu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with elu activation with given alpha.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = webnn::mojom::blink::Activation::Tag::kElu,
+                            .elu_alpha = 0.5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with hardSigmoid activation with default alpha = 0.1 and beta
+    // = -1.0.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kHardSigmoid,
+                     .hard_sigmoid_alpha = 0.1,
+                     .hard_sigmoid_beta = -1.0}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kHardSigmoid,
+                     .hard_sigmoid_alpha = 0.1,
+                     .hard_sigmoid_beta = -1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with leaky relu activation with default options.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.01}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with leaky relu activation with given alpha.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kLeakyRelu,
+                     .leaky_relu_alpha = 0.02}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with relu activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kRelu}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with sigmoid activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSigmoid}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softmax activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftmax}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softplus activation with steepness = 2.0.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kSoftplus,
+                            .softplus_steepness = 2.0}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftplus,
+                     .softplus_steepness = 2.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with softsign activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                   .dimensions = {1, 1, 3, 3}},
+        .options =
+            {.activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{
+                     .kind = webnn::mojom::blink::Activation::Tag::kSoftsign}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test conv2d with tanh activation.
+    Conv2dTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .options = {.activation =
+                        Activation{
+                            .kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 3, 3}},
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind =
+                                webnn::mojom::blink::Activation::Tag::kTanh}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct ElementWiseBinaryTester {
   OperandInfoBlink lhs;
   OperandInfoBlink rhs;
