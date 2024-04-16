@@ -18,6 +18,10 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -32,6 +36,30 @@ const int kMouseDeviceId = 42;
 const gfx::Point kDefaultPosition(100, 100);
 const double kMoveDeltaDIP = MouseKeysController::kBaseSpeedDIPPerSecond *
                              MouseKeysController::kUpdateFrequencyInSeconds;
+
+class TestTextInputView : public views::WidgetDelegateView {
+ public:
+  TestTextInputView() : text_field_(new views::Textfield) {
+    text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+    std::string name = "Hello, world";
+    text_field_->SetAccessibleName(base::UTF8ToUTF16(name));
+    AddChildView(text_field_.get());
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+  }
+  TestTextInputView(const TestTextInputView&) = delete;
+  TestTextInputView& operator=(const TestTextInputView&) = delete;
+  ~TestTextInputView() override = default;
+
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(50, 50);
+  }
+
+  void FocusOnTextInput() { text_field_->RequestFocus(); }
+  const std::u16string& GetText() { return text_field_->GetText(); }
+
+ private:
+  raw_ptr<views::Textfield> text_field_;  // owned by views hierarchy.
+};
 
 class EventCapturer : public ui::EventHandler {
  public:
@@ -181,6 +209,10 @@ class MouseKeysTest : public AshTestBase {
 
   MouseKeysController* GetMouseKeysController() {
     return Shell::Get()->mouse_keys_controller();
+  }
+
+  void SetDisableInTextFields(bool value) {
+    return GetMouseKeysController()->set_disable_in_text_fields(value);
   }
 
   void SetLeftHanded(bool value) {
@@ -752,6 +784,131 @@ TEST_F(MouseKeysTest, NumPad) {
   EXPECT_EQ(0u, CheckForKeyEvents().size());
   ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
                                     kMoveDeltaDIP);
+}
+
+TEST_F(MouseKeysTest, NoDisableInTextFields) {
+  raw_ptr<TestTextInputView> text_input_view = new TestTextInputView;
+  views::Widget* widget = views::Widget::CreateWindowWithContext(
+      text_input_view, Shell::GetPrimaryRootWindow(),
+      gfx::Rect(100, 200, 80, 80));
+  widget->Show();
+
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  SetDisableInTextFields(false);
+  EXPECT_FALSE(GetMouseKeysController()->disable_in_text_fields());
+  text_input_view->FocusOnTextInput();
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_7);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_L);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
+                                    kMoveDeltaDIP);
+
+  // No text should be entered.
+  EXPECT_EQ(text_input_view->GetText(), u"");
+}
+
+TEST_F(MouseKeysTest, DisableInTextFields) {
+  raw_ptr<TestTextInputView> text_input_view = new TestTextInputView;
+  views::Widget* widget = views::Widget::CreateWindowWithContext(
+      text_input_view, Shell::GetPrimaryRootWindow(),
+      gfx::Rect(100, 200, 80, 80));
+  widget->Show();
+
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  SetDisableInTextFields(true);
+  EXPECT_TRUE(GetMouseKeysController()->disable_in_text_fields());
+  text_input_view->FocusOnTextInput();
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  PressAndReleaseKey(ui::VKEY_7);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_L);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
+
+  // "789uojkl" should be entered.
+  EXPECT_EQ(text_input_view->GetText(), u"i789uojkl");
+}
+
+TEST_F(MouseKeysTest, EscapeToResumeInTextfield) {
+  raw_ptr<TestTextInputView> text_input_view = new TestTextInputView;
+  views::Widget* widget = views::Widget::CreateWindowWithContext(
+      text_input_view, Shell::GetPrimaryRootWindow(),
+      gfx::Rect(100, 200, 80, 80));
+  widget->Show();
+
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  SetDisableInTextFields(true);
+  EXPECT_TRUE(GetMouseKeysController()->disable_in_text_fields());
+  text_input_view->FocusOnTextInput();
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  PressAndReleaseKey(ui::VKEY_L);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_7);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(18u, CheckForKeyEvents().size());
+
+  // "lkjou987" should be entered.
+  EXPECT_EQ(text_input_view->GetText(), u"ilkjou987");
+
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(2u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
+  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_7);
+  PressAndReleaseKey(ui::VKEY_8);
+  PressAndReleaseKey(ui::VKEY_9);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_O);
+  PressAndReleaseKey(ui::VKEY_J);
+  PressAndReleaseKey(ui::VKEY_K);
+  PressAndReleaseKey(ui::VKEY_L);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  ExpectMouseMovedInCircularPattern(CheckForMouseEvents(), kDefaultPosition,
+                                    kMoveDeltaDIP);
+
+  // Text should be unchanged.
+  EXPECT_EQ(text_input_view->GetText(), u"ilkjou987");
 }
 
 }  // namespace ash

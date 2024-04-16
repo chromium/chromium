@@ -6,7 +6,10 @@
 #define ASH_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "ui/base/ime/ash/ime_bridge_observer.h"
+#include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"
@@ -17,7 +20,9 @@ namespace ash {
 // Mouse keys is an accessibility feature that allows you to control your mouse
 // cursor with the keyboard.  To do this, MouseKeysController ingests key events
 // and generates mouse events.
-class ASH_EXPORT MouseKeysController : public ui::EventHandler {
+class ASH_EXPORT MouseKeysController : public ui::EventHandler,
+                                       public ash::IMEBridgeObserver,
+                                       public ui::InputMethodObserver {
  public:
   // TODO(259372916): Find a good base speed/acceleration.
   // Base movement speed in DIP/s.
@@ -56,6 +61,11 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     max_speed_ = factor * kBaseSpeedDIPPerSecond * kUpdateFrequencyInSeconds;
   }
 
+  void set_disable_in_text_fields(bool value) {
+    disable_in_text_fields_ = value;
+  }
+  bool disable_in_text_fields() { return disable_in_text_fields_; }
+
   enum MouseKey {
     kKeyUpLeft = 0,
     kKeyUp,
@@ -73,6 +83,16 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
+  // ash::IMEBridgeObserver:
+  void OnInputContextHandlerChanged() override;
+
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override;
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
+
   void SendMouseEventToLocation(ui::EventType type, const gfx::Point& location);
   void MoveMouse(const gfx::Vector2d& move_delta_dip);
   void CenterMouseIfUninitialized();
@@ -88,12 +108,17 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
 
   bool enabled_ = false;
   bool paused_ = false;
+  bool paused_for_text_ = false;
+  bool disable_in_text_fields_ = true;
   bool left_handed_ = false;
   double acceleration_ = kDefaultAcceleration;
   double max_speed_;
   gfx::Vector2d move_direction_;
   double speed_ = 0;
 
+  // The currently active input method, observed for focus changes.
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      input_method_observer_{this};
   bool pressed_keys_[kKeyCount];
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);
   int event_flags_ = 0;
