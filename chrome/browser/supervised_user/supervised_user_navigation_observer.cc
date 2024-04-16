@@ -293,7 +293,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
       /*hidden=*/false, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
       /*title=*/std::nullopt,
-      // TODO(crbug.com/1475695): Investigate whether we want to record blocked
+      // TODO(crbug.com/40279734): Investigate whether we want to record blocked
       // navigations in the VisitedLinkDatabase, and if so, populate
       // top_level_url with a real value.
       /*top_level_url=*/std::nullopt);

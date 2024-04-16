@@ -114,7 +114,7 @@ struct WebAppInstallParams {
 
 // The different UI flows that exist for creating a web app.
 enum class WebAppInstallFlow {
-  // TODO(crbug.com/1216457): This should be removed by adding all known flows
+  // TODO(crbug.com/40184819): This should be removed by adding all known flows
   // to this enum.
   kUnknown,
   // The 'Create Shortcut' flow for adding the current page as a shortcut app.

@@ -1028,7 +1028,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       web_data_service->RemoveAutofillDataModifiedBetween(delete_begin_,
                                                           delete_end_);
       // Clear out the Autofill StrikeDatabase in its entirety.
-      // TODO(crbug.com/884817): Respect |delete_begin_| and |delete_end_| and
+      // TODO(crbug.com/40594007): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
       // timeframe.
       autofill::StrikeDatabase* strike_database =
@@ -1052,12 +1052,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // DATA_TYPE_CACHE
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_CACHE) {
     // Tell the renderers associated with |profile_| to clear their cache.
-    // TODO(crbug.com/668114): Renderer cache is a platform concept, and should
-    // live in BrowsingDataRemoverImpl. However, WebCacheManager itself is
-    // a component with dependency on content/browser. Untangle these
+    // TODO(crbug.com/40495069): Renderer cache is a platform concept, and
+    // should live in BrowsingDataRemoverImpl. However, WebCacheManager itself
+    // is a component with dependency on content/browser. Untangle these
     // dependencies or reimplement the relevant part of WebCacheManager
     // in content/browser.
-    // TODO(crbug.com/1022757): add a test for this.
+    // TODO(crbug.com/40657761): add a test for this.
     for (content::RenderProcessHost::iterator iter =
              content::RenderProcessHost::AllHostsIterator();
          !iter.IsAtEnd(); iter.Advance()) {
@@ -1111,7 +1111,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 #endif
 
-    // TODO(crbug.com/829321): Remove null-check.
+    // TODO(crbug.com/41380998): Remove null-check.
     auto* webrtc_event_log_manager = WebRtcEventLogManager::GetInstance();
     if (webrtc_event_log_manager) {
       webrtc_event_log_manager->ClearCacheForBrowserContext(

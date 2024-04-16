@@ -187,10 +187,10 @@ public class AppLocaleUtils {
 
     /**
      * Migrate the App override language from Chrome SharedPreferences to the {@link LocaleManager}
-     * service if needed.  A migration is only attempted once on Android T and done if there is a
+     * service if needed. A migration is only attempted once on Android T and done if there is a
      * Chrome SharedPreferences override language but no system App override language.
-     * TODO(crbug.com/1333981) Move to Android T.
-     * TODO(crbug.com/1334729) Remove migration after Oct 2023.
+     * TODO(crbug.com/1333981) Move to Android T. TODO(crbug.com/40846627) Remove migration after
+     * Oct 2023.
      */
     @RequiresApi(Build.VERSION_CODES.S)
     public static void maybeMigrateOverrideLanguage() {

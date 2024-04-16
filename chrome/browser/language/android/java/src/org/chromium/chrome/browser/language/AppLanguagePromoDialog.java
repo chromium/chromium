@@ -154,8 +154,8 @@ public class AppLanguagePromoDialog {
     }
 
     /**
-     * Internal class for managing a list of languages in a RecyclerView.
-     * TODO(https://crbug.com/1325473) Refactor this to a separate file.
+     * Internal class for managing a list of languages in a RecyclerView. TODO(crbug.com/40225510)
+     * Refactor this to a separate file.
      */
     protected static class LanguageItemAdapter
             extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

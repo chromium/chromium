@@ -250,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest, BrotliEnabled) {
 }
 
 void CheckCacheResetStatus(base::HistogramTester* histograms, bool reset) {
-  // TODO(crbug/1041810): The failure case, here, is to time out.  Since Chrome
-  // doesn't synchronize cache loading, there's no guarantee that this is
+  // TODO(crbug.com/40114587): The failure case, here, is to time out.  Since
+  // Chrome doesn't synchronize cache loading, there's no guarantee that this is
   // complete and it's merely available at earliest convenience.  If shutdown
   // occurs prior to the cache being loaded, then nothing is reported.  This
   // should probably be fixed to avoid the use of the sleep function, but that

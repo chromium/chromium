@@ -400,17 +400,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_LE(frame_counter, 3);
 }
 
-// TODO(crbug.com/796889): Enable on Mac when thread check crash is fixed.
+// TODO(crbug.com/40555763): Enable on Mac when thread check crash is fixed.
 // TODO(sprang): Figure out why test times out on Win 10 and ChromeOS.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-// TODO(crbug.com/1225911): Test is flaky on Linux.
+// TODO(crbug.com/40776079): Test is flaky on Linux.
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
                        DISABLED_RunP2PScreenshareWhileSharingScreen) {
   RunP2PScreenshareWhileSharing(base::BindOnce(GetDesktopMediaIDForScreen));
 }
 
-// TODO(crbug.com/1450456) flaky on ASan bots
+// TODO(crbug.com/40270173) flaky on ASan bots
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_RunP2PScreenshareWhileSharingTab \
   DISABLED_RunP2PScreenshareWhileSharingTab

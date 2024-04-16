@@ -319,7 +319,7 @@ export class SettingsPaymentsSectionElement extends
 
   /**
    * Returns true if IBAN should be shown from settings page.
-   * TODO(crbug.com/1352606): Add additional check (starter country-list, or
+   * TODO(crbug.com/40234941): Add additional check (starter country-list, or
    * the saved-pref-boolean on if the user has submitted an IBAN form).
    */
   private shouldShowIbanSettings_(): boolean {

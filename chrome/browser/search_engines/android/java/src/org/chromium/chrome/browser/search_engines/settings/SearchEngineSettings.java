@@ -18,11 +18,11 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /**
- * A preference fragment for selecting a default search engine.
- * ATTENTION: User can't change search engine if it is controlled by an enterprise policy. Check
+ * A preference fragment for selecting a default search engine. ATTENTION: User can't change search
+ * engine if it is controlled by an enterprise policy. Check
  * TemplateUrlServiceFactory.get().isDefaultSearchManaged() before launching this fragment.
  *
- * TODO(crbug.com/988877): Add on scroll shadow to action bar.
+ * <p>TODO(crbug.com/41473490): Add on scroll shadow to action bar.
  */
 public class SearchEngineSettings extends ListFragment implements ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;

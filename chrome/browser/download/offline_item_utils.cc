@@ -171,7 +171,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
       NOTREACHED();
   }
 
-  // TODO(crbug.com/857549): Set pending_state correctly.
+  // TODO(crbug.com/40582846): Set pending_state correctly.
   item.pending_state = item.state == OfflineItemState::PENDING
                            ? PendingState::PENDING_NETWORK
                            : PendingState::NOT_PENDING;

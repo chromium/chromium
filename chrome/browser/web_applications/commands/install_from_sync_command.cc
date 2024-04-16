@@ -234,7 +234,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
 
   // If the page doesn't have a favicon, then the icon fetcher will hang
   // forever.
-  // TODO(https://crbug.com/1328977): Allow favicons without waiting for them to
+  // TODO(crbug.com/40226606): Allow favicons without waiting for them to
   // be updated on the page.
   IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
@@ -330,7 +330,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // a sync install is not a recordable install source.
   DCHECK(!webapps::InstallableMetrics::IsReportableInstallSource(
       webapps::WebappInstallSource::SYNC));
-  // TODO(https://crbug.com/1303949): migrate LogToInstallManager to take a
+  // TODO(crbug.com/40826246): migrate LogToInstallManager to take a
   // base::Value::Dict
   if (install_error_log_entry_.HasErrorDict()) {
     command_manager()->LogToInstallManager(

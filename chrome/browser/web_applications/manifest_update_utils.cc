@@ -166,7 +166,7 @@ std::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
 
 void RecordIconDownloadMetrics(IconsDownloadedResult result,
                                DownloadedIconsHttpResults icons_http_results) {
-  // TODO(crbug.com/1238622): Report `result` and `icons_http_results` in
+  // TODO(crbug.com/40193545): Report `result` and `icons_http_results` in
   // internals.
   base::UmaHistogramEnumeration("WebApp.Icon.DownloadedResultOnUpdate", result);
   RecordDownloadedIconHttpStatusCodes(

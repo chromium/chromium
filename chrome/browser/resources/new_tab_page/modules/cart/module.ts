@@ -370,7 +370,7 @@ export class ChromeCartModuleElement extends I18nMixin
         leftScrollShadow ? leftScrollShadow.offsetWidth : 0,
         rightScrollShadow ? rightScrollShadow.offsetWidth : 0);
     let leftPosition = carts[index].offsetLeft - scrollOffset;
-    // TODO(crbug.com/1198632): This could make a left scroll jump over cart
+    // TODO(crbug.com/40760821): This could make a left scroll jump over cart
     // items.
     if (index === 0) {
       const consentCard = this.shadowRoot!.getElementById(

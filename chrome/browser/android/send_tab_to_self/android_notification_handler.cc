@@ -135,7 +135,7 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
       message->SetIconResourceId(
           ResourceMapper::MapToJavaDrawableId(IDR_SEND_TAB_TO_SELF));
 
-      // TODO(crbug.com/1220129): A valid WebContents shouldn't be needed here.
+      // TODO(crbug.com/40772682): A valid WebContents shouldn't be needed here.
       if (web_contents_) {
         messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
             message.get(), web_contents_->GetTopLevelNativeWindow(),

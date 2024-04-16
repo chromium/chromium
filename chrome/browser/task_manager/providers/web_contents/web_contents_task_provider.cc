@@ -276,7 +276,7 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
   // navigation, since neither |RenderFrameDeleted| nor |RenderFrameHostChanged|
   // is fired to delete the existing task, we do not recreate them.
   //
-  // TODO(https://crbug.com/1183639): DidFinishNavigation is not called when we
+  // TODO(crbug.com/40171294): DidFinishNavigation is not called when we
   // create initial empty documents, and as a result, we will not create new
   // tasks for these empty documents if they are in a different process from
   // their embedder/opener (eg: an empty fenced frame or a blank tab created by

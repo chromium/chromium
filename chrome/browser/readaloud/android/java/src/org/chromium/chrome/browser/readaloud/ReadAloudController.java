@@ -675,7 +675,7 @@ public class ReadAloudController
     /** Returns true if the web contents within current Tab is readable. */
     public boolean isReadable(Tab tab) {
         // If we don't have a valid Profile, playback won't work.
-        // TODO(crbug.com/1518203): Remove when valid profile is guaranteed.
+        // TODO(crbug.com/41491180): Remove when valid profile is guaranteed.
         if (tab == null
                 || tab.getUrl() == null
                 || tab.getWebContents() == null

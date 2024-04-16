@@ -238,7 +238,7 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
 #elif BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1339062): What is the correct function to use here? (This
   // may or may not obsolete the following TODO)
-  // TODO(crbug.com/1320766): For legacy compatibility, this uses
+  // TODO(crbug.com/40223626): For legacy compatibility, this uses
   // IsEnterpriseDevice() which effectively equates to a domain join check.
   // Consider whether this should use IsManagedDevice() instead.
   if (base::win::IsEnrolledToDomain())

@@ -185,7 +185,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   raw_ptr<content::RenderFrameHost> background_main_frame_ = nullptr;
 };
 
-// TODO(crbug.com/1177103): Re-enable. Flaky on Linux and Windows.
+// TODO(crbug.com/40748275): Re-enable. Flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_BasicGalleryWatch DISABLED_BasicGalleryWatch
 #else
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
     ExecuteCmdAndCheckReply(kRemoveGalleryWatchCmd, kRemoveGalleryWatchOK);
 }
 
-// TODO(crbug.com/1047645): Flaky on Linux and Windows.
+// TODO(crbug.com/40671492): Flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CorrectResponseOnModifyingWatchedGallery \
   DISABLED_CorrectResponseOnModifyingWatchedGallery

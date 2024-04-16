@@ -518,7 +518,7 @@ include_rules = [
 
   # chrome/browser/ui/views/ is an implementation, not a public interface.
   # Parent directories should not depend on it directly.
-  # TODO(crbug.com/1112591): Remove the exceptions below.
+  # TODO(crbug.com/40709781): Remove the exceptions below.
   "-chrome/browser/ui/views",
   "+chrome/browser/ui/views/ash/chrome_browser_main_extra_parts_ash.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
@@ -559,7 +559,7 @@ include_rules = [
 
   # No inclusion of WebKit from the browser, other than the ones in
   # WebKit/public/{mojom,common}.
-  # TODO(crbug.com/1008303) clarify dependency and remove or move these individual headers
+  # TODO(crbug.com/40649940) clarify dependency and remove or move these individual headers
   # into public/common.
   "-third_party/blink",
   "+third_party/blink/public/common",

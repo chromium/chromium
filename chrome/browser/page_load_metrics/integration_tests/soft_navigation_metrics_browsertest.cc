@@ -331,7 +331,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1466868): Investigate timeout issue on linux-lacros-rel and
+// TODO(crbug.com/40924160): Investigate timeout issue on linux-lacros-rel and
 // linux-wayland when retrieving web exposed soft nav lcp entries using the
 // EvalJs method.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)

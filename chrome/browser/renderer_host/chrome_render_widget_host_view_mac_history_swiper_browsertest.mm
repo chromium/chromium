@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   ExpectUrlAndOffset(url1_, 0);
 }
 
-// TODO(crbug.com/1070405): flaky.
+// TODO(crbug.com/40126320): flaky.
 IN_PROC_BROWSER_TEST_F(
     ChromeRenderWidgetHostViewMacHistorySwiperTest,
     DISABLED_InnerScrollersOverscrollBehaviorPreventsNavigation) {

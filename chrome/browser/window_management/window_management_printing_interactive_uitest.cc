@@ -55,7 +55,7 @@ class WindowManagementTest : public InProcessBrowserTest {
 #endif
 };
 
-// TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
+// TODO(crbug.com/40115071): Windows crashes static casting to ScreenWin.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NoCrashOnEventsDuringHandlerPrint \
   DISABLED_NoCrashOnEventsDuringHandlerPrint

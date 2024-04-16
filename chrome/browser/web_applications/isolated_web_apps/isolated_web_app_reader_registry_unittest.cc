@@ -1059,7 +1059,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
   }
 }
 
-// TODO(crbug.com/1365853): Add a test that checks the behavior when
+// TODO(crbug.com/40239531): Add a test that checks the behavior when
 // `SignedWebBundleReader`s for two different Web Bundle IDs are requested
 // concurrently. Testing this is currently not possible, since running two
 // `MockWebBundleParser`s at the same time is not yet possible.

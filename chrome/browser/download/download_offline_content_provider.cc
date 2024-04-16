@@ -318,7 +318,7 @@ void DownloadOfflineContentProvider::GetVisualsForItem(
     const ContentId& id,
     GetVisualsOptions options,
     VisualsCallback callback) {
-  // TODO(crbug.com/855330) Supply thumbnail if item is visible.
+  // TODO(crbug.com/40581903) Supply thumbnail if item is visible.
   DownloadItem* item = GetDownload(id.id);
   display::Screen* screen = display::Screen::GetScreen();
   if (!item || !options.get_icon || !screen) {
@@ -452,7 +452,7 @@ void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
   if (offline_item.state == OfflineItemState::COMPLETE ||
       offline_item.state == OfflineItemState::FAILED ||
       offline_item.state == OfflineItemState::CANCELLED) {
-    // TODO(crbug.com/938152): May be move this to DownloadItem.
+    // TODO(crbug.com/40616574): May be move this to DownloadItem.
     // Never call this for completed downloads from history.
     item->RemoveObserver(this);
 

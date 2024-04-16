@@ -212,7 +212,7 @@ std::u16string GetChromeCounterTextFromResult(
     ResultInt signin_data_count = signin_result->WebAuthnCredentialsValue();
 
     std::vector<std::u16string> counts;
-    // TODO(crbug.com/1086433): If there are profile passwords, account
+    // TODO(crbug.com/40132590): If there are profile passwords, account
     // passwords and other sign-in data, these are combined as
     // "<1>; <2>; <3>" by recursively applying a "<1>; <2>" message.
     // Maybe we should do something more pretty?

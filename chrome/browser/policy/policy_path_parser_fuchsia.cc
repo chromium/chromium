@@ -31,7 +31,7 @@ base::FilePath::StringType ExpandPathVariables(
   }
 
   // Translate two special variables ${user_name} and ${machine_name}
-  // TODO(crbug.com/1231482): Integrate with platform provided values, as
+  // TODO(crbug.com/40190717): Integrate with platform provided values, as
   // they become available.
   size_t position = result.find(kUserNamePolicyVarName);
   if (position != std::string::npos) {

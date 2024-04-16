@@ -224,7 +224,7 @@ std::optional<bool>
 ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
     const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
-  // TODO(crbug.com/1456641): Implement `GetThirdPartyPartitioningSite()` for
+  // TODO(crbug.com/40066162): Implement `GetThirdPartyPartitioningSite()` for
   // delegate-specific data keys.
   return IsStorageTypeCookieLike(storage_type);
 }

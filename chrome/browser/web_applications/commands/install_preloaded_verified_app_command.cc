@@ -43,7 +43,7 @@ namespace web_app {
 
 namespace {
 
-// TODO(crbug.com/1457430): Find a better way to do Lacros testing so that we
+// TODO(crbug.com/40273612): Find a better way to do Lacros testing so that we
 // don't have to pass localhost into the allowlist. Allowlisted host must be
 // from a Google server.
 constexpr auto kHostAllowlist = base::MakeFixedFlatSet<std::string_view>(
@@ -217,7 +217,7 @@ void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_source_);
   finalize_options.add_to_quick_launch_bar = false;
   finalize_options.overwrite_existing_manifest_fields = false;
-  // TODO(crbug.com/1250011): apply host_allowlist instead of disabling origin
+  // TODO(crbug.com/40197834): apply host_allowlist instead of disabling origin
   // association validate for all origins.
   finalize_options.skip_origin_association_validation = true;
 

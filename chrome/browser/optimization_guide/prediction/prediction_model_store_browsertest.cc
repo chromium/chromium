@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
       kSuccessfulModelVersion, 1);
 }
 
-// TODO(crbug.com/1517460): Re-enable this test
+// TODO(crbug.com/41490438): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_TestIncognitoProfile DISABLED_TestIncognitoProfile
 #else

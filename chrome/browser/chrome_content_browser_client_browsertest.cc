@@ -167,7 +167,7 @@ class TopChromeChromeContentBrowserClientTest
 };
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1497344) Flaky on Mac.
+// TODO(crbug.com/40938936) Flaky on Mac.
 #define MAYBE_ShouldUseSpareRendererWhenNoTopChromePagesPresent \
   DISABLED_ShouldUseSpareRendererWhenNoTopChromePagesPresent
 #else
@@ -773,7 +773,7 @@ class ProtocolHandlerTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1454691): Enable test when MacOS flake is fixed.
+// TODO(crbug.com/40917055): Enable test when MacOS flake is fixed.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CustomHandler DISABLED_CustomHandler
 #else

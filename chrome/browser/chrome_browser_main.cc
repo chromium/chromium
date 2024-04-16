@@ -464,7 +464,7 @@ StartupProfileInfo CreateInitialProfile(
   // profile loading, this can lead to a crash (see https://crbug.com/1289527).
   // Load the primary Lacros profile before any other profile to ensure that the
   // primary profile is always loaded.
-  // TODO(https://crbug.com/1264436): remove this once Lacros no longer uses
+  // TODO(crbug.com/40203366): remove this once Lacros no longer uses
   // GetActiveUserProfile() and GetPrimaryUserProfile().
   ProfileManager::GetPrimaryUserProfile();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -690,7 +690,7 @@ void ChromeBrowserMainParts::SetupMetrics() {
       variations::VariationsIdsProvider::GetInstance());
   metrics->GetSyntheticTrialRegistry()->AddObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
-  // TODO(crbug.com/1505638): Investiagte the reason why the mojo connection
+  // TODO(crbug.com/40946277): Investiagte the reason why the mojo connection
   // is often created and closed for the same render process on lacros-chrome.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   synthetic_trial_syncer_ = content::SyntheticTrialSyncer::Create(
@@ -1324,7 +1324,7 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   // Delete the media history database if it still exists.
-  // TODO(crbug.com/1198344): Remove this.
+  // TODO(crbug.com/40177301): Remove this.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

@@ -588,7 +588,7 @@ class WebApp {
   bool is_locally_installed_ = false;
   bool is_from_sync_and_pending_installation_ = false;
   // Note: This field is not persisted in the database.
-  // TODO(crbug.com/1162477): Add this field to the protocol buffer file and
+  // TODO(crbug.com/40162790): Add this field to the protocol buffer file and
   // other places to save it to the database, and then make sure to continue
   // uninstallation on startup if any web apps have this field set to true.
   bool is_uninstalling_ = false;
@@ -604,7 +604,7 @@ class WebApp {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
-  // TODO(crbug.com/1072058): No longer aiming to ship, remove.
+  // TODO(crbug.com/40127045): No longer aiming to ship, remove.
   apps::UrlHandlers url_handlers_;
   base::flat_set<ScopeExtensionInfo> scope_extensions_;
   base::flat_set<ScopeExtensionInfo> validated_scope_extensions_;

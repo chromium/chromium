@@ -130,7 +130,7 @@ void OfflineItemModel::OpenDownload() {
 
   offline_items_collection::OpenParams open_params(
       offline_items_collection::LaunchLocation::DOWNLOAD_SHELF);
-  // TODO(crbug.com/1058475): Determine if we ever need to open in incognito.
+  // TODO(crbug.com/40121163): Determine if we ever need to open in incognito.
   GetProvider()->OpenItem(open_params, offline_item_->id);
 }
 

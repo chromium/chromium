@@ -104,7 +104,7 @@ void WebApkInstallService::OnFinishedInstall(
     if (!web_contents)
       return;
 
-    // TODO(https://crbug.com/861643): Support maskable icons here.
+    // TODO(crbug.com/40584062): Support maskable icons here.
     ShortcutHelper::AddToLauncherWithSkBitmap(
         web_contents.get(), shortcut_info, primary_icon,
         webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);

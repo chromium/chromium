@@ -9,7 +9,7 @@
 namespace media_router {
 
 std::vector<DiscoveryNetworkInfo> GetDiscoveryNetworkInfoList() {
-  // TODO(crbug.com/1234750)
+  // TODO(crbug.com/40192116)
   NOTIMPLEMENTED_LOG_ONCE();
   return {};
 }

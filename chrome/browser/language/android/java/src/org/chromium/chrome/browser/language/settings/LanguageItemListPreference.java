@@ -73,7 +73,7 @@ public class LanguageItemListPreference extends ChromeBasePreference
             if (++index > COLLECTION_SUMMARY_ITEM_LIMIT) break;
             languageNames.add(item.getDisplayName());
         }
-        // TODO(crbug.com/1181224): Make sure to localize the separator.
+        // TODO(crbug.com/40170296): Make sure to localize the separator.
         return TextUtils.join(", ", languageNames);
     }
 }

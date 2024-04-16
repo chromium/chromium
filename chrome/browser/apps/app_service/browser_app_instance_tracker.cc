@@ -705,7 +705,7 @@ bool BrowserAppInstanceTrackerLacros::IsActivationClientTracked(
     wm::ActivationClient* client) const {
   // Iterate over the full list of browsers instead of tracked_browsers_ in case
   // tracked_browsers_ is out of date with global state
-  // TODO(crbug.com/1236273): This can be changed to iterate tracked_browsers_
+  // TODO(crbug.com/40782702): This can be changed to iterate tracked_browsers_
   // when confident it doesn't get out of sync.
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (IsBrowserTracked(browser) &&

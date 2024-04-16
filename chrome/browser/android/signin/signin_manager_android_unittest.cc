@@ -103,7 +103,7 @@ class SigninManagerAndroidTest : public ::testing::Test {
     offline_pages::OfflinePageModelFactory::GetInstance()->SetTestingFactory(
         profile_->GetProfileKey(), base::BindRepeating(&BuildOfflinePageModel));
 
-    // TODO(crbug.com/748484): Remove requirement for this delegate in
+    // TODO(crbug.com/41335519): Remove requirement for this delegate in
     // unit_tests.
     DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
         ->SetDownloadManagerDelegateForTesting(

@@ -151,8 +151,8 @@ void HeadlessModeProtocolBrowserTest::OnEvaluateResult(
   FinishAsyncTest();
 }
 
-// TODO(1408839): Move similar code in //headless/test to a shared location
-// in //components/devtools/test.
+// TODO(crbug.com/40253719): Move similar code in //headless/test to a shared
+// location in //components/devtools/test.
 void HeadlessModeProtocolBrowserTest::ProcessTestResult(
     const std::string& test_result) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -211,7 +211,7 @@ HEADLESS_MODE_PROTOCOL_TEST(FocusEvent, "input/focus-event.js")
 // Flaky crbug/1431857
 HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,
                             "input/focus-blur-notifications.js")
-// TODO(crbug.com/1416882): Re-enable this test
+// TODO(crbug.com/40257054): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
 #else
@@ -248,7 +248,7 @@ class HeadlessModeInputSelectFileDialogTest
   bool select_file_dialog_has_run_ = false;
 };
 
-// TODO(crbug.com/1459246): flaky on Mac and Linux builders.
+// TODO(crbug.com/40919351): flaky on Mac and Linux builders.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InputSelectFileDialog DISABLED_InputSelectFileDialog
 #else

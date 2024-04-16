@@ -331,7 +331,7 @@ public class CreatorCoordinator
     }
 
     private RecyclerView setUpView() {
-        // TODO(crbug.com/1374744): Refactor NTP naming out of the general Feed code.
+        // TODO(crbug.com/40872531): Refactor NTP naming out of the general Feed code.
         mContentManager = new FeedListContentManager();
         ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
 

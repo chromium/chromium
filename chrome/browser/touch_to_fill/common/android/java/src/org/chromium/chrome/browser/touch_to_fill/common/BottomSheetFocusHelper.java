@@ -60,7 +60,7 @@ public class BottomSheetFocusHelper extends EmptyBottomSheetObserver {
                 webContentsAccessibility.restoreFocus();
             }
         }
-        // TODO(crbug.com/1418952): Move the adding and removing of the observer out of the helper.
+        // TODO(crbug.com/40257910): Move the adding and removing of the observer out of the helper.
         mBottomSheetController.removeObserver(this);
     }
 }

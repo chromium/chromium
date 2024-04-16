@@ -429,7 +429,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(crbug.com/570344): Remove this switch once Web Bluetooth is
+    // TODO(crbug.com/41229108): Remove this switch once Web Bluetooth is
     // supported on Linux.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);

@@ -119,7 +119,7 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
 };
 }  // namespace
 
-// TODO(crbug.com/1473470): Move tests related to base class behavior of
+// TODO(crbug.com/40927036): Move tests related to base class behavior of
 // MaybeNotifySyncUser to the test suite for TailoredSecurityService.
 class ChromeTailoredSecurityServiceTest : public testing::Test {
  public:

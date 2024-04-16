@@ -63,7 +63,7 @@ void SyncedTabDelegateAndroid::ResetWebContents() {
 SessionID SyncedTabDelegateAndroid::SessionIdFromAndroidId(int android_tab_id) {
   // Increment with 1 since SessionID considers zero as invalid value, whereas
   // Android IDs start at 0.
-  // TODO(crbug.com/853731): Returning SessionID instances that haven't been
+  // TODO(crbug.com/41395165): Returning SessionID instances that haven't been
   // generated with SessionID::NewUnique() is problematic or at least hard to
   // reason about, due to possible conflicts in case they were put together or
   // compared with regular SessionID instances. We should either migrate this

@@ -509,7 +509,7 @@ jlong PersonalDataManagerAndroid::GetCreditCardUseDateForTesting(
   return card->use_date().ToTimeT();
 }
 
-// TODO(crbug.com/629507): Use a mock clock for testing.
+// TODO(crbug.com/40477114): Use a mock clock for testing.
 jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(JNIEnv* env) {
   return base::Time::Now().ToTimeT();
 }
@@ -691,7 +691,7 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
   FieldType excluded_field = include_name_in_label ? UNKNOWN_TYPE : NAME_FULL;
 
   std::vector<std::u16string> labels;
-  // TODO(crbug.com/1487119): Replace by `profiles` when `GetProfilesToSuggest`
+  // TODO(crbug.com/40283168): Replace by `profiles` when `GetProfilesToSuggest`
   // starts returning a list of const AutofillProfile*.
   AutofillProfile::CreateInferredLabels(
       std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>(

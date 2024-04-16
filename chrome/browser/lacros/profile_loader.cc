@@ -40,7 +40,7 @@ void OnProfileInitialized(base::OnceCallback<void(Profile*)> callback,
 
   auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile);
   if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
-    // TODO(https://crbug.com/1313848): Consider taking a
+    // TODO(crbug.com/40221173): Consider taking a
     // `ScopedProfileKeepAlive`.
     fre_service->OpenFirstRunIfNeeded(
         FirstRunService::EntryPoint::kOther,

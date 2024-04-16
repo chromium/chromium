@@ -319,7 +319,7 @@ void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
       std::min(args.sites.size() - args.offset, g_prepopulate_chunk_size);
   for (size_t i = 0; i < chunk_size; i++) {
     DIPSState state = ReadSite(args.sites[args.offset + i]);
-    // TODO(crbug.com/1446678): Verify whether we need to ignore if WAA is
+    // TODO(crbug.com/40913154): Verify whether we need to ignore if WAA is
     // non-empty regardless of interaction.
     if (state.user_interaction_times().has_value()) {
       continue;

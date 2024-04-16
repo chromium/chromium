@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // Failing on some Win and Linux buildbots.  See crbug.com/354425.
-// TODO(crbug.com/1334427): Fix flakiness on macOS and re-enable this test.
+// TODO(crbug.com/40846460): Fix flakiness on macOS and re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_Iframes DISABLED_Iframes
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
       << message_;
 }
 
-// TODO(https://crbug.com/1246088): Flaky.
+// TODO(crbug.com/40789006): Flaky.
 // Tests that platform apps have isolated storage by default.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 namespace {
 
-// TODO(crbug.com/1487630): flaky on Linux dbg.
+// TODO(crbug.com/40283343): flaky on Linux dbg.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_PlatformAppDevToolsBrowserTest \
   DISABLED_PlatformAppDevToolsBrowserTest
@@ -1569,7 +1569,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ASSERT_TRUE(synthetic_wheel_listener.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/961017): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/41457618): Fix memory leaks in tests and re-enable on LSAN.
 #if defined(LEAK_SANITIZER)
 #define MAYBE_VideoPictureInPicture DISABLED_VideoPictureInPicture
 #else

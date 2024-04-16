@@ -497,7 +497,7 @@ std::optional<IconSrcAndSize> FindBestImageResourceMatch(
 
   for (const IconPurpose& purpose : purposes) {
     for (const blink::Manifest::ImageResource& icon : icons) {
-      // TODO(crbug.com/1381377): Need to add check if icon has been
+      // TODO(crbug.com/40245169): Need to add check if icon has been
       // successfully downloaded.
       if (!base::Contains(icon.purpose, purpose)) {
         continue;

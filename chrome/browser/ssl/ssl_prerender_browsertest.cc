@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
 // TODO(bokan): In the future, when prerendering supports cross origin
 // triggering, this test can be more straightforward by using one server for
 // the initial page and another, with bad certs, for the prerendering page.
-// TODO(crbug.com/1464656): the test has been flaky across platforms.
+// TODO(crbug.com/40923072): the test has been flaky across platforms.
 IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
                        DISABLED_TestNoInterstitialInPrerenderSW) {
   auto server = CreateExpiredCertServer(GetChromeTestDataDir());

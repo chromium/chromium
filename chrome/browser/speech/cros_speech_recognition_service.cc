@@ -88,7 +88,7 @@ void CrosSpeechRecognitionService::BindRecognizer(
                                   : GetLanguageName(LanguageCode::kEnUs);
   PopulateFilePaths(binary_path, config_paths);
 
-  // TODO(crbug.com/1467525): Implement offensive word mask on ChromeOS so that
+  // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS so that
   // mask_offensive_words is not hard-coded.
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path,

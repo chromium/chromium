@@ -30,7 +30,7 @@ class SecurePaymentConfirmationTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{::features::kSecurePaymentConfirmation,
                               ::features::kSecurePaymentConfirmationDebug},
-        // TODO(crbug.com/1368590): Refactor code to allow mocking out the
+        // TODO(crbug.com/40868539): Refactor code to allow mocking out the
         // credential store APIs.
         /*disabled_features=*/{
             features::kSecurePaymentConfirmationUseCredentialStoreAPIs});

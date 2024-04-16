@@ -118,7 +118,7 @@ PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
 void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     page_load_metrics::PageLoadTracker* tracker) {
-  // TODO(crbug.com/1299103): Integrate side panel metrics with UKM.
+  // TODO(crbug.com/40823327): Integrate side panel metrics with UKM.
   if (IsSidePanel(web_contents())) {
 #if defined(TOOLKIT_VIEWS)
     if (auto side_search_observer =

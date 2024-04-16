@@ -822,7 +822,7 @@ base::FilePath GetMultiProfileAppDataDir(base::FilePath app_data_dir) {
   // The kCrAppModeUserDataDirKey is expected to be a path in kWebAppDirname,
   // and the true user data dir is extracted by going three directories up.
   // For profile-agnostic apps, remove this reference to the profile name.
-  // TODO(https://crbug.com/1021237): Do not specify kCrAppModeUserDataDirKey
+  // TODO(crbug.com/40656955): Do not specify kCrAppModeUserDataDirKey
   // if Chrome is using the default user data dir.
 
   // Strip the app name directory.
@@ -1766,7 +1766,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
     } ];
   }
 
-  // TODO(crbug.com/1273526): If we decide to rename app bundles on app title
+  // TODO(crbug.com/40807015): If we decide to rename app bundles on app title
   // changes, instead of relying on localization, then this will need to change
   // to use GetShortcutBaseName, most likely only for non-legacy-apps
   // (in other words, revert to what the code looked like before on these

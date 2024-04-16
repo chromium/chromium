@@ -1036,5 +1036,5 @@ TEST(ChromeUsbDelegateBrowserContextTest, BrowserContextIsNull) {
                                  get_devices_future.GetCallback());
   EXPECT_TRUE(get_devices_future.Get().empty());
 
-  // TODO(crbug.com/1303193): Test GetDevice with null browser_context.
+  // TODO(crbug.com/40217296): Test GetDevice with null browser_context.
 }

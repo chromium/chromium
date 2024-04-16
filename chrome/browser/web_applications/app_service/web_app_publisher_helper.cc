@@ -206,7 +206,7 @@ apps::PermissionType GetPermissionType(
 }
 
 apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
-  // TODO(crbug.com/1189949): Migrate apps with chromeos_data.oem_installed set
+  // TODO(crbug.com/40755721): Migrate apps with chromeos_data.oem_installed set
   // to the new WebAppManagement::Type::kOem install type.
   if (web_app->chromeos_data().has_value()) {
     auto& chromeos_data = web_app->chromeos_data().value();
@@ -1048,7 +1048,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       base::BindOnce(
           [](apps::LaunchCallback callback, apps::LaunchSource launch_source,
              std::vector<content::WebContents*> web_contentses) {
-// TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
+// TODO(crbug.com/40184120): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
             for (content::WebContents* web_contents : web_contentses) {
               if (launch_source == apps::LaunchSource::kFromArc) {
@@ -1096,7 +1096,7 @@ void WebAppPublisherHelper::LaunchAppWithParams(
     const WebApp* web_app = GetWebApp(params_for_restore.app_id);
     is_system_web_app = web_app && web_app->IsSystemApp();
 
-    // TODO(crbug.com/1368285): Determine whether override URL can
+    // TODO(crbug.com/40240250): Determine whether override URL can
     // be restored for all SWAs.
     auto system_app_type =
         swa_manager->GetSystemAppTypeForAppId(params_for_restore.app_id);

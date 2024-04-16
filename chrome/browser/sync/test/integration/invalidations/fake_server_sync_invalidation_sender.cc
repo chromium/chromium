@@ -100,7 +100,7 @@ void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
     const std::string& token = token_and_invalidations.first;
 
     // Pass a message to GCMDriver to simulate a message from the server.
-    // TODO(crbug.com/1082115): Implement reflection blocking.
+    // TODO(crbug.com/40130815): Implement reflection blocking.
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
         GetFakeGCMDriverByToken(token);
     if (!fake_gcm_driver) {
@@ -162,7 +162,7 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
     // If several DeviceInfos have the same FCM registration token, select the
     // latest updated one. This may happen after resetting sync engine and
     // changing cache GUID without signout.
-    // TODO(crbug.com/1325295): remove once fixed.
+    // TODO(crbug.com/40225423): remove once fixed.
     const base::Time last_updated = syncer::ProtoTimeToTime(
         entity.specifics().device_info().last_updated_timestamp());
     if (token_to_mtime.find(token) != token_to_mtime.end() &&

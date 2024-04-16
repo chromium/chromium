@@ -213,7 +213,7 @@ void DeviceStatusIconRenderer::AddItem(StatusIconMenuModel* menu,
   if (index > IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) {
     // This case should be fairly rare, but if we have more items than
     // pre-defined command ids, we don't put those in the status icon menu.
-    // TODO(crbug.com/1433378): Add a metric to capture this.
+    // TODO(crbug.com/40264386): Add a metric to capture this.
     return;
   }
   menu->AddItem(index, label);

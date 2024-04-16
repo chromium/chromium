@@ -28,7 +28,7 @@ ReauthenticatorBridge::ReauthenticatorBridge(
   device_reauth::DeviceAuthParams params(
       base::Seconds(0), static_cast<device_reauth::DeviceAuthSource>(source));
 
-  // TODO(crbug.com/1479361): Replace GetLastUsedProfile() when Android starts
+  // TODO(crbug.com/40280856): Replace GetLastUsedProfile() when Android starts
   // supporting multiple profiles.
   authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile(), params);

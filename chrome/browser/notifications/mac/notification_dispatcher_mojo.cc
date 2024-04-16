@@ -42,7 +42,7 @@ NotificationDispatcherMojo::NotificationDispatcherMojo(
       next_service_restart_timer_delay_(kInitialServiceRestartTimerDelay) {
   // Force start the notification service once so we show the permission request
   // to users on the first start of Chrome.
-  // TODO(crbug.com/1129366): Find a better time to ask for permissions.
+  // TODO(crbug.com/40149365): Find a better time to ask for permissions.
   CheckIfServiceCanBeTerminated();
 }
 

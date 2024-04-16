@@ -561,7 +561,7 @@ public abstract class NotificationBuilderBase {
     static void setGroupOnBuilder(NotificationWrapperBuilder builder, CharSequence origin) {
         if (origin == null) return;
         builder.setGroup(NotificationConstants.GROUP_WEB_PREFIX + origin);
-        // TODO(crbug.com/674927) Post a group summary notification.
+        // TODO(crbug.com/40498483) Post a group summary notification.
         // Notifications with the same group will only actually be stacked if we post a group
         // summary notification. Calling setGroup at least prevents them being autobundled with
         // all Chrome notifications on N though (see crbug.com/674015).

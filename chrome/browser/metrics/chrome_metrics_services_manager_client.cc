@@ -136,8 +136,8 @@ bool ShouldUsePostFREFixSamplingTrial() {
   // We check for g_browser_process and local_state() because some unit tests
   // may reach this point without creating a test browser process and/or local
   // state.
-  // TODO(crbug/1321823): Fix the unit tests so that we do not need to check for
-  // g_browser_process and local_state().
+  // TODO(crbug.com/40837610): Fix the unit tests so that we do not need to
+  // check for g_browser_process and local_state().
   return g_browser_process && g_browser_process->local_state() &&
          ShouldUsePostFREFixSamplingTrial(g_browser_process->local_state());
 }
@@ -431,8 +431,10 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
   // before tabs get added to the TabModel. This means it may be more
   // conservative in case unused TabModels are not cleaned up, but it seems to
   // work correctly.
-  // TODO(crbug/741888): Check if TabModelList's version can be updated safely.
-  // TODO(crbug/1023759): This function should return true for Incognito CCTs.
+  // TODO(crbug.com/40529753): Check if TabModelList's version can be updated
+  // safely.
+  // TODO(crbug.com/40107157): This function should return true for Incognito
+  // CCTs.
   for (const TabModel* model : TabModelList::models()) {
     if (model->IsOffTheRecord())
       return true;

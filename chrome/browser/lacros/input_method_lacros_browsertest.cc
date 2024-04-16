@@ -520,7 +520,7 @@ class InputMethodLacrosBrowserTest
   }
 
   void SetUp() override {
-    // TODO(crbug.com/1492215): The ash side fix (crrev.com/c/5046561,
+    // TODO(crbug.com/40285433): The ash side fix (crrev.com/c/5046561,
     // landed in 121.0.6140.0) is not in all ash used for version skew tests
     // yet, skip the test for older version of ash.
     if (GetAshChromeVersion() < base::Version({121, 0, 6140})) {

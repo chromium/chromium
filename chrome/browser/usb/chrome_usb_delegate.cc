@@ -282,7 +282,7 @@ bool ChromeUsbDelegate::PageMayUseUsb(content::Page& page) {
   // strict as we'd like, as cases like extensions and Isolated Web Apps still
   // need USB access in non-default partitions, so we'll just guard against
   // HTTP(S) as that presents a clear risk for inappropriate sharing.
-  // TODO(crbug.com/1469672): USB permissions should be explicitly scoped to
+  // TODO(crbug.com/40068594): USB permissions should be explicitly scoped to
   // StoragePartitions.
   if (main_rfh.GetStoragePartition() !=
       main_rfh.GetBrowserContext()->GetDefaultStoragePartition()) {

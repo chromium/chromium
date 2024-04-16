@@ -392,10 +392,10 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
   LoadAndWaitForFile("history_length_test_page_21.html");
 }
 
-// TODO(crbug.com/22111): Disabled because of flakiness and because for a while
-// history didn't support #q=searchTerm. Now that it does support these type
-// of URLs (crbug.com/619799), this test could be re-enabled if somebody goes
-// through the effort to wait for the various stages of the page loading.
+// TODO(crbug.com/41000594): Disabled because of flakiness and because for a
+// while history didn't support #q=searchTerm. Now that it does support these
+// type of URLs (crbug.com/619799), this test could be re-enabled if somebody
+// goes through the effort to wait for the various stages of the page loading.
 // The loading strategy of the new, Polymer version of chrome://history is
 // sophisticated and multi-part, so we'd need to wait on or ensure a few things
 // are happening before running the test.

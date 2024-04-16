@@ -305,7 +305,7 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
   }
 
   if (web_contents) {
-    // TODO(crbug.com/1179196): Add test for this metric.
+    // TODO(crbug.com/40169435): Add test for this metric.
     RecordDownloadStartPerProfileType(
         Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   }

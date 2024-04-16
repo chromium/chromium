@@ -56,7 +56,7 @@ class ChromeSigninClient : public SigninClient {
   //   must be the device account and can't be changed/cleared.
   bool IsClearPrimaryAccountAllowed(bool has_sync_account) const override;
 
-  // TODO(crbug.com/1369980): Remove revoke sync restriction when allowing
+  // TODO(crbug.com/40240844): Remove revoke sync restriction when allowing
   // enterprise users to revoke sync fully launches.
   bool IsRevokeSyncConsentAllowed() const override;
   void PreSignOut(

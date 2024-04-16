@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_TRUE(HasBubbleController());
 }
 
-// TODO(crbug.com/1493575): Re-enable this test.
+// TODO(crbug.com/40936746): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DISABLED_OnSodaError) {
   // Live Caption is disabled when there is an error in the SODA download for
   // the language belonging to Live Caption.

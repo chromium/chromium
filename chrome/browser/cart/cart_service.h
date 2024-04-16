@@ -39,8 +39,8 @@ class ShoppingService;
 }
 
 // Service to maintain and read/write data for chrome cart module.
-// TODO(crbug.com/1253633) Make this BrowserContext-based and get rid of Profile
-// usage so that we can modularize this.
+// TODO(crbug.com/40199234) Make this BrowserContext-based and get rid of
+// Profile usage so that we can modularize this.
 class CartService : public history::HistoryServiceObserver,
                     public KeyedService,
                     public commerce::DiscountConsentHandler {

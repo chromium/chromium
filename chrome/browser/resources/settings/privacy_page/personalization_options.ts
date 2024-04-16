@@ -169,7 +169,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private onFocusConfigChange_() {
     if (!this.enablePageContentSetting_) {
-      // TODO(crbug.com/1476887): Remove once crbug.com/1476887 launched.
+      // TODO(crbug.com/40070860): Remove once crbug.com/1476887 launched.
       return;
     }
 

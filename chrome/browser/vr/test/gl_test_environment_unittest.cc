@@ -9,8 +9,8 @@
 
 namespace vr {
 
-// TODO(crbug.com/1394319): Re-enable this test on MSAN if not removed.
-// TODO(crbug.com/1231934): Re-enable this test on Linux in general, or fully
+// TODO(crbug.com/40881517): Re-enable this test on MSAN if not removed.
+// TODO(crbug.com/40190919): Re-enable this test on Linux in general, or fully
 // remove if DrawVrBrowsingMode is removed (see
 // https://chromium-review.googlesource.com/c/chromium/src/+/4102520/comments/b1cb2e21_5078eef7).
 #if BUILDFLAG(IS_LINUX)

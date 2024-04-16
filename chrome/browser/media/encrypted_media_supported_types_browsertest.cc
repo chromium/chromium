@@ -197,7 +197,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     vp9_profile0_codecs_.push_back("vp09.00.10.08");
 
     // VP9 profile 2 is supported in WebM/MP4 with ClearKey/ExternalClearKey.
-    // TODO(crbug.com/707128): Add support in Widevine CDM.
+    // TODO(crbug.com/40513453): Add support in Widevine CDM.
     vp9_profile2_codecs_.push_back("vp09.02.10.10");
 
     // AV1 codec string: https://aomediacodec.github.io/av1-isobmff/#codecsparam
@@ -495,7 +495,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     // On Windows & Linux platforms, HEVC support is detected through the GPU
     // capabilities which won't indicate support when running the tests.
-    // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+    // TODO(crbug.com/40226210): Fix this so that we can inject HEVC support on
     // Windows.
     EXPECT_UNSUPPORTED(hevc_supported);
 #elif BUILDFLAG(IS_MAC)

@@ -902,7 +902,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   // Upgrading an extension that has background should not reshow the balloon.
   {
-    // TODO(crbug.com/438376): Fix crbug.com/438376 and remove these checks.
+    // TODO(crbug.com/41145854): Fix crbug.com/438376 and remove these checks.
     InSequence expected_call_sequence;
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(false)).Times(Exactly(1));
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));

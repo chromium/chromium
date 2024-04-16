@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileSynchronous) {
 
 // Test OnProfileCreate is called with is_new_profile set to true when
 // creating a new profile asynchronously.
-// TODO(crbug.com/1280223): Flaky on ChromeOS-Ash.
+// TODO(crbug.com/40811337): Flaky on ChromeOS-Ash.
 // TODO(crbug.com/1304167): Failing on Mac.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateNewProfileAsynchronous DISABLED_CreateNewProfileAsynchronous
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileAsynchronous) {
   FlushIoTaskRunnerAndSpinThreads();
 }
 
-// TODO(crbug.com/1282123): Flaky on ChromeOS-Ash.
+// TODO(crbug.com/40812649): Flaky on ChromeOS-Ash.
 // TODO(crbug.com/1218591): Flaky on Mac.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_CreateOldProfileAsynchronous DISABLED_CreateOldProfileAsynchronous
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
 }
 
 // Test that a README file is created for profiles that didn't have it.
-// TODO(https://crbug.com/1289754): Flaky on ChromeOS-Ash.
+// TODO(crbug.com/40817682): Flaky on ChromeOS-Ash.
 // TODO(https://crbug.com/1304167): Failing on Mac.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_ProfileReadmeCreated DISABLED_ProfileReadmeCreated
@@ -764,7 +764,7 @@ class ProfileBrowserTestWithoutDestroyProfile : public ProfileBrowserTest {
 
 // Verifies destroying regular profile will result in destruction of OTR
 // profiles.
-// TODO(crbug.com/1468503): Re-enable this test on ChromeOS.
+// TODO(crbug.com/40924925): Re-enable this test on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DestroyRegularProfileBeforeOTRs \
   DISABLED_DestroyRegularProfileBeforeOTRs

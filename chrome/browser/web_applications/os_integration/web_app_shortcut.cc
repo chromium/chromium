@@ -225,7 +225,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     }
   }
 
-// TODO(crbug.com/1416965): Implement tests on Linux for using shortcuts_menu
+// TODO(crbug.com/40257107): Implement tests on Linux for using shortcuts_menu
 // actions.
 #if BUILDFLAG(IS_LINUX)
   const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =

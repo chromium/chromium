@@ -453,7 +453,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       hosts_and_urls_requested.insert(host.host());
     }
     for (const auto& url : hints_request.urls()) {
-      // TODO(crbug/1051365):  Remove normalization step once nav predictor
+      // TODO(crbug.com/40118423):  Remove normalization step once nav predictor
       // provides predictable URLs.
       hosts_and_urls_requested.insert(GURL(url.url()).GetAsReferrer().spec());
     }
@@ -1324,7 +1324,7 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
-// TODO(crbug.com/1459340): De-leakify and re-enable.
+// TODO(crbug.com/40919396): De-leakify and re-enable.
 #if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
 #define MAYBE_HintsFetcher_SRP_Slow_Connection \
   DISABLED_HintsFetcher_SRP_Slow_Connection
@@ -1651,7 +1651,7 @@ class HintsFetcherSearchPageLimitedURLsBrowserTest
   }
 };
 
-// TODO(crbug/1463073): Disable limited SRP test on Windows/CrOS for now.
+// TODO(crbug.com/40067071): Disable limited SRP test on Windows/CrOS for now.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_HintsFetcherLimitedResults DISABLED_HintsFetcherLimitedResults
 #else

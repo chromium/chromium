@@ -554,7 +554,7 @@ public class SectionHeaderView extends LinearLayout {
     public void showWebFeedAwarenessIph(
             UserEducationHelper helper, int tabIndex, Runnable scroller) {
         // Stop showing before in the view hierarchy, as this will fail/assert.
-        // TODO(https://crbug.com/1448368): Request IPH after parent set or something.
+        // TODO(crbug.com/40914294): Request IPH after parent set or something.
         if (getParent() == null) return;
 
         helper.requestShowIPH(

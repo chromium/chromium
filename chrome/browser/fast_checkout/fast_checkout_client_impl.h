@@ -212,7 +212,7 @@ class FastCheckoutClientImpl
   // `allow_further_runs == false` to have any effect. The `IsShowing()` guard
   // is currently required because of uncontrolled `HideFastCheckout()` calls
   // in `BrowserAutofillManager::OnHidePopupImpl()`.
-  // TODO(crbug.com/1334642): remove `HideFastCheckout()` call from
+  // TODO(crbug.com/40228235): remove `HideFastCheckout()` call from
   // `BrowserAutofillManger` by introducing a new `AutofillManager::Observer`
   // methods pair, then remove this method in favor of `Stop()`.
   void InternalStop(bool allow_further_runs);

@@ -210,9 +210,9 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
         ->clear_randomized_field_metadata();
   }
 
-  // TODO(crbug.com/1251119): The language is sometimes missing from the upload,
-  // making the test flaky. Add the language back to the comparison when the
-  // root cause is fixed.
+  // TODO(crbug.com/40792292): The language is sometimes missing from the
+  // upload, making the test flaky. Add the language back to the comparison when
+  // the root cause is fixed.
   request.mutable_upload()->clear_language();
   expected.mutable_upload()->clear_language();
 

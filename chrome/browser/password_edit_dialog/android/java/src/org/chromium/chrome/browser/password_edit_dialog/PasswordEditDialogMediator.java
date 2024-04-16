@@ -120,7 +120,7 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
             // If there is more than one username possible,
             // the user is asked to confirm the one to be saved.
             // Otherwise, they are just asked if they want to update the password.
-            // TODO(crbug.com/1378591): Take care that confirm username dialog should
+            // TODO(crbug.com/40243989): Take care that confirm username dialog should
             // not be navigated through the cog button.
             return displayUsernames.size() < 2
                     ? R.string.password_update_dialog_title

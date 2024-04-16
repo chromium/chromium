@@ -121,8 +121,8 @@ void SmsFetchRequestHandler::AskUserPermission(
   // overwrite that one with the new origin. In most cases where there's only
   // one pending origin, the request will be removed when |SmsRetrieverClient|
   // times out which would triggers |Request::OnFailure|.
-  // TODO(crbug.com/1138454): We should improve the infrastructure to be able to
-  // handle failures when there are multiple pending origins simultaneously.
+  // TODO(crbug.com/40153007): We should improve the infrastructure to be able
+  // to handle failures when there are multiple pending origins simultaneously.
   Java_SmsFetcherMessageHandler_showNotification(
       env, one_time_code, top_origin, embedded_origin, client_name,
       reinterpret_cast<intptr_t>(this));
@@ -159,7 +159,7 @@ void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
-  // TODO(crbug.com/1015645): We should have a separate catergory for this type
+  // TODO(crbug.com/40103792): We should have a separate catergory for this type
   // of failure.
   request->SendFailureMessage(FailureType::kPromptCancelled);
 }

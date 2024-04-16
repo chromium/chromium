@@ -639,7 +639,7 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
 
   // AllPasswordsBottomSheetController assumes that the focused frame has a live
   // RenderFrame so that it can use the password manager driver.
-  // TODO(https://crbug.com/1286779): Investigate if focused frame really needs
+  // TODO(crbug.com/40815830): Investigate if focused frame really needs
   // to return RenderFrameHosts with non-live RenderFrames.
   if (!GetWebContents().GetFocusedFrame()->IsRenderFrameLive()) {
     return;
@@ -649,7 +649,8 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   // |AllPasswordsSheetDismissed| we are sure that this controller is alive as
   // it owns |AllPasswordsBottomSheetController| from which the method is
   // called.
-  // TODO(crbug.com/1104132): Update the controller with the last focused field.
+  // TODO(crbug.com/40139552): Update the controller with the last focused
+  // field.
   all_passords_bottom_sheet_controller_ =
       std::make_unique<AllPasswordsBottomSheetController>(
           &GetWebContents(), password_client_->GetProfilePasswordStore(),

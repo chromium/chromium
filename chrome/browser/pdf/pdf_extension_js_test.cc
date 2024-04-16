@@ -295,8 +295,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_INK)
-// TODO(https://crbug.com/920684): Test times out under sanitizers.
-// TODO(https://crbug.com/1523044): Test fails for
+// TODO(crbug.com/41434927): Test times out under sanitizers.
+// TODO(crbug.com/41495998): Test fails for
 // testViewportToCameraConversion.
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepCsp) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
   // The script-source none directive in the mock headers file should
   // prevent the JavaScript from executing the beep().
-  // TODO(https://crbug.com/1032511) functionality not implemented.
+  // TODO(crbug.com/40050941) functionality not implemented.
   RunTestsInJsModule("nobeep_test.js", "test-nobeep-csp.pdf");
 }
 

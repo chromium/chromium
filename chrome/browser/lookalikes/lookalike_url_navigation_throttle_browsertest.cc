@@ -1022,8 +1022,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   test_helper()->CheckNoLookalikeUkm();
 }
 
-// TODO(https://crbug.com/1122078): Enable test when MacOS flake is fixed.
-// TODO(https://crbug.com/1106402): Enable test when Win/Linux flake is fixed.
+// TODO(crbug.com/40146482): Enable test when MacOS flake is fixed.
+// TODO(crbug.com/40706320): Enable test when Win/Linux flake is fixed.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Idn_SiteEngagement_Match DISABLED_Idn_SiteEngagement_Match
 #else
@@ -1875,7 +1875,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
                        ShowInterstitialAfterActivation) {
-  // TODO(crbug.com/1176054): Cross-origin prerender isn't yet supported, so we
+  // TODO(crbug.com/40168192): Cross-origin prerender isn't yet supported, so we
   // trigger prerendering a page that needs to show an interstitial like this.
   // Once cross-origin prerender is supported, this should be updated to more
   // realistic use-case. i.e. navigate to an primary page with a normal URL and

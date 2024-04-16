@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * These values have been used as SharedPreferences keys in the past and should not be reused.
- * Do not remove values from this list.
+ * These values have been used as SharedPreferences keys in the past and should not be reused. Do
+ * not remove values from this list.
  *
- * TODO(crbug.com/1483469): Rename this to reflect that deprecated keys from all registries should
- * rest here, not just Chrome-layer keys.
+ * <p>TODO(crbug.com/40282028): Rename this to reflect that deprecated keys from all registries
+ * should rest here, not just Chrome-layer keys.
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
 public class DeprecatedChromePreferenceKeys {

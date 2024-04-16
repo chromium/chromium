@@ -902,7 +902,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
-  // TODO(https://crbug.com/1266001): Improve unit tests support for tracing.
+  // TODO(crbug.com/40801822): Improve unit tests support for tracing.
   // In particular, the initialization call below is most likely too narrow /
   // doesn't take care of everything that is needed.  In the future we might
   // need to 1) initialize tracing from a better place (maybe

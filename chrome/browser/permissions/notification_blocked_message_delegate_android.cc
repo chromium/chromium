@@ -118,7 +118,7 @@ void NotificationBlockedMessageDelegate::OnWebContentsFocused(
     // by the PermissionRequestManager, thereby causing message to be
     // dismissed and dialog_controller to dismiss the dialog.
     dialog_controller_->ShowDialog(*delegate_->ReasonForUsingQuietUi());
-    // TODO(crbug.com/1291313): add browser tests to test if
+    // TODO(crbug.com/40818674): add browser tests to test if
     // webcontents have been navigated to another page in the meantime.
   }
 }

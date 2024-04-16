@@ -263,7 +263,7 @@ SupervisedUserExtensionsManager::GetExtensionState(
     const extensions::Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1218633): Check if this is needed for extensions in
+  // TODO(crbug.com/40771733): Check if this is needed for extensions in
   // LaCrOS.
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because

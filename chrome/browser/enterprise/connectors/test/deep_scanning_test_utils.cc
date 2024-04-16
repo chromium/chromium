@@ -669,7 +669,7 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
       filenames += fh.first + "; ";
     }
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1501186): To fix the tests for ChromeOS.
+    // TODO(crbug.com/40941444): To fix the tests for ChromeOS.
     // If filename is not found as expected, try the filename without path.
     if (!base::Contains(filenames_and_hashes_, filename)) {
       for (const auto& fh : filenames_and_hashes_) {

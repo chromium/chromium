@@ -493,11 +493,11 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   SetUpPrefs();
   LaunchServiceWithAudioSourceFetcher();
 
-  // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
+  // TODO(crbug.com/40753481): Check implementation / sandbox policy on Mac and
   // Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Check that Start begins audio recording.
-  // TODO(crbug.com/1173135): Try to mock audio input, maybe with
+  // TODO(crbug.com/40166991): Try to mock audio input, maybe with
   // TestStreamFactory::stream_, to test end-to-end.
   std::string device_id = media::AudioDeviceDescription::kDefaultDeviceId;
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,

@@ -412,7 +412,7 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeBetween) {
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInModel) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/1002762): Fix this test to run in < action_timeout()
+  // TODO(crbug.com/40646823): Fix this test to run in < action_timeout()
   // on the Android bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());

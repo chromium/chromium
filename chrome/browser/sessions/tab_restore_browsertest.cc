@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 // unload handler, resulting in the tab not closing while the group does. Then
 // restore the group. The group should restore intact and duplicate the
 // still-open tab.
-// TODO(crbug.com/1181521): Run unload handlers before the group is closed.
+// TODO(crbug.com/40750891): Run unload handlers before the group is closed.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        MAYBE_RestoreGroupWithUnloadHandlerRejected) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
@@ -1941,7 +1941,7 @@ class SoftNavigationTabRestoreTest : public TabRestoreTest {
   base::test::ScopedFeatureList features_list_;
 };
 
-// TODO(crbug.com/1492469): Test is found flaky on linux, win and mac,most
+// TODO(crbug.com/40285531): Test is found flaky on linux, win and mac,most
 // probably due to mouseclicks not working consistently.
 IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
                        DISABLED_SoftNavigationToRestoredTab) {

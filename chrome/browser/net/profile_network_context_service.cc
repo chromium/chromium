@@ -938,7 +938,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   if (!Profile::FromBrowserContext(
            chrome::GetBrowserContextRedirectedInIncognito(profile_))
            ->IsMainProfile()) {
-    // TODO(crbug.com/1148298): At the moment client certs are only enabled for
+    // TODO(crbug.com/40156976): At the moment client certs are only enabled for
     // the main profile and its incognito profile (similarly to how it worked in
     // Ash-Chrome). Return some cert store for secondary profiles in
     // Lacros-Chrome when certs are supported there.
@@ -964,7 +964,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // selection dialog.
   return nullptr;
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1380609): Implement ClientCertStore support.
+  // TODO(crbug.com/40244798): Implement ClientCertStore support.
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 #else

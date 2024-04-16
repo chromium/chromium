@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextStyle) {
   RunPDFTest(FILE_PATH_LITERAL("text-style.pdf"));
 }
 
-// TODO(https://crbug.com/1172026)
+// TODO(crbug.com/40745411)
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
   RunPDFTest(FILE_PATH_LITERAL("xfa_fields.pdf"));
 }
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
 using PDFExtensionAccessibilityNavigationTest =
     PDFExtensionAccessibilityTestWithOopifOverride;
 
-// TODO(crbug.com/1487426): Fix the flakiness on ChromeOS.
+// TODO(crbug.com/40934115): Fix the flakiness on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LinkNavigation DISABLED_LinkNavigation
 #else

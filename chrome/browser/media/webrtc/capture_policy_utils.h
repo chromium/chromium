@@ -82,7 +82,7 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// TODO(crbug.com/1342069): Use Origin instead of GURL.
+// TODO(crbug.com/40230867): Use Origin instead of GURL.
 void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
                                     const GURL& url,
                                     base::OnceCallback<void(bool)> callback);

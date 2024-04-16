@@ -116,7 +116,7 @@ content::WebContents* GetSignInTabWithAccessPoint(
 
 // Returns the short user identity to display for |profile|. It is based on the
 // current unconsented primary account (if exists).
-// TODO(crbug.com/1012179): Move this logic into ProfileAttributesEntry once
+// TODO(crbug.com/40102223): Move this logic into ProfileAttributesEntry once
 // AvatarToolbarButton becomes an observer of ProfileAttributesStorage and thus
 // ProfileAttributesEntry is up-to-date when AvatarToolbarButton needs it.
 std::u16string GetShortProfileIdentityToDisplay(

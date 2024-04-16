@@ -23,8 +23,8 @@
 #error "These tests are unsupported on Android"
 #endif
 
-// TODO(crbug.com/1372198): Temporarily disable the tests on macOS since they do
-// not yet work with current WebAuthn UI.
+// TODO(crbug.com/40870879): Temporarily disable the tests on macOS since they
+// do not yet work with current WebAuthn UI.
 #if !BUILDFLAG(IS_MAC)
 
 namespace payments {

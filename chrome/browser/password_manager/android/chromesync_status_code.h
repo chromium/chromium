@@ -7,7 +7,7 @@
 
 namespace password_manager {
 
-// TODO(crbug.com/1300837): Remove once GMS definition will be exposed.
+// TODO(crbug.com/40824450): Remove once GMS definition will be exposed.
 // Status codes redefinition for the GMS ChromeSync API.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
 enum class ChromeSyncStatusCode {

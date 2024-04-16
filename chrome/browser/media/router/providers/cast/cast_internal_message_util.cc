@@ -213,7 +213,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
 base::Value::Dict CreateAppMessageBody(
     const std::string& session_id,
     const cast::channel::CastMessage& cast_message) {
-  // TODO(https://crbug.com/862532): Investigate whether it is possible to move
+  // TODO(crbug.com/41400942): Investigate whether it is possible to move
   // instead of copying the contents of |cast_message|. Right now copying is
   // done because the message is passed as a const ref at the
   // CastSocket::Observer level.

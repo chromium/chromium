@@ -691,8 +691,8 @@ void ChromeBrowserMainPartsWin::RegisterApplicationRestart(
 int ChromeBrowserMainPartsWin::HandleIconsCommands(
     const base::CommandLine& parsed_command_line) {
   if (parsed_command_line.HasSwitch(switches::kHideIcons)) {
-    // TODO(740976): This is not up-to-date and not localized. Figure out if
-    // the --hide-icons and --show-icons switches are still used.
+    // TODO(crbug.com/41329700): This is not up-to-date and not localized.
+    // Figure out if the --hide-icons and --show-icons switches are still used.
     std::u16string cp_applet = u"Programs and Features";
     const std::u16string msg =
         l10n_util::GetStringFUTF16(IDS_HIDE_ICONS_NOT_SUPPORTED, cp_applet);
@@ -805,7 +805,7 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
   if (!command_line.HasSwitch(switches::kRestart))
     restart_command.AppendSwitch(switches::kRestart);
 
-  // TODO(crbug.com/964541): Remove other unneeded switches, including
+  // TODO(crbug.com/41459588): Remove other unneeded switches, including
   // duplicates, perhaps harmonize with switches::RemoveSwitchesForAutostart.
   return restart_command;
 }
@@ -855,7 +855,7 @@ void ChromeBrowserMainPartsWin::OnModuleEvent(
   }
   // Since OnModuleEvent can be invoked from any thread, the above trace event's
   // END might be the last event on this thread, emit an empty event to force
-  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
+  // the END to be flushed. TODO(crbug.com/40657156): Remove this once fixed.
   PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 

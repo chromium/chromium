@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, MAYBE_AutoReload) {
   EXPECT_EQ(kRequestsToFail + 1, interceptor_requests());
 }
 
-// TODO(crbug.com/1350295): Test is flaky.
+// TODO(crbug.com/40856405): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
                        DISABLED_ManualReloadNotSuppressed) {
   GURL test_url("http://error.page.auto.reload");
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 // Make sure that a same document navigation does not cause issues with the
 // auto-reload timer.  Note that this test was added due to this case causing
 // a crash.  On regression, this test may hang due to a crashed renderer.
-// TODO(crbug.com/1111535): Flaky.
+// TODO(crbug.com/40709227): Flaky.
 IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
                        DISABLED_IgnoresSameDocumentNavigation) {
   GURL test_url("http://error.page.auto.reload");

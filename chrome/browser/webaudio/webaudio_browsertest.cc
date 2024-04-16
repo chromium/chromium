@@ -14,7 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
 
-// TODO(crbug.com/1173300): Investigate why different macOS versions have
+// TODO(crbug.com/40167066): Investigate why different macOS versions have
 // different fingerprints.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_VerifyDynamicsCompressorFingerprint \
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
   // fine, and are cause for updating these expectations -- the issue is if
   // different devices return different fingerprints.
 #if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/1156752): Investigate why this fingerprint is different.
+  // TODO(crbug.com/40160543): Investigate why this fingerprint is different.
   EXPECT_EQ("13.13046550525678", fingerprint);
 #else
   EXPECT_EQ("13.130926895706125", fingerprint);

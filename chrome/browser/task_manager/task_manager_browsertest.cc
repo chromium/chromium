@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
 }
 
-// TODO(https://crbug.com/1113972): disabled as test is flaky.
+// TODO(crbug.com/40710551): disabled as test is flaky.
 IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest,
                        DISABLED_OrderingOfDependentRows) {
   ShowTaskManager();

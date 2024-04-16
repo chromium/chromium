@@ -12,7 +12,7 @@ build_webui("build") {
     "device_log_ui.html",
   ]
 
-  # TODO(crbug.com/1511758): Migrate device-log-ui to TypeScript.
+  # TODO(crbug.com/41484340): Migrate device-log-ui to TypeScript.
   non_web_component_files = [ "device_log_ui.js" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

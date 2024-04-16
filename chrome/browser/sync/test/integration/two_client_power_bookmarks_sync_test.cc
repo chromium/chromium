@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTestNoTestingConfig,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest,
-                       // TODO(crbug.com/1430600): Re-enable this test.
+                       // TODO(crbug.com/40901832): Re-enable this test.
                        DISABLED_UpdateOnePower) {
   ASSERT_TRUE(SetupSync());
   SetupServices();

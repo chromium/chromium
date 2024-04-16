@@ -208,8 +208,8 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
                    signin::PROFILE_MODE_ADD_ACCOUNT_DISABLED;
   }
 
-  // TODO(crbug.com/1134045): Check whether the child account status should also
-  // be sent in the Mirror request header when loading the local version of
+  // TODO(crbug.com/40151268): Check whether the child account status should
+  // also be sent in the Mirror request header when loading the local version of
   // OneGoogleBar.
   std::string chrome_connected_header_value =
       chrome_connected_header_helper.BuildRequestHeader(

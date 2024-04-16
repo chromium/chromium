@@ -711,7 +711,7 @@ public class AndroidShareSheetControllerUnitTest {
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         // Attempt to do the copy image action.
-        // TODO(crbug/1448355): Set up a real temp image and verify the URI is correct.
+        // TODO(crbug.com/40064767): Set up a real temp image and verify the URI is correct.
         chooseCustomAction(intent, R.string.sharing_copy_image);
         Assert.assertTrue("Clipboard cannot paste.", Clipboard.getInstance().canPaste());
     }

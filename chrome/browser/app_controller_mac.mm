@@ -1612,7 +1612,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   } else {
     // Asynchronously load profile first if needed.
-    // TODO(crbug.com/1426857): Replace CreateBrowser by LaunchBrowserStartup
+    // TODO(crbug.com/40261514): Replace CreateBrowser by LaunchBrowserStartup
     app_controller_mac::RunInLastProfileSafely(
         base::BindOnce(base::IgnoreResult(&CreateBrowser)),
         app_controller_mac::kShowProfilePickerOnFailure);

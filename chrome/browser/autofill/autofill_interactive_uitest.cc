@@ -516,7 +516,7 @@ class ValueWaiter {
 // Test fixtures derive from this class. This class hierarchy allows test
 // fixtures to have distinct list of test parameters.
 //
-// TODO(crbug.com/832707): Parametrize this class to ensure that all tests in
+// TODO(crbug.com/41383133): Parametrize this class to ensure that all tests in
 //                         this run with all possible valid combinations of
 //                         features and field trials.
 class AutofillInteractiveTestBase : public AutofillUiTest {
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_ClearForm, ClearTwoSection) {
               ValuesAre(kEmptyAddress));
 }
 
-// TODO(crbug.com/1468282) Flaky on Mac.
+// TODO(crbug.com/40924835) Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
 #else
@@ -1977,8 +1977,8 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterReload) {
 // Test that filling a form sends all the expected events to the different
 // fields being filled.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
-  // TODO(crbug.com/609861): Remove the autocomplete attribute from the textarea
-  // field when the bug is fixed.
+  // TODO(crbug.com/40468256): Remove the autocomplete attribute from the
+  // textarea field when the bug is fixed.
   static const char kTestEventFormString[] =
       R"( <script type="text/javascript">
           var inputfocus = false;
@@ -2220,7 +2220,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForCompanyName) {
   EXPECT_EQ(company_name, GetFieldValueById("company"));
 }
 
-// TODO(https://crbug.com/1279102): Check back if flakiness is fixed now.
+// TODO(crbug.com/40810623): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        NoAutofillSuggestionForCompanyName) {
   static const char kTestShippingFormWithCompanyString[] = R"(
@@ -3612,7 +3612,7 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
 
 // Ensure that autofill suggestions are properly read out via ChromeVox.
 // This is a regressions test for crbug.com/1208913.
-// TODO(https://crbug.com/1294266): Flaky on ChromeOS
+// TODO(crbug.com/40820453): Flaky on ChromeOS
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestNotificationOfAutofillDropdown \
   DISABLED_TestNotificationOfAutofillDropdown

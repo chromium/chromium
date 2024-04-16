@@ -51,7 +51,7 @@ class WebAppInstallManager {
   using ErrorLog = base::Value::List;
   const ErrorLog* error_log() const { return error_log_.get(); }
 
-  // TODO(crbug.com/1322974): migrate loggign to WebAppCommandManager after all
+  // TODO(crbug.com/40224498): migrate loggign to WebAppCommandManager after all
   // tasks are migrated to the command system.
   void TakeCommandErrorLog(base::PassKey<WebAppCommandManager>,
                            base::Value::Dict log);

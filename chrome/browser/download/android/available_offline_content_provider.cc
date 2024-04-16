@@ -70,7 +70,7 @@ int ContentTypePriority(AvailableContentType type) {
 }
 
 AvailableContentType ContentType(const OfflineItem& item) {
-  // TODO(crbug.com/1033985): Make provider namespace a reusable constant.
+  // TODO(crbug.com/40111585): Make provider namespace a reusable constant.
   if (item.is_transient || item.is_off_the_record ||
       item.state != OfflineItemState::COMPLETE || item.is_dangerous ||
       item.id.name_space == "content_index") {

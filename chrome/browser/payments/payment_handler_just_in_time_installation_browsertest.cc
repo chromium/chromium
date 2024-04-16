@@ -98,10 +98,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
 
 using PaymentHandlerSkipSheetTest = PaymentHandlerJustInTimeInstallationTest;
 
-// TODO(crbug.com/825270): Now that user-activation is required for show(), this
-// test doesn't make much sense (we will always have a user gesture). However we
-// should make sure that the codepaths it is testing are covered by other
-// skip-the-sheet tests before removing it.
+// TODO(crbug.com/40568495): Now that user-activation is required for show(),
+// this test doesn't make much sense (we will always have a user gesture).
+// However we should make sure that the codepaths it is testing are covered by
+// other skip-the-sheet tests before removing it.
 IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(

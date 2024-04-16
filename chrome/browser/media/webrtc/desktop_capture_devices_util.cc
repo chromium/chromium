@@ -47,7 +47,7 @@ BASE_FEATURE(kSuppressLocalAudioPlaybackForSystemAudio,
 
 namespace {
 
-// TODO(crbug.com/1208868): Eliminate code duplication with
+// TODO(crbug.com/40181897): Eliminate code duplication with
 // capture_handle_manager.cc.
 media::mojom::CaptureHandlePtr CreateCaptureHandle(
     content::WebContents* capturer,
@@ -241,7 +241,7 @@ std::string DeviceName(content::WebContents* web_contents,
     return base::StrCat({prefix, content::kWebContentsCaptureScheme,
                          base::UnguessableToken::Create().ToString()});
   } else {
-    // TODO(crbug.com/1252682): MediaStreamTrack.label leaks internal state for
+    // TODO(crbug.com/40793276): MediaStreamTrack.label leaks internal state for
     // screen/window
     return base::StrCat({prefix, media_id.ToString()});
   }
@@ -286,8 +286,8 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
               kSuppressLocalAudioPlaybackForTabAudio)) {
         suppress_local_audio_playback = false;  // Surface-specific killswitch.
       }
-      // TODO(crbug/1378669): Deprecate disable_local_echo, support the same
-      // functionality based only on suppress_local_audio_playback.
+      // TODO(crbug.com/40244028): Deprecate disable_local_echo, support the
+      // same functionality based only on suppress_local_audio_playback.
       web_id.disable_local_echo =
           disable_local_echo || suppress_local_audio_playback;
       out_devices.audio_device = blink::MediaStreamDevice(

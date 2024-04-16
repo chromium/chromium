@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   SetDIPSTime(frame_interaction_time);
   UserActivationObserver observer_b(web_contents, iframe);
 
-  // TODO(crbug.com/1386142): Remove the ExecJs workaround once
+  // TODO(crbug.com/40247129): Remove the ExecJs workaround once
   // SimulateMouseClickOrTapElementWithId is able to activate iframes on Android
 #if !BUILDFLAG(IS_ANDROID)
   content::SimulateMouseClickOrTapElementWithId(web_contents, kIframeId);
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All, DIPSTabHelperBrowserTest, ::testing::Bool());
 
-// TODO(crbug.com/654704): Android does not support PRE_ tests.
+// TODO(crbug.com/40488499): Android does not support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
 class DIPSPrepopulateTest : public PlatformBrowserTest {
  public:

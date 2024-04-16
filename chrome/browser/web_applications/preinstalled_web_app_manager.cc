@@ -249,8 +249,8 @@ struct SynchronizeDecision {
     // See crbug.com/1393284 and crbug.com/1363004 for past incidents.
     kIgnore,
   } type;
-  // TODO(crbug.com/1409355): Rename DisabledReason to SynchronizeDecisionReason
-  // since it applies to every install decision.
+  // TODO(crbug.com/40253925): Rename DisabledReason to
+  // SynchronizeDecisionReason since it applies to every install decision.
   DisabledReason reason;
   std::string log;
 };
@@ -887,7 +887,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     }
   }
 
-  // TODO(crbug.com/1175196): Move this constant into some shared constants.h
+  // TODO(crbug.com/40747215): Move this constant into some shared constants.h
   // file.
   bool preinstalled_apps_enabled_in_prefs =
       profile_->GetPrefs()->GetString(prefs::kPreinstalledApps) == "install";

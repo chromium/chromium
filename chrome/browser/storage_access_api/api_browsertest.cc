@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Access change should be reflected immediately.
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-  // TODO(https://crbug.com/1441133): should EXPECT_FALSE here since user
+  // TODO(crbug.com/40266432): should EXPECT_FALSE here since user
   // explicitly blocks cookies for hostB
   EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
 }
@@ -2567,6 +2567,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 }
 
-// TODO(crbug.com/1448957): Add test cases of 3PC enabled by other mechanisms.
+// TODO(crbug.com/40269576): Add test cases of 3PC enabled by other mechanisms.
 
 }  // namespace

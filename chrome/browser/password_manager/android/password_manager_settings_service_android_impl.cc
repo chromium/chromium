@@ -259,14 +259,14 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
   }
-  // TODO(crbug.com/1492135): Implement retries for writing to GMSCore.
+  // TODO(crbug.com/40285405): Implement retries for writing to GMSCore.
   bridge_helper_->SetPasswordSettingValue(
       account, PasswordManagerSetting::kAutoSignIn, false);
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
   CHECK(bridge_helper_);
-  // TODO(crbug.com/1485556): Copy the pref values to GMSCore for local users.
+  // TODO(crbug.com/40282601): Copy the pref values to GMSCore for local users.
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
@@ -484,7 +484,7 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
     // account has just signed out. So the account can't be queried via
     // `sync_service_->GetAccountInfo().email` but instead needs to be retrieved
     // via kGoogleServices*Last*SyncingUsername.
-    // TODO(crbug.com/1490523): Revisit this logic - does anything need to be
+    // TODO(crbug.com/40284768): Revisit this logic - does anything need to be
     // done for signed-in non-syncing users too?
     account = SyncingAccount(
         pref_service_->GetString(::prefs::kGoogleServicesLastSyncingUsername));

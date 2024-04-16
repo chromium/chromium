@@ -59,7 +59,7 @@ int64_t SecondsSinceEpoch(base::Time t) {
 
 namespace component_updater {
 
-// TODO(crbug.com/1286121): add tests for pinning enforcement.
+// TODO(crbug.com/40815428): add tests for pinning enforcement.
 class PKIMetadataComponentUpdaterTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<CTEnforcement>,
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, MAYBE_TestCTUpdate) {
   // logs.
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
   net::EmbeddedTestServer::ServerCertificateConfig server_config;
-  // TODO(https://crbug.com/1211074): Need to use a separate hostname for each
+  // TODO(crbug.com/40767453): Need to use a separate hostname for each
   // request since the current code does not flush verifier caches on CT log
   // updates. When log updates switch to the new path, change the test to use
   // the same hostname for each request to test that caches are cleared as
@@ -993,7 +993,7 @@ INSTANTIATE_TEST_SUITE_P(PKIMetadataComponentUpdater,
                                          CTEnforcement::kDisabledByProto,
                                          CTEnforcement::kDisabledByFeature));
 
-// TODO(https://crbug.com/1287211) additional Chrome Root Store browser tests to
+// TODO(crbug.com/40816087) additional Chrome Root Store browser tests to
 // add:
 //
 // * Test that AIA fetching still works after updating CRS.

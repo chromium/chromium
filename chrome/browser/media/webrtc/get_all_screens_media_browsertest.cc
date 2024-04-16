@@ -388,8 +388,8 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
                                                      track_ids, &error_name);
   if (param.expected_csp_acceptable) {
     EXPECT_TRUE(result);
-    // TODO(crbug.com/1404274): Adapt this test if a decision is made on whether
-    // stream ids shall be shared or unique.
+    // TODO(crbug.com/40251833): Adapt this test if a decision is made on
+    // whether stream ids shall be shared or unique.
     EXPECT_EQ(1u, stream_ids.size());
     EXPECT_EQ(5u, track_ids.size());
   } else {
@@ -474,7 +474,7 @@ class InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
-    // TODO(crbug.com/1459164): Use a less error-prone flag.
+    // TODO(crbug.com/40274188): Use a less error-prone flag.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Display");

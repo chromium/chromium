@@ -529,7 +529,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     // add the fallback hostname to the allowlist now before triggering
     // fallback. HTTPS-First Mode handles this on the user proceeding through
     // the interstitial only.
-    // TODO(crbug.com/1446193): Distinguish HTTPS-First Mode and HTTPS-Upgrades
+    // TODO(crbug.com/40912859): Distinguish HTTPS-First Mode and HTTPS-Upgrades
     // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
     // downgrade Page Info.
     // TODO(crbug.com/1394910): Move this to a helper function

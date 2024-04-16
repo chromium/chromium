@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
                             blink::mojom::DisplayMode::kStandalone, 1);
 }
 
-// TODO(crbug.com/988292): Flakes on most platforms.
+// TODO(crbug.com/40637899): Flakes on most platforms.
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
                        DISABLED_WebAppBannerFiresAppInstalled) {
   content::WebContents* web_contents =
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
 
-// TODO(https://crbug.com/1289196): Flaky failures.
+// TODO(crbug.com/40817384): Flaky failures.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_DestroyWebContents DISABLED_DestroyWebContents
 #else

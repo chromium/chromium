@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, AllowCookiesUsingExceptions) {
 
 // Verify that cookies can be blocked for a specific website using exceptions.
 //
-// TODO(https://crbug.com/931080): Re-enable test once flakiness is fixed.
+// TODO(crbug.com/41440775): Re-enable test once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
                        DISABLED_BlockCookiesUsingExceptions) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetPageURL()));

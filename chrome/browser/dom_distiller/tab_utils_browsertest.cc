@@ -77,7 +77,7 @@ std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
 }
 
 // FaviconUpdateWaiter waits for favicons to be changed after navigation.
-// TODO(1064318): Combine with FaviconUpdateWaiter in
+// TODO(crbug.com/40123662): Combine with FaviconUpdateWaiter in
 // chrome/browser/chrome_service_worker_browsertest.cc.
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
  public:
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
   ASSERT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
-// TODO(crbug.com/1227141): Flaky on Mac.
+// TODO(crbug.com/40776875): Flaky on Mac.
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
                        FaviconFromOriginalPage) {
   content::WebContents* initial_web_contents =

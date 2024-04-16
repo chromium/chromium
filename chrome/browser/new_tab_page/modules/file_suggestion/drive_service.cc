@@ -43,7 +43,7 @@ constexpr char kPlatform[] = "CHROME_OS";
 #else
 constexpr char kPlatform[] = "UNSPECIFIED_PLATFORM";
 #endif
-// TODO(crbug/1178869): Add language code to request.
+// TODO(crbug.com/40749413): Add language code to request.
 constexpr char kRequestBody[] = R"({
   "client_info": {
     "platform_type": "%s",
@@ -335,7 +335,7 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
   }
 
   // Skip fetch if data is cached and not expired.
-  // TODO(crbug.com/1221743): Leverage the standard HTTP cache once ItemSuggest
+  // TODO(crbug.com/40773636): Leverage the standard HTTP cache once ItemSuggest
   // supports GET requests.
   if (cached_json_ && cached_json_token_ == token_info.token &&
       /* We use std::max to guard against negative cache ages. This can happen,

@@ -10,7 +10,7 @@
 
 // A singleton that acts as a rendezvous for dialog observers to register and
 // the dialog managers/delegates to post their activities.
-// TODO(crbug/953495): Merge this into DesktopMediaPickerFactoryImpl.
+// TODO(crbug.com/41453310): Merge this into DesktopMediaPickerFactoryImpl.
 class DesktopMediaPickerManager {
  public:
   class DialogObserver : public base::CheckedObserver {

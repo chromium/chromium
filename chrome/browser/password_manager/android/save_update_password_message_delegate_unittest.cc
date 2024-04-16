@@ -207,7 +207,8 @@ class SaveUpdatePasswordMessageDelegateTest
                                      const std::u16string& password);
   void TriggerDialogDismissedCallback(bool dialog_accepted);
 
-  // TODO(crbug.com/1428562): Remove this helper as it makes tests hard to read.
+  // TODO(crbug.com/40900579): Remove this helper as it makes tests hard to
+  // read.
   std::u16string GetExpectedUPMMessageDescription(
       bool is_update,
       bool is_signed_in,

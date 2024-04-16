@@ -31,8 +31,8 @@ public class PasswordAccessReauthenticationHelper {
     /**
      * The reason for the reauthentication.
      *
-     * TODO(crbug.com/1180986): Remove the edit reason once the password check credential
-     * editor is completely replaced with the new one.
+     * <p>TODO(crbug.com/40170183): Remove the edit reason once the password check credential editor
+     * is completely replaced with the new one.
      */
     @IntDef({ReauthReason.VIEW_PASSWORD, ReauthReason.EDIT_PASSWORD, ReauthReason.COPY_PASSWORD})
     @Retention(RetentionPolicy.SOURCE)

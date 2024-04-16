@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       Optional(AllOf(Not(IsDistillable()), IsLast(), Not(IsMobileFriendly()))));
 }
 
-// TODO(crbug.com/1461973): Flaky on Linux MSAN.
+// TODO(crbug.com/40921719): Flaky on Linux MSAN.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_ObserverNotCalledAfterRemoval \
   DISABLED_ObserverNotCalledAfterRemoval

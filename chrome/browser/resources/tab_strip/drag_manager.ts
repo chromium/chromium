@@ -468,7 +468,7 @@ export class DragManager {
 
   private onDragEnter_(event: DragEvent) {
     if (this.dragSession_) {
-      // TODO(crbug.com/843556): Do not update the drag session on dragenter.
+      // TODO(crbug.com/41389308): Do not update the drag session on dragenter.
       // An incorrect event target on dragenter causes tabs to move around
       // erroneously.
       return;

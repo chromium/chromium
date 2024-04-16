@@ -183,7 +183,7 @@ LinkCapturingNavigationThrottle::MaybeCreate(
 
   // If there is no browser attached to this web-contents yet, this was a
   // middle-mouse-click action, which should not be captured.
-  // TODO(crbug.com/1474984): Find a better way to detect middle-clicks.
+  // TODO(crbug.com/40279479): Find a better way to detect middle-clicks.
   if (chrome::FindBrowserWithTab(web_contents) == nullptr) {
     return nullptr;
   }

@@ -22,7 +22,7 @@
 // Because of these limitations, we intend to eventually migrate all tests off
 // of this checker. Please do not use it in new tests.
 //
-// TODO(crbug.com/1174031): replace the checker with more specific checkers.
+// TODO(crbug.com/40746547): replace the checker with more specific checkers.
 class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
  public:
   explicit UpdatedProgressMarkerChecker(syncer::SyncServiceImpl* service);

@@ -261,7 +261,7 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1338416): Re-enable this test
+// TODO(crbug.com/40849047): Re-enable this test
 IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, DISABLED_NormalKeyEvents) {
   static const KeyEventTestData kTestNoInput[] = {
     // a

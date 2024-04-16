@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
 }
 
 // Tests that the counter doesn't crash if restarted in a quick succession.
-// TODO(crbug.com/1458605): Upgrade this test to use SigninDataCounter.
+// TODO(crbug.com/40918960): Upgrade this test to use SigninDataCounter.
 IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MultipleRestarts) {
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(

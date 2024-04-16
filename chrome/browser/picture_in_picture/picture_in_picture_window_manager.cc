@@ -263,7 +263,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     const display::Display& display,
     const gfx::Size& minimum_outer_window_size,
     const gfx::Size& excluded_margin) {
-  // TODO(https://crbug.com/1327797): This copies a bunch of logic from
+  // TODO(crbug.com/40841415): This copies a bunch of logic from
   // VideoOverlayWindowViews. That class and this one should be refactored so
   // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
   // window sizing.

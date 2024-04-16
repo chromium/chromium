@@ -460,7 +460,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          SingleClientContactInfoChildAccountTest,
                          testing::Bool());
 
-// TODO(crbug.com/1435411): Enable this test on Android.
+// TODO(crbug.com/40265115): Enable this test on Android.
 IN_PROC_BROWSER_TEST_P(SingleClientContactInfoChildAccountTest,
                        DisableForChildAccounts) {
   ASSERT_TRUE(SetupClients());

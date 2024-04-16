@@ -109,8 +109,8 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
  private:
   class TabReadbackRequest;
-  // TODO(crbug/714384) check sizes and consider using base::flat_map if these
-  // layer maps are small.
+  // TODO(crbug.com/41314695) check sizes and consider using base::flat_map if
+  // these layer maps are small.
   using ThumbnailLayerMap = std::map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =
       base::flat_map<int, std::unique_ptr<TabReadbackRequest>>;

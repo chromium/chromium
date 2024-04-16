@@ -74,7 +74,7 @@ class TabLoaderTest : public BrowserWithTestWindowTest {
   void SimulateLoadTimeout() {
     // Unfortunately there's no mock time in BrowserTaskEnvironment.
     // Fast-forward things and simulate firing the timer.
-    // TODO(crbug.com/905412): TaskEnvironment::TimeSource::MOCK_TIME now
+    // TODO(crbug.com/40602467): TaskEnvironment::TimeSource::MOCK_TIME now
     // supports this.
     EXPECT_TRUE(tab_loader_.force_load_timer().IsRunning());
     clock_.SetNowTicks(tab_loader_.force_load_time());

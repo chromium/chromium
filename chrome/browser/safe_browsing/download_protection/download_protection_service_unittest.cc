@@ -857,7 +857,7 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
   Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
 }
 
-// TODO(crbug.com/721964): Create specific unit tests for
+// TODO(crbug.com/41319255): Create specific unit tests for
 // check_client_download_request.*, download_url_sb_client.*, and
 // ppapi_download_request.*.
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {

@@ -66,7 +66,7 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
   // is to support the situation where a site is not a PWA, users have installed
   // it via Create Shortcut action, the site becomes a standalone PWA later and
   // we want to prompt them to "install" the new PWA experience.
-  // TODO(crbug.com/1205529): Showing an install button when it's already
+  // TODO(crbug.com/40180519): Showing an install button when it's already
   // installed is confusing. Perhaps different UX would be best.
 
   Profile* profile = Profile::FromBrowserContext(browser_context);

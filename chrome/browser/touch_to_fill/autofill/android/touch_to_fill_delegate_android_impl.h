@@ -90,7 +90,7 @@ class FormStructure;
 // It is supposed to be owned by the given |BrowserAutofillManager|, and
 // interact with it and its |AutofillClient| and |AutofillDriver|.
 //
-// TODO(crbug.com/1324900): Consider using more descriptive name.
+// TODO(crbug.com/40839529): Consider using more descriptive name.
 class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
  public:
   explicit TouchToFillDelegateAndroidImpl(BrowserAutofillManager* manager);

@@ -383,7 +383,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
   }
 
   private updateFocus_() {
-    // TODO(crbug.com/1378720): Re-focusing a changed entry (such as when an
+    // TODO(crbug.com/40875159): Re-focusing a changed entry (such as when an
     // entry is removed from list) happens before the entry elements have been
     // updated (e.g. different buttons shown / hidden). This causes the
     // focusRowMixin to incorrectly identify an element which is about to be

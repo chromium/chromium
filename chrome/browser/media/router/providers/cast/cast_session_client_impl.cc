@@ -258,7 +258,7 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
     SendMessageToClient(
         CreateV2Message(client_id(), base::Value::Dict(), sequence_number));
   } else {
-    // TODO(crbug.com/951089): Send correct error codes.  The original
+    // TODO(crbug.com/41452006): Send correct error codes.  The original
     // implementation isn't much help here because it sends incorrectly
     // formatted error messages without a valid error code in a lot of cases.
     SendErrorCodeToClient(sequence_number,

@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_CloseCrashBubbleEnablesSaving) {
       ->SetWaitingForUserToAckCrashForTest(true);
 }
 
-// TODO(crbug.com/1473975): Re-enable test that flakily times out
+// TODO(crbug.com/40927197): Re-enable test that flakily times out
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CloseCrashBubbleEnablesSaving \
   DISABLED_CloseCrashBubbleEnablesSaving

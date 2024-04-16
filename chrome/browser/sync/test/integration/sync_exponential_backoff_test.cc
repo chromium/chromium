@@ -37,7 +37,7 @@ class SyncExponentialBackoffTest : public SyncTest {
   }
 };
 
-// TODO(crbug.com/1346194): Test fails on Lacros.
+// TODO(crbug.com/40854025): Test fails on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OfflineToOnline DISABLED_OfflineToOnline
 #else

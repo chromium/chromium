@@ -241,12 +241,12 @@ public interface TabModel extends TabList {
 
     /**
      * Set when tab model become active and inactive.
-     * @param active Whether the tab model is active.
      *
-     * TODO(crbug.com/1140125): This function is only called by TabModelSelectorBase class, so we
-     * should create a package private TabModelInternal interface which inherits from TabModel.
-     * TabModelInternal interface should have this method and change TabModelSelectorBase#mTabModels
-     * to hold the impls.
+     * @param active Whether the tab model is active.
+     *     <p>TODO(crbug.com/40726458): This function is only called by TabModelSelectorBase class,
+     *     so we should create a package private TabModelInternal interface which inherits from
+     *     TabModel. TabModelInternal interface should have this method and change
+     *     TabModelSelectorBase#mTabModels to hold the impls.
      */
     void setActive(boolean active);
 }

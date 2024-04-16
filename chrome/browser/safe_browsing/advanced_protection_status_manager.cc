@@ -152,7 +152,7 @@ void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // TODO(crbug.com/926204): remove IdentityManager ensures that primary
+      // TODO(crbug.com/41437854): remove IdentityManager ensures that primary
       // account always has valid refresh token when it is set.
       if (event.GetCurrentState().primary_account.is_under_advanced_protection)
         OnAdvancedProtectionEnabled();

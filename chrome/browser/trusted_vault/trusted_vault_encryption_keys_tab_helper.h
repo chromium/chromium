@@ -47,7 +47,7 @@ class TrustedVaultEncryptionKeysTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // TODO(https://crbug.com/1281874): Update this to check if the Mojo interface
+  // TODO(crbug.com/40812482): Update this to check if the Mojo interface
   // is bound.
   bool HasEncryptionKeysApiForTesting(
       content::RenderFrameHost* render_frame_host);

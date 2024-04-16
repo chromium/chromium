@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1181765): More tests should be added to cover all possible
+// TODO(crbug.com/40751070): More tests should be added to cover all possible
 // scenarios. E.g. a test closing the visible tab in a window should be added.
 
 #include "base/test/bind.h"

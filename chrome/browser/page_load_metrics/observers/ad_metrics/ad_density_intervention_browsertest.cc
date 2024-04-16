@@ -93,7 +93,7 @@ class AdDensityViolationBrowserTest
 #define MAYBE_DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered \
   DesktopPageAdDensityByHeightAbove30_AdInterventionNotTriggered
 #endif
-// TODO(https://crbug.com/1142592): Replace this heavy-weight browsertest with
+// TODO(crbug.com/40727827): Replace this heavy-weight browsertest with
 // a unit test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTest,

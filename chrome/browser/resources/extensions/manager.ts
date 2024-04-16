@@ -90,7 +90,7 @@ export interface ExtensionsManagerElement {
   };
 }
 
-// TODO(crbug.com/1450101): Always show a top shadow for the DETAILS, ERRORS and
+// TODO(crbug.com/40270029): Always show a top shadow for the DETAILS, ERRORS and
 // SITE_PERMISSIONS_ALL_SITES pages.
 const ExtensionsManagerElementBase = CrContainerShadowMixin(PolymerElement);
 

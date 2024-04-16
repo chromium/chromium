@@ -4,7 +4,7 @@
 
 export type PdfOcrPrefCallback = chrome.pdfViewerPrivate.PdfOcrPrefCallback;
 
-// TODO(crbug.com/1302465): Move the other chrome.pdfViewerPrivate calls across
+// TODO(crbug.com/40825351): Move the other chrome.pdfViewerPrivate calls across
 // the PDF UI under this proxy.
 // `chrome.pdfViewerPrivate.isAllowedLocalFileAccess` is currently located in
 // `chrome/browser/resources/pdf/navigator.ts`.

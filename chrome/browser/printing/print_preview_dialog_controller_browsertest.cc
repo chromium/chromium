@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after print preview works even when the PDF plugin is
 // disabled for webpages.
-// TODO(crbug.com/1401532): Flaky on Mac12 Test.
+// TODO(crbug.com/40884297): Flaky on Mac12 Test.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_PdfPluginDisabled DISABLED_PdfPluginDisabled
 #else
@@ -306,7 +306,7 @@ GetTrackedTags() {
 
 }  // namespace
 
-// TODO(crbug.com/1385142): Flaky on macos12 builds.
+// TODO(crbug.com/40879071): Flaky on macos12 builds.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TaskManagementTest DISABLED_TaskManagementTest
 #else

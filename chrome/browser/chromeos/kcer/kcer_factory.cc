@@ -254,7 +254,7 @@ KcerFactory::BuildServiceInstanceForBrowserContext(
       base::BindOnce(&KcerFactory::StartInitializingKcerInstance,
                      base::Unretained(const_cast<KcerFactory*>(this)),
                      new_kcer->GetWeakPtr(),
-                     // TODO(https://crbug.com/1380714): Remove
+                     // TODO(crbug.com/40061562): Remove
                      // `UnsafeDanglingUntriaged`
                      base::UnsafeDanglingUntriaged(context)));
 

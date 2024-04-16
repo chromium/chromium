@@ -2161,7 +2161,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                       ManifestUpdateResult::kAppUpdated, 0);
 }
 
-// TODO(https://crbug.com/1401216): Flakes on multiple platforms.
+// TODO(crbug.com/40250635): Flakes on multiple platforms.
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
                        DISABLED_CheckUpdateOfGeneratedIcons_SyncFailure) {
   // The first "name" character is used to generate icons. Make it like a space

@@ -53,7 +53,7 @@ enum class SearchPreloadTestResponseDeferralType {
 //  step 3: do something
 //  step 4: dispatch the delayed part of response by calling
 //  DispatchDelayedResponseTask.
-// TODO(https://crbug.com/1309017): This class should be a part of
+// TODO(crbug.com/40219294): This class should be a part of
 // SearchPrefetchBaseBrowserTest. Eliminate the differences between
 // SearchPreloadUnifiedBrowserTest and SearchPrefetchBaseBrowserTest, such as
 // removing duplicated methods from SearchPreloadUnifiedBrowserTest and making

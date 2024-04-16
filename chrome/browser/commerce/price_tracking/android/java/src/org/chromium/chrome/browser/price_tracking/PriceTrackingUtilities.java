@@ -93,7 +93,8 @@ public class PriceTrackingUtilities {
         SHARED_PREFERENCES_MANAGER.writeBoolean(PRICE_ALERTS_MESSAGE_CARD, false);
     }
 
-    // TODO(crbug.com/1326572): Needs to rethink these conditions before starting implicit tracking.
+    // TODO(crbug.com/40225862): Needs to rethink these conditions before starting implicit
+    // tracking.
     /**
      * @return Whether the PriceAlertsMessageCard is enabled. We don't show this message card if
      *     user can already receive price drop notifications, see {@link

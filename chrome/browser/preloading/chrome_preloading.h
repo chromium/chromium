@@ -118,7 +118,7 @@ static constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnBookmarkBar(113,
                                         "MouseHoverOrMouseDownOnBookmarkBar");
 
-// TODO(crbug.com/1309934): Integrate more Preloading predictors with
+// TODO(crbug.com/40219645): Integrate more Preloading predictors with
 // Preloading logging APIs.
 }  // namespace chrome_preloading_predictor
 

@@ -70,7 +70,7 @@ void QuickDeleteBridge::GetLastVisitedDomainAndUniqueDomainCount(
       &task_tracker_);
 }
 
-// TODO(crbug.com/1412087) use rvalue reference to pass the result and define
+// TODO(crbug.com/40255099) use rvalue reference to pass the result and define
 // copy ctor and copy assignment in history::DomainsVisitedResult.
 void QuickDeleteBridge::OnGetLastVisitedDomainAndUniqueDomainCountComplete(
     const JavaRef<jobject>& j_callback,

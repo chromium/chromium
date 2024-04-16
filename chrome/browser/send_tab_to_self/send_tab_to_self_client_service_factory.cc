@@ -76,7 +76,7 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
 #endif
 
-  // TODO(crbug.com/976741) refactor profile out of STTSClient constructor.
+  // TODO(crbug.com/40632832) refactor profile out of STTSClient constructor.
   return std::make_unique<SendTabToSelfClientService>(
       profile, sync_service->GetSendTabToSelfModel());
 }

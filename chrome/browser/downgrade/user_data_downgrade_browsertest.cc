@@ -262,7 +262,7 @@ class UserDataDowngradeBrowserNoResetTest
 // Verify the user data directory will not be reset without downgrade.
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, PRE_Test) {}
 
-// TODO(crbug.com/1469927): Re-enable this test
+// TODO(crbug.com/40925550): Re-enable this test
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, DISABLED_Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_EQ(chrome::kChromeVersion,

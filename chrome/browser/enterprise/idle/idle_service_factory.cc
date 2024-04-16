@@ -26,7 +26,7 @@ IdleServiceFactory* IdleServiceFactory::GetInstance() {
 IdleServiceFactory::IdleServiceFactory()
     : ProfileKeyedServiceFactory(
           "IdleService",
-          // TODO(crbug.com/1316511): Can we support Guest profiles?
+          // TODO(crbug.com/40222215): Can we support Guest profiles?
           ProfileSelections::BuildForRegularProfile()) {}
 
 // BrowserContextKeyedServiceFactory:

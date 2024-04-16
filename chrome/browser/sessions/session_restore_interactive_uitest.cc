@@ -133,7 +133,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 };
 
 // TODO(https://crbug.com/1152160): Enable FocusOnLaunch on Lacros builds.
-// TODO(https://crbug.com/1284590): Flaky on Linux ASAN/TSAN builders.
+// TODO(crbug.com/40814457): Flaky on Linux ASAN/TSAN builders.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || \
     (BUILDFLAG(IS_LINUX) &&          \
      (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 
 // TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
 // builds.
-// TODO(crbug.com/1291651): Flaky failures.
+// TODO(crbug.com/40818881): Flaky failures.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
 #else

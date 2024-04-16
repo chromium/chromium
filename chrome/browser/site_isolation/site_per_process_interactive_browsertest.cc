@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1295296): Fails on Mac 10.11.
+// TODO(crbug.com/40821065): Fails on Mac 10.11.
 #define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
 #else
 #define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
@@ -1313,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 // The test also exits fullscreen by simulating pressing ESC rather than using
 // document.webkitExitFullscreen(), which tests the browser-initiated
 // fullscreen exit path.
-// TODO(crbug.com/756338): flaky on all platforms.
+// TODO(crbug.com/40535621): flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        DISABLED_FullscreenElementInMultipleSubframes) {
   // Allow fullscreen in all iframes descending to |c_middle|.

@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, MaxLength) {
 }
 
 // Tests that values exceeding `kMaxDataLengthForDatabase` are truncated.
-// TODO(crbug.com/1443393): As of the unified table layout, values are already
+// TODO(crbug.com/40267335): As of the unified table layout, values are already
 // truncated in AutofillTable. No special logic on the Sync-side is necessary.
 // Clean this up.
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {

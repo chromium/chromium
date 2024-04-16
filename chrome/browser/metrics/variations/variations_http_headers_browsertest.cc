@@ -518,7 +518,7 @@ void SetUpLimitedEntropyRandomizationSource() {
 // Creates a trial named "t1" with 100 groups. If
 // `with_google_web_experiment_ids` is true, each group will be associated with
 // a variation ID.
-// TODO(crbug.com/1146199): Refactor this so that creating the field trial
+// TODO(crbug.com/40729905): Refactor this so that creating the field trial
 // either uses a different API or tighten the current API to set up a field
 // trial that can only be made with the low entropy provider.
 void CreateFieldTrial(const base::FieldTrial::EntropyProvider& entropy_provider,

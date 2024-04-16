@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-// TODO(crbug.com/1245180): Flaky on Lacros.
+// TODO(crbug.com/40788468): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TokenExpiry DISABLED_TokenExpiry
 #else

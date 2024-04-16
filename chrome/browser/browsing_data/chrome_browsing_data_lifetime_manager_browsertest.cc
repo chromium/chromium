@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
-// TODO(crbug.com/1441381): Re-enable this test
+// TODO(crbug.com/40909863): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Autofill DISABLED_Autofill
 #else

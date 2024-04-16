@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
       lcp_timestamps[2].value());
 }
 
-// TODO(https://crbug.com/1493285): This test is flaky on ChromeOS.
+// TODO(crbug.com/40936591): This test is flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LargestContentfulPaint_SubframeInput \
   DISABLED_LargestContentfulPaint_SubframeInput
@@ -543,9 +543,9 @@ class MAYBE_MouseoverLCPTest : public MetricIntegrationTest,
       // 500ms after a mousemove event on an LCP image.
       constexpr auto kWaitTime = base::Milliseconds(600);
       base::PlatformThread::Sleep(kWaitTime);
-      // TODO(1289726): Here we should call MoveMouseTo() a second time, but
-      // currently a second mouse move call is not dispatching the event as it
-      // should. So instead, we dispatch the event directly.
+      // TODO(crbug.com/40212076): Here we should call MoveMouseTo() a second
+      // time, but currently a second mouse move call is not dispatching the
+      // event as it should. So instead, we dispatch the event directly.
       EXPECT_EQ(
           EvalJs(web_contents()->GetPrimaryMainFrame(), "dispatch_mouseover()")
               .error,
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_NativeLazyLoadingImage) {
   Validate();
 }
 
-// TODO(https://crbug.com/1487837): This test is flaky on multiple platforms.
+// TODO(crbug.com/40283415): This test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest,
                        DISABLED_ManualLazyLoadingImage) {
   std::string test_url =
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_CssBackgroundImage) {
   Validate();
 }
 
-// TODO(crbug.com/1522206): Flaky test.
+// TODO(crbug.com/41495170): Flaky test.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_WrittenAsInnerHtmlImage DISABLED_WrittenAsInnerHtmlImage
 #else
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_WrittenAsInnerHtmlImage) {
   Validate();
 }
 
-// TODO(crbug.com/1521113): Flaky on Mac.
+// TODO(crbug.com/41494085): Flaky on Mac.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_WrittenAsOuterHtmlImage DISABLED_WrittenAsOuterHtmlImage
 #else

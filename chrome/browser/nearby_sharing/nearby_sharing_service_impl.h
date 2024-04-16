@@ -519,7 +519,7 @@ class NearbySharingServiceImpl
   base::flat_map<std::string, ShareTarget> outgoing_share_target_map_;
   // A map of ShareTarget id to OutgoingShareTargetInfo. This lets us know which
   // endpoint and public certificate are related to the outgoing share target.
-  // TODO(crbug/1085068) update this map when handling payloads
+  // TODO(crbug.com/40132032) update this map when handling payloads
   base::flat_map<base::UnguessableToken, OutgoingShareTargetInfo>
       outgoing_share_target_info_map_;
   // For metrics. The IDs of ShareTargets that are cancelled while trying to

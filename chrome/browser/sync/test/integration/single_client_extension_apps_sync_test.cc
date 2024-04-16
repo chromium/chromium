@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
   ASSERT_TRUE(SetupSync());
 
-  // TODO(crbug.com/1124986): Determine if these values
+  // TODO(crbug.com/40717558): Determine if these values
   // can be raised without introducing flakiness.
   const int kNumApps = 1;
   const int kNumPlatformApps = 1;

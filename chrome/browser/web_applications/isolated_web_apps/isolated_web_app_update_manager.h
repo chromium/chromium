@@ -54,7 +54,7 @@ constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
 // TODO(crbug.com/1459160): Implement updates for unmanaged IWAs once we have
 // designed that process.
 //
-// TODO(crbug.com/1459161): Consider only executing update discovery tasks when
+// TODO(crbug.com/40274187): Consider only executing update discovery tasks when
 // the user is not on a metered/paid internet connection.
 class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
  public:

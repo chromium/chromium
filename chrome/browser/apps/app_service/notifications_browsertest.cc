@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsWebNotificationTest,
   ASSERT_FALSE(HasBadge(profile(), app_id2).value());
 }
 
-// TODO(crbug.com/1334960): Disabled AppNotificationsWebNotificationTest.
+// TODO(crbug.com/40846781): Disabled AppNotificationsWebNotificationTest.
 // PersistentNotificationWhenInstallAndUninstallApp on chromeos and linux,
 // because it is failing on linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

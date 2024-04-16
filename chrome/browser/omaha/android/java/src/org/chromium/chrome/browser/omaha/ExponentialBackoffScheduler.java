@@ -17,23 +17,23 @@ import javax.annotation.concurrent.NotThreadSafe;
 /**
  * Manages a timer that implements exponential backoff for failed attempts.
  *
- * The first timer will fire after BASE_MILLISECONDS.  On a failure, the timer is changed to
- * (randomInteger[0, 2^failures) + 1) * BASE_MILLISECONDS.  MAX_MILLISECONDS is used to ensure that
+ * <p>The first timer will fire after BASE_MILLISECONDS. On a failure, the timer is changed to
+ * (randomInteger[0, 2^failures) + 1) * BASE_MILLISECONDS. MAX_MILLISECONDS is used to ensure that
  * you aren't waiting years for a timer to fire.
  *
- * The state is stored in shared preferences to ensure that they are kept after the device sleeps.
- * Because multiple ExponentialBackoffSchedulers can be used by different components,
- * the owning class must set the preference name.
+ * <p>The state is stored in shared preferences to ensure that they are kept after the device
+ * sleeps. Because multiple ExponentialBackoffSchedulers can be used by different components, the
+ * owning class must set the preference name.
  *
- * Timestamps are recorded in RTC to avoid situations where the phone is rebooted, messing up
- * any timestamps generated using elapsedRealtime().
+ * <p>Timestamps are recorded in RTC to avoid situations where the phone is rebooted, messing up any
+ * timestamps generated using elapsedRealtime().
  *
- * This class is not thread-safe because any two different classes could be accessing the same
+ * <p>This class is not thread-safe because any two different classes could be accessing the same
  * SharedPreferences.
  */
 @NotThreadSafe
 public class ExponentialBackoffScheduler {
-    // TODO(crbug.com/1131415): remove and use OmahaBase.TAG when OmahaBase.java is modularized.
+    // TODO(crbug.com/40150188): remove and use OmahaBase.TAG when OmahaBase.java is modularized.
     // Used in various org.chromium.chrome.browser.omaha files.
     static final String TAG = "omaha";
 

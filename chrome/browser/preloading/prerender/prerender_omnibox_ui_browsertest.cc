@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests that prerender is cancelled if a different prerendering starts.
-// TODO(crbug.com/1348636): Test is flaky.
+// TODO(crbug.com/40855413): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
                        DISABLED_DifferentSuggestion) {
   base::HistogramTester histogram_tester;

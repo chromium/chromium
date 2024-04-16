@@ -54,7 +54,7 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   // Repair prefs if the user was previously affected by crbug.com/1475747. This
   // will reset the affected prefs, before setting up the state for the Throttle
   // for this navigation.
-  // TODO(crbug.com/1475747): Remove this after M120 (or after
+  // TODO(crbug.com/40070502): Remove this after M120 (or after
   // kHttpsFirstModeV2ForTypicallySecureUsers is enabled by default).
   HttpsFirstModeService::FixTypicallySecureUserPrefs(profile);
 
@@ -172,7 +172,7 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
     // heuristic.
   }
 
-  // TODO(crbug.com/1448371): There are some cases where the navigation may
+  // TODO(crbug.com/40064769): There are some cases where the navigation may
   // "restart", such as if we encounter an exempted transient network error on
   // the upgraded HTTPS URL, show a net error page, and then reload the tab. In
   // these cases the navigation will proceed with the upgrade/fallback logic,

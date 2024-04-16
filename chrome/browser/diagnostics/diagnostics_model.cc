@@ -218,7 +218,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
 class DiagnosticsModelFuchsia : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelFuchsia() {
-    // TODO(crbug.com/1234737) Check that the list of diagnostic is correct.
+    // TODO(crbug.com/40192108) Check that the list of diagnostic is correct.
     tests_.push_back(MakeInstallTypeTest());
     tests_.push_back(MakeVersionTest());
     tests_.push_back(MakeUserDirTest());

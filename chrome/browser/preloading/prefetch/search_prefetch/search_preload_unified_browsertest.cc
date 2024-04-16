@@ -470,7 +470,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
 // Tests that the SearchSuggestionService can trigger prerendering after the
 // corresponding prefetch request succeeds.
-// TODO(crbug.com/1503002): enable the flaky test.
+// TODO(crbug.com/40943413): enable the flaky test.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_PrerenderHintReceivedBeforeSucceed \
   DISABLED_PrerenderHintReceivedBeforeSucceed
@@ -1417,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // TODO(https://cubug.com/1282624): This test should run on Android after we're
 // able to interact with Android UI.
-// TODO(https://crbug.com/1342481): On LacrOS, the window's bound changes
+// TODO(crbug.com/40231021): On LacrOS, the window's bound changes
 // unexpectedly, and it stops auto completing.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
@@ -2391,7 +2391,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
 #define MAYBE_OpenPrefetchedResponseInBackgroundedTab \
   OpenPrefetchedResponseInBackgroundedTab
 #endif
-// TODO(https://crbug.com/1454675): Flaky on chromiumos ASAN LSAN and Linux
+// TODO(crbug.com/40272425): Flaky on chromiumos ASAN LSAN and Linux
 // ASAN.
 IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
                        MAYBE_OpenPrefetchedResponseInBackgroundedTab) {
@@ -2453,7 +2453,7 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
       /*navigation_handle_callback=*/{});
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url), {});
 
-  // TODO(crbug.com/1423259): Ideally we should open the tab with the
+  // TODO(crbug.com/40259971): Ideally we should open the tab with the
   // prerendered result.
   prerender_observer.WaitForDestroyed();
 

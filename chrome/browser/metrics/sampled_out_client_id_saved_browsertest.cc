@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SampledOutClientIdSavedBrowserTest, ClientIdSaved) {
   ASSERT_TRUE(metrics_service()->GetClientId().empty());
   ASSERT_TRUE(
       local_state()->GetString(metrics::prefs::kMetricsClientID).empty());
-  // TODO(crbug.com/1325166): Re-enable this test
+  // TODO(crbug.com/40225372): Re-enable this test
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android Chrome, since we have not yet consented to metrics reporting,

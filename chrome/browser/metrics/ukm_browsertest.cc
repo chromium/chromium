@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
 
   CloseBrowserSynchronously(nonsync_browser);
-  // TODO(crbug/746076): UKM doesn't actually get re-enabled yet.
+  // TODO(crbug.com/40530708): UKM doesn't actually get re-enabled yet.
   // EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Client ID should not have been reset.

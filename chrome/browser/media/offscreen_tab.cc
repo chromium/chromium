@@ -222,7 +222,7 @@ bool OffscreenTab::ShouldSuppressDialogs(WebContents* source) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
   // Suppress all because there is no possible direct user interaction with
   // dialogs.
-  // TODO(crbug.com/734191): This does not suppress window.print().
+  // TODO(crbug.com/40526231): This does not suppress window.print().
   return true;
 }
 

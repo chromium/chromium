@@ -53,7 +53,7 @@ bool IsAudioServiceSandboxEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1374069): Remove the kAudioProcessHighPriorityEnabled policy
+// TODO(crbug.com/40242320): Remove the kAudioProcessHighPriorityEnabled policy
 // and the code enabled by this function.
 bool IsAudioProcessHighPriorityEnabled() {
   const base::Value* value =

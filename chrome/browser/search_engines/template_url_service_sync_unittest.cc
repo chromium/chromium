@@ -163,7 +163,7 @@ class TestTemplateURLServiceClient : public TemplateURLServiceClient {
 }  // namespace
 
 // TemplateURLServiceSyncTest -------------------------------------------------
-// TODO(crbug/1465778): Remove this test when the default search provider
+// TODO(crbug.com/40276119): Remove this test when the default search provider
 // preference stops being synced.
 class TemplateURLServiceSyncTest : public testing::Test {
  public:

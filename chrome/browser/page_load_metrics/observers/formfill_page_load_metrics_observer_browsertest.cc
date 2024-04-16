@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 0);
 }
 
-// TODO(crbug.com/1373542): test is flaky across platforms.
+// TODO(crbug.com/40242092): test is flaky across platforms.
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        DISABLED_UserDataFieldFilledPreviouslyUseCounter) {
   base::HistogramTester histogram_tester;
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        MAYBE_ClearBrowsingData) {
-  // TODO(https://crbug.com/1487593): Re-enable this test on bfcache bot.
+  // TODO(crbug.com/40283328): Re-enable this test on bfcache bot.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     return;
   }

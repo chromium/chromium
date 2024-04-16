@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrolling) {
 
   double new_scroll1 = content::EvalJs(contents, kExpression1).ExtractDouble();
 
-  // TODO(crbug.com/1131598): Perform the corresponding EvalJs() calls here and
+  // TODO(crbug.com/40150272): Perform the corresponding EvalJs() calls here and
   // assign to new_scroll2 and new_scroll3, once the printing code has been
   // fixed to handle these cases. Right now, the scroll offset jumps.
   double new_scroll2 = old_scroll2;
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedIframeFetched) {
   EXPECT_NE(old_height, new_height);
 }
 
-// TODO(crbug.com/1305193)  Reenable after flakes have been resolved.
+// TODO(crbug.com/40826924)  Reenable after flakes have been resolved.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        DISABLED_LazyLoadedIframeFetchedCrossOrigin) {
   ASSERT_TRUE(embedded_test_server()->Started());

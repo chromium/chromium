@@ -16,7 +16,7 @@ namespace content {
 class WebContents;
 }
 
-// TODO(crbug.com/1238559)
+// TODO(crbug.com/40193527)
 // The two functions to get the app ID from a WebContents do it in slightly
 // different ways and have different use cases.
 //

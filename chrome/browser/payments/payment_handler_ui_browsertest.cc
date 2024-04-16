@@ -80,7 +80,7 @@ class PaymentRequestActivationlessShowTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(https://crbug.com/1519140): Fix flakiness and re-enable.
+// TODO(crbug.com/41492121): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
                        DISABLED_ActivationlessShow) {
   std::string payment_method =

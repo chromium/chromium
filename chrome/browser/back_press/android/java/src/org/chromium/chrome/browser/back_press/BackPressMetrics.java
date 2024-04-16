@@ -13,8 +13,8 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
 
 /**
- * A utility class to record back press related histograms. TODO(https://crbug.com/1509190): Move
- * other histogram recording to this class.
+ * A utility class to record back press related histograms. TODO(crbug.com/41481803): Move other
+ * histogram recording to this class.
  */
 public class BackPressMetrics {
     private static final String EDGE_HISTOGRAM = "Android.BackPress.SwipeEdge";

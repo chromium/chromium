@@ -383,7 +383,7 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   // identity key across. Rather than have duplicate pairings, we allow this
   // replacement once.
   //
-  // TODO(crbug.com/1442040): remove once the transition is firmly complete.
+  // TODO(crbug.com/40910325): remove once the transition is firmly complete.
   // Probably by May 2024.
   const std::string& claimed_name = pairing->name;
   if (pairing->from_new_implementation) {

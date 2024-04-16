@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests the use of a PAC script set via Web Proxy Autodiscovery Protocol.
-// TODO(crbug.com/991867): Add a test case for when DhcpWpadUrlClient
+// TODO(crbug.com/41475031): Add a test case for when DhcpWpadUrlClient
 // returns an empty PAC URL.
 class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
  public:

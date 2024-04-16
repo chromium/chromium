@@ -383,7 +383,7 @@ source_set("unittests") {
   }
 }
 
-# TODO(crbug.com/1290541): Fails to link on Fuchsia builds.
+# TODO(crbug.com/40818202): Fails to link on Fuchsia builds.
 # TODO(issuetracker.google.com/236160471): CDDL compiler doesn't build
 # on Windows.
 if (!is_fuchsia && !is_win) {

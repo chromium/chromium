@@ -2010,7 +2010,7 @@ static_library("browser") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiling_host",
 
-    # TODO(crbug.com/1335199): break this dep when favicon is in its own target
+    # TODO(crbug.com/40228447): break this dep when favicon is in its own target
     "//chrome/browser/share",
     "//chrome/browser/ui",
     "//chrome/browser/storage_access_api",
@@ -3444,7 +3444,7 @@ static_library("browser") {
       "trusted_vault/trusted_vault_client_android.cc",
       "trusted_vault/trusted_vault_client_android.h",
 
-      # TODO(crbug.com/1426388): Move to its own target in touch_to_fill/.
+      # TODO(crbug.com/40261269): Move to its own target in touch_to_fill/.
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.cc",
       "touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h",
       "touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.cc",
@@ -6802,7 +6802,7 @@ static_library("browser") {
   }
 
   if (is_posix && !is_mac) {
-    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    # TODO(crbug.com/40188745): Complete crash reporting integration on Fuchsia.
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client.h",
@@ -7475,7 +7475,7 @@ static_library("browser") {
       "//components/guest_view/browser",
       "//media/cast:sender",
 
-      # TODO(crbug.com/879012): mirroring shouldn't depend on enable_extensions.
+      # TODO(crbug.com/41410773): mirroring shouldn't depend on enable_extensions.
       "//components/mirroring/browser",
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",

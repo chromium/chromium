@@ -366,7 +366,7 @@ AX_TEST_F(
       }
     });
 
-// TODO(crbug.com/1506001): Test is flaky.
+// TODO(crbug.com/40946640): Test is flaky.
 AX_TEST_F(
     'SwitchAccessItemScanManagerTest', 'DISABLED_DismissVirtualKeyboard',
     async function() {

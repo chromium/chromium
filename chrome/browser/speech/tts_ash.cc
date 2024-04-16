@@ -252,7 +252,7 @@ void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,
   // Note: TtsUtterance::ShouldAlwaysBeSpoken() is a misleading name. It should
   // be renamed as TtsUtterance::FromExternalPlatform(), which indicates whether
   // the utterance is originated from an external platform(Lacros) or not (Ash).
-  // TODO(crbug/1227543): Rename TtsUtterance::ShouldAlwaysBeSpoken().
+  // TODO(crbug.com/40189267): Rename TtsUtterance::ShouldAlwaysBeSpoken().
   if (utterance->ShouldAlwaysBeSpoken()) {
     // Speak Lacros utterance.
     mojo_utterance->utterance_id = GetRemoteUtteranceId(utterance);

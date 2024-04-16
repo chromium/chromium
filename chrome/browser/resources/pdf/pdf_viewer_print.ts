@@ -315,7 +315,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
         });
         return;
       case 'documentFocusChanged':
-        // TODO(crbug.com/1069370): Draw a focus rect around plugin.
+        // TODO(crbug.com/40125884): Draw a focus rect around plugin.
         return;
       case 'sendKeyEvent':
         const keyEvent = deserializeKeyEvent((data as KeyEventData).keyEvent) as

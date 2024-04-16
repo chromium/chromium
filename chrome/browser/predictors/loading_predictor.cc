@@ -237,7 +237,7 @@ bool LoadingPredictor::PrepareForPageLoad(
   }
 
   // LCPP: set fonts to be prefetched to prefetch_requests.
-  // TODO(crbug.com/1493768): make prefetch work for platforms without the
+  // TODO(crbug.com/40285959): make prefetch work for platforms without the
   // optimization guide.
   if (base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) &&
       blink::features::kLCPPFontURLPredictorEnablePrefetch.Get() &&

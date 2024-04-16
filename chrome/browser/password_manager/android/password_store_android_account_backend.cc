@@ -413,7 +413,7 @@ PasswordStoreAndroidAccountBackend::GetStorageType() {
 
 void PasswordStoreAndroidAccountBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  // TODO(crbug.com/1335387) Check if this might be called multiple times
+  // TODO(crbug.com/40847054) Check if this might be called multiple times
   // without a need for it. If it is don't repeatedly initialize the sync
   // service to make it clear that it's not needed to do so for future readers
   // of the code.

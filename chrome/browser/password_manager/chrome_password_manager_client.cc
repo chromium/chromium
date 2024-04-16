@@ -188,7 +188,7 @@ static const char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1513384): Get rid of DeprecatedGetOriginAsURL().
+// TODO(crbug.com/41485955): Get rid of DeprecatedGetOriginAsURL().
 url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
@@ -1020,7 +1020,7 @@ void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
 #endif
 
 bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
-  // TODO(crbug.com/862989): Move the following function (and the feature) to
+  // TODO(crbug.com/41401202): Move the following function (and the feature) to
   // the password component. Then remove IsIsolationForPasswordsSitesEnabled()
   // from the PasswordManagerClient interface.
   return site_isolation::SiteIsolationPolicy::
@@ -1185,7 +1185,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   if (password_manager::features::kPasswordGenerationExperimentVariationParam
           .Get() ==
       password_manager::features::PasswordGenerationVariation::kNudgePassword) {
-    // TODO(crbug.com/1444051): Rewrite the AutomaticGenerationAvailable
+    // TODO(crbug.com/40267520): Rewrite the AutomaticGenerationAvailable
     // triggering instead of checking a boolean if the experiment is launched.
     if (ui_data.input_field_empty) {
       ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
@@ -1298,7 +1298,7 @@ void ChromePasswordManagerClient::FrameWasScrolled() {
 }
 
 void ChromePasswordManagerClient::GenerationElementLostFocus() {
-  // TODO(crbug.com/968046): Look into removing this since FocusedInputChanged
+  // TODO(crbug.com/40629608): Look into removing this since FocusedInputChanged
   // seems to be a good replacement.
   if (popup_controller_)
     popup_controller_->GenerationElementLostFocus();
@@ -1349,7 +1349,7 @@ void ChromePasswordManagerClient::BindCredentialManager(
   // It looks like in order to remove this workaround, we probably just need to
   // make the CredentialManager mojo API rebind on the renderer side when the
   // next call is made, if it has become disconnected.
-  // TODO(https://crbug.com/1015358): Remove this workaround.
+  // TODO(crbug.com/40653684): Remove this workaround.
   content::BackForwardCache::DisableForRenderFrameHost(
       render_frame_host,
       back_forward_cache::DisabledReason(

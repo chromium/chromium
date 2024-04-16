@@ -10,7 +10,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 /**
  * An interface to help other chrome features surface share sheet APIs.
  *
- * TODO(crbug.com/1009124) This class can become the Public API of ShareSheetCoordinator, and
+ * <p>TODO(crbug.com/40100930) This class can become the Public API of ShareSheetCoordinator, and
  * ShareSheetCoordinator can be rewritten as ShareSheetCoordinatorImpl.
  */
 public interface ChromeOptionShareCallback {

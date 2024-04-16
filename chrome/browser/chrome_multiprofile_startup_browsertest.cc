@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(ChromeMultiProfileStartupBrowserTestBase,
     EXPECT_FALSE(ProfilePicker::IsOpen());
   }
 
-  // TODO(https://crbug.com/1288766): In some cases, profile creation is
+  // TODO(crbug.com/40817107): In some cases, profile creation is
   // triggered by restoring the previously opened profile, and the test
   // expectations in terms of `PostProfileInit()` calls can
   // be met without opening browsers. We still open them for consistency, at

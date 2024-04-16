@@ -54,7 +54,7 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                         PrivacyGuideFragment.FragmentType.DONE));
 
         if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()) {
-            // TODO(crbug.com/1215630): This fragment is always displayed and need to be added to
+            // TODO(crbug.com/40184479): This fragment is always displayed and need to be added to
             // the above list once the privacy guide android 3 is removed.
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
         }

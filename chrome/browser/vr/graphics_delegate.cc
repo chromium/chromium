@@ -34,7 +34,7 @@ CameraModel CameraModelViewProjFromXRView(
     const device::mojom::XRViewPtr& view) {
   CameraModel model = {};
 
-  // TODO(https://crbug.com/1070380): mojo space is currently equivalent to
+  // TODO(crbug.com/40684534): mojo space is currently equivalent to
   // world space, so the view matrix is world_from_view.
   model.view_matrix = view->mojo_from_view;
 

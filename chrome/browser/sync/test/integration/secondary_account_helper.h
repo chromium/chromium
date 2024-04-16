@@ -32,7 +32,7 @@ base::CallbackListSubscription SetUpSigninClient(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets up necessary fakes for fake network responses to work. Meant to be
 // called from SetUpOnMainThread.
-// TODO(crbug.com/882770): On ChromeOS, we need to set up a fake
+// TODO(crbug.com/40593103): On ChromeOS, we need to set up a fake
 // `NetworkPortalDetector`, otherwise `ash::DelayNetworkCall` will think it's
 // behind a captive portal and delay all network requests forever, which means
 // the ListAccounts requests (i.e. getting cookie accounts) will never make it

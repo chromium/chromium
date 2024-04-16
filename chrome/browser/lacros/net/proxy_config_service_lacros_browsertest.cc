@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ProxyConfigServiceLacrosTest, ProxyUpdates) {
   crosapi::mojom::ProxySettingsWpadPtr wpad =
       crosapi::mojom::ProxySettingsWpad::New();
   wpad->pac_url = GURL(kPacUrl);
-  // TODO(https://crbug.com/1320656): This test seems buggy; wpad is never used.
+  // TODO(crbug.com/40223591): This test seems buggy; wpad is never used.
   proxy_config->proxy_settings = crosapi::mojom::ProxySettings::NewWpad(
       crosapi::mojom::ProxySettingsWpad::New());
   SendAshProxyUpdateAndWait(proxy_config.Clone());

@@ -204,7 +204,7 @@ void ProcessMirrorHeader(
       << "when Mirror is disabled.";
 
   // Do not allow non-Google origins to open incognito windows.
-  // TODO(crbug.com/1449357): Expand this check to all Mirror headers,
+  // TODO(crbug.com/40064889): Expand this check to all Mirror headers,
   //                          regardless of `service_type`.
   if (service_type == GAIA_SERVICE_TYPE_INCOGNITO &&
       base::FeatureList::IsEnabled(kVerifyRequestInitiatorForMirrorHeaders)) {

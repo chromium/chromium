@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
-// TODO(crbug/713201):
+// TODO(crbug.com/41314042):
 // BrowserCloseManagerBrowserTest.AddBeforeUnloadDuringClosing flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AddBeforeUnloadDuringClosing DISABLED_AddBeforeUnloadDuringClosing
@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
-// TODO(https://crbug.com/1461936): This test is failing on Linux.
+// TODO(crbug.com/40921700): This test is failing on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_TestCloseTabDuringShutdown DISABLED_TestCloseTabDuringShutdown
 #else
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // browser is opened and closed. While there are active downloads, closing the
 // incognito window shouldn't block on the active downloads which belong to the
 // parent profile.
-// TODO(https://crbug.com/844019): Fix the notification expectation around the
+// TODO(crbug.com/40576829): Fix the notification expectation around the
 // call to AttemptClose.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        DISABLED_TestWithOffTheRecordWindowAndRegularDownload) {

@@ -117,7 +117,7 @@ void AutoSigninFirstRunDialogAndroid::WebContentsDestroyed() {
 void AutoSigninFirstRunDialogAndroid::OnVisibilityChanged(
     content::Visibility visibility) {
   if (dialog_jobject_ && visibility == content::Visibility::HIDDEN) {
-    // TODO(https://crbug.com/610700): once bug is fixed, this code should be
+    // TODO(crbug.com/41253286): once bug is fixed, this code should be
     // gone.
     JNIEnv* env = AttachCurrentThread();
     Java_AutoSigninFirstRunDialog_dismissDialog(env, dialog_jobject_);

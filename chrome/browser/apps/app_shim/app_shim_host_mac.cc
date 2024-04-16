@@ -119,7 +119,7 @@ void AppShimHost::OnShimProcessTerminated(
   // If we attempted to recreate the app shims and still failed to launch, then
   // there is no hope to launch the app. Close its windows (since they will
   // never be seen).
-  // TODO(https://crbug.com/913362): Consider adding some UI to tell the
+  // TODO(crbug.com/40605763): Consider adding some UI to tell the
   // user that the process launch failed.
   DLOG(ERROR) << "Failed to launch recreated shim, giving up.";
 

@@ -58,7 +58,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
   SendMessageDelegate* delegate = delegate_iter->second.get();
   DCHECK(delegate);
 
-  // TODO(crbug/1015411): Here we assume the caller gets the |device| from
+  // TODO(crbug.com/40103693): Here we assume the caller gets the |device| from
   // GetDeviceCandidates, so LocalDeviceInfoProvider is ready. It's better to
   // queue up the message and wait until LocalDeviceInfoProvider is ready.
   const syncer::DeviceInfo* local_device_info =

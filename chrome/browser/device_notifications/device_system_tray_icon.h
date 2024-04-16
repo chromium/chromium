@@ -24,7 +24,7 @@ class DeviceSystemTrayIcon {
   // Stage `profile` to be shown in the system tray icon.
   virtual void StageProfile(Profile* profile);
 
-  // TODO(crbug.com/1353104): Remove support for non-immediate unstage request.
+  // TODO(crbug.com/40235090): Remove support for non-immediate unstage request.
   // Unstage `profile` that is being shown in the system tray icon. The profile
   // will be removed immediately when `immediate` is true, otherwise it is
   // scheduled to be removed later.

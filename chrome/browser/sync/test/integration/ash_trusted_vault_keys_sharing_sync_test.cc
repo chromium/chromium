@@ -359,7 +359,7 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
 
   // Should be created before any observed notification is shown. Must outlive
   // profile, i.e. TearDownOnMainThread().
-  // TODO(crbug.com/1513038): would be better to avoid non-trivial lifetime
+  // TODO(crbug.com/41485611): would be better to avoid non-trivial lifetime
   // requirements. Perhaps, NotificationDisplayServiceTester simply should not
   // call SetTestingFactory(ctx, NullFactory) in destructor, since this
   // contradicts class-level comment ("Profile may outlive this") and unlikely

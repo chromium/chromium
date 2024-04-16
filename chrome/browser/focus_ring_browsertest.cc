@@ -19,7 +19,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
-// TODO(crbug.com/958242): Move the baselines to skia gold for easier
+// TODO(crbug.com/40625383): Move the baselines to skia gold for easier
 //   rebaselining when all platforms are supported
 
 // To rebaseline this test on all platforms:

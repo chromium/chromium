@@ -32,7 +32,7 @@ import {getTemplate} from './app.html.js';
 
 const WebAppSettingsAppElementBase = I18nMixin(PolymerElement);
 
-// TODO(crbug.com/1294060): Investigate end-to-end WebAppSettings tests
+// TODO(crbug.com/40213759): Investigate end-to-end WebAppSettings tests
 export class WebAppSettingsAppElement extends WebAppSettingsAppElementBase {
   static get is() {
     return 'web-app-settings-app';

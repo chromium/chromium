@@ -375,7 +375,7 @@ TEST_F(DownloadFeedbackServiceTest, MultiplePendingFeedbackComplete) {
   EXPECT_TRUE(base::PathExists(file_path[2]));
 }
 
-// TODO(https://crbug.com/1179266): Deflake this test.
+// TODO(crbug.com/40749638): Deflake this test.
 TEST_F(DownloadFeedbackServiceTest, DISABLED_MultiFeedbackWithIncomplete) {
   const std::string ping_request = "ping";
   const std::string ping_response = "resp";

@@ -129,7 +129,7 @@ void WebAppsCrosapi::LaunchAppWithIntent(const std::string& app_id,
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
   controller_->Launch(std::move(params), base::DoNothing());
-  // TODO(crbug/1261263): handle the case where launch fails.
+  // TODO(crbug.com/40202131): handle the case where launch fails.
   std::move(callback).Run(LaunchResult(State::kSuccess));
 }
 

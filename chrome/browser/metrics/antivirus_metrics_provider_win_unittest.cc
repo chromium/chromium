@@ -109,7 +109,7 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
   base::ThreadCheckerImpl thread_checker_;
 };
 
-// TODO(crbug.com/682286): Flaky on Windows 10.
+// TODO(crbug.com/41295648): Flaky on Windows 10.
 TEST_P(AntiVirusMetricsProviderTest, DISABLED_GetMetricsFullName) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking_;
 

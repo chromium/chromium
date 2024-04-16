@@ -77,16 +77,15 @@ public final class BackPressHelper {
     }
 
     /**
-     * Register a list of {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}. The
-     * first handler has the top priority and the last one has the least.
-     * TODO(https://crbug.com/1406012): consider introducing a lightweight
-     * {@link org.chromium.chrome.browser.back_press.BackPressManager} if too many handlers should
-     * be registered.
+     * Register a list of {@link BackPressHandler} on a given {@link OnBackPressedDispatcher}. The
+     * first handler has the top priority and the last one has the least. TODO(crbug.com/40252517):
+     * consider introducing a lightweight {@link
+     * org.chromium.chrome.browser.back_press.BackPressManager} if too many handlers should be
+     * registered.
      *
      * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
      * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
-     * @param handlers {@link BackPressHandler} observing back press state and consuming back
-     * press.
+     * @param handlers {@link BackPressHandler} observing back press state and consuming back press.
      * @param activity {@link SecondaryActivity} handling the back press.
      */
     public static void create(

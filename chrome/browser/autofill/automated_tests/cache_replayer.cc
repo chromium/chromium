@@ -557,7 +557,7 @@ bool RetrieveAndDecompressStoredHTTP(const ServerCache& cache,
     VLOG(1) << "There is no HTTP body to decompress: " << http_text;
     return true;
   }
-  // TODO(crbug.com/945925): Add compression format detection, return an
+  // TODO(crbug.com/40620146): Add compression format detection, return an
   // error if not supported format.
   // Decompress the body.
   std::string decompressed_body;

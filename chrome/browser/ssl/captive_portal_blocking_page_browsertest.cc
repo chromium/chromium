@@ -206,7 +206,7 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   // checks the behavior of the Blocking Page, not the integration with that
   // throttle.
   //
-  // TODO(https://crbug.com/1003940): Clean this code up now that committed
+  // TODO(crbug.com/40647477): Clean this code up now that committed
   // interstitials have shipped.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("https://mock.failed.request/start=-20")));

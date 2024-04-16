@@ -261,7 +261,7 @@ std::u16string GetMechanismDescription(
       message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
-      // TODO(crbug.com/1439987): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
+      // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
       // third party providers.
       message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;

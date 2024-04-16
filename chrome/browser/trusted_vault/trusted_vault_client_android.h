@@ -23,7 +23,7 @@
 // used on Android.
 //
 // This class must be accessed from the UI thread.
-// TODO(crbug.com/1451788): move this class under components/trusted_vault once
+// TODO(crbug.com/40915967): move this class under components/trusted_vault once
 // its java counterpart does not have to stay under chrome/android (e.g. its
 // dependecy on AppHooks is addressed).
 class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {

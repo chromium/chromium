@@ -118,7 +118,7 @@ void HistoryClustersTabHelper::OnOmniboxUrlCopied() {
 }
 
 void HistoryClustersTabHelper::OnOmniboxUrlShared() {
-  // TODO(crbug.com/1171352): possibly update a different context annotation.
+  // TODO(crbug.com/40166126): possibly update a different context annotation.
   OnOmniboxUrlCopied();
 }
 

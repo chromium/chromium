@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_EQ(notification_ids[0], first_id);
 }
 
-// TODO(crbug.com/1002602): Test is flaky on TSAN.
+// TODO(crbug.com/40098231): Test is flaky on TSAN.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_OrphanedNonPersistentNotificationCreatesForegroundTab \
   DISABLED_OrphanedNonPersistentNotificationCreatesForegroundTab
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(
 // display notifications whilst fullscreen is deferred to the operating system.
 #if !BUILDFLAG(IS_MAC)
 
-// TODO(https://crbug.com/1086169) Test is flaky on Linux TSan.
+// TODO(crbug.com/40132496) Test is flaky on Linux TSan.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     defined(THREAD_SANITIZER)
 #define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen

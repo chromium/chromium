@@ -402,9 +402,9 @@ TEST_F(CrowdDenyPreloadDataTest, LastOneSurvivesFromUpdatesInQuickSuccession) {
 
   // Trigger three loads without pumping the message loop.
   //
-  // TODO(crbug.com/1028642): Think about making this test stronger. Even if the
-  // ordering were random, given the generous retry policy in continuous build,
-  // the test would still pass most of the time.
+  // TODO(crbug.com/40109238): Think about making this test stronger. Even if
+  // the ordering were random, given the generous retry policy in continuous
+  // build, the test would still pass most of the time.
   preload_data()->LoadFromDisk(data_path_v2, base::Version());
   preload_data()->LoadFromDisk(data_path_v3, base::Version());
   task_environment()->RunUntilIdle();

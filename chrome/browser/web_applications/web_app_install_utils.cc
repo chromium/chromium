@@ -792,7 +792,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest.icons,
                                                    web_app_info);
 
-  // TODO(crbug.com/1218210): Confirm incoming icons to write to web_app_info.
+  // TODO(crbug.com/40185556): Confirm incoming icons to write to web_app_info.
   PopulateFileHandlerInfoFromManifest(manifest.file_handlers,
                                       web_app_info->scope, web_app_info);
 
@@ -929,7 +929,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   // are present, by generating icons for any sizes that have failed to
   // download. This ensures that the created manifest for the web app does not
   // contain links to icons that are not actually created and linked on disk.
-  // TODO(https://crbug.com/1029223): Don't resize before writing to disk, it's
+  // TODO(crbug.com/40661228): Don't resize before writing to disk, it's
   // not necessary and would simplify this code path to remove.
   SizeToBitmap size_to_icons = ResizeIconsAndGenerateMissing(
       square_icons_any, SizesToGenerate(), icon_letter,

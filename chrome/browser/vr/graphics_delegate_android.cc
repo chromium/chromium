@@ -25,7 +25,7 @@ GraphicsDelegateAndroid::~GraphicsDelegateAndroid() = default;
 void GraphicsDelegateAndroid::Initialize(base::OnceClosure on_initialized) {
   // We can only share native GL resources with the runtimes, and they don't
   // support ANGLE, so disable it.
-  // TODO(crbug.com/1170580): support ANGLE?
+  // TODO(crbug.com/40744597): support ANGLE?
   gl::init::DisableANGLE();
 
   gl::GLDisplay* display = nullptr;

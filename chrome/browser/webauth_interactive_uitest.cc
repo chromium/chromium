@@ -76,7 +76,7 @@ class WebAuthFocusTest : public InProcessBrowserTest,
   bool permission_requested_;
 };
 
-// TODO(crbug.com/1222768): Disabled for being flaky.
+// TODO(crbug.com/40774271): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   // Web Authentication requests will often trigger machine-wide indications,
   // such as a Security Key flashing for a touch. If background tabs were able

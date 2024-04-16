@@ -33,7 +33,7 @@ using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
 
 const char kUrlVarName[] = "${url}";
 
-// TODO(crbug.com/1124758): add ${edge} on macOS/Linux once it's released on
+// TODO(crbug.com/40147515): add ${edge} on macOS/Linux once it's released on
 // those platforms.
 
 #if BUILDFLAG(IS_MAC)

@@ -89,7 +89,7 @@ class PasswordStoreBridge
           ServiceAccessType::EXPLICIT_ACCESS);
 
   // Used to fetch and edit passwords.
-  // TODO(crbug.com/1442826): Use PasswordStore directly.
+  // TODO(crbug.com/40267119): Use PasswordStore directly.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       AffiliationServiceFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile()),

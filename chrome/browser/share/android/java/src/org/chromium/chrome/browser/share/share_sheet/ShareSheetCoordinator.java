@@ -371,14 +371,10 @@ public class ShareSheetCoordinator
     /**
      * Create third-party property models.
      *
-     * <p>
-     * This method delivers its result asynchronously through {@code callback},
-     * to allow for the upcoming ShareRanking backend, which is asynchronous.
-     * The existing backend is synchronous, but this method is an asynchronous
-     * wrapper around it so that the design of the rest of this class won't need
-     * to change when ShareRanking is hooked up.
-     * TODO(https://crbug.com/1217186)
-     * </p>
+     * <p>This method delivers its result asynchronously through {@code callback}, to allow for the
+     * upcoming ShareRanking backend, which is asynchronous. The existing backend is synchronous,
+     * but this method is an asynchronous wrapper around it so that the design of the rest of this
+     * class won't need to change when ShareRanking is hooked up. TODO(crbug.com/40185097)
      */
     @VisibleForTesting
     void createThirdPartyPropertyModels(

@@ -160,7 +160,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     return;
   }
 
-  // TODO(crbug.com/829232) Unify with other calls to GetData.
+  // TODO(crbug.com/41380939) Unify with other calls to GetData.
   if (!params.has_value()) {
     webapps::InstallableParams data_params;
     data_params.check_eligibility = true;

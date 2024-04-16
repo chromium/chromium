@@ -91,7 +91,7 @@ void HttpClient::Send(
       gurl, request_type, std::move(request_body), std::move(header_keys),
       std::move(header_values), network_traffic_annotation);
   simple_loader->SetAllowHttpErrorResults(true);
-  // TODO(https://crbug.com/1178921): Use flag to control the max size limit.
+  // TODO(crbug.com/40169299): Use flag to control the max size limit.
   simple_loader->DownloadToString(
       loader_factory_.get(),
       base::BindOnce(&HttpClient::OnSimpleLoaderComplete,

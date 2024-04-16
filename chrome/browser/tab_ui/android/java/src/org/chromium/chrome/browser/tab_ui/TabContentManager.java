@@ -330,7 +330,8 @@ public class TabContentManager {
             boolean writeBack) {
         if (!mSnapshotsEnabled) return;
 
-        // TODO(crbug/1444782): Remove forceUpdate and writeBack params once the following features
+        // TODO(crbug.com/40267864): Remove forceUpdate and writeBack params once the following
+        // features
         // launch:
         // * GridTabSwitcherAndroidAnimations
         // OR

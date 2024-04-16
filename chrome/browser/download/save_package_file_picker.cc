@@ -109,7 +109,7 @@ bool IsErrorPage(content::WebContents* web_contents) {
 
 }  // anonymous namespace
 
-// TODO(crbug/928323): REMOVE DIRTY HACK
+// TODO(crbug.com/41439108): REMOVE DIRTY HACK
 // To prevent access to blocked websites, we are temporarily disabling the
 // HTML-only download of error pages for child users only.
 // Note that MHTML is still available, so the save functionality is preserved.

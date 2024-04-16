@@ -169,7 +169,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-// TODO(crbug.com/1470995): flaky on Linux debug.
+// TODO(crbug.com/40926030): flaky on Linux debug.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_FindInChunkedPDF DISABLED_FindInChunkedPDF
 #else

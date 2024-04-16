@@ -219,7 +219,7 @@ public final class TrackingProtectionNoticeTest {
 
     @Test
     @SmallTest
-    // TODO(crbug.com/1497465): Fix flakiness on histogramWatcher assertion.
+    // TODO(crbug.com/40287090): Fix flakiness on histogramWatcher assertion.
     public void testNoticeNotShownMoreThanOnceWhenNewTabWithSecurePageIsOpened() {
         mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
         sActivityTestRule.startMainActivityOnBlankPage();

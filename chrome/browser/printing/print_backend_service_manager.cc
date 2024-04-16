@@ -145,7 +145,7 @@ void PrintBackendServiceManager::SetCrashKeys(const std::string& printer_name) {
   if (sandboxed_service_remote_for_test_)
     return;
 
-  // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+  // TODO(crbug.com/40777132)  Remove local call for driver info, don't want
   // any residual accesses left into the printer drivers from the browser
   // process.
   base::ScopedAllowBlocking allow_blocking;
@@ -1089,7 +1089,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
       base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
                           base::Unretained(this), sandboxed, remote_id));
 
-  // TODO(crbug.com/1225111)  Make a superfluous call to the service, just to
+  // TODO(crbug.com/40775634)  Make a superfluous call to the service, just to
   // cause an IPC that will in turn make the adjusted timeout value actually
   // take effect.
   service->Poke();

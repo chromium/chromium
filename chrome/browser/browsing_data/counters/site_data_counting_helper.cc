@@ -68,7 +68,7 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   if (quota_manager) {
     // Count storage keys with filesystem, websql, indexeddb, serviceworkers,
     // cachestorage, and medialicense using quota manager.
-    // TODO(crbug.com/1434517): For now, media licenses are part of the quota
+    // TODO(crbug.com/40264778): For now, media licenses are part of the quota
     // management system, but when dis-integrated, remove media license logic
     // from quota logic.
     auto buckets_callback =

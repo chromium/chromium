@@ -495,7 +495,7 @@ SystemNetworkContextManager* SystemNetworkContextManager::GetInstance() {
     // CreateInstance() to initialize |g_system_network_context_manager|.
     content::GetNetworkService();
 
-    // TODO(crbug.com/981057): There should be a DCHECK() here to make sure
+    // TODO(crbug.com/40634772): There should be a DCHECK() here to make sure
     // |g_system_network_context_manager| has been created, but that is not
     // true in many unit tests.
   }
@@ -601,8 +601,8 @@ SystemNetworkContextManager::SystemNetworkContextManager(
           base::Unretained(this)));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  // TODO(crbug.com/1501418): If this call is removed, clank crashes on startup.
-  // Not sure why.
+  // TODO(crbug.com/40941700): If this call is removed, clank crashes on
+  // startup. Not sure why.
   content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
       true, base::DoNothing());
 #endif

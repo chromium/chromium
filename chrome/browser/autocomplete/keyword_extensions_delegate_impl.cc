@@ -30,9 +30,9 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
   omnibox_input_observation_.Observe(
       OmniboxInputWatcher::GetForBrowserContext(profile_));
 
-  // TODO(crbug.com/1278436): The comment below is historic and maybe misleading
-  // because extensions don't always "run" in the original profile. Review and
-  // update as needed.
+  // TODO(crbug.com/40810217): The comment below is historic and maybe
+  // misleading because extensions don't always "run" in the original profile.
+  // Review and update as needed.
   //
   // Extension suggestions always come from the original profile, since that's
   // where extensions run. We use the input ID to distinguish whether the

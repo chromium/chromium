@@ -136,7 +136,7 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   }
 
   // Wrap the content in a java.lang.Integer, so it can be nullable.
-  // TODO(crbug.com/1219434): Having an empty optional/null to represent the
+  // TODO(crbug.com/40772220): Having an empty optional/null to represent the
   // hidden entry point doesn't seem worth it after all. Make that just another
   // value in the enum, sparing the complexity here.
   ScopedJavaLocalRef<jclass> integer_class =

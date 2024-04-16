@@ -110,7 +110,7 @@ void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
 }
 
 void AppShimListener::OnServerChannelCreateError() {
-  // TODO(https://crbug.com/272577): Set a timeout and attempt to reconstruct
+  // TODO(crbug.com/41035623): Set a timeout and attempt to reconstruct
   // the channel. Until cases where the error could occur are better known,
   // just reset the acceptor to allow failure to be communicated via the test
   // API.

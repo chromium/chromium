@@ -156,7 +156,7 @@ void SetSkipMainProfileCheckForTesting(bool skip_check);
 bool IsMainProfileCheckSkippedForTesting();
 
 // The storage partitions' domain name for the experimental web app isolation.
-// TODO(crbug.com/1425284): use a better domain name, or maybe use a unique
+// TODO(crbug.com/40260833): use a better domain name, or maybe use a unique
 // domain for each app.
 constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
 #endif

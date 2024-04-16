@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(https://crbug.com/1266234): Make this work under Lacros.
+// TODO(crbug.com/40204047): Make this work under Lacros.
 // Check histogram counts when an app to replace gets installed after the
 // preinstalled web app is installed.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,

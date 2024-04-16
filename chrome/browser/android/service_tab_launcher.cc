@@ -72,7 +72,7 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
 void ServiceTabLauncher::OnTabLaunched(int request_id,
                                        content::WebContents* web_contents) {
   TabLaunchedCallback* callback = tab_launched_callbacks_.Lookup(request_id);
-  // TODO(crbug.com/962873): The Lookup() can fail though we don't expect that
+  // TODO(crbug.com/41458698): The Lookup() can fail though we don't expect that
   // it should be able to. It would be nice if this was a DCHECK() instead.
   if (callback)
     std::move(*callback).Run(web_contents);

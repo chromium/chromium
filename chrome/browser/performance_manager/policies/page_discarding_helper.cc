@@ -69,7 +69,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
   }
   NodeRssMap result(std::move(result_container));
 
-  // TODO(crbug/1240994): Use visitor to accumulate the result to avoid
+  // TODO(crbug.com/40194476): Use visitor to accumulate the result to avoid
   // allocating extra lists of frame nodes behind the scenes.
 
   // List all the processes associated with these page nodes.

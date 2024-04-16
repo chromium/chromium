@@ -288,7 +288,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->name = extension->name();
     app->short_name = extension->short_name();
 
-    // TODO(crbug.com/1367337): Work out how pinning interacts with Lacros
+    // TODO(crbug.com/40240007): Work out how pinning interacts with Lacros
     // multi-profile support once there is a product decision on what that looks
     // like.
     app->policy_ids = {extension->id()};

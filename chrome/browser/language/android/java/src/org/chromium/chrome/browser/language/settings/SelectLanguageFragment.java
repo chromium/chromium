@@ -75,7 +75,7 @@ public class SelectLanguageFragment extends Fragment implements ProfileDependent
             query = query.trim().toLowerCase(locale);
             List<LanguageItem> results = new ArrayList<>();
             for (LanguageItem item : mFilteredLanguages) {
-                // TODO(crbug/783049): Consider searching in item's native display name and
+                // TODO(crbug.com/40548938): Consider searching in item's native display name and
                 // language code too.
                 if (item.getDisplayName().toLowerCase(locale).contains(query)) {
                     results.add(item);

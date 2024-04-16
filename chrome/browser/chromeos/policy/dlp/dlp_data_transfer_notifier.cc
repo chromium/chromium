@@ -222,7 +222,7 @@ void DlpDataTransferNotifier::ResizeAndShowWidget(const gfx::Size& bubble_size,
           // which case there's an additional check in CloseWidget() to compare
           // the passed parameter against `widget_`.
           base::UnsafeDangling(
-              widget_.get()),  // TODO(crbug.com/1381414): Remove the following
+              widget_.get()),  // TODO(crbug.com/40245183): Remove the following
                                // comment if outdated.
                                //
                                // Safe as DlpClipboardNotificationHelper

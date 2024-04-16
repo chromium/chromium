@@ -89,7 +89,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    // TODO(crbug.com/1302062): Flaky on Nexus 5x (bullhead).
+    // TODO(crbug.com/40825119): Flaky on Nexus 5x (bullhead).
     @DisableIf.Build(hardware_is = "bullhead")
     public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.

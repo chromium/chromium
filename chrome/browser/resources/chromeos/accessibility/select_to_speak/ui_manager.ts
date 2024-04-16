@@ -320,7 +320,7 @@ export class UiManager {
    * Renders user selection rect, in the form of a focus ring.
    */
   setSelectionRect(rect: chrome.accessibilityPrivate.ScreenRect): void {
-    // TODO(crbug.com/1185238): Support showing two focus rings at once, in case
+    // TODO(crbug.com/40753028): Support showing two focus rings at once, in case
     // a focus ring highlighting a node group is already present.
     this.setFocusRings_(
         [rect], false /* don't draw background */, false /* panelVisible */);

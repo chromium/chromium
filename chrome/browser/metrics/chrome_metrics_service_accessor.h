@@ -140,7 +140,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeBrowserMainParts;
   friend class ChromeContentBrowserClient;
   friend class ChromeMetricsServicesManagerClient;
-  // TODO(crbug.com/1508150): Remove this friend when the limited entropy
+  // TODO(crbug.com/40948861): Remove this friend when the limited entropy
   // synthetic trial has wrapped up.
   friend class ChromeVariationsServiceClient;
   friend bool domain_reliability::ShouldCreateService();

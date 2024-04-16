@@ -121,7 +121,7 @@ void DetectFirefoxProfiles(const std::string locale,
         // https://en.wikipedia.org/wiki/Firefox_version_history), the reality
         // is that the current cutoff of at least Firefox 48 is mostly due to
         // the fact that there's a Firefox 48 profile for testing in
-        // firefox_importer_unittest.cc. TODO(https://crbug.com/1179967): Add
+        // firefox_importer_unittest.cc. TODO(crbug.com/40169760): Add
         // more modern Firefox test profiles, and roll the cutoff version.
         continue;
       }

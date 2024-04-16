@@ -124,8 +124,8 @@ void HistoryClustersModuleService::GetClusters(
     history_clusters::QueryClustersContinuationParams continuation_params,
     std::vector<history::Cluster> continuation_clusters,
     GetClustersCallback callback) {
-  // TODO(crbug/1442619): Encapsulate work done by this method in a task that
-  // gets returned to the caller.
+  // TODO(crbug.com/40910650): Encapsulate work done by this method in a task
+  // that gets returned to the caller.
 
   size_t task_id = task_id_++;
   std::unique_ptr<history_clusters::HistoryClustersServiceTask>

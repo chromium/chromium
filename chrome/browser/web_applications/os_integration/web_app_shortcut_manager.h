@@ -86,7 +86,7 @@ class WebAppShortcutManager {
   // Registers a shortcuts menu for a web app after reading its shortcuts menu
   // icons from disk.
   //
-  // TODO(crbug.com/1098471): Consider unifying this method and
+  // TODO(crbug.com/40701951): Consider unifying this method and
   // RegisterShortcutsMenuWithOs() below.
   void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       const webapps::AppId& app_id,

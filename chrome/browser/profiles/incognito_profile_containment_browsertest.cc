@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 // state even if user did not explicitly open the browser in regular mode and if
 // so, please add the file to the allow_list at the top and file a bug to follow
 // up.
-// TODO(https://crbug.com/1277824): Flakes on Win 7.
+// TODO(crbug.com/40809832): Flakes on Win 7.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
                        DISABLED_StoringDataDoesNotModifyProfileFolder) {
   // Take a snapshot of regular profile.

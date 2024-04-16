@@ -333,7 +333,7 @@ const struct {
     // website can do with access to that directory and its contents.
     {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), kBlockAllChildren},
 #endif
-    // TODO(https://crbug.com/984641): Refine this list, for example add
+    // TODO(crbug.com/40095723): Refine this list, for example add
     // XDG_CONFIG_HOME when it is not set ~/.config?
 };
 
@@ -1406,8 +1406,8 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
 
   // Otherwise, a valid set of grants are stored in the in-memory map
   // |active_permissions_map_|.
-  // TODO(crbug.com/1466929): Update iteration logic below to handle the case of
-  // write-only permission grants.
+  // TODO(crbug.com/40276567): Update iteration logic below to handle the case
+  // of write-only permission grants.
   std::vector<std::unique_ptr<Object>> objects;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
@@ -1672,7 +1672,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     HandleType handle_type,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1009970): Figure out what external paths should be
+  // TODO(crbug.com/40101272): Figure out what external paths should be
   // blocked. We could resolve the external path to a local path, and check for
   // blocked directories based on that, but that doesn't work well. Instead we
   // should have a separate Chrome OS only code path to block for example the
@@ -2206,7 +2206,7 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
   if (!registrar.IsActivelyInstalled(app_id)) {
     return;
   }
-  // TODO(crbug.com/1487679): Ensure that `GetAppScope` retrieves the correct
+  // TODO(crbug.com/40283362): Ensure that `GetAppScope` retrieves the correct
   // GURL when Scope Extensions is launched, which allows web apps to have more
   // than one origin as a scope.
   const auto gurl = registrar.GetAppScope(app_id);

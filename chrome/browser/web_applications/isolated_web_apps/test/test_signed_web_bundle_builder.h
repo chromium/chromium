@@ -65,7 +65,7 @@ class TestSignedWebBundleBuilder {
   static constexpr std::string_view kTestIconUrl = "/256x256-green.png";
   static constexpr std::string_view kTestHtmlUrl = "/index.html";
 
-  // TODO(crbug.com/1434557): Use a struct instead when designated initializers
+  // TODO(crbug.com/40264793): Use a struct instead when designated initializers
   // are supported.
   class BuildOptions {
    public:

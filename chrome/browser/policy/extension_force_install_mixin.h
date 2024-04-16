@@ -97,7 +97,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   enum class UpdateWaitMode {
     // Don't wait, and return immediately.
     kNone,
-    // TODO(crbug.com/1090941): Add other wait modes as necessary.
+    // TODO(crbug.com/40697472): Add other wait modes as necessary.
   };
 
   // The type of the server error that should be simulated.

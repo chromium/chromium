@@ -1363,7 +1363,7 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
     read = local_or_syncable_reading_list_manager_->GetReadStatus(node);
   }
 
-  // TODO(crbug.com/1467559): Folders need to use most recent child's time for
+  // TODO(crbug.com/40924440): Folders need to use most recent child's time for
   // date_last_used.
   return Java_BookmarkBridge_createBookmarkItem(
       env, node->id(), type, GetTitle(node), url, node->is_folder(), parent_id,
@@ -1478,7 +1478,7 @@ const BookmarkNode* BookmarkBridge::GetParentNode(const BookmarkNode* node) {
 }
 
 int BookmarkBridge::GetBookmarkType(const BookmarkNode* node) {
-  // TODO(crbug.com/1150559) return the wrong type when the backend is not
+  // TODO(crbug.com/40157934) return the wrong type when the backend is not
   // loaded?
   if (partner_bookmarks_shim_->IsLoaded() &&
       partner_bookmarks_shim_->IsPartnerBookmark(node))

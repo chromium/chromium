@@ -153,7 +153,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     return;
   }
 
-  // TODO(crbug.com/766854): Plumb this through from the notification platform
+  // TODO(crbug.com/40540804): Plumb this through from the notification platform
   // bridges so they can report completion of the operation as needed.
   base::OnceClosure completed_closure = base::BindOnce(&OperationCompleted);
 

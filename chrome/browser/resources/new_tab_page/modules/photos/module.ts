@@ -241,7 +241,7 @@ async function createPhotosElement(): Promise<PhotosModuleElement|null> {
       await PhotosProxy.getHandler().shouldShowOptInScreen();
   const {showSoftOptOutButton} =
       await PhotosProxy.getHandler().shouldShowSoftOptOutButton();
-  // TODO(crbug/129770): Construct a new mojo API which returns both memories
+  // TODO(crbug.com/40215260): Construct a new mojo API which returns both memories
   // and title.
   const {optInTitleText} =
       await PhotosProxy

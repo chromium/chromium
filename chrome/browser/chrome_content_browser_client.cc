@@ -2035,7 +2035,7 @@ bool ChromeContentBrowserClient::
   return is_embedded_origin_secure && scheme == content::kChromeUIScheme;
 }
 
-// TODO(crbug.com/1087559): This is based on SubframeTask::GetTitle()
+// TODO(crbug.com/40694933): This is based on SubframeTask::GetTitle()
 // implementation. Find a general solution to avoid code duplication.
 std::string ChromeContentBrowserClient::GetSiteDisplayNameForCdmProcess(
     content::BrowserContext* browser_context,
@@ -2188,7 +2188,7 @@ bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(
   // exception. Relaxing site isolation like this is a bad idea and should be
   // avoided.
   //
-  // TODO(crbug.com/624410): clean up the logic for detecting NTP.
+  // TODO(crbug.com/41261582): clean up the logic for detecting NTP.
   return url.SchemeIs(chrome::kChromeSearchScheme) &&
          url.host() == chrome::kChromeSearchMostVisitedHost &&
          search::IsNTPURL(parent_site_url);
@@ -2670,7 +2670,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       }
 
       // Enable SharedArrayBuffer on desktop if allowed by Enterprise Policy.
-      // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
+      // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is
+      // complete.
       if (prefs->GetBoolean(
               prefs::kSharedArrayBufferUnrestrictedAccessAllowed)) {
         command_line->AppendSwitch(
@@ -3180,7 +3181,7 @@ ChromeContentBrowserClient::AllowWebBluetooth(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  // TODO(crbug.com/598890): Don't disable if
+  // TODO(crbug.com/40462828): Don't disable if
   // base::CommandLine::ForCurrentProcess()->
   // HasSwitch(switches::kEnableWebBluetooth) is true.
   if (base::GetFieldTrialParamValue(
@@ -4335,7 +4336,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   // and does not work. See crbug.com/1317431.
   web_prefs->databases_enabled = false;
 
-  // TODO(crbug.com/1311019): Implement WebAuthn integration and remove.
+  // TODO(crbug.com/42050450): Implement WebAuthn integration and remove.
   web_prefs->disable_webauthn = true;
 #endif
 
@@ -4721,7 +4722,7 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForZygote(
   // inexpensive, an the features which control Mojo behavior aren't relevant
   // for this operation.
   //
-  // TODO(https://crbug.com/1299283): This will need to be changed before
+  // TODO(crbug.com/40058840): This will need to be changed before
   // MojoIpcz experimentation can happen on Lacros, as it results in
   // inconsistent MojoIpcz feature status across Mojo initializations.
   mojo::core::Init();
@@ -6249,7 +6250,7 @@ void ChromeContentBrowserClient::
   // For service worker contexts, we only allow file access. The remainder of
   // this code is used to allow extensions to access chrome:-scheme
   // resources, which we are moving away from.
-  // TODO(crbug.com/1280411) Factories should not be created for unloaded
+  // TODO(crbug.com/40811448) Factories should not be created for unloaded
   // extensions.
   if (extension) {
     InitializeFileURLLoaderFactoryForExtension(
@@ -6873,8 +6874,8 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
             sandbox_flags, has_user_gesture, initiating_origin,
             std::move(weak_initiator_document), out_factory);
 #else
-  // TODO(crbug.com/1394838): Figure out why this was initially made async, and,
-  // if possible, unify with the sync path above.
+  // TODO(crbug.com/40248796): Figure out why this was initially made async,
+  // and, if possible, unify with the sync path above.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
@@ -7027,7 +7028,7 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1420597): Remove this after feature is launched.
+  // TODO(crbug.com/40258836): Remove this after feature is launched.
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://settings/passwords to
   // chrome://password-manager.

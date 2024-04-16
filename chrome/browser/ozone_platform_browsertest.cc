@@ -23,7 +23,7 @@ class OzonePlatformTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/1430388) Flaky during teardown on linux ASan/LSan builder.
+// TODO(crbug.com/40901715) Flaky during teardown on linux ASan/LSan builder.
 #if BUILDFLAG(IS_LINUX) && \
     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER))
 #define MAYBE_ExitsGracefullyOnPlatormInitFailure \

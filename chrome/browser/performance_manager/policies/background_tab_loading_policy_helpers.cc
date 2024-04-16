@@ -41,7 +41,7 @@ size_t CalculateMaxSimultaneousTabLoads(size_t lower_bound,
 }
 
 float CalculateAgeScore(double last_visibility_change_seconds) {
-  // TODO(crbug.com/1059341): Determine via an experiment whether tabs could
+  // TODO(crbug.com/40121561): Determine via an experiment whether tabs could
   // simply be sorted by descending order of last visibility, instead of using
   // an opaque score.
 

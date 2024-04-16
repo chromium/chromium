@@ -44,7 +44,7 @@ constexpr char kExtensionId2[] = "abcdefghijklmnoabcdefghijklmnoac";
 using ::testing::_;
 using ::testing::Eq;
 
-// TODO(crbug.com/1096499): Get rid of chrome/browser dependencies and then
+// TODO(crbug.com/40700771): Get rid of chrome/browser dependencies and then
 // move this file to components/enterprise/browser.
 class PolicyInfoTest : public ::testing::Test {
  public:

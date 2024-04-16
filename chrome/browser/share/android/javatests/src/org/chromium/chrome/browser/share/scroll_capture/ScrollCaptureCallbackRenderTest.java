@@ -82,7 +82,7 @@ public class ScrollCaptureCallbackRenderTest {
 
     @Before
     public void setUp() {
-        // TODO(https://crbug.com/1254801): create a page that checkboards in a gradient or
+        // TODO(crbug.com/40199744): create a page that checkboards in a gradient or
         // something more complex to generate better test images.
         GURL url =
                 new GURL(

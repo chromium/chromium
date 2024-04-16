@@ -499,7 +499,7 @@ ProfileImpl::ProfileImpl(
     // tests.
     // Note: |ash::InitializeAccountManager| is idempotent and safe to call
     // multiple times.
-    // TODO(https://crbug.com/982233): Remove this call.
+    // TODO(crbug.com/40635309): Remove this call.
     ash::InitializeAccountManager(
         path_, base::DoNothing() /* initialization_callback */);
 
@@ -1245,7 +1245,7 @@ ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
       GetDefaultStoragePartition()->GetZoomLevelDelegate());
 }
 
-// TODO(crbug.com/734484): Remove this function.
+// TODO(crbug.com/40526371): Remove this function.
 PrefService* ProfileImpl::GetReadOnlyOffTheRecordPrefs() {
   if (!dummy_otr_prefs_) {
     dummy_otr_prefs_ = CreateIncognitoPrefServiceSyncable(

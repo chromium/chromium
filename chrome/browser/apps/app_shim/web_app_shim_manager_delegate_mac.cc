@@ -168,7 +168,7 @@ void WebAppShimManagerDelegate::CloseAppWindows(Profile* profile,
     return;
   }
   // This is only used by legacy apps.
-  // TODO(https://crbug.com/1431891): This seems to happen in the wild although
+  // TODO(crbug.com/40902596): This seems to happen in the wild although
   // though shouldn't be possible. Once legacy apps are no longer supported all
   // this legacy app specific code should get deleted entirely.
   // NOTREACHED();

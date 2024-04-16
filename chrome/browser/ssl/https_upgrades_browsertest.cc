@@ -1226,7 +1226,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-// TODO(https://crbug.com/1469343): Fails on the linux-wayland-rel bot.
+// TODO(crbug.com/40925331): Fails on the linux-wayland-rel bot.
 #if defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser \
   DISABLED_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_TypicallySecureUser

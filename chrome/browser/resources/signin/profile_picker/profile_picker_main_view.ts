@@ -255,7 +255,7 @@ export class ProfilePickerMainViewElement extends
   private handleProfileRemoved_(profilePath: string) {
     for (let i = 0; i < this.profilesList_.length; i += 1) {
       if (this.profilesList_[i].profilePath === profilePath) {
-        // TODO(crbug.com/1063856): Add animation.
+        // TODO(crbug.com/40123459): Add animation.
         this.splice('profilesList_', i, 1);
         break;
       }

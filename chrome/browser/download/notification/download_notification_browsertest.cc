@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
 }
 
 // These tests have ash dependency so they are only available for ash.
-// TODO(crbug.com/1266950): Enable these tests for Lacros.
+// TODO(crbug.com/40204280): Enable these tests for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 //////////////////////////////////////////////////

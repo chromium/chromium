@@ -132,7 +132,7 @@ class TouchToFillMediator {
                         .with(
                                 SUBTITLE,
                                 getSubtitle(url, isOriginSecure, triggerSubmission, credentials))
-                        // TODO(crbug.com/1471888): Use the TTF resource provider instead
+                        // TODO(crbug.com/40278443): Use the TTF resource provider instead
                         // and use a 32dp icon.
                         .with(
                                 IMAGE_DRAWABLE_ID,
@@ -349,7 +349,7 @@ class TouchToFillMediator {
 
     private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
         final Origin o = Origin.create(credentialOrigin);
-        // TODO(crbug.com/1030230): assert o != null as soon as credential Origin must be valid.
+        // TODO(crbug.com/40661767): assert o != null as soon as credential Origin must be valid.
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
@@ -379,7 +379,7 @@ class TouchToFillMediator {
 
     private void onSelectedMorePasskeys() {
         mModel.set(VISIBLE, false);
-        // TODO(crbug/1474805): add metrics
+        // TODO(crbug.com/40070194): add metrics
         mDelegate.onShowMorePasskeysSelected();
     }
 

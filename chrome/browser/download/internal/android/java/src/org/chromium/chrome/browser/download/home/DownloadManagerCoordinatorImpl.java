@@ -108,7 +108,7 @@ class DownloadManagerCoordinatorImpl
 
     /**
      * Creates the top level layout for download home including the toolbar.
-     * TODO(crbug.com/880468) : Investigate if it is better to do in XML.
+     * TODO(crbug.com/41411681) : Investigate if it is better to do in XML.
      */
     private void initializeView() {
         mMainView = new FrameLayout(mActivity);

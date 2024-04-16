@@ -549,7 +549,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        PasswordSyncEnablingGMSHasSetting) {
-  // TODO(crbug.com/1493989): Split this test.
+  // TODO(crbug.com/40286015): Split this test.
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
   pref_service()->SetBoolean(

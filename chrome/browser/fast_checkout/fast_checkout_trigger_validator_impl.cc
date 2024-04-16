@@ -98,7 +98,7 @@ bool FastCheckoutTriggerValidatorImpl::IsTriggerForm(
   if (!capabilities_fetcher_) {
     return false;
   }
-  // TODO(crbug.com/1356498): Stop calculating the signature once the form
+  // TODO(crbug.com/40236321): Stop calculating the signature once the form
   // signature has been moved to `form_data`.
   // Check browser form's signature and renderer form's signature.
   autofill::FormSignature form_signature =

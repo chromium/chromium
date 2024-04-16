@@ -219,7 +219,7 @@ bool WriteJSON(const base::FilePath& file_path,
   return WriteJSONNode(file_path, Value(std::move(root_dict)));
 }
 
-// TODO(https://crbug.com/1212151): The test flakily times out.
+// TODO(crbug.com/40768066): The test flakily times out.
 TEST(AutofillCacheReplayerDeathTest,
      DISABLED_ServerCacheReplayerConstructor_CrashesWhenNoDomainNode) {
   // Make death test threadsafe.

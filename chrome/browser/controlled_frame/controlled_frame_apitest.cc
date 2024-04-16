@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, AuthRequestIsProxied) {
     EXPECT_EQ(kAuthBasicUrl,
               web_view_guest->GetGuestMainFrame()->GetLastCommittedURL());
     // The auth request fails but keeps retrying until this error is produced.
-    // TODO(https://crbug.com/1502580): The error produced here should be
+    // TODO(crbug.com/40942953): The error produced here should be
     // authentication related.
     EXPECT_EQ(net::Error::ERR_TOO_MANY_RETRIES,
               navigation_observer.last_net_error_code());

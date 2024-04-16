@@ -75,7 +75,7 @@ std::u16string PermissionInfoBarDelegate::GetCompactLinkText() const {
   return std::u16string();
 }
 
-// TODO(crbug.com/1082737): Many methods of this class switches on the quiet UI
+// TODO(crbug.com/40131069): Many methods of this class switches on the quiet UI
 // reason. Refactor this into separate subclasses instead.
 std::u16string PermissionInfoBarDelegate::GetDescriptionText() const {
   return prompt_model_.description;

@@ -181,7 +181,7 @@ js2gtest("switch_access_extjs_tests") {
     "nodes/tab_node_test.js",
     "point_scan_manager_test.js",
 
-    # TODO(1316408): Tests were broken at head. Re-enable tests when they pass.
+    # TODO(crbug.com/40834097): Tests were broken at head. Re-enable tests when they pass.
     # "saatlite/gen/saatlite_tests.js",
     "switch_access_predicate_test.js",
     "switch_access_test.js",

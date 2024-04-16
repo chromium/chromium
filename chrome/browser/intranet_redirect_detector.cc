@@ -38,7 +38,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-// TODO(crbug.com/181671): Write test to verify we handle the policy toggling.
+// TODO(crbug.com/40966307): Write test to verify we handle the policy toggling.
 IntranetRedirectDetector::IntranetRedirectDetector()
     : redirect_origin_(g_browser_process->local_state()->GetString(
           prefs::kLastKnownIntranetRedirectOrigin)) {

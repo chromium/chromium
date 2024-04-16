@@ -8,12 +8,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.IBAN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
@@ -87,7 +87,7 @@ class TouchToFillPaymentMethodMediator {
     static final String TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN =
             "Autofill.TouchToFill.CreditCard.NumberOfCardsShown";
 
-    // TODO(crbug/1383487): Remove the Context from the Mediator.
+    // TODO(crbug.com/40246126): Remove the Context from the Mediator.
     private Context mContext;
     private TouchToFillPaymentMethodComponent.Delegate mDelegate;
     private PropertyModel mModel;
@@ -239,7 +239,10 @@ class TouchToFillPaymentMethodMediator {
                                 TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_IMAGE,
                                 cardImageFunction,
                                 cardImageMetaData)
-                        .with(TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME, "")
+                        .with(
+                                TouchToFillPaymentMethodProperties.CreditCardProperties
+                                        .NETWORK_NAME,
+                                "")
                         .with(
                                 TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())

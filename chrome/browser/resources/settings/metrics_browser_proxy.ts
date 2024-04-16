@@ -665,7 +665,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordSafeBrowsingInteractionHistogram(interaction:
                                              SafeBrowsingInteractions) {
-    // TODO(crbug.com/1124491): Set the correct suffix for
+    // TODO(crbug.com/40717279): Set the correct suffix for
     // SafeBrowsing.Settings.UserAction. Use the .Default suffix for now.
     chrome.send('metricsHandler:recordInHistogram', [
       'SafeBrowsing.Settings.UserAction.Default',

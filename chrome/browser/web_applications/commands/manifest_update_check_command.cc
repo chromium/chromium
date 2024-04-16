@@ -535,9 +535,9 @@ void ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded() {
           IdentityUpdateDecision::kRevert &&
       manifest_data_changes_.app_icon_identity_change) {
     const WebApp& web_app = GetWebApp();
-    // TODO(crbug.com/1485348): Bundle up product icon data into a single struct
-    // to make this a single assignment and less likely to miss fields as they
-    // get added in future.
+    // TODO(crbug.com/40282537): Bundle up product icon data into a single
+    // struct to make this a single assignment and less likely to miss fields as
+    // they get added in future.
     new_install_info_->manifest_icons = web_app.manifest_icons();
     new_install_info_->icon_bitmaps = existing_app_icon_bitmaps_;
     new_install_info_->is_generated_icon = web_app.is_generated_icon();

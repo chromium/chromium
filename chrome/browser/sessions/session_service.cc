@@ -501,7 +501,7 @@ void SessionService::DidScheduleCommand() {
     return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1245816): for debugging, remove once tracked down
+  // TODO(crbug.com/40196304): for debugging, remove once tracked down
   // source of problem.
   // A command has been scheduled for a SessionService other than the first.
   // Recreating the SessionService happens if shutdown is canceled, which is

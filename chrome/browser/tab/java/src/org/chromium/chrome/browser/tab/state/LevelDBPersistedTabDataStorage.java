@@ -30,7 +30,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     private LevelDBPersistedDataStorage mPersistedDataStorage;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
-    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or proguard rules to improve
+    // TODO(crbug.com/40156389) Apply tricks like @CheckDiscard or proguard rules to improve
     // performance
     private boolean mIsDestroyed;
 
@@ -43,7 +43,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
     @MainThread
     @Override
     public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer) {
-        // TODO(crbug.com/1221571) update LevelDB storage in native to use ByteBuffer instead
+        // TODO(crbug.com/40186903) update LevelDB storage in native to use ByteBuffer instead
         // of byte[] to avoid conversion
         serializer.preSerialize();
         mPersistedDataStorage.save(getKey(tabId, dataId), toByteArray(serializer.get()));
@@ -148,7 +148,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage, 
         return keysToKeep;
     }
 
-    // TODO(crbug.com/1145785) Implement URL -> byte[] mapping rather
+    // TODO(crbug.com/40156023) Implement URL -> byte[] mapping rather
     // than tab id -> byte[] mapping so we don't store the same data
     // multiple times when the user has multiple tabs at the same URL.
     private static final String getKey(int tabId, String dataId) {

@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
   EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 }
 
-// TODO(https://crbug.com/1513116): Re-enable when timeouts are fixed.
+// TODO(crbug.com/41485689): Re-enable when timeouts are fixed.
 IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, DISABLED_Uninstall) {
   if (!HasLacrosArgument()) {
     return;

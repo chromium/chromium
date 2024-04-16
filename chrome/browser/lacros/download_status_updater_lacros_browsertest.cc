@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
   EXPECT_TRUE(BrowserWindow::IsRestored(*browser()->window()));
 }
 
-// TODO(crbug.com/1482885): Deflake this test. The flake rate seems to be < 5%.
+// TODO(crbug.com/40281894): Deflake this test. The flake rate seems to be < 5%.
 IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     DISABLED_ShowInBrowser_DangerousDownload_RestoreMinimizedBrowser) {

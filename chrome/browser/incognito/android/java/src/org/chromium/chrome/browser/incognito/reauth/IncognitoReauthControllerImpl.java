@@ -331,7 +331,7 @@ public class IncognitoReauthControllerImpl
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO(crbug.com/1374222): Incognito does not lock correctly for versions < Android P.
+        // TODO(crbug.com/40242374): Incognito does not lock correctly for versions < Android P.
         outState.putBoolean(KEY_IS_INCOGNITO_REAUTH_PENDING, mIncognitoReauthPending);
     }
 

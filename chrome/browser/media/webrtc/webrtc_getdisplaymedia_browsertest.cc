@@ -1123,7 +1123,7 @@ class GetDisplayMediaChangeSourceBrowserTest
   ~GetDisplayMediaChangeSourceBrowserTest() override = default;
 
   void SetUp() override {
-    // TODO(crbug.com/1381951): Fix GetDisplayMediaChangeSourceBrowserTest with
+    // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
 #if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
     if (dynamic_surface_switching_requested_ && feature_enabled_ &&

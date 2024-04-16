@@ -119,7 +119,7 @@ scoped_refptr<RefcountedKeyedService>
       std::make_unique<content_settings::CustomExtensionProvider>(
           extensions::ContentSettingsService::Get(original_profile)
               ->content_settings_store(),
-          // TODO(crbug.com/1254409): This is the only call site, so can we
+          // TODO(crbug.com/40199565): This is the only call site, so can we
           // remove this constructor parameter, or should this actually reflect
           // the case where profile->IsOffTheRecord() is true? And what is the
           // interaction with profile->IsGuestSession()?

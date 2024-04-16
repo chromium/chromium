@@ -30,7 +30,7 @@ plugin.addEventListener('message', e => {
   const message = (e as MessageEvent).data;
   switch (message.type) {
     case 'formFocusChange':
-      // TODO(crbug.com/1279516): Ideally, the plugin would just consume
+      // TODO(crbug.com/40810904): Ideally, the plugin would just consume
       // interesting keyboard events first.
       isFormFieldFocused = (message as {focused: boolean}).focused;
       break;
@@ -69,7 +69,7 @@ channel.port1.onmessage = e => {
       break;
 
     case 'syncScrollToRemote':
-      // TODO(crbug.com/1306236): Implement smooth scrolling correctly.
+      // TODO(crbug.com/40218278): Implement smooth scrolling correctly.
       window.scrollTo({
         left: e.data.x,
         top: e.data.y,
@@ -229,7 +229,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Suppress extra scroll by preventing the default "keypress" handler for Space.
-// TODO(crbug.com/1279429): Ideally would prevent "keydown" instead, but this
+// TODO(crbug.com/40208546): Ideally would prevent "keydown" instead, but this
 // doesn't work when a plugin element has focus.
 document.addEventListener('keypress', e => {
   switch (e.key) {

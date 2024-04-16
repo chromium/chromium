@@ -97,15 +97,14 @@ public abstract class PersistedTabData implements UserData {
     }
 
     /**
-     * Asynchronously acquire a {@link PersistedTabData}
-     * for a {@link Tab}
-     * @param tab {@link Tab} {@link PersistedTabData} is being acquired for.
-     * At a minimum, a frozen tab with an identifier and isIncognito fields set
-     * is required.
+     * Asynchronously acquire a {@link PersistedTabData} for a {@link Tab}
+     *
+     * @param tab {@link Tab} {@link PersistedTabData} is being acquired for. At a minimum, a frozen
+     *     tab with an identifier and isIncognito fields set is required.
      * @param factory {@link PersistedTabDataFactory} which will create {@link PersistedTabData}
      * @param tabDataCreator for constructing a {@link PersistedTabData} corresponding to the passed
-     * in tab. This will be used as a fallback in the event that the {@link PersistedTabData} cannot
-     * be found in storage or needs an update.
+     *     in tab. This will be used as a fallback in the event that the {@link PersistedTabData}
+     *     cannot be found in storage or needs an update.
      * @param clazz class of the {@link PersistedTabData}
      * @param callback callback to pass the {@link PersistedTabData} in
      * @return {@link PersistedTabData} from storage
@@ -117,7 +116,7 @@ public abstract class PersistedTabData implements UserData {
             Class<T> clazz,
             Callback<T> callback) {
         ThreadUtils.assertOnUiThread();
-        // TODO(crbug.com/1059602) cache callbacks
+        // TODO(crbug.com/40121680) cache callbacks
         T persistedTabDataFromTab = getUserData(tab, clazz);
         if (persistedTabDataFromTab != null) {
             if (persistedTabDataFromTab.needsUpdate()) {
@@ -415,7 +414,7 @@ public abstract class PersistedTabData implements UserData {
                                     + oe.getMessage());
                     res = null;
                 }
-                // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not
+                // TODO(crbug.com/40162721) convert to enum histogram and differentiate null/not
                 // null/out of memory
                 RecordHistogram.recordBooleanHistogram(
                         "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
@@ -531,7 +530,7 @@ public abstract class PersistedTabData implements UserData {
 
     /** Delete all {@link PersistedTabData} when a {@link Tab} is closed. */
     public static void onTabClose(Tab tab) {
-        // TODO(crbug.com/1223965) ensure we cleanup ShoppingPersistedTabData on startup
+        // TODO(crbug.com/40187854) ensure we cleanup ShoppingPersistedTabData on startup
         ShoppingPersistedTabData shoppingPersistedTabData =
                 tab.getUserDataHost().getUserData(ShoppingPersistedTabData.class);
         if (shoppingPersistedTabData != null) {

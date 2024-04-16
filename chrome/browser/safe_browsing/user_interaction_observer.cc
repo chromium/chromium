@@ -86,7 +86,7 @@ void SafeBrowsingUserInteractionObserver::CreateForWebContents(
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   // This method is called for all unsafe resources on |web_contents|. Only
   // create an observer if there isn't one.
-  // TODO(crbug.com/1057157): The observer should observe all unsafe resources
+  // TODO(crbug.com/40677238): The observer should observe all unsafe resources
   // instead of the first one only.
   content::WebContentsUserData<
       SafeBrowsingUserInteractionObserver>::CreateForWebContents(web_contents,

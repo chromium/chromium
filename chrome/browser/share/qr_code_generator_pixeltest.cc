@@ -40,7 +40,8 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
     ASSERT_EQ(response->width(), response->height());
 
     // Verify that the expected UMA metrics got logged.
-    // TODO(1246137): Cover BytesToQrPixels and QrPixelsToQrImage as well.
+    // TODO(crbug.com/40789042): Cover BytesToQrPixels and QrPixelsToQrImage as
+    // well.
     histograms.ExpectTotalCount("Sharing.QRCodeGeneration.Duration", 1);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

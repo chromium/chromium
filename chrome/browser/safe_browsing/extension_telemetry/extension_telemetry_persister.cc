@@ -85,7 +85,7 @@ ExtensionTelemetryPersister::ExtensionTelemetryPersister(
 
 void ExtensionTelemetryPersister::PersisterInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1325864): Remove old directory clean up code after
+  // TODO(crbug.com/40225665): Remove old directory clean up code after
   // launch.
   base::FilePath old_dir;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &old_dir)) {

@@ -322,7 +322,7 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
 
   // Don't handle navigations in subframe or fenced frame which shouldn't
   // show an interstitial and record metrics.
-  // TODO(crbug.com/1199724): For portals, the throttle probably should be run
+  // TODO(crbug.com/40177966): For portals, the throttle probably should be run
   // as they may eventually become the primary main frame. Revisit here once
   // portals are migrated to MPArch.
   if (!navigation_handle->IsInPrimaryMainFrame() &&

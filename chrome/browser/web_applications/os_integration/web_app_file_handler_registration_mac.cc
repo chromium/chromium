@@ -18,7 +18,7 @@ bool ShouldRegisterFileHandlersWithOs() {
 }
 
 bool FileHandlingIconsSupportedByOs() {
-  // TODO(crbug/1218237): implement and flip this to true.
+  // TODO(crbug.com/40185574): implement and flip this to true.
   return false;
 }
 

@@ -90,7 +90,7 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1486393): Re-enable the test.
+// TODO(crbug.com/40282876): Re-enable the test.
 #define MAYBE_RestoreTab DISABLED_RestoreTab
 #else
 #define MAYBE_RestoreTab RestoreTab

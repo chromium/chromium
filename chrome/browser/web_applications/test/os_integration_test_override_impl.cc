@@ -456,7 +456,7 @@ base::FilePath OsIntegrationTestOverrideImpl::GetShortcutPath(
   std::string shortcut_filename = app_name + ".app";
   base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
   // Exits early if the app id is empty because the verification won't work.
-  // TODO(crbug.com/1289865): Figure a way to find the profile that has the app
+  // TODO(crbug.com/40212146): Figure a way to find the profile that has the app
   //                          installed without using app ID.
   if (app_id.empty()) {
     return shortcut_path;

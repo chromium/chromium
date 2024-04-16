@@ -210,7 +210,7 @@ public interface SigninManager {
 
     /**
      * Verifies if the account is managed. Callback may be called either synchronously or
-     * asynchronously depending on the availability of the result. TODO(crbug.com/1002408) Update
+     * asynchronously depending on the availability of the result. TODO(crbug.com/40646656) Update
      * API to use CoreAccountInfo instead of email
      *
      * @param email An email of the account.

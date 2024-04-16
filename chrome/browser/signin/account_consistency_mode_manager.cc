@@ -178,7 +178,7 @@ bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
 AccountConsistencyMethod
 AccountConsistencyModeManager::GetAccountConsistencyMethod() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/860671): ChromeOS should use the cached value.
+  // TODO(crbug.com/40583837): ChromeOS should use the cached value.
   // Changing the value dynamically is not supported.
   return ComputeAccountConsistencyMethod(profile_);
 #else

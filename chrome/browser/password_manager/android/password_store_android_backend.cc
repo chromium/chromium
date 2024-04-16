@@ -381,13 +381,13 @@ void PasswordStoreAndroidBackend::Init(
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));
-  // TODO(https://crbug.com/1229650): Create subscription before completion.
+  // TODO(crbug.com/40778507): Create subscription before completion.
 }
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   lifecycle_helper_->UnregisterObserver();
-  // TODO(https://crbug.com/1229654): Implement (e.g. unsubscribe from GMS).
+  // TODO(crbug.com/40190023): Implement (e.g. unsubscribe from GMS).
   std::move(shutdown_completed).Run();
 }
 
@@ -430,7 +430,7 @@ void PasswordStoreAndroidBackend::GetLoginsInternal(
     LoginsOrErrorReply callback) {
   JobId job_id = bridge_helper_->GetLoginsForSignonRealm(
       FormToSignonRealmQuery(form, include_psl), std::move(account));
-  // TODO(crbug.com/1491084): Re-design metrics to be less reliant on exact
+  // TODO(crbug.com/40284943): Re-design metrics to be less reliant on exact
   // method name and separate external methods from internal ones.
   QueueNewJob(job_id,
               base::BindOnce(&ValidateSignonRealm, std::move(form), include_psl,
@@ -828,7 +828,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
 
   if (error.api_error_code.has_value()) {
-    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code,
+    // TODO(crbug.com/40839365): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
 

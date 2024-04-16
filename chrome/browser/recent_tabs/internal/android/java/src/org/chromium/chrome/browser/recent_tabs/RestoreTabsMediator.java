@@ -250,12 +250,12 @@ public class RestoreTabsMediator {
     }
 
     /**
-     * Sets the tab items and creates the corresponding models for the
-     * tab item entries on the tab list page. All tabs will be selected by default.
+     * Sets the tab items and creates the corresponding models for the tab item entries on the tab
+     * list page. All tabs will be selected by default.
      */
     @VisibleForTesting
     public void setTabListItems() {
-        // TODO(crbug.com/1429406): Refactor ForeignSessionHelper to retrieve only the
+        // TODO(crbug.com/40262659): Refactor ForeignSessionHelper to retrieve only the
         // necessary data instead of preloading all the sessions.
         ForeignSession session = mModel.get(RestoreTabsProperties.SELECTED_DEVICE);
         assert session != null;
@@ -384,7 +384,7 @@ public class RestoreTabsMediator {
         // Get the tab switcher's current tab list model size.
         int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
 
-        // TODO(crbug.com/1426921): Consider adding a spinner if restoring the tabs becomes
+        // TODO(crbug.com/40261552): Consider adding a spinner if restoring the tabs becomes
         // a batched process.
         assert tabs.size() > 0 && mForeignSessionHelper != null;
         mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(

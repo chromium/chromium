@@ -219,7 +219,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   settings_browser_ = browser;
   // We have to first call Restore() because the window was created as a
   // fullscreen window, having no prior bounds.
-  // TODO(crbug.com/1015383): Figure out how to do it more cleanly.
+  // TODO(crbug.com/40103687): Figure out how to do it more cleanly.
   browser->window()->Restore();
   browser->window()->Maximize();
 }

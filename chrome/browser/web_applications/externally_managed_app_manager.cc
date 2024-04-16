@@ -348,7 +348,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
         return;
       }
 
-      // TODO(crbug.com/1300321): Investigate re-install of the app for all
+      // TODO(crbug.com/40216215): Investigate re-install of the app for all
       // WebAppManagement sources.
       if ((ConvertExternalInstallSourceToSource(
                install_options.install_source) == WebAppManagement::kPolicy) &&
@@ -484,7 +484,7 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
     return;
   }
 
-  // TODO(crbug.com/809304): Call CreateWebContentsIfNecessary() instead of
+  // TODO(crbug.com/40561535): Call CreateWebContentsIfNecessary() instead of
   // checking web_contents_ once major migration of default hosted apps to web
   // apps has completed.
   // Temporarily using offline manifest migrations (in which |web_contents_|

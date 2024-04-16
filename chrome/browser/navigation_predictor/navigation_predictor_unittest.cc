@@ -1218,7 +1218,7 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   ASSERT_EQ(0u, entries.size());
 }
 
-// TODO(crbug.com/1442258): Flaky on Android.
+// TODO(crbug.com/40266872): Flaky on Android.
 TEST_F(NavigationPredictorUserInteractionsTest,
        DISABLED_UserInteractionMetricsIgnoresUpdatesForInvalidUkmSourceId) {
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;

@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectVideoTabs) {
 }
 
 // Makes sure that tabs using DevTools are protected from discarding.
-// TODO(crbug.com/1446876): Flaky on debug Linux.
+// TODO(crbug.com/40913262): Flaky on debug Linux.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ProtectDevToolsTabsFromDiscarding \
   DISABLED_ProtectDevToolsTabsFromDiscarding

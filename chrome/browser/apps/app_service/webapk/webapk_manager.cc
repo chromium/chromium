@@ -238,7 +238,7 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
   // 2. The WebAPK was uninstalled through Android settings. In this case, the
   //    Chrome OS-side app will still be installed and eligible for a WebAPK.
 
-  // TODO(crbug.com/1200199): Remove the web app as well, if it is still
+  // TODO(crbug.com/40178176): Remove the web app as well, if it is still
   // installed and eligible, and WebAPKs are not disabled by policy.
   webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
 }

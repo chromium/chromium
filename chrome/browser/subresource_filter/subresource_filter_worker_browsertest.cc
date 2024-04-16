@@ -77,7 +77,7 @@ class SubresourceFilterWorkerFetchBrowserTest
   }
 };
 
-// TODO(https://crbug.com/1011208): Add more tests for workers like top-level
+// TODO(crbug.com/40101794): Add more tests for workers like top-level
 // worker script fetch and module script fetch.
 
 // Test if fetch() on dedicated workers is blocked by the subresource filter.

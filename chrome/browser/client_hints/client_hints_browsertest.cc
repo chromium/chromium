@@ -1248,7 +1248,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         continue;
       }
 
-      // TODO(crbug.com/1286857): Skip over the `Sec-CH-UA-Full` client hint
+      // TODO(crbug.com/40211003): Skip over the `Sec-CH-UA-Full` client hint
       // because it is only added in the presence of a valid
       // "UserAgentDeprecation" Origin Trial token. Need to add `Sec-CH-UA-Full`
       // corresponding tests.

@@ -20,7 +20,7 @@ class ReadingListModel;
 // list nodes as children. Only has one level of children.
 // 2. Talk to reading list model, and sync with the in memory bookmark tree.
 // 3. Talk to observers to report model change events.
-// TODO(crbug.com/1510550): Refactor this to be part of the bookmarks dir.
+// TODO(crbug.com/41483143): Refactor this to be part of the bookmarks dir.
 // - Better renamed to ReadingListAsBookmarkAdapter when moved.
 class ReadingListManagerImpl : public ReadingListManager,
                                public ReadingListModelObserver {

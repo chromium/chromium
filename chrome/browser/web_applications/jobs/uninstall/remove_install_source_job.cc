@@ -122,7 +122,7 @@ void RemoveInstallSourceJob::
         app->SetParentAppId(std::nullopt);
       }
     }
-    // TODO(crbug.com/1447308): Make sync uninstall not synchronously
+    // TODO(crbug.com/40913556): Make sync uninstall not synchronously
     // remove its sync install source even while a command has an app lock so
     // that we can CHECK(app->HasAnySources()) here.
   }

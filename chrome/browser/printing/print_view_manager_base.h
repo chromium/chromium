@@ -47,7 +47,7 @@ namespace printing {
 class PrintQueriesQueue;
 class PrinterQuery;
 
-// TODO(crbug.com/1514866): Remove this emergency off switch after a safe
+// TODO(crbug.com/41487419): Remove this emergency off switch after a safe
 // rollout.
 BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
 

@@ -473,7 +473,7 @@ class WebAppCommandScheduler {
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
 
-  // TODO(https://crbug.com/1298130): expose all commands for web app
+  // TODO(crbug.com/40215411): expose all commands for web app
   // operations.
 
  private:

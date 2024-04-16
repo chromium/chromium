@@ -923,8 +923,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
 }
 
 // Flaky on ChromeOS and Linux: http://crbug.com/526886
-// TODO(crbug.com/807446): Flaky on Mac.
-// TODO(crbug.com/809383): Flaky on Windows.
+// TODO(crbug.com/40560638): Flaky on Mac.
+// TODO(crbug.com/41369000): Flaky on Windows.
 // Tests that moving browser plugin (without resize/UpdateRects) correctly
 // repositions popup.
 IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
 #endif
 
 #if BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)  // TODO(https://crbug.com/801552): Flaky.
+    BUILDFLAG(IS_CHROMEOS)  // TODO(crbug.com/41364503): Flaky.
 #define MAYBE_LongPressSelection DISABLED_LongPressSelection
 #else
 #define MAYBE_LongPressSelection LongPressSelection
@@ -1641,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest,
 
   // Wait for guest's document to consider itself focused. This avoids
   // flakiness on some platforms.
-  // TODO(crbug.com/1519130): `base::test::RunUntil` times out on mac.
+  // TODO(crbug.com/41492111): `base::test::RunUntil` times out on mac.
   while (!content::EvalJs(guest_rfh, "document.hasFocus()").ExtractBool()) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

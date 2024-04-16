@@ -53,7 +53,7 @@ void AddProcessCreateMetrics(std::vector<const char*>& v) {
 }  // namespace
 
 // Verify that startup histograms are logged on browser startup.
-// TODO(crbug.com/1459364): Re-enable this test
+// TODO(crbug.com/40919406): Re-enable this test
 // TODO(b/321634178): Disable the test on Lacros due to flakiness.
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)

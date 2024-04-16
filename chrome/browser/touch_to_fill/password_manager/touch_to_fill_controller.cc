@@ -182,7 +182,7 @@ void TouchToFillController::OnDismiss() {
   view_.reset();
   no_passkeys_bridge_.reset();
   if (!ttf_delegate_) {
-    // TODO(crbug/1462532): Remove this check when
+    // TODO(crbug.com/40274966): Remove this check when
     // PasswordSuggestionBottomSheetV2 is launched
     return;
   }
@@ -200,7 +200,7 @@ gfx::NativeView TouchToFillController::GetNativeView() {
 }
 
 void TouchToFillController::Close() {
-  // TODO(crbug/1468487). This is a duplicate of `OnDismiss`. Merge the two
+  // TODO(crbug.com/40277147). This is a duplicate of `OnDismiss`. Merge the two
   // functions.
   OnDismiss();
 }

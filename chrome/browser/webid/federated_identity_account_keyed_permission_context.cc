@@ -137,7 +137,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
     const std::optional<std::string>& account_id) {
-  // TODO(crbug.com/1334019): This is currently origin-bound, but we would like
+  // TODO(crbug.com/40846157): This is currently origin-bound, but we would like
   // this grant to apply at the 'site' (aka eTLD+1) level. We should override
   // GetGrantedObject to find a grant that matches the RP's site rather
   // than origin, and also ensure that duplicate sites cannot be added.

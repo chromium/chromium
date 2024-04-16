@@ -15,7 +15,7 @@ namespace {
 
 class AbortPaymentHandlerTest : public PaymentRequestPlatformBrowserTestBase {};
 
-// TODO(crbug.com/1129578): fix flakiness and reenable
+// TODO(crbug.com/40720284): fix flakiness and reenable
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanAbortInvokedInstalledPaymentHandler \
   DISABLED_CanAbortInvokedInstalledPaymentHandler

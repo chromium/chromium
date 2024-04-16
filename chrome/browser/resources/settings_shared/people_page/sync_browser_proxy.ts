@@ -18,9 +18,9 @@ export interface StoredAccount {
 }
 
 /**
- * TODO(crbug.com/1322559): signedIn doesn't indicate if the user is signed-in,
+ * TODO(crbug.com/40838076): signedIn doesn't indicate if the user is signed-in,
  * but instead if the user is syncing.
- * TODO(crbug.com/1107771): signedIn actually means having primary account with
+ * TODO(crbug.com/40707088): signedIn actually means having primary account with
  * sync consent. Rename to make this clear.
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */

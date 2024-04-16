@@ -636,7 +636,7 @@ class
 
 // Checks that the proper security state is displayed when the passive mixed
 // content warning feature is enabled.
-// TODO(crbug.com/1026464): Once that launch is finished and other tests run
+// TODO(crbug.com/40108287): Once that launch is finished and other tests run
 // with the feature enabled this test and the class will be redundant and can be
 // removed.
 IN_PROC_BROWSER_TEST_F(
@@ -1499,7 +1499,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
       false /* expect_ran_mixed_content */, false /* expect_cert_error */);
 }
 
-// TODO(https://crbug.com/1461939): This test is failing on Mac12 Tests.
+// TODO(crbug.com/40921701): This test is failing on Mac12 Tests.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SecurityLevelIsSecureAfterPrefetch \
   DISABLED_SecurityLevelIsSecureAfterPrefetch

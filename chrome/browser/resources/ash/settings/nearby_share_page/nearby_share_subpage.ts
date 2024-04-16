@@ -321,7 +321,7 @@ export class SettingsNearbyShareSubpageElement extends
 
   private getHighVisibilityToggleText_(inHighVisibility: boolean): TrustedHTML
       |string {
-    // TODO(crbug.com/1154830): Add logic to show how much time the user
+    // TODO(crbug.com/40159645): Add logic to show how much time the user
     // actually has left.
     return inHighVisibility ?
         this.i18n('nearbyShareHighVisibilityOn', 5) :

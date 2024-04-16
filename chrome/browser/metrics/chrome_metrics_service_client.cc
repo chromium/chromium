@@ -416,7 +416,7 @@ bool IsProcessRunning(base::ProcessId pid) {
     return true;
   }
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/967028): Implement along with metrics support.
+  // TODO(crbug.com/40629149): Implement along with metrics support.
   NOTIMPLEMENTED_LOG_ONCE();
 #else
 #error Unsupported OS. Might be okay to just return false.
@@ -502,9 +502,9 @@ class ChromeComponentMetricsProviderDelegate
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug/1295789): Remove this and use ChangeMetricsReportingState() once
-// crash no longer depends on GoogleUpdateSettings and per-user is available
-// outside of Ash.
+// TODO(crbug.com/40214482): Remove this and use ChangeMetricsReportingState()
+// once crash no longer depends on GoogleUpdateSettings and per-user is
+// available outside of Ash.
 void UpdateMetricsServicesForPerUser(bool enabled) {
   // Set the local state pref because a lot of services read directly from this
   // pref to obtain metrics consent.
@@ -513,7 +513,7 @@ void UpdateMetricsServicesForPerUser(bool enabled) {
   // device policy value. The previous user consent will get overwritten by
   // the correct device policy value on startup.
   //
-  // TODO(crbug/1297765): Once a proper API is established and services no
+  // TODO(crbug.com/40822509): Once a proper API is established and services no
   // longer read the pref value directly, this can be removed.
   g_browser_process->local_state()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled, enabled);
@@ -660,7 +660,7 @@ void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
 }
 
 void ChromeMetricsServiceClient::MergeSubprocessHistograms() {
-  // TODO(crbug.com/1293026): Move this to a shared place to not have to
+  // TODO(crbug.com/40213327): Move this to a shared place to not have to
   // duplicate the code across different `MetricsServiceClient`s.
 
   // Synchronously fetch subprocess histograms that live in shared memory.
@@ -844,7 +844,7 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(MakeDemographicMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType::UMA));
 
-  // TODO(crbug.com/1207574): Add metrics registration for WebView, iOS and
+  // TODO(crbug.com/40765618): Add metrics registration for WebView, iOS and
   // WebLayer.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());

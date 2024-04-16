@@ -133,8 +133,8 @@ public class PasswordManagerHelperTest {
 
     @Before
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
-        // TODO(crbug.com/1511244): Parametrize the tests for account and local storage.
-        // TODO(crbug.com/1500670): Parametrise the tests for local and account.
+        // TODO(crbug.com/41483830): Parametrize the tests for account and local storage.
+        // TODO(crbug.com/40940922): Parametrise the tests for local and account.
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);

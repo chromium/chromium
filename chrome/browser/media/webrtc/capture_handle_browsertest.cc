@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), "null");
 }
 
-// TODO(crbug/1248619): Disabled because of flakiness.
+// TODO(crbug.com/40790671): Disabled because of flakiness.
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
                        DISABLED_IncognitoTabCannotReadRegularTabCaptureHandle) {
   TabInfo captured_tab =

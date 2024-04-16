@@ -94,7 +94,7 @@ bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
   // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
   // previously upgraded and we fell back to HTTP so there is no need to
   // observe again.
-  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
+  // TODO(crbug.com/40162528): There are cases where we don't currently upgrade
   // even though we probably should. Make a decision for the ones listed in the
   // bug and potentially identify more.
   bool is_using_https_as_default_scheme =

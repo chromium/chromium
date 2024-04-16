@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoplayPolicy) {
 }
 
 // This test exercises the webview spatial navigation API
-// TODO(https://crbug.com/1520415): Flaky timeouts on Mac and Cros.
+// TODO(crbug.com/41493388): Flaky timeouts on Mac and Cros.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SpatialNavigationJavascriptAPI \
   DISABLED_SpatialNavigationJavascriptAPI
@@ -2689,7 +2689,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, IndexedDBIsolation) {
 // This test ensures that closing app window on 'loadcommit' does not crash.
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
-// TODO(crbug.com/949923): The test is flaky (crash) on ChromeOS debug and ASan/LSan
+// TODO(crbug.com/40621838): The test is flaky (crash) on ChromeOS debug and
+// ASan/LSan
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
@@ -3100,7 +3101,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ScreenCoordinates) {
       << message_;
 }
 
-// TODO(1057340): This test leaks memory.
+// TODO(crbug.com/40677344): This test leaks memory.
 #if defined(LEAK_SANITIZER)
 #define MAYBE_TearDownTest DISABLED_TearDownTest
 #else
@@ -4051,7 +4052,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, UserAgent) {
       << message_;
 }
 
-// TODO(crbug.com/1424459): Test is flaky.
+// TODO(crbug.com/40260430): Test is flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_UserAgent_NewWindow DISABLED_UserAgent_NewWindow
 #else
@@ -4466,7 +4467,7 @@ class WebViewChannelTest
 
 // This test verify that the set of rules registries of a webview will be
 // removed from RulesRegistryService after the webview is gone.
-// TODO(crbug.com/1344573): The test has the same callstack caused by the race
+// TODO(crbug.com/40231831): The test has the same callstack caused by the race
 // with ScopedFeatureList as the issue describes.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone \
@@ -4880,7 +4881,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
   // - It is a "regular" extension API function that goes through the request /
   //   response flow in ExtensionFunctionDispatcher, unlike extension message
   //   APIs.
-  // *TODO(https://crbug.com/1430991): The exact set of APIs and type of
+  // *TODO(crbug.com/40263329): The exact set of APIs and type of
   // context this is is a bit fuzzy. In practice, it's basically the same set
   // as is exposed to content scripts.
   static constexpr char kGetAcceptLanguages[] =
@@ -4972,7 +4973,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
 // Makes sure that a webview will display correctly after reloading it after a
 // crash.
-// TODO(https://crbug.com/1494743): Flaky on Win,Mac,ChromeOS,Linux.
+// TODO(crbug.com/40286295): Flaky on Win,Mac,ChromeOS,Linux.
 IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_ReloadAfterCrash) {
   // Load guest and wait for it to appear.
   LoadAppWithGuest("web_view/simple");
@@ -6660,7 +6661,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
 
 // Checks that content scripts work in an out-of-process iframe in a <webview>
 // tag.
-// TODO(crbug.com/1363124): Fix flakiness on win-rel. The test is also disabled
+// TODO(crbug.com/40864752): Fix flakiness on win-rel. The test is also disabled
 // on mac11-arm64-rel using filter.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentScriptInOOPIF DISABLED_ContentScriptInOOPIF

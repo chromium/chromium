@@ -168,7 +168,7 @@ bool UiElement::IsVisible() const {
   // opacities, but this element did not, it must be invisible.
   DCHECK(update_phase_ >= kUpdatedComputedOpacity ||
          FrameLifecycle::phase() >= kUpdatedComputedOpacity);
-  // TODO(crbug.com/832216): we shouldn't need to check opacity() here.
+  // TODO(crbug.com/41382805): we shouldn't need to check opacity() here.
   return update_phase_ >= kUpdatedComputedOpacity && opacity() > 0.0f &&
          computed_opacity() > 0.0f;
 }
@@ -720,9 +720,9 @@ bool UiElement::UpdateWorldSpaceTransform(bool parent_changed) {
   bool child_changed = false;
   set_update_phase(kUpdatedWorldSpaceTransform);
   for (auto& child : children_) {
-    // TODO(crbug.com/850260): it's unfortunate that we're not passing down the
-    // same dirtiness signal that we return. I.e., we'd ideally use |changed|
-    // here.
+    // TODO(crbug.com/41393128): it's unfortunate that we're not passing down
+    // the same dirtiness signal that we return. I.e., we'd ideally use
+    // |changed| here.
     child_changed |= child->UpdateWorldSpaceTransform(should_update);
   }
 

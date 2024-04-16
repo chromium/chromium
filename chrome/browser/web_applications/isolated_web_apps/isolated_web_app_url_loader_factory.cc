@@ -182,7 +182,7 @@ void LogErrorMessageToConsole(std::optional<int> frame_tree_node_id,
     LOG(ERROR) << error_message;
     return;
   }
-  // TODO(crbug.com/1365850): The console message will vanish from the console
+  // TODO(crbug.com/40239529): The console message will vanish from the console
   // if the user does not have the `Preserve Log` option enabled, since it is
   // triggered before the navigation commits. We should try to use a similar
   // approach as in crrev.com/c/3397976, but `FrameTreeNode` is not part of
@@ -356,7 +356,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       }
     }
 
-    // TODO(crbug.com/990733): For the initial implementation, we allow only
+    // TODO(crbug.com/41474458): For the initial implementation, we allow only
     // net::HTTP_OK, but we should clarify acceptable status code in the spec.
     if (response->head()->response_code != net::HTTP_OK) {
       LogErrorMessageToConsole(

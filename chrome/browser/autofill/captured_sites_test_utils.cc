@@ -660,8 +660,8 @@ bool WebPageReplayServerWrapper::Start(
     return false;
 
   // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/847910): create a process std stream reader class to use the
-  // process output to determine when the server is ready
+  // TODO(crbug.com/40578543): create a process std stream reader class to use
+  // the process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));

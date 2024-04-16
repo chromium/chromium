@@ -51,7 +51,7 @@ class OutputProtectionImpl final
   // Helper function to lazily create the |proxy_| and return it.
   OutputProtectionProxy* GetProxy();
 
-  // TODO(crbug.com/770958): Remove these IDs after OutputProtection PPAPI is
+  // TODO(crbug.com/41347782): Remove these IDs after OutputProtection PPAPI is
   // deprecated.
   const int render_process_id_;
   const int render_frame_id_;

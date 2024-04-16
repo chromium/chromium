@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLServiceBrowserTest, PRE_LoadKeywordData) {
             TemplateURLPrepopulateData::yahoo_fr.keyword);
 }
 
-// TODO(crbug.com/1520740): Fails in Mac builds.
+// TODO(crbug.com/41493716): Fails in Mac builds.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadKeywordData DISABLED_LoadKeywordData
 #else

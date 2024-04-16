@@ -105,7 +105,7 @@
 namespace {
 
 // List of sources for which sign out is always allowed.
-// TODO(crbug.com/1161966): core product logic should not rely on metric
+// TODO(crbug.com/40162614): core product logic should not rely on metric
 // sources/callsites.  Consider removing such logic, potentially as part of
 // introducing a cross-platform SigninManager.
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
@@ -431,7 +431,7 @@ ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,
     const std::optional<signin_metrics::ProfileSignout> signout_source) const {
-  // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
+  // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources| in general
   // and for Lacros main profile.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (!signout_source.has_value()) {

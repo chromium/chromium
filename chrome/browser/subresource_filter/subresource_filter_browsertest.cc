@@ -1028,7 +1028,7 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
 }  // namespace
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1357773): Flaky on Mac.
+// TODO(crbug.com/40236757): Flaky on Mac.
 #define MAYBE_ExpectPerformanceHistogramsAreRecorded \
   DISABLED_ExpectPerformanceHistogramsAreRecorded
 #else

@@ -16,9 +16,9 @@ namespace performance_manager::policies {
 
 namespace {
 
-// TODO(crbug/1489325): oom_score_adj of some processes could be out-of-dated.
-// Override OnIsFocusedChanged to update the oom_score_adj of the focused tab
-// to make it harder to be killed by the Linux oom killer.
+// TODO(crbug.com/40283990): oom_score_adj of some processes could be
+// out-of-dated. Override OnIsFocusedChanged to update the oom_score_adj of the
+// focused tab to make it harder to be killed by the Linux oom killer.
 constexpr base::TimeDelta kOomScoresAssignmentMinimalInterval =
     base::Seconds(10);
 

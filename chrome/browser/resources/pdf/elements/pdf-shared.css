@@ -22,7 +22,7 @@ cr-icon-button:hover {
    ui/webui/resources/cr_elements/shared_vars_css.html. Unfortunately there
    seems to be no great way to share styles with the
    "prefers-color-scheme: dark" @media query selector.
-   TODO(crbug.com/1231199): Remove these overrides when the PDF viewer
+   TODO(crbug.com/40779507): Remove these overrides when the PDF viewer
    supports light and dark modes. */
 cr-action-menu,
 viewer-bookmark {

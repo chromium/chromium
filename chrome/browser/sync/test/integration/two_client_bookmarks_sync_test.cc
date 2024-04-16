@@ -2603,7 +2603,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, ManagedBookmarks) {
   base::Value::List list;
   list.Append(std::move(bookmark));
   policy::PolicyMap policy;
-  // TODO(https://crbug.com/1187001): Migrate PolicyMap::Set() to take a
+  // TODO(crbug.com/40172729): Migrate PolicyMap::Set() to take a
   // base::Value::Dict.
   policy.Set(policy::key::kManagedBookmarks, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

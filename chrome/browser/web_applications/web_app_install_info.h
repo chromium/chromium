@@ -86,7 +86,7 @@ struct IconBitmaps {
 
   bool empty() const;
 
-  // TODO(crbug.com/1152661): Consider using base::flat_map.
+  // TODO(crbug.com/40158740): Consider using base::flat_map.
 
   // Icon bitmaps suitable for any context, keyed by their square size.
   // See https://www.w3.org/TR/appmanifest/#dfn-any-purpose

@@ -745,7 +745,7 @@ void RemoteToLocalSyncer::FinalizeSync(std::unique_ptr<SyncTaskToken> token,
 
 void RemoteToLocalSyncer::Prepare(SyncStatusCallback callback) {
   DCHECK(url_.is_valid());
-  // TODO(https://crbug.com/1152272): convert passed parameters to moved
+  // TODO(crbug.com/40733540): convert passed parameters to moved
   // parameters when this is converted to base::BindOnce.
   remote_change_processor()->PrepareForProcessRemoteChange(
       url_,

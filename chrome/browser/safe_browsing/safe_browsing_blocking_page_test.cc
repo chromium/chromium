@@ -3081,7 +3081,7 @@ class SafeBrowsingBlockingPageIDNTest
   }
 };
 
-// TODO(crbug.com/1039367): VerifyIDNDecoded does not work with committed
+// TODO(crbug.com/40666794): VerifyIDNDecoded does not work with committed
 // interstitials, this test should be re-enabled once it is adapted.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageIDNTest,
                        DISABLED_SafeBrowsingBlockingPageDecodesIDN) {

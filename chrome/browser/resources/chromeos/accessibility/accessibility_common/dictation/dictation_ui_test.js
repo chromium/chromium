@@ -205,7 +205,7 @@ AX_TEST_F(
       });
     });
 
-// TODO(crbug.com/1510428): This test is flaky.
+// TODO(crbug.com/41483025): This test is flaky.
 AX_TEST_F(
     'DictationUIE2ETest', 'DISABLED_HintsTimeoutWithChromeVox',
     async function() {

@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioAndVideoCallCollectingMetricsWithVideoCodec("VP9");
 }
 
-// TODO(crbug.com/1241344): test fails on some mac bots.
+// TODO(crbug.com/40194627): test fails on some mac bots.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
   DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2

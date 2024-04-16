@@ -40,7 +40,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsObserverBrowserTest::web_contents,
             base::Unretained(this))) {
-    // TODO(crbug.com/1239281): Remove this once kPrerender2MainFrameNavigation
+    // TODO(crbug.com/40193792): Remove this once kPrerender2MainFrameNavigation
     // is enabled by default.
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kPrerender2MainFrameNavigation);

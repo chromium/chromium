@@ -216,9 +216,9 @@ class NewTabPageTest : public InProcessBrowserTest,
 
 // TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky on
 // ubsan.
-// TODO(crbug.com/1377330): NewTabPageTest.LandingPagePixelTest is failing on
+// TODO(crbug.com/40874245): NewTabPageTest.LandingPagePixelTest is failing on
 // Win11 Tests x64.
-// TODO(crbug.com/1416880): It's also found flaky on Linux Tests, Linux Tests
+// TODO(crbug.com/40893756): It's also found flaky on Linux Tests, Linux Tests
 // (Wayland), linux-lacros-tester-rel, Mac12 Tests.
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LandingPagePixelTest) {
   WaitForLazyLoad();

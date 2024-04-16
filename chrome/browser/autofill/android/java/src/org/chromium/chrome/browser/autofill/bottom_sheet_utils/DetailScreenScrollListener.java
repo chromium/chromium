@@ -13,7 +13,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Listener for scroll events of the recycler view holding addresses and credit cards.
- * TODO(crbug.com/1425446): Add test coverage for this class.
+ * TODO(crbug.com/40260900): Add test coverage for this class.
  */
 public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
     private final BottomSheetController mBottomSheetController;

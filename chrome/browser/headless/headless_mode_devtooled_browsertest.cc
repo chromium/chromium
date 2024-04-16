@@ -33,7 +33,7 @@ void HeadlessModeDevTooledBrowserTest::RunTest() {
 
   devtools_client_.AttachToWebContents(web_contents_.get());
 
-  // TODO(crbug.com/1408835): Figure about a better way to cope with racing.
+  // TODO(crbug.com/40253715): Figure about a better way to cope with racing.
   GURL url("about:blank");
   content::NavigationController::LoadURLParams params(url);
   web_contents_->GetController().LoadURLWithParams(params);

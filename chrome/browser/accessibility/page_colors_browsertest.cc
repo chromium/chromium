@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserTest, PageColorsPrefChange) {
   EXPECT_EQ(page_colors_state, ui::NativeTheme::PageColors::kDusk);
 }
 
-// TODO(crbug.com/1231644): This test is failing on ChromeOS - appears to be a
+// TODO(crbug.com/40779801): This test is failing on ChromeOS - appears to be a
 // result of MultiDeviceSetupClientHolder leading to multiple Prefs getting
 // created. May need to look into TestingProfile.
 #if BUILDFLAG(IS_CHROMEOS)

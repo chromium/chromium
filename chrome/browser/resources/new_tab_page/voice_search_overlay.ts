@@ -165,7 +165,7 @@ function getErrorTimeout(error: Error): number {
   }
 }
 
-// TODO(crbug.com/570968): Remove when bug is fixed.
+// TODO(crbug.com/40449919): Remove when bug is fixed.
 declare global {
   interface Window {
     webkitSpeechRecognition: typeof SpeechRecognition;

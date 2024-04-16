@@ -1188,7 +1188,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
                                       GetParam().is_successful_migration, 1);
 }
 
-// TODO(crbug.com/1306001): Add cases for rolling migration and non-syncing
+// TODO(crbug.com/40827496): Add cases for rolling migration and non-syncing
 // users or clean up.
 INSTANTIATE_TEST_SUITE_P(
     BuiltInBackendToAndroidBackendMigratorTest,

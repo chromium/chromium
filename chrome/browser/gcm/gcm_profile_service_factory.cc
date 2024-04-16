@@ -161,7 +161,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       content::GetIOThreadTaskRunner({}), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // TODO(crbug.com/1424920): Removing image fetcher references here breaks
+  // TODO(crbug.com/40260641): Removing image fetcher references here breaks
   // tests: org.chromium.chrome.browser.ImageFetcherIntegrationTest Users of
   // image fetcher may be depending on this service to initialize the image
   // fetcher factory. [FATAL:scoped_refptr.h(291)] Check failed: ptr_.

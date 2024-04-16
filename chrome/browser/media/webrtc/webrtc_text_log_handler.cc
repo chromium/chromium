@@ -324,7 +324,7 @@ void WebRtcTextLogHandler::ReleaseLog(
 
   // Checking log_buffer_ here due to seeing some crashes out in the wild.
   // See crbug/699960 for more details.
-  // TODO(crbug/807547): Remove if condition.
+  // TODO(crbug.com/41368009): Remove if condition.
   if (log_buffer_) {
     log_buffer_->SetComplete();
     *log_buffer = std::move(log_buffer_);

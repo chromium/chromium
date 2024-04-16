@@ -51,8 +51,8 @@ namespace shell_integration {
 
 namespace {
 
-// TODO(crbug.com/773563): Remove |g_sequenced_task_runner| and use an instance
-// field / singleton instead.
+// TODO(crbug.com/40544199): Remove |g_sequenced_task_runner| and use an
+// instance field / singleton instead.
 #if BUILDFLAG(IS_WIN)
 base::LazyThreadPoolCOMSTATaskRunner g_sequenced_task_runner =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(

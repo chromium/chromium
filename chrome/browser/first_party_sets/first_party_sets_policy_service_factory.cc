@@ -57,7 +57,7 @@ FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  // TODO(https://crbug.com/1464637): explicitly declare a dependency on
+  // TODO(crbug.com/40275685): explicitly declare a dependency on
   // HostContentSettingsMapFactory.
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }

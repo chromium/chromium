@@ -273,7 +273,7 @@ struct AuthenticatorRequestDialogModel {
 
     kPreSelectAccount,
 
-    // TODO(crbug.com/1490293): Merge with kSelectPriorityMechanism.
+    // TODO(crbug.com/40284700): Merge with kSelectPriorityMechanism.
     kPreSelectSingleAccount,
 
     // kSelectPriorityMechanism lets the user confirm a single "priority"

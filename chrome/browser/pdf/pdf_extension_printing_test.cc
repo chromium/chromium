@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
   menu_interceptor.Wait();
 }
 
-// TODO(crbug.com/1330032): Fix flakiness.
+// TODO(crbug.com/40842943): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
   content::RenderFrameHost* extension_host =

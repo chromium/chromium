@@ -319,7 +319,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // device. This is heuristically determined by two things: |sink| has been
   // discovered via DIAL exclusively, and we failed to open a cast channel to
   // |sink| a number of times past a pre-determined threshold.
-  // TODO(crbug.com/774233): This is a temporary and not a definitive way to
+  // TODO(crbug.com/41349540): This is a temporary and not a definitive way to
   // tell if a device is a Cast/non-Cast device. We need to collect some metrics
   // for the device description URL advertised by Cast devices to determine the
   // long term solution for restricting dual discovery.

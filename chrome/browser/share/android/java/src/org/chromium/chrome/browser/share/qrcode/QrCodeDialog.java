@@ -31,7 +31,7 @@ public class QrCodeDialog extends DialogFragment {
     public static String URL_KEY = "url_key";
 
     private WindowAndroid mWindowAndroid;
-    // TODO(crbug/1477441): Remove list of Tabs.
+    // TODO(crbug.com/40280300): Remove list of Tabs.
     protected ArrayList<QrCodeDialogTab> mTabs;
     private TabLayoutPageListener mTabLayoutPageListener;
 

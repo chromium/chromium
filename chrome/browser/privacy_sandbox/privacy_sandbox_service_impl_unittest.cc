@@ -2477,7 +2477,7 @@ TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxAdMeasurementPolicy) {
                          {kIsAttributionReportingAllowed, false}});
 }
 
-// TODO(crbug.com/1428506): consider parameterizing other tests for the various
+// TODO(crbug.com/40262246): consider parameterizing other tests for the various
 // feature flags, particularly `kPrivacySandboxSettings4RestrictedNotice`.
 class PrivacySandboxServiceM1RestrictedNoticePromptTest
     : public PrivacySandboxServiceM1PromptTest {

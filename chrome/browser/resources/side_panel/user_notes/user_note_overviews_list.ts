@@ -96,7 +96,7 @@ export class UserNoteOverviewsListElement extends PolymerElement {
       event: CustomEvent<{overview: NoteOverview, event: MouseEvent}>) {
     event.preventDefault();
     event.stopPropagation();
-    // TODO(crbug.com/1409894): Implement this.
+    // TODO(crbug.com/40889379): Implement this.
   }
 }
 

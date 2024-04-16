@@ -76,7 +76,7 @@ public class BrandingController {
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
 
-        // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
+        // TODO(crbug.com/40234239): Start branding checker during CCT warm up.
         mBrandingChecker =
                 new BrandingChecker(
                         appId,

@@ -475,7 +475,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
   // |icon_scale_for_compressed_response_| to apps::EncodeImageToPngBytes(). In
   // most cases AppIconLoader always uses the 1.0 intended icon scale
   // factor as an intermediate representation to be compressed and returned.
-  // TODO(crbug.com/1112737): Investigate how to unify it and set
+  // TODO(crbug.com/40709882): Investigate how to unify it and set
   // |icon_scale_for_compressed_response_| value in AppIconLoader()
   // constructor.
   icon_scale_for_compressed_response_ = icon_scale_;

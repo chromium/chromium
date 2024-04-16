@@ -18,7 +18,7 @@ namespace web_app {
 
 struct DailyInteraction {
   // Required.
-  // TODO(crbug.com/1442799): Use manifest_identity_url here instead of
+  // TODO(crbug.com/40267110): Use manifest_identity_url here instead of
   // start_url.
   GURL start_url;
   // Implied bool used = true;

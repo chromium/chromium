@@ -466,7 +466,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return element;
   }
 
-  // TODO(crbug.com/1442693): Potentially hide links during distillation.
+  // TODO(crbug.com/40910704): Potentially hide links during distillation.
   private shouldShowLinks(): boolean {
     // Links should only show when Read Aloud is paused.
     return chrome.readingMode.linksEnabled && this.speechPlayingState.paused;

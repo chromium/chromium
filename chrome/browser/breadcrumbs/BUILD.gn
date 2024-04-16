@@ -39,7 +39,7 @@ source_set("unit_tests") {
   sources = [ "breadcrumb_manager_tab_helper_unittest.cc" ]
 
   # Chrome on Fuchsia uses the system crash handler.
-  # TODO(crbug.com/1186718): Enable when the implementation is capable of
+  # TODO(crbug.com/40172607): Enable when the implementation is capable of
   # including CrashKeys in reports.
   if (!is_fuchsia) {
     sources += [ "crash_reporter_breadcrumb_observer_unittest.cc" ]

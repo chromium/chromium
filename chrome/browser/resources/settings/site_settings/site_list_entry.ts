@@ -214,7 +214,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     let description = '';
 
     // If a description has been set by the handler, have it override others.
-    // TODO(crbug.com/1467504): Move all possible descriptions in to this
+    // TODO(crbug.com/40276807): Move all possible descriptions in to this
     // field C++ side so this function can be greatly simplified.
     if (this.model.description) {
       description = this.model.description;

@@ -30,8 +30,8 @@ import org.chromium.url.GURL;
 
 /**
  * Represent the sad tab displayed in place of a crashed renderer. Instantiated on the first
- * |show()| request from a Tab, and destroyed together with it.
- * TODO(crbug.com/1161348): Consider moving this to its own target.
+ * |show()| request from a Tab, and destroyed together with it. TODO(crbug.com/40162422): Consider
+ * moving this to its own target.
  */
 public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;

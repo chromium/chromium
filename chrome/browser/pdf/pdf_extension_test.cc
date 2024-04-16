@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest, DirectNavigationToPDF) {
   ValidateSingleSuccessfulDownloadAndNoPDFPluginLaunch();
 }
 
-// TODO(crbug.com/1201401): fix flakiness and reenable. Also, that test
+// TODO(crbug.com/40762344): fix flakiness and reenable. Also, that test
 // became flaky on Windows, see crbug.com/1323701.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1465295): Deflake and reenable the test.
+// TODO(crbug.com/40923384): Deflake and reenable the test.
 #define MAYBE_IframePdfPlaceholderWithCSP DISABLED_IframePdfPlaceholderWithCSP
 #else
 #define MAYBE_IframePdfPlaceholderWithCSP IframePdfPlaceholderWithCSP
@@ -1400,7 +1400,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
   EXPECT_EQ(base::UTF16ToUTF8(view->GetSelectedText()), kExpectedText);
 }
 
-// TODO(crbug.com/1253714): Add tests for using space and shift+space shortcuts
+// TODO(crbug.com/40793934): Add tests for using space and shift+space shortcuts
 // for scrolling PDFs.
 
 // Test that even if a different tab is selected when a navigation occurs,
@@ -2162,7 +2162,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   WaitForSavedPdf(save_path);
 }
 
-// TODO(crbug.com/1269103): Make this test non-flaky.
+// TODO(crbug.com/40803991): Make this test non-flaky.
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
                        DISABLED_SaveWithPolicyUniqueTimeSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2261,8 +2261,8 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
   bool clipboard_changed_ = false;
 };
 
-// TODO(crbug.com/1121446): Fix flakiness.
-// TODO(crbug.com/1520715): Fix flakiness.
+// TODO(crbug.com/40715498): Fix flakiness.
+// TODO(crbug.com/41493691): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftRightArrowPresses) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
@@ -2286,7 +2286,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
-// TODO(crbug.com/897801): test is flaky.
+// TODO(crbug.com/40599189): test is flaky.
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
                        DISABLED_IndividualShiftLeftArrowPresses) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
@@ -3471,7 +3471,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
   EXPECT_EQ(pdf_url, stream->original_url());
 }
 
-// TODO(crbug.com/1522192): Add a test for reloading the same URL with a new
+// TODO(crbug.com/41495156): Add a test for reloading the same URL with a new
 // Content-Security-Policy: sandbox header.
 
 // Test that navigating to a different PDF successfully loads the PDF.

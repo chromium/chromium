@@ -123,7 +123,7 @@ TEST_F(FileUtilsTest, GetFileSystemUrls) {
   url_list = GetFileSystemUrls(GetProfile(), fp_list);
   // Given a list of absolute file paths, return a list of filesystem:// URLs
   // that use the kFileSystemTypeExternal type with Files Manager's origin.
-  // TODO(crbug/1203961): The use of Files Manager origin in these URLs is
+  // TODO(crbug.com/40763788): The use of Files Manager origin in these URLs is
   // probably incorrect and should be revisited.
   EXPECT_THAT(
       url_list,

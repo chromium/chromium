@@ -92,7 +92,7 @@ void StartupData::RecordCoreSystemProfile() {
   delegating_provider.ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks(), &system_profile);
 
-  // TODO(crbug.com/965482): Records information from other providers.
+  // TODO(crbug.com/40628379): Records information from other providers.
   metrics::GlobalPersistentSystemProfile::GetInstance()->SetSystemProfile(
       system_profile, /* complete */ false);
 }

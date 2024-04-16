@@ -48,7 +48,7 @@ class SensitivityPersistedTabDataAndroid
  private:
   friend class TabAndroidUserData<SensitivityPersistedTabDataAndroid>;
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
-  // TODO(crbug.com/1457995) Consider making is_sensitive_ absl::option<bool>
+  // TODO(crbug.com/40273829) Consider making is_sensitive_ absl::option<bool>
   bool is_sensitive_ = false;
   raw_ptr<TabAndroid> tab_;
 

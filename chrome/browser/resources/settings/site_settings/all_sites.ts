@@ -97,7 +97,7 @@ export class AllSitesElement extends AllSitesElementBase {
 
   static get properties() {
     return {
-      // TODO(https://crbug.com/1037809): Refactor siteGroupMap to use an Object
+      // TODO(crbug.com/40112954): Refactor siteGroupMap to use an Object
       // instead of a Map so that it's observable by Polymer more naturally. As
       // it stands, one cannot use computed properties based off the value of
       // siteGroupMap nor can one use observable functions to listen to changes

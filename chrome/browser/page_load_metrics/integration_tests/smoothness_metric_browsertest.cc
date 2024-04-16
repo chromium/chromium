@@ -36,7 +36,7 @@ bool ExtractUKMSmoothnessMetric(const ukm::TestUkmRecorder& ukm_recorder,
 
 }  // namespace
 
-// TODO(crbug.com/1489113): Re-enable this test
+// TODO(crbug.com/40934889): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_BasicSmoothnessAverage DISABLED_BasicSmoothnessAverage
 #else

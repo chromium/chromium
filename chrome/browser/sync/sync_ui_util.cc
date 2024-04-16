@@ -99,7 +99,7 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
   // Check if Sync is disabled by policy.
   if (service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // TODO(crbug.com/911153): Is SyncStatusMessageType::kSynced correct for
+    // TODO(crbug.com/41429548): Is SyncStatusMessageType::kSynced correct for
     // this case?
     return {SyncStatusMessageType::kSynced,
             IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,

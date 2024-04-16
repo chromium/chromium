@@ -110,7 +110,7 @@ void StartSmartSelectionActionMenu::InitMenu(
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1275075): Take metrics in Lacros as well.
+  // TODO(crbug.com/40808069): Take metrics in Lacros as well.
   base::RecordAction(base::UserMetricsAction("Arc.SmartTextSelection.Request"));
 #endif
 

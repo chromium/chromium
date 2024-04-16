@@ -104,7 +104,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
   }
   origin_ = url::Origin::Create(gurl);
 
-  // TODO(crbug/1295875): Optimise the computation of the following loop.
+  // TODO(crbug.com/40214522): Optimise the computation of the following loop.
   for (const auto& quota_info : quota_storage_info_list) {
     if (origin_ == quota_info.storage_key.origin()) {
       size_.data_size_in_bytes +=

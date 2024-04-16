@@ -528,7 +528,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
 
-// TODO(https://crbug.com/1137759): Flaky test.
+// TODO(crbug.com/40724963): Flaky test.
 TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   base::HistogramTester histograms;
 

@@ -101,7 +101,7 @@ class DragSession {
   }
 
   finish() {
-    // TODO(crbug/1444154): Ensure it is possible to drag bookmarks into an
+    // TODO(crbug.com/40267573): Ensure it is possible to drag bookmarks into an
     // empty active folder.
     if (!this.lastDropTargetBookmark_) {
       return;

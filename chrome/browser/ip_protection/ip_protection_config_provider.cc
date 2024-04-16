@@ -36,7 +36,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
 namespace {
-// TODO(https://crbug.com/1299886): Once `google_apis::GetAPIKey()` handles this
+// TODO(crbug.com/40216037): Once `google_apis::GetAPIKey()` handles this
 // logic we can remove this helper.
 std::string GetAPIKey() {
   return chrome::GetChannel() == version_info::Channel::STABLE
@@ -553,7 +553,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
   // We can't do much about the first case, but for the others we could track
   // the backoff time here and not request tokens again until afterward.
   //
-  // TODO(https://crbug.com/1476891): Track the backoff time in the browser
+  // TODO(crbug.com/40280126): Track the backoff time in the browser
   // process and don't make new requests if we are in a backoff period.
   if (exponential) {
     if (last_try_get_auth_tokens_backoff_ &&

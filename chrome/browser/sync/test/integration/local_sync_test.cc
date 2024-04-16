@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // If this test fails after adding a new data type, carefully consider whether
   // the type should be enabled in Local Sync mode, i.e. for roaming profiles on
   // Windows.
-  // TODO(crbug.com/1109640): Consider whether all of these types should really
+  // TODO(crbug.com/40708107): Consider whether all of these types should really
   // be enabled in Local Sync mode.
   syncer::ModelTypeSet expected_active_data_types = {
       syncer::BOOKMARKS,

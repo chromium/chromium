@@ -466,7 +466,7 @@ class MetricsServiceBrowserNoUploadTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1378228): Fix flakiness.
+// TODO(crbug.com/40874891): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest,
                        DISABLED_FilesRemoved) {
   // SetUp() has removed consent and made metrics "sampled-in" (enabled).
@@ -495,7 +495,7 @@ class MetricsServiceBrowserSampledOutTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1380375): Flaky on Mac and ChromeOS, fix flakiness and
+// TODO(crbug.com/40876239): Flaky on Mac and ChromeOS, fix flakiness and
 // re-enable the test.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FilesRemoved DISABLED_FilesRemoved

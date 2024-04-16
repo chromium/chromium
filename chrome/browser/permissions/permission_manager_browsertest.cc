@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
           "/permissions/permissions_service_worker.html")));
   run_loop.Run();
 
-  // TODO(crbug.com/889276) : We are relying here on the test shuts down to
+  // TODO(crbug.com/40092556) : We are relying here on the test shuts down to
   // close the browser. We need to make the test more robust by closing the
   // browser explicitly.
 }

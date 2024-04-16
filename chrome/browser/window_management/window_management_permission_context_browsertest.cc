@@ -201,8 +201,8 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPermissionContextTest, GestureToPrompt) {
   EXPECT_FALSE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
 }
 
-// TODO(crbug.com/1290805): Test failing on linux-chromeos-chrome.
-// TODO(crbug.com/1290660): Test failing on linux.
+// TODO(crbug.com/40212482): Test failing on linux-chromeos-chrome.
+// TODO(crbug.com/40212443): Test failing on linux.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DismissAndDeny DISABLED_DismissAndDeny
 #else

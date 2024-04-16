@@ -428,7 +428,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
 
     // In-progress but dangerous downloads are considered complete.
-    // TODO(crbug.com/1433102): Don't duplicate this logic.
+    // TODO(crbug.com/40264271): Don't duplicate this logic.
     bool in_progress_dangerous =
         (state == DownloadState::IN_PROGRESS &&
          danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);

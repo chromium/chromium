@@ -29,7 +29,7 @@
 
 namespace {
 
-// TODO(crbug.com/1453285): Add unit tests for these GoogleUpdate policies.
+// TODO(crbug.com/40271852): Add unit tests for these GoogleUpdate policies.
 constexpr char kAutoUpdateCheckPeriodMinutes[] = "AutoUpdateCheckPeriodMinutes";
 constexpr char kDownloadPreference[] = "DownloadPreference";
 constexpr char kForceInstallApps[] = "ForceInstallApps";
@@ -215,7 +215,7 @@ base::Value GetGoogleUpdatePolicyNames() {
 }
 
 policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
-  // TODO(crbug/1133309): Use actual schemas.
+  // TODO(crbug.com/40722467): Use actual schemas.
   return policy::PolicyConversions::PolicyToSchemaMap{{
       {kAutoUpdateCheckPeriodMinutes, policy::Schema()},
       {kDownloadPreference, policy::Schema()},

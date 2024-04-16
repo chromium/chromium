@@ -63,7 +63,7 @@ std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
   // Do not call default production StartImpl if in TestingProfile.
   provider->SetStartSystemOnStart(false);
 
-  // TODO(crbug.com/973324): Consider calling `CreateFakeSubsystems` in the
+  // TODO(crbug.com/41464466): Consider calling `CreateFakeSubsystems` in the
   // constructor instead.
   provider->CreateFakeSubsystems();
   provider->ConnectSubsystems();

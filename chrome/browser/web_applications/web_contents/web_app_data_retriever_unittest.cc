@@ -112,7 +112,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     // tracks the old RenderFrame where the navigation started in). So we
     // should disable same-site proactive BrowsingInstance for the main frame.
     // Note: this will not disable RenderDocument.
-    // TODO(crbug.com/936696): Make WebAppDataRetriever support a change of
+    // TODO(crbug.com/40615943): Make WebAppDataRetriever support a change of
     // RenderFrames.
     content::DisableProactiveBrowsingInstanceSwapFor(
         web_contents()->GetPrimaryMainFrame());

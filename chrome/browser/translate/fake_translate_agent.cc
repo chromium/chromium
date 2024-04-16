@@ -40,7 +40,7 @@ FakeTranslateAgent::FakeTranslateAgent()
 
 FakeTranslateAgent::~FakeTranslateAgent() = default;
 
-// TODO(crbug.com/1064974) Remove with subframe translation launch.
+// TODO(crbug.com/40123934) Remove with subframe translation launch.
 mojo::PendingRemote<translate::mojom::TranslateAgent>
 FakeTranslateAgent::BindToNewPageRemote() {
   receiver_.reset();

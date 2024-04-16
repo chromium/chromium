@@ -70,7 +70,7 @@
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
+// TODO(crbug.com/40567307)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.
 #error "ChromeOS not supported here yet"
 #endif
@@ -628,9 +628,9 @@ class SystemAccessProcessPrintBrowserTestBase
       } else {
         disabled_features.push_back(features::kUseXpsForPrinting);
       }
-      // TODO(crbug.com/1034053):  Support `kUseXpsForPrintingFromPdf`.
+      // TODO(crbug.com/40111626):  Support `kUseXpsForPrintingFromPdf`.
       disabled_features.push_back(features::kUseXpsForPrintingFromPdf);
-      // TODO(crbug.com/1291257):  Support `kReadPrinterCapabilitiesWithXps`.
+      // TODO(crbug.com/40212677):  Support `kReadPrinterCapabilitiesWithXps`.
       disabled_features.push_back(features::kReadPrinterCapabilitiesWithXps);
 #endif  // BUILDFLAG(IS_WIN)
     } else {
@@ -877,7 +877,7 @@ class SystemAccessProcessPrintBrowserTestBase
                        .shadowRoot.querySelector('.action-button');
       button.click();)";
     auto result = content::ExecJs(preview_dialog, kScript);
-    // TODO(crbug.com/1472464):  Update once it is known if the assertion
+    // TODO(crbug.com/40926610):  Update once it is known if the assertion
     // should not happen if the failure is just because the renderer
     // terminated.
     // If the renderer terminates, it will return a failing result.  It has
@@ -2372,7 +2372,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 0);
 }
 
-// TODO(crbug.com/1501950):  Enable test for Linux and macOS once renderer
+// TODO(crbug.com/40942272):  Enable test for Linux and macOS once renderer
 // RunLoop behavior can be made to work with test expectations.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        SystemPrintAfterSystemPrintFromPrintPreview) {

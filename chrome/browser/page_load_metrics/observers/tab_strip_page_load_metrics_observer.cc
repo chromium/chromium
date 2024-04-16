@@ -30,7 +30,7 @@ const char kTabsPageLoadTimeSinceCreated[] = "Tabs.PageLoad.TimeSinceCreated2";
 
 namespace {
 
-// TODO(crbug/1450633): Create an iterator abstraction that could be reused
+// TODO(crbug.com/40915391): Create an iterator abstraction that could be reused
 // in other places we need to iterate across tabs for both Android and desktop.
 std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
   std::vector<std::vector<content::WebContents*>> all_web_contents = {};

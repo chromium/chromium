@@ -26,7 +26,7 @@ base::FilePath ImageEditorComponentInfo::GetInstalledPath() const {
 bool ImageEditorComponentInfo::IsImageEditorAvailable() const {
   // Currently this feature is available unconditionally if the component is
   // installed.
-  // TODO(crbug.com/1317444): Differentiate on multiple features.
+  // TODO(crbug.com/40222495): Differentiate on multiple features.
   return !installed_path_.empty();
 }
 

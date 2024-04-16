@@ -60,7 +60,7 @@ class MemorySaverModeDelegateImpl
                   memory_saver_mode_policy->OnMemorySaverModeChanged(false);
                   return;
                 case MemorySaverModeState::kEnabled:
-                  // TODO(crbug.com/1492508): This setting should enable the
+                  // TODO(crbug.com/40936185): This setting should enable the
                   // non-timer Memory Saver policy.
                   memory_saver_mode_policy->OnMemorySaverModeChanged(false);
                   return;

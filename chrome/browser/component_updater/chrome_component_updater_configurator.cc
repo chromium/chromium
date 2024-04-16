@@ -303,7 +303,7 @@ std::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
                 : std::nullopt;
 }
 
-// TODO(crbug/1496582): Consolidate the cache path getters.
+// TODO(crbug.com/40286829): Consolidate the cache path getters.
 std::optional<base::FilePath> ChromeConfigurator::GetBackgroundDownloaderCache()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

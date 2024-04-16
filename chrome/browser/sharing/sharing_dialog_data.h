@@ -26,7 +26,7 @@ struct VectorIcon;
 // All data required to display a SharingDialog.
 struct SharingDialogData {
  public:
-  // TODO(crbug.com/1013099): Merge both images using alpha blending so they
+  // TODO(crbug.com/40102679): Merge both images using alpha blending so they
   // work on any background color.
   struct HeaderIcons {
     HeaderIcons(const gfx::VectorIcon* light, const gfx::VectorIcon* dark);

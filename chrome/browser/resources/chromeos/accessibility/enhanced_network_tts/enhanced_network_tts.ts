@@ -293,7 +293,7 @@ export class EnhancedNetworkTts {
       sendTtsAudio: (audioBuffer: chrome.ttsEngine.AudioBuffer) => void,
       lastData: boolean): void {
     if (!audioData) {
-      // TODO(crbug.com/1231318): Provide more appropriate error handling.
+      // TODO(crbug.com/40779585): Provide more appropriate error handling.
       return;
     }
 

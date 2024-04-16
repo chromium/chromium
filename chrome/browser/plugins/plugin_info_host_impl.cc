@@ -221,7 +221,7 @@ void PluginInfoHostImpl::PluginsLoaded(
   if (context_.FindEnabledPlugin(params.url, params.mime_type, &output->status,
                                  &output->plugin, &output->actual_mime_type,
                                  &plugin_metadata)) {
-    // TODO(crbug.com/1167278): Simplify this once PDF is the only "plugin."
+    // TODO(crbug.com/40164563): Simplify this once PDF is the only "plugin."
     context_.DecidePluginStatus(params.url, params.main_frame_origin,
                                 output->plugin,
                                 plugin_metadata->security_status(),

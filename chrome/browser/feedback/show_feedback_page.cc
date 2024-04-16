@@ -237,7 +237,7 @@ void RequestFeedbackFlow(const GURL& page_url,
     if (!chromeos::IsKioskSession() ||
         base::FeatureList::IsEnabled(
             ash::features::kKioskEnableSystemWebApps)) {
-      // TODO(crbug.com/1407646): Include autofill metadata into CrOS new
+      // TODO(crbug.com/40253237): Include autofill metadata into CrOS new
       // feedback tool.
       ash::SystemAppLaunchParams params;
       params.url = BuildFeedbackUrl(

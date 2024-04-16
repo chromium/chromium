@@ -370,7 +370,7 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   static std::unique_ptr<KeyedService> BuildTestOfflinePageModel(
       SimpleFactoryKey* key);
 
-  // TODO(https://crbug.com/809610): The static members below will be removed
+  // TODO(crbug.com/40561648): The static members below will be removed
   // once the reference to BuildTestOfflinePageModel in SetUp is converted to a
   // base::OnceCallback.
   static base::FilePath private_archives_dir_;

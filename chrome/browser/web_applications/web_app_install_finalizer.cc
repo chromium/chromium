@@ -240,7 +240,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     const FinalizeOptions& options,
     InstallFinalizedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1084939): Implement a before-start queue in
+  // TODO(crbug.com/40693380): Implement a before-start queue in
   // WebAppInstallManager and replace this runtime error in
   // WebAppInstallFinalizer with DCHECK(started_).
   if (!started_) {
@@ -499,8 +499,9 @@ void WebAppInstallFinalizer::Start() {
 
 void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
-  // TODO(crbug/1279315): Turn WebAppInstallFinalizer into a command so it can
-  // properly call callbacks on shutdown instead of dropping them on shutdown.
+  // TODO(crbug.com/40810770): Turn WebAppInstallFinalizer into a command so it
+  // can properly call callbacks on shutdown instead of dropping them on
+  // shutdown.
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -765,7 +766,7 @@ FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
     return FileHandlerUpdateAction::kNoUpdate;
   }
 
-  // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
+  // TODO(crbug.com/40176713): Consider trying to re-use the comparison
   // results from the ManifestUpdateDataFetchCommand.
   const apps::FileHandlers* old_handlers =
       provider_->registrar_unsafe().GetAppFileHandlers(app_id);

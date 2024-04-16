@@ -435,7 +435,8 @@ public class MainActivity extends AppCompatActivity
                 editor.apply();
             }
         } else {
-            // TODO(1369795) Refactor the way ordering is stored so it's not mixed with URLs
+            // TODO(crbug.com/40240792) Refactor the way ordering is stored so it's not mixed with
+            // URLs
             savedUrlSet = new HashSet<String>();
             if (!TextUtils.isEmpty(url)) {
                 savedUrlSet.add("1" + url);

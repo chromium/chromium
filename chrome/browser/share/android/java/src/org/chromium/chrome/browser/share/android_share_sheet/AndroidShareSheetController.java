@@ -175,7 +175,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             }
         }
 
-        // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
+        // TODO(crbug.com/40063413): Maybe fallback to Chrome's share sheet properly.
         if (provider == null) {
             Log.i(TAG, "No custom actions provided.");
         }

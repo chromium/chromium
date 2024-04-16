@@ -187,7 +187,7 @@ FormData CreateFormForRenderHost(content::RenderFrameHost& rfh,
   return form;
 }
 
-// TODO(crbug.com/474577): Get rid of the mocked client in the client's own
+// TODO(crbug.com/40412780): Get rid of the mocked client in the client's own
 // test.
 class MockChromePasswordManagerClient : public ChromePasswordManagerClient {
  public:

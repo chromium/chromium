@@ -264,7 +264,7 @@ void TabManager::OnMemoryPressure(
   if (g_browser_process->IsShuttingDown())
     return;
 
-  // TODO(crbug.com/762775): Pause or resume background tab opening based on
+  // TODO(crbug.com/40538873): Pause or resume background tab opening based on
   // memory pressure signal after it becomes more reliable.
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:

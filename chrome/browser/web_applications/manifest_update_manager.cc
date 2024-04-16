@@ -78,7 +78,7 @@ ManifestUpdateManager::ScopedBypassWindowCloseWaitingForTesting::
   BypassWindowCloseWaitingForTesting() = false;  // IN-TEST
 }
 
-// TODO(crbug.com/1453661): Also handle DidFinishNavigation() and
+// TODO(crbug.com/40272003): Also handle DidFinishNavigation() and
 // do not start the ManifestUpdateCheckCommand if different origin
 // navigation happens.
 class ManifestUpdateManager::PreUpdateWebContentsObserver
@@ -99,7 +99,7 @@ class ManifestUpdateManager::PreUpdateWebContentsObserver
   }
 
   // content::WebContentsObserver:
-  // TODO(crbug.com/1376155): Investigate what other functions can be observed
+  // TODO(crbug.com/40873503): Investigate what other functions can be observed
   //  so that for WebAppIntegrationTestDriver::CloseCustomToolbar(), the same
   //  observer can be used.
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,

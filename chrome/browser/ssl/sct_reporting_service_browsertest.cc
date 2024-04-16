@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 }
 
 // Tests that disabling Extended Reporting causes the cache to be cleared.
-// TODO(crbug.com/1179504): Reenable. Flakes heavily on all platforms.
+// TODO(crbug.com/40749747): Reenable. Flakes heavily on all platforms.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
                        DISABLED_OptingOutClearsSCTAuditingCache) {
   // Enable SCT auditing and enqueue a report.
@@ -1097,8 +1097,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // dir path has an additional "Network" subdirectory in it. This means that
   // different platforms will have different persistence paths depending on the
   // current state of the network service sandbox rollout.
-  // TODO(crbug.com/715679): Simplify this once the paths are consistent (i.e.,
-  // after the network service sandbox is fully rolled out.)
+  // TODO(crbug.com/41315406): Simplify this once the paths are consistent
+  // (i.e., after the network service sandbox is fully rolled out.)
   base::FilePath persistence_path2 =
       persistence_path1.Append(chrome::kNetworkDataDirname);
   persistence_path1 =

@@ -190,7 +190,7 @@ apps::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
             apps::PatternMatchType::kPrefix);
       }
       break;
-    // TODO(crbug.com/1463908): support the new pattern types.
+    // TODO(crbug.com/40275407): support the new pattern types.
     case arc::mojom::PatternType::PATTERN_ADVANCED_GLOB:
     case arc::mojom::PatternType::PATTERN_SUFFIX:
     case arc::mojom::PatternType::kUnknown:

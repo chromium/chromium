@@ -463,7 +463,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
 
-  // TODO(https://crbug.com/1468301): We can do a better job than basing this
+  // TODO(crbug.com/40277066): We can do a better job than basing this
   // purely on `web_app_hint_url`, for example for non-persistent notifications
   // triggered from workers (where `web_app_hint_url` is always blank) but also
   // for persistent notifications triggered from web pages (where the page url

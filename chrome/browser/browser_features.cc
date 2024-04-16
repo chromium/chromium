@@ -212,7 +212,7 @@ const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
 
 #if BUILDFLAG(IS_WIN)
 // Enables locking the cookie database for profiles.
-// TODO(crbug.com/1430226): Remove after fully launched.
+// TODO(crbug.com/40901624): Remove after fully launched.
 BASE_FEATURE(kLockProfileCookieDatabase,
              "LockProfileCookieDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -396,7 +396,7 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
 //  there). This flag is introduced as means of disabling this feature in case
 //  of possible future regressions.
 //
-// TODO(crbug.com/1251999): Remove this flag once we confirm that blue border
+// TODO(crbug.com/40198577): Remove this flag once we confirm that blue border
 // works fine on ChromeOS.
 //
 // b/279051234: We suspect the tab sharing blue border may cause a bad issue

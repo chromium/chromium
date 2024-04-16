@@ -362,7 +362,7 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   EXPECT_FALSE(manager_->ArePoliciesRequired());
 }
 
-// TODO(crbug.com/1312544): Extend the test coverage by merging tests from
+// TODO(crbug.com/40831734): Extend the test coverage by merging tests from
 // ios/chrome/browser/policy/cloud/user_policy_signin_service_unittest.mm here.
 
 #if !BUILDFLAG(IS_ANDROID)

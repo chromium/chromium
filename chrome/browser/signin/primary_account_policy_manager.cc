@@ -263,16 +263,16 @@ void PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile(
                          weak_pointer_factory_.GetWeakPtr(), profile,
                          primary_account.email));
 #elif BUILDFLAG(IS_ANDROID)
-      // The CHECK below was disabled on Android as test
-      // HistoryActivityTest#testSupervisedUser signs out a supervised account.
-      // We believe this state is not expected on Android as supervised users
-      // are not allowed to sign out.
-      // See https://crbug.com/1285271#c7 for more info.
-      //
-      // TODO(crbug/1312416): Understand if this test covers a valid usecase
-      // and see how this should be handled on Android.
-      LOG(WARNING) << "Unexpected state: User is signed in, signin is not "
-                      "allowed, sign out is not allowed. Do nothing.";
+    // The CHECK below was disabled on Android as test
+    // HistoryActivityTest#testSupervisedUser signs out a supervised account.
+    // We believe this state is not expected on Android as supervised users
+    // are not allowed to sign out.
+    // See https://crbug.com/1285271#c7 for more info.
+    //
+    // TODO(crbug.com/40220593): Understand if this test covers a valid usecase
+    // and see how this should be handled on Android.
+    LOG(WARNING) << "Unexpected state: User is signed in, signin is not "
+                    "allowed, sign out is not allowed. Do nothing.";
 #else
       CHECK(false) << "Deleting profiles is not supported.";
 #endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)

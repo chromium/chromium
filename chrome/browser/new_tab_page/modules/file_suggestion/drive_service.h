@@ -63,7 +63,7 @@ class DriveService : public KeyedService {
   void GetDriveFiles(GetFilesCallback get_files_callback);
   // Retrieves classification result from segmentation platform before
   // retrieving document suggestions.
-  // TODO(crbug.com/1470762): Use the classification result to decide when to
+  // TODO(crbug.com/40925895): Use the classification result to decide when to
   // show the Drive module, instead of ignoring it.
   bool GetDriveModuleSegmentationData();
   void GetDriveFilesInternal();

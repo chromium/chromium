@@ -313,7 +313,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   // FormFieldData::is_focusable for all forms. This is admissible for our
   // testing purposes because all test forms only have (what should be)
   // focusable fields.
-  // TODO(crbug.com/1393058): Remove this hack when the focusability issue is
+  // TODO(crbug.com/40248042): Remove this hack when the focusability issue is
   // fixed.
   const FormStructure* GetOrWaitForFormWithFocusableFields(size_t num_fields) {
     const FormStructure* form =

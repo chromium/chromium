@@ -93,7 +93,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
 
   private focusOnAnchor_() {
     // Return focus to the three dots menu once a site has been edited.
-    // TODO(crbug.com/1298326): If the edited site is the only site in the
+    // TODO(crbug.com/40215499): If the edited site is the only site in the
     // list, focus is not on the three dots menu.
     assert(this.siteToEditAnchorElement_, 'Site Anchor');
     focusWithoutInk(this.siteToEditAnchorElement_);

@@ -80,7 +80,7 @@ constexpr char kLocalUrlAccessCommand[] = "requestUrlAccessLocal";
 constexpr char kRemoteUrlAccessCommand[] = "requestUrlAccessRemote";
 
 // Class to keep track of iframes created and destroyed.
-// TODO(https://crbug.com/1188721): Can be replaced with
+// TODO(crbug.com/40173416): Can be replaced with
 // WebContents::UnsafeFindFrameByFrameTreeNodeId.
 class RenderFrameTracker : public content::WebContentsObserver {
  public:
@@ -315,7 +315,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // Tests that prerendering fails in supervised user mode.
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1259146): Flaky on ChromeOS.
+// TODO(crbug.com/40201321): Flaky on ChromeOS.
 #define MAYBE_DisallowPrerendering DISABLED_DisallowPrerendering
 #else
 #define MAYBE_DisallowPrerendering DisallowPrerendering

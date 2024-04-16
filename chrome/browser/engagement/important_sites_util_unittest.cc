@@ -31,7 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// TODO(crbug.com/1039517): Disabled all tests because they lead the flakiness
+// TODO(crbug.com/40666874): Disabled all tests because they lead the flakiness
 // dashboard. The root cause is documented in the bug.
 #if !BUILDFLAG(IS_ANDROID)
 

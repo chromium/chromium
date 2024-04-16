@@ -105,9 +105,9 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   void TearDown() override {
     list_.reset();
 
-    // TODO(crbug.com/832879): Tearing down the TabStripModel should just delete
-    // all its owned WebContents. Then |manually_added_web_contents_| won't be
-    // necessary.
+    // TODO(crbug.com/40571733): Tearing down the TabStripModel should just
+    // delete all its owned WebContents. Then |manually_added_web_contents_|
+    // won't be necessary.
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
     for (WebContents* contents : all_web_contents_) {
       tab_strip_model->DetachAndDeleteWebContentsAt(
@@ -282,4 +282,4 @@ TEST_F(CurrentTabDesktopMediaListTest, CallingRefreshAfterTabFreedIsSafe) {
   RefreshList();
 }
 
-// TODO(crbug.com/1136942): Test rescaling of the thumbnails.
+// TODO(crbug.com/40724504): Test rescaling of the thumbnails.

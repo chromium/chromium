@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// TODO(crbug.com/1441731): Test is flaky.
+// TODO(crbug.com/40910130): Test is flaky.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_MoveActivatedTabToNewBrowser DISABLED_MoveActivatedTabToNewBrowser
 #else

@@ -130,7 +130,7 @@ void PersistentNotificationHandler::OnClick(
   else
     metrics_logger->LogPersistentNotificationClick();
 
-  // TODO(crbug.com/1477232)
+  // TODO(crbug.com/40280229)
   if (!origin.is_empty()) {
     // Notification clicks are considered a form of engagement with the
     // |origin|, thus we log the interaction with the Site Engagement service.

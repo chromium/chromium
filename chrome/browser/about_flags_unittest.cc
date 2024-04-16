@@ -39,7 +39,7 @@ std::set<std::string> GetAllPublicSwitchesAndFeaturesForTesting() {
     // Skip over flags that are part of the flags system itself - they don't
     // have any of the usual metadata or histogram entries for flags, since they
     // are synthesized during the build process.
-    // TODO(https://crbug.com/1068258): Remove the need for this by generating
+    // TODO(crbug.com/40125404): Remove the need for this by generating
     // histogram entries automatically.
     if (entry.supported_platforms & flags_ui::kFlagInfrastructure)
       continue;

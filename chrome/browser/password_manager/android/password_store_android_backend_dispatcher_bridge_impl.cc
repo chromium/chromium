@@ -32,7 +32,7 @@ constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     std::string account) {
   if (account.empty()) {
-    // TODO(crbug.com/1511194): Ensure java is consistent with C++ in
+    // TODO(crbug.com/41483781): Ensure java is consistent with C++ in
     // interpreting the empty string instead of relying on nullptr.
     return nullptr;
   }

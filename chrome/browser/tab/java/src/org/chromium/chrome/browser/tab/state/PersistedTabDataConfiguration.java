@@ -10,18 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Contains configuration values such as data storage methods and unique identifiers
- * for {@link PersistedTabData}
+ * Contains configuration values such as data storage methods and unique identifiers for {@link
+ * PersistedTabData}
  */
 public enum PersistedTabDataConfiguration {
-    // TODO(crbug.com/1059650) investigate should this go in the app code?
+    // TODO(crbug.com/40678592) investigate should this go in the app code?
     // Also investigate if the storage instance should be shared.
     MOCK_PERSISTED_TAB_DATA("MPTD"),
     ENCRYPTED_MOCK_PERSISTED_TAB_DATA("EMPTD"),
     SHOPPING_PERSISTED_TAB_DATA("SPTD"),
     ARCHIVE_PERSISTED_TAB_DATA("APTD"),
     EMPTY_BYTE_BUFFER_TEST_CONFIG("EBBTC"),
-    // TODO(crbug.com/1113828) investigate separating test from prod test implementations
+    // TODO(crbug.com/40143638) investigate separating test from prod test implementations
     TEST_CONFIG("TC");
 
     private static final Map<Class<? extends PersistedTabData>, PersistedTabDataConfiguration>
@@ -53,7 +53,7 @@ public enum PersistedTabDataConfiguration {
     private static boolean sUseTestConfig;
 
     static {
-        // TODO(crbug.com/1060187) remove static initializer and initialization lazy
+        // TODO(crbug.com/40121925) remove static initializer and initialization lazy
         sLookup.put(MockPersistedTabData.class, MOCK_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(MockPersistedTabData.class, ENCRYPTED_MOCK_PERSISTED_TAB_DATA);
         sLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
@@ -123,7 +123,7 @@ public enum PersistedTabDataConfiguration {
         return sLookup.get(clazz);
     }
 
-    // TODO(crbug.com/1290977) merge test config options into an enum so there can be just one
+    // TODO(crbug.com/40212560) merge test config options into an enum so there can be just one
     // setter).
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setUseTestConfig(boolean useTestConfig) {

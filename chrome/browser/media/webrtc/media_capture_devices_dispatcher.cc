@@ -292,7 +292,7 @@ void MediaCaptureDevicesDispatcher::OnMediaRequestStateChanged(
 
 void MediaCaptureDevicesDispatcher::OnCreatingAudioStream(int render_process_id,
                                                           int render_frame_id) {
-  // TODO(https://crbug.com/837606): Figure out how to simplify threading here.
+  // TODO(crbug.com/41385872): Figure out how to simplify threading here.
   // Currently, this will either always be called on the UI thread, or always
   // on the IO thread, depending on how far along the work to migrate to the
   // audio service has progressed. The rest of the methods of the

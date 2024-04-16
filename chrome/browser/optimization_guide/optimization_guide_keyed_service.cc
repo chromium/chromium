@@ -457,7 +457,7 @@ void OptimizationGuideKeyedService::Initialize() {
   // Some previous paths were written in incorrect locations. Delete the
   // old paths.
   //
-  // TODO(crbug.com/1328981): Remove this code in 05/2023 since it should be
+  // TODO(crbug.com/40842340): Remove this code in 05/2023 since it should be
   // assumed that all clients that had the previous path have had their previous
   // stores deleted.
   DeleteOldStorePaths(profile_path);

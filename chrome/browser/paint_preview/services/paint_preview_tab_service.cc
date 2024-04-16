@@ -36,7 +36,7 @@ namespace paint_preview {
 namespace {
 
 // The maximum X and Y dimension in pixels.
-// TODO(crbug/1239291): Tune this value.
+// TODO(crbug.com/40193795): Tune this value.
 constexpr int kMaxCaptureSizePixels = 100000;
 
 constexpr size_t kMaxPerCaptureSizeBytes = 8 * 1000L * 1000L;       // 8 MB.

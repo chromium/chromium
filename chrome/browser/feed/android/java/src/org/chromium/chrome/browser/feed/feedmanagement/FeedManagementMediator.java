@@ -122,7 +122,7 @@ public class FeedManagementMediator {
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
         mContext.startActivity(intent);
 
-        // TODO(https://crbug.com/1195209): Record uma by calling ReportOtherUserAction
+        // TODO(crbug.com/40758890): Record uma by calling ReportOtherUserAction
         // on the stream.
     }
 

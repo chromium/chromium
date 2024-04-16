@@ -70,7 +70,7 @@ class FollowManagementMediator {
 
     // Once the list of feeds has been refreshed, get the list.
     private void getFollowedWebFeeds(boolean success) {
-        // TODO(https://crbug.com/1197286) If this fails, show a snackbar with a failure message.
+        // TODO(crbug.com/40176853) If this fails, show a snackbar with a failure message.
         WebFeedBridge.getAllFollowedWebFeeds(this::fillRecyclerView);
     }
 

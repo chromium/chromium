@@ -464,7 +464,7 @@ return score;
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
 
-// TODO(crbug.com/1184305): Disabled for being flaky.
+// TODO(crbug.com/40752530): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
     DISABLED_RequestAnimationFramesAfterBackForwardCacheRestore) {
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }
 
-// TODO(https://crbug.com/1494775): Test is flaky on MSAN.
+// TODO(crbug.com/40937315): Test is flaky on MSAN.
 // TODO(https://crbug.com/40799125): Test is flaky on Windows and Mac.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \

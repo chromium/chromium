@@ -161,7 +161,8 @@ TEST(ProfileKeyedService_DisplaySetDifferenceTest, MissingExpectedService) {
 // to, because other services depend on it, add a comment explaining why.
 // Example:
 //   // FooService is required because BarService depends on it.
-//   // TODO(crbug.com/12345): Stop creating BarService for the system profile.
+//   // TODO(crbug.com/40781525): Stop creating BarService for the system
+//   profile.
 class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
  public:
   ProfileKeyedServiceBrowserTest() {

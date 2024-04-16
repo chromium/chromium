@@ -1311,7 +1311,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 // changing source willproperly update the associated media player id. This is
 // checked by closing the window because the test it at a too high level to be
 // able to check the actual media player id being used.
-// TODO(crbug.com/1311308) Fix flakiness on ChromeOS and reenable this test.
+// TODO(crbug.com/40830975) Fix flakiness on ChromeOS and reenable this test.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PreloadNoneSrcChangeThenLoad DISABLED_PreloadNoneSrcChangeThenLoad
 #else
@@ -1614,7 +1614,7 @@ class PictureInPictureWindowControllerPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-// TODO(crbug.com/1432427): Reenable once Linux MSAN failure is fixed.
+// TODO(crbug.com/40902928): Reenable once Linux MSAN failure is fixed.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_EnterPipThenNavigateAwayCloseWindow \
   DISABLED_EnterPipThenNavigateAwayCloseWindow
@@ -1929,7 +1929,7 @@ IN_PROC_BROWSER_TEST_F(
 // calls the Media Session actions "play" and "pause" handler functions.
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
-    // TODO(crbug.com/1384370): Re-enable this test
+    // TODO(crbug.com/40878458): Re-enable this test
     DISABLED_PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -2161,7 +2161,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 }
 
 // Test that video conferencing action buttons function correctly.
-// TODO(crbug.com/1312401): Test is flaky.
+// TODO(crbug.com/40220588): Test is flaky.
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        DISABLED_VideoConferencingActions) {
   // Enter PiP.

@@ -694,7 +694,7 @@ NearbySharingServiceImpl::RegisterReceiveSurface(
       << __func__ << ": A ReceiveSurface(" << ReceiveSurfaceStateToString(state)
       << ") has been registered";
 
-  // TODO(crbug.com/1186559): Remove these logs. They are only needed to help
+  // TODO(crbug.com/40753805): Remove these logs. They are only needed to help
   // debug crbug.com/1186559.
   if (state == ReceiveSurfaceState::kForeground) {
     if (!IsBluetoothPresent()) {

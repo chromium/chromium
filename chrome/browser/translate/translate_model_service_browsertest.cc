@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", false, 1);
 }
 
-// TODO(crbug.com/1320359): Re-enable this test
+// TODO(crbug.com/40836720): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LanguageDetectionModelAvailableForDetection \
   DISABLED_LanguageDetectionModelAvailableForDetection

@@ -206,23 +206,23 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/1076175) Remove once launched.
+          // TODO(crbug.com/40128551) Remove once launched.
           features::kAutofillUseNewSectioningMethod,
-          // TODO(crbug.com/1157405) Remove once launched.
+          // TODO(crbug.com/40160818) Remove once launched.
           features::kAutofillEnableDependentLocalityParsing,
-          // TODO(crbug.com/1150895) Remove once launched.
+          // TODO(crbug.com/40158074) Remove once launched.
           features::kAutofillParsingPatternProvider,
           features::kAutofillPageLanguageDetection,
-          // TODO(crbug.com/1165780): Remove once shared labels are launched.
+          // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/1341387): Remove once launched.
+          // TODO(crbug.com/40230674): Remove once launched.
           features::kAutofillParseVcnCardOnFileStandaloneCvcFields,
           // TODO(crbug.com/1311937): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
           features::kAutofillInferCountryCallingCode,
-          // TODO(crbug.com/1441057): Remove once launched.
+          // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/1474308): Clean up when launched.
+          // TODO(crbug.com/40279279): Clean up when launched.
           features::kAutofillDefaultToCityAndNumber,
           // TODO(b/40204601): Clean up when launched.
           blink::features::kAutofillIncludeFormElementsInShadowDom,
@@ -234,7 +234,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
        // As it is not supported on iOS yet, it is disabled.
        features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       // TODO(crbug.com/1317961): Remove once launched. This feature is
+       // TODO(crbug.com/40222716): Remove once launched. This feature is
        // disabled since it is not supported on iOS.
        features::kAutofillAlwaysParsePlaceholders,
        // TODO(crbug.com/1493145): Remove when/if launched. This feature changes
@@ -269,7 +269,8 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   html_content_.reserve(input.length());
   for (const char c : input) {
     // Strip `\n`, `\t`, `\r` from |html| to match old `data:` URL behavior.
-    // TODO(crbug/239819): the tests expect weird concatenation behavior based
+    // TODO(crbug.com/40317270): the tests expect weird concatenation behavior
+    // based
     //   legacy data URL behavior. Fix this so the the tests better represent
     //   the parsing being done in the wild.
     if (c != '\r' && c != '\n' && c != '\t')

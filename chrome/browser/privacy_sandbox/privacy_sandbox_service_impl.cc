@@ -310,7 +310,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   }
 
   // Check for FPS pref init at each startup.
-  // TODO(crbug.com/1351327): Remove this logic when most users have run init.
+  // TODO(crbug.com/40234448): Remove this logic when most users have run init.
   MaybeInitializeFirstPartySetsPref();
 
   // Record preference state for UMA at each startup.
@@ -815,7 +815,7 @@ void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(
     // A host or site is expected in other parts of the UI, so we cannot simply
     // display the origin directly (it may also be empty). Instead, we elide it
     // but record a metric to understand how widespread this is.
-    // TODO(crbug.com/1489306) - Investigate how much of an issue this is.
+    // TODO(crbug.com/40283983) - Investigate how much of an issue this is.
     RecordProtectedAudienceJoiningTopFrameDisplayedHistogram(false);
   }
 

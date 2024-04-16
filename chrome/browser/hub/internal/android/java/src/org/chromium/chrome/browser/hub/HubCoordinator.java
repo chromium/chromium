@@ -137,7 +137,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             return BackPressResult.SUCCESS;
         }
 
-        // TODO(crbug/1498614): Discuss with Start Surface owners and investigate removing.
+        // TODO(crbug.com/40287515): Discuss with Start Surface owners and investigate removing.
         if (startSurfaceHandlesBackPress()) {
             // This is based on the logic in TabSwitcherMediator where the logic is delegated to
             // ReturnToChromeBackPressHandler.

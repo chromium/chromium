@@ -62,7 +62,7 @@ public class SigninMetricsUtils {
 
     /** Logs signin user action for a given {@link SigninAccessPoint}. */
     public static void logSigninUserActionForAccessPoint(@SigninAccessPoint int accessPoint) {
-        // TODO(https://crbug.com/1349700): Remove this check when user action checks are removed
+        // TODO(crbug.com/40233859): Remove this check when user action checks are removed
         // from native code.
         if (accessPoint != SigninAccessPoint.SETTINGS_SYNC_OFF_ROW) {
             SigninMetricsUtilsJni.get().logSigninUserActionForAccessPoint(accessPoint);

@@ -145,7 +145,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   ~ChromeContentBrowserClient() override;
 
-  // TODO(https://crbug.com/787567): This file is about calls from content/ out
+  // TODO(crbug.com/41356866): This file is about calls from content/ out
   // to chrome/ to get values or notify about events, but both of these
   // functions are from chrome/ to chrome/ and don't involve content/ at all.
   // That suggests they belong somewhere else at the chrome/ layer.

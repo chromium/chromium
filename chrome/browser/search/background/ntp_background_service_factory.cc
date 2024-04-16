@@ -44,7 +44,7 @@ NtpBackgroundServiceFactory::~NtpBackgroundServiceFactory() = default;
 std::unique_ptr<KeyedService>
 NtpBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/914898): Background service URLs should be
+  // TODO(crbug.com/41431683): Background service URLs should be
   // configurable server-side, so they can be changed mid-release.
 
   auto url_loader_factory = context->GetDefaultStoragePartition()

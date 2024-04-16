@@ -115,7 +115,7 @@ AccountProfileMapper::CreateAccessTokenFetcher(
     const base::FilePath& profile_path,
     const account_manager::AccountKey& account,
     OAuth2AccessTokenConsumer* consumer) {
-  // TODO(https://crbug.com/1226045): Create a fetcher that can wait on
+  // TODO(crbug.com/40188699): Create a fetcher that can wait on
   // initialization of the class.
   if (!ProfileContainsAccount(profile_path, account)) {
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
@@ -510,7 +510,7 @@ AccountProfileMapper::RemoveStaleAccounts() {
     if (ShouldDeleteProfile(entry)) {
       // Pass an empty callback because this should never delete the last
       // profile.
-      // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
+      // TODO(crbug.com/40200752): ensure that the user cannot cancel the
       // profile deletion.
       g_browser_process->profile_manager()
           ->GetDeleteProfileHelper()

@@ -32,7 +32,7 @@
 namespace {
 
 // Maximum time to wait for service initialization.
-// TODO(crbug.com/1506969): Update based on collected metrics.
+// TODO(crbug.com/40947650): Update based on collected metrics.
 constexpr base::TimeDelta kInitializationTimeout = base::Seconds(10);
 
 // The name of the file that contains the list of files that are downloaded with

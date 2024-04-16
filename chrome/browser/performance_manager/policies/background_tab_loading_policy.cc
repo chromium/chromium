@@ -335,7 +335,7 @@ bool BackgroundTabLoadingPolicy::ShouldLoad(const PageNode* page_node) {
     return false;
   }
 
-  // TODO(crbug.com/1071100): Enforce the site engagement score for tabs that
+  // TODO(crbug.com/40126611): Enforce the site engagement score for tabs that
   // don't make use of background communication mechanisms.
   return true;
 }
@@ -373,7 +373,7 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
   page_nodes_to_load_.clear();
   tabs_scored_ = 0;
 
-  // TODO(crbug.com/1071077): Interrupt all ongoing loads.
+  // TODO(crbug.com/40126598): Interrupt all ongoing loads.
 
   // All restored tabs may be loaded.
   UpdateHasRestoredTabsToLoad();

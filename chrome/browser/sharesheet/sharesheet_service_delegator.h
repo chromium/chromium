@@ -50,7 +50,7 @@ class SharesheetServiceDelegator {
   gfx::NativeWindow GetNativeWindow();
   SharesheetController* GetSharesheetController();
 
-  // TODO(crbug.com/1233830) : Remove after business logic is moved
+  // TODO(crbug.com/40191717) : Remove after business logic is moved
   // out of SharesheetHeaderView.
   Profile* GetProfile();
 

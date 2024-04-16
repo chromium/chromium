@@ -223,7 +223,7 @@ AX_TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
-// TODO(crbug.com/1177140) Re-enable test
+// TODO(crbug.com/40748296) Re-enable test
 TEST_F(
     'SelectToSpeakMouseSelectionTest', 'DISABLED_DoesNotSpeakOnlyTheTrayButton',
     function() {

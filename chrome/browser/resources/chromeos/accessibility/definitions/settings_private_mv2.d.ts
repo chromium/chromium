@@ -41,7 +41,7 @@ declare global {
       type GetAllPrefsCallback = (prefs: PrefObject[]) => void;
       type OnPrefSetCallback = (success: boolean) => void;
       type GetPrefCallback = (pref: PrefObject) => void;
-      // TODO(crbug/1373934) Update existing usages of PrefObject to be typed,
+      // TODO(crbug.com/40242259) Update existing usages of PrefObject to be typed,
       // removing the need to use any here.
       export interface PrefObject<T = any> {
         key: string;

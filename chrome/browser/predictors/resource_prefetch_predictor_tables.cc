@@ -207,7 +207,7 @@ bool ResourcePrefetchPredictorTables::SetDatabaseVersion(sql::Database* db,
 }
 
 void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
-  // TODO(crbug.com/1229370): This method's logic is almost identical to
+  // TODO(crbug.com/40778330): This method's logic is almost identical to
   // sqlite_proto::ProtoTableManager::CreateOrClearTablesIfNecessary, so the two
   // classes could probably share a common implementation wrapping
   // sql::MetaTable.

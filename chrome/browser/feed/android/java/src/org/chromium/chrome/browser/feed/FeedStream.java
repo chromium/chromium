@@ -1154,7 +1154,7 @@ public class FeedStream implements Stream {
         }
         if (mStreamKind == StreamKind.SINGLE_WEB_FEED) {
             View creatorErrorCard;
-            // TODO(crbug/1396161): Add offline error scenario.
+            // TODO(crbug.com/40882611): Add offline error scenario.
             if (slice.getZeroStateSlice().getType()
                     == FeedUiProto.ZeroStateSlice.Type.NO_CARDS_AVAILABLE) {
                 creatorErrorCard =
@@ -1169,7 +1169,7 @@ public class FeedStream implements Stream {
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.creator_general_error, mRecyclerView, false);
             }
-            // TODO(crbug/1385903): Replace display height dependency with setting the
+            // TODO(crbug.com/40879463): Replace display height dependency with setting the
             // RecyclerView height to match_parent.
             DisplayMetrics displayMetrics = new DisplayMetrics();
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

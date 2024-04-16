@@ -178,7 +178,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean isTabModelRestored() {
-        // TODO(crbug.com/1081339): Remove |mTabRestoreCompleted|. |mTabRestoreCompleted| is always
+        // TODO(crbug.com/40130477): Remove |mTabRestoreCompleted|. |mTabRestoreCompleted| is always
         // false for incognito, while |mTabStateInitialized| is not. |mTabStateInitialized| is
         // marked after the TabModelSelector is initialized, therefore it is the true state of the
         // TabModel.
@@ -206,7 +206,7 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
         }
     }
 
-    // TODO(crbug.com/948518): This is a band-aid fix for not crashing when undo the last closed
+    // TODO(crbug.com/41450619): This is a band-aid fix for not crashing when undo the last closed
     // tab, should remove later.
     /**
      * @return Whether filter should notify observers about the SetIndex call.

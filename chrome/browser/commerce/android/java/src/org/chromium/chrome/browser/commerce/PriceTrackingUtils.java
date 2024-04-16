@@ -17,7 +17,8 @@ import org.chromium.chrome.browser.profiles.Profile;
  * A set of utilities to facilitate price tracking features. This is the Java version of the
  * commerce component's core price tracking utils.
  */
-// TODO(1351830): This should live in the commerce component once BookmarkModel is moved to its
+// TODO(crbug.com/40234642): This should live in the commerce component once BookmarkModel is moved
+// to its
 //                appropriate component.
 @JNINamespace("commerce")
 public class PriceTrackingUtils {

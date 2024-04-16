@@ -232,7 +232,7 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-// TODO(crbug.com/1292501): Fix flakiness.
+// TODO(crbug.com/40819389): Fix flakiness.
 AX_TEST_F(
     'ChromeVoxDesktopAutomationHandlerTest', 'DISABLED_DatalistSelection',
     async function() {

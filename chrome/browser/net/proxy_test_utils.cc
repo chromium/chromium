@@ -42,7 +42,7 @@ void ProxyBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kProxyServer,
                                   proxy_server_.host_port_pair().ToString());
 
-  // TODO(https://crbug.com/901896): Don't rely on proxying localhost (Relied
+  // TODO(crbug.com/40600992): Don't rely on proxying localhost (Relied
   // on by BasicAuthWSConnect)
   command_line->AppendSwitchASCII(
       switches::kProxyBypassList,

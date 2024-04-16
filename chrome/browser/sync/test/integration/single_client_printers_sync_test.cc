@@ -40,7 +40,7 @@ class SingleClientPrintersSyncTest : public SyncTest {
   }
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137770): rewrite tests to not use verifier.
+    // TODO(crbug.com/40724972): rewrite tests to not use verifier.
     return true;
   }
 };

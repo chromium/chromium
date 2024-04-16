@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   EXPECT_TRUE(base::ContentsEqual(kTestFile, full_file_name));
 }
 
-// TODO(crbug.com/1271463): Flaky on mac arm64.
+// TODO(crbug.com/40805571): Flaky on mac arm64.
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 #define MAYBE_SaveHTMLOnlyCancel DISABLED_SaveHTMLOnlyCancel
 #else

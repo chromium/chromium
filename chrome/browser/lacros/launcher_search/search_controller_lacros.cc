@@ -24,7 +24,8 @@ SearchControllerLacros::SearchControllerLacros(int provider_types)
     : profile_(g_browser_process->profile_manager()->GetProfileByPath(
           ProfileManager::GetPrimaryUserProfilePath())) {
   if (!profile_) {
-    // TODO(crbug.com/1228587): Log error metrics if the profile is unavailable.
+    // TODO(crbug.com/40189614): Log error metrics if the profile is
+    // unavailable.
     return;
   }
 
@@ -69,8 +70,8 @@ void SearchControllerLacros::RegisterWithAsh() {
 void SearchControllerLacros::Search(const std::u16string& query,
                                     SearchCallback callback) {
   if (!autocomplete_controller_) {
-    // TODO(crbug.com/1228687): Log error metrics if the autocomplete controller
-    // is unavailable.
+    // TODO(crbug.com/40777889): Log error metrics if the autocomplete
+    // controller is unavailable.
     if (publisher_.is_bound() && publisher_.is_connected()) {
       publisher_->OnSearchResultsReceived(
           mojom::SearchStatus::kBackendUnavailable, std::nullopt);

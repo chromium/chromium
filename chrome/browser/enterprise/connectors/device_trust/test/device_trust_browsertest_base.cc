@@ -170,7 +170,7 @@ void DeviceTrustBrowserTestBase::VerifyAttestationFlowSuccessful(
     DTAttestationResult success_result,
     std::optional<DTAttestationPolicyLevel> policy_level) {
   std::string challenge_response = GetChallengeResponseHeader();
-  // TODO(crbug.com/1241857): Add challenge-response validation.
+  // TODO(crbug.com/40194842): Add challenge-response validation.
   EXPECT_TRUE(!challenge_response.empty());
   ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);

@@ -701,7 +701,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         List<Tab> tabs = new ArrayList<>();
         for (Integer id : ids) {
             Tab tab = TabModelUtils.getTabById(getTabModel(), id);
-            // TODO(crbug/1382463): If this is called during a TabModelObserver observer iterator
+            // TODO(crbug.com/40245624): If this is called during a TabModelObserver observer
+            // iterator
             // it is possible a sequencing issue can occur where the tab is gone from the TabModel,
             // but still exists in the TabGroup. Avoid returning null by skipping the tab if it
             // doesn't exist in the TabModel.
@@ -716,7 +717,7 @@ public class TabGroupModelFilter extends TabModelFilter {
                 && !mIsResetting
                 && ((tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
                         || tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                        // TODO(https://crbug.com/1194287): Investigates a better solution
+                        // TODO(crbug.com/40175585): Investigates a better solution
                         // without adding the TabLaunchType.FROM_START_SURFACE.
                         || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE));
     }
@@ -755,7 +756,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
             if (didCreateNewGroup) {
                 mActualGroupCount++;
-                // TODO(crbug.com/1188370): Update UMA for Context menu creation.
+                // TODO(crbug.com/40173284): Update UMA for Context menu creation.
                 if (tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP) {
                     if (mShouldRecordUma) {
                         RecordUserAction.record("TabGroup.Created.OpenInNewTab");

@@ -128,7 +128,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/1318240): Flaky.
+// TODO(crbug.com/40835241): Flaky.
 TEST_F(GeolocationPermissionContextDelegateTests,
        DISABLED_SearchGeolocationInIncognito) {
   url::Origin requesting_frame_url = url::Origin::Create(GURL(kDSETestUrl));

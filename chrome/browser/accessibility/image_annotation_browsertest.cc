@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
       "Appears to say: red.png Annotation. Appears to be: red.png 'fr' Label");
 }
 
-// TODO(crbug.com/1476383): Fix flakiness on ChromeOS
+// TODO(crbug.com/40928269): Fix flakiness on ChromeOS
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoesntAnnotateInternalPages DISABLED_DoesntAnnotateInternalPages
 #else

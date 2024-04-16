@@ -110,7 +110,7 @@ export class PriceTrackingSection extends PolymerElement {
     const fullText: string =
         loadTimeData.getStringF('trackPriceSaveLocation', folderName);
 
-    // TODO(1456420): Find a better way to dynamically add a link to a templated
+    // TODO(crbug.com/40066115): Find a better way to dynamically add a link to a templated
     //                string and possibly avoid using substring.
     this.saveLocationStartText_ =
         fullText.substring(0, fullText.lastIndexOf(folderName));

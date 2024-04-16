@@ -16,8 +16,8 @@
 
 using base::android::ScopedJavaLocalRef;
 
-// TODO(crbug.com/1426935): Move this class to chrome/browser/recent_tabs module
-// once dependency issues have been resolved.
+// TODO(crbug.com/40261558): Move this class to chrome/browser/recent_tabs
+// module once dependency issues have been resolved.
 class ForeignSessionHelper {
  public:
   explicit ForeignSessionHelper(Profile* profile);

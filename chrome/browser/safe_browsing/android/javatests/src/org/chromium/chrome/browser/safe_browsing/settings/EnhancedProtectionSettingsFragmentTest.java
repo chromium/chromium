@@ -76,7 +76,7 @@ public class EnhancedProtectionSettingsFragmentTest {
                 fragment.findPreference(EnhancedProtectionSettingsFragment.PREF_LEARN_MORE);
     }
 
-    // TODO(crbug.com/1478337): Add a test to check the openUrlInCCT functionality.
+    // TODO(crbug.com/40929404): Add a test to check the openUrlInCCT functionality.
 
     @Test
     @SmallTest

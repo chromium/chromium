@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
 
   ASSERT_TRUE(result->is_error_message());
 
-  // TODO(https://crbug.com/1134349): Currently this errors out because the
+  // TODO(crbug.com/40151413): Currently this errors out because the
   // device is not enterprise enrolled. We want this to error out because of a
   // poorly formatted attestation message.
   const char expected_error_message[] =

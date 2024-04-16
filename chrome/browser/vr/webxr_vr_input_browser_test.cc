@@ -91,7 +91,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     wait_loop_ = nullptr;
   }
 
-  // TODO(https://crbug.com/887726): Figure out why waiting for OpenVR to grab
+  // TODO(crbug.com/41416308): Figure out why waiting for OpenVR to grab
   // the updated state instead of waiting for a number of frames causes frames
   // to be submitted at an extremely slow rate. Once fixed, switch away from
   // waiting on number of frames.
@@ -322,7 +322,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputHandednessChange) {
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputSourcesChange) {
   WebXrControllerInputMock my_mock;
 
-  // TODO(crbug.com/963676): Figure out if the race is a product or test bug.
+  // TODO(crbug.com/41459138): Figure out if the race is a product or test bug.
   // There's a potential for a race causing the input sources change event to
   // fire multiple times if we disconnect a controller that has a gamepad.
   // Even just a select trigger is sufficient to have an xr-standard mapping, so

@@ -169,7 +169,7 @@ void StandaloneBrowserApps::StopApp(const std::string& app_id) {
     views::Widget* widget =
         views::Widget::GetWidgetForNativeView(instance->window);
     DCHECK(widget);
-    // TODO(crbug.com/1252688): kUnspecified is only supposed to be used for
+    // TODO(crbug.com/40198883): kUnspecified is only supposed to be used for
     // backwards compatibility with (deprecated) Close(), but there is no enum
     // for other cases where StopApp may be invoked, for example, closing the
     // app from a menu.

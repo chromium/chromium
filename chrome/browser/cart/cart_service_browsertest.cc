@@ -122,7 +122,7 @@ class CartServiceBrowserTest : public InProcessBrowserTest {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-    // TODO(crbug.com/1206094): Investigate TabStripModelObserver-based waiting
+    // TODO(crbug.com/40180767): Investigate TabStripModelObserver-based waiting
     // mechanism.
     base::PlatformThread::Sleep(base::Seconds(2));
     base::RunLoop().RunUntilIdle();

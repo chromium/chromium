@@ -305,7 +305,7 @@ class AppServiceProxyBase : public KeyedService,
   // Any apps with overlapping preferred app preferences will have all their
   // supported link filters unset, as if RemoveSupportedLinksPreference was
   // called for that app.
-  // TODO(crbug.com/1265315): Remove this method to use
+  // TODO(crbug.com/40203720): Remove this method to use
   // SetSupportedLinksPreference(std::string).
   void SetSupportedLinksPreference(const std::string& app_id,
                                    IntentFilters all_link_filters);

@@ -7,7 +7,7 @@
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
-// TODO(https://crbug.com/891832): Remove these conversion functions as part of
+// TODO(crbug.com/41418750): Remove these conversion functions as part of
 // the switch to only mojom types.
 device_test::mojom::ControllerRole DeviceToMojoControllerRole(
     device::ControllerRole role) {

@@ -400,7 +400,7 @@ bool DeleteShortcutInAutoStart(base::Environment* env,
 bool DeleteShortcutInApplicationsMenu(
     const base::FilePath& shortcut_filename,
     const base::FilePath& directory_filename) {
-  // TODO(crbug.com/1276141): Support shortcut testing in Applications Menu.
+  // TODO(crbug.com/40808705): Support shortcut testing in Applications Menu.
   DCHECK(!OsIntegrationTestOverride::Get() ||
          GetInstalledLaunchXdgUtilityForTesting());  // IN-TEST
   std::vector<std::string> argv;

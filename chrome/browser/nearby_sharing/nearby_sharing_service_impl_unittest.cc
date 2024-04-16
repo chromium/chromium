@@ -1320,7 +1320,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         kEndpointId));
     EXPECT_FALSE(fake_nearby_connections_manager_->has_incoming_payloads());
 
-    // TODO(crbug.com/1123022): This check is flaky, should be investigated.
+    // TODO(crbug.com/40716484): This check is flaky, should be investigated.
     // EXPECT_TRUE(FileExists(file_path));
 
     // To avoid UAF in OnIncomingTransferUpdate().

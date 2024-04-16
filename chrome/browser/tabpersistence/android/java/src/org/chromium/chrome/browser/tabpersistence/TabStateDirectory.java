@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * Manages the directory where tab state is saved.
  *
- * TODO(crbug.com/1097396): Deduplicate code between tabbed mode and custom tabs.
+ * <p>TODO(crbug.com/40136597): Deduplicate code between tabbed mode and custom tabs.
  */
 public class TabStateDirectory {
     private static final String TAG = "tabpersistence";

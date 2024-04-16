@@ -188,7 +188,7 @@ class AddressEditorMediator {
                         .with(VALUE, mProfileToEdit.getInfo(FieldType.EMAIL_ADDRESS))
                         .build();
 
-        // TODO(crbug.com/1445020): Use localized string.
+        // TODO(crbug.com/40267973): Use localized string.
         mNicknameField =
                 ChromeFeatureList.isEnabled(
                                 ChromeFeatureList

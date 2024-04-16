@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        PermissionQueryDefault) {
   NavigateToPageWithFrame(kHostA);
   EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
-  // TODO(crbug.com/1414468): the `storage-access` permission seems to behave
+  // TODO(crbug.com/40256138): the `storage-access` permission seems to behave
   // similarly on self-queries. This is a counterintuitive result, however. It
   // does reflect the fact that the permission was never set, but it does not
   // reflect the fact that the `kHostA` top-level page's access to cookies on
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 // unblocked for just that top-level/third-party combination.
 IN_PROC_BROWSER_TEST_F(
     RequestStorageAccessForWithFirstPartySetsBrowserTest,
-    // TODO(crbug.com/1370096): Re-enable usage metric assertions.
+    // TODO(crbug.com/40869547): Re-enable usage metric assertions.
     Permission_AutograntedWithinFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;

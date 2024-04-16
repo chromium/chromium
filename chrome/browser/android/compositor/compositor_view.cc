@@ -230,7 +230,7 @@ void CompositorView::SetLayoutBounds(JNIEnv* env,
 }
 
 void CompositorView::SetBackground(bool visible, SkColor color) {
-  // TODO(crbug.com/770911): Set the background color on the compositor.
+  // TODO(crbug.com/41347744): Set the background color on the compositor.
   // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   root_layer_->SetIsDrawable(visible);
@@ -293,7 +293,7 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
 
   if (overlay_immersive_ar_mode_) {
     // Suppress the scene background's default background which breaks
-    // transparency. TODO(https://crbug.com/1002270): Remove this workaround
+    // transparency. TODO(crbug.com/40098084): Remove this workaround
     // once the issue with StaticTabSceneLayer's unexpected background is
     // resolved.
     bool should_show_background = scene_layer->ShouldShowBackground();

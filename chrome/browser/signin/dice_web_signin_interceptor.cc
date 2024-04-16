@@ -1172,7 +1172,7 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
       }
     }
 
-    // TODO(crbug/1450011): Move this to DiceSignedInProfileCreator when
+    // TODO(crbug.com/40269992): Move this to DiceSignedInProfileCreator when
     // DisallowManagedProfileSignout is fully released.
     if (state_->intercepted_account_management_accepted_ &&
         base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {

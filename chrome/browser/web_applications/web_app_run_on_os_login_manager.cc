@@ -88,7 +88,7 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
       continue;
     }
 
-    // TODO(crbug.com/1091964): Implement Run on OS Login mode selection and
+    // TODO(crbug.com/40698043): Implement Run on OS Login mode selection and
     // launch app appropriately.
     // For ROOL on ChromeOS, we only have managed web apps which need to be run
     // as standalone windows, never as tabs

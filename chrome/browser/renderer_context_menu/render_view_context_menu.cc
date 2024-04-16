@@ -3484,7 +3484,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       if (browser) {
         browser->window()->ShowEmojiPanel();
       } else {
-        // TODO(https://crbug.com/919167): Ensure this is called in the correct
+        // TODO(crbug.com/40608277): Ensure this is called in the correct
         // process. This fails in print preview for PWA windows on Mac.
         ui::ShowEmojiPanel();
       }
@@ -4153,7 +4153,7 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
   dl_params->set_referrer_policy(
       content::Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
   dl_params->set_referrer_encoding(params_.frame_charset);
-  // TODO(https://crbug.com/1457702): use the actual origin here rather than
+  // TODO(crbug.com/40066346): use the actual origin here rather than
   // pulling it out of the frame url.
   dl_params->set_initiator(url::Origin::Create(params_.frame_url));
   dl_params->set_suggested_name(params_.suggested_filename);

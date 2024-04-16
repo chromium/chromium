@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
 
   // Navigate away and check that the group id is still the same because we are
   // part of the same window.
-  // TODO(https://crbug.com/1204391): Understand why this returns false.
+  // TODO(crbug.com/40180004): Understand why this returns false.
   ASSERT_FALSE(
       NavigateInRenderer(web_contents, GURL("https://www.example.com")));
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));

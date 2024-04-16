@@ -250,7 +250,7 @@ MetadataDatabaseIndex::~MetadataDatabaseIndex() {}
 void MetadataDatabaseIndex::RemoveUnreachableItems() {
   // Do nothing. MetadataDatabaseIndex is behind a private flag and will be
   // removed soon.
-  // TODO(crbug.com/568008): Remove MetadataDatabaseIndex.
+  // TODO(crbug.com/40448384): Remove MetadataDatabaseIndex.
 }
 
 bool MetadataDatabaseIndex::GetFileMetadata(

@@ -192,7 +192,7 @@ PrintViewManagerBase::~PrintViewManagerBase() {
 }
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// TODO(crbug.com/892294):  Remove `DisableThirdPartyBlocking()` once OOP
+// TODO(crbug.com/41419019):  Remove `DisableThirdPartyBlocking()` once OOP
 // printing is always enabled for Windows.
 // static
 void PrintViewManagerBase::DisableThirdPartyBlocking() {

@@ -2384,7 +2384,7 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 }
 
 #if !BUILDFLAG(IS_WIN)
-// TODO(crbug.com/739204) Add a Windows version of this test.
+// TODO(crbug.com/41328715) Add a Windows version of this test.
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        TrustedSourcesPolicyTrusted) {
   base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());

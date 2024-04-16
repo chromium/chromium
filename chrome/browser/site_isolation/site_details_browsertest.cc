@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_ManyIframes) {
                   ElementsAre(Bucket(12, 1), Bucket(29, 1), Bucket(68, 1))));
 }
 
-// TODO(crbug.com/671891): This test is flaky.
+// TODO(crbug.com/40496888): This test is flaky.
 IN_PROC_BROWSER_TEST_F(SiteDetailsBrowserTest, DISABLED_IsolateExtensions) {
   // We start on "about:blank", which should be credited with a process in this
   // case.

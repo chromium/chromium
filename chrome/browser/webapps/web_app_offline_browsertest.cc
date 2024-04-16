@@ -450,7 +450,7 @@ class WebAppOfflineDarkModeTest
 #if BUILDFLAG(IS_WIN)
     InProcessBrowserTest::SetUp();
 #elif BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1298658): Get this test suite working.
+    // TODO(crbug.com/40215627): Get this test suite working.
     GTEST_SKIP();
 #else
     InProcessBrowserTest::SetUp();

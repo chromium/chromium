@@ -42,7 +42,7 @@ void SendTabToSelfClientService::Shutdown() {
 }
 
 void SendTabToSelfClientService::SendTabToSelfModelLoaded() {
-  // TODO(crbug.com/949756): Push changes that happened before the model was
+  // TODO(crbug.com/40621767): Push changes that happened before the model was
   // loaded.
 }
 

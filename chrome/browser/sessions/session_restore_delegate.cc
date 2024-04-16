@@ -136,6 +136,6 @@ SessionRestoreDelegate::WebContentsTracker::WebContentsTracker(
     : WebContentsObserver(web_contents) {}
 
 void SessionRestoreDelegate::WebContentsTracker::WebContentsDestroyed() {
-  // TODO(https://crbug.com/1482502): remove once crash understood.
+  // TODO(crbug.com/40072229): remove once crash understood.
   DUMP_WILL_BE_CHECK(false);
 }

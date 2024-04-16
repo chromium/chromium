@@ -164,7 +164,7 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
           ? blink::PermissionType::AUDIO_CAPTURE
           : blink::PermissionType::VIDEO_CAPTURE;
 
-  // TODO(crbug.com/1321100): Remove `security_origin`.
+  // TODO(crbug.com/40223767): Remove `security_origin`.
   if (render_frame_host->GetLastCommittedOrigin() != security_origin) {
     return false;
   }

@@ -59,8 +59,8 @@ void SiteSettingsCounter::Count() {
       [&](ContentSettingsType content_type,
           const ContentSettingsForOneType& content_settings_list) {
         for (const auto& content_setting : content_settings_list) {
-          // TODO(crbug.com/762560): Check the conceptual SettingSource instead
-          // of ContentSettingPatternSource.source
+          // TODO(crbug.com/40538766): Check the conceptual SettingSource
+          // instead of ContentSettingPatternSource.source
           if (content_setting.source == "preference" ||
               content_setting.source == "notification_android" ||
               content_setting.source == "ephemeral") {

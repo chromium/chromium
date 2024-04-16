@@ -336,7 +336,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     }
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
-      // TODO(crbug.com/1269417): this is a side-by-side comparison of metrics
+      // TODO(crbug.com/40205026): this is a side-by-side comparison of metrics
       // reporter histogram vs. old histogram. Cleanup when the experiment ends.
       this.metricsReporter.measure('TabListDataReceived')
           .then(

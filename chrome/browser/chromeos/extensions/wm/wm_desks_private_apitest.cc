@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
   histogram_tester.ExpectBucketCount("Ash.DeskApi.RemoveDesk.Result", 1, 1);
 }
 
-// TODO(crbug.com/1474001): Re-enable test that flakily fails
+// TODO(crbug.com/40927214): Re-enable test that flakily fails
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_LaunchAndUndo DISABLED_LaunchAndUndo
 #else

@@ -56,7 +56,7 @@ class WebAppTranslationManager {
   // locale, otherwise returns an empty string.
   std::string GetTranslatedDescription(const webapps::AppId& app_id);
 
-  // TODO(crbug.com/1212519): Add a method to get the short_name.
+  // TODO(crbug.com/40183274): Add a method to get the short_name.
 
  private:
   void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);

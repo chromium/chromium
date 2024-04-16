@@ -67,7 +67,7 @@ std::vector<std::string> GetMatchingDomains(
         matching_reused_credentials) {
   base::flat_set<std::string> matching_domains;
   for (const auto& credential : matching_reused_credentials) {
-    // TODO(https://crbug.com/1419601): Avoid converting signon_realm to URL,
+    // TODO(crbug.com/40895227): Avoid converting signon_realm to URL,
     // ideally use PasswordForm::url.
     std::string domain = base::UTF16ToUTF8(url_formatter::FormatUrl(
         GURL(credential.signon_realm),
@@ -272,7 +272,7 @@ void ChromePasswordReuseDetectionManagerClient::PrimaryPageChanged(
 
 void ChromePasswordReuseDetectionManagerClient::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // TODO(https://crbug.com/1315689): In context of Phishguard, we should handle
+  // TODO(crbug.com/40833643): In context of Phishguard, we should handle
   // input events on subframes separately, so that we can accurately report that
   // the password was reused on a subframe. Currently any password reuse for
   // this WebContents will report password reuse on the main frame URL.
@@ -289,7 +289,7 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
   // causes crashes. See https://crbug.com/1155662 for details. In the short
   // term, we skip ozone/wayland entirely and use a synchronous crosapi to get
   // clipboard text.
-  // TODO(https://crbug.com/913422): This logic can be removed once all
+  // TODO(crbug.com/40605786): This logic can be removed once all
   // clipboard APIs are async.
   auto* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<crosapi::mojom::Clipboard>()) {

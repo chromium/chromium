@@ -3039,7 +3039,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', async function() {
   await mockFeedback.replay();
 });
 
-// TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS
+// TODO(crbug.com/40777708) - Improve the generation of summaries across ChromeOS
 AX_TEST_F(
     // TODO(crbug.com/1419811): Test is flaky.
     'ChromeVoxBackgroundTest', 'DISABLED_AlertDialogAutoSummaryTextContent',

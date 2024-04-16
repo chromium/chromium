@@ -30,7 +30,7 @@
 namespace webrtc_event_logging {
 
 namespace {
-// TODO(crbug.com/817495): Eliminate the duplication with other uploaders.
+// TODO(crbug.com/41373913): Eliminate the duplication with other uploaders.
 const char kUploadContentType[] = "multipart/form-data";
 const char kBoundary[] = "----**--yradnuoBgoLtrapitluMklaTelgooG--**----";
 

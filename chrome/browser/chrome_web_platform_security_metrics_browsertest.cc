@@ -141,7 +141,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         // SharedArrayBuffer is needed for these tests.
         features::kSharedArrayBuffer,
         // Some PNA worker feature relies on this.
-        // TODO(https://crbug.com/1430451): Remove this once PNA for workers
+        // TODO(crbug.com/40263073): Remove this once PNA for workers
         // metric logging doesn't rely on kPlzDedicatedWorker
         blink::features::kPlzDedicatedWorker,
     };
@@ -2329,7 +2329,7 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest, SameSite) {
   EXPECT_TRUE(content::ExecJs(
       web_contents(), "document.querySelector('iframe').src += '#foo';"));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  // TODO(https://crbug.com/1408429) It seems the initiator origin is wrong,
+  // TODO(crbug.com/40062719) It seems the initiator origin is wrong,
   // e.g. `child_url` instead of `parent_url`, causing the metrics not to be
   // recorded.
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
@@ -2492,7 +2492,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kDanglingMarkupInTargetNotEndsWithNewLineOrGT, 0);
 }
 
-// TODO(https://crbug.com/1487325): Fix and reenable the test for Mac.
+// TODO(crbug.com/40283243): Fix and reenable the test for Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DanglingMarkupInTargetWithNewLineOrGreaterThan \
   DISABLED_DanglingMarkupInTargetWithNewLineOrGreaterThan

@@ -226,7 +226,7 @@ void ReturnToOriginalPage(content::WebContents* distilled_web_contents) {
       << "Could not retrieve original page for distilled URL: "
       << distilled_url;
 
-  // TODO(https://crbug.com/925965): Consider saving & retrieving the original
+  // TODO(crbug.com/40093888): Consider saving & retrieving the original
   // page web contents instead of reloading the page.
   content::NavigationController::LoadURLParams params(source_url);
   params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;

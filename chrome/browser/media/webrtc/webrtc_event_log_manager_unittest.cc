@@ -2270,7 +2270,7 @@ TEST_F(WebRtcEventLogManagerTest, StartRemoteLoggingCreatesEmptyFile) {
   ExpectRemoteFileContents(*file_path, std::string());
 }
 
-// TODO(crbug.com/1185008): Fix this flaky test.
+// TODO(crbug.com/40752893): Fix this flaky test.
 TEST_F(WebRtcEventLogManagerTest,
        DISABLED_RemoteLogFileCreatedInCorrectDirectory) {
   // Set up separate browser contexts; each one will get one log.
@@ -2507,7 +2507,7 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 }
 
-// TODO(crbug.com/1112027): Fix this flaky test.
+// TODO(crbug.com/40709493): Fix this flaky test.
 TEST_F(WebRtcEventLogManagerTest,
        DISABLED_LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
   constexpr size_t kLogsNum = 3;

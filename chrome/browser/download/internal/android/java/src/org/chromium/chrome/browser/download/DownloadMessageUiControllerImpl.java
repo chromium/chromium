@@ -340,7 +340,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         Context context = ContextUtils.getApplicationContext();
 
         MessageDispatcher dispatcher = getMessageDispatcher();
-        // TODO(https://crbug.com/1350110): Fix the issue with dispatcher
+        // TODO(crbug.com/40234025): Fix the issue with dispatcher
         //                                  being Null and remove the following if clause
         if (dispatcher == null) {
             // When the message dispatcher is null we don't want to block the download, hence

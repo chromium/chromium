@@ -145,7 +145,7 @@ class PasswordSyncInactiveChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
-// TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
+// TODO(crbug.com/40651154): avoid re-entrance protection in checkers below or
 // factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {

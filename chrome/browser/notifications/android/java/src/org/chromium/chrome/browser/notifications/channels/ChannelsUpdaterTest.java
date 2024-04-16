@@ -74,7 +74,7 @@ public class ChannelsUpdaterTest {
 
     @After
     public void tearDown() {
-        // TODO(https://crbug.com/1086663): Replace with a SharedPreferencesTestRule when
+        // TODO(crbug.com/40694404): Replace with a SharedPreferencesTestRule when
         //     implemented.
         mSharedPreferences.removeKey(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION);
     }

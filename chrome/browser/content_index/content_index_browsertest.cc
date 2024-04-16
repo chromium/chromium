@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, UserDeletedEntryDispatchesEvent) {
   EXPECT_TRUE(GetAllItems().empty());
 }
 
-// TODO(crbug.com/1080922): flaky.
+// TODO(crbug.com/40691072): flaky.
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
   // Record that two articles were added.
   {

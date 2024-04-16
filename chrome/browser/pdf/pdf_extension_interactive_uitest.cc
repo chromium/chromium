@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
            IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-// TODO(crbug.com/1335822): Deflake this test.
+// TODO(crbug.com/40847318): Deflake this test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TouchSelectionBounds DISABLED_TouchSelectionBounds
 #else

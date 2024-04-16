@@ -31,7 +31,7 @@ namespace {
 
 // The command line flag to control the max amount of concurrent active
 // requests.
-// TODO(crbug.com/1191061): Tweak this number to an "optimal" value.
+// TODO(crbug.com/40174400): Tweak this number to an "optimal" value.
 constexpr char kMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
 constexpr int kDefaultMaxParallelActiveRequests = 5;
 
@@ -294,7 +294,8 @@ void CloudBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
 void CloudBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<CancelRequests> cancel) {
   // Nothing to do for cloud upload service.
-  // TODO(1374944): Might consider canceling requests in `request_queue_`.
+  // TODO(crbug.com/40242713): Might consider canceling requests in
+  // `request_queue_`.
 }
 
 base::WeakPtr<BinaryUploadService> CloudBinaryUploadService::AsWeakPtr() {
@@ -306,7 +307,7 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     bool authorized) {
   // Ignore the request if the browser cannot upload data.
   if (!authorized) {
-    // TODO(crbug/1028133): Add extra logic to handle UX for non-authorized
+    // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
     // users.
     request->FinishRequest(Result::UNAUTHORIZED,
                            enterprise_connectors::ContentAnalysisResponse());

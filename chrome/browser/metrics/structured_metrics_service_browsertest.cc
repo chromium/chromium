@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, DisabledWhenRevoked) {
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
-                       // TODO(crbug.com/1482522): Re-enable this test
+                       // TODO(crbug.com/40931527): Re-enable this test
                        DISABLED_InMemoryPurgeOnConsentRevoke) {
   auto* sm_service = GetSMService();
 
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
-// TODO(crbug.com/1482059): Re-enable this test
+// TODO(crbug.com/40931189): Re-enable this test
 // Only flaky on chromeos-rel.
 #if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG) && !defined(ADDRESS_SANITIZER)
 #define MAYBE_StagedLogPurgeOnConsentRevoke \
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsServiceDisabled,
   EXPECT_THAT(sm_service->scheduler_.get(), testing::IsNull());
 }
 
-// TODO(https://crbug.com/1513143): Flaky on linux-chromeos-rel.
+// TODO(crbug.com/41485716): Flaky on linux-chromeos-rel.
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
                        DISABLED_PurgeForceRecordedEvents) {
   // This feature is intended only for events that are recorded before user

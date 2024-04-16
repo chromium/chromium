@@ -574,7 +574,7 @@ class DIPSBounceDetectorBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     DIPSBounceDetectorBrowserTest,
-    // TODO(crbug.com/1467570): Re-enable this test
+    // TODO(crbug.com/40924446): Re-enable this test
     DISABLED_AttributeSameSiteIframesCookieClientAccessTo1P) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(
                                       "(Write) -> d.test/title1.html")));
 }
 
-// TODO(crbug.com/1466483): Flaky on Mac.
+// TODO(crbug.com/40276415): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
   DISABLED_AttributeSameSiteIframesCookieServerAccessTo1P
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
 }
 
-// TODO(crbug.com/1454793): Flaky on Mac.
+// TODO(crbug.com/40917101): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DiscardPrerenderedPageCookieClientAccess \
   DISABLED_DiscardPrerenderedPageCookieClientAccess
@@ -1055,8 +1055,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // request for a favicon after prerendering page already accessed (Write) the
   // cookie). To prevent flakiness we check for any such access and test for the
   // expected outcome accordingly.
-  // TODO(crbug.com/1447929): Investigate whether Prerendering pages (same-site)
-  // can be use for evasion.
+  // TODO(crbug.com/40269100): Investigate whether Prerendering pages
+  // (same-site) can be use for evasion.
   const std::string expected_access_type =
       observer.CookieAccessedInPrimaryPage() ? "Read" : "None";
 
@@ -1515,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Verifies server redirects that occur while opening a link in a new tab are
 // properly detected.
-// TODO(crbug.com/1493269): Flaky on Chrome OS and Linux.
+// TODO(crbug.com/40936579): Flaky on Chrome OS and Linux.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OpenServerRedirectURLInNewTab \
   DISABLED_OpenServerRedirectURLInNewTab
@@ -1760,7 +1760,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
 // Tests setting different metrics for the RedirectHeuristic_CookieAccess2 UKM
 // event.
-// TODO(https://crbug.com/1489241): Flaky on multiple platforms.
+// TODO(crbug.com/40934961): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                        DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -2707,7 +2707,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                      " 127.0.0.1/service_worker/)"}));
 }
 
-// TODO(crbug.com/154571): Shared workers are not available on Android.
+// TODO(crbug.com/40290702): Shared workers are not available on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorkerAccess_Storages DISABLED_SharedWorkerAccess_Storages
 #else

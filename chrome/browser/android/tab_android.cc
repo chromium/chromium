@@ -483,11 +483,11 @@ void TabAndroid::OnShow(JNIEnv* env) {
     return;
   }
 
-  // TODO(crbug.com/1368291): When a tab is backgrounded, and then brought again
-  // to the foreground it's TabLoadTracker state gets stuck in LOADING. This
-  // disagrees with the WebContents internal state. So for now we can only trust
-  // UNLOADED. TabLoadTracker::DidStopLoading is not being called correctly
-  // except for the initial load in InitWebContents.
+  // TODO(crbug.com/40868330): When a tab is backgrounded, and then brought
+  // again to the foreground it's TabLoadTracker state gets stuck in LOADING.
+  // This disagrees with the WebContents internal state. So for now we can only
+  // trust UNLOADED. TabLoadTracker::DidStopLoading is not being called
+  // correctly except for the initial load in InitWebContents.
   bool loaded =
       resource_coordinator::TabLoadTracker::Get()->GetLoadingState(
           web_contents_.get()) != mojom::LifecycleUnitLoadingState::UNLOADED &&

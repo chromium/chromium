@@ -2884,7 +2884,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, Status511) {
 // The second check finds no captive portal. The reloader triggers a reload at
 // the same time SSL error handler tries to show an interstitial. Should result
 // in an SSL interstitial.
-// TODO(crbug.com/1271739): Flaky on all platforms.
+// TODO(crbug.com/40805743): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        DISABLED_InterstitialTimerCertErrorAfterSlowLoad) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);

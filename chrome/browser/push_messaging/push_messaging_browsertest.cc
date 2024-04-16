@@ -2642,7 +2642,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 
-// TODO(https://crbug.com/1268294): This test hits the issue. Re-enable after it
+// TODO(crbug.com/40204670): This test hits the issue. Re-enable after it
 // is fixed.
 IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
                        DISABLED_WarningToCorrectRFH_Prerender) {

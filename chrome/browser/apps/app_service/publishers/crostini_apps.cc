@@ -157,7 +157,7 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
 void CrostiniApps::CreateAppOverrides(
     const guest_os::GuestOsRegistryService::Registration& registration,
     App* app) {
-  // TODO(crbug.com/955937): Enable once Crostini apps are managed inside App
+  // TODO(crbug.com/40624403): Enable once Crostini apps are managed inside App
   // Management.
   app->show_in_management = false;
 

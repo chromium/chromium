@@ -226,7 +226,7 @@ export class SettingsSpellCheckPageElement extends
       // Hide list of spell check languages if there is only 1 language
       // and we don't need to display any errors for that language
 
-      // TODO(crbug/1124888): Make hideSpellCheckLanugages_ a computed property
+      // TODO(crbug.com/40147587): Make hideSpellCheckLanugages_ a computed property
       this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
           singleLanguage.downloadDictionaryFailureCount === 0;
     } else {

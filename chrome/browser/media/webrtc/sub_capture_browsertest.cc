@@ -36,7 +36,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gl/gl_switches.h"
 
-// TODO(crbug.com/1215089): Enable this test suite on Lacros.
+// TODO(crbug.com/40184242): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
 //
 // TODO(crbug.com/1353349)  Re-enable for macOS and ChromeOS after flakes are
 // resolved.
-// TODO(crbug.com/1459313): Also flakes on linux-bfcache-rel, so turning the
+// TODO(crbug.com/40919381): Also flakes on linux-bfcache-rel, so turning the
 // test off entirely.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Original track becomes unblocked for sub-capture clone is GCed 3/3.
 //
-// TODO(crbug.com/1356788): Re-enable this test.
+// TODO(crbug.com/40860614): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanUndoSubCaptureOnOriginalTrackAfterCloneIsGarbageCollected) {

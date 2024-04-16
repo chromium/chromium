@@ -265,7 +265,7 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
     return;
   }
 
-  // TODO(crbug.com/894756): Add a test helper that sets this up correctly.
+  // TODO(crbug.com/40597876): Add a test helper that sets this up correctly.
   if (!generation_element_data_) {
     /* This can currently happen in integration tests that are iniated from
     the java side. */

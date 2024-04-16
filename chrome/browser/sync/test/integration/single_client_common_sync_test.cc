@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // postpone their startup. Since such data types were paused (even for a short
   // period), an additional GetUpdates request may be sent during initialization
   // for them.
-  // TODO(crbug.com/1432855): remove once GetUpdates is not issued anymore.
+  // TODO(crbug.com/40264154): remove once GetUpdates is not issued anymore.
   GetUpdatesObserver::GetUpdatesOriginSet get_updates_origins_to_exclude{
       SyncEnums::PROGRAMMATIC};
   ModelTypeSet types_to_exclude{ModelType::ARC_PACKAGE, ModelType::HISTORY,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
   // Verify that there were no unexpected GetUpdates requests during Sync
   // initialization.
-  // TODO(crbug.com/1418329): wait for invalidations to initialize and consider
+  // TODO(crbug.com/40894668): wait for invalidations to initialize and consider
   // making a Commit request. This would help to verify that there are no
   // unnecessary GetUpdates requests after browser restart.
   EXPECT_TRUE(Difference(get_updates_observer.GetAllOrigins(),
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1465272): Deflake and reenable the test.
+// TODO(crbug.com/40275935): Deflake and reenable the test.
 #define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
   DISABLED_ShouldGetTypesWithUnsyncedDataFromSyncService
 #else

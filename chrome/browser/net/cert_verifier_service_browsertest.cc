@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(
     CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest,
     Test) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/1410924): Avoid flake on android browser tests by
+  // TODO(crbug.com/40254617): Avoid flake on android browser tests by
   // requiring the test to always take at least 1 second to finish. Remove this
   // delay once issue 1410924 is resolved.
   base::RunLoop run_loop;

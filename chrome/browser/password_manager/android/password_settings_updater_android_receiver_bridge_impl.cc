@@ -89,7 +89,7 @@ void PasswordSettingsUpdaterAndroidReceiverBridgeImpl::
                               jint setting,
                               jboolean is_part_of_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  // TODO(crbug.com/1289700): Record metrics.
+  // TODO(crbug.com/40212062): Record metrics.
   consumer_->OnSuccessfulSettingChange(
       static_cast<PasswordManagerSetting>(setting));
 }

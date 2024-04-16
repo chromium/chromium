@@ -47,7 +47,7 @@ public class UkmTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
-    // TODO(crbug/1049736): Move this to ukm_browsertest.cc.
+    // TODO(crbug.com/40117796): Move this to ukm_browsertest.cc.
     @Test
     @SmallTest
     public void testHistoryDeleteCheck() throws Exception {

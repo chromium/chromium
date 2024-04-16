@@ -89,7 +89,7 @@ void CheckSecurityState(content::WebContents* tab,
                         security_state::SecurityLevel expected_security_level,
                         int expected_authentication_state) {
   ASSERT_FALSE(tab->IsCrashed());
-  // TODO(crbug.com/1077074): Check if this can be replaced with
+  // TODO(crbug.com/40688528): Check if this can be replaced with
   // GetLastCommittedEntry.
   content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);

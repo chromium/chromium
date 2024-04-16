@@ -398,8 +398,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
   base::OneShotEvent web_contents_released_event_;
 };
 
-// TODO(crbug.com/1464507): Avoid mocking the scheduler in favor of only mocking
-// external dependencies.
+// TODO(crbug.com/40275639): Avoid mocking the scheduler in favor of only
+// mocking external dependencies.
 class TestWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
   TestWebAppCommandScheduler(Profile& profile,

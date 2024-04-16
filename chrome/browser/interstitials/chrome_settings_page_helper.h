@@ -19,7 +19,7 @@ namespace security_interstitials {
 // This class is used to open a Chrome setting page in a security interstitial.
 // The implementation is different on desktop platforms and on Android. On
 // desktop, it opens a new tab and navigation to chrome://settings/*.
-// TODO(crbug.com/1130721): On Android, it creates an intent to launch a
+// TODO(crbug.com/40720989): On Android, it creates an intent to launch a
 // Settings activity.
 class ChromeSettingsPageHelper : public SettingsPageHelper {
  public:

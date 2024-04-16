@@ -509,7 +509,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
       case download::PathValidationResult::SAME_AS_SOURCE:
         break;
 
-      // TODO(crbug.com/1361503): This should trigger a duplicate download
+      // TODO(crbug.com/40863725): This should trigger a duplicate download
       // prompt.
       case download::PathValidationResult::SUCCESS_RESOLVED_CONFLICT:
         break;

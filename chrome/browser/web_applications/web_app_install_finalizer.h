@@ -104,7 +104,7 @@ class WebAppInstallFinalizer {
                        InstallFinalizedCallback callback);
 
   // Write the new WebApp data to disk and update the app.
-  // TODO(https://crbug.com/1196051): Chrome fails to update the manifest
+  // TODO(crbug.com/40759394): Chrome fails to update the manifest
   // if the app window needing update closes at the same time as Chrome.
   // Therefore, the manifest may not always update as expected.
   // Virtual for testing.

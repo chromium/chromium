@@ -134,7 +134,7 @@ void WebAppPolicyManager::Start(
   policy_settings_and_force_installs_applied_ =
       std::move(policy_settings_and_force_installs_applied);
   // When Lacros is enabled, don't run PWA-specific logic in Ash.
-  // TODO(crbug.com/1251491): Consider factoring out logic that should only run
+  // TODO(crbug.com/40792561): Consider factoring out logic that should only run
   // in Ash into a separate class. This way, when running in Ash, we won't need
   // to construct a WebAppPolicyManager.
   bool enable_pwa_support = true;

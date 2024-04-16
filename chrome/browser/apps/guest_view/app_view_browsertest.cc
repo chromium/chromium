@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
   EXPECT_FALSE(exit_observer.did_exit_normally());
 }
 
-// TODO(https://crbug.com/1179298): this is flaky on wayland-ozone.
+// TODO(crbug.com/40169473): this is flaky on wayland-ozone.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_KillGuestCommunicatingWithWrongAppView \
   DISABLED_KillGuestCommunicatingWithWrongAppView

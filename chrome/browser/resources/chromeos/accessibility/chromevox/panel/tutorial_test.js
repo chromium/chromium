@@ -83,7 +83,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   }
 };
 
-// TODO(crbug.com/1501314): Flaky on ChromeOS.
+// TODO(crbug.com/40941587): Flaky on ChromeOS.
 AX_TEST_F('ChromeVoxTutorialTest', 'DISABLED_BasicTest', async function() {
   const mockFeedback = this.createMockFeedback();
   const root = await this.runWithLoadedTree(this.simpleDoc);

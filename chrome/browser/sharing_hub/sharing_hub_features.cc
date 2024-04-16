@@ -27,7 +27,7 @@ bool SharingHubDisabledByPolicy(content::BrowserContext* context) {
 
 // Whether screenshots-related features should be disabled by policy.
 // Currently used by desktop.
-// TODO(crbug.com/1261244): possibly apply to Android features.
+// TODO(crbug.com/40798792): possibly apply to Android features.
 bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
   return prefs->GetBoolean(prefs::kDisableScreenshots);

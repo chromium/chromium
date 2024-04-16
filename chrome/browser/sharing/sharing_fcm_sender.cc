@@ -107,7 +107,7 @@ void SharingFCMSender::SendMessageToFcmTarget(
     return;
   }
 
-  // TODO(crbug.com/1408456): This can probably go away.
+  // TODO(crbug.com/40253551): This can probably go away.
   if (canSendViaVapid) {
     std::optional<SharingSyncPreference::FCMRegistration> fcm_registration =
         sync_preference_->GetFCMRegistration();

@@ -257,7 +257,7 @@ public class TabListFaviconProvider {
                 TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, true);
 
         if (sRoundedGlobeFavicon == null) {
-            // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
+            // TODO(crbug.com/40682607): From Android Developer Documentation, we should avoid
             //  resizing vector drawable.
             Bitmap globeBitmap =
                     getResizedBitmapFromDrawable(
@@ -640,7 +640,7 @@ public class TabListFaviconProvider {
      * Update the favicon color used in normal mode (non-incognito) with latest color setting.
      * Return the same {@link TabFavicon} with updated color in its drawable(s).
      *
-     * TODO(https://crbug.com/1234953): Avoid creating color filter every time.
+     * <p>TODO(crbug.com/40781763): Avoid creating color filter every time.
      */
     private TabFavicon colorFaviconWithTheme(TabFavicon favicon) {
         assert favicon.isRecolorAllowed();

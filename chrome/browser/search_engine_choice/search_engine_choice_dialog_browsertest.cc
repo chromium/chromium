@@ -176,7 +176,7 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
         /*dialog_disabled=*/false);
   }
 
-  // TODO(crbug.com/1468496): Make this function handle multiple browsers.
+  // TODO(crbug.com/40277150): Make this function handle multiple browsers.
   void QuitAndRestoreBrowser(Browser* browser) {
     Profile* profile = browser->profile();
     // Enable SessionRestore to last used pages.

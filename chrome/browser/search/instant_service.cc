@@ -74,7 +74,7 @@ InstantService::InstantService(Profile* profile)
   // Listen for theme installation.
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
-  // TODO(crbug.com/1192394): multiple WebUI pages depend on the theme source
+  // TODO(crbug.com/40757220): multiple WebUI pages depend on the theme source
   // without adding it themselves. This is not causing an issue because the
   // theme source is being added here. The source should be added where it is
   // used and then the following can be removed.

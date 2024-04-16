@@ -64,7 +64,7 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
   CHECK_EQ(started_edge_, static_cast<ui::BackGestureEventSwipeEdge>(edge));
 
   if (progress > 1.f) {
-    // TODO(https://crbug.com/1510932): Happens in fling. Should figure out why
+    // TODO(crbug.com/41483519): Happens in fling. Should figure out why
     // before launch. Cap the progress at 1.f for now.
     LOG(ERROR) << "TabOnBackGestureHandler::OnBackProgressed " << progress;
     progress = 1.f;

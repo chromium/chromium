@@ -11,7 +11,7 @@ import type {QueryState} from './externs.js';
 import {getTemplate} from './router.html.js';
 
 // All valid pages.
-// TODO(crbug.com/1473855): Change this to an enum and use that type for holding
+// TODO(crbug.com/40069898): Change this to an enum and use that type for holding
 //  these values for better type check when `loadTimeData` is no longer needed.
 export const Page = {
   HISTORY: 'history',

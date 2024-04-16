@@ -278,7 +278,7 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
       continue;
 
     // Parse description
-    // TODO(crbug.com/1266076): Need to parse languageCode and save it in
+    // TODO(crbug.com/40801865): Need to parse languageCode and save it in
     // coupon_info_proto.
     coupon_info_proto.set_coupon_description(GetStringFromDict(
         coupon_discount_dict.Find("description"), "title", true));

@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
-// TODO(crbug.com/1488697): Remove circular dependency.
+// TODO(crbug.com/40283709): Remove circular dependency.
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"  // nogncheck
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"

@@ -130,7 +130,7 @@ class NetErrorTabHelperWithPrerenderingTest : public NetErrorTabHelperTest {
   std::list<error_page::DnsProbeStatus> dns_probe_status_queue_;
 };
 
-// TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
+// TODO(crbug.com/40786063): Enable this test on macOS after the issue is fixed.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses \
   DISABLED_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses

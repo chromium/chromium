@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-// TODO(crbug.com/1344609): Test flaky on Mac.
+// TODO(crbug.com/40853067): Test flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MultiProfile DISABLED_MultiProfile
 #else
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-// TODO(crbug.com/1444657): Flaky on MacOS
+// TODO(crbug.com/40064501): Flaky on MacOS
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MultiProfileWithDifferentThresholds \
   DISABLED_MultiProfileWithDifferentThresholds
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleImmediately) {
 
 // It should be possible to focus the bubble with the "focus dialog" hotkey
 // combination (Alt+Shift+A).
-// TODO(https://crbug.com/1350659): Probably flaky on macOS.
+// TODO(crbug.com/40856612): Probably flaky on macOS.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
   DISABLED_CanFocusBubbleWithFocusDialogHotkey
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 
 // It should be possible to focus the bubble with the "rotate pane focus" (F6)
 // hotkey.
-// TODO(crbug.com/1343849): Probably flaky on macOS.
+// TODO(crbug.com/40852599): Probably flaky on macOS.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
   DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey

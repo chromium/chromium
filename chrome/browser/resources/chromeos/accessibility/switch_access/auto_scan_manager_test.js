@@ -101,7 +101,7 @@ TEST_F(
       });
     });
 
-// TODO(crbug.com/1408940): Test is flaky.
+// TODO(crbug.com/40888769): Test is flaky.
 TEST_F(
     'SwitchAccessAutoScanManagerTest', 'DISABLED_EnableAndDisable', function() {
       this.runWithLoadedDesktop(() => {

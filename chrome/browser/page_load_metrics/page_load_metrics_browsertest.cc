@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
 }
 
-// TODO(crbug.com/1324432): Re-enable this test
+// TODO(crbug.com/40839280): Re-enable this test
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        DISABLED_MainFrameViewportRect) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     PageLoadMetricsBrowserTest,
-    // TODO(crbug.com/1324760): Re-enable this test
+    // TODO(crbug.com/40839452): Re-enable this test
     DISABLED_NonZeroMainFrameScrollOffset_NestedSameOriginFrame_MainFrameIntersection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(
   main_frame_intersection_expectation_waiter->Wait();
 }
 
-// TODO(crbug.com/1352092): Fix flakiness.
+// TODO(crbug.com/40234728): Fix flakiness.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_NonZeroMainFrameScrollOffset_NestedCrossOriginFrame_MainFrameIntersection \
   DISABLED_NonZeroMainFrameScrollOffset_NestedCrossOriginFrame_MainFrameIntersection
@@ -1038,7 +1038,7 @@ class PageLoadMetricsPre3pcdBrowserTest : public PageLoadMetricsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1482170): Re-enable this test on Lacros.
+// TODO(crbug.com/40931292): Re-enable this test on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoStatePrefetchMetrics DISABLED_NoStatePrefetchMetrics
 #else
@@ -1242,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoPaintForEmptyDocument) {
                                       0);
 }
 
-// TODO(crbug.com/986642): Flaky on Win and Linux.
+// TODO(crbug.com/41472183): Flaky on Win and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NoPaintForEmptyDocumentInChildFrame \
   DISABLED_NoPaintForEmptyDocumentInChildFrame
@@ -1421,7 +1421,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NonHtmlMainResource) {
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
 }
 
-// TODO(crbug.com/1223288): Test flakes on Chrome OS.
+// TODO(crbug.com/40774566): Test flakes on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_NonHttpOrHttpsUrl DISABLED_NonHttpOrHttpsUrl
 #else
@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_DocumentWriteBlock) {
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
 }
 
-// TODO(crbug.com/1482261): Re-enable this test on Lacros.
+// TODO(crbug.com/40931345): Re-enable this test on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_DocumentWriteReload DISABLED_DocumentWriteReload
 #else
@@ -1613,8 +1613,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWriteScript) {
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
 }
 
-// TODO(crbug.com/712935): Flaky on Linux dbg.
-// TODO(crbug.com/738235): Now flaky on Win and Mac.
+// TODO(crbug.com/40516222): Flaky on Linux dbg.
+// TODO(crbug.com/41328109): Now flaky on Win and Mac.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_BadXhtml) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2476,7 +2476,7 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-// TODO(crbug.com/882077) Disabled due to flaky timeouts on all platforms.
+// TODO(crbug.com/41412649) Disabled due to flaky timeouts on all platforms.
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsResourceLoadBrowserTest,
                        DISABLED_ReceivedAggregateResourceDataLength) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -2825,7 +2825,7 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
   base::test::ScopedFeatureList features_list_;
 };
 
-// TODO(crbug.com/1431821): Flaky on many platforms.
+// TODO(crbug.com/40063969): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
   TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
@@ -3657,7 +3657,7 @@ class PageLoadMetricsBrowserTestCrashedPage
     : public PageLoadMetricsBrowserTestTerminatedPage,
       public ::testing::WithParamInterface<const char*> {};
 
-// TODO(crbug.com/1479116): Very flaky on Lacros.
+// TODO(crbug.com/40280758): Very flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_UkmIsRecordedForCrashedTabPage \
   DISABLED_UkmIsRecordedForCrashedTabPage
@@ -3722,7 +3722,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestAnimatedLCP,
 
 // Tests that a non-animated image's reported LCP values are larger than its
 // load times, when the feature flag for animated image reporting is enabled.
-// TODO(crbug.com/1306713): Flaky on Mac/Linux/Lacros.
+// TODO(crbug.com/40218474): Flaky on Mac/Linux/Lacros.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PageLCPNonAnimatedImage DISABLED_PageLCPNonAnimatedImage
 #else

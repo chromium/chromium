@@ -318,7 +318,7 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           }
         }
       } else {
-        // TODO(https://crbug.com/1238325): Most databases are already open and
+        // TODO(crbug.com/40784064): Most databases are already open and
         // the LOCK prevents us from accessing them.
         LOG(INFO) << "Could not open: " << file << " " << status.ToString();
       }

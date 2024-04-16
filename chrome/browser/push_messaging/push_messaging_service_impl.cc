@@ -1698,7 +1698,7 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
-  // TODO(crbug.com/1122545): Currently, if |status| is unsuccessful, the old
+  // TODO(crbug.com/40146635): Currently, if |status| is unsuccessful, the old
   // subscription remains in SW database and preferences and the refresh is
   // aborted. Instead, one should abort the refresh and retry to refresh
   // periodically.

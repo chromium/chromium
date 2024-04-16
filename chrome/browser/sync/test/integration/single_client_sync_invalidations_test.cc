@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 // ChromeOS doesn't have the concept of sign-out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1315138): Enable test on Android once signout is supported.
+// TODO(crbug.com/40833316): Enable test on Android once signout is supported.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SignoutAndSignin DISABLED_SignoutAndSignin
 #else

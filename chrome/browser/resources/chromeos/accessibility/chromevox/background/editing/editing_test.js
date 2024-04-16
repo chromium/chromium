@@ -1915,7 +1915,7 @@ AX_TEST_F(
       // that.
     });
 
-// TODO(https://crbug.com/1254742): flakes due to underlying bug with
+// TODO(crbug.com/40794522): flakes due to underlying bug with
 // accessibility intents.
 AX_TEST_F(
     'ChromeVoxEditingTest', 'DISABLED_ParagraphNavigation', async function() {
@@ -2342,7 +2342,7 @@ AX_TEST_F(
     });
 
 // Regression test that large text areas produce output.
-// TODO(crbug.com/1503691): re-enable this test once its flakiness is resolved.
+// TODO(crbug.com/40944160): re-enable this test once its flakiness is resolved.
 AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `

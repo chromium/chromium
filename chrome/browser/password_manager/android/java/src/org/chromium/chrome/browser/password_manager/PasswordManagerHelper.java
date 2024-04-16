@@ -204,7 +204,7 @@ public class PasswordManagerHelper {
                     (syncService != null)
                             ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
                             : "";
-            // TODO(crbug.com/1507785): Find an alternative to account settings intent.
+            // TODO(crbug.com/40948486): Find an alternative to account settings intent.
             credentialManagerLauncher.getAccountSettingsIntent(
                     accountName,
                     (intent) ->
@@ -437,7 +437,7 @@ public class PasswordManagerHelper {
 
         // Request for overlay flow, Play Store will fallback to the default
         // behaviour if overlay is not available.
-        // TODO(crbug.com/1348506): Use AlleyOop v3 overlay UI after fixing Chrome restart
+        // TODO(crbug.com/40855336): Use AlleyOop v3 overlay UI after fixing Chrome restart
         // during the GMS Core installation.
         // intent.putExtra("overlay", true);
 

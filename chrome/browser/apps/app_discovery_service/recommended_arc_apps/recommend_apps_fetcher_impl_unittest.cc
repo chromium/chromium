@@ -320,7 +320,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   void VerifyArcRequestHeaders(
       const AppListRequestHeaderReader& header_reader) {
     EXPECT_EQ(kTestArcSdkVersion, header_reader.sdk_version());
-    // TODO(crbug.com/1345149): Verify that fingerprint is only set when
+    // TODO(crbug.com/40232048): Verify that fingerprint is only set when
     // kAppDiscoveryForOobe is enabled.
     EXPECT_EQ(kTestDeviceFingerprint, header_reader.device_fingerprint());
     EXPECT_EQ(kTestArcPlayStoreVersion, header_reader.play_store_version());

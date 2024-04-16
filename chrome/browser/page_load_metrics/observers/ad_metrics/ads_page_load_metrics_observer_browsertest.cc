@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an empty embedded ad isn't reported at all.
-// TODO(crbug.com/1226500): This test is flaky.
+// TODO(crbug.com/40188872): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_OriginStatusMetricEmbeddedEmpty) {
   base::HistogramTester histogram_tester;
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       static_cast<int>(page_load_metrics::OriginStatus::kCross));
 }
 
-// TODO(crbug.com/1326576): Re-enable this test
+// TODO(crbug.com/40840626): Re-enable this test
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_AverageViewportAdDensity) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       expected_page_density_height);
 }
 
-// TODO(crbug.com/1352329): Flaky on Lacros bots.
+// TODO(crbug.com/40857704): Flaky on Lacros bots.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PageAdDensityMultipleFrames DISABLED_PageAdDensityMultipleFrames
 #else
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 // Creates a frame with display:none styling and verifies that it has an
 // empty intersection with the main frame.
 //
-// TODO(crbug.com/1121444): This test is disabled due to flaky failures on
+// TODO(crbug.com/40715497): This test is disabled due to flaky failures on
 // multiple platforms.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                        DISABLED_PageAdDensityIgnoreDisplayNoneFrame) {
@@ -1009,8 +1009,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
-// TODO(https://crbug.com/1234339): Test is flaky.
-// TODO(https://crbug.com/1495823)
+// TODO(crbug.com/40781435): Test is flaky.
+// TODO(crbug.com/40286659)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
 #else
@@ -1229,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       true);
 }
 
-// TODO(https://crbug.com/929136): Investigate why setting display: none on the
+// TODO(crbug.com/41439596): Investigate why setting display: none on the
 // frame will cause size updates to not be received. Verify that we record the
 // correct sizes for display: none iframes.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest, FramePixelSize) {
@@ -2310,7 +2310,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that rAF events are measured as part of the cpu metrics.
-// TODO(crbug.com/1305274): Flaky on multiple platforms.
+// TODO(crbug.com/40826975): Flaky on multiple platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TwoRAFFramesTriggerCpuUpdates \

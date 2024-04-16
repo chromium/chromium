@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   policies.Erase(policy::key::kExtensionInstallForcelist);
   UpdateProviderPolicy(policies);
 
-  // TODO(crbug.com/1042187)
+  // TODO(crbug.com/40668351)
   // Extension should be uninstalled now. It would be better to keep it, but it
   // doesn't happen for now.
   ASSERT_FALSE(extension_registry()->GetExtensionById(
@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // Verifies that if the cache entry contains inconsistent extension version,
 // the crx installation fails and download of a new crx file is attempted.
 //
-// TODO(crbug.com/1357637): Fix this test. It doesn't alway pass.
+// TODO(crbug.com/40236711): Fix this test. It doesn't alway pass.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        DISABLED_CrxVersionInconsistencyInCache) {
   base::ScopedAllowBlockingForTesting allow_io;
@@ -1669,7 +1669,7 @@ IN_PROC_BROWSER_TEST_F(
 // if there are no computed_hashes.json for it. Note that this behavior will
 // change in the future.
 // See https://crbug.com/958794#c22 for details.
-// TODO(https://crbug.com/1044572): Change this test so extension without hashes
+// TODO(crbug.com/40669814): Change this test so extension without hashes
 // will be also reinstalled.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        CorruptedNonWebstoreExtensionWithoutHashesRemained) {

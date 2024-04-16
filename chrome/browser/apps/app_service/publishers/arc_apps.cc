@@ -437,7 +437,7 @@ bool PackageShouldDefaultHandleLinksInBrowser(const std::string& package_name) {
 // Returns true if the given `profile` is managed, and therefore should open
 // supported links inside the app by default.
 bool IsProfileManaged(Profile* profile) {
-  // TODO(crbug.com/1454381): Remove once we have policy control over link
+  // TODO(crbug.com/40272292): Remove once we have policy control over link
   // capturing behavior.
   return profile->GetProfilePolicyConnector()->IsManaged();
 }

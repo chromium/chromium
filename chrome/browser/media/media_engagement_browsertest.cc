@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
-// TODO(crbug.com/1177113) Re-enable test
+// TODO(crbug.com/40748282) Re-enable test
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DISABLED_DoNotRecordEngagement_PlaybackStopped) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, SessionNewTabCrossOrigin) {
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1498676) Flaky on Mac.
+// TODO(crbug.com/40939686) Flaky on Mac.
 #define MAYBE_SessionMultipleTabsClosingParent \
   DISABLED_SessionMultipleTabsClosingParent
 #else

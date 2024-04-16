@@ -168,7 +168,7 @@ bool TouchToFillDelegateAndroidImpl::IntendsToShowTouchToFill(
 bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     const FormData& form,
     const FormFieldData& field) {
-  // TODO(crbug.com/1386143): store only FormGlobalId and FieldGlobalId instead
+  // TODO(crbug.com/40247130): store only FormGlobalId and FieldGlobalId instead
   // to avoid that FormData and FormFieldData may become obsolete during the
   // bottomsheet being open.
   query_form_ = form;
@@ -219,10 +219,10 @@ bool TouchToFillDelegateAndroidImpl::IsShowingTouchToFill() {
   return ttf_payment_method_state_ == TouchToFillState::kIsShowing;
 }
 
-// TODO(crbug.com/1348538): Create a central point for TTF hiding decision.
+// TODO(crbug.com/40233391): Create a central point for TTF hiding decision.
 void TouchToFillDelegateAndroidImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
-    // TODO(crbug.com/1417442): This is to prevent calling virtual functions in
+    // TODO(crbug.com/40257323): This is to prevent calling virtual functions in
     // destructors in the following call chain:
     //       ~ContentAutofillDriver()
     //   --> ~BrowserAutofillManager()
@@ -276,7 +276,7 @@ void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
   CHECK(pdm);
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
-  // TODO(crbug.com/1480992): Figure out why `card` is sometimes nullptr.
+  // TODO(crbug.com/40071928): Figure out why `card` is sometimes nullptr.
   if (!card) {
     return;
   }

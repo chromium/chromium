@@ -197,7 +197,7 @@ SyncTest::SyncTest(TestType test_type)
   if (num_clients_ > 1) {
     // Workaround to turn off single client optimization for sync standalone
     // invalidations in tests.
-    // TODO(crbug.com/1438806): Remove once resolved.
+    // TODO(crbug.com/40908214): Remove once resolved.
     enabled_features.push_back(
         {switches::kSyncFilterOutInactiveDevicesForSingleClient,
          {{switches::kSyncActiveDeviceMargin.name, "-2d"}}});
@@ -292,7 +292,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(syncer::kSyncShortNudgeDelayForTest);
   }
 
-  // TODO(crbug.com/1060366): This is a temporary switch to allow having two
+  // TODO(crbug.com/40122009): This is a temporary switch to allow having two
   // profiles syncing the same account. Having a profile outside of the user
   // directory isn't supported in Chrome.
   if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir)) {
@@ -301,7 +301,7 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (cl->HasSwitch(syncer::kSyncServiceURL)) {
-    // TODO(crbug.com/1243653): setup real SecurityDomainService if
+    // TODO(crbug.com/40787402): setup real SecurityDomainService if
     // server_type_ == EXTERNAL_LIVE_SERVER.
     // Effectively disables interaction with SecurityDomainService for E2E
     // tests.
@@ -683,7 +683,7 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
       // AwaitQuiescence() because Android commits Session for "about:blank"
       // page, hence AwaitQuiescence() would wait for downloading updates
       // forever.
-      // TODO(crbug.com/1188034): remove this workaround once SetupSync doesn't
+      // TODO(crbug.com/40173160): remove this workaround once SetupSync doesn't
       // rely on self-notifications.
       DCHECK(GetSyncService(client_index)->IsEngineInitialized());
       GetSyncService(client_index)->SetInvalidationsForSessionsEnabled(true);
@@ -818,7 +818,7 @@ void SyncTest::TearDownOnMainThread() {
   profiles_.clear();
   clients_.clear();
   profile_to_fake_gcm_driver_.clear();
-  // TODO(crbug.com/1260897): There are various other Profile-related members
+  // TODO(crbug.com/40798524): There are various other Profile-related members
   // around like profile_to_*_map_ - those should probably be cleaned up too.
 
 #if !BUILDFLAG(IS_ANDROID)

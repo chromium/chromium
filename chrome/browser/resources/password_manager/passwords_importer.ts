@@ -214,7 +214,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private closeDialog_() {
     this.dialogState_ = DialogState.NO_DIALOG;
-    // TODO(crbug/1432962): Make sure that focus behaves correctly when the
+    // TODO(crbug.com/40264206): Make sure that focus behaves correctly when the
     // dialog is closed.
   }
 
@@ -482,7 +482,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private getFailedEntryErrorMessage_(
       status: chrome.passwordsPrivate.ImportEntryStatus): string {
-    // TODO(crbug/1434221): Use constants for length limits.
+    // TODO(crbug.com/40264637): Use constants for length limits.
     switch (status) {
       case chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD:
         return this.i18n('importPasswordsMissingPassword');

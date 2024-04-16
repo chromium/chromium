@@ -345,7 +345,7 @@ class ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor
   }
 };
 
-// TODO(crbug.com/1204127): Fix flakiness.
+// TODO(crbug.com/40763886): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerAndServiceWorkerInterceptor,
                        DISABLED_RegisterFetchListenerForHTMLHandler) {
   WebContents* web_contents =

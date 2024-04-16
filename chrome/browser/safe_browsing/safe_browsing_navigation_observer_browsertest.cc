@@ -2553,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   EXPECT_EQ(4, referrer_chain.size());
   VerifyReferrerChainEntry(
       new_window_subframe_url,  // url
-      // TODO(crbug.com/1300014): this should be |new_window_url|.
+      // TODO(crbug.com/40823953): this should be |new_window_url|.
       GURL(),                         // main_frame_url
       ReferrerChainEntry::EVENT_URL,  // type
       test_server_ip,                 // ip_address
@@ -3392,7 +3392,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            referrer_chain.Get(0));
 }
 
-// TODO(crbug.com/1247228): Test is flaky across multiple platforms.
+// TODO(crbug.com/40789803): Test is flaky across multiple platforms.
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                        DISABLED_AllowlistDomainsRemoved_RecentNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

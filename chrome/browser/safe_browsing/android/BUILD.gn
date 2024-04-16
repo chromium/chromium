@@ -29,7 +29,7 @@ source_set("android") {
     # NOTE: This target cannot depend on //chrome/browser as the latter
     # indirectly depends on it. As a result, we need to add some dependencies
     # explicitly here to avoid flaky build failures that otherwise can occur.
-    # TODO(crbug.com/1222101): Resolve the circular dependency structure so
+    # TODO(crbug.com/40773813): Resolve the circular dependency structure so
     # that workarounds aren't needed.
     "//chrome/common",
     "//content/public/browser",

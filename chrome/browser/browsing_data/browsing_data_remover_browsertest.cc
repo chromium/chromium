@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MAYBE_Database) {
 // with ConditionalCacheDeletionHelper. Whether ConditionalCacheDeletionHelper
 // actually deletes the correct entries is tested
 // in ConditionalCacheDeletionHelperBrowsertest.
-// TODO(crbug.com/817417): check the cache size instead of stopping the server
+// TODO(crbug.com/41373874): check the cache size instead of stopping the server
 // and loading the request again.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Cache) {
   // Load several resources.
@@ -742,8 +742,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Cache) {
 // Note that there is a race between crashing the network service and clearing
 // the cache, so the test might flakily fail if the tested behavior does not
 // work.
-// TODO(crbug.com/813882): test retry behavior by validating the cache is empty
-// after the crash.
+// TODO(crbug.com/40563720): test retry behavior by validating the cache is
+// empty after the crash.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        ClearCacheAndNetworkServiceCrashes) {
   if (!content::IsOutOfProcessNetworkService())
@@ -1522,7 +1522,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 }
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-// TODO(crbug.com/1469354): Test is flaky on Mac.
+// TODO(crbug.com/40925336): Test is flaky on Mac.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #define MAYBE_SessionOnlyStorageRemoved DISABLED_SessionOnlyStorageRemoved
 #else

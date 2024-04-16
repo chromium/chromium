@@ -209,7 +209,7 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
   if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
     trusted_vault_service = TrustedVaultServiceFactory::GetForProfile(profile);
     if (!trusted_vault_service) {
-      // TODO(crbug.com/1434661): Is it possible? Ideally, this should be
+      // TODO(crbug.com/40264840): Is it possible? Ideally, this should be
       // replaced with CHECK(trusted_vault_service).
       return;
     }

@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
   ExpectDeleteLastSessionCalled(2);
 }
 
-// TODO(crbug.com/1487680): flaky.
+// TODO(crbug.com/40283363): flaky.
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
                        DISABLED_RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.

@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
 // Tests that destroying a profile while updating will correctly remove the
 // existing tasks. An incognito browser is used because a regular profile is
 // never truly destroyed until browser shutdown (See https://crbug.com/88586).
-// TODO(crbug.com/1168407): Fix the flakiness and re-enable this.
+// TODO(crbug.com/40743320): Fix the flakiness and re-enable this.
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
                        DISABLED_DestroyedProfile) {
   StartUpdating();

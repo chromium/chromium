@@ -16,7 +16,7 @@ namespace safe_browsing {
 
 namespace {
 
-// TODO(crbug.com/1494413): Use EnumTraits for these methods.
+// TODO(crbug.com/40937112): Use EnumTraits for these methods.
 safe_browsing::RemoteHostInfo::ProtocolType
 WebRequestProtocolTypeToRemoteHostInfoProtocolType(
     mojom::WebRequestProtocolType protocol_type) {

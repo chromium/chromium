@@ -232,7 +232,7 @@ class AccountProfileMapper
   // particular to migrate old profiles that were created before this class and
   // don't have their Gaia IDs populated. This migrates both Dice profiles and
   // the Ash main profile.
-  // TODO(https://crbug.com/1266485): Consider deleting this code once all Dice
+  // TODO(crbug.com/40802153): Consider deleting this code once all Dice
   // profiles were converted.
   void MigrateOldProfiles();
 

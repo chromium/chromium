@@ -7,7 +7,7 @@
 
 void PrerenderWebContentsDelegateImpl::PrerenderWebContentsCreated(
     content::WebContents* prerender_web_contents) {
-  // TODO(https://crbug.com/1350676): Audit attached TabHelpers and add tests
+  // TODO(crbug.com/40234240): Audit attached TabHelpers and add tests
   // for cases that need special treatment like PageLoadMetricsObserver and
   // Extensions.
   TabHelpers::AttachTabHelpers(prerender_web_contents);

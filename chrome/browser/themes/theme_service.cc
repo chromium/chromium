@@ -966,7 +966,7 @@ void ThemeService::SetThemePrefsForExtension(
   if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
     NtpCustomBackgroundService::ResetNtpTheme(profile_);
     // Extensions are incompatible with device themes so turn them off.
-    // TODO(crbug.com/1477021): Remove this if we can otherwise separate
+    // TODO(crbug.com/40280173): Remove this if we can otherwise separate
     // extension and device themes from attempting to apply at the same time.
     profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
                                      false);

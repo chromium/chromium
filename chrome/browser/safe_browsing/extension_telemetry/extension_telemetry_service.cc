@@ -564,7 +564,7 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
 void ExtensionTelemetryService::OnUploadComplete(
     bool success,
     const std::string& response_data) {
-  // TODO(https://crbug.com/1408126): Add `config_manager_` implementation
+  // TODO(crbug.com/40253384): Add `config_manager_` implementation
   // to check server response and update config.
   if (success) {
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());

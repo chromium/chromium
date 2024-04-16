@@ -130,7 +130,7 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
 
   auto entity_data = std::make_unique<syncer::EntityData>();
   entity_data->name = app.untranslated_name();
-  // TODO(crbug.com/1103570): Remove this fallback later.
+  // TODO(crbug.com/40139320): Remove this fallback later.
   if (entity_data->name.empty())
     entity_data->name = app.start_url().spec();
 

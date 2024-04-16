@@ -550,7 +550,7 @@ WebContentsState::CreateSingleNavigationStateAsByteBuffer(
   url::Origin initiator_origin;
   if (jinitiator_origin)
     initiator_origin = url::Origin::FromJavaObject(jinitiator_origin);
-  // TODO(https://crbug.com/1399608): Deal with getting initiator_base_url
+  // TODO(crbug.com/40062134): Deal with getting initiator_base_url
   // plumbed here too.
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationController::CreateNavigationEntry(

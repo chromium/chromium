@@ -166,7 +166,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
 
     // Make sure RegisterClient calls for storage are finished to avoid flaky
     // crashes in QuotaManagerImpl::RegisterClient on test shutdown.
-    // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
+    // TODO(crbug.com/40170877) : Remove this when 1182630 is fixed.
     extensions::util::GetStoragePartitionForExtensionId(extenson_id, profile());
     task_environment()->RunUntilIdle();
 
@@ -461,7 +461,7 @@ TEST_F(ThemeServiceTest, ThemeUpgrade) {
 }
 
 TEST_F(ThemeServiceTest, NTPLogoAlternate) {
-  // TODO(https://crbug.com/1039006): Fix ScopedTempDir deletion errors on Win.
+  // TODO(crbug.com/40666609): Fix ScopedTempDir deletion errors on Win.
 
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile());
@@ -604,7 +604,7 @@ TEST_F(ThemeServiceTest, UseDefaultTheme_DisableNtpThemeTest) {
 }
 
 TEST_P(ColorProviderTest, OmniboxContrast) {
-  // TODO(crbug.com/1336315): Windows platform high contrast colors are
+  // TODO(crbug.com/40847629): Windows platform high contrast colors are
   // not sufficiently high-contrast to pass this test.
 #if BUILDFLAG(IS_WIN)
   if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast) {
@@ -612,7 +612,7 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
   }
 #endif
 #if BUILDFLAG(IS_LINUX)
-  // TODO(crbug/1521414): Linux platform native dark mode colors aren't
+  // TODO(crbug.com/41494383): Linux platform native dark mode colors aren't
   //                      sufficiently high contrast to pass.
   if (std::get<SystemTheme>(GetParam()) == SystemTheme::kCustom &&
       std::get<ui::NativeTheme::ColorScheme>(GetParam()) ==
@@ -689,7 +689,7 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
     check_sufficient_contrast(ids[0], ids[1]);
   }
 #if !BUILDFLAG(USE_GTK) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1336796): GTK and LaCrOS do not have a sufficiently
+  // TODO(crbug.com/40847971): GTK and LaCrOS do not have a sufficiently
   // high-contrast selected row color to pass this test.
   if (std::get<ContrastMode>(GetParam()) == ContrastMode::kHighContrast) {
     check_sufficient_contrast(kColorOmniboxResultsBackgroundSelected,

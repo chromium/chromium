@@ -2081,7 +2081,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
       1, IsLacrosEnabled() ? AppTypeNameV2::kStandaloneBrowserWebAppWindow
                            : AppTypeNameV2::kWebWindow);
 
-  // TODO(crbug.com/1253250): Register non-mojom apps and use
+  // TODO(crbug.com/40199106): Register non-mojom apps and use
   // AppServiceProxy::LaunchAppWithParams to test launching.
   proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
       kWebAppId2, LaunchContainer::kLaunchContainerTab,

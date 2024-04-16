@@ -827,10 +827,10 @@ class SessionRestoreImpl : public BrowserListObserver {
     // why some browsers don't have an active tab on startup.
     CHECK(!window.tabs.empty());
 
-    // TODO(crbug.com/930991): Check that tab groups are contiguous in |window|
-    // to ensure tabs will not be reordered when restoring. This is not possible
-    // yet due the ordering of TabStripModelObserver notifications in an edge
-    // case.
+    // TODO(crbug.com/41440719): Check that tab groups are contiguous in
+    // |window| to ensure tabs will not be reordered when restoring. This is not
+    // possible yet due the ordering of TabStripModelObserver notifications in
+    // an edge case.
 
     const int selected_tab_index = std::clamp(
         window.selected_tab_index, 0, static_cast<int>(window.tabs.size() - 1));

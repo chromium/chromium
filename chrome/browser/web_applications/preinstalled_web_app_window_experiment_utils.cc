@@ -86,7 +86,7 @@ const char kAppIdsWithUserOverriddenDisplayModePrefKey[] =
     "display_mode";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(crbug.com/1385246): Delete prefs when experiment ends (likely by end
+  // TODO(crbug.com/40246684): Delete prefs when experiment ends (likely by end
   // of 2023).
   registry->RegisterDictionaryPref(kWebAppPreinstalledAppWindowExperimentPref);
   registry->RegisterListPref(kAppIdsLaunchedBeforePrefKey);

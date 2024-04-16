@@ -259,7 +259,7 @@ void NtpBackgroundService::FetchCollectionImageInfo(
     const std::string& collection_id) {
   collection_images_error_info_.ClearError();
   // Ignore subsequent requests to fetch collection image info.
-  // TODO(crbug.com/1454463): Prioritize the latest request to fetch collection
+  // TODO(crbug.com/40916951): Prioritize the latest request to fetch collection
   // images.
   if (!requested_collection_id_.empty()) {
     return;

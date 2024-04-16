@@ -279,7 +279,7 @@ export class NearbyConfirmationPageElement extends
   private onAccept_() {
     this.confirmationManager.accept().then(
         _result => {
-            // TODO(crbug.com/1123934): Show error if !result.success
+            // TODO(crbug.com/40147171): Show error if !result.success
         });
   }
 

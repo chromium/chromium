@@ -26,7 +26,7 @@ class NetworkTraversalIceConfigFetcher
   NetworkTraversalIceConfigFetcher& operator=(
       const NetworkTraversalIceConfigFetcher& other) = delete;
 
-  // TODO(crbug.com/1124392) - Cache configs fetched from server.
+  // TODO(crbug.com/40147375) - Cache configs fetched from server.
   void GetIceServers(GetIceServersCallback callback) override;
 
  private:

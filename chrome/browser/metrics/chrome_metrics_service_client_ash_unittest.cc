@@ -50,7 +50,7 @@ namespace {
 using TestEvent1 = ukm::builders::PageLoad;
 
 // Needed to fake System Profile which is provided when ukm report is generated.
-// TODO(crbug/1396482): Refactor to remove the classes needed to fake
+// TODO(crbug.com/40249492): Refactor to remove the classes needed to fake
 // SystemProfile.
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {

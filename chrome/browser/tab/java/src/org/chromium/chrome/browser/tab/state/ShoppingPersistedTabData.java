@@ -851,10 +851,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     /**
      * @return {@link PriceDrop} relating to the offer for the {@link ShoppingPersistedTabData}
-     * TODO(crbug.com/1145770) Implement getPriceDrop to only return a result if there is
-     * actually a price drop. Ensure priceString and previousPriceString are integers.
-     * Deprecate getPrice and getPriceString(). Change price and previousPriceString
-     * representations to be numeric to make drop comparison easier.
+     *     TODO(crbug.com/40156017) Implement getPriceDrop to only return a result if there is
+     *     actually a price drop. Ensure priceString and previousPriceString are integers. Deprecate
+     *     getPrice and getPriceString(). Change price and previousPriceString representations to be
+     *     numeric to make drop comparison easier.
      */
     public PriceDrop getPriceDropLegacy() {
         assert mPriceDropMethod == PriceDropMethod.LEGACY;
@@ -938,7 +938,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return false;
     }
 
-    // TODO(crbug.com/1151156) Make parameters finch configurable
+    // TODO(crbug.com/40158181) Make parameters finch configurable
     private static int getMinimumDroppedThresholdPercentage() {
         return MINIMUM_DROP_PERCENTAGE;
     }
@@ -1001,7 +1001,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @Override
     public boolean deserialize(@Nullable ByteBuffer bytes) {
-        // TODO(crbug.com/1135573) add in metrics for serialize and deserialize
+        // TODO(crbug.com/40151939) add in metrics for serialize and deserialize
         // Do not attempt to deserialize if the bytes are null
         if (bytes == null || !bytes.hasRemaining()) {
             return false;

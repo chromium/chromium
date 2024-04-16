@@ -76,7 +76,7 @@ void PlatformAuthProviderManager::SetEnabled(bool enabled,
   on_enable_complete_ = std::move(on_complete);
   StartFetchOrigins();
 
-  // TODO(crbug.com/1246839): Users may add/remove WebAccounts, which could
+  // TODO(crbug.com/40196687): Users may add/remove WebAccounts, which could
   // change the set of origins. Consider polling on a low-frequency timer and/or
   // using a `WebAccountMonitor` (obtained from `WebAuthenticationCoreManager`)
   // to watch for account removals. I don't see a way to watch for additions.

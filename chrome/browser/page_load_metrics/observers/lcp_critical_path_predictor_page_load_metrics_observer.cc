@@ -161,8 +161,8 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   std::optional<predictors::LcppData> lcpp_data_prelearn =
       predictor ? predictor->GetLcppData(*commit_url_) : std::nullopt;
 
-  // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
-  // this. Unflag the feature.
+  // TODO(crbug.com/40517495): kSpeculativePreconnectFeature flag can also
+  // affect this. Unflag the feature.
   if (lcpp_data_inputs_.has_value()
       // Don't learn LCPP when prerender to avoid data skew. Activation LCP
       // should be much shorter than regular LCP.

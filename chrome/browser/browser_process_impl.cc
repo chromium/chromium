@@ -965,7 +965,7 @@ IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {
 
 const std::string& BrowserProcessImpl::GetApplicationLocale() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1033644): Remove #if.
+  // TODO(crbug.com/40663419): Remove #if.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif
   DCHECK(!locale_.empty());
@@ -1331,7 +1331,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
       providers;
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1373092): For Windows, continue to add providers behind
+  // TODO(crbug.com/40241934): For Windows, continue to add providers behind
   // features, as support for them is added.
   if (base::FeatureList::IsEnabled(features::kEnableDPAPIEncryptionProvider)) {
     // The DPAPI key provider requires OSCrypt::Init to have already been called
@@ -1585,7 +1585,7 @@ void BrowserProcessImpl::Unpin() {
 
   chrome::ShutdownIfNeeded();
 
-  // TODO(crbug.com/967603): remove when root cause is found.
+  // TODO(crbug.com/40629374): remove when root cause is found.
   CHECK_EQ(BrowserList::GetInstance()->size(), 0u);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

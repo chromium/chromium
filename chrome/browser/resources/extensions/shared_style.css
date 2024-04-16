@@ -99,7 +99,7 @@ a[href] {
   margin-inline-end: var(--cr-section-padding);
 
   /* Makes the tappable area fill its parent.
-   * TODO(crbug.com/949697): This is an explicit reminder to override
+   * TODO(crbug.com/41451251): This is an explicit reminder to override
    * once .separator styling is extracted from settings. */
   margin-inline-start: 0;
 }

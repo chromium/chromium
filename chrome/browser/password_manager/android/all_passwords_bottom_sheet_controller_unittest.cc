@@ -406,7 +406,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        ShowMigrationWarningOnPasswordFillIfEnabled) {
-  // TODO(crbug.com/1484686): Migration warning isn't reached if authenticator
+  // TODO(crbug.com/40932864): Migration warning isn't reached if authenticator
   // is present.
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP();

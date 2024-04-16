@@ -55,7 +55,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   }
 
   void TearDown() override {
-    // TODO(crbug.com/1269414) This should call
+    // TODO(crbug.com/40205024) This should call
     // crash_reporter::ResetCrashKeysForTesting() once
     // ChromeUserManagerImpl::UpdateNumberOfUsers allows the static
     // local crash_key to be cleared between tests.
@@ -84,7 +84,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   EXPECT_EQ(expected_breadcrumbs, GetBreadcrumbsCrashKeyValue());
 }
 
-// TODO(crbug.com/1255177): re-enable the test once this Breakpad bug is fixed.
+// TODO(crbug.com/40199927): re-enable the test once this Breakpad bug is fixed.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ProductDataOverflow DISABLED_ProductDataOverflow
 #else

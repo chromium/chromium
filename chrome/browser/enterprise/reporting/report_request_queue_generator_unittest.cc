@@ -51,7 +51,7 @@ const char kActiveProfileName2[] = "active_profile2";
 
 }  // namespace
 
-// TODO(crbug.com/1103732): Get rid of chrome/browser dependencies and then
+// TODO(crbug.com/40704763): Get rid of chrome/browser dependencies and then
 // move this file to components/enterprise/browser.
 class ReportRequestQueueGeneratorTest : public ::testing::Test {
  public:

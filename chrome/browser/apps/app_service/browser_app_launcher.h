@@ -52,7 +52,7 @@ class BrowserAppLauncher {
   // Deprecated. Prefer `LaunchAppWithParams()` or `LaunchAppWithIntent`.
   // This interface is deprecated in production code, as using it might cause
   // behaviour difference between the production code and test code.
-  // TODO(crbug.com/1289100): Remove this interface if all usages are removed.
+  // TODO(crbug.com/40211799): Remove this interface if all usages are removed.
   content::WebContents* LaunchAppWithParamsForTesting(AppLaunchParams params);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

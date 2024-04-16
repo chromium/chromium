@@ -1344,7 +1344,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
   // showing even though the user proceeded through it in a regular tab.
   WebContents* app_tab = app_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(app_tab));
-  // TODO(crbug.com/1154877): Apps are not setting the right security state in
+  // TODO(crbug.com/40735115): Apps are not setting the right security state in
   // this case, so we only check the presence of the interstitial (inside Wait
   // ForInterstitial) and the behavior after clicking through.
   // After the bug is fixed, add a call to CheckAuthenticationBrokenState
@@ -1654,7 +1654,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MarkDataAsNonSecure) {
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
-// TODO(crbug.com/1148302): This class directly calls
+// TODO(crbug.com/40156980): This class directly calls
 // `UnsafelyGetNSSCertDatabaseForTesting()` that causes crash at the moment
 // and is never called from Lacros-Chrome. This should be revisited when there
 // is a solution for the client certificates settings page on Lacros-Chrome.
@@ -1691,7 +1691,7 @@ class SSLUITestWithClientCert : public SSLUITestBase {
 // Visit a HTTPS page which requires client cert authentication. The client
 // cert will be selected automatically, then a test which uses WebSocket runs.
 //
-// TODO(https://crbug.com/1279930): disabled because of race in when certs
+// TODO(crbug.com/40811167): disabled because of race in when certs
 // are incorporated.
 IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // Import a client cert for test.
@@ -2357,7 +2357,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureContentTwoTabs) {
 // Visits two pages from the same origin: one that runs insecure content and one
 // that doesn't.  The test checks that we propagate the insecure content state
 // from one to the other.
-// TODO(crbug.com/1112300): Flaky
+// TODO(crbug.com/40709634): Flaky
 IN_PROC_BROWSER_TEST_F(SSLUITest, DISABLED_TestRunsInsecureContentTwoTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(https_server_.Start());
@@ -3193,7 +3193,7 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
 // This test, and the related test TestUnsafeContentsWithUserException, verify
 // that if unsafe content is loaded but the host of that unsafe content has a
 // user exception, the content runs and the security style is downgraded.
-// TODO(crbug.com/1107659): Disabled due to flakiness.
+// TODO(crbug.com/40707016): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
                        DISABLED_TestUnsafeContentsInWorkerWithUserException) {
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -6148,7 +6148,7 @@ IN_PROC_BROWSER_TEST_F(
           tab);
   // Currently the interstitial is only displayed when back/forward cache is
   // enabled, so return early when the feature is disabled.
-  // TODO(https://crbug.com/1375961): Fix this.
+  // TODO(crbug.com/40243001): Fix this.
   if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_FALSE(helper->IsDisplayingInterstitial());
     return;

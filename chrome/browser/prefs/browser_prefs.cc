@@ -2617,7 +2617,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 11/2023, but DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/1445497): The pref kPasswordsUseUPMLocalAndSeparateStores
+  // TODO(crbug.com/40268177): The pref kPasswordsUseUPMLocalAndSeparateStores
   // and this call (to compute said pref) should be removed once
   // kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration is launched and
   // enough clients have migrated. UsesSplitStoresAndUPMForLocal() should be

@@ -131,7 +131,7 @@ class MultipleProfileDeletionObserver
     MaybeQuit();
   }
 
-  // TODO(https://crbug.com/704601): remove this code when bug is fixed.
+  // TODO(crbug.com/41309128): remove this code when bug is fixed.
   void OnBrowsingDataRemoverWouldComplete(
       base::OnceClosure continue_to_completion) {
     std::move(continue_to_completion).Run();
@@ -290,7 +290,7 @@ class ProfileManagerBrowserTest : public ProfileManagerBrowserTestBase,
 
 // CrOS multi-profiles implementation is too different for these tests.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1290803): Test failed on Mac.
+// TODO(crbug.com/40818380): Test failed on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DeleteSingletonProfile DISABLED_DeleteSingletonProfile
 #else

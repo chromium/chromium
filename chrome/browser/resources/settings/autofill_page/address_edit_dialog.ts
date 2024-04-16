@@ -172,7 +172,7 @@ export class SettingsAddressEditDialogElement extends
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
     this.countryInfo_.getAddressFormat(countryCode as string).then(format => {
       this.address.languageCode = format.languageCode;
-      // TODO(crbug.com/1408117): validation is performed for addresses from
+      // TODO(crbug.com/40253382): validation is performed for addresses from
       // the user account only now, this flag should be removed when it
       // becomes the only type of addresses
       const skipValidation = !this.isAccountAddress_;

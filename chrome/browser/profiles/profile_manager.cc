@@ -520,7 +520,7 @@ Profile* ProfileManager::GetLastUsedProfile() {
       ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
           user->username_hash()));
 #else
-  // TODO(crbug.com/1363933): Once Lacros is launched pre-login, we should
+  // TODO(crbug.com/40238900): Once Lacros is launched pre-login, we should
   // probably do something analogous to the !IsLoggedIn() check above.
   Profile* profile =
       profile_manager->GetProfile(profile_manager->GetLastUsedProfileDir());
@@ -969,7 +969,7 @@ void ProfileManager::CreateMultiProfileAsync(
 
   // As another check, make sure the generated path is not present in the file
   // system (there could be orphan profile dirs).
-  // TODO(crbug.com/1277948): There can be a theoretical race condition with a
+  // TODO(crbug.com/40809920): There can be a theoretical race condition with a
   // direct CreateProfileAsync() call that can create the directory before
   // adding an entry to ProfileAttributesStorage. Creating a new
   // ProfileAttributesEntry consistently before writing the profile folder to
@@ -1201,7 +1201,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     }
   }
 
-  // TODO(https://crbug.com/1194607): investigate whether these prefs are
+  // TODO(crbug.com/40175703): investigate whether these prefs are
   // actually useful.
   if (!profile->GetPrefs()->HasPrefPath(prefs::kProfileAvatarIndex))
     profile->GetPrefs()->SetInteger(prefs::kProfileAvatarIndex, avatar_index);
@@ -1572,7 +1572,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
 #endif
 
-  // TODO(crbug.com/1031477): Remove once getting this created with the browser
+  // TODO(crbug.com/40110472): Remove once getting this created with the browser
   // context does not change dependency initialization order to cause crashes.
   AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile);
 }

@@ -669,7 +669,8 @@ public class AutofillUiUtils {
         // Until AutofillEnableCardArtServerSideStretching is rolled out, the server maintains the
         // card art image's aspect ratio, so the fetched image might not be the exact required size.
         // Scale the icon to the desired dimension.
-        // TODO(crbug.com/1458974): Remove scaling when AutofillEnableCardArtServerSideStretching is
+        // TODO(crbug.com/40274131): Remove scaling when AutofillEnableCardArtServerSideStretching
+        // is
         // rolled out.
         if (bitmap.getWidth() != cardIconSpecs.getWidth()
                 || bitmap.getHeight() != cardIconSpecs.getHeight()) {

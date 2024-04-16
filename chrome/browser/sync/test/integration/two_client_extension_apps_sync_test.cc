@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
-// TODO(https://crbug.com/1265969): Change back to E2E_ENABLED when flakiness is
+// TODO(crbug.com/40203939): Change back to E2E_ENABLED when flakiness is
 // fixed.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ONLY(Merge)) {
   ResetSyncForPrimaryAccount();

@@ -262,7 +262,7 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   PreSignOut(signout_source);
 }
 
-// TODO(crbug.com/1369588): Enable |ChromeSigninClientSignoutSourceTest| test
+// TODO(crbug.com/40240718): Enable |ChromeSigninClientSignoutSourceTest| test
 // suite on Android.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)

@@ -73,7 +73,7 @@ TEST_P(LookalikeThrottleTest, SpoofsBlocked) {
       {"xn--testsite-1g5g.com", true,
        url_formatter::IDNSpoofChecker::Result::kDangerousPattern},
 
-      // TODO(crbug.com/1100485): Add an example for digit lookalikes.
+      // TODO(crbug.com/40052713): Add an example for digit lookalikes.
 
       // 🍕.com, fails ICU spoof checks, but is allowed because consists of only
       // emoji and ASCII.

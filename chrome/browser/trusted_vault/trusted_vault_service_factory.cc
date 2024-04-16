@@ -87,7 +87,7 @@ CreateChromeSyncTrustedVaultClient(Profile* profile) {
   if (!lacros_service->IsAvailable<crosapi::mojom::TrustedVaultBackend>()) {
     // TrustedVault Crosapi is not available, fallback to standalone
     // implementation.
-    // TODO(crbug.com/1434667): this should be replaced CHECK() once it is not
+    // TODO(crbug.com/40264843): this should be replaced CHECK() once it is not
     // possible to have Ash-side TrustedVault Crosapi disabled (two milestones
     // after kChromeOSTrustedVaultClientShared is guaranteed to be enabled in
     // Ash).

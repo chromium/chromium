@@ -290,7 +290,7 @@ export class ModulesV2Element extends AppElementBase {
               '#moduleElement',
             ],
             {fixed: true});
-        // TODO(crbug.com/1494416): Currently, a period of time must elapse
+        // TODO(crbug.com/40075330): Currently, a period of time must elapse
         // between the registration of the anchor element and the promo
         // invocation, else the anchor element will not be ready for use.
         setTimeout(() => {

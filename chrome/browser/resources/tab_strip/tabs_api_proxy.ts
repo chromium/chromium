@@ -123,7 +123,7 @@ export class TabsApiProxyImpl implements TabsApiProxy {
   }
 
   isVisible() {
-    // TODO(crbug.com/1234500): Move this call out of tabs_api_proxy
+    // TODO(crbug.com/40781526): Move this call out of tabs_api_proxy
     // since it's not related to tabs API.
     return document.visibilityState === 'visible';
   }

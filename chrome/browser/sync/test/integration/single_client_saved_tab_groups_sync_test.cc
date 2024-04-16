@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
   SavedTabGroupKeyedService* const service =
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
-  // TODO(crbug/1445672): Verify that the orphaned tab exists but isn't
+  // TODO(crbug.com/40912573): Verify that the orphaned tab exists but isn't
   // linked to any group.
 
   // Verify adding the corresponding group adds the orphaned tab to the model.

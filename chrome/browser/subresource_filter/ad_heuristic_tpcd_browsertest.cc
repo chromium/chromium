@@ -433,7 +433,7 @@ class AdHeuristicTPCDBrowserTestSkipHeuristicsGrant
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1508725): Investigate flakiness on Lacros/ChromeOS flakiness.
+// TODO(crbug.com/41481346): Investigate flakiness on Lacros/ChromeOS flakiness.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CookieBlocked DISABLED_CookieBlockedProfile
 #else

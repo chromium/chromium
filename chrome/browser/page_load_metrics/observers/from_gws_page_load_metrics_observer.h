@@ -87,8 +87,8 @@ class FromGWSPageLoadMetricsLogger {
   // Invoked when metrics for the given page are complete.
   void OnCommit(content::NavigationHandle* navigation_handle,
                 ukm::SourceId source_id);
-  // TODO(crbug/993377): Replace const& to PageLoadMetricsObserverDelegate with
-  // a member variable.
+  // TODO(crbug.com/40640180): Replace const& to PageLoadMetricsObserverDelegate
+  // with a member variable.
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);

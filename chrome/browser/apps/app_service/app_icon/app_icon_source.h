@@ -51,7 +51,7 @@ class AppIconSource : public content::URLDataSource {
   bool ShouldReplaceExistingSource() override;
 
  private:
-  // TODO(https://crbug.com/1427068): Prevent this pointer from dangling.
+  // TODO(crbug.com/40261613): Prevent this pointer from dangling.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 

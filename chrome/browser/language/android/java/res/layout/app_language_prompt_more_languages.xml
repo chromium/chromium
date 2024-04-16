@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:visibility="invisible"
         android:paddingEnd="8dp" />
 
-    <!-- TODO(https://crbug.com/1325465) Change wording -->
+    <!-- TODO(crbug.com/40225504) Change wording -->
     <TextView
         android:id="@+id/more_languages_button"
         android:layout_width="wrap_content"

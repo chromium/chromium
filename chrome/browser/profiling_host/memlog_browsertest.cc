@@ -56,7 +56,7 @@ class MemlogBrowserTest : public PlatformBrowserTest,
   }
 };
 
-// TODO(crbug.com/1223739) Disabled due to flakiness.
+// TODO(crbug.com/40774799) Disabled due to flakiness.
 // Ensure invocations via TracingController can generate a valid JSON file with
 // expected data.
 IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, DISABLED_EndToEnd) {

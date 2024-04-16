@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   // result, SiteEngagementMetrics::kEngagementTypeHistogram maintains a value
   // of 2 with the prerendering activation.
   //
-  // TODO(crbug.com/1166085): Add a test for browser-initiated/omnibox
+  // TODO(crbug.com/40164098): Add a test for browser-initiated/omnibox
   // navigations when available.
   histogram_tester()->ExpectTotalCount(
       SiteEngagementMetrics::kEngagementTypeHistogram, 2);

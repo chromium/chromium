@@ -24,7 +24,7 @@ class SharingMessageBridge : public KeyedService {
 
   // Sends Sharing Message to Sync server. |on_commit_callback| will be called
   // when commit attempt finishes (either successfully or unsuccessfully).
-  // TODO(crbug.com/1034932): take each parameter separately and construct
+  // TODO(crbug.com/40111980): take each parameter separately and construct
   // specifics inside. Currently this method updates given |specifics| and
   // fills in |message_id| field.
   virtual void SendSharingMessage(

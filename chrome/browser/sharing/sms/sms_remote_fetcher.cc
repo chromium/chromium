@@ -16,7 +16,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/1224878): Add browser tests for communication between this
+// TODO(crbug.com/40188157): Add browser tests for communication between this
 // and the caller from content/.
 base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,

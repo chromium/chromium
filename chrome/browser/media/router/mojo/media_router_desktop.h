@@ -466,7 +466,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   DesktopMediaPickerController desktop_picker_;
 
   // Collects logs from the Media Router and the native Media Route Providers.
-  // TODO(crbug.com/1077138): Limit logging before Media Router usage.
+  // TODO(crbug.com/40129011): Limit logging before Media Router usage.
   LoggerImpl logger_;
 
   MediaRouterDebuggerImpl media_router_debugger_;

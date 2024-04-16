@@ -27,7 +27,7 @@ bool disabled_for_testing = false;
 
 // Discards pages on the UI thread. Returns true if at least 1 page is
 // discarded.
-// TODO(crbug/1241049): Returns the remaining reclaim target so
+// TODO(crbug.com/40194498): Returns the remaining reclaim target so
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
 std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(

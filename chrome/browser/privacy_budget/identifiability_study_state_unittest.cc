@@ -692,7 +692,7 @@ TEST(IdentifiabilityStudyStateStandaloneTest, NextOffsetIsTooExpensive) {
   EXPECT_THAT(state.seen_surfaces(), ElementsAre(kRegularSurface1));
 }
 
-// TODO(1407940): Flaky on all platforms
+// TODO(crbug.com/40888212): Flaky on all platforms
 TEST(IdentifiabilityStudyStateStandaloneTest, DISABLED_ReachesPivotPoint) {
   test::ScopedPrivacyBudgetConfig::Parameters parameters;
   parameters.active_surface_budget = kTestingActiveSurfaceBudget;

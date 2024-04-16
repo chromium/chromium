@@ -88,7 +88,7 @@ class AppPublisher
   //
   // NOTE: On Ash, App Service will not call this method, and instead will call
   // `GetCompressedIconData()` to load raw icon data from the Publisher.
-  // TODO(crbug.com/1380608): Clean up/simplify remaining usages of LoadIcon.
+  // TODO(crbug.com/40244797): Clean up/simplify remaining usages of LoadIcon.
   virtual void LoadIcon(const std::string& app_id,
                         const IconKey& icon_key,
                         apps::IconType icon_type,

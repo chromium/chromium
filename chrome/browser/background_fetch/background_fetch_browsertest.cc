@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(
             offline_items_collection::OfflineItemState::CANCELLED);
 }
 
-// TODO(crbug.com/1329696): Fix flaky timeouts and re-enable.
+// TODO(crbug.com/40842751): Fix flaky timeouts and re-enable.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
     DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenCorrectDownloadTotalSpecified) {
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, ClickEventIsDispatched) {
   }
 }
 
-// TODO(crbug.com/1056096): Re-enable this test.
+// TODO(crbug.com/40120187): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DISABLED_AbortFromUI) {
   std::vector<OfflineItem> items;
   // Creates a registration with more than one request.

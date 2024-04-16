@@ -503,7 +503,7 @@ class ChromePasswordManagerClient
 
 #if BUILDFLAG(IS_ANDROID)
   // Username filled by Touch To Fill and the timestamp. Used to collect
-  // metrics. TODO(crbug.com/1299394): Remove after the launch.
+  // metrics. TODO(crbug.com/40215916): Remove after the launch.
   std::optional<std::pair<std::u16string, base::Time>>
       username_filled_by_touch_to_fill_ = std::nullopt;
 

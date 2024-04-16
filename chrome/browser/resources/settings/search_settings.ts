@@ -129,7 +129,7 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): boolean {
           const select = node.parentNode!.parentNode!;
           assert(select.nodeName === 'SELECT');
 
-          // TODO(crbug.com/355446): support showing bubbles inside subpages.
+          // TODO(crbug.com/41096577): support showing bubbles inside subpages.
           // Currently, they're incorrectly positioned and there's no great
           // signal at which to know when to reposition them (because every
           // page asynchronously loads/renders things differently).

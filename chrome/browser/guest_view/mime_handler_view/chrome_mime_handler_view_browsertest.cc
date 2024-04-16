@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 // other cross-origin content. On the embedder side, when the first page loads,
 // the <object> loads some text/csv content to create a MimeHandlerViewGuest.
 // The test passes if MHV loads.
-// TODO(crbug.com/1182355): Disabled due to flakes.
+// TODO(crbug.com/40751404): Disabled due to flakes.
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        DISABLED_NavigationRaceFromCrossProcessRenderer) {
   const std::string kTestName = "test_navigation_race_cross_origin";

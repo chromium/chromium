@@ -86,7 +86,7 @@ std::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
   // These checks ensure invalid data isn't passed along, potentially leading to
   // crashes, e.g. when we calculate the hash which assumes a positive height
   // and stride.
-  // TODO(crbug.com/1085230): figure out why the height is sometimes negative.
+  // TODO(crbug.com/40132113): figure out why the height is sometimes negative.
   if (!frame || !frame->data() || frame->stride() < 0 ||
       frame->size().height() < 0) {
     return std::nullopt;
@@ -199,7 +199,7 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
 
   // Update |window_id| if |desktop_media_id.id| corresponds to a
   // viz::FrameSinkId.
-  // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
+  // TODO(crbug.com/40239799): This lookup is fairly fragile and has
   // now resulted in at least two patches to avoid it (though both are Wayland
   // based problems). On top of that, the series of ifdefs is a bit confusing.
   // We should try to simplify/abstract/cleanup this logic.

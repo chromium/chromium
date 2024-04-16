@@ -177,9 +177,10 @@ void AdaptiveQuietNotificationPermissionUiEnabler::PermissionPromptResolved() {
     base::AutoReset<bool> enabling_adaptively(&is_enabling_adaptively_, true);
     profile_->GetPrefs()->SetBoolean(
         prefs::kEnableQuietNotificationPermissionUi, true /* value */);
-    // TODO(crbug.com/1147467): If `kQuietNotificationPermissionShouldShowPromo`
-    // stops being a good indicator as to how the quiet UI pref was enabled,
-    // remove the |BackfillEnablingMethodIfMissing| logic.
+    // TODO(crbug.com/40156618): If
+    // `kQuietNotificationPermissionShouldShowPromo` stops being a good
+    // indicator as to how the quiet UI pref was enabled, remove the
+    // |BackfillEnablingMethodIfMissing| logic.
     profile_->GetPrefs()->SetBoolean(
         prefs::kQuietNotificationPermissionShouldShowPromo, true /* value */);
   }

@@ -3781,7 +3781,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       // Only policy provider sets exceptions for this type.
       ContentSettingsType::AUTO_SELECT_CERTIFICATE,
 
-      // TODO(710873): Make sure that these get fixed:
+      // TODO(crbug.com/41312665): Make sure that these get fixed:
       // Not deleted but should be deleted with history?
       ContentSettingsType::IMPORTANT_SITE_INFO,
   };

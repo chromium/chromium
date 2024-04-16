@@ -4169,7 +4169,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableExplicitDmaFencesName,
      flag_descriptions::kDisableExplicitDmaFencesDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDisableExplicitDmaFences)},
-    // TODO(crbug.com/1012846): Remove this flag and provision when HDR is fully
+    // TODO(crbug.com/40652358): Remove this flag and provision when HDR is
+    // fully
     //  supported on ChromeOS.
     {"use-hdr-transfer-function",
      flag_descriptions::kUseHDRTransferFunctionName,
@@ -5440,7 +5441,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-force-dark", flag_descriptions::kAutoWebContentsDarkModeName,
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-     // TODO(https://crbug.com/1011696): Investigate crash reports and
+     // TODO(crbug.com/40651782): Investigate crash reports and
      // re-enable variations for ChromeOS.
      FEATURE_VALUE_TYPE(blink::features::kForceWebContentsDarkMode)},
 #else

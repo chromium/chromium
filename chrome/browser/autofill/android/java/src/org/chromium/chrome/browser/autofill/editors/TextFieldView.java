@@ -42,7 +42,7 @@ import java.util.List;
 // TODO(b/173103628): Re-enable this
 // @VisibleForTesting
 class TextFieldView extends FrameLayout implements FieldView {
-    // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
+    // TODO(crbug.com/40824084): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
 

@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlockedImageErr) {
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM works with fetches
-// TODO(https://crbug.com/1497270): Fix flakiness and re-enable.
+// TODO(crbug.com/40938887): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, DISABLED_TPCBlockedFetchErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, TPCBlocked4xxErr) {
 }
 
 // Check that multiple entries are entered correctly.
-// TODO(https://crbug.com/1498862): Fix flakiness and re-enable.
+// TODO(crbug.com/40287588): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, DISABLED_MultiErrs) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
