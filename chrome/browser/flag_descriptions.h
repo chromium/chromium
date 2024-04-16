@@ -400,6 +400,9 @@ extern const char kAutofillMoreProminentPopupDescription[];
 extern const char kAutofillVirtualViewStructureAndroidName[];
 extern const char kAutofillVirtualViewStructureAndroidDescription[];
 
+extern const char kAutoPictureInPictureVideoHeuristicsName[];
+extern const char kAutoPictureInPictureVideoHeuristicsDescription[];
+
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 

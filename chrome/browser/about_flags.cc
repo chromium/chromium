@@ -9412,6 +9412,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaSessionEnterPictureInPictureDescription,
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(blink::features::kMediaSessionEnterPictureInPicture)},
+
+    {"auto-picture-in-picture-video-heuristics",
+     flag_descriptions::kAutoPictureInPictureVideoHeuristicsName,
+     flag_descriptions::kAutoPictureInPictureVideoHeuristicsDescription,
+     kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(blink::features::kAutoPictureInPictureVideoHeuristics)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

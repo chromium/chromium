@@ -668,6 +668,12 @@ const char kAutofillVirtualViewStructureAndroidDescription[] =
     "When enabled, a setting allows to switch to using Android Autofill. Chrome"
     " then provides a virtual view structure but no own suggestions.";
 
+const char kAutoPictureInPictureVideoHeuristicsName[] =
+    "Auto picture in picture video heuristics";
+const char kAutoPictureInPictureVideoHeuristicsDescription[] =
+    "Enables the use of video heuristics for tracking HTMLVideoElement "
+    "visibility.";
+
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
     "If enabled, caches eligible pages after cross-site navigations."

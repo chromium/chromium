@@ -17998,6 +17998,7 @@ from previous Chrome versions.
       label="EnableWebHidOnExtensionServiceWorker:disabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
+  <int value="-1418524927" label="AutoPictureInPictureVideoHeuristics:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>
   <int value="-1418199391" label="FilesInlineSyncStatusProgressEvents:enabled"/>
   <int value="-1418070574" label="VcWebApi:disabled"/>
@@ -22927,6 +22928,7 @@ from previous Chrome versions.
   <int value="779086132" label="enable-data-reduction-proxy-alt"/>
   <int value="779703052" label="ChromeOSAmbientMode:enabled"/>
   <int value="779849093" label="OfflinePagesCTSuppressNotifications:disabled"/>
+  <int value="779929413" label="AutoPictureInPictureVideoHeuristics:disabled"/>
   <int value="779990030" label="MlUrlScoring:disabled"/>
   <int value="780092266" label="LauncherNudgeSessionReset:disabled"/>
   <int value="780177218"
