@@ -26,12 +26,8 @@ namespace {
 constexpr size_t kVideoProcessorDimensionsWindowSize = 100;
 
 bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
-  if (overlay->background_color.has_value()) {
-    return false;
-  }
-  CHECK(overlay->overlay_image);
-  return overlay->overlay_image->type() !=
-         DCLayerOverlayType::kDCompVisualContent;
+  return overlay->overlay_image && overlay->overlay_image->type() !=
+                                       DCLayerOverlayType::kDCompVisualContent;
 }
 
 // Unconditionally get a IDCompositionVisual2 as a IDCompositionVisual3.
@@ -1191,9 +1187,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
         hr = root_visual_content.As(&root_dcomp_surface);
       }
       CHECK_EQ(S_OK, hr);
-    } else {
-      // Note: this is allowed in tests, but not expected otherwise.
-      DLOG(WARNING) << "No root surface in overlay list";
     }
 
     if (root_swap_chain != root_swap_chain_ ||

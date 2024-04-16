@@ -22,6 +22,7 @@
 namespace viz {
 class DisplayResourceProvider;
 struct DebugRendererSettings;
+class OverlayCandidateFactory;
 
 class VIZ_SERVICE_EXPORT OverlayProcessorWin
     : public OverlayProcessorInterface {
@@ -49,8 +50,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   void SetIsPageFullscreen(bool enabled) override;
 
   void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override {
-  }
+      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   // Attempt to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
@@ -131,6 +131,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       AggregatedRenderPass* root_render_pass,
       const gfx::Rect& damage_rect);
 
+  // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
+  // be placed in |out_candidates| in front-to-back order. Returns true if all
+  // quads were successfully promoted.
+  std::optional<OverlayCandidateList> TryDelegatedCompositing(
+      const AggregatedRenderPassList& render_passes,
+      const OverlayCandidateFactory& factory,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
+      const DisplayResourceProvider* resource_provider) const;
+
   const raw_ptr<OutputSurface> output_surface_;
 
   // Reference to the global viz singleton.
@@ -145,6 +155,14 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 
   bool is_page_fullscreen_mode_ = false;
+
+  bool delegation_succeeded_last_frame_ = false;
+
+  // Returned and reset by |GetAndResetOverlayDamage| to fully damage the root
+  // render pass when we drop out of delegated compositing. This is essentially
+  // a binary of "full damage needed" or "no full damage needed" for the primary
+  // plane.
+  gfx::Rect overlay_damage_rect_;
 };
 
 }  // namespace viz

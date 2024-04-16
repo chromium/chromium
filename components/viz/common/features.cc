@@ -190,7 +190,7 @@ const base::FeatureParam<int> kCALayerNewLimitManyVideos{&kCALayerNewLimit,
                                                          "many-videos", -1};
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kCanSkipRenderPassOverlay,
              "CanSkipRenderPassOverlay",
              base::FEATURE_ENABLED_BY_DEFAULT);

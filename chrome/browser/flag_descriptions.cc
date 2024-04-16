@@ -1022,7 +1022,8 @@ const char kEnableRawDrawDescription[] =
 
 const char kEnableDelegatedCompositingName[] = "Enable delegated compositing";
 const char kEnableDelegatedCompositingDescription[] =
-    "When enabled and applicable, the act of compositing is delegated to Ash.";
+    "When enabled and applicable, the act of compositing is delegated to the "
+    "system compositor.";
 
 const char kEnableRenderPassDrawnRectName[] =
     "Enable drawn rect for render passes";

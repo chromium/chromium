@@ -4,20 +4,26 @@
 
 #include "components/viz/service/display/overlay_processor_win.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
-#include "gpu/config/gpu_finch_features.h"
+#include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/overlay_candidate_factory.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_switches.h"
 
 namespace viz {
 namespace {
@@ -92,6 +98,23 @@ gfx::Rect UpdateRenderPassFromOverlayData(
   }
 }
 
+OverlayCandidateFactory::OverlayContext WindowsDelegatedOverlayContext() {
+  OverlayCandidateFactory::OverlayContext context;
+  context.is_delegated_context = true;
+  context.disable_wire_size_optimization = true;
+  context.supports_clip_rect = true;
+  context.supports_out_of_window_clip_rect = true;
+  context.supports_arbitrary_transform = true;
+  context.supports_rounded_display_masks = true;
+  context.supports_mask_filter = true;
+  context.transform_and_clip_rpdq = true;
+  context.allow_non_overlay_resources = base::FeatureList::IsEnabled(
+      features::kCopyNonOverlayResourcesToDCompSurfaces);
+  return context;
+}
+
+DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
+
 }  // anonymous namespace
 
 OverlayProcessorWin::OverlayProcessorWin(
@@ -111,13 +134,24 @@ bool OverlayProcessorWin::IsOverlaySupported() const {
 }
 
 gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
+  if (features::IsDelegatedCompositingEnabled()) {
+    return gfx::Rect();
+  }
+
   // TODO(dcastagna): Implement me.
   NOTIMPLEMENTED();
   return gfx::Rect();
 }
 
 gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
-  return gfx::Rect();
+  return std::exchange(overlay_damage_rect_, gfx::Rect());
+}
+
+void OverlayProcessorWin::AdjustOutputSurfaceOverlay(
+    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+  if (delegation_succeeded_last_frame_) {
+    output_surface_plane->reset();
+  }
 }
 
 void OverlayProcessorWin::ProcessForOverlays(
@@ -133,6 +167,60 @@ void OverlayProcessorWin::ProcessForOverlays(
     gfx::Rect* root_damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
   TRACE_EVENT0("viz", "OverlayProcessorWin::ProcessForOverlays");
+
+  delegation_succeeded_last_frame_ = false;
+
+  if (features::IsDelegatedCompositingEnabled() && !disable_delegation()) {
+    OverlayCandidateFactory factory(
+        render_passes->back().get(), resource_provider,
+        &surface_damage_rect_list_in_root_space, &output_color_matrix,
+        gfx::RectF(render_passes->back()->output_rect), &render_pass_filters,
+        WindowsDelegatedOverlayContext());
+
+    std::optional<CandidateList> delegation_result = TryDelegatedCompositing(
+        *render_passes, factory, render_pass_backdrop_filters,
+        resource_provider);
+
+    // TODO(crbug.com/1502717): Add a histogram to emit delegation status,
+    // similar to OverlayProcessorDelegated::ProcessForOverlays.
+
+    if (delegation_result) {
+      OverlayCandidateList delegated_candidates =
+          std::move(delegation_result.value());
+
+      DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
+                  "delegation success, candidates.size = %zu",
+                  delegated_candidates.size());
+
+      // We are not promoting videos from any render pass so this map should be
+      // empty.
+      frames_since_using_dc_layers_map_.clear();
+
+      // Set the z-order of the candidates, noting that |delegated_candidates|
+      // was pushed in front-to-back order.
+      for (size_t i = 0u; i < delegated_candidates.size(); i++) {
+        delegated_candidates[i].plane_z_order = delegated_candidates.size() - i;
+      }
+
+      // Set this to the full output rect unconditionally on success. This is
+      // unioned with the next frame's damage (via |GetAndResetOverlayDamage|)
+      // to fully damage the root surface if the next frame fails delegation.
+      // Since delegated compositing succeeded here, the previous frame's
+      // |overlay_damage_rect_| influence on |root_damage_rect| is cleared
+      // below.
+      // In the case of resize, we will be correctly damaged from another
+      // source.
+      overlay_damage_rect_ = render_passes->back()->output_rect;
+
+      delegation_succeeded_last_frame_ = true;
+      *candidates = std::move(delegated_candidates);
+      *root_damage_rect = gfx::Rect();
+      return;
+    }
+
+    DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED,
+                "delegation failed this frame");
+  }
 
   auto* root_render_pass = render_passes->back().get();
   if (render_passes->back()->is_color_conversion_pass) {
@@ -264,6 +352,84 @@ void OverlayProcessorWin::ProcessOnDCLayerOverlayProcessorForTesting(
       resource_provider, render_pass_filters, render_pass_backdrop_filters,
       surface_damage_rect_list, is_page_fullscreen_mode,
       render_pass_overlay_data_map);
+}
+
+std::optional<OverlayCandidateList>
+OverlayProcessorWin::TryDelegatedCompositing(
+    const AggregatedRenderPassList& render_passes,
+    const OverlayCandidateFactory& factory,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
+    const DisplayResourceProvider* resource_provider) const {
+  const AggregatedRenderPass* root_render_pass = render_passes.back().get();
+
+  if (root_render_pass->HasCapture()) {
+    DBG_LOG_OPT(
+        "delegated.overlay.log", DBG_OPT_RED,
+        "Root pass has capture: copy_requests = %zu, video_capture_enabled "
+        "= %d",
+        root_render_pass->copy_requests.size(),
+        root_render_pass->video_capture_enabled);
+    return std::nullopt;
+  }
+
+  if (root_render_pass->is_color_conversion_pass) {
+    // DWM cannot blend non-opaque HDR overlays in the extended sRGB color space
+    // that viz uses.
+    // TODO(crbug.com/1524141): Handle color conversion pass during overlay
+    // processing instead of surface aggregation so we can add it to opaque HDR
+    // overlays, e.g. web contents surfaces.
+    DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED, "Frame has HDR content");
+    return std::nullopt;
+  }
+
+  OverlayCandidateList candidates;
+  candidates.reserve(root_render_pass->quad_list.size());
+
+  // Try to promote all the quads in the root pass to overlay.
+  for (auto it = root_render_pass->quad_list.begin();
+       it != root_render_pass->quad_list.end(); ++it) {
+    const DrawQuad* quad = *it;
+
+    std::optional<OverlayCandidate> dc_layer;
+    // Try to promote videos like DCLayerOverlay does first, then fall back to
+    // OverlayCandidateFactory. This is because Windows has some specific
+    // details on how it promotes e.g. protected videos that we want to
+    // preserve.
+    dc_layer = dc_layer_overlay_processor_->FromTextureOrYuvQuad(
+        resource_provider, root_render_pass, it, is_page_fullscreen_mode_);
+
+    if (!dc_layer.has_value()) {
+      OverlayCandidate overlay;
+      auto res = factory.FromDrawQuad(quad, overlay);
+      if (res == OverlayCandidateFactory::CandidateStatus::kFailVisible) {
+        // These can be safely skipped.
+        continue;
+      }
+
+      if (res != OverlayCandidateFactory::CandidateStatus::kSuccess) {
+        DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_RED,
+                    "FromDrawQuad failed with status code = %d",
+                    static_cast<int>(res));
+        return std::nullopt;
+      }
+
+      dc_layer = std::make_optional(std::move(overlay));
+    }
+
+    if (factory.IsOccludedByFilteredQuad(
+            dc_layer.value(), root_render_pass->quad_list.begin(),
+            root_render_pass->quad_list.end(), render_pass_backdrop_filters)) {
+      DBG_LOG_OPT(
+          "delegated.overlay.log", DBG_OPT_RED,
+          "FromDrawQuad failed because of an occluding backdrop filter");
+      return std::nullopt;
+    }
+
+    candidates.push_back(std::move(dc_layer).value());
+  }
+
+  return std::make_optional(std::move(candidates));
 }
 
 }  // namespace viz

@@ -134,6 +134,15 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     friend bool operator==(const OverlayRect&, const OverlayRect&) = default;
   };
 
+  // Promote a single quad in isolation, like how |Process| would internally.
+  // This ignores per-frame limitations such as max number of YUV quads, etc.
+  // This also adds other properties needed for delegated compositing.
+  std::optional<OverlayCandidate> FromTextureOrYuvQuad(
+      const DisplayResourceProvider* resource_provider,
+      const AggregatedRenderPass* render_pass,
+      const QuadList::ConstIterator& it,
+      bool is_page_fullscreen_mode) const;
+
  private:
   // Information about a render pass's overlays from the previous frame. The
   // previous frame's overlays are used for optimizations, which are done

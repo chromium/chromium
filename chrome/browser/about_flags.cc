@@ -9395,7 +9395,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRawDrawDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kRawDraw)},
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
     {"enable-delegated-compositing",
      flag_descriptions::kEnableDelegatedCompositingName,
      flag_descriptions::kEnableDelegatedCompositingDescription, kOsAll,

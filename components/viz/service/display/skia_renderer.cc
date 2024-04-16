@@ -106,7 +106,7 @@ namespace viz {
 
 namespace {
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAddSharedImageRasterReadUsage,
              "AddSharedImageRasterReadUsage",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -643,7 +643,7 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
   }
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 struct SkiaRenderer::RenderPassOverlayParams {
   AggregatedRenderPassId render_pass_id;
   RenderPassBacking render_pass_backing;
@@ -1078,7 +1078,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      resource_provider,
                      overlay_processor),
       skia_output_surface_(skia_output_surface),
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
       can_skip_render_pass_overlay_(
           base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
 #endif
@@ -1286,7 +1286,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 
   FlushOutputSurface();
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   // Delete render pass overlay backings from the previous frame that will not
   // be used again.
   for (auto& overlay : available_render_pass_overlay_backings_) {
@@ -1294,7 +1294,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
         overlay.render_pass_backing.mailbox);
   }
   available_render_pass_overlay_backings_.clear();
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
@@ -1448,7 +1448,7 @@ void SkiaRenderer::BindFramebufferToTexture(
       render_pass_id, backing.size, backing.format, backing.alpha_type,
       backing.generate_mipmap ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo,
       backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
-      /*is_overlay=*/is_root, backing.mailbox);
+      /*is_overlay=*/backing.is_scanout, backing.mailbox);
 
   if (is_root && debug_settings_->show_overdraw_feedback) {
     DCHECK(output_surface_->capabilities().renderer_allocates_images);
@@ -3040,7 +3040,7 @@ void SkiaRenderer::ScheduleOverlays() {
     }
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
       if (!overlay.mailbox.IsZero()) {
@@ -3644,7 +3644,7 @@ void SkiaRenderer::FlushOutputSurface() {
   lock_set_for_external_use_->UnlockResources(sync_token);
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 bool SkiaRenderer::CanSkipRenderPassOverlay(
     AggregatedRenderPassId render_pass_id,
     const AggregatedRenderPassDrawQuad* rpdq,
@@ -3759,18 +3759,30 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
       kOverlayUsage = kOverlayUsage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
     }
 
+#if BUILDFLAG(IS_WIN)
+    // We must use DComp surfaces in this case since they have no special
+    // synchronization requirements. We can use DComp textures if we return them
+    // from |SkiaOutputDeviceDComp| when they become available or with buffer
+    // queue once render pass backings support it.
+    kOverlayUsage = gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                    gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                    gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+#endif
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
         kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
-    overlay_params.render_pass_backing = {buffer_size,
-                                          /*generate_mipmap=*/false,
-                                          color_space,
-                                          RenderPassAlphaType::kPremul,
-                                          buffer_format,
-                                          mailbox,
-                                          /*is_root=*/false,
-                                          /*is_scanout=*/true,
-                                          /*scanout_dcomp_surface=*/false};
+    overlay_params.render_pass_backing = {
+        buffer_size,
+        /*generate_mipmap=*/false,
+        color_space,
+        RenderPassAlphaType::kPremul,
+        buffer_format,
+        mailbox,
+        /*is_root=*/false,
+        /*is_scanout=*/true,
+        /*scanout_dcomp_surface=*/
+        !!(kOverlayUsage & gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE),
+    };
   } else {
     overlay_params = *it;
     available_render_pass_overlay_backings_.erase(it);
@@ -3982,7 +3994,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
         dst_overlay_backing.format, dst_overlay_backing.alpha_type,
-        skgpu::Mipmapped::kNo, /*scanout_dcomp_surface=*/false,
+        skgpu::Mipmapped::kNo, dst_overlay_backing.scanout_dcomp_surface,
         RenderPassBackingSkColorSpace(dst_overlay_backing),
         /*is_overlay=*/true, overlay->mailbox);
     if (!current_canvas_) {
@@ -4054,7 +4066,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // Adjust |bounds_rect| to contain the whole buffer and at the right location.
   overlay->display_rect.set_origin(gfx::PointF(filter_bounds.origin()));
   overlay->display_rect.set_size(gfx::SizeF(buffer_size));
-#else   // BUILDFLAG(IS_OZONE)
+#else   // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   // TODO(fangzhoug): Merge Ozone and Apple code paths of delegated compositing.
 
   // Set |uv_rect| to reflect rounding up from |filter_bounds| to |buffer_size|.
@@ -4084,7 +4096,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->format = SinglePlaneSharedImageFormatToBufferFormat(buffer_format);
 #endif  // BUILDFLAG(IS_APPLE)
 }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
 void SkiaRenderer::EndPaint(const gfx::Rect& update_rect,
                             bool failed,
@@ -4281,7 +4293,7 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
 
 #endif  // BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
     ScopedInFlightRenderPassOverlayBackingRef(SkiaRenderer* renderer,
                                               const gpu::Mailbox& mailbox)
@@ -4350,7 +4362,7 @@ SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
   other.mailbox_ = gpu::Mailbox();
   return *this;
 }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
 SkiaRenderer::OverlayLock::OverlayLock(
     DisplayResourceProvider* resource_provider,
@@ -4363,28 +4375,28 @@ SkiaRenderer::OverlayLock::~OverlayLock() = default;
 SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer::OverlayLock&& other) {
   resource_lock = std::move(other.resource_lock);
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   render_pass_lock = std::move(other.render_pass_lock);
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 }
 
 SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
     SkiaRenderer::OverlayLock&& other) {
   resource_lock = std::move(other.resource_lock);
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
   render_pass_lock = std::move(other.render_pass_lock);
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
   return *this;
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
                                        const gpu::Mailbox& mailbox) {
   render_pass_lock.emplace(renderer, mailbox);
 }
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
 bool SkiaRenderer::OverlayLockComparator::operator()(

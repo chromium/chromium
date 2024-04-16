@@ -4,20 +4,17 @@
 
 #include "components/viz/service/display_embedder/skia_output_device_dcomp.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
 #include "base/debug/alias.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/service/display/dc_layer_overlay.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -25,28 +22,16 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
-#include "skia/ext/legacy_display_globals.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/dc_layer_overlay_params.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_version_info.h"
 
 namespace viz {
 
@@ -306,6 +291,7 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.pending_swap_params.max_pending_swaps = 1;
   capabilities_.renderer_allocates_images = true;
   capabilities_.supports_viewporter = presenter_->SupportsViewporter();
+  capabilities_.supports_non_backed_solid_color_overlays = true;
 
   DCHECK(context_state_);
   DCHECK(context_state_->gr_context() || context_state_->graphite_context());
@@ -431,17 +417,34 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
   }
 
   for (auto& dc_layer : overlays) {
-    // Only use the first shared image mailbox for accessing as an overlay.
-    const gpu::Mailbox& mailbox = dc_layer.mailbox;
-    std::optional<gl::DCLayerOverlayImage> overlay_image =
-        BeginOverlayAccess(mailbox);
-    if (!overlay_image) {
-      DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
+    // This is not necessarily an error, DCLayerTree can succeed with any
+    // combination of overlay image and background color. However, it's wasteful
+    // to have an overlay with no image or background color.
+    if (dc_layer.mailbox.IsZero() && !dc_layer.color.has_value()) {
+      // This can happen when |PrepareRenderPassOverlay| encounters a bypass
+      // quad that is skipped.
       continue;
     }
 
+    if (dc_layer.is_solid_color) {
+      CHECK(dc_layer.color.has_value());
+      CHECK(dc_layer.mailbox.IsZero());
+    }
+
     auto params = std::make_unique<gl::DCLayerOverlayParams>();
-    params->overlay_image = std::move(overlay_image);
+
+    const gpu::Mailbox& mailbox = dc_layer.mailbox;
+    if (!mailbox.IsZero()) {
+      std::optional<gl::DCLayerOverlayImage> overlay_image =
+          BeginOverlayAccess(mailbox);
+      if (!overlay_image) {
+        DLOG(ERROR) << "Failed to ProduceOverlay or GetDCLayerOverlayImage";
+        continue;
+      }
+      params->overlay_image = std::move(overlay_image);
+    }
+
+    params->background_color = dc_layer.color;
     params->z_order = dc_layer.plane_z_order;
 
     // SwapChainPresenter uses the size of the overlay's resource in pixels to
@@ -451,10 +454,14 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
         dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
         dc_layer.resource_size_in_pixels.height());
 
-    params->quad_rect = gfx::ToEnclosingRect(dc_layer.display_rect);
-    DCHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
+    params->quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
+    CHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
     params->transform = absl::get<gfx::Transform>(dc_layer.transform);
     params->clip_rect = dc_layer.clip_rect;
+    params->opacity = dc_layer.opacity;
+    params->rounded_corner_bounds = dc_layer.rounded_corners;
+    params->nearest_neighbor_filter = dc_layer.nearest_neighbor_filter;
+
     params->protected_video_type = dc_layer.protected_video_type;
     params->color_space = dc_layer.color_space;
     params->hdr_metadata = dc_layer.hdr_metadata;

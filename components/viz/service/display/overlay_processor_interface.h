@@ -155,9 +155,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
 
-  // For Mac, if we successfully generated a candidate list for CALayerOverlay,
-  // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the std::optional instance so the instance can be reset.
+  // If we successfully generated a candidates list for delegated compositing
+  // during |ProcessForOverlays|, we no longer need the |output_surface_plane|.
+  // This function takes a pointer to the std::optional instance so the instance
+  // can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   virtual void AdjustOutputSurfaceOverlay(

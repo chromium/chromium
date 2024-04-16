@@ -739,6 +739,57 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
 
 }  // namespace
 
+std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
+    const DisplayResourceProvider* resource_provider,
+    const AggregatedRenderPass* render_pass,
+    const QuadList::ConstIterator& it,
+    bool is_page_fullscreen_mode) const {
+  // Backdrop filter occlusion is checked in |OverlayProcessorWin| via
+  // |OverlayCandidate::IsOccludedByFilteredQuad|, so we don't need to populate
+  // this vector.
+  const std::vector<gfx::Rect> backdrop_filter_rects;
+
+  ValidateDrawQuadResult result = ValidateDrawQuad(
+      resource_provider, it, backdrop_filter_rects, true,
+      has_p010_video_processor_support_, INT_MAX, INT_MIN, false);
+
+  if (result.code != DC_LAYER_SUCCESS) {
+    RecordDCLayerResult(result.code, it);
+    return std::nullopt;
+  }
+
+  OverlayCandidate candidate;
+  int ignore_processed_yuv_overlay_count = 0;
+  FromDrawQuad(resource_provider, render_pass, is_page_fullscreen_mode, it,
+               ignore_processed_yuv_overlay_count, candidate);
+
+  // Once we've promoted the video as normal, add extra properties required for
+  // delegated compositing.
+
+  if (it->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
+    gfx::MaskFilterInfo mask_filter_info =
+        it->shared_quad_state->mask_filter_info;
+    mask_filter_info.ApplyTransform(render_pass->transform_to_root_target);
+    candidate.rounded_corners = mask_filter_info.rounded_corner_bounds();
+  }
+
+  candidate.opacity = it->shared_quad_state->opacity;
+
+  // We don't expect quads promoted by |DCLayerOverlayProcessor| to have a
+  // differing |visible_rect|, but we handle it here just in case.
+  if (it->visible_rect != it->rect) {
+    // |OverlayCandidate| does not support clipping a candidate via
+    // |visible_rect|, but we can get the same effect by clipping its buffer via
+    // |uv_rect| and resizing its |display_rect|. This is similar to how
+    // |OverlayCandidateFactory| handles |visible_rect|.
+    candidate.uv_rect = gfx::MapRect(gfx::RectF(it->visible_rect),
+                                     gfx::RectF(it->rect), candidate.uv_rect);
+    candidate.display_rect = gfx::RectF(it->visible_rect);
+  }
+
+  return candidate;
+}
+
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     int allowed_yuv_overlay_count,
     bool skip_initialization_for_testing)

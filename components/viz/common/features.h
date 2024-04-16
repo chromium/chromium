@@ -56,7 +56,7 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kCALayerNewLimitManyVideos;
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanSkipRenderPassOverlay);
 #endif
 
