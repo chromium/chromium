@@ -234,6 +234,7 @@
     "ASan Debug (32-bit x86 with V8-ARM)": "ci/ASan Debug (32-bit x86 with V8-ARM)/gn-args.json",
     "ASan Release (32-bit x86 with V8-ARM)": "ci/ASan Release (32-bit x86 with V8-ARM)/gn-args.json",
     "ASan Release Media (32-bit x86 with V8-ARM)": "ci/ASan Release Media (32-bit x86 with V8-ARM)/gn-args.json",
+    "Centipede High End Upload Linux ASan": "ci/Centipede High End Upload Linux ASan/gn-args.json",
     "Centipede Upload Linux ASan": "ci/Centipede Upload Linux ASan/gn-args.json",
     "ChromiumOS ASAN Release": "ci/ChromiumOS ASAN Release/gn-args.json",
     "Libfuzzer Upload Chrome OS ASan": "ci/Libfuzzer Upload Chrome OS ASan/gn-args.json",

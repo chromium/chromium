@@ -297,6 +297,37 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Centipede High End Upload Linux ASan",
+    description_html = """This builder uploads centipede high end fuzzers.\
+Those fuzzers require more resources to run correctly.\
+""",
+    executable = "recipe:chromium/fuzz",
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "centipede",
+            "asan",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "optimize_for_fuzzing",
+            "shared",
+            "release",
+            "reclient",
+            "disable_seed_corpus",
+            "high_end_fuzzer_targets",
+        ],
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "centipede",
+        short_name = "centipede high end",
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+)
+
+ci.builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 4,

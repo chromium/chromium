@@ -725,6 +725,27 @@
           }
         ]
       },
+      "Centipede High End Upload Linux ASan": {
+        "contact_team_email": "chrome-deet-core@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Centipede Upload Linux ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
         "problem_specs": [

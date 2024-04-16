@@ -1375,3 +1375,10 @@ gn_args.config(
     args = {"enable_run_ios_unittests_with_xctest": True},
     configs = ["ios"],
 )
+
+gn_args.config(
+    name = "high_end_fuzzer_targets",
+    args = {
+        "high_end_fuzzer_targets": True,
+    },
+)
