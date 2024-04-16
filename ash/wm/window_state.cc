@@ -5,6 +5,7 @@
 #include "ash/wm/window_state.h"
 
 #include <absl/cleanup/cleanup.h>
+
 #include <optional>
 #include <utility>
 
@@ -43,6 +44,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -1089,6 +1091,9 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
                                       *float_state);
     return;
   }
+
+  SCOPED_CRASH_KEY_NUMBER("333095196", "state_type",
+                          base::to_underlying(GetStateType()));
 
   CrossFadeAnimation(window_, std::move(old_layer_owner));
 }

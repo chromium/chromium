@@ -20,12 +20,15 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -283,6 +286,14 @@ void CrossFadeAnimationInternal(
   const gfx::Rect new_bounds(window->bounds());
   const bool old_on_top = (old_bounds.width() > new_bounds.width());
 
+  SCOPED_CRASH_KEY_BOOL("333095196", "animate_old_layer_transform",
+                        animate_old_layer_transform);
+  SCOPED_CRASH_KEY_BOOL("333095196", "old_on_top", old_on_top);
+  SCOPED_CRASH_KEY_STRING256("333095196", "window_title",
+                             base::UTF16ToUTF8(window->GetTitle()));
+  SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_begin",
+                             base::StringPrintf("%p", new_layer));
+
   // Ensure the higher-resolution layer is on top.
   if (old_on_top)
     old_layer->parent()->StackBelow(new_layer, old_layer);
@@ -347,6 +358,8 @@ void CrossFadeAnimationInternal(
     old_layer = nullptr;
   }
 
+  SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_mid",
+                             base::StringPrintf("%p", new_layer));
   // Set the new layer's current transform, such that the user sees a scaled
   // version of the window with the original bounds at the original position.
   gfx::Transform in_transform;
@@ -389,6 +402,12 @@ void CrossFadeAnimationInternal(
       // New layer is on top, fade it in.
       new_layer->SetOpacity(kWindowAnimation_ShowOpacity);
     }
+    SCOPED_CRASH_KEY_NUMBER("333095196", "animation_duration_ms",
+                            animation_duration.InMillisecondsF());
+    SCOPED_CRASH_KEY_BOOL("333095196", "is_destroying",
+                          window->is_destroying());
+    SCOPED_CRASH_KEY_STRING256("333095196", "new_layer_end",
+                               base::StringPrintf("%p", window->layer()));
     new_layer->SetTransform(gfx::Transform());
   }
 }
