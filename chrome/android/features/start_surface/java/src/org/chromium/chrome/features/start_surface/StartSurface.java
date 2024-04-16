@@ -6,16 +6,13 @@ package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.features.tasks.TasksView;
 
 /** Interface to communicate with the start surface. */
@@ -136,12 +133,4 @@ public interface StartSurface {
      */
     @Nullable
     TasksView getPrimarySurfaceView();
-
-    /**
-     * TODO(crbug.com/1315676): Remove this API after the bug is resolved.
-     *
-     * @return A {@link ObservableSupplier <TabSwitcherCustomViewManager>}.
-     */
-    @NonNull
-    ObservableSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
 }

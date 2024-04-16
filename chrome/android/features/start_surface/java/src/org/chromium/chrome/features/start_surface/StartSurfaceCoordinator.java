@@ -28,7 +28,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -58,7 +57,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher.TabSwitcherType;
-import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -104,9 +102,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Toolbar> mToolbarSupplier;
-    // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
-    private final ObservableSupplierImpl<TabSwitcherCustomViewManager>
-            mTabSwitcherCustomViewManagerSupplier;
 
     @VisibleForTesting
     static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
@@ -261,7 +256,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mModuleRegistrySupplier = moduleRegistrySupplier;
 
         mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
-        mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
 
         assert mIsStartSurfaceEnabled;
@@ -478,12 +472,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public @Nullable TasksView getPrimarySurfaceView() {
         return mView;
-    }
-
-    @Override
-    public ObservableSupplier<TabSwitcherCustomViewManager>
-            getTabSwitcherCustomViewManagerSupplier() {
-        return mTabSwitcherCustomViewManagerSupplier;
     }
 
     public boolean isMVTilesCleanedUpForTesting() {

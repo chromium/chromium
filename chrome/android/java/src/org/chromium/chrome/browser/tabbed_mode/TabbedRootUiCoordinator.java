@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
@@ -25,7 +24,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -203,12 +201,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private Callback<Boolean> mDesktopWindowModeSupplierCallback;
     private Destroyable mTabGroupCreationDialogManager;
-
-    /**
-     * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
-     * {@link StartSurface} is available.
-     */
-    private CallbackController mTabSwitcherCustomViewManagerCallbackController;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -502,10 +494,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mNotificationPermissionController = null;
         }
 
-        if (mTabSwitcherCustomViewManagerCallbackController != null) {
-            mTabSwitcherCustomViewManagerCallbackController.destroy();
-        }
-
         if (mDesktopSiteSettingsIPHController != null) {
             mDesktopSiteSettingsIPHController.destroy();
             mDesktopSiteSettingsIPHController = null;
@@ -787,33 +775,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         /* showRegularOverviewIntent= */ null,
                         /* isTabbedActivity= */ true);
 
-        mTabSwitcherCustomViewManagerCallbackController = new CallbackController();
-        mStartSurfaceSupplier.onAvailable(
-                mTabSwitcherCustomViewManagerCallbackController.makeCancelable(
-                        (startSurface) -> {
-                            new OneShotCallback<>(
-                                    startSurface.getTabSwitcherCustomViewManagerSupplier(),
-                                    (tabSwitcherCustomViewManager) -> {
-                                        if (!incognitoReauthCoordinatorFactory
-                                                        .getTabSwitcherCustomViewManagerSupplier()
-                                                        .hasValue()
-                                                && tabSwitcherCustomViewManager != null) {
-                                            incognitoReauthCoordinatorFactory
-                                                    .setTabSwitcherCustomViewManager(
-                                                            tabSwitcherCustomViewManager);
-                                        }
-                                    });
-                        }));
-
         mIncognitoTabSwitcherSupplier.onAvailable(
-                mTabSwitcherCustomViewManagerCallbackController.makeCancelable(
+                mCallbackController.makeCancelable(
                         (tabSwitcher) -> {
                             var tabSwitcherCustomViewManager =
                                     tabSwitcher.getTabSwitcherCustomViewManager();
-                            if (!incognitoReauthCoordinatorFactory
-                                            .getTabSwitcherCustomViewManagerSupplier()
-                                            .hasValue()
-                                    && tabSwitcherCustomViewManager != null) {
+                            if (tabSwitcherCustomViewManager != null) {
                                 incognitoReauthCoordinatorFactory.setTabSwitcherCustomViewManager(
                                         tabSwitcherCustomViewManager);
                             }
