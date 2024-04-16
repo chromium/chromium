@@ -56,7 +56,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
