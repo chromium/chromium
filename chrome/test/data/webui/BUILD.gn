@@ -113,6 +113,7 @@ source_set("browser_tests") {
       "chromeos/print_preview_cros/print_preview_cros_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
       "chromeos/shimless_rma/shimless_rma_browsertest.cc",
+      "chromeos/shortcut_customization/shortcut_customization_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
       "settings/chromeos/os_settings_browsertest.cc",
     ]

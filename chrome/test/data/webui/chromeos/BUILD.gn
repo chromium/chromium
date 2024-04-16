@@ -98,7 +98,6 @@ if (include_js2gtest_tests) {
       "diagnostics/diagnostics_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
       "print_management/print_management_browsertest.js",
-      "shortcut_customization/shortcut_customization_browsertest.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }

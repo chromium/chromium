@@ -14,9 +14,9 @@ static_library("shortcut_customization_ui") {
     "shortcuts_app_manager.h",
     "shortcuts_app_manager_factory.cc",
     "shortcuts_app_manager_factory.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
+
+  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash",
@@ -36,6 +36,15 @@ static_library("shortcut_customization_ui") {
     "//content/public/browser",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }
 
