@@ -252,12 +252,16 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
     return false;
   }
 
-  // TODO(yaoxia): measure metrics for the DB file size to have some idea if it
-  // gets too big.
-
   if (!InitializeTables()) {
     HandleInitializationFailure();
     return false;
+  }
+
+  int64_t file_size = 0L;
+  if (base::GetFileSize(path_to_database_, &file_size)) {
+    int64_t file_size_kb = file_size / 1024;
+    base::UmaHistogramCounts1M("BrowsingTopics.SiteDataStorage.FileSize.KB",
+                               file_size_kb);
   }
 
   db_init_status_ = InitStatus::kSuccess;

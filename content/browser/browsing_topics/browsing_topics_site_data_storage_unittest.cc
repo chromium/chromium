@@ -170,6 +170,10 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, LoadFromFile_CurrentVersion_Success) {
 
   histograms.ExpectUniqueSample("BrowsingTopics.SiteDataStorage.InitStatus",
                                 true, /*expected_bucket_count=*/1);
+
+  histograms.ExpectTotalCount("BrowsingTopics.SiteDataStorage.FileSize.KB", 1);
+  EXPECT_GT(
+      histograms.GetTotalSum("BrowsingTopics.SiteDataStorage.FileSize.KB"), 0);
 }
 
 TEST_F(BrowsingTopicsSiteDataStorageTest,
