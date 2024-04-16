@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -79,6 +80,16 @@ public class TabResumptionModuleMetricsUtils {
 
         assert tileCount == 2;
         return tileIndex == 0 ? ClickInfo.DOUBLE_TILE_FIRST : ClickInfo.DOUBLE_TILE_SECOND;
+    }
+
+    /** Maps SuggestionBundle to a ModuleShowConfig value, or null if there are no suggestions. */
+    static @Nullable @ModuleShowConfig Integer computeModuleShowConfig(
+            @Nullable SuggestionBundle bundle) {
+        if (bundle == null || bundle.entries.size() == 0) return null;
+
+        return bundle.entries.size() == 1
+                ? ModuleShowConfig.SINGLE_TILE_FOREIGN
+                : ModuleShowConfig.DOUBLE_TILE_FOREIGN;
     }
 
     /** Records info (encoded tile count and index) on a clicked tile. */

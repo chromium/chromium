@@ -46,9 +46,9 @@ public class TabResumptionModuleMediator {
     protected final ThumbnailProvider mThumbnailProvider;
     protected final SuggestionClickCallbacks mSuggestionClickCallbacks;
 
-    // The number of tiles shown as a result of the latest suggestion. This determines whether the
-    // module is visible (iff non-0), and is useful for logging.
-    private int mTileCount;
+    // Configuration of the tab resumption module if shown, or null if hidden. This is used for
+    // logging and for checking shown / hidden status.
+    private @Nullable @ModuleShowConfig Integer mModuleShowConfig;
 
     private long mFirstLoadTime;
     private boolean mIsStable;
@@ -70,7 +70,7 @@ public class TabResumptionModuleMediator {
         mFaviconProvider = faviconProvider;
         mThumbnailProvider = thumbnailProvider;
         mSuggestionClickCallbacks = suggestionClickCallbacks;
-        mTileCount = 0;
+        mModuleShowConfig = null;
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.FAVICON_PROVIDER, mFaviconProvider);
@@ -82,7 +82,7 @@ public class TabResumptionModuleMediator {
         mHandler.removeCallbacksAndMessages(null);
         // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has triggered yet.
         // This includes the case where TENTATIVE tiles are quickly clicked by a user.
-        ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
+        ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mModuleShowConfig);
     }
 
     /** Returns the current time in ms since the epoch. */
@@ -154,7 +154,7 @@ public class TabResumptionModuleMediator {
         // is handled by FORCED_NULL data.
 
         // Skip work if the module instance is irreversibly hidden.
-        if (mIsStable && mTileCount == 0) {
+        if (mIsStable && mModuleShowConfig == null) {
             return;
         }
 
@@ -189,7 +189,6 @@ public class TabResumptionModuleMediator {
                 }
             }
         }
-
         return bundle;
     }
 
@@ -209,9 +208,11 @@ public class TabResumptionModuleMediator {
      *
      * @param recordStabilityDelay Whether to record how long it takes to get and render stable
      *     results from "slow path".
-     * @param numTilesShown The number of tiles that user sees when suggestions are deemed stable.
+     * @param moduleShowConfig The ModuleShowConfig to log. If null, then logs NO_SUGGESTIONS
+     *     NotShownReason instead.
      */
-    private void ensureStabilityAndLogMetrics(boolean recordStabilityDelay, int numTilesShown) {
+    private void ensureStabilityAndLogMetrics(
+            boolean recordStabilityDelay, @Nullable @ModuleShowConfig Integer moduleShowConfig) {
         // Activates only on first call.
         if (mIsStable) {
             return;
@@ -222,23 +223,17 @@ public class TabResumptionModuleMediator {
             TabResumptionModuleMetricsUtils.recordStabilityDelay(
                     getCurrentTimeMs() - mFirstLoadTime);
         }
-        if (numTilesShown == 0) {
+        if (moduleShowConfig == null) {
             TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
                     ModuleNotShownReason.NO_SUGGESTIONS);
-        } else if (numTilesShown == 1) {
-            // Assumes ForeignSessionTabResumptionDataProvider.
-            TabResumptionModuleMetricsUtils.recordModuleShowConfig(
-                    ModuleShowConfig.SINGLE_TILE_FOREIGN);
         } else {
-            // Assumes ForeignSessionTabResumptionDataProvider.
-            TabResumptionModuleMetricsUtils.recordModuleShowConfig(
-                    ModuleShowConfig.DOUBLE_TILE_FOREIGN);
+            TabResumptionModuleMetricsUtils.recordModuleShowConfig(moduleShowConfig.intValue());
         }
     }
 
     /** Computes and sets UI properties and triggers render. */
     private void setPropertiesAndTriggerRender(@Nullable SuggestionBundle bundle) {
-        @Nullable String title = null;
+        String title = null;
         boolean isVisible = false;
         if (bundle != null) {
             Resources res = mContext.getResources();
@@ -255,12 +250,14 @@ public class TabResumptionModuleMediator {
     /** Handles `suggestions` data passed from mDataProvider.fetchSuggestions(). */
     private void onSuggestionReceived(@NonNull SuggestionsResult result) {
         List<SuggestionEntry> suggestions = result.suggestions;
-        @Nullable
         SuggestionBundle bundle =
                 (suggestions != null && suggestions.size() > 0)
                         ? makeSuggestionBundle(suggestions)
                         : null;
-        int nextTileCount = (bundle == null) ? 0 : bundle.entries.size();
+        @ModuleShowConfig Integer prevModuleShowConfig = mModuleShowConfig;
+        mModuleShowConfig = TabResumptionModuleMetricsUtils.computeModuleShowConfig(bundle);
+        boolean prevIsShown = (prevModuleShowConfig != null);
+        boolean isShown = (mModuleShowConfig != null);
 
         @ResultStrength int strength = result.strength;
         if (strength == ResultStrength.TENTATIVE) {
@@ -270,34 +267,34 @@ public class TabResumptionModuleMediator {
                     () -> {
                         // Activates if STABLE is never encountered. In this case TENTATIVE
                         // suggestions is considered stable.
-                        ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
+                        ensureStabilityAndLogMetrics(
+                                /* recordStabilityDelay= */ false, mModuleShowConfig);
                     },
                     STABILITY_TIMEOUT_MS);
 
         } else if (strength == ResultStrength.STABLE) {
-            if (mTileCount == 0 && nextTileCount == 0) {
+            // Confirmed hidden: Don't show and enter terminal state.
+            if (!prevIsShown && !isShown) {
                 mModuleDelegate.onDataFetchFailed(getModuleType());
             }
             setPropertiesAndTriggerRender(bundle);
-            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, nextTileCount);
+            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ true, mModuleShowConfig);
 
         } else if (strength == ResultStrength.FORCED_NULL) {
-            assert nextTileCount == 0;
+            assert !isShown;
+            // Activates if STABLE was never encountered. In this case TENTATIVE suggestions are
+            // considered stable (therefore log `prevModuleShowConfig`).
             setPropertiesAndTriggerRender(bundle);
-            // Activates if STABLE was never encountered. In this case TENTATIVDE suggestions are
-            // considered stable. Uses corresponding number of tiles shown.
-            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, mTileCount);
+            ensureStabilityAndLogMetrics(/* recordStabilityDelay= */ false, prevModuleShowConfig);
         }
 
-        // If module visibility changes.
-        if ((mTileCount == 0) != (nextTileCount == 0)) {
-            if (nextTileCount != 0) { // Hidden to shown.
+        // If module show / hide status changes.
+        if (prevIsShown != isShown) {
+            if (isShown) { // Transition from hidden to shown: Explicitly show.
                 mModuleDelegate.onDataReady(getModuleType(), mModel);
-            } else { // Shown to hidden.
+            } else { // Transition from shown to hidden: Remove and enter terminal state.
                 mModuleDelegate.removeModule(getModuleType());
             }
         }
-
-        mTileCount = nextTileCount;
     }
 }
