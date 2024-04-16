@@ -954,6 +954,12 @@ bool ConsumeAnyValue(CSSParserTokenRange& range) {
   return result;
 }
 
+// MathFunctionParser is a helper for parsing something that _might_ be a
+// function. In particular, it helps rewinding the parser to the point where it
+// started if what was to be parsed was not a function (or an invalid function).
+// This rewinding happens in the destructor, unless Consume*() was called _and_
+// returned success. In effect, this gives us a multi-token peek for functions.
+//
 // TODO(rwlbuis): consider pulling in the parsing logic from
 // css_math_expression_node.cc.
 class MathFunctionParser {
@@ -970,14 +976,21 @@ class MathFunctionParser {
       const Flags parsing_flags = Flags({Flag::AllowPercent}),
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
       HashMap<CSSValueID, double> color_channel_keyword_values = {})
-      : source_range_(range), range_(range) {
+      : range_(&range), range_copy_(range) {
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kFunctionToken) {
       calc_value_ = CSSMathFunctionValue::Create(
           CSSMathExpressionNode::ParseMathFunction(
-              token.FunctionId(), ConsumeFunction(range_), context,
+              token.FunctionId(), ConsumeFunction(*range_), context,
               parsing_flags, allowed_anchor_queries),
           value_range);
+    }
+  }
+
+  ~MathFunctionParser() {
+    if (!has_consumed_) {
+      // Rewind the parser.
+      *range_ = range_copy_;
     }
   }
 
@@ -986,7 +999,8 @@ class MathFunctionParser {
     if (!calc_value_) {
       return nullptr;
     }
-    source_range_ = range_;
+    DCHECK(!has_consumed_);  // Cannot consume twice.
+    has_consumed_ = true;
     CSSMathFunctionValue* result = calc_value_;
     calc_value_ = nullptr;
     return result;
@@ -996,14 +1010,16 @@ class MathFunctionParser {
     if (!calc_value_ || calc_value_->Category() != kCalcNumber) {
       return false;
     }
-    source_range_ = range_;
+    DCHECK(!has_consumed_);  // Cannot consume twice.
+    has_consumed_ = true;
     result = calc_value_->GetDoubleValue();
     return true;
   }
 
  private:
-  CSSParserTokenRange& source_range_;
-  CSSParserTokenRange range_;
+  bool has_consumed_ = false;
+  CSSParserTokenRange* range_;
+  CSSParserTokenRange range_copy_;  // For rewinding.
   CSSMathFunctionValue* calc_value_ = nullptr;
 };
 
