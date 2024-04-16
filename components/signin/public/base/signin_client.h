@@ -20,7 +20,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -45,6 +44,7 @@ class SharedURLLoaderFactory;
 
 namespace mojom {
 class CookieManager;
+class NetworkContext;
 }
 }  // namespace network
 
