@@ -22173,6 +22173,24 @@
             ]
         }
     ],
+    "WebRTC-LibvpxVp9Encoder-SvcFrameDropConfig": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,layer_drop_mode:1,max_consec_drop:2,_20240416"
+                }
+            ]
+        }
+    ],
     "WebRTC-PaddingMode-RecentLargePacket": [
         {
             "platforms": [
