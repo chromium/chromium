@@ -3968,7 +3968,7 @@
   {
     "name": "enable-user-link-capturing-pwa",
     "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 129
   },
   {
     "name": "enable-variable-refresh-rate",
