@@ -381,10 +381,13 @@ void ClipboardIOS::WriteText(base::StringPiece text) {
 void ClipboardIOS::WriteHTML(
     base::StringPiece markup,
     std::optional<base::StringPiece> /* source_url */) {
-  NSDictionary<NSString*, id>* html_item = @{
-    ClipboardFormatType::HtmlType().ToNSString() :
-        base::SysUTF8ToNSString(markup)
-  };
+  // We need to mark it as utf-8. (see crbug.com/40759159)
+  std::string html_fragment_str("<meta charset='utf-8'>");
+  html_fragment_str += markup;
+  NSString* html = base::SysUTF8ToNSString(html_fragment_str);
+
+  NSDictionary<NSString*, id>* html_item =
+      @{ClipboardFormatType::HtmlType().ToNSString() : html};
   [GetPasteboard() addItems:@[ html_item ]];
 }
 
