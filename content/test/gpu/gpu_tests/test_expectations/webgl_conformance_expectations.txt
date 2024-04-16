@@ -736,6 +736,14 @@ crbug.com/1230619 conformance/context/constants-and-properties.html [ Failure ]
 crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
 crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
 
+####################
+# Fuchsia failures #
+####################
+crbug.com/40935289 [ fuchsia web-engine-shell ] WebglExtension_EXT_float_blend [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] conformance/textures/misc/texture-size-limit.html [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] conformance/textures/misc/texture-sub-image-cube-maps.html [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

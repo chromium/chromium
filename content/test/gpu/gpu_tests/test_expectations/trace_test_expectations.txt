@@ -232,6 +232,10 @@ crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipeli
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
+# Failures on fuchsia
+crbug.com/40935289 [ fuchsia web-engine-shell ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

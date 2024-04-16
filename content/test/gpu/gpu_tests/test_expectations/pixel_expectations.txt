@@ -439,9 +439,9 @@ crbug.com/40241618 [ android android-sm-s911u1 no-passthrough renderer-skia-vulk
 
 # Flaky failures vulkan queue submission, causing dchecks on CQ
 # finder:disable-narrowing
-crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
-crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
-crbug.com/40937765 [ android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
+crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
+crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_FourColors_Rot_90 [ RetryOnFailure ]
+crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 # finder:enable-narrowing
 
 # ChromeOS Volteer failures
@@ -451,7 +451,19 @@ crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLCon
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
 
 # Failures on fuchsia
-crbug.com/414481724 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_HEVC [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_270 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_FourColors_Rot_90 [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Failures on Windows with SkiaGraphite
 crbug.com/329235191 [ win graphite-enabled ] Pixel_BackgroundImage [ Failure ]
