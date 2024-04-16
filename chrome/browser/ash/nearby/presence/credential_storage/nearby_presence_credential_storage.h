@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
@@ -88,11 +89,14 @@ class NearbyPresenceCredentialStorage
                                 bool success);
   void OnPrivateCredentialsRetrieved(
       GetPrivateCredentialsCallback callback,
+      base::TimeTicks retrieval_start_time,
       bool success,
       std::unique_ptr<std::vector<::nearby::internal::LocalCredential>>
           entries);
   void OnPublicCredentialsRetrieved(
       GetPublicCredentialsCallback callback,
+      base::TimeTicks retrieval_start_time,
+      mojom::PublicCredentialType public_credential_type,
       bool success,
       std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
           entries);

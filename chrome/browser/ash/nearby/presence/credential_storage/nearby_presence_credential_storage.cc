@@ -157,16 +157,19 @@ void NearbyPresenceCredentialStorage::GetPublicCredentials(
     GetPublicCredentialsCallback callback) {
   CHECK(callback);
 
+  auto on_credentials_received_callback = base::BindOnce(
+      &NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      /*retrieval_start_time=*/base::TimeTicks::Now(), public_credential_type);
+
   switch (public_credential_type) {
     case (mojom::PublicCredentialType::kLocalPublicCredential):
-      local_public_db_->LoadEntries(base::BindOnce(
-          &NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      local_public_db_->LoadEntries(
+          std::move(on_credentials_received_callback));
       break;
     case (mojom::PublicCredentialType::kRemotePublicCredential):
-      remote_public_db_->LoadEntries(base::BindOnce(
-          &NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      remote_public_db_->LoadEntries(
+          std::move(on_credentials_received_callback));
       break;
   }
 }
@@ -176,7 +179,8 @@ void NearbyPresenceCredentialStorage::GetPrivateCredentials(
   CHECK(callback);
   private_db_->LoadEntries(base::BindOnce(
       &NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      /*retrieval_start_time=*/base::TimeTicks::Now()));
 }
 
 void NearbyPresenceCredentialStorage::UpdateLocalCredential(
@@ -225,6 +229,7 @@ void NearbyPresenceCredentialStorage::OnLocalCredentialUpdated(
 
 void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
     GetPrivateCredentialsCallback callback,
+    base::TimeTicks retrieval_start_time,
     bool success,
     std::unique_ptr<std::vector<::nearby::internal::LocalCredential>> entries) {
   CHECK(callback);
@@ -236,6 +241,11 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
                             std::nullopt);
     return;
   }
+
+  base::TimeDelta retrieval_duration =
+      base::TimeTicks::Now() - retrieval_start_time;
+  metrics::RecordCredentialStorageRetrievePrivateCredentialsDuration(
+      retrieval_duration);
 
   CHECK(entries);
 
@@ -252,6 +262,8 @@ void NearbyPresenceCredentialStorage::OnPrivateCredentialsRetrieved(
 
 void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
     GetPublicCredentialsCallback callback,
+    base::TimeTicks retrieval_start_time,
+    mojom::PublicCredentialType public_credential_type,
     bool success,
     std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
         entries) {
@@ -263,6 +275,19 @@ void NearbyPresenceCredentialStorage::OnPublicCredentialsRetrieved(
     std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted,
                             std::nullopt);
     return;
+  }
+
+  base::TimeDelta retrieval_duration =
+      base::TimeTicks::Now() - retrieval_start_time;
+  switch (public_credential_type) {
+    case (mojom::PublicCredentialType::kLocalPublicCredential):
+      metrics::RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
+          retrieval_duration);
+      break;
+    case (mojom::PublicCredentialType::kRemotePublicCredential):
+      metrics::RecordCredentialStorageRetrieveRemotePublicCredentialsDuration(
+          retrieval_duration);
+      break;
   }
 
   CHECK(entries);

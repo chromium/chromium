@@ -854,6 +854,15 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
@@ -891,6 +900,16 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
 
     run_loop.Run();
   }
+
+  // Only record duration for successful loads.
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -930,6 +949,15 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
@@ -966,6 +994,15 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
@@ -999,6 +1036,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration",
+      1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
@@ -1033,6 +1074,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Success) {

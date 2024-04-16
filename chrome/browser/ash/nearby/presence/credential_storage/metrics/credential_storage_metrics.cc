@@ -50,4 +50,27 @@ void RecordCredentialStorageSavePrivateCredentialsResult(bool success) {
       success);
 }
 
+void RecordCredentialStorageRetrieveLocalPublicCredentialsDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      duration);
+}
+
+void RecordCredentialStorageRetrieveRemotePublicCredentialsDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      duration);
+}
+
+void RecordCredentialStorageRetrievePrivateCredentialsDuration(
+    base::TimeDelta duration) {
+  base::UmaHistogramMicrosecondsTimes(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration",
+      duration);
+}
+
 }  // namespace ash::nearby::presence::metrics
