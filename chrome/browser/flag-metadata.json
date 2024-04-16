@@ -5728,7 +5728,7 @@
   {
     "name": "nearby-presence",
     "owners": ["chromeos-cross-device-eng@google.com", "hansberry@chromium.org"],
-    "expiry_milestone": 125
+    "expiry_milestone": 150
   },
   {"name": "nearby-sharing-self-share",
    "owners": ["brandosocarras@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com"],
