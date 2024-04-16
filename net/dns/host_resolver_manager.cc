@@ -546,11 +546,14 @@ HostResolverManager::CreateServiceEndpointRequest(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!invalidation_in_progress_);
   DCHECK_EQ(resolve_context->GetTargetNetwork(), target_network_);
-  DCHECK(registered_contexts_.HasObserver(resolve_context));
+  if (resolve_context) {
+    DCHECK(registered_contexts_.HasObserver(resolve_context));
+  }
 
   return std::make_unique<ServiceEndpointRequestImpl>(
       std::move(scheme_host_port), std::move(network_anonymization_key),
-      std::move(net_log), std::move(parameters), resolve_context->GetWeakPtr(),
+      std::move(net_log), std::move(parameters),
+      resolve_context ? resolve_context->GetWeakPtr() : nullptr,
       weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
 

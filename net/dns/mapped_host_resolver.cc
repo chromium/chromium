@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
@@ -74,6 +75,16 @@ MappedHostResolver::CreateRequest(
 
   return impl_->CreateRequest(rewritten, network_anonymization_key,
                               source_net_log, optional_parameters);
+}
+
+std::unique_ptr<HostResolver::ServiceEndpointRequest>
+MappedHostResolver::CreateServiceEndpointRequest(
+    Host host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>

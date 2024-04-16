@@ -65,6 +65,11 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
       const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
       const std::optional<ResolveHostParameters>& optional_parameters) override;
+  std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
+      Host host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      ResolveHostParameters parameters) override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   HostCache* GetHostCache() override;
   base::Value::Dict GetDnsConfigAsValue() const override;

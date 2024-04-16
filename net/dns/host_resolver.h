@@ -489,6 +489,13 @@ class NET_EXPORT HostResolver {
       const NetLogWithSource& net_log,
       const std::optional<ResolveHostParameters>& optional_parameters) = 0;
 
+  // Creates a service endpoint resolution request.
+  virtual std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
+      Host host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      ResolveHostParameters parameters) = 0;
+
   // Creates a request to probe configured DoH servers to find which can be used
   // successfully.
   virtual std::unique_ptr<ProbeRequest> CreateDohProbeRequest();

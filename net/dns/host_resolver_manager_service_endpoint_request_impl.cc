@@ -70,8 +70,11 @@ HostResolverManager::ServiceEndpointRequestImpl::~ServiceEndpointRequestImpl() {
 int HostResolverManager::ServiceEndpointRequestImpl::Start(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!delegate_);
-  CHECK(resolve_context_);
   CHECK(manager_);
+
+  if (!resolve_context_) {
+    return ERR_CONTEXT_SHUT_DOWN;
+  }
 
   delegate_ = delegate;
 

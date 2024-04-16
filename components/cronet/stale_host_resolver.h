@@ -97,6 +97,11 @@ class StaleHostResolver : public net::HostResolver {
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const net::NetLogWithSource& net_log,
       const std::optional<ResolveHostParameters>& optional_parameters) override;
+  std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
+      Host host,
+      net::NetworkAnonymizationKey network_anonymization_key,
+      net::NetLogWithSource net_log,
+      ResolveHostParameters parameters) override;
 
   // The remaining public methods pass through to the inner resolver:
 

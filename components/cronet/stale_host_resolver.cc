@@ -362,6 +362,18 @@ StaleHostResolver::CreateRequest(
       optional_parameters.value_or(ResolveHostParameters()), tick_clock_);
 }
 
+std::unique_ptr<net::HostResolver::ServiceEndpointRequest>
+StaleHostResolver::CreateServiceEndpointRequest(
+    Host host,
+    net::NetworkAnonymizationKey network_anonymization_key,
+    net::NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  // TODO(crbug.com/335119455): Figure out a plan to support the
+  // ServiceEndpointRequest API.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 net::HostCache* StaleHostResolver::GetHostCache() {
   return inner_resolver_->GetHostCache();
 }

@@ -31,6 +31,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_results_test_util.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -773,6 +774,91 @@ TEST_F(ContextHostResolverTest, HostCacheInvalidation) {
   // ContextHostResolver has been destroyed (and deregisters its ResolveContext)
   resolver = nullptr;
   manager_->InvalidateCachesForTesting();
+}
+
+class FakeServiceEndpontRequestDelegate
+    : public HostResolver::ServiceEndpointRequest::Delegate {
+ public:
+  void OnServiceEndpointsUpdated() override {}
+  void OnServiceEndpointRequestFinished(int rv) override { result_ = rv; }
+
+  std::optional<int> result() const { return result_; }
+
+ private:
+  std::optional<int> result_;
+};
+
+class ContextHostResolverServiceEndpointTest : public ContextHostResolverTest {
+ public:
+  ContextHostResolverServiceEndpointTest() = default;
+
+  ~ContextHostResolverServiceEndpointTest() override = default;
+
+  void SetUp() override {
+    ContextHostResolverTest::SetUp();
+
+    context_ = CreateTestURLRequestContextBuilder()->Build();
+
+    MockDnsClientRuleList rules;
+    rules.emplace_back("example.com", dns_protocol::kTypeA, /*secure=*/false,
+                       MockDnsClientRule::Result(BuildTestDnsAddressResponse(
+                           "example.com", kEndpoint.address())),
+                       /*delay=*/false, context_.get());
+    rules.emplace_back(
+        "example.com", dns_protocol::kTypeAAAA, /*secure=*/false,
+        MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
+        /*delay=*/false, context_.get());
+    SetMockDnsRules(std::move(rules));
+  }
+
+ protected:
+  std::unique_ptr<ContextHostResolver> CreateResolver() {
+    auto resolve_context = std::make_unique<ResolveContext>(
+        context_.get(), /*enable_caching=*/false);
+    return std::make_unique<ContextHostResolver>(manager_.get(),
+                                                 std::move(resolve_context));
+  }
+
+ private:
+  std::unique_ptr<URLRequestContext> context_;
+};
+
+TEST_F(ContextHostResolverServiceEndpointTest, Resolve) {
+  std::unique_ptr<ContextHostResolver> resolver = CreateResolver();
+
+  std::unique_ptr<HostResolver::ServiceEndpointRequest> request =
+      resolver->CreateServiceEndpointRequest(
+          HostResolver::Host(
+              url::SchemeHostPort(url::kHttpsScheme, "example.com", 100)),
+          NetworkAnonymizationKey(), NetLogWithSource(),
+          HostResolver::ResolveHostParameters());
+
+  FakeServiceEndpontRequestDelegate delegate;
+  int rv = request->Start(&delegate);
+  EXPECT_THAT(rv, test::IsError(ERR_IO_PENDING));
+
+  RunUntilIdle();
+  EXPECT_THAT(*delegate.result(), test::IsOk());
+  EXPECT_THAT(request->GetEndpointResults(),
+              testing::ElementsAre(
+                  ExpectServiceEndpoint(testing::ElementsAre(kEndpoint))));
+}
+
+TEST_F(ContextHostResolverServiceEndpointTest, DestroyResolver) {
+  std::unique_ptr<ContextHostResolver> resolver = CreateResolver();
+
+  std::unique_ptr<HostResolver::ServiceEndpointRequest> request =
+      resolver->CreateServiceEndpointRequest(
+          HostResolver::Host(
+              url::SchemeHostPort(url::kHttpsScheme, "example.com", 100)),
+          NetworkAnonymizationKey(), NetLogWithSource(),
+          HostResolver::ResolveHostParameters());
+
+  resolver.reset();
+
+  FakeServiceEndpontRequestDelegate delegate;
+  int rv = request->Start(&delegate);
+  EXPECT_THAT(rv, test::IsError(ERR_CONTEXT_SHUT_DOWN));
 }
 
 class NetworkBoundResolveContext : public ResolveContext {

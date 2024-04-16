@@ -726,6 +726,16 @@ MockHostResolverBase::CreateRequest(
                                        optional_parameters, AsWeakPtr());
 }
 
+std::unique_ptr<HostResolver::ServiceEndpointRequest>
+MockHostResolverBase::CreateServiceEndpointRequest(
+    Host host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 std::unique_ptr<HostResolver::ProbeRequest>
 MockHostResolverBase::CreateDohProbeRequest() {
   return std::make_unique<ProbeRequestImpl>(AsWeakPtr());
@@ -1509,6 +1519,16 @@ HangingHostResolver::CreateRequest(
   }
 
   return std::make_unique<RequestImpl>(weak_ptr_factory_.GetWeakPtr());
+}
+
+std::unique_ptr<HostResolver::ServiceEndpointRequest>
+HangingHostResolver::CreateServiceEndpointRequest(
+    Host host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>
