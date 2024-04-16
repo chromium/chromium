@@ -2001,6 +2001,11 @@ const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
     "mute controls.";
 
+const char kCrasProcessorDedicatedThreadName[] =
+    "Run CrasProcessor in a dedicated thread";
+const char kCrasProcessorDedicatedThreadDescription[] =
+    "Run CrasProcessor in a separate thread out of the audio thread";
+
 const char kCrasSplitAlsaUsbInternalName[] =
     "CRAS Split USB/Internal refactor control";
 const char kCrasSplitAlsaUsbInternalDescription[] =
