@@ -34,7 +34,9 @@ ci.defaults.set(
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
+    siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -109,6 +111,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -166,6 +169,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -212,7 +216,7 @@ ci.builder(
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_enabled = True,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -293,6 +297,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -345,6 +350,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -405,6 +411,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -465,6 +472,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -526,6 +534,7 @@ ci.builder(
         },
     },
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -850,6 +859,7 @@ ci.builder(
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -943,4 +953,5 @@ ci.builder(
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )

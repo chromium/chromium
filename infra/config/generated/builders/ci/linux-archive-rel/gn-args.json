@@ -4,6 +4,7 @@
     "enable_updater": true,
     "is_component_build": false,
     "is_debug": false,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

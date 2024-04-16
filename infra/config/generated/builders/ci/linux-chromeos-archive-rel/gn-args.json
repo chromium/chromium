@@ -5,6 +5,7 @@
     "is_debug": false,
     "target_os": "chromeos",
     "use_cups": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }
