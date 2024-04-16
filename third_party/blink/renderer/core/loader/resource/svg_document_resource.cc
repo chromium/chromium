@@ -77,7 +77,7 @@ void SVGDocumentResource::NotifyStartLoad() {
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
   const ResourceResponse& response = GetResponse();
-  if (MimeTypeAllowed(response)) {
+  if (MimeTypeAllowed(response) && HasData()) {
     content_->UpdateDocument(DecodedText(), response.CurrentRequestUrl());
   } else if (!ErrorOccurred()) {
     SetStatus(ResourceStatus::kDecodeError);

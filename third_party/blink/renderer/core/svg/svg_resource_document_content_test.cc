@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -13,9 +14,9 @@
 
 namespace blink {
 
-class SVGResourceDocumentContentTest : public SimTest {};
+class SVGResourceDocumentContentSimTest : public SimTest {};
 
-TEST_F(SVGResourceDocumentContentTest, GetDocumentBeforeLoadComplete) {
+TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   main_resource.Complete("<html><body></body></html>");
@@ -42,6 +43,22 @@ TEST_F(SVGResourceDocumentContentTest, GetDocumentBeforeLoadComplete) {
   // Finish the response, the Document should now be accessible.
   svg_resource.Complete("g></svg>");
   EXPECT_NE(nullptr, entry->GetDocument());
+}
+
+class SVGResourceDocumentContentTest : public PageTestBase {};
+
+TEST_F(SVGResourceDocumentContentTest, EmptyDataUrl) {
+  const char kEmptySVGImageDataUrl[] = "data:image/svg+xml,";
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(kEmptySVGImageDataUrl), options);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+  auto* content = SVGResourceDocumentContent::Fetch(params, GetDocument());
+
+  EXPECT_TRUE(content->IsLoaded());
+  EXPECT_TRUE(content->ErrorOccurred());
 }
 
 }  // namespace blink
