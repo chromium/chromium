@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -8859,6 +8860,109 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/std::nullopt,
       GURL("https://win.url"));
+}
+
+// Test the case the debugging report URLs are just below and exactly match the
+// max URL length. When the length is hit, no errors are produced, but the debug
+// report URLs are ignored.
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportsLengthLimit) {
+  std::string almost_too_long_loss_report_url = "https://loss.url/";
+  almost_too_long_loss_report_url += std::string(
+      url::kMaxURLChars - almost_too_long_loss_report_url.size(), '1');
+  std::string too_long_loss_report_url = almost_too_long_loss_report_url + "2";
+
+  std::string almost_too_long_win_report_url = "https://win.url/";
+  almost_too_long_win_report_url += std::string(
+      url::kMaxURLChars - almost_too_long_win_report_url.size(), '1');
+  std::string too_long_win_report_url = almost_too_long_win_report_url + "2";
+
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  // Copying large URLs can cause flaky generateBid() timeouts with the default
+  // value, even on the standard debug bots.
+  per_buyer_timeout_ = TestTimeouts::action_max_timeout();
+
+  // Almost too long loss report URL and too long win report URL. Mixing the too
+  // long / not-too-long cases makes sure that we don't clear both URLs when one
+  // is too longer, or check the length of the wrong URL.
+  {
+    AddJavascriptResponse(
+        &url_loader_factory_, interest_group_bidding_url_,
+        CreateBasicGenerateBidScriptWithDebuggingReport(
+            base::StringPrintf(R"(forDebuggingOnly.reportAdAuctionLoss("%s");
+                                  forDebuggingOnly.reportAdAuctionWin("%s"))",
+                               almost_too_long_loss_report_url.c_str(),
+                               too_long_win_report_url.c_str())));
+
+    BidderWorklet* worklet_impl;
+    auto worklet =
+        CreateWorklet(interest_group_bidding_url_,
+                      /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+    int id = worklet_impl->context_group_id_for_testing();
+    TestChannel* channel =
+        inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+    generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+    GenerateBid(worklet.get());
+    generate_bid_run_loop_->Run();
+    generate_bid_run_loop_.reset();
+
+    EXPECT_THAT(bid_errors_, testing::ElementsAre());
+    ASSERT_EQ(1u, bids_.size());
+    EXPECT_EQ(bid_debug_loss_report_url_, almost_too_long_loss_report_url);
+    EXPECT_FALSE(bid_debug_win_report_url_.has_value());
+
+    channel->WaitForAndValidateConsoleMessage(
+        "warning", /*json_args=*/
+        "[{\"type\":\"string\", "
+        "\"value\":\"reportAdAuctionWin accepts URLs of at most length "
+        "2097152.\"}]",
+        /*stack_trace_size=*/1, /*function=*/"generateBid",
+        interest_group_bidding_url_, /*line_number=*/5);
+
+    channel->ExpectNoMoreConsoleEvents();
+  }
+
+  // Too long loss report URL and almost too long win report URL.
+  {
+    AddJavascriptResponse(
+        &url_loader_factory_, interest_group_bidding_url_,
+        CreateBasicGenerateBidScriptWithDebuggingReport(
+            base::StringPrintf(R"(forDebuggingOnly.reportAdAuctionLoss("%s");
+                                  forDebuggingOnly.reportAdAuctionWin("%s"))",
+                               too_long_loss_report_url.c_str(),
+                               almost_too_long_win_report_url.c_str())));
+
+    BidderWorklet* worklet_impl;
+    auto worklet =
+        CreateWorklet(interest_group_bidding_url_,
+                      /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+    int id = worklet_impl->context_group_id_for_testing();
+    TestChannel* channel =
+        inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+    generate_bid_run_loop_ = std::make_unique<base::RunLoop>();
+    GenerateBid(worklet.get());
+    generate_bid_run_loop_->Run();
+    generate_bid_run_loop_.reset();
+
+    EXPECT_THAT(bid_errors_, testing::ElementsAre());
+    ASSERT_EQ(1u, bids_.size());
+    EXPECT_FALSE(bid_debug_loss_report_url_.has_value());
+    EXPECT_EQ(bid_debug_win_report_url_, almost_too_long_win_report_url);
+
+    channel->WaitForAndValidateConsoleMessage(
+        "warning", /*json_args=*/
+        "[{\"type\":\"string\", "
+        "\"value\":\"reportAdAuctionLoss accepts URLs of at most length "
+        "2097152.\"}]",
+        /*stack_trace_size=*/1, /*function=*/"generateBid",
+        interest_group_bidding_url_, /*line_number=*/4);
+
+    channel->ExpectNoMoreConsoleEvents();
+  }
 }
 
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,

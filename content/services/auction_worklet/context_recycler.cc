@@ -40,7 +40,7 @@ ContextRecycler::~ContextRecycler() = default;
 void ContextRecycler::AddForDebuggingOnlyBindings() {
   DCHECK(!for_debugging_only_bindings_);
   for_debugging_only_bindings_ =
-      std::make_unique<ForDebuggingOnlyBindings>(v8_helper_);
+      std::make_unique<ForDebuggingOnlyBindings>(v8_helper_, v8_logger_.get());
   AddBindings(for_debugging_only_bindings_.get());
 }
 
