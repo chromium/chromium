@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -18,6 +19,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/features.h"
+
+using Step = AuthenticatorRequestDialogModel::Step;
 
 ChangePinControllerImpl::ChangePinControllerImpl(
     content::WebContents* web_contents)
@@ -34,6 +37,7 @@ ChangePinControllerImpl::ChangePinControllerImpl(
                       : nullptr;
   model_ = std::make_unique<AuthenticatorRequestDialogModel>(
       web_contents->GetPrimaryMainFrame());
+  model_observation_.Observe(&model_->observers);
 }
 
 ChangePinControllerImpl::~ChangePinControllerImpl() = default;
@@ -68,6 +72,46 @@ bool ChangePinControllerImpl::StartChangePin() {
   if (!IsChangePinFlowAvailable()) {
     return false;
   }
-  model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMReauthAccount);
+  // TODO(enclave): use local UV instead of GPM reauth when available.
+  model_->SetStep(Step::kGPMReauthAccount);
   return true;
+}
+
+void ChangePinControllerImpl::CancelAuthenticatorRequest() {
+  // User clicked "Cancel" in the GPM dialog.
+  Reset();
+}
+
+void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
+  rapt_ = std::move(rapt);
+  model_->SetStep(Step::kGPMCreatePin);
+}
+
+void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
+  // User closed the reauth window.
+  Reset();
+}
+
+void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
+  CHECK(rapt_.has_value() && (model_->step() == Step::kGPMCreatePin ||
+                              model_->step() == Step::kGPMCreateArbitraryPin));
+  enclave_manager_->ChangePIN(
+      base::UTF16ToUTF8(pin), std::move(rapt_),
+      base::BindOnce(&ChangePinControllerImpl::OnGpmPinChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChangePinControllerImpl::Reset() {
+  model_observation_.Reset();
+  model_->SetStep(Step::kNotStarted);
+  rapt_.reset();
+}
+
+void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
+  if (!success) {
+    model_->SetStep(Step::kGPMError);
+    return;
+  }
+  // TODO(derinel): Display success UI
+  Reset();
 }

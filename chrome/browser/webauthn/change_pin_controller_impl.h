@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/supports_user_data.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
 
 namespace content {
@@ -21,8 +22,47 @@ class SyncService;
 struct AuthenticatorRequestDialogModel;
 class EnclaveManager;
 
-class ChangePinControllerImpl : public ChangePinController,
-                                public base::SupportsUserData::Data {
+// ChangePinControllerImpl controls the Google Password Manager PIN flow.
+// It relies heavily on the AuthenticatorRequestDialogModel's state machine.
+// The following diagram should help understand the flow. To edit the dialog,
+// paste it in asciiflow.com.
+//
+//         ChangePinController                   AuthenticatorRequestDialogModel
+// ┌─────────────────────────────────┐             ┌───────────────────────┐
+// │                                 │             │                       │
+// │ StartChangePin ─────────────────┼─────────────┼───────────┐           │
+// │                                 │             │           │           │
+// │                                 │ Cancelled   │           ▼           │
+// │ OnRecoverSecurityDomainClosed ◄─┼─────────────┼── kGpmReauthAccount   │
+// │                                 │             │           │           │
+// │        ┌────────────────────────┼─────────────┼───────────┘           │
+// │        │                        │ Success     │                       │
+// │        ▼                        │             │                       │
+// │ OnReauthComplete ───────────────┼─────────────┼───────────┐           │
+// │                                 │             │           │           │
+// │                                 │ Cancelled   │           ▼           │
+// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMCreatePin       │
+// │                                 │             │           │           │
+// │                                 │ PIN entered │           │           │
+// │        ┌────────────────────────┼─────────────┼───────────┘           │
+// │        │                        │             │                       │
+// │        ▼                        │             └───────────────────────┘
+// │ OnGPMPinEntered ────────────────┼─────┐         EnclaveManager
+// │                                 │     │       ┌────────────────┐
+// │                                 │     │       │                │
+// │                                 │     │       │                │
+// │                                 │     └───────┼─► ChangePIN    │
+// │                success/failure  │             │      │         │
+// │        ┌────────────────────────┼─────────────┼──────┘         │
+// │        ▼                        │             │                │
+// │                                 │             │                │
+// │ OnGpmPinChanged                 │             │                │
+// │                                 │             │                │
+// └─────────────────────────────────┘             └────────────────┘
+class ChangePinControllerImpl
+    : public ChangePinController,
+      public base::SupportsUserData::Data,
+      public AuthenticatorRequestDialogModel::Observer {
  public:
   explicit ChangePinControllerImpl(content::WebContents* web_contents);
   ChangePinControllerImpl(const ChangePinControllerImpl&) = delete;
@@ -40,12 +80,29 @@ class ChangePinControllerImpl : public ChangePinController,
   // Starts the change PIN flow. Returns true if the flow has started.
   bool StartChangePin() override;
 
+  // AuthenticatorRequestDialogModel::Observer
+  void CancelAuthenticatorRequest() override;
+  void OnReauthComplete(std::string rapt) override;
+  void OnRecoverSecurityDomainClosed() override;
+  void OnGPMPinEntered(const std::u16string& pin) override;
+
  private:
+  void OnGpmPinChanged(bool success);
+  void Reset();
+
   const bool enclave_enabled_;
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
   // EnclaveManager is a KeyedService.
   raw_ptr<EnclaveManager> enclave_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  std::optional<std::string> rapt_ = std::nullopt;
+
+  base::ScopedObservation<
+      base::ObserverList<AuthenticatorRequestDialogModel::Observer>,
+      AuthenticatorRequestDialogModel::Observer>
+      model_observation_{this};
+
+  base::WeakPtrFactory<ChangePinControllerImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_CHANGE_PIN_CONTROLLER_IMPL_H_
