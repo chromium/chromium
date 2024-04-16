@@ -974,9 +974,11 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
     return result_height;
   }
   if (const auto& layout_result = line_item.layout_result) {
-    // Assume 0 is the baseline.  BlockOffset() is always negative.
-    return FontHeight(-line_item.BlockOffset(),
-                      line_item.Size().block_size + line_item.BlockOffset());
+    if (line_item.Size().inline_size != LayoutUnit()) {
+      // Assume 0 is the baseline.  BlockOffset() is always negative.
+      return FontHeight(-line_item.BlockOffset(),
+                        line_item.Size().block_size + line_item.BlockOffset());
+    }
   }
   return FontHeight();
 }
