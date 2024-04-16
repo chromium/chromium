@@ -295,11 +295,6 @@ ChromeRefresh2023Level GetChromeRefresh2023Level();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kBubbleMetricsApi);
 
-#if BUILDFLAG(IS_MAC)
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kMacClipboardWriteImageWithPng);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_APPLE)
 // Font Smoothing, a CoreText technique, simulates optical sizes to enhance text
 // readability at smaller scales. In practice, it leads to an increased
