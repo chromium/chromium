@@ -1800,20 +1800,6 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
 
   auto* desks_controller = DesksController::Get();
 
-  auto move_windows_to_target_desk = [&](Desk* target_desk) -> bool {
-    bool did_any_window_move = false;
-    for (aura::Window* dragged_window : dragged_item->GetWindows()) {
-      if (!desks_controller->MoveWindowFromActiveDeskTo(
-              dragged_window, target_desk, root_window_,
-              DesksMoveWindowFromActiveDeskSource::kDragAndDrop)) {
-        CHECK(!did_any_window_move);
-        return false;
-      }
-      did_any_window_move = true;
-    }
-    return true;
-  };
-
   for (ash::DeskMiniView* mini_view : desks_bar_view_->mini_views()) {
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
@@ -1827,7 +1813,10 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     desks_bar_view_->UpdateDeskIconButtonState(
         desks_bar_view_->new_desk_button(),
         /*target_state=*/DeskIconButton::State::kExpanded);
-    return move_windows_to_target_desk(target_desk);
+
+    return desks_controller->MoveWindowFromActiveDeskTo(
+        dragged_item->GetWindow(), target_desk, root_window_,
+        DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
   }
 
   if (!desks_controller->CanCreateDesks()) {
@@ -1856,7 +1845,9 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     }
   }
 
-  return move_windows_to_target_desk(target_desk);
+  return desks_controller->MoveWindowFromActiveDeskTo(
+      dragged_item->GetWindow(), target_desk, root_window_,
+      DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
 }
 
 void OverviewGrid::StartScroll() {

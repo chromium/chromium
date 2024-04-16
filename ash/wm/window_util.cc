@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -577,6 +578,32 @@ bool IsAnyWindowDragged() {
       return true;
   }
   return false;
+}
+
+void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
+  aura::Window* container = window_to_fix->parent();
+  DCHECK(desks_util::IsDeskContainer(container));
+  DCHECK_EQ(window_to_fix, wm::GetTransientRoot(window_to_fix));
+
+  const auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
+          DesksMruType::kAllDesks);
+  // Find the closest sibling that is not a transient descendant, which
+  // `window_to_fix` should be stacked below.
+  aura::Window* closest_sibling_above_window = nullptr;
+  for (aura::Window* window : mru_windows) {
+    if (window == window_to_fix) {
+      if (closest_sibling_above_window) {
+        container->StackChildBelow(window_to_fix, closest_sibling_above_window);
+      }
+      return;
+    }
+
+    if (window->parent() == container &&
+        !wm::HasTransientAncestor(window, window_to_fix)) {
+      closest_sibling_above_window = window;
+    }
+  }
 }
 
 aura::Window* GetTopWindow() {

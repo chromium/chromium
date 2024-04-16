@@ -154,6 +154,16 @@ ASH_EXPORT void ExpandArcPipWindow();
 // an item is being dragged around.
 bool IsAnyWindowDragged();
 
+// Adjusts the z-order stacking of `window_to_fix` in its parent to match its
+// order in the MRU window list. This is done after the window is moved from one
+// parent container to another by means of calling `AddChild()` which adds it as
+// the top-most window, which doesn't necessarily match the MRU order.
+// `window_to_fix` must be a child of a desk container, and the root of a
+// transient hierarchy (if it belongs to one).
+// This function must be called after `AddChild()` was called to add the
+// `window_to_fix`.
+void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix);
+
 // Returns the top window on MRU window list, or null if the list is empty.
 ASH_EXPORT aura::Window* GetTopWindow();
 ASH_EXPORT aura::Window* GetTopNonFloatedWindow();

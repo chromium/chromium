@@ -4053,6 +4053,40 @@ TEST_F(SnapGroupDesksTest, DragOverviewGroupItemToAnotherDeskWithSnapGroup) {
   ActivateDesk(desk0);
 }
 
+// Tests that if one of the windows parent container change in snap group, the
+// other window will follow and get moved to the same target desk container. To
+// simulate the CUJ, `Search + Shift + [ or ]` is used in the test to trigger
+// moving active window to the left / right desk
+TEST_F(SnapGroupDesksTest, WindowDeskContainerChange) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  // Use `Search + Shift + ]` to move `w0` and `w1` to `desk1`.
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desks_util::GetDeskForContext(w0.get()), desk1);
+  EXPECT_EQ(desks_util::GetDeskForContext(w1.get()), desk1);
+
+  ActivateDesk(desk1);
+
+  // Use `Search + Shift + [` to move `w0` and `w1` to `desk0`
+  PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  EXPECT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+}
+
 // Tests that pressing the 'Close All' button closes both windows in a Snap
 // Group.
 TEST_F(SnapGroupDesksTest, CloseAll) {
@@ -5158,13 +5192,16 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplays) {
 
   auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
       Shell::Get()->GetRootWindowForDisplayId(secondary_id));
-  // Note that `w2` will be the mru window since it was moved to display 2 after
-  // `w1`.
+
   MruWindowTracker* mru_window_tracker = Shell::Get()->mru_window_tracker();
   aura::Window* mru_window = window_util::GetTopMostWindow(
       mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk));
-  EXPECT_EQ(mru_window, w2.get());
-  VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider_window});
+
+  // `w1` will be the mru window. With the window stacking fixed by
+  // `window_util::FixWindowStackingAccordingToGlobalMru()`, the `w2` that gets
+  // moved after will be stacked above `w1`.
+  EXPECT_EQ(mru_window, w1.get());
+  VerifyStackingOrder(desk_container, {w2.get(), w1.get(), divider_window});
 
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
 }

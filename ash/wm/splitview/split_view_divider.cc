@@ -557,6 +557,7 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<SplitViewDividerView>(this));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
+  // TODO(michelefan|sophiewen): Evaluate and remove this property if needed.
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
 
   // Use a window targeter and enlarge the hit region to allow located events
@@ -621,7 +622,12 @@ void SplitViewDivider::RefreshStackingOrder() {
 
   aura::Window::Windows visible_observed_windows;
   for (aura::Window* window : observed_windows_) {
-    if (window->IsVisible()) {
+    // During desk switches, the `IsVisible()`, which traverses up the
+    // parent layer hierarchy to determine visibility, can be unreliable due to
+    // the inactive desk's invisibility. Instead, use `TargetVisibility()`,
+    // which directly assesses the window's target visibility, regardless of the
+    // visibility of its parent's layer.
+    if (window->TargetVisibility()) {
       visible_observed_windows.push_back(window);
     }
   }
@@ -648,7 +654,7 @@ void SplitViewDivider::RefreshStackingOrder() {
     return;
   }
 
-  CHECK(top_window->IsVisible());
+  CHECK(top_window->TargetVisibility());
 
   auto* divider_sibling_window =
       dragged_window_ ? dragged_window_.get() : top_window;

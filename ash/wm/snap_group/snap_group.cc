@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -16,10 +17,12 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -139,29 +142,44 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
   SnapGroupController::Get()->RemoveSnapGroup(this);
 }
 
-void SnapGroup::OnWindowAddedToRootWindow(aura::Window* window) {
-  DCHECK(window == window1_ || window == window2_);
+void SnapGroup::OnWindowParentChanged(aura::Window* window,
+                                      aura::Window* parent) {
   // Skip any recursive updates during the other window move.
-  if (is_moving_display_) {
+  if (parent == nullptr || is_moving_snap_group_) {
     return;
   }
 
-  base::AutoReset<bool> lock(&is_moving_display_, true);
+  DCHECK(window == window1_ || window == window2_);
+
+  base::AutoReset<bool> lock(&is_moving_snap_group_, true);
 
   const bool cached_divider_visibility =
       snap_group_divider_.divider_widget()->IsVisible();
 
   if (cached_divider_visibility) {
-    // Hide the divider, then move the other window to the same display as the
-    // moved `window`.
+    // Hide the divider, then move the to-be-moved window to the same `parent`
+    // container as the moved `window`.
     snap_group_divider_.SetVisible(false);
   }
 
-  window_util::MoveWindowToDisplay(
-      window == window1_ ? window2_ : window1_,
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(window->GetRootWindow())
-          .id());
+  aura::Window* to_be_moved_window = window == window1_ ? window2_ : window1_;
+  bool did_parent_change = false;
+  if (window->GetRootWindow() != to_be_moved_window->GetRootWindow()) {
+    window_util::MoveWindowToDisplay(
+        to_be_moved_window,
+        display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
+    did_parent_change = true;
+  } else if (parent != to_be_moved_window->parent()) {
+    parent->AddChild(to_be_moved_window);
+    did_parent_change = true;
+  }
+
+  // The `window` may be temporarily moved under
+  // `kShellWindowId_UnparentedContainer`, skip the stacking order fixing in
+  // this case.
+  if (did_parent_change && desks_util::IsDeskContainer(parent)) {
+    window_util::FixWindowStackingAccordingToGlobalMru(to_be_moved_window);
+  }
 
   // Restore the divider visibility after both windows are moved to the target
   // display.

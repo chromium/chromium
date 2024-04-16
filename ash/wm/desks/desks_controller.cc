@@ -2145,6 +2145,8 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
   // while-loop.
   aura::WindowTracker unclosed_windows_tracker(app_windows);
 
+  aura::Window* floated_window =
+      Shell::Get()->float_controller()->FindFloatedWindowOfDesk(removed_desk);
   while (!unclosed_windows_tracker.windows().empty()) {
     aura::Window* window = unclosed_windows_tracker.Pop();
     views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
@@ -2159,16 +2161,17 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // container are removed from the container in case we want to immediately
     // reuse that container. Since floated window doesn't belong to desk
     // container, handle it separately.
-    aura::Window* floated_window =
-        Shell::Get()->float_controller()->FindFloatedWindowOfDesk(removed_desk);
 
     // When windows are being closed, they do so asynchronously. So, to free up
     // the desk container while the windows are being closed, we want to move
     // those windows to the container `kShellWindowId_UnparentedContainer`.
-    if (window != floated_window) {
-      window->GetRootWindow()
-          ->GetChildById(kShellWindowId_UnparentedContainer)
-          ->AddChild(window);
+    // If we move one of the windows in a snap group, the `SnapGroup` will take
+    // care of moving the other to be under the same parent, so we don't need to
+    // move it here again.
+    auto* unparented_container = window->GetRootWindow()->GetChildById(
+        kShellWindowId_UnparentedContainer);
+    if (window != floated_window && unparented_container != window->parent()) {
+      unparented_container->AddChild(window);
     }
 
     // We need to ensure that `widget->Close()` is called after we move the
