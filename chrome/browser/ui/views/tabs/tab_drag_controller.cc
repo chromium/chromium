@@ -1936,6 +1936,14 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
   attached_context_ = nullptr;
   Attach(new_context, last_point_in_screen_, std::move(me));
 
+  // Tabbed PWAs with a home tab should have a home tab in every window. This
+  // means when dragging tabs out to create a new window, a home tab needs to be
+  // added.
+  if (browser->app_controller() && browser->app_controller()->has_tab_strip()) {
+    web_app::MaybeAddPinnedHomeTab(browser,
+                                   browser->app_controller()->app_id());
+  }
+
   browser->window()->Show();
 }
 
