@@ -12,6 +12,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -380,10 +381,10 @@ TEST(PickleTest, FindNext) {
 
 TEST(PickleTest, FindNextWithIncompleteHeader) {
   size_t header_size = sizeof(Pickle::Header);
-  std::unique_ptr<char[]> buffer(new char[header_size - 1]);
-  memset(buffer.get(), 0x1, header_size - 1);
+  auto buffer = base::HeapArray<char>::Uninit(header_size - 1);
+  memset(buffer.data(), 0x1, header_size - 1);
 
-  const char* start = buffer.get();
+  const char* start = buffer.data();
   const char* end = start + header_size - 1;
 
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size, start, end));
@@ -397,9 +398,9 @@ TEST(PickleTest, FindNextOverflow) {
   size_t header_size = sizeof(Pickle::Header);
   size_t header_size2 = 2 * header_size;
   size_t payload_received = 100;
-  std::unique_ptr<char[]> buffer(new char[header_size2 + payload_received]);
-  const char* start = buffer.get();
-  Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.get());
+  auto buffer = base::HeapArray<char>::Uninit(header_size2 + payload_received);
+  const char* start = buffer.data();
+  Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.data());
   const char* end = start + header_size2 + payload_received;
   // It is impossible to construct an overflow test otherwise.
   if (sizeof(size_t) > sizeof(header->payload_size) ||
@@ -441,8 +442,8 @@ TEST(PickleTest, GetReadPointerAndAdvance) {
 
 TEST(PickleTest, Resize) {
   size_t unit = Pickle::kPayloadUnit;
-  std::unique_ptr<char[]> data(new char[unit]);
-  char* data_ptr = data.get();
+  auto data = base::HeapArray<char>::Uninit(unit);
+  char* data_ptr = data.data();
   for (size_t i = 0; i < unit; i++)
     data_ptr[i] = 'G';
 
