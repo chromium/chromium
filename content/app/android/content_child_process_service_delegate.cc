@@ -59,7 +59,8 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
 
     content::
         Java_ContentChildProcessServiceDelegate_forwardSurfaceForSurfaceRequest(
-            env, service_impl_, request_token,
+            env, service_impl_,
+            base::android::UnguessableTokenAndroid::Create(env, request_token),
             texture_owner->CreateJavaSurface().j_surface());
   }
 

@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -68,13 +67,13 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
     @CalledByNative
     void onCompositorReady(
-            @JniType("base::UnguessableToken") UnguessableToken rootFrameGuid,
-            @JniType("std::vector<base::UnguessableToken>") UnguessableToken[] frameGuids,
-            @JniType("std::vector") int[] frameContentSize,
-            @JniType("std::vector") int[] scrollOffsets,
-            @JniType("std::vector") int[] subFramesCount,
-            @JniType("std::vector<base::UnguessableToken>") UnguessableToken[] subFrameGuids,
-            @JniType("std::vector") int[] subFrameClipRects,
+            UnguessableToken rootFrameGuid,
+            UnguessableToken[] frameGuids,
+            int[] frameContentSize,
+            int[] scrollOffsets,
+            int[] subFramesCount,
+            UnguessableToken[] subFrameGuids,
+            int[] subFrameClipRects,
             float pageScaleFactor,
             long nativeAxTree) {
         mCompositorListener.onCompositorReady(
@@ -216,7 +215,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         int requestBitmap(
                 long nativePlayerCompositorDelegateAndroid,
-                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
+                UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback,
                 Runnable errorCallback,
                 float scaleFactor,
@@ -231,7 +230,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         String onClick(
                 long nativePlayerCompositorDelegateAndroid,
-                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
+                UnguessableToken frameGuid,
                 int x,
                 int y);
 

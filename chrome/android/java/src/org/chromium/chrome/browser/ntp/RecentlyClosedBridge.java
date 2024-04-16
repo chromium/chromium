@@ -72,7 +72,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             @JniType("std::vector<int64_t>") long[] tabTimestamps,
             @JniType("std::vector<const std::u16string*>") String[] tabTitles,
             @JniType("std::vector") GURL[] tabUrls,
-            @JniType("std::vector<std::optional<base::Token>>") Token[] tabGroupIds) {
+            Token[] tabGroupIds) {
         RecentlyClosedGroup group = new RecentlyClosedGroup(id, groupTimestamp, groupTitle);
 
         addTabs(group.getTabs(), tabIds, tabTimestamps, tabTitles, tabUrls, tabGroupIds);
@@ -85,13 +85,13 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             List<RecentlyClosedEntry> entries,
             int id,
             long eventTimestamp,
-            @JniType("std::vector<std::optional<base::Token>>") Token[] tabGroupIds,
+            Token[] tabGroupIds,
             @JniType("std::vector<const std::u16string*>") String[] groupTitles,
             @JniType("std::vector<int32_t>") int[] tabIds,
             @JniType("std::vector<int64_t>") long[] tabTimestamps,
             @JniType("std::vector<const std::u16string*>") String[] tabTitles,
             @JniType("std::vector") GURL[] tabUrls,
-            @JniType("std::vector<std::optional<base::Token>>") Token[] perTabTabGroupIds) {
+            Token[] perTabTabGroupIds) {
         RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(id, eventTimestamp);
 
         assert tabGroupIds.length == groupTitles.length;

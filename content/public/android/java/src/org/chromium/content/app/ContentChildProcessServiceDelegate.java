@@ -14,7 +14,6 @@ import android.view.Surface;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -152,8 +151,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void forwardSurfaceForSurfaceRequest(
-            @JniType("base::UnguessableToken") UnguessableToken requestToken, Surface surface) {
+    private void forwardSurfaceForSurfaceRequest(UnguessableToken requestToken, Surface surface) {
         if (mGpuCallback == null) {
             Log.e(TAG, "No callback interface has been provided.");
             return;

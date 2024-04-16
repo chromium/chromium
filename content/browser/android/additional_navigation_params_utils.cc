@@ -18,7 +18,13 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
     std::optional<network::AttributionReportingRuntimeFeatures>
         runtime_features) {
   return Java_AdditionalNavigationParamsUtils_create(
-      env, initiator_frame_token, initiator_process_id, attribution_src_token,
+      env,
+      base::android::UnguessableTokenAndroid::Create(env,
+                                                     initiator_frame_token),
+      initiator_process_id,
+      attribution_src_token ? base::android::UnguessableTokenAndroid::Create(
+                                  env, attribution_src_token.value())
+                            : nullptr,
       runtime_features ? runtime_features->ToEnumBitmask() : 0);
 }
 
@@ -29,9 +35,10 @@ GetInitiatorFrameTokenFromJavaAdditionalNavigationParams(
   if (!j_object) {
     return std::nullopt;
   }
-  std::optional<base::UnguessableToken> optional_token =
-      Java_AdditionalNavigationParamsUtils_getInitiatorFrameToken(env,
-                                                                  j_object);
+  auto optional_token =
+      base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+          env, Java_AdditionalNavigationParamsUtils_getInitiatorFrameToken(
+                   env, j_object));
   if (optional_token) {
     return blink::LocalFrameToken(optional_token.value());
   }
@@ -55,9 +62,14 @@ GetAttributionSrcTokenFromJavaAdditionalNavigationParams(
   if (!j_object) {
     return std::nullopt;
   }
-  std::optional<base::UnguessableToken> optional_token =
-      Java_AdditionalNavigationParamsUtils_getAttributionSrcToken(env,
-                                                                  j_object);
+  auto java_token = Java_AdditionalNavigationParamsUtils_getAttributionSrcToken(
+      env, j_object);
+  if (!java_token) {
+    return std::nullopt;
+  }
+  auto optional_token =
+      base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+          env, java_token);
   if (optional_token) {
     return blink::AttributionSrcToken(optional_token.value());
   }

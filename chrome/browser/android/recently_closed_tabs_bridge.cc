@@ -117,7 +117,8 @@ void JNI_RecentlyClosedBridge_AddGroupToEntries(
   Java_RecentlyClosedBridge_addGroupToEntries(
       env, jentries, group.id.id(),
       group.timestamp.InMillisecondsSinceUnixEpoch(), group.visual_data.title(),
-      ids, timestamps, titles, urls, group_ids);
+      ids, timestamps, titles, urls,
+      TokenAndroid::ToJavaArrayOfTokens(env, group_ids));
 }
 
 void JNI_RecentlyClosedBridge_AddBulkEventToEntries(
@@ -154,8 +155,10 @@ void JNI_RecentlyClosedBridge_AddBulkEventToEntries(
 
   Java_RecentlyClosedBridge_addBulkEventToEntries(
       env, jentries, window.id.id(),
-      window.timestamp.InMillisecondsSinceUnixEpoch(), group_ids, group_titles,
-      ids, timestamps, titles, urls, per_tab_group_ids);
+      window.timestamp.InMillisecondsSinceUnixEpoch(),
+      TokenAndroid::ToJavaArrayOfTokens(env, group_ids), group_titles, ids,
+      timestamps, titles, urls,
+      TokenAndroid::ToJavaArrayOfTokens(env, per_tab_group_ids));
 }
 
 // Add `entries` to `jentries`.

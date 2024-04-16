@@ -5,9 +5,11 @@
 #ifndef BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_
 #define BASE_ANDROID_UNGUESSABLE_TOKEN_ANDROID_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/unguessable_token.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace base {
 namespace android {
@@ -15,21 +17,21 @@ namespace android {
 class BASE_EXPORT UnguessableTokenAndroid {
  public:
   // Create a Java UnguessableToken with the same value as |token|.
-  static jni_zero::ScopedJavaLocalRef<jobject> Create(
+  static ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
       const base::UnguessableToken& token);
 
   // Create a native UnguessableToken from Java UnguessableToken |token|.
-  static base::UnguessableToken FromJavaUnguessableToken(
+  static std::optional<base::UnguessableToken> FromJavaUnguessableToken(
       JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& token);
+      const JavaRef<jobject>& token);
 
   // Parcel UnguessableToken |token| and unparcel it, and return the result.
   // While this method is intended for facilitating unit tests, it results only
   // in a clone of |token|.
-  static jni_zero::ScopedJavaLocalRef<jobject> ParcelAndUnparcelForTesting(
+  static ScopedJavaLocalRef<jobject> ParcelAndUnparcelForTesting(
       JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& token);
+      const JavaRef<jobject>& token);
 
   UnguessableTokenAndroid() = delete;
   UnguessableTokenAndroid(const UnguessableTokenAndroid&) = delete;

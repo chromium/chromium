@@ -1251,6 +1251,8 @@ component("base") {
       "android/thread_instruction_count.h",
       "android/timezone_utils.cc",
       "android/timezone_utils.h",
+      "android/unguessable_token_android.cc",
+      "android/unguessable_token_android.h",
       "debug/stack_trace_android.cc",
       "files/file_util_android.cc",
       "files/scoped_file_android.cc",
@@ -1365,8 +1367,6 @@ component("base") {
       "android/token_android.h",
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
-      "android/unguessable_token_android.cc",
-      "android/unguessable_token_android.h",
     ]
     deps += [ "//build:robolectric_buildflags" ]
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
@@ -4322,9 +4322,7 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/TraceEvent.java",
-      "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
       "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
     ]
@@ -4365,7 +4363,6 @@ if (is_android || is_robolectric) {
       "android/java/src/org/chromium/base/ThreadUtils.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
       "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
@@ -4546,7 +4543,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/TimeUtils.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
       "android/java/src/org/chromium/base/Token.java",
-      "android/java/src/org/chromium/base/TokenBase.java",
       "android/java/src/org/chromium/base/TraceEvent.java",
       "android/java/src/org/chromium/base/UnguessableToken.java",
       "android/java/src/org/chromium/base/UnownedUserData.java",
