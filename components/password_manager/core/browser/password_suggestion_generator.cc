@@ -242,13 +242,14 @@ void AddPasswordUsernameChildSuggestion(const std::u16string& username,
 }
 
 void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
-                                    const std::u16string& password) {
+                                    const CredentialUIEntry& credential) {
   autofill::Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       autofill::PopupItemId::kFillPassword);
-  fill_password.payload =
-      autofill::Suggestion::PasswordSuggestionDetails(password);
+  fill_password.payload = autofill::Suggestion::PasswordSuggestionDetails(
+      credential.password,
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()));
   suggestion.children.emplace_back(std::move(fill_password));
 }
 
@@ -272,14 +273,15 @@ autofill::Suggestion GetManualFallbackSuggestion(
       ReplaceEmptyUsername(credential.username, &replaced);
   suggestion.additional_label = maybe_username;
   suggestion.icon = autofill::Suggestion::Icon::kGlobe;
-  suggestion.payload =
-      autofill::Suggestion::PasswordSuggestionDetails(credential.password);
+  suggestion.payload = autofill::Suggestion::PasswordSuggestionDetails(
+      credential.password,
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()));
   suggestion.is_acceptable = on_password_form.value();
 
   if (!replaced) {
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
   }
-  AddFillPasswordChildSuggestion(suggestion, credential.password);
+  AddFillPasswordChildSuggestion(suggestion, credential);
   suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
   AddViewPasswordDetailsChildSuggestion(suggestion);
 

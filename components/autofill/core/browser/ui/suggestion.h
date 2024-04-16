@@ -30,6 +30,9 @@ struct Suggestion {
     friend bool operator==(const PasswordSuggestionDetails&,
                            const PasswordSuggestionDetails&) = default;
     std::u16string password;
+    // Stores either the password signon realm or the Android app name for which
+    // the password was saved.
+    std::u16string display_signon_realm;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
