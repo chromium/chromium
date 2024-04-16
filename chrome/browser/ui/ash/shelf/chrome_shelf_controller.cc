@@ -835,14 +835,7 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   if (target_index < 0 || model_->IsAppPinned(app_id))
     return;
 
-  ash::ShelfItem item;
-  item.type = ash::TYPE_PINNED_APP;
-  item.id = ash::ShelfID(app_id);
-
-  model_->AddAt(target_index, item,
-                std::make_unique<AppShortcutShelfItemController>(item.id));
-
-  ReportUpdateShelfIconList(model_);
+  EnsureAppPinnedInModelAtIndex(app_id, /*current_index=*/-1, target_index);
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
