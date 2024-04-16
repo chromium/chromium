@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_options.h"
 #include "third_party/blink/renderer/modules/notifications/notification.h"
 #include "third_party/blink/renderer/modules/notifications/timestamp_trigger.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/exception_state_matchers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -102,7 +104,7 @@ TEST(NotificationDataTest, ReflectProperties) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_THAT(exception_state, HadNoException());
 
   EXPECT_EQ(kNotificationTitle, notification_data->title);
 
@@ -163,10 +165,10 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
-
-  EXPECT_EQ("Silent notifications must not specify vibration patterns.",
-            exception_state.Message());
+  ASSERT_THAT(exception_state,
+              HadException(
+                  ESErrorType::kTypeError,
+                  "Silent notifications must not specify vibration patterns."));
 }
 
 TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
@@ -187,10 +189,11 @@ TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
-
-  EXPECT_EQ("Notifications of type \"button\" cannot specify a placeholder.",
-            exception_state.Message());
+  ASSERT_THAT(
+      exception_state,
+      HadException(
+          ESErrorType::kTypeError,
+          "Notifications of type \"button\" cannot specify a placeholder."));
 }
 
 TEST(NotificationDataTest, RenotifyWithEmptyTag) {
@@ -206,11 +209,10 @@ TEST(NotificationDataTest, RenotifyWithEmptyTag) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
-
-  EXPECT_EQ(
-      "Notifications which set the renotify flag must specify a non-empty tag.",
-      exception_state.Message());
+  ASSERT_THAT(exception_state,
+              HadException(ESErrorType::kTypeError,
+                           "Notifications which set the renotify flag must "
+                           "specify a non-empty tag."));
 }
 
 TEST(NotificationDataTest, InvalidIconUrls) {
@@ -237,7 +239,7 @@ TEST(NotificationDataTest, InvalidIconUrls) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_THAT(exception_state, HadNoException());
 
   EXPECT_TRUE(notification_data->image.IsEmpty());
   EXPECT_TRUE(notification_data->icon.IsEmpty());
@@ -266,7 +268,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_THAT(exception_state, HadNoException());
 
   Vector<int> normalized_pattern;
   for (size_t i = 0; i < std::size(kNotificationVibrationNormalized); ++i)
@@ -291,7 +293,7 @@ TEST(NotificationDataTest, DefaultTimestampValue) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_THAT(exception_state, HadNoException());
 
   // The timestamp should be set to the current time since the epoch if it
   // wasn't supplied by the developer. "32" has no significance, but an equal
@@ -318,7 +320,7 @@ TEST(NotificationDataTest, DirectionValues) {
     mojom::blink::NotificationDataPtr notification_data =
         CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                                options, exception_state);
-    ASSERT_FALSE(exception_state.HadException());
+    ASSERT_THAT(exception_state, HadNoException());
 
     EXPECT_EQ(mappings.at(direction), notification_data->direction);
   }
@@ -345,7 +347,7 @@ TEST(NotificationDataTest, MaximumActionCount) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
+  ASSERT_THAT(exception_state, HadNoException());
 
   // The stored actions will be capped to |maxActions| entries.
   ASSERT_EQ(Notification::maxActions(), notification_data->actions->size());
@@ -373,10 +375,11 @@ TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
   mojom::blink::NotificationDataPtr notification_data =
       CreateNotificationData(scope.GetExecutionContext(), kNotificationTitle,
                              options, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
-
-  EXPECT_EQ("Notification trigger timestamp too far ahead in the future.",
-            exception_state.Message());
+  ASSERT_THAT(
+      exception_state,
+      HadException(
+          ESErrorType::kTypeError,
+          "Notification trigger timestamp too far ahead in the future."));
 }
 
 }  // namespace
