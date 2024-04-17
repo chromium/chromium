@@ -24,9 +24,15 @@ constexpr CGFloat kCellBottomMargin = 18;
 // Line spacing for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 
+// Minimum height for the header view.
+constexpr CGFloat kHeaderViewMinHeight = 44;
+
 // Horizontal spacing between views used in
 // `AppendHorizontalConstraintsForViews`.
 constexpr CGFloat kHorizontalSpacing = 16;
+
+// Height of the grey separator.
+constexpr CGFloat kSeparatorHeight = 1;
 
 // Vertical spacing between views. Used when the Keyboard Accessory Upgrade
 // feature is disabled.
@@ -36,8 +42,9 @@ constexpr CGFloat kVerticalSpacing = 8;
 // cell and the chip groups.
 constexpr CGFloat kGenericVerticalSpacingBetweenViews = 16;
 
-// Vertical spacing between two chip buttons.
-constexpr CGFloat kVerticalSpacingBetweenChips = 4;
+// Small vertical spacing between views. Used to visually group chips together
+// and as vertical padding for the cell's header.
+constexpr CGFloat kSmallVerticalSpacingBetweenViews = 4;
 
 // Vertical spacing between two labeled chip buttons.
 constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
@@ -56,8 +63,9 @@ CGFloat GetVerticalSpacingForElementType(
       return kGenericVerticalSpacingBetweenViews;
     case ManualFillCellView::ElementType::kLabeledChipButton:
       return kVerticalSpacingBetweenLabeledChips;
+    case ManualFillCellView::ElementType::kSeparator:
     case ManualFillCellView::ElementType::kOtherChipButton:
-      return kVerticalSpacingBetweenChips;
+      return kSmallVerticalSpacingBetweenViews;
   }
 }
 
@@ -285,37 +293,70 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
   return attributed_title;
 }
 
-UIView* CreateGraySeparatorForContainer(UIView* container) {
-  UIView* grayLine = [[UIView alloc] init];
-  grayLine.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  grayLine.translatesAutoresizingMaskIntoConstraints = NO;
-  [container addSubview:grayLine];
+UIStackView* CreateHeaderView(UIView* icon, UILabel* label) {
+  UIStackView* header_view =
+      [[UIStackView alloc] initWithArrangedSubviews:@[ icon, label ]];
+  header_view.translatesAutoresizingMaskIntoConstraints = NO;
+  header_view.spacing = UIStackViewSpacingUseSystem;  // Spacing of 8px.
+  header_view.alignment = UIStackViewAlignmentCenter;
 
-  id<LayoutGuideProvider> safeArea = container.safeAreaLayoutGuide;
-  [NSLayoutConstraint activateConstraints:@[
-    // Vertical constraints.
-    [grayLine.bottomAnchor constraintEqualToAnchor:container.bottomAnchor],
-    [grayLine.heightAnchor constraintEqualToConstant:1],
-    // Horizontal constraints.
-    [grayLine.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor
-                                           constant:kCellMargin],
-    [safeArea.trailingAnchor constraintEqualToAnchor:grayLine.trailingAnchor
-                                            constant:kCellMargin],
-  ]];
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [header_view.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kHeaderViewMinHeight],
+    ]];
+  }
 
-  return grayLine;
+  return header_view;
 }
 
-UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view) {
+UIView* CreateGraySeparatorForContainer(UIView* container) {
+  UIView* gray_line = [[UIView alloc] init];
+  gray_line.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  gray_line.translatesAutoresizingMaskIntoConstraints = NO;
+  [container addSubview:gray_line];
+
+  id<LayoutGuideProvider> safe_area = container.safeAreaLayoutGuide;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      // Vertical constraints.
+      [gray_line.heightAnchor constraintEqualToConstant:kSeparatorHeight],
+      // Horizontal constraints.
+      [gray_line.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
+                                              constant:kCellMargin],
+      [safe_area.trailingAnchor
+          constraintEqualToAnchor:gray_line.trailingAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      // Vertical constraints.
+      [gray_line.bottomAnchor constraintEqualToAnchor:container.bottomAnchor],
+      [gray_line.heightAnchor constraintEqualToConstant:kSeparatorHeight],
+      // Horizontal constraints.
+      [gray_line.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor
+                                              constant:kCellMargin],
+      [safe_area.trailingAnchor constraintEqualToAnchor:gray_line.trailingAnchor
+                                               constant:kCellMargin],
+    ]];
+  }
+
+  return gray_line;
+}
+
+UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
+                                           BOOL cell_has_header) {
   UILayoutGuide* layout_guide = [[UILayoutGuide alloc] init];
   [content_view addLayoutGuide:layout_guide];
 
   id<LayoutGuideProvider> safe_area = content_view.safeAreaLayoutGuide;
+  CGFloat top_margin = cell_has_header && IsKeyboardAccessoryUpgradeEnabled()
+                           ? kSmallVerticalSpacingBetweenViews
+                           : kCellMargin;
   CGFloat bottom_margin =
       IsKeyboardAccessoryUpgradeEnabled() ? kCellMargin : kCellBottomMargin;
   [NSLayoutConstraint activateConstraints:@[
     [layout_guide.topAnchor constraintEqualToAnchor:content_view.topAnchor
-                                           constant:kCellMargin],
+                                           constant:top_margin],
     [layout_guide.bottomAnchor constraintEqualToAnchor:content_view.bottomAnchor
                                               constant:-bottom_margin],
     [layout_guide.leadingAnchor constraintEqualToAnchor:safe_area.leadingAnchor

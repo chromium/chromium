@@ -114,6 +114,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // The constraints for the visible favicon.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
 
+// The view displayed at the top the cell containing the favicon and site name.
+@property(nonatomic, strong) UIView* headerView;
+
 // The favicon for the credential. Of type FaviconView when the Keyboard
 // Accessory Upgrade is disabled, and FaviconContainerView when enabled.
 @property(nonatomic, strong) UIView* faviconView;
@@ -191,11 +194,16 @@ static const CGFloat kOffsetForConnectedCell = 16;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;
     }
-    AddViewToVerticalLeadViews(self.siteNameLabel,
-                               ManualFillCellView::ElementType::kOther,
-                               verticalLeadViews);
     self.siteNameLabel.hidden = NO;
     self.faviconView.hidden = NO;
+    AddViewToVerticalLeadViews(self.headerView,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      AddViewToVerticalLeadViews(self.grayLine,
+                                 ManualFillCellView::ElementType::kSeparator,
+                                 verticalLeadViews);
+    }
   }
 
   // Holds the chip buttons related to the credential that are vertical leads.
@@ -262,7 +270,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
-  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+  self.layoutGuide =
+      AddLayoutGuideToContentView(self.contentView, /*cell_has_header=*/YES);
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -283,22 +292,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
   ];
 
   self.siteNameLabel = CreateLabel();
-  self.siteNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.siteNameLabel.adjustsFontForContentSizeCategory = YES;
-  [self.contentView addSubview:self.siteNameLabel];
-
-  UIStackView* stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ self.faviconView, self.siteNameLabel ]];
-  stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  stackView.spacing = UIStackViewSpacingUseSystem;
-  stackView.alignment = UIStackViewAlignmentCenter;
-
-  [self.contentView addSubview:stackView];
+  self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel);
+  [self.contentView addSubview:self.headerView];
+  AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
+                                      self.layoutGuide);
 
   self.grayLine = CreateGraySeparatorForContainer(self.contentView);
-
-  AppendHorizontalConstraintsForViews(staticConstraints, @[ stackView ],
-                                      self.layoutGuide);
 
   self.usernameButton = CreateChipWithSelectorAndTarget(
       @selector(userDidTapUsernameButton:), self);

@@ -391,7 +391,9 @@
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
-  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+  self.layoutGuide = AddLayoutGuideToContentView(
+      self.contentView,
+      /*cell_has_header=*/!IsKeyboardAccessoryUpgradeEnabled());
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 

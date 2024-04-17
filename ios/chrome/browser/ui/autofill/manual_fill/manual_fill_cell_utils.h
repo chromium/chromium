@@ -38,6 +38,8 @@ struct ManualFillCellView {
     kLabeledChipButton,
     // A chip button that is not the first of its group and is unlabeled.
     kOtherChipButton,
+    // A grey line to separate some parts of the cell.
+    kSeparator,
     // Any other element not falling into one of the above types.
     kOther,
   };
@@ -128,6 +130,10 @@ UILabel* CreateLabel();
 NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                                                         NSString* subtitle);
 
+// Creates an horizontal stack view containing an icon and a label. Used to
+// create the different manual fill cells' header.
+UIStackView* CreateHeaderView(UIView* icon, UILabel* label);
+
 // Creates a gray horizontal line separator, with the same margin as the other
 // components here. The gray line is added to the given `container` and proper
 // constraints are enabled to keep the line at the bottom of the container and
@@ -135,6 +141,9 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
 UIView* CreateGraySeparatorForContainer(UIView* container);
 
 // Creates a layout guide for the cell and adds it to the given 'content_view`.
-UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view);
+// `cell_has_header` indicates whether or not the layout guide should take a
+// header into account.
+UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
+                                           BOOL cell_has_header);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

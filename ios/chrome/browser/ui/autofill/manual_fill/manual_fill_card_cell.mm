@@ -182,7 +182,8 @@ using base::SysNSStringToUTF8;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
-  self.layoutGuide = AddLayoutGuideToContentView(self.contentView);
+  self.layoutGuide =
+      AddLayoutGuideToContentView(self.contentView, /*cell_has_header=*/YES);
 
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
