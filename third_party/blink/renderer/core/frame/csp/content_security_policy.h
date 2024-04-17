@@ -362,7 +362,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // if the `base-uri`, `object-src`, and `script-src` directives are all
   // strict enough (even if the strictest directives come from different CSP
   // sources).
-  bool IsStrictPolicyEnforced() const;
+  bool IsStrictPolicyEnforced() const { return enforces_strict_policy_; }
 
   // Returns true if trusted types are required.
   bool RequiresTrustedTypes() const;
@@ -500,6 +500,8 @@ class CORE_EXPORT ContentSecurityPolicy final
   mojom::blink::InsecureRequestPolicy insecure_request_policy_;
 
   bool supports_wasm_eval_ = false;
+
+  bool enforces_strict_policy_{false};
 };
 
 }  // namespace blink

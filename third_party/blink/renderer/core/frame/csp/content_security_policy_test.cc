@@ -1322,6 +1322,48 @@ TEST_F(ContentSecurityPolicyTest, SelfForDataMatchesNothing) {
                                  ReportingDisposition::kSuppressReporting));
 }
 
+TEST_F(ContentSecurityPolicyTest, IsStrictPolicyEnforced) {
+  // No policy, no strictness.
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+
+  // Strict policy, strictness.
+  const char* strict_policy =
+      "object-src 'none'; "
+      "script-src 'nonce-abc' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' "
+      "           https: http:;"
+      "base-uri 'none';";
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_policy, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_TRUE(csp->IsStrictPolicyEnforced());
+
+  // Report-only strict policy, no strictness.
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_policy, ContentSecurityPolicyType::kReport,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+
+  // Composed strict policy, strictness.
+  const char* strict_object = "object-src 'none';";
+  const char* strict_script = "script-src 'none';";
+  const char* strict_base = "base-uri 'none';";
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_object, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_script, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_base, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_TRUE(csp->IsStrictPolicyEnforced());
+}
+
 TEST_F(ContentSecurityPolicyTest, ReasonableRestrictionMetrics) {
   struct TestCase {
     const char* header;
