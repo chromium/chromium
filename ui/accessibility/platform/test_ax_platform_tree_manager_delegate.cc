@@ -26,7 +26,7 @@ float TestAXPlatformTreeManagerDelegate::AccessibilityGetDeviceScaleFactor() {
   return 1.0f;
 }
 
-void TestAXPlatformTreeManagerDelegate::AccessibilityFatalError() {}
+void TestAXPlatformTreeManagerDelegate::UnrecoverableAccessibilityError() {}
 
 gfx::AcceleratedWidget
 TestAXPlatformTreeManagerDelegate::AccessibilityGetAcceleratedWidget() {

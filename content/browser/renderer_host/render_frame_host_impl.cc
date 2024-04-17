@@ -2924,7 +2924,7 @@ void RenderFrameHostImpl::AccessibilityReset() {
   render_accessibility_->Reset(*accessibility_reset_token_);
 }
 
-void RenderFrameHostImpl::AccessibilityFatalError() {
+void RenderFrameHostImpl::UnrecoverableAccessibilityError() {
   CHECK(!BrowserAccessibilityManager::IsFailFastMode());
   browser_accessibility_manager_.reset();
   if (!render_accessibility_) {
@@ -2943,7 +2943,7 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
 
   // Turn off accessibility for this WebContents to ensure we don't continue
   // churning on failures, but do not crash the renderer.
-  delegate_->AccessibilityFatalError();
+  delegate_->UnrecoverableAccessibilityError();
   // Crash keys were set in BrowserAccessibilityManager::Unserialize().
   base::debug::DumpWithoutCrashing();
 }
@@ -7279,7 +7279,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
   if (!browser_accessibility_manager_->OnAccessibilityEvents(details)) {
     // OnAccessibilityEvents returns false in IPC error conditions.
-    AccessibilityFatalError();
+    UnrecoverableAccessibilityError();
   }
 }
 

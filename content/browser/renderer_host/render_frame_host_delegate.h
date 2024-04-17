@@ -306,7 +306,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Indicates an unrecoverable error in accessibility. Gracefully turns off
   // accessibility in all frames.
-  virtual void AccessibilityFatalError() {}
+  virtual void UnrecoverableAccessibilityError() {}
 
   // Gets the GeolocationContext associated with this delegate.
   virtual device::mojom::GeolocationContext* GetGeolocationContext();

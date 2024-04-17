@@ -46,14 +46,15 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
 // Do not test on AX_FAIL_FAST_BUILDS, where the BAD IPC will simply assert.
 #if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
     defined(AX_FAIL_FAST_BUILD)
-#define MAYBE_AccessibilityFatalErrorDisallowReenabling \
-  DISABLED_AccessibilityFatalErrorDisallowReenabling
+#define MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling \
+  DISABLED_UnrecoverableAccessibilityErrorDisallowReenabling
 #else
-#define MAYBE_AccessibilityFatalErrorDisallowReenabling \
-  AccessibilityFatalErrorDisallowReenabling
+#define MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling \
+  UnrecoverableAccessibilityErrorDisallowReenabling
 #endif
-IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
-                       MAYBE_AccessibilityFatalErrorDisallowReenabling) {
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityIpcErrorBrowserTest,
+    MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling) {
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"

@@ -2857,8 +2857,8 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   is_fatal = false;
 #elif defined(AX_FAIL_FAST_BUILD)
   // In fast-failing-builds, crash immediately with a full message, otherwise
-  // rely on AccessibilityFatalError(), which will not crash until multiple
-  // errors occur.
+  // rely on UnrecoverableAccessibilityError(), which will not crash until
+  // multiple errors occur.
   // TODO(accessibility) Make AXTree errors fatal in Canary and Dev builds, as
   // they indicate fundamental problems in part of the engine. They are much
   // less frequent than in the past -- it should not be highimpact on users.

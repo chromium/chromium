@@ -697,7 +697,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       ui::AXApiType::Type api_type,
       bool start_recording,
       std::optional<ui::AXEventCallback> callback) override;
-  void AccessibilityFatalError() override;
+  void UnrecoverableAccessibilityError() override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
 #if BUILDFLAG(IS_ANDROID)
@@ -2477,7 +2477,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool is_in_preview_mode_ = false;
 
   // Indicates accessibility had an unrecoverable error.
-  bool accessibility_fatal_error_ = false;
+  bool unrecoverable_accessibility_error_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

@@ -663,7 +663,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void AccessibilityViewSetFocus() override;
   gfx::Rect AccessibilityGetViewBounds() override;
   float AccessibilityGetDeviceScaleFactor() override;
-  void AccessibilityFatalError() override;
+  void UnrecoverableAccessibilityError() override;
   gfx::AcceleratedWidget AccessibilityGetAcceleratedWidget() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()

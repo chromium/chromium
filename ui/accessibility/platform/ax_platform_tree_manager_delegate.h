@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // The accessibility tree source has sent us invalid information. This could
   // indicate either a serious error or a malicious attack, e.g. from a rogue
   // renderer.
-  virtual void AccessibilityFatalError() = 0;
+  virtual void UnrecoverableAccessibilityError() = 0;
 
   // Returns a handle to the platform specific widget containing the current
   // accessibility tree. Example: the HWND of the widget containing the

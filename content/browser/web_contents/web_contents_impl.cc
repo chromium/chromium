@@ -1903,7 +1903,7 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
                         "mode", mode.ToString(), "previous_mode",
                         accessibility_mode_.ToString());
 
-  if (accessibility_fatal_error_) {
+  if (unrecoverable_accessibility_error_) {
     DUMP_WILL_BE_CHECK(accessibility_mode_.is_mode_off());
     return;
   }
@@ -5218,9 +5218,9 @@ void WebContentsImpl::RecordAccessibilityEvents(
   }
 }
 
-void WebContentsImpl::AccessibilityFatalError() {
+void WebContentsImpl::UnrecoverableAccessibilityError() {
   SetAccessibilityMode(ui::AXMode::kNone);
-  accessibility_fatal_error_ = true;
+  unrecoverable_accessibility_error_ = true;
 }
 
 device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {

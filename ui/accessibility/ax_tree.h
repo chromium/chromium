@@ -270,7 +270,7 @@ class AX_EXPORT AXTree {
 #endif
 
   // Accumulate errors as there can be more than one before Chrome is crashed
-  // via AccessibilityFatalError();
+  // via UnrecoverableAccessibilityError();
   // In an AX_FAIL_FAST_BUILD or if |is_fatal|, will assert/crash immediately.
   void RecordError(const AXTreeUpdateState& update_state,
                    std::string new_error,
