@@ -284,6 +284,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "https://crbug.com/335422062")
     public void testExitPipWhenDeviceLocked() throws Throwable {
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         enterFullscreen();
