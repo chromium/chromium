@@ -82,9 +82,12 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
       browser_view->GetWidget()->GetRootView()->GetNativeViewAccessible();
   EXPECT_NE(nullptr, native_view_accessible);
 
-  // The root view has a child that is a client role for Chromium.
+  // The root view has a child that is a client role for Chromium. Also, there
+  // can be one more hidden child that is `AnnounceTextView`, created by
+  // `PdfOcrController` when it announces text via `RootView::AnnounceTextAs()`
+  // on Linux.
   int n_children = atk_object_get_n_accessible_children(native_view_accessible);
-  ASSERT_EQ(1, n_children);
+  ASSERT_GE(n_children, 1);
   AtkObject* client =
       atk_object_ref_accessible_child(native_view_accessible, 0);
   ASSERT_EQ(0, atk_object_get_index_in_parent(client));
@@ -96,9 +99,12 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
       TabModalConfirmDialog::Create(std::move(delegate), contents);
 
   // The root view still has one child that is a dialog role since if it has a
-  // modal dialog it hides the rest of the children.
+  // modal dialog it hides the rest of the children. However, there can be one
+  // more hidden child that is `AnnounceTextView`, which is created by
+  // `PdfOcrController` when it announces text via `RootView::AnnounceTextAs()`
+  // on Linux.
   n_children = atk_object_get_n_accessible_children(native_view_accessible);
-  ASSERT_EQ(1, n_children);
+  ASSERT_GE(n_children, 1);
   AtkObject* dialog_node =
       atk_object_ref_accessible_child(native_view_accessible, 0);
   ASSERT_EQ(0, atk_object_get_index_in_parent(dialog_node));
