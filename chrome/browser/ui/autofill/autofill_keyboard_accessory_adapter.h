@@ -35,7 +35,6 @@ class AutofillKeyboardAccessoryAdapter
  public:
   explicit AutofillKeyboardAccessoryAdapter(
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
-
   AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
       delete;
   AutofillKeyboardAccessoryAdapter& operator=(
@@ -99,13 +98,6 @@ class AutofillKeyboardAccessoryAdapter
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
-  std::u16string GetSuggestionMainTextAt(int row) const override;
-  std::u16string GetSuggestionMinorTextAt(int row) const override;
-  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
-      int row) const override;
-  bool GetRemovalConfirmationText(int index,
-                                  std::u16string* title,
-                                  std::u16string* body) override;
   bool RemoveSuggestion(
       int index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -131,6 +123,11 @@ class AutofillKeyboardAccessoryAdapter
   void PinView() override;
 
   // AutofillKeyboardAccessoryController:
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override;
+  bool GetRemovalConfirmationText(int index,
+                                  std::u16string* title,
+                                  std::u16string* body) override;
   base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
       override;
 

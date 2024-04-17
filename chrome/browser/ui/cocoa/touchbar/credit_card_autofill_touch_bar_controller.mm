@@ -126,11 +126,11 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (NSButton*)createCreditCardButtonAtRow:(int)row {
-  NSString* label =
-      base::SysUTF16ToNSString(_controller->GetSuggestionMainTextAt(row));
+  const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(row);
+  NSString* label = base::SysUTF16ToNSString(suggestion.main_text.value);
   NSString* subtext = nil;
   std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
-      _controller->GetSuggestionLabelsAt(row);
+      suggestion.labels;
   if (!suggestion_labels.empty()) {
     CHECK_GT(suggestion_labels.size(), 0U);
     CHECK_GT(suggestion_labels[0].size(), 0U);
@@ -144,7 +144,6 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
                        : label;
 
   // Create the button.
-  const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(row);
   NSImage* cardIconImage =
       GetCreditCardTouchBarImage(autofill::GetIconResourceID(suggestion.icon));
   NSButton* button = nil;

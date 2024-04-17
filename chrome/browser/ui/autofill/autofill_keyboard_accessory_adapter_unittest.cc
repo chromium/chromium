@@ -81,19 +81,6 @@ class MockAutofillKeyboardAccessoryController
     return suggestions_[row];
   }
 
-  std::u16string GetSuggestionMinorTextAt(int row) const override {
-    return std::u16string();
-  }
-
-  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
-      int row) const override {
-    return suggestions_[row].labels;
-  }
-
-  MOCK_METHOD(bool,
-              GetRemovalConfirmationText,
-              (int, std::u16string*, std::u16string*),
-              (override));
   MOCK_METHOD(bool,
               RemoveSuggestion,
               (int, AutofillMetrics::SingleEntryRemovalMethod),
@@ -120,9 +107,14 @@ class MockAutofillKeyboardAccessoryController
   MOCK_METHOD(void, PinView, (), (override));
 
   // AutofillKeyboardAccessoryController:
-  std::u16string GetSuggestionMainTextAt(int row) const override {
-    return suggestions_[row].main_text.value;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override {
+    return suggestions_[row].labels;
   }
+  MOCK_METHOD(bool,
+              GetRemovalConfirmationText,
+              (int, std::u16string*, std::u16string*),
+              (override));
   base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
       override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -273,7 +265,7 @@ class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
     return controller()->GetSuggestionAt(i);
   }
 
-  AutofillSuggestionController* adapter_as_controller() {
+  AutofillKeyboardAccessoryController* adapter_as_controller() {
     return autofill_accessory_adapter_.get();
   }
 

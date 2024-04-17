@@ -147,21 +147,9 @@ const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
   return controller_->GetSuggestionAt(OffsetIndexFor(row));
 }
 
-std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMainTextAt(
-    int row) const {
-  CHECK(controller_) << "Call GetSuggestionMainTextAt only from its owner!";
-  return controller_->GetSuggestionMainTextAt(OffsetIndexFor(row));
-}
-
-std::u16string AutofillKeyboardAccessoryAdapter::GetSuggestionMinorTextAt(
-    int row) const {
-  CHECK(controller_) << "Call GetSuggestionMinorTextAt only from its owner!";
-  return controller_->GetSuggestionMinorTextAt(OffsetIndexFor(row));
-}
-
 std::vector<std::vector<Suggestion::Text>>
 AutofillKeyboardAccessoryAdapter::GetSuggestionLabelsAt(int row) const {
-  CHECK(controller_) << "Call GetSuggestionLabelAt only from its owner!";
+  CHECK(controller_) << "Call GetSuggestionLabelsAt only from its owner!";
   CHECK(static_cast<size_t>(row) < labels_.size());
   return {{Suggestion::Text(labels_[OffsetIndexFor(row)])}};
 }

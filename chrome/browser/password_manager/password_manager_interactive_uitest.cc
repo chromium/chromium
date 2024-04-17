@@ -396,8 +396,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                autofill_client->suggestion_controller_for_testing().get();
   })) << "Creating `AutofillPopupController` timed out.";
   EXPECT_EQ(3, controller->GetLineCount());
-  EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
-  EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
+  EXPECT_EQ(u"user", controller->GetSuggestionAt(0).main_text.value);
+  EXPECT_NE(u"admin", controller->GetSuggestionAt(1).main_text.value);
 
   // The username_field should get re-filled with "user" instead of "admin".
   WaitForElementValue("username_field", "user");

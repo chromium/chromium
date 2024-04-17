@@ -344,85 +344,6 @@ const Suggestion& AutofillKeyboardAccessoryControllerImpl::GetSuggestionAt(
   return suggestions_[row];
 }
 
-std::u16string AutofillKeyboardAccessoryControllerImpl::GetSuggestionMainTextAt(
-    int row) const {
-  return suggestions_[row].main_text.value;
-}
-
-std::u16string
-AutofillKeyboardAccessoryControllerImpl::GetSuggestionMinorTextAt(
-    int row) const {
-  return suggestions_[row].minor_text.value;
-}
-
-std::vector<std::vector<Suggestion::Text>>
-AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
-  return suggestions_[row].labels;
-}
-
-bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
-    int index,
-    std::u16string* title,
-    std::u16string* body) {
-  const std::u16string& value = suggestions_[index].main_text.value;
-  const PopupItemId popup_item_id = suggestions_[index].popup_item_id;
-  const Suggestion::BackendId backend_id =
-      suggestions_[index].GetPayload<Suggestion::BackendId>();
-
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
-    if (title) {
-      title->assign(value);
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
-  }
-
-  if (popup_item_id != PopupItemId::kAddressEntry &&
-      popup_item_id != PopupItemId::kCreditCardEntry) {
-    return false;
-  }
-  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents_->GetBrowserContext());
-
-  if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
-          absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (!CreditCard::IsLocalCard(credit_card)) {
-      return false;
-    }
-    if (title) {
-      title->assign(credit_card->CardNameAndLastFourDigits());
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
-  }
-
-  if (const AutofillProfile* profile = pdm->GetProfileByGUID(
-          absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty()) {
-        title->swap(street_address);
-      } else {
-        title->assign(value);
-      }
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
-
-    return true;
-  }
-
-  return false;  // The ID was valid. The entry may have been deleted in a race.
-}
-
 FillingProduct AutofillKeyboardAccessoryControllerImpl::GetMainFillingProduct()
     const {
   return delegate_->GetMainFillingProduct();
@@ -547,6 +468,76 @@ bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   PopupItemId popup_item_id = suggestions_[0].popup_item_id;
   return base::Contains(kItemsTriggeringFieldFilling, popup_item_id) ||
          popup_item_id == PopupItemId::kScanCreditCard;
+}
+
+// AutofillKeyboardAccessoryController implementation:
+
+std::vector<std::vector<Suggestion::Text>>
+AutofillKeyboardAccessoryControllerImpl::GetSuggestionLabelsAt(int row) const {
+  return suggestions_[row].labels;
+}
+
+bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
+    int index,
+    std::u16string* title,
+    std::u16string* body) {
+  const std::u16string& value = suggestions_[index].main_text.value;
+  const PopupItemId popup_item_id = suggestions_[index].popup_item_id;
+  const Suggestion::BackendId backend_id =
+      suggestions_[index].GetPayload<Suggestion::BackendId>();
+
+  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+    if (title) {
+      title->assign(value);
+    }
+    if (body) {
+      body->assign(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY));
+    }
+    return true;
+  }
+
+  if (popup_item_id != PopupItemId::kAddressEntry &&
+      popup_item_id != PopupItemId::kCreditCardEntry) {
+    return false;
+  }
+  PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents_->GetBrowserContext());
+
+  if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
+          absl::get<Suggestion::Guid>(backend_id).value())) {
+    if (!CreditCard::IsLocalCard(credit_card)) {
+      return false;
+    }
+    if (title) {
+      title->assign(credit_card->CardNameAndLastFourDigits());
+    }
+    if (body) {
+      body->assign(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
+    }
+    return true;
+  }
+
+  if (const AutofillProfile* profile = pdm->GetProfileByGUID(
+          absl::get<Suggestion::Guid>(backend_id).value())) {
+    if (title) {
+      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
+      if (!street_address.empty()) {
+        title->swap(street_address);
+      } else {
+        title->assign(value);
+      }
+    }
+    if (body) {
+      body->assign(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+    }
+
+    return true;
+  }
+
+  return false;  // The ID was valid. The entry may have been deleted in a race.
 }
 
 base::WeakPtr<AutofillKeyboardAccessoryController>

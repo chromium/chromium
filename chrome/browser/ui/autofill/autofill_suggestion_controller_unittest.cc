@@ -310,15 +310,17 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
 
   Suggestion result0 = client().popup_controller(manager()).GetSuggestionAt(0);
   EXPECT_EQ(options[0].value, result0.main_text.value);
-  EXPECT_EQ(options[0].value,
-            client().popup_controller(manager()).GetSuggestionMainTextAt(0));
+  EXPECT_EQ(
+      options[0].value,
+      client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
   ASSERT_EQ(1u, result0.labels.size());
   ASSERT_EQ(1u, result0.labels[0].size());
   EXPECT_EQ(options[0].content, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
   EXPECT_EQ(options[0].content, client()
                                     .popup_controller(manager())
-                                    .GetSuggestionLabelsAt(0)[0][0]
+                                    .GetSuggestionAt(0)
+                                    .labels[0][0]
                                     .value);
   EXPECT_EQ(PopupItemId::kDatalistEntry, result0.popup_item_id);
 
@@ -344,8 +346,9 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   EXPECT_EQ(
       options[0].value,
       client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
-  EXPECT_EQ(options[0].value,
-            client().popup_controller(manager()).GetSuggestionMainTextAt(0));
+  EXPECT_EQ(
+      options[0].value,
+      client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(0).labels.size());
@@ -363,8 +366,9 @@ TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
   EXPECT_EQ(
       options[1].value,
       client().popup_controller(manager()).GetSuggestionAt(1).main_text.value);
-  EXPECT_EQ(options[1].value,
-            client().popup_controller(manager()).GetSuggestionMainTextAt(1));
+  EXPECT_EQ(
+      options[1].value,
+      client().popup_controller(manager()).GetSuggestionAt(1).main_text.value);
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(1).labels.size());
@@ -598,6 +602,9 @@ TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture)
   picture_in_picture_window_manager->NotifyObserversOnEnterPictureInPicture();
 }
 
+// TODO(crbug.com/333316034): Move these tests into their own separate test file
+// for `AutofillKeyboardAccessoryAdapterImpl`.
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillSuggestionControllerTest,
        GetRemovalConfirmationText_UnrelatedPopupItemId) {
   std::u16string title;
@@ -713,7 +720,6 @@ TEST_F(AutofillSuggestionControllerTest,
                 IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillSuggestionControllerTest, AcceptPwdSuggestionInvokesWarningAndroid) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::

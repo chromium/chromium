@@ -191,8 +191,6 @@ static_library("test_support") {
     "../browser/tpcd/experiment/mock_experiment_manager.h",
     "../browser/tpcd/support/trial_test_utils.cc",
     "../browser/tpcd/support/trial_test_utils.h",
-    "../browser/ui/autofill/mock_autofill_popup_controller.cc",
-    "../browser/ui/autofill/mock_autofill_popup_controller.h",
     "../browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
@@ -246,6 +244,8 @@ static_library("test_support") {
     sources += [
       "../browser/preloading/preview/preview_test_util.cc",
       "../browser/preloading/preview/preview_test_util.h",
+      "../browser/ui/autofill/mock_autofill_popup_controller.cc",
+      "../browser/ui/autofill/mock_autofill_popup_controller.h",
     ]
   }
 

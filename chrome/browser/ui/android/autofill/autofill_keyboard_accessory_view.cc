@@ -19,7 +19,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
-#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
+#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -38,7 +38,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
-    base::WeakPtr<AutofillSuggestionController> controller)
+    base::WeakPtr<AutofillKeyboardAccessoryController> controller)
     : controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));
@@ -84,8 +84,8 @@ void AutofillKeyboardAccessoryView::Show() {
           GetIconResourceID(suggestion.icon));
     }
 
-    std::u16string label = controller_->GetSuggestionMainTextAt(i);
-    std::u16string sublabel = controller_->GetSuggestionMinorTextAt(i);
+    std::u16string label = suggestion.main_text.value;
+    std::u16string sublabel = suggestion.minor_text.value;
     if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
             controller_->GetSuggestionLabelsAt(i);
         !suggestion_labels.empty()) {

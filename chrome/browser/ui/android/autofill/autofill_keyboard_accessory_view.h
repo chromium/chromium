@@ -18,7 +18,7 @@
 
 namespace autofill {
 
-class AutofillSuggestionController;
+class AutofillKeyboardAccessoryController;
 
 // A suggestion view that acts as an alternative to the field-attached popup
 // window. This view appears above the keyboard and spans the width of the
@@ -27,7 +27,7 @@ class AutofillKeyboardAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
   explicit AutofillKeyboardAccessoryView(
-      base::WeakPtr<AutofillSuggestionController> controller);
+      base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
   AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
   AutofillKeyboardAccessoryView& operator=(
@@ -70,7 +70,7 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
-  base::WeakPtr<AutofillSuggestionController> controller_;
+  base::WeakPtr<AutofillKeyboardAccessoryController> controller_;
 
   // Invoked when the user confirms or declines the deletion process.
   base::OnceCallback<void(bool)> deletion_callback_;
