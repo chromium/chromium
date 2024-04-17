@@ -13448,7 +13448,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PartitionAllocSchedulerLoopQuarantineCapacity": "1048576"
+                        "PartitionAllocSchedulerLoopQuarantineBranchCapacity": "262144"
                     },
                     "enable_features": [
                         "PartitionAllocSchedulerLoopQuarantine",

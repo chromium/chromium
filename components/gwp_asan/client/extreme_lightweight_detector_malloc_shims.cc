@@ -32,6 +32,7 @@ extern AllocatorDispatch allocator_dispatch;
 SamplingState<EXTREMELIGHTWEIGHTDETECTOR> sampling_state;
 
 using partition_alloc::internal::LightweightQuarantineBranch;
+using partition_alloc::internal::LightweightQuarantineBranchConfig;
 using partition_alloc::internal::LightweightQuarantineRoot;
 
 ExtremeLightweightDetectorOptions init_options;
@@ -100,12 +101,14 @@ bool TryInitSlow() {
     partition_alloc::PartitionRoot* partition_root =
         allocator_shim::internal::PartitionAllocMalloc::Allocator();
 
+    LightweightQuarantineBranchConfig quarantine_config = {
+        .lock_required = true,
+        .branch_capacity_in_bytes = init_options.quarantine_capacity_in_bytes,
+    };
     lightweight_quarantine_partition_root = partition_root;
-    lightweight_quarantine_root_storage.emplace(
-        *partition_root, init_options.quarantine_capacity_in_bytes);
+    lightweight_quarantine_root_storage.emplace(*partition_root);
     lightweight_quarantine_branch_storage.emplace(
-        lightweight_quarantine_root_storage->CreateBranch(
-            /*lock_required=*/true));
+        lightweight_quarantine_root_storage->CreateBranch(quarantine_config));
     lightweight_quarantine_branch =
         lightweight_quarantine_branch_storage.value().get();
 

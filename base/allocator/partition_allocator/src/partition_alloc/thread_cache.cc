@@ -519,8 +519,14 @@ ThreadCache::ThreadCache(PartitionRoot* root)
   // When enabled, initialize scheduler loop quarantine branch.
   // This branch is only used within this thread, so not `lock_required`.
   if (root_->settings.scheduler_loop_quarantine) {
+    internal::LightweightQuarantineBranchConfig per_thread_config = {
+        .lock_required = false,
+        .branch_capacity_in_bytes =
+            root_->scheduler_loop_quarantine_branch_capacity_in_bytes,
+    };
     scheduler_loop_quarantine_branch_.emplace(
-        root_->CreateSchedulerLoopQuarantineBranch(false));
+        root_->GetSchedulerLoopQuarantineRoot().CreateBranch(
+            per_thread_config));
   }
 }
 

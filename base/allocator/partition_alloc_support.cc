@@ -1114,9 +1114,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   const bool scheduler_loop_quarantine = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocSchedulerLoopQuarantine);
-  const size_t scheduler_loop_quarantine_capacity_in_bytes =
+  const size_t scheduler_loop_quarantine_branch_capacity_in_bytes =
       static_cast<size_t>(
-          base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+          base::features::kPartitionAllocSchedulerLoopQuarantineBranchCapacity
+              .Get());
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
 
@@ -1197,7 +1198,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
       memory_tagging_reporting_mode, bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
-      scheduler_loop_quarantine_capacity_in_bytes,
+      scheduler_loop_quarantine_branch_capacity_in_bytes,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
       allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists));
 

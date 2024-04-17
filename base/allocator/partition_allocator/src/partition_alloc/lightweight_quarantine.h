@@ -56,16 +56,22 @@ struct LightweightQuarantineStats;
 
 namespace internal {
 
+struct LightweightQuarantineBranchConfig {
+  // When set to `false`, the branch is for single-thread use (faster).
+  bool lock_required = true;
+  // Capacity for a branch in bytes.
+  size_t branch_capacity_in_bytes = 0;
+};
+
 class LightweightQuarantineBranch;
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineRoot {
  public:
-  explicit LightweightQuarantineRoot(PartitionRoot& allocator_root,
-                                     size_t capacity_in_bytes = 0)
-      : allocator_root_(allocator_root),
-        capacity_in_bytes_(capacity_in_bytes) {}
+  explicit LightweightQuarantineRoot(PartitionRoot& allocator_root)
+      : allocator_root_(allocator_root) {}
 
-  LightweightQuarantineBranch CreateBranch(bool lock_required = true);
+  LightweightQuarantineBranch CreateBranch(
+      const LightweightQuarantineBranchConfig& config);
 
   void AccumulateStats(LightweightQuarantineStats& stats) const {
     stats.count += count_.load(std::memory_order_relaxed);
@@ -77,22 +83,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineRoot {
         quarantine_miss_count_.load(std::memory_order_relaxed);
   }
 
-  size_t GetCapacityInBytes() const {
-    return capacity_in_bytes_.load(std::memory_order_relaxed);
-  }
-  void SetCapacityInBytes(size_t capacity) {
-    capacity_in_bytes_.store(capacity, std::memory_order_relaxed);
-    // `size_in_bytes` may exceed `capacity_in_bytes` here.
-    // Each branch will try to shrink their quarantine later.
-  }
-
  private:
   PartitionRoot& allocator_root_;
-  std::atomic_size_t capacity_in_bytes_;
-  // Total size of quarantined entries, capped by `capacity_in_bytes`.
-  std::atomic_size_t size_in_bytes_ = 0;
 
   // Stats.
+  std::atomic_size_t size_in_bytes_ = 0;
   std::atomic_size_t count_ = 0;  // Number of quarantined entries
   std::atomic_size_t cumulative_count_ = 0;
   std::atomic_size_t cumulative_size_in_bytes_ = 0;
@@ -119,52 +114,36 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
-  void Purge() {
-    ConditionalScopedGuard guard(lock_required_, lock_);
-    PurgeInternal(0);
-  }
+  void Purge();
 
   // Determines this list contains an object.
   bool IsQuarantinedForTesting(void* object);
 
   Root& GetRoot() { return root_; }
 
+  size_t GetCapacityInBytes() {
+    return branch_capacity_in_bytes_.load(std::memory_order_relaxed);
+  }
+  // After shrinking the capacity, this branch may need to `Purge()` to meet the
+  // requirement.
+  void SetCapacityInBytes(size_t capacity_in_bytes);
+
  private:
-  LightweightQuarantineBranch(Root& root, bool lock_required);
+  LightweightQuarantineBranch(Root& root,
+                              const LightweightQuarantineBranchConfig& config);
 
   // Try to dequarantine entries to satisfy below:
   //   root_.size_in_bytes_ <=  target_size_in_bytes
   // It is possible that this branch cannot satisfy the
   // request as it has control over only what it has. If you need to ensure the
   // constraint, call `Purge()` for each branch in sequence, synchronously.
-  void PurgeInternal(size_t target_size_in_bytes)
+  PA_ALWAYS_INLINE void PurgeInternal(size_t target_size_in_bytes)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   Root& root_;
 
-  bool lock_required_;
+  const bool lock_required_;
   Lock lock_;
-
-  // An utility to lock only if a condition is met.
-  class PA_SCOPED_LOCKABLE ConditionalScopedGuard {
-   public:
-    explicit ConditionalScopedGuard(bool condition, Lock& lock)
-        PA_EXCLUSIVE_LOCK_FUNCTION(lock)
-        : condition_(condition), lock_(lock) {
-      if (condition_) {
-        lock_.Acquire();
-      }
-    }
-    ~ConditionalScopedGuard() PA_UNLOCK_FUNCTION() {
-      if (condition_) {
-        lock_.Release();
-      }
-    }
-
-   private:
-    const bool condition_;
-    Lock& lock_;
-  };
 
   // Non-cryptographic random number generator.
   // Thread-unsafe so guarded by `lock_`.
@@ -178,6 +157,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   std::vector<QuarantineSlot, InternalAllocator<QuarantineSlot>> slots_
       PA_GUARDED_BY(lock_);
   size_t branch_size_in_bytes_ PA_GUARDED_BY(lock_) = 0;
+  // Using `std::atomic` here so that other threads can update this value.
+  std::atomic_size_t branch_capacity_in_bytes_;
 
   friend class LightweightQuarantineRoot;
 };

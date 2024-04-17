@@ -492,7 +492,7 @@ void ConfigurePartitions(
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
-    size_t scheduler_loop_quarantine_capacity_in_bytes,
+    size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
     ZappingByFreeFlags zapping_by_free_flags,
     UsePoolOffsetFreelists use_pool_offset_freelists
 
@@ -528,8 +528,8 @@ void ConfigurePartitions(
             scheduler_loop_quarantine
                 ? partition_alloc::PartitionOptions::kEnabled
                 : partition_alloc::PartitionOptions::kDisabled;
-        opts.scheduler_loop_quarantine_capacity_in_bytes =
-            scheduler_loop_quarantine_capacity_in_bytes;
+        opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
+            scheduler_loop_quarantine_branch_capacity_in_bytes;
         opts.memory_tagging = {
             .enabled = enable_memory_tagging
                            ? partition_alloc::PartitionOptions::kEnabled

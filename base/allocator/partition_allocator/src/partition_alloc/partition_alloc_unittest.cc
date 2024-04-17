@@ -344,7 +344,7 @@ class PartitionAllocTest
     // Requires explicit `FreeFlag` to activate, no effect otherwise.
     opts.zapping_by_free_flags = PartitionOptions::kEnabled;
     opts.scheduler_loop_quarantine = PartitionOptions::kEnabled;
-    opts.scheduler_loop_quarantine_capacity_in_bytes =
+    opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
         std::numeric_limits<size_t>::max();
     return opts;
   }
@@ -3599,8 +3599,8 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
       allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
 
   constexpr size_t kCapacityInBytes = std::numeric_limits<size_t>::max();
-  size_t original_capacity_in_bytes = branch.GetRoot().GetCapacityInBytes();
-  branch.GetRoot().SetCapacityInBytes(kCapacityInBytes);
+  size_t original_capacity_in_bytes = branch.GetCapacityInBytes();
+  branch.SetCapacityInBytes(kCapacityInBytes);
 
   for (size_t size : kTestSizes) {
     SCOPED_TRACE(size);
@@ -3618,7 +3618,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
   }
 
   branch.Purge();
-  branch.GetRoot().SetCapacityInBytes(original_capacity_in_bytes);
+  branch.SetCapacityInBytes(original_capacity_in_bytes);
 }
 
 // Ensures `Free<kSchedulerLoopQuarantine>` works as `Free<kNone>` if disabled.

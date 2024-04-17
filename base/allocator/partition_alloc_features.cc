@@ -113,10 +113,11 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantine,
              "PartitionAllocSchedulerLoopQuarantine",
              FEATURE_DISABLED_BY_DEFAULT);
-// Scheduler Loop Quarantine's capacity in bytes.
-const base::FeatureParam<int> kPartitionAllocSchedulerLoopQuarantineCapacity{
-    &kPartitionAllocSchedulerLoopQuarantine,
-    "PartitionAllocSchedulerLoopQuarantineCapacity", 0};
+// Scheduler Loop Quarantine's per-branch capacity in bytes.
+const base::FeatureParam<int>
+    kPartitionAllocSchedulerLoopQuarantineBranchCapacity{
+        &kPartitionAllocSchedulerLoopQuarantine,
+        "PartitionAllocSchedulerLoopQuarantineBranchCapacity", 0};
 
 BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
              "PartitionAllocZappingByFreeFlags",

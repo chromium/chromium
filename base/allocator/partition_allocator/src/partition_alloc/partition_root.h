@@ -173,7 +173,7 @@ struct PartitionOptions {
   AllowToggle use_configurable_pool = kDisallowed;
 
   EnableToggle scheduler_loop_quarantine = kDisabled;
-  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
 
   EnableToggle zapping_by_free_flags = kDisabled;
 
@@ -370,7 +370,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   bool quarantine_always_for_testing = false;
 
-  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
+  size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
   // NoDestructor because we don't need to dequarantine objects as the root
   // associated with it is dying anyway.
@@ -1027,9 +1027,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
-
-  internal::LightweightQuarantineBranch CreateSchedulerLoopQuarantineBranch(
-      bool lock_required);
+  PA_ALWAYS_INLINE internal::LightweightQuarantineRoot&
+  GetSchedulerLoopQuarantineRoot();
 
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
@@ -2547,6 +2546,11 @@ PartitionRoot::GetSchedulerLoopQuarantineBranch() {
   } else {
     return *scheduler_loop_quarantine->get();
   }
+}
+
+internal::LightweightQuarantineRoot&
+PartitionRoot::GetSchedulerLoopQuarantineRoot() {
+  return scheduler_loop_quarantine_root;
 }
 
 // Explicitly declare common template instantiations to reduce compile time.
