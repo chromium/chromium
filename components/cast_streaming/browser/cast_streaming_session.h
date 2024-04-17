@@ -188,7 +188,7 @@ class CastStreamingSession {
     void OnReceiversDestroying(const openscreen::cast::ReceiverSession* session,
                                ReceiversDestroyingReason reason) override;
     void OnError(const openscreen::cast::ReceiverSession* session,
-                 openscreen::Error error) override;
+                 const openscreen::Error& error) override;
 
     void OnDataTimeout();
     void OnCastChannelClosed();

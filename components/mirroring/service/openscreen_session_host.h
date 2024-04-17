@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       const openscreen::cast::SenderSession* session,
       openscreen::cast::RemotingCapabilities capabilities) override;
   void OnError(const openscreen::cast::SenderSession* session,
-               openscreen::Error error) override;
+               const openscreen::Error& error) override;
 
   // RtpStreamClient overrides.
   void OnError(const std::string& message) override;

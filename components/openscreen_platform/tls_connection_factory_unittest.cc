@@ -56,7 +56,7 @@ class MockTlsConnectionFactoryClient
               (override));
   MOCK_METHOD(void,
               OnError,
-              (openscreen::TlsConnectionFactory*, Error),
+              (openscreen::TlsConnectionFactory*, const Error&),
               (override));
 };
 

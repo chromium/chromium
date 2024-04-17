@@ -264,7 +264,7 @@ void CastStreamingTestSender::OnNegotiated(
 
 void CastStreamingTestSender::OnError(
     const openscreen::cast::SenderSession* session,
-    openscreen::Error error) {
+    const openscreen::Error& error) {
   LOG(ERROR) << "Sender Session error: " << error.ToString();
   CHECK_EQ(session, sender_session_.get());
   Stop();

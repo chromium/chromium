@@ -613,7 +613,7 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
 
 void OpenscreenSessionHost::OnError(
     const openscreen::cast::SenderSession* session,
-    openscreen::Error error) {
+    const openscreen::Error& error) {
   switch (error.code()) {
     case openscreen::Error::Code::kAnswerTimeout:
       ReportAndLogError(SessionError::ANSWER_TIME_OUT, error.ToString());

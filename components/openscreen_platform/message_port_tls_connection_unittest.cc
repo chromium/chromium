@@ -42,7 +42,8 @@ class MockTlsConnectionClient : public openscreen::TlsConnection::Client {
   ~MockTlsConnectionClient() override = default;
 
   MOCK_METHOD2(OnRead, void(openscreen::TlsConnection*, std::vector<uint8_t>));
-  MOCK_METHOD2(OnError, void(openscreen::TlsConnection*, openscreen::Error));
+  MOCK_METHOD2(OnError,
+               void(openscreen::TlsConnection*, const openscreen::Error&));
 };
 
 class MockTaskRunner : public openscreen::TaskRunner {

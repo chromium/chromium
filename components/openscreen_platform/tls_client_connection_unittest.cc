@@ -130,7 +130,7 @@ class FakeSocketStreams {
 
 class MockTlsConnectionClient : public TlsConnection::Client {
  public:
-  MOCK_METHOD(void, OnError, (TlsConnection*, Error), (override));
+  MOCK_METHOD(void, OnError, (TlsConnection*, const Error&), (override));
   MOCK_METHOD(void, OnRead, (TlsConnection*, std::vector<uint8_t>), (override));
 };
 
