@@ -309,19 +309,19 @@ void SetBaseBundleID(const char* new_base_bundle_id) {
 #define CF_CAST_DEFN(TypeCF)                                       \
   template <>                                                      \
   TypeCF##Ref CFCast<TypeCF##Ref>(const CFTypeRef& cf_val) {       \
-    if (cf_val == NULL) {                                          \
-      return NULL;                                                 \
+    if (cf_val == nullptr) {                                       \
+      return nullptr;                                              \
     }                                                              \
     if (CFGetTypeID(cf_val) == TypeCF##GetTypeID()) {              \
       return (TypeCF##Ref)(cf_val);                                \
     }                                                              \
-    return NULL;                                                   \
+    return nullptr;                                                \
   }                                                                \
                                                                    \
   template <>                                                      \
   TypeCF##Ref CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val) { \
     TypeCF##Ref rv = CFCast<TypeCF##Ref>(cf_val);                  \
-    DCHECK(cf_val == NULL || rv);                                  \
+    CHECK(cf_val == nullptr || rv);                                \
     return rv;                                                     \
   }
 

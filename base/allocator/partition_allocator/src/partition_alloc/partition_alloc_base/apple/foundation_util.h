@@ -11,14 +11,12 @@
 
 namespace partition_alloc::internal::base::apple {
 
-// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
-// specific CoreFoundation type. The compatibility of the passed
-// object is found by comparing its opaque type against the
-// requested type identifier. If the supplied object is not
-// compatible with the requested return type, CFCast<>() returns
-// NULL and CFCastStrict<>() will DCHECK. Providing a NULL pointer
-// to either variant results in NULL being returned without
-// triggering any DCHECK.
+// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more specific
+// CoreFoundation type. The compatibility of the passed object is found by
+// comparing its opaque type against the requested type identifier. If the
+// supplied object is not compatible with the requested return type, CFCast<>()
+// returns null and CFCastStrict<>() will CHECK. Providing a null pointer to
+// either variant results in null being returned without triggering any CHECK.
 //
 // Example usage:
 // CFNumberRef some_number = base::mac::CFCast<CFNumberRef>(

@@ -140,14 +140,12 @@ BASE_EXPORT const char* BaseBundleID();
 // make its own copy of new_base_bundle_id.
 BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
 
-// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
-// specific CoreFoundation type. The compatibility of the passed
-// object is found by comparing its opaque type against the
-// requested type identifier. If the supplied object is not
-// compatible with the requested return type, CFCast<>() returns
-// NULL and CFCastStrict<>() will DCHECK. Providing a NULL pointer
-// to either variant results in NULL being returned without
-// triggering any DCHECK.
+// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more specific
+// CoreFoundation type. The compatibility of the passed object is found by
+// comparing its opaque type against the requested type identifier. If the
+// supplied object is not compatible with the requested return type, CFCast<>()
+// returns null and CFCastStrict<>() will CHECK. Providing a null pointer to
+// either variant results in null being returned without triggering any CHECK.
 //
 // Example usage:
 // CFNumberRef some_number = base::apple::CFCast<CFNumberRef>(
@@ -197,28 +195,27 @@ CF_CAST_DECL(SecPolicy);
 
 #if defined(__OBJC__)
 
-// ObjCCast<>() and ObjCCastStrict<>() cast a basic id to a more
-// specific (NSObject-derived) type. The compatibility of the passed
-// object is found by checking if it's a kind of the requested type
-// identifier. If the supplied object is not compatible with the
-// requested return type, ObjCCast<>() returns nil and
-// ObjCCastStrict<>() will DCHECK. Providing a nil pointer to either
-// variant results in nil being returned without triggering any DCHECK.
+// ObjCCast<>() and ObjCCastStrict<>() cast a basic id to a more specific
+// (NSObject-derived) type. The compatibility of the passed object is found by
+// checking if it's a kind of the requested type identifier. If the supplied
+// object is not compatible with the requested return type, ObjCCast<>() returns
+// nil and ObjCCastStrict<>() will CHECK. Providing a nil pointer to either
+// variant results in nil being returned without triggering any CHECK.
 //
-// The strict variant is useful when retrieving a value from a
-// collection which only has values of a specific type, e.g. an
-// NSArray of NSStrings. The non-strict variant is useful when
-// retrieving values from data that you can't fully control. For
-// example, a plist read from disk may be beyond your exclusive
-// control, so you'd only want to check that the values you retrieve
+// The strict variant is useful when retrieving a value from a collection which
+// only has values of a specific type, e.g. an NSArray of NSStrings. The
+// non-strict variant is useful when retrieving values from data that you can't
+// fully control. For example, a plist read from disk may be beyond your
+// exclusive control, so you'd only want to check that the values you retrieve
 // from it are of the expected types, but not crash if they're not.
 //
 // Example usage:
-// NSString* version = base::apple::ObjCCast<NSString>(
-//     [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
+//   NSString* version = base::apple::ObjCCast<NSString>(
+//       [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
 //
-// NSString* str = base::apple::ObjCCastStrict<NSString>(
-//     [ns_arr_of_ns_strs objectAtIndex:0]);
+//   // (If it's not possible to use an NSArray<NSString>.)
+//   NSString* str = base::apple::ObjCCastStrict<NSString>(
+//       [ns_arr_of_ns_strs objectAtIndex:0]);
 template <typename T>
 T* ObjCCast(id objc_val) {
   if ([objc_val isKindOfClass:[T class]]) {
@@ -230,7 +227,7 @@ T* ObjCCast(id objc_val) {
 template <typename T>
 T* ObjCCastStrict(id objc_val) {
   T* rv = ObjCCast<T>(objc_val);
-  DCHECK(objc_val == nil || rv);
+  CHECK(objc_val == nil || rv);
   return rv;
 }
 
