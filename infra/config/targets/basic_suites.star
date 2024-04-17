@@ -3446,9 +3446,7 @@ targets.legacy_basic_suite(
                 "--weston-use-gl",
             ],
             swarming = targets.swarming(
-                # These tests currently take about an hour and fifteen minutes
-                # to run. Split them into roughly 5-minute shards.
-                shards = 20,
+                shards = 5,
             ),
         ),
     },

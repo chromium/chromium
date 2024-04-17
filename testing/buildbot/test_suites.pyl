@@ -3768,7 +3768,7 @@
           '--weston-use-gl',
         ],
         'swarming': {
-          'shards': 20,
+          'shards': 5,
         },
       },
     },
