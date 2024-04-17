@@ -57,14 +57,13 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
   return v8_template;
 }
 
+const WrapperTypeInfo* ToWrapperTypeInfo(
+    const v8::TracedReference<v8::Object>& wrapper) {
+  return GetInternalField<WrapperTypeInfo, kV8DOMWrapperTypeIndex>(wrapper);
+}
+
 const WrapperTypeInfo* ToWrapperTypeInfo(v8::Local<v8::Object> wrapper) {
-  const auto* wrappable = ToScriptWrappable(wrapper->GetIsolate(), wrapper);
-  const WrapperTypeInfo* type_info =
-      wrappable ? wrappable->GetWrapperTypeInfo() : nullptr;
-  DCHECK_EQ(
-      type_info,
-      (GetInternalField<WrapperTypeInfo, kV8DOMWrapperTypeIndex>(wrapper)));
-  return type_info;
+  return GetInternalField<WrapperTypeInfo, kV8DOMWrapperTypeIndex>(wrapper);
 }
 
 }  // namespace blink
