@@ -148,14 +148,19 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
   gfx::GpuMemoryBufferHandle handle;
 
   auto d3d11_device = GetOrCreateD3D11Device();
-  if (!d3d11_device)
+  if (!d3d11_device) {
     return handle;
+  }
 
   DXGI_FORMAT dxgi_format;
   switch (format) {
     case gfx::BufferFormat::RGBA_8888:
     case gfx::BufferFormat::RGBX_8888:
       dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      break;
+    case gfx::BufferFormat::BGRA_8888:
+    case gfx::BufferFormat::BGRX_8888:
+      dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
       break;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       dxgi_format = DXGI_FORMAT_NV12;
@@ -167,8 +172,9 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
   }
 
   size_t buffer_size;
-  if (!BufferSizeForBufferFormatChecked(size, format, &buffer_size))
+  if (!BufferSizeForBufferFormatChecked(size, format, &buffer_size)) {
     return handle;
+  }
 
   // We are binding as a shader resource and render target regardless of usage,
   // so make sure that the usage is one that we support.
@@ -192,18 +198,21 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
 
-  if (FAILED(d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture)))
+  if (FAILED(d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture))) {
     return handle;
+  }
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  if (FAILED(d3d11_texture.As(&dxgi_resource)))
+  if (FAILED(d3d11_texture.As(&dxgi_resource))) {
     return handle;
+  }
 
   HANDLE texture_handle;
   if (FAILED(dxgi_resource->CreateSharedHandle(
           nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
-          nullptr, &texture_handle)))
+          nullptr, &texture_handle))) {
     return handle;
+  }
 
   handle.dxgi_handle.Set(texture_handle);
   handle.dxgi_token = gfx::DXGIHandleToken();
@@ -223,12 +232,14 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
   DCHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
 
   auto d3d11_device = GetOrCreateD3D11Device();
-  if (!d3d11_device)
+  if (!d3d11_device) {
     return false;
+  }
 
   base::WritableSharedMemoryMapping mapping = shared_memory.Map();
-  if (!mapping.IsValid())
+  if (!mapping.IsValid()) {
     return false;
+  }
 
   return CopyDXGIBufferToShMem(buffer_handle.dxgi_handle.Get(),
                                mapping.GetMemoryAsSpan<uint8_t>(),

@@ -132,7 +132,9 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
       return format == gfx::BufferFormat::RGBA_8888 ||
-             format == gfx::BufferFormat::RGBX_8888;
+             format == gfx::BufferFormat::RGBX_8888 ||
+             format == gfx::BufferFormat::BGRA_8888 ||
+             format == gfx::BufferFormat::BGRX_8888;
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
     case gfx::BufferUsage::SCANOUT_VDA_WRITE:
@@ -210,8 +212,9 @@ bool GpuMemoryBufferSupport::IsConfigurationSupportedForTest(
     gfx::GpuMemoryBufferType type,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  if (type == GetNativeGpuMemoryBufferType())
+  if (type == GetNativeGpuMemoryBufferType()) {
     return IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
+  }
 
   if (type == gfx::SHARED_MEMORY_BUFFER) {
     return GpuMemoryBufferImplSharedMemory::IsConfigurationSupported(format,
