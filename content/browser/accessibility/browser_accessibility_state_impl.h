@@ -111,18 +111,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnUserInputEvent();
   void OnAccessibilityApiUsage();
 
-  // Accessibility objects can have the "hot tracked" state set when
-  // the mouse is hovering over them, but this makes tests flaky because
-  // the test behaves differently when the mouse happens to be over an
-  // element.  This is a global switch to not use the "hot tracked" state
-  // in a test.
-  void set_disable_hot_tracking_for_testing(bool disable_hot_tracking) {
-    disable_hot_tracking_ = disable_hot_tracking;
-  }
-  bool disable_hot_tracking_for_testing() const {
-    return disable_hot_tracking_;
-  }
-
   // Calls InitBackgroundTasks with short delays for scheduled tasks,
   // and then calls the given completion callback when done.
   void CallInitBackgroundTasksForTesting(base::RepeatingClosure done_callback);
@@ -182,9 +170,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Changes are disallowed while running tests or when
   // --force-renderer-accessibility is used on the command line.
   bool allow_ax_mode_changes_ = true;
-
-  // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
-  bool disable_hot_tracking_ = false;
 
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.

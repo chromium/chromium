@@ -52,6 +52,9 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 #endif  // !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
 
 // static
+bool BrowserAccessibility::ignore_hovered_state_for_testing_ = false;
+
+// static
 BrowserAccessibility* BrowserAccessibility::FromAXPlatformNodeDelegate(
     ui::AXPlatformNodeDelegate* delegate) {
   if (!delegate || !delegate->IsWebContent())
@@ -1799,9 +1802,7 @@ std::u16string BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
 }
 
 bool BrowserAccessibility::ShouldIgnoreHoveredStateForTesting() {
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-  return accessibility_state->disable_hot_tracking_for_testing();
+  return ignore_hovered_state_for_testing_;
 }
 
 std::optional<int> BrowserAccessibility::GetPosInSet() const {

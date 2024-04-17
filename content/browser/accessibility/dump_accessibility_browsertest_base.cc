@@ -381,10 +381,9 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path,
     const char* file_dir,
     const base::FilePath::StringType& expectations_qualifier) {
-  // Disable the "hot tracked" state (set when the mouse is hovering over
+  // Ignore the hovered state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
-  BrowserAccessibilityStateImpl::GetInstance()
-      ->set_disable_hot_tracking_for_testing(true);
+  BrowserAccessibility::ignore_hovered_state_for_testing_ = true;
 
   // Normally some accessibility events that would be fired are suppressed or
   // delayed, depending on what has focus or the type of event. For testing,
