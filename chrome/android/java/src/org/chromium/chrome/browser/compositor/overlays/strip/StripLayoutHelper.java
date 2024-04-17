@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -85,7 +87,7 @@ import java.util.Set;
  *
  * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
-public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate {
+public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGroupTitleDelegate {
     /** A property for animations to use for changing the X offset of the tab. */
     public static final FloatProperty<StripLayoutHelper> SCROLL_OFFSET =
             new FloatProperty<StripLayoutHelper>("scrollOffset") {
@@ -252,14 +254,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     if (groupTitle == null) return;
 
                     int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, newTitle);
-                    updateGroupTitle(rootId, newTitle, widthPx);
+                    updateGroupTitle(groupTitle, newTitle, widthPx);
                     updateGroupAccessibilityDescription(groupTitle);
 
-                    // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
-                    //  with groupTitle.isVisible() check to avoid creating when unneeded.
-                    mLayerTitleCache.getUpdatedGroupTitle(
-                            rootId, groupTitle.getTitle(), mIncognito);
-                    mRenderHost.requestRender();
+                    if (groupTitle.isVisible()) {
+                        mLayerTitleCache.getUpdatedGroupTitle(
+                                rootId, groupTitle.getTitle(), mIncognito);
+                        mRenderHost.requestRender();
+                    }
                 }
 
                 @Override
@@ -274,17 +276,24 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     groupTitle.updateTint(color);
 
                     // Title may also need to change color.
-                    // TODO(crbug.com/331664842): When group title bitmaps are culled, guard this
-                    //  with groupTitle.isVisible() check to avoid creating when unneeded.
-                    mLayerTitleCache.getUpdatedGroupTitle(
-                            rootId, groupTitle.getTitle(), mIncognito);
-                    mRenderHost.requestRender();
+                    if (groupTitle.isVisible()) {
+                        mLayerTitleCache.getUpdatedGroupTitle(
+                                rootId, groupTitle.getTitle(), mIncognito);
+                        mRenderHost.requestRender();
+                    }
                 }
 
                 @Override
                 public void didChangeGroupRootId(int oldRootId, int newRootId) {
+                    releaseResourcesForGroupTitle(oldRootId);
+
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
                     if (groupTitle != null) groupTitle.updateRootId(newRootId);
+                }
+
+                @Override
+                public void didRemoveTabGroup(int oldRootId) {
+                    releaseResourcesForGroupTitle(oldRootId);
                 }
             };
 
@@ -2422,11 +2431,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         groupTitle.setAccessibilityDescription(buildGroupAccessibilityDescription(groupTitle));
     }
 
-    private void updateGroupTitle(int rootId, String title, int widthPx) {
-        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-        if (groupTitle == null) return;
-
-        updateGroupTitle(groupTitle, title, widthPx);
+    @Override
+    public void releaseResourcesForGroupTitle(int rootId) {
+        mLayerTitleCache.removeGroupTitle(rootId);
     }
 
     private void updateGroupTitle(StripLayoutGroupTitle groupTitle, String title, int widthPx) {
@@ -2468,7 +2475,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(mIncognito, rootId, titleString, textWidth, color);
+                new StripLayoutGroupTitle(this, mIncognito, rootId, titleString, textWidth, color);
         updateGroupAccessibilityDescription(groupTitle);
         pushPropertiesToGroupTitle(groupTitle);
 
@@ -2862,7 +2869,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
-        mStripStacker.performOcclusionPass(mStripTabs, getVisibleLeftBound(), stripWidth);
+        mStripStacker.performOcclusionPass(mStripViews, getVisibleLeftBound(), stripWidth);
 
         // 5. Create render list.
         createRenderList();

@@ -50,9 +50,17 @@ public class ScrollingStripStacker extends StripStacker {
             StripLayoutView[] indexOrderedViews, float xOffset, float visibleWidth) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
             StripLayoutView view = indexOrderedViews[i];
-            view.setVisible(
-                    (view.getDrawX() + view.getWidth()) >= xOffset
-                            && view.getDrawX() <= xOffset + visibleWidth);
+            float drawX;
+            float width;
+            if (view instanceof StripLayoutGroupTitle groupTitle) {
+                drawX = groupTitle.getPaddedX();
+                width = groupTitle.getBottomIndicatorWidth();
+            } else {
+                drawX = view.getDrawX();
+                width = view.getWidth();
+            }
+
+            view.setVisible((drawX + width) >= xOffset && drawX <= xOffset + visibleWidth);
         }
     }
 }

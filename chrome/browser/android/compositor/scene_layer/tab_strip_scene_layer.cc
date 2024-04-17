@@ -546,6 +546,8 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
           title_indicator_layer->children()[0].get(), title_layer->layer());
     }
     title_layer->SetUIResourceIds();
+  } else {
+    title_indicator_layer->RemoveAllChildren();
   }
 
   // Set bottom indicator properties.

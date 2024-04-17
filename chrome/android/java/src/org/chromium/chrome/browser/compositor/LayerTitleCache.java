@@ -166,13 +166,14 @@ public class LayerTitleCache {
         TabGroupModelFilter filter =
                 (TabGroupModelFilter)
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(incognito);
+        if (!filter.tabGroupExistsForRootId(groupRootId)) return;
+
         String titleString = filter.getTabGroupTitle(groupRootId);
         getUpdatedGroupTitle(groupRootId, titleString, incognito);
     }
 
     public String getUpdatedGroupTitle(int groupRootId, String titleString, boolean incognito) {
-        // TODO(crbug.com/331642736): Investigate skipping creating the bitmap for empty titles.
-        if (titleString == null) titleString = "";
+        if (TextUtils.isEmpty(titleString)) return null;
 
         getUpdatedGroupTitleInternal(groupRootId, titleString, incognito);
         return titleString;
@@ -305,8 +306,6 @@ public class LayerTitleCache {
     }
 
     public void removeGroupTitle(int rootId) {
-        // TODO(crbug.com/326492787): Currently unused. Call to release bitmaps when we actually
-        // observe tab group changes (i.e. call this when a tab group is destroyed).
         Title title = mGroupTitles.get(rootId);
         if (title == null) return;
         title.unregister();

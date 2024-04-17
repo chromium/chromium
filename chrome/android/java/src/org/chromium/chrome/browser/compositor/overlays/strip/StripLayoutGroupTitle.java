@@ -20,6 +20,18 @@ import org.chromium.ui.base.LocalizationUtils;
  * onto the GL canvas.
  */
 public class StripLayoutGroupTitle extends StripLayoutView {
+    /** Delegate for additional group title functionality. */
+    public interface StripLayoutGroupTitleDelegate {
+        // TODO(https://crbug.com/326492955): Implement click to collapse/expand.
+
+        /**
+         * Releases the resources associated with this group indicator.
+         *
+         * @param rootId The root ID of the given group indicator.
+         */
+        void releaseResourcesForGroupTitle(int rootId);
+    }
+
     /** A property for animations to use for changing the width of the bottom indicator. */
     public static final FloatProperty<StripLayoutGroupTitle> BOTTOM_INDICATOR_WIDTH =
             new FloatProperty<>("bottomIndicatorWidth") {
@@ -51,6 +63,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
     private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
 
+    // External influences.
+    private final StripLayoutGroupTitleDelegate mDelegate;
+
     // State variables.
     private final boolean mIncognito;
 
@@ -74,6 +89,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
      *
+     * @param delegate The delegate for additional strip group title functionality.
      * @param incognito Whether or not this tab group is Incognito.
      * @param rootId The root ID for the tab group.
      * @param title The title of the tab group, if it is set. Null otherwise.
@@ -81,6 +97,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param color The color of the tab group.
      */
     public StripLayoutGroupTitle(
+            StripLayoutGroupTitleDelegate delegate,
             boolean incognito,
             int rootId,
             @Nullable String title,
@@ -88,6 +105,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             @ColorInt int color) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
+        mDelegate = delegate;
         mIncognito = incognito;
 
         updateRootId(rootId);
@@ -139,6 +157,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     public void setHeight(float height) {
         mHeight = height;
         mTouchTarget.bottom = mDrawY + mHeight;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+
+        if (!visible) mDelegate.releaseResourcesForGroupTitle(mRootId);
     }
 
     @Override
