@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/logging.h"
 #include "components/enterprise/common/proto/legacy_tech_events.pb.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,9 @@ constexpr char kCookieTransferOrScriptUrl[] = "script url";
 constexpr char kCookieName[] = "cookie name";
 constexpr char kCookieDomain[] = "cookie domain";
 constexpr char kCookiePath[] = "cookie path";
+
+constexpr char kLongUrl[] =
+    "https://username:password@example.com:8080/path/file.html?key=value#ref";
 
 }  // namespace
 
@@ -111,14 +115,33 @@ TEST_F(LegacyTechGeneratorTest, TestWithCookieIssueDetailsWrite) {
       /*filename=*/kFileName,
       /*line=*/kLine,
       /*column=*/kColumn,
-      /*cookie_issue_details=*/
-      std::move(cookie_issue_details)};
+      /*cookie_issue_details=*/std::move(cookie_issue_details)};
 
   LegacyTechReportGenerator generator;
   std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
 
   EXPECT_EQ(CookieAccessOperation::COOKIE_ACCESS_OPERATION_WRITE,
             report->cookie_issue_details().access_operation());
+}
+
+TEST_F(LegacyTechGeneratorTest, TestDropComponents) {
+  LegacyTechReportGenerator::LegacyTechData data = {
+      /*type=*/kType,
+      /*url=*/GURL(kLongUrl),
+      /*frame_url=*/GURL(kLongUrl),
+      /*matched_url=*/kMatchedUrl,
+      /*filename=*/kFileName,
+      /*line=*/kLine,
+      /*column=*/kColumn,
+      /*cookie_issue_details=*/std::nullopt};
+
+  LegacyTechReportGenerator generator;
+  std::unique_ptr<LegacyTechEvent> report = generator.Generate(data);
+
+  std::string expected_url = "https://example.com:8080/path/file.html";
+
+  EXPECT_EQ(expected_url, report->url());
+  EXPECT_EQ(expected_url, report->frame_url());
 }
 
 }  // namespace enterprise_reporting

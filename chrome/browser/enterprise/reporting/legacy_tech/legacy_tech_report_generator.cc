@@ -8,6 +8,21 @@
 
 namespace enterprise_reporting {
 
+namespace {
+GURL SanitizeUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return GURL();
+  }
+
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements);
+}
+}  // namespace
+
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData() = default;
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     const std::string& type,
@@ -46,8 +61,8 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
       static_cast<const LegacyTechData&>(data);
   std::unique_ptr<LegacyTechEvent> report = std::make_unique<LegacyTechEvent>();
   report->set_feature_id(legacy_tech_data.type);
-  report->set_url(legacy_tech_data.url.spec());
-  report->set_frame_url(legacy_tech_data.frame_url.spec());
+  report->set_url(SanitizeUrl(legacy_tech_data.url).spec());
+  report->set_frame_url(SanitizeUrl(legacy_tech_data.frame_url).spec());
   report->set_allowlisted_url_match(legacy_tech_data.matched_url);
   report->set_filename(legacy_tech_data.filename);
   report->set_column(legacy_tech_data.column);
