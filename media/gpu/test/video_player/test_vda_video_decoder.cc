@@ -117,8 +117,9 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
-        vda_config, false, base::SequencedTaskRunner::GetCurrentDefault());
+        base::BindRepeating(
+            &media::VideoDecoderPipeline::CreateForVDAAdapterForARC),
+        this, vda_config, base::SequencedTaskRunner::GetCurrentDefault());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
     DVLOGF(2) << "Use original VDA";

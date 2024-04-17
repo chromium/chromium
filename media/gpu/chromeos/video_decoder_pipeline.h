@@ -199,6 +199,13 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::unique_ptr<MediaLog> media_log,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
       bool in_video_decoder_process);
+  // Same idea but creates a VideoDecoderPipeline instance intended to be
+  // adapted or bridged to a VideoDecodeAccelerator interface, for ARC clients.
+  static std::unique_ptr<VideoDecoder> CreateForVDAAdapterForARC(
+      const gpu::GpuDriverBugWorkarounds& workarounds,
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      std::unique_ptr<DmabufVideoFramePool> frame_pool,
+      std::vector<Fourcc> renderable_fourccs);
 
   static std::unique_ptr<VideoDecoder> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,

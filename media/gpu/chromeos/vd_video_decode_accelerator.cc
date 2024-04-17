@@ -15,7 +15,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
-#include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -181,13 +180,12 @@ std::unique_ptr<VideoDecodeAccelerator> VdVideoDecodeAccelerator::Create(
     CreateVideoDecoderCb create_vd_cb,
     Client* client,
     const Config& config,
-    bool low_delay,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   std::unique_ptr<VdVideoDecodeAccelerator,
                   std::default_delete<VideoDecodeAccelerator>>
       vda(new VdVideoDecodeAccelerator(std::move(create_vd_cb),
                                        std::move(task_runner)));
-  if (!vda->Initialize(config, client, low_delay))
+  if (!vda->Initialize(config, client, /*low_delay=*/true))
     return nullptr;
   return vda;
 }
@@ -261,12 +259,8 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     // its use.
     vd_ = create_vd_cb_.Run(
         gpu::GpuDriverBugWorkarounds(), client_task_runner_,
-        std::move(frame_pool), /*frame_converter=*/nullptr,
-        VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
-        std::make_unique<NullMediaLog>(),
-        /*oop_video_decoder=*/{},
-        // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
-        /*in_video_decoder_process=*/false);
+        std::move(frame_pool),
+        VideoDecoderPipeline::DefaultPreferredRenderableFourccs());
     if (!vd_)
       return false;
 

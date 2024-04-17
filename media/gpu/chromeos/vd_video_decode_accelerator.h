@@ -47,8 +47,8 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
       public VdaVideoFramePool::VdaDelegate {
  public:
   // Callback for creating VideoDecoder instance.
-  using CreateVideoDecoderCb =
-      base::RepeatingCallback<decltype(VideoDecoderPipeline::Create)>;
+  using CreateVideoDecoderCb = base::RepeatingCallback<
+      decltype(VideoDecoderPipeline::CreateForVDAAdapterForARC)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.
@@ -56,7 +56,6 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
       CreateVideoDecoderCb create_vd_cb,
       Client* client,
       const Config& config,
-      bool low_delay,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   VdVideoDecodeAccelerator(const VdVideoDecodeAccelerator&) = delete;
   VdVideoDecodeAccelerator& operator=(const VdVideoDecodeAccelerator&) = delete;

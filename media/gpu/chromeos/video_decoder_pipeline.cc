@@ -23,6 +23,7 @@
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
@@ -194,6 +195,42 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
       std::move(frame_converter), std::move(renderable_fourccs),
       std::move(media_log), std::move(create_decoder_function_cb),
       uses_oop_video_decoder, in_video_decoder_process);
+  return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
+      base::WrapUnique(pipeline));
+}
+
+// static
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForVDAAdapterForARC(
+    const gpu::GpuDriverBugWorkarounds& workarounds,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    std::unique_ptr<DmabufVideoFramePool> frame_pool,
+    std::vector<Fourcc> renderable_fourccs) {
+  DCHECK(client_task_runner);
+  DCHECK(frame_pool);
+  DCHECK(!renderable_fourccs.empty());
+
+  CreateDecoderFunctionCB create_decoder_function_cb;
+#if BUILDFLAG(USE_VAAPI)
+  create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  if (base::FeatureList::IsEnabled(kV4L2FlatVideoDecoder) &&
+      !IsV4L2DecoderStateful()) {
+    create_decoder_function_cb =
+        base::BindOnce(&V4L2StatelessVideoDecoder::Create);
+  } else {
+    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+  }
+#else
+  return nullptr;
+#endif
+
+  auto* pipeline = new VideoDecoderPipeline(
+      workarounds, std::move(client_task_runner), std::move(frame_pool),
+      /*frame_converter=*/nullptr, std::move(renderable_fourccs),
+      std::make_unique<NullMediaLog>(), std::move(create_decoder_function_cb),
+      /*uses_oop_video_decoder=*/false,
+      // TODO(b/195769334): Set this properly once OOP-VD is enabled for ARC.
+      /*in_video_decoder_process=*/false);
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
 }
