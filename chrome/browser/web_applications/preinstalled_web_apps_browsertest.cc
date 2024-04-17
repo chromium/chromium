@@ -39,11 +39,6 @@ class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase,
             PreinstalledWebAppManager::SkipStartupForTesting()) {
     // Ignore any default app configs on disk.
     SetPreinstalledWebAppConfigDirForTesting(&empty_path_);
-    WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
-        [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
-          return std::make_unique<FakeOsIntegrationManager>(profile, nullptr,
-                                                            nullptr, nullptr);
-        });
   }
 
   ~PreinstalledWebAppsBrowserTest() override {

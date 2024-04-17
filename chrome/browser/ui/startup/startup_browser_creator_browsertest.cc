@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -69,7 +71,6 @@
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -79,6 +80,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -1800,6 +1802,7 @@ class StartupBrowserWithListAppsFeature : public StartupBrowserCreatorTest {
   }
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2060,6 +2063,7 @@ class StartupBrowserCreatorRestartTest : public StartupBrowserCreatorTest,
   bool browser_added_check_passed_ = false;
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<
       base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>
       mock_relaunch_callback_;
@@ -2188,7 +2192,7 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
@@ -2260,25 +2264,27 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        PRE_LastUsedProfilesWithWebApp) {
-  BrowserAddedObserver added_observer;
+  {
+    BrowserAddedObserver added_observer;
 
 #if BUILDFLAG(IS_MAC)
-  // Simulate an app shim connecting and launching an app.
-  apps::AppShimManager::Get()->LoadAndLaunchAppForTesting(kAppId);
+    // Simulate an app shim connecting and launching an app.
+    apps::AppShimManager::Get()->LoadAndLaunchAppForTesting(kAppId);
 #endif
 
-  content::RunAllTasksUntilIdle();
-  // Launching with an app opens the app window via a task, so the test
-  // might start before SelectFirstBrowser is called.
-  if (!browser()) {
-    added_observer.Wait();
-    SelectFirstBrowser();
+    content::RunAllTasksUntilIdle();
+    // Launching with an app opens the app window via a task, so the test
+    // might start before SelectFirstBrowser is called.
+    if (!browser()) {
+      added_observer.Wait();
+      SelectFirstBrowser();
+    }
   }
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 
   // An app window should have been launched.
   EXPECT_TRUE(browser()->is_type_app());
-  CloseBrowserAsynchronously(browser());
+  CloseBrowserSynchronously(browser());
 }
 
 // TODO(crbug.com/327256043): Flaky on win
@@ -2445,6 +2451,9 @@ class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {}
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
@@ -2658,6 +2667,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
         last_opened_profiles);
   }
 
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_WIN)
   // This is needed to stop StartupBrowserWebAppProtocolHandlingTests creating a
@@ -3525,7 +3536,7 @@ class StartupBrowserCreatorInfobarsTest
       policy_provider_.UpdateChromePolicy(policies);
     }
   }
-
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 

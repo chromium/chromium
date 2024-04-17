@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "install_from_info_command.h"
+#include "chrome/browser/web_applications/commands/install_from_info_command.h"
 
 #include <map>
 #include <memory>
@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -31,14 +33,7 @@ namespace web_app {
 
 class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
  public:
-  InstallFromInfoCommandTest() {
-    WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
-        [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
-          return std::make_unique<FakeOsIntegrationManager>(profile, nullptr,
-                                                            nullptr, nullptr);
-        });
-  }
-
+  InstallFromInfoCommandTest() = default;
   std::map<SquareSizePx, SkBitmap> ReadIcons(const webapps::AppId& app_id,
                                              IconPurpose purpose,
                                              const SortedSizesPx& sizes_px) {
@@ -53,10 +48,6 @@ class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
             }));
     run_loop.Run();
     return result;
-  }
-
-  FakeOsIntegrationManager* os_integration_manager() {
-    return provider().os_integration_manager().AsTestOsIntegrationManager();
   }
 };
 

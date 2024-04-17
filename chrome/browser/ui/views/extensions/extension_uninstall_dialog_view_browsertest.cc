@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -211,6 +213,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
       ->extension_service()
       ->AddExtension(extension.get());
 
+  std::unique_ptr<web_app::OsIntegrationTestOverrideBlockingRegistration>
+      faked_os_integration;
+  {
+    base::ScopedAllowBlockingForTesting blocking;
+    faked_os_integration = std::make_unique<
+        web_app::OsIntegrationTestOverrideBlockingRegistration>();
+  }
   const GURL start_url = GURL("https://test.com/");
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
@@ -238,6 +247,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
                              extensions::UNINSTALL_REASON_FOR_TESTING,
                              extensions::UNINSTALL_SOURCE_FOR_TESTING);
     run_loop.RunUntilIdle();
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting blocking;
+    faked_os_integration.reset();
   }
 }
 

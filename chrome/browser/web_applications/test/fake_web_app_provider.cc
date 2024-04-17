@@ -98,6 +98,20 @@ void FakeWebAppProvider::SetSynchronizePreinstalledAppsOnStartup(
   synchronize_preinstalled_app_on_startup_ = synchronize_on_startup;
 }
 
+void FakeWebAppProvider::UseRealOsIntegrationManager() {
+  CheckNotStartedAndDisconnect();
+  auto file_handler_manager =
+      std::make_unique<WebAppFileHandlerManager>(profile_);
+  auto protocol_handler_manager =
+      std::make_unique<WebAppProtocolHandlerManager>(profile_);
+  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
+      profile_, file_handler_manager.get(), protocol_handler_manager.get());
+
+  SetOsIntegrationManager(std::make_unique<OsIntegrationManager>(
+      profile_, std::move(shortcut_manager), std::move(file_handler_manager),
+      std::move(protocol_handler_manager)));
+}
+
 void FakeWebAppProvider::SetEnableAutomaticIwaUpdates(
     AutomaticIwaUpdateStrategy automatic_iwa_update_strategy) {
   CheckNotStartedAndDisconnect();

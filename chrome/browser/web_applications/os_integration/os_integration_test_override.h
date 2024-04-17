@@ -66,6 +66,8 @@ class OsIntegrationTestOverrideImpl;
 class OsIntegrationTestOverride
     : public base::RefCountedThreadSafe<OsIntegrationTestOverride> {
  public:
+  static void CheckOsIntegrationAllowed();
+
   // This will return a nullptr in production code or tests that have not
   // created a `OsIntegrationTestOverrideImpl::BlockingRegistration` through
   // `OsIntegrationTestOverrideImpl::OverrideForTesting`.
@@ -129,5 +131,8 @@ class OsIntegrationTestOverride
 };
 
 }  // namespace web_app
+
+#define CHECK_OS_INTEGRATION_ALLOWED() \
+  OsIntegrationTestOverride::CheckOsIntegrationAllowed()
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_OS_INTEGRATION_TEST_OVERRIDE_H_

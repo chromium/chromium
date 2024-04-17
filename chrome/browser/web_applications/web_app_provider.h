@@ -105,8 +105,6 @@ class WebAppProvider : public KeyedService {
 
   using OsIntegrationManagerFactory =
       std::unique_ptr<OsIntegrationManager> (*)(Profile*);
-  static void SetOsIntegrationManagerFactoryForTesting(
-      OsIntegrationManagerFactory factory);
 
   explicit WebAppProvider(Profile* profile);
   WebAppProvider(const WebAppProvider&) = delete;

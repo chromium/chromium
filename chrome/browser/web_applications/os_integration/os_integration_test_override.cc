@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -33,6 +34,27 @@ GetMutableOsIntegrationTestOverrideStateForTesting() {
   return *g_os_integration_test_override.get();
 }
 }  // namespace
+
+// static
+void OsIntegrationTestOverride::CheckOsIntegrationAllowed() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Note: Using OsIntegrationManager::SuppressForTesting disables os
+  // integration, even if OsIntegrationTestOverride is specified. In this case,
+  // os integration is still not allowed, and anything needing it (like
+  // launching) should call this function & check-fail here.
+  bool os_integration_can_occur_in_tests =
+      !OsIntegrationManager::AreOsHooksSuppressedForTesting() &&
+      ::web_app::OsIntegrationTestOverride::Get();
+  if (!os_integration_can_occur_in_tests) {
+    CHECK_IS_NOT_TEST()
+        << "Please initialize an "
+           "`OsIntegrationTestOverrideBlockingRegistration`"
+           "to allow fully installed web apps with OS integration in tests. In "
+           "unit tests it may be required to call "
+           "`FakeWebAppProvider::UseRealOsIntegrationManager()` during set up.";
+  }
+#endif
+}
 
 // static
 scoped_refptr<OsIntegrationTestOverride> OsIntegrationTestOverride::Get() {

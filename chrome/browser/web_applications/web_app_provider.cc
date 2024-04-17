@@ -73,13 +73,6 @@ enum class WebappInstallSource;
 
 namespace web_app {
 
-namespace {
-
-WebAppProvider::OsIntegrationManagerFactory
-    g_os_integration_manager_factory_for_testing = nullptr;
-
-}  // namespace
-
 // static
 WebAppProvider* WebAppProvider::GetDeprecated(Profile* profile) {
   return WebAppProviderFactory::GetForProfile(profile);
@@ -134,12 +127,6 @@ WebAppProvider* WebAppProvider::GetForWebContents(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
   return WebAppProvider::GetForLocalAppsUnchecked(profile);
-}
-
-// static
-void WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
-    OsIntegrationManagerFactory factory) {
-  g_os_integration_manager_factory_for_testing = factory;
 }
 
 WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
@@ -360,21 +347,16 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   translation_manager_ = std::make_unique<WebAppTranslationManager>(profile);
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);
 
-  if (g_os_integration_manager_factory_for_testing) {
-    os_integration_manager_ =
-        g_os_integration_manager_factory_for_testing(profile);
-  } else {
-    auto file_handler_manager =
-        std::make_unique<WebAppFileHandlerManager>(profile);
-    auto protocol_handler_manager =
-        std::make_unique<WebAppProtocolHandlerManager>(profile);
-    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile, file_handler_manager.get(), protocol_handler_manager.get());
+  auto file_handler_manager =
+      std::make_unique<WebAppFileHandlerManager>(profile);
+  auto protocol_handler_manager =
+      std::make_unique<WebAppProtocolHandlerManager>(profile);
+  auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
+      profile, file_handler_manager.get(), protocol_handler_manager.get());
 
-    os_integration_manager_ = std::make_unique<OsIntegrationManager>(
-        profile, std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager));
-  }
+  os_integration_manager_ = std::make_unique<OsIntegrationManager>(
+      profile, std::move(shortcut_manager), std::move(file_handler_manager),
+      std::move(protocol_handler_manager));
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile);
   command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile);

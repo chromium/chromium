@@ -184,20 +184,29 @@ void WebAppUninstallAndReplaceJob::
 void WebAppUninstallAndReplaceJob::OnShortcutLocationGathered(
     const webapps::AppId& from_app,
     base::OnceClosure on_complete,
-    ShortcutLocations locations) {
+    ShortcutLocations from_app_locations) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
 
   const bool is_extension = proxy->AppRegistryCache().GetAppType(from_app) ==
                             apps::AppType::kChromeApp;
+  bool run_on_os_login = from_app_locations.in_startup;
   if (is_extension) {
     // Need to be called before `proxy->UninstallSilently` because
     // UninstallSilently might synchronously finish, so the wait won't get
     // finished if called after.
     WaitForExtensionShortcutsDeleted(
-        from_app, base::BindOnce(&WebAppUninstallAndReplaceJob::
-                                     SynchronizeOSIntegrationForReplacementApp,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(on_complete), locations));
+        from_app,
+        base::BindOnce(&WebAppUninstallAndReplaceJob::
+                           SynchronizeOSIntegrationForReplacementApp,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(on_complete),
+                       run_on_os_login, from_app_locations));
+  } else {
+    // Platforms like Mac don't fetch the 'run on os login' property from the
+    // GetAppExistingShortCutLocation API.
+    run_on_os_login =
+        run_on_os_login ||
+        to_app_lock_->registrar().GetAppRunOnOsLoginMode(from_app).value ==
+            RunOnOsLoginMode::kWindowed;
   }
 
   // When the `from_app` is a web app, we can't wait for it to finish because it
@@ -207,18 +216,19 @@ void WebAppUninstallAndReplaceJob::OnShortcutLocationGathered(
   proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
 
   if (!is_extension) {
-    SynchronizeOSIntegrationForReplacementApp(std::move(on_complete),
-                                              locations);
+    SynchronizeOSIntegrationForReplacementApp(
+        std::move(on_complete), run_on_os_login, from_app_locations);
   }
 }
 
 void WebAppUninstallAndReplaceJob::SynchronizeOSIntegrationForReplacementApp(
     base::OnceClosure on_complete,
-    ShortcutLocations locations) {
+    bool from_app_run_on_os_login,
+    ShortcutLocations from_app_locations) {
   ValueWithPolicy<RunOnOsLoginMode> run_on_os_login =
       to_app_lock_->registrar().GetAppRunOnOsLoginMode(to_app_);
   if (run_on_os_login.user_controllable) {
-    RunOnOsLoginMode new_mode = locations.in_startup
+    RunOnOsLoginMode new_mode = from_app_run_on_os_login
                                     ? RunOnOsLoginMode::kWindowed
                                     : RunOnOsLoginMode::kNotRun;
     if (new_mode != run_on_os_login.value) {
@@ -230,8 +240,9 @@ void WebAppUninstallAndReplaceJob::SynchronizeOSIntegrationForReplacementApp(
   }
 
   SynchronizeOsOptions synchronize_options;
-  synchronize_options.add_shortcut_to_desktop = locations.on_desktop;
-  synchronize_options.add_to_quick_launch_bar = locations.in_quick_launch_bar;
+  synchronize_options.add_shortcut_to_desktop = from_app_locations.on_desktop;
+  synchronize_options.add_to_quick_launch_bar =
+      from_app_locations.in_quick_launch_bar;
   synchronize_options.reason = SHORTCUT_CREATION_AUTOMATED;
   to_app_lock_->os_integration_manager().Synchronize(to_app_,
                                                      std::move(on_complete));

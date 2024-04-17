@@ -58,7 +58,7 @@ class AppBannerManagerBrowserTestBase : public PlatformBrowserTest {
                                         const std::string& value);
 
 #if !BUILDFLAG(IS_ANDROID)
-  web_app::OsIntegrationTestOverrideBlockingRegistration os_hooks_suppress_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 #endif
 };
 

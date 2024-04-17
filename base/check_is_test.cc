@@ -15,6 +15,11 @@ namespace base::internal {
 void check_is_test_impl(base::NotFatalUntil fatal_milestone) {
   CHECK(g_this_is_a_test, fatal_milestone);
 }
+
+// static
+bool IsInTest::Get() {
+  return g_this_is_a_test;
+}
 }  // namespace base::internal
 
 namespace base::test {
@@ -23,7 +28,7 @@ namespace base::test {
 // code. We therefore have to also mark the symbol as exported here.
 BASE_EXPORT void AllowCheckIsTestForTesting() {
   // This CHECK ensures that `AllowCheckIsTestForTesting` is called
-  // just once. Since it is called in `base::TestSuite`, this should effectivly
+  // just once. Since it is called in `base::TestSuite`, this should effectively
   // prevent calls to `AllowCheckIsTestForTesting` in production code
   // (assuming that code has unit test coverage).
   //
@@ -34,5 +39,4 @@ BASE_EXPORT void AllowCheckIsTestForTesting() {
 
   g_this_is_a_test = true;
 }
-
 }  // namespace base::test

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -677,12 +678,23 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+class PopupBlockerBrowserTestWithWebApps : public PopupBlockerBrowserTest {
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
 // Reentrancy regression test for PopunderPreventer attempting to activate a
 // fullscreen web app window that is being closed; see crbug.com/331095620.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       CloseFullscreenStandaloneWebApp) {
+// TODO(crbug.com/335493696): Mac shims don't work with faked fullscreen.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseFullscreenStandaloneWebApp \
+  DISABLED_CloseFullscreenStandaloneWebApp
+#else
+#define MAYBE_CloseFullscreenStandaloneWebApp CloseFullscreenStandaloneWebApp
+#endif
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTestWithWebApps,
+                       MAYBE_CloseFullscreenStandaloneWebApp) {
   GURL url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  web_app::OsIntegrationManager::ScopedSuppressForTesting suppress;
   webapps::AppId id = web_app::InstallWebAppFromPage(browser(), url);
   Browser* app = web_app::LaunchWebAppBrowserAndWait(browser()->profile(), id);
   WebContents* tab = app->tab_strip_model()->GetActiveWebContents();

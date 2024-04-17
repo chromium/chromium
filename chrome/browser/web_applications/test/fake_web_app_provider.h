@@ -108,6 +108,11 @@ class FakeWebAppProvider : public WebAppProvider {
   // by default for unit tests, and can be enabled by setting this flag to true.
   void SetSynchronizePreinstalledAppsOnStartup(bool synchronize_on_startup);
 
+  // Call when the unit tets wants to trigger OS integration, removing the
+  // ScopedSuppressOsHooks in FakeOsIntegrationManager (allowing the
+  // OsIntegrationTestOverrideBlockingRegistration to work correctly).
+  void UseRealOsIntegrationManager();
+
   enum class AutomaticIwaUpdateStrategy {
     kDefault,
     kForceDisabled,

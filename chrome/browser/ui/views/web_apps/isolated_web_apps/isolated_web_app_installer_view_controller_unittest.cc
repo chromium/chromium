@@ -232,6 +232,9 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
         std::make_unique<LoopbackCrosapiAppServiceProxy>(profile_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+    // Launching requires real os integration.
+    fake_provider()->UseRealOsIntegrationManager();
+
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

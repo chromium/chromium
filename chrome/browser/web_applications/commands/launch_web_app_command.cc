@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -57,6 +58,20 @@ void LaunchWebAppCommand::FirstRunServiceCompleted(bool success) {
     CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
                             apps::LaunchContainer::kLaunchContainerNone);
     return;
+  }
+
+  bool is_standalone_launch =
+      params_.container == apps::LaunchContainer::kLaunchContainerWindow ||
+      (launch_setting_ ==
+           LaunchWebAppWindowSetting::kOverrideWithWebAppConfig &&
+       lock_->registrar().GetAppUserDisplayMode(params_.app_id) !=
+           mojom::UserDisplayMode::kBrowser);
+
+  if (is_standalone_launch) {
+    // Launching an app in a standalone windows requires OS integration, and the
+    // only way this is supported in tests is to use the
+    // OsIntegrationTestOverride functionality.
+    CHECK_OS_INTEGRATION_ALLOWED();
   }
 
   provider_->ui_manager().LaunchWebApp(

@@ -54,10 +54,12 @@ class WebAppUninstallAndReplaceJob {
 
   void OnShortcutLocationGathered(const webapps::AppId& from_app,
                                   base::OnceClosure on_complete,
-                                  ShortcutLocations locations);
+                                  ShortcutLocations from_app_locations);
 
-  void SynchronizeOSIntegrationForReplacementApp(base::OnceClosure on_complete,
-                                                 ShortcutLocations locations);
+  void SynchronizeOSIntegrationForReplacementApp(
+      base::OnceClosure on_complete,
+      bool from_app_run_on_os_login,
+      ShortcutLocations from_app_locations);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/protocol_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/run_on_os_login_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_menu_handling_sub_manager.h"
@@ -144,6 +145,7 @@ void OsIntegrationManager::Synchronize(
   // This is usually called to clean up OS integration states on the OS,
   // regardless of whether there are apps existing in the app registry or not.
   if (options.has_value() && options.value().force_unregister_os_integration) {
+    CHECK_OS_INTEGRATION_ALLOWED();
     ForceUnregisterOsIntegrationOnSubManager(
         app_id, /*index=*/0,
         std::move(callback).Then(
@@ -307,6 +309,8 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
         FROM_HERE, std::move(write_state_to_db));
     return;
   }
+
+  CHECK_OS_INTEGRATION_ALLOWED();
 
   ExecuteNextSubmanager(app_id, options, desired_states_ptr,
                         web_app->current_os_integration_states(), /*index=*/0,
