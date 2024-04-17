@@ -2392,17 +2392,43 @@ void DisplayManager::AddMirrorDisplayInfoIfAny(
 
 void DisplayManager::InsertAndUpdateDisplayInfo(
     const ManagedDisplayInfo& new_info) {
+  ManagedDisplayInfo* info = nullptr;
   auto it = display_info_.find(new_info.id());
   if (it != display_info_.end()) {
-    ManagedDisplayInfo* info = &(it->second);
+    info = &(it->second);
     info->Copy(new_info);
   } else {
-    display_info_[new_info.id()] = new_info;
+    info = &display_info_[new_info.id()];
+    *info = new_info;
+
     // Set from_native_platform to false so that all information
     // (rotation, zoom factor etc.) is copied.
-    display_info_[new_info.id()].set_from_native_platform(false);
+    info->set_from_native_platform(false);
+
+    // If an external display is plugged in for the first time and doesn't have
+    // any entry in display_info_, such as those from Pref or from previous
+    // config, apply recommended default zoom factor.
+    ApplyDefaultZoomFactorIfNecessary(*info);
   }
-  display_info_[new_info.id()].UpdateDisplaySize();
+
+  CHECK(info);
+  info->UpdateDisplaySize();
+}
+
+void DisplayManager::ApplyDefaultZoomFactorIfNecessary(
+    ManagedDisplayInfo& info) {
+  // Only apply to external display. The internal display has good handle of
+  // default dpi.
+  if (IsInternalDisplayId(info.id())) {
+    return;
+  }
+
+  // Ignore unified display.
+  if (info.id() == kUnifiedDisplayId) {
+    return;
+  }
+
+  info.UpdateZoomFactorToMatchTargetDPI();
 }
 
 Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {

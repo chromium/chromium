@@ -503,6 +503,116 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
             display_manager()->GetDisplayAt(1).bounds());
 }
 
+// Test recommended zoom factor will be applied to external display when
+// connected for the first time.
+TEST_F(DisplayManagerTest, UpdateDisplayWithUnseenExternalDisplayTest) {
+  // Set up internal display and external display.
+  const int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  const int external_id_1 = 10;
+  const display::ManagedDisplayInfo internal_display_info =
+      CreateDisplayInfo(internal_display_id, gfx::Rect(0, 0, 1920, 1200));
+  display::ManagedDisplayInfo external_display_info_1 =
+      CreateDisplayInfo(external_id_1, gfx::Rect(1, 1, 3840, 2160));
+  const float external_display_dpi_1 = 192.f;
+  external_display_info_1.set_device_dpi(external_display_dpi_1);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info_1);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+
+  // The recommended zoom factor should be applied since this external display
+  // is connected for the first time.
+
+  // The available zoom factors for 3840X2160 are
+  // {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}. The expected
+  // zoom factor = external_display_dpi_1 /
+  // kRecommendedDefaultExternalDisplayDpi = 192 / 96 = 2, which is available.
+  const float expect_zoom_factor_1 = 2.f;
+  EXPECT_EQ(expect_zoom_factor_1,
+            GetDisplayInfoForId(external_id_1).zoom_factor());
+
+  // Update the external display again.
+  external_display_info_1.set_device_dpi(300.f);
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info_1);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The recommended zoom factor should not be applied since this external
+  // display is connected before.
+  EXPECT_EQ(1.f, GetDisplayInfoForId(external_id_1).zoom_factor());
+
+  // Test with a new external display with different display dpi.
+  const int external_id_2 = 20;
+  display::ManagedDisplayInfo external_display_info_2 =
+      CreateDisplayInfo(external_id_2, gfx::Rect(1, 1, 3840, 2160));
+  const float external_display_dpi_2 = 140.f;
+  external_display_info_2.set_device_dpi(external_display_dpi_2);
+
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info_2);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The available zoom factors for 3840X2160 are
+  // {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}. The expected
+  // zoom factor = external_display_dpi_2 /
+  // kRecommendedDefaultExternalDisplayDpi = 140 / 96 = 1.46, the closest
+  // available zoom factor is 1.4.
+  const float expect_zoom_factor_2 = 1.4f;
+  EXPECT_EQ(expect_zoom_factor_2,
+            GetDisplayInfoForId(external_id_2).zoom_factor());
+
+  // Test with a new external display with a large display dpi.
+  const int external_id_3 = 30;
+  display::ManagedDisplayInfo external_display_info_3 =
+      CreateDisplayInfo(external_id_3, gfx::Rect(1, 1, 3840, 2160));
+  const float external_display_dpi_3 = 300.f;
+  external_display_info_3.set_device_dpi(external_display_dpi_3);
+
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info_3);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The available zoom factors for 3840X2160 are
+  // {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}. The expected
+  // zoom factor = external_display_dpi_3 /
+  // kRecommendedDefaultExternalDisplayDpi = 300 / 96 = 3.125, the closest
+  // available zoom factor is 2.4.
+  const float expect_zoom_factor_3 = 2.4f;
+  EXPECT_EQ(expect_zoom_factor_3,
+            GetDisplayInfoForId(external_id_3).zoom_factor());
+
+  // Test with a new external display with a small display dpi.
+  const int external_id_4 = 40;
+  display::ManagedDisplayInfo external_display_info_4 =
+      CreateDisplayInfo(external_id_4, gfx::Rect(1, 1, 3840, 2160));
+  const float external_display_dpi_4 = 50.f;
+  external_display_info_4.set_device_dpi(external_display_dpi_4);
+
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info_4);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  // The available zoom factors for 3840X2160 are
+  // {1.f, 1.10f, 1.20f, 1.40f, 1.60f, 1.80f, 2.00f, 2.20f, 2.40f}. The expected
+  // zoom factor = external_display_dpi_4 /
+  // kRecommendedDefaultExternalDisplayDpi = 50 / 96 = 0.52, the closest
+  // available zoom factor is 1.
+  const float expect_zoom_factor_4 = 1.f;
+  EXPECT_EQ(expect_zoom_factor_4,
+            GetDisplayInfoForId(external_id_4).zoom_factor());
+}
+
 // Test in emulation mode (use_fullscreen_host_window=false)
 TEST_F(DisplayManagerTest, EmulatorTest) {
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());

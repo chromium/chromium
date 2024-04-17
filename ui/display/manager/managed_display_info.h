@@ -258,6 +258,10 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // TODO(oshima): Rename to |GetDeviceScaleFactor()|.
   float GetEffectiveDeviceScaleFactor() const;
 
+  // Updates the zoom factor so that the effective dpi matches to the
+  // recommended default dpi.
+  void UpdateZoomFactorToMatchTargetDPI();
+
   // Copy the display info except for fields that can be modified by a user
   // (|rotation_|). |rotation_| is copied when the |another_info| isn't native
   // one.
