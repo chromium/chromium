@@ -174,8 +174,10 @@ class CORE_EXPORT RubyBlockPositionCalculator {
     DISALLOW_NEW();
 
     Member<LogicalRubyColumn> column;
-    wtf_size_t over_depth = 0;
-    wtf_size_t under_depth = 0;
+    // Nesting level on the "over" side. The value is zero or positive.
+    int32_t over_depth = 0;
+    // Nesting level on the "under" side. The value is zero or negative.
+    int32_t under_depth = 0;
 
     void Trace(Visitor* visitor) const;
   };
