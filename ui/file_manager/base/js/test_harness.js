@@ -4,6 +4,7 @@
 
 // Mark the test as fully loaded. The Browser Test reads this.
 window.__TEST_LOADED__ = false;
+window.IN_TEST = true;
 
 import 'chrome://webui-test/strings.m.js';
 

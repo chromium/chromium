@@ -132,7 +132,10 @@ function clearCachedEntriesReducer(state: State): State {
  */
 function scheduleClearCachedEntries() {
   if (clearCachedEntriesRequestId === 0) {
-    clearCachedEntriesRequestId = requestIdleCallback(startClearCache);
+    // For unittest force to run at least at 50ms to avoid flakiness on slow
+    // bots (msan).
+    const options = window.IN_TEST ? {timeout: 50} : {};
+    clearCachedEntriesRequestId = requestIdleCallback(startClearCache, options);
   }
 }
 
