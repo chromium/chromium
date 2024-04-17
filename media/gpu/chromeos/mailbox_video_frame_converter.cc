@@ -462,14 +462,13 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    auto si_format = GetSharedImageFormat(*buffer_format);
+
+  auto si_format = GetSharedImageFormat(*buffer_format);
+  mailbox_frame->set_shared_image_format_type(
+      media::SharedImageFormatType::kSharedImageFormat);
+  if (si_format.PrefersExternalSampler()) {
     mailbox_frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormat);
-    if (si_format.PrefersExternalSampler()) {
-      mailbox_frame->set_shared_image_format_type(
-          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-    }
+        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
   }
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
@@ -599,19 +598,12 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
-  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb;
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    destroy_shared_image_cb = gpu_delegate_->CreateSharedImage(
-        mailbox, std::move(gpu_memory_buffer_handle),
-        GetSharedImageFormat(*buffer_format), shared_image_size,
-        src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        shared_image_usage);
-  } else {
-    destroy_shared_image_cb = gpu_delegate_->CreateSharedImage(
-        mailbox, std::move(gpu_memory_buffer_handle), *buffer_format,
-        gfx::BufferPlane::DEFAULT, shared_image_size, src_color_space,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
-  }
+  gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb =
+      gpu_delegate_->CreateSharedImage(
+          mailbox, std::move(gpu_memory_buffer_handle),
+          GetSharedImageFormat(*buffer_format), shared_image_size,
+          src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          shared_image_usage);
   if (destroy_shared_image_cb.is_null()) {
     OnError(FROM_HERE, "Failed to create shared image.");
     return false;

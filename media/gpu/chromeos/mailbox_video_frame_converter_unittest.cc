@@ -225,31 +225,17 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     {
       InSequence sequence;
       EXPECT_CALL(*mock_gpu_delegate_, Initialize()).WillOnce(Return(true));
-      if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-        viz::SharedImageFormat shared_image_format =
-            viz::MultiPlaneFormat::kNV12;
-        shared_image_format.SetPrefersExternalSampler();
-        EXPECT_CALL(
-            *mock_gpu_delegate_,
-            CreateSharedImage(
-                /*mailbox=*/_, /*handle=*/_, shared_image_format,
-                /*size=*/kVisibleRect.size(), /*color_space=*/_,
-                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
-            .WillOnce(DoAll(
-                SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
-                Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
-      } else {
-        EXPECT_CALL(
-            *mock_gpu_delegate_,
-            CreateSharedImage(
-                /*mailbox=*/_, /*handle=*/_, kBufferFormat,
-                gfx::BufferPlane::DEFAULT,
-                /*size=*/kVisibleRect.size(), /*color_space=*/_,
-                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
-            .WillOnce(DoAll(
-                SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
-                Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
-      }
+      viz::SharedImageFormat shared_image_format = viz::MultiPlaneFormat::kNV12;
+      shared_image_format.SetPrefersExternalSampler();
+      EXPECT_CALL(
+          *mock_gpu_delegate_,
+          CreateSharedImage(
+              /*mailbox=*/_, /*handle=*/_, shared_image_format,
+              /*size=*/kVisibleRect.size(), /*color_space=*/_,
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
+          .WillOnce(
+              DoAll(SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
+                    Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
       EXPECT_CALL(mock_output_cb_, Run(_))
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }
