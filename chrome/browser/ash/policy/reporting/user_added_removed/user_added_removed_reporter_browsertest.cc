@@ -263,9 +263,6 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
   ASSERT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
-  test::WaitForGuestTosScreen();
-  test::TapGuestTosAccept();
-
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
 }

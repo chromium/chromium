@@ -1042,6 +1042,12 @@ inline constexpr char kWebAppPreinstalledAppWindowExperiment[] =
 // Deprecated 04/2024.
 inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 04/2024
+constexpr char kMetricsUserInheritOwnerConsent[] =
+    "metrics.user_inherit_owner_consent";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1484,6 +1490,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 04/2024.
   registry->RegisterTimePref(kDIPSTimerLastUpdate, base::Time());
+
+  // Deprecated 04/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kMetricsUserInheritOwnerConsent, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2793,6 +2804,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2024.
   profile_prefs->ClearPref(kDIPSTimerLastUpdate);
+
+  // Added 04/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kMetricsUserInheritOwnerConsent);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

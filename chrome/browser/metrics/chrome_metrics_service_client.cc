@@ -1418,9 +1418,7 @@ bool ChromeMetricsServiceClient::ShouldUploadMetricsForUserId(
 
     auto current_user_id = per_user_state_manager_->GetCurrentUserId();
 
-    // Current session is an ephemeral session with metrics reporting enabled.
-    // All logs generated during the session will not have a user id associated.
-    // Do not upload log with |user_id| during this session.
+    // Do not upload logs that are missing |user_id| during this session.
     if (!current_user_id.has_value()) {
       return false;
     }

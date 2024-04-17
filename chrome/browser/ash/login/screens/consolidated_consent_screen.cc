@@ -206,6 +206,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
 
+  // TODO(b/326605902): Evaluate whether ownership status callback is needed.
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&ConsolidatedConsentScreen::OnOwnershipStatusCheckDone,
                      weak_factory_.GetWeakPtr()));
@@ -317,6 +318,7 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // user to sign in. Therefore, the current user would be the owner if the
   // device is not enterprise managed.
   bool is_managed = ash::InstallAttributes::Get()->IsEnterpriseManaged();
+
   if (status == DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
     is_owner_ = !is_managed;
   } else if (status ==
@@ -328,11 +330,14 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // unset.
   context()->is_owner_flow = is_owner_;
 
-  // If the user is not the owner and the owner disabled metrics, the user
-  // is not allowed to update the usage opt-in.
+  // TODO(b/325492473): Remove logic to remove SetUsageOptInHidden.
   if (view_) {
-    view_->SetUsageOptinHidden(!is_owner_.value_or(false) &&
-                               !StatsReportingController::Get()->IsEnabled());
+    // All new accounts are shown the default usage opt-in.
+    // Managed devices have their consent set by the device enterprise policy.
+    // Unmanaged devices have UMA opted in by default with the ability to
+    // toggle. view_->SetUsageMode() controls setting the value of the users
+    // consent and controls whether the user is able to toggle the consent.
+    view_->SetUsageOptinHidden(false);
   }
 
   const bool is_demo = arc::IsArcDemoModeSetupFlow();
@@ -372,6 +377,10 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     }
 
     UpdateMetricsMode(is_enabled, is_managed);
+  } else {
+    // Demo mode devices cannot modify reporting consent during OOBE.
+    // Disables user consent toggle since it's set by the enterprise policy.
+    UpdateMetricsMode(StatsReportingController::Get()->IsEnabled(), is_managed);
   }
 }
 

@@ -19,12 +19,6 @@ const char kMetricsUserConsent[] = "metrics.user_consent";
 // if a user goes from a no->yes metrics consent state.
 const char kMetricsUserId[] = "metrics.user_id";
 
-// Bool pref whether per-user consent should inherit consent from the device
-// owner consent, which defaults to true. This case should only occur if a new
-// user is being registered.
-const char kMetricsUserInheritOwnerConsent[] =
-    "metrics.user_inherit_owner_consent";
-
 // Array of dictionaries that are each UMA logs that were not sent because the
 // user session ended before accumulated metrics were sent.
 const char kMetricsUserMetricLogs[] = "metrics.user_metrics_logs";

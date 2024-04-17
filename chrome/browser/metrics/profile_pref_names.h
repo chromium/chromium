@@ -12,7 +12,6 @@ namespace prefs {
 extern const char kMetricsRequiresClientIdResetOnConsent[];
 extern const char kMetricsUserConsent[];
 extern const char kMetricsUserId[];
-extern const char kMetricsUserInheritOwnerConsent[];
 extern const char kMetricsUserMetricLogs[];
 extern const char kMetricsUserMetricLogsMetadata[];
 

@@ -41,6 +41,22 @@ namespace metrics {
 //
 // It is assumed that there can only be at most one user logged in at once. This
 // assumption is only true in Ash Chrome.
+//
+// This class integrates into the MetricsService in order to separately handle
+// UMA reporting consent for unmanaged secondary users. Profile prefs are
+// used to handle the consent for each user. These profile settings interact
+// with the local state pref that controls the overall device reporting
+// consent, and UMA uploading logic.
+//
+// Ownership status needs to be asynchronously retrieved first in order to know
+// whether the device has no ownership yet, or whether the device is owned and
+// we are controlling consent for a secondary user.
+//
+// This class does not manage the device owner reporting consent.
+// Device owner consent is handled separately by
+// |ash::StatsReportingController|. In the future, we may want to consider
+// simplifying the code by using a single class to manage both device owner
+// consent and secondary user consent.
 class PerUserStateManagerChromeOS
     : public user_manager::UserManager::UserSessionStateObserver,
       public user_manager::UserManager::Observer,
@@ -59,7 +75,7 @@ class PerUserStateManagerChromeOS
       const std::string& signing_key);
 
   // Does not own |metrics_service_client| and |local_state|. Lifetime of
-  // these raw pointers should be managed by the caller.
+  // these raw pointers should be handled by the caller.
   PerUserStateManagerChromeOS(MetricsServiceClient* metrics_service_client,
                               PrefService* local_state);
 
@@ -86,13 +102,11 @@ class PerUserStateManagerChromeOS
   // The cases in which this occurs are:
   //
   //    1) Regular non-owner users on non-managed devices.
-  //    2) Guest users on non-owned devices.
+  //    2) Guest users.
   //
   // If no user is logged in, returns std::nullopt. True means that the user
   // has opted-into metrics collection during the session and False means that
   // the user has opted-out.
-  //
-  // NOTE: If ownership status is not known, this will return std::nullopt.
   std::optional<bool> GetCurrentUserReportingConsentIfApplicable() const;
 
   // Sets the metric consent for the current logged in user. If no user is
@@ -106,16 +120,6 @@ class PerUserStateManagerChromeOS
   // This call should be used to toggle consent from the UI or during OOBE flow
   // for the current user.
   void SetCurrentUserMetricsConsent(bool metrics_consent);
-
-  // Returns true if a user log store in the user cryptohome should be used for
-  // the current logged in user.
-  //
-  // Certain users (ie ephemeral sessions with metrics consent on) should not
-  // use a user log store since the user log store will be stored on the
-  // temporary cryptohome and will be deleted at the end of the session.
-  // Ephemeral sessions with metric consent on should be stored in local state
-  // to be persistent.
-  bool ShouldUseUserLogStore() const;
 
   // Returns true if |user| should have the ability to toggle user metrics
   // collection for themselves.
@@ -136,6 +140,9 @@ class PerUserStateManagerChromeOS
   // as it is hack to force PerUserStateManagerChromeOS to return a fixed value.
   static void SetIsManagedForTesting(bool is_managed);
 
+  // Resets the logged in user state for testing.
+  void ResetStateForTesting();
+
  protected:
   // These methods are marked virtual to stub out for testing.
 
@@ -154,9 +161,6 @@ class PerUserStateManagerChromeOS
 
   // Returns true if the reporting policy is managed.
   virtual bool IsReportingPolicyManaged() const;
-
-  // Returns the device metrics consent.
-  virtual bool GetDeviceMetricsConsent() const;
 
   // Returns true if user log store has been set to be used to persist metric
   // logs.
@@ -185,7 +189,10 @@ class PerUserStateManagerChromeOS
   // Loads appropriate prefs from |current_user_| and creates new log storage
   // using profile prefs.
   //
-  // Will only be called when OwnershipStatus is known.
+  // Will only be called when OwnershipStatus is known. This guarantees that
+  // we avoid race conditions where the ownership status is still unknown due
+  // to policy fetch on browser restart.
+  // The status will either be kOwnershipNone, or kOwnershipTaken.
   void InitializeProfileMetricsState(
       ash::DeviceSettingsService::OwnershipStatus status);
 
@@ -199,9 +206,7 @@ class PerUserStateManagerChromeOS
     // immediately created.
     USER_LOGIN = 1,
 
-    // User profile has been created and ready to use. Note that if ownership
-    // status is unknown, user log store will not be created until the ownership
-    // status is known.
+    // User profile has been created and ready to use.
     USER_PROFILE_READY = 2,
 
     // User log store has been initialized, if applicable. Per-user consent
