@@ -139,6 +139,9 @@ class TabGroup;
                                            inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block;
 
+// Creates a UIAction instance for opening  a link in new tab group
+- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block;
+
 #ifdef __cplusplus
 // Creates a UIMenu instance for adding a tab to an existing group or to a new
 // group using a block that takes a group as an argument. This argument will be
@@ -150,6 +153,14 @@ class TabGroup;
     menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
                      numberOfTabs:(int)tabsNumber
                             block:(void (^)(const TabGroup*))block;
+
+// Creates a UIMenu instance for opening a link in an existing group or in a new
+// group using a block that takes a group as an argument. This argument will be
+// `nullptr` if it should be added to a new group. If there is no existing
+// groups, it will only have the option to open in a new group.
+- (UIMenuElement*)
+    menuToOpenLinkInGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                              block:(void (^)(const TabGroup*))block;
 
 // Creates a UIMenu instance for moving a tab from `currentGroup` in or out of
 // an existing group. `groups` cannot be empty.

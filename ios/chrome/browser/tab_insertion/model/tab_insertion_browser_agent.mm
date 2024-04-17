@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
@@ -110,6 +111,18 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
       .WithOpener(WebStateOpener(tab_insertion_params.parent));
   web::WebState* web_state_ptr = web_state.get();
   web_state_list->InsertWebState(std::move(web_state), params);
+  if (tab_insertion_params.insert_in_group) {
+    if (tab_insertion_params.tab_group) {
+      web_state_list->MoveToGroup(
+          {web_state_list->GetIndexOfWebState(web_state_ptr)},
+          tab_insertion_params.tab_group.get());
+    } else {
+      web_state_list->CreateGroup(
+          {web_state_list->GetIndexOfWebState(web_state_ptr)},
+          tab_groups::TabGroupVisualData{
+              u"", TabGroup::DefaultColorForNewTabGroup(web_state_list)});
+    }
+  }
   return web_state_ptr;
 }
 

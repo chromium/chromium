@@ -55,6 +55,7 @@ source_set("model") {
 source_set("url_loading_params_header") {
   sources = [ "url_loading_params.h" ]
   deps = [
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",
     "//ui/base",

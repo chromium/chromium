@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+Testing.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -197,6 +198,35 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
             ->Load(loadParams);
       }];
       [menuElements addObject:openNewTab];
+
+      if (IsTabGroupInGridEnabled()) {
+        std::set<const TabGroup*> groups =
+            GetAllGroupsForBrowserState(self.browser->GetBrowserState());
+        auto actionResult = ^(const TabGroup* group) {
+          UrlLoadParams groupLoadParams = UrlLoadParams::InNewTab(linkURL);
+          groupLoadParams.SetInBackground(YES);
+          groupLoadParams.in_incognito = isOffTheRecord;
+          groupLoadParams.append_to = OpenPosition::kCurrentTab;
+          groupLoadParams.web_params.referrer = referrer;
+          groupLoadParams.origin_point =
+              [params.view convertPoint:params.location toView:nil];
+          groupLoadParams.load_in_group = true;
+          if (group) {
+            groupLoadParams.tab_group = group->GetWeakPtr();
+          }
+          ContextMenuConfigurationProvider* strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+          UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+              ->Load(groupLoadParams);
+        };
+
+        UIMenuElement* openLinkInGroupMenu =
+            [actionFactory menuToOpenLinkInGroupWithGroups:groups
+                                                     block:actionResult];
+        [menuElements addObject:openLinkInGroupMenu];
+      }
 
       if (!isOffTheRecord) {
         // Open in Incognito Tab.

@@ -385,6 +385,8 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
   insertion_params.inherit_opener = params.inherit_opener;
   insertion_params.should_skip_new_tab_animation = params.from_external;
   insertion_params.placeholder_title = params.placeholder_title;
+  insertion_params.insert_in_group = params.load_in_group;
+  insertion_params.tab_group = params.tab_group;
 
   web::WebState* web_state =
       insertion_agent->InsertWebState(params.web_params, insertion_params);

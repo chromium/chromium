@@ -217,6 +217,7 @@ chromium-metrics-reviews@google.com.
   <int value="50" label="Delete Tab Group Group"/>
   <int value="51" label="Move Tab to Existing Group"/>
   <int value="52" label="Remove Tab from Group"/>
+  <int value="53" label="Open Link In New Group"/>
 </enum>
 
 <enum name="IOSMenuScenario">
