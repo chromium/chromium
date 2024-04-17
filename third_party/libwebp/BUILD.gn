@@ -500,6 +500,8 @@ static_library("libwebp_utils") {
     "src/src/utils/huffman_encode_utils.h",
     "src/src/utils/huffman_utils.c",
     "src/src/utils/huffman_utils.h",
+    "src/src/utils/palette.c",
+    "src/src/utils/palette.h",
     "src/src/utils/quant_levels_dec_utils.c",
     "src/src/utils/quant_levels_dec_utils.h",
     "src/src/utils/quant_levels_utils.c",
@@ -784,5 +786,16 @@ fuzzer_test("libwebp_enc_dec_api_fuzzer") {
     ":libwebp_webp",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
+  additional_configs = [ ":libwebp_config" ]
+}
+
+fuzzer_test("libwebp_huffman_fuzzer") {
+  sources = [ "src/tests/fuzzer/huffman_fuzzer.c" ]
+  deps = [
+    ":libwebp",
+    ":libwebp_dec",
+    ":libwebp_utils",
+    ":libwebp_webp",
+  ]
   additional_configs = [ ":libwebp_config" ]
 }
