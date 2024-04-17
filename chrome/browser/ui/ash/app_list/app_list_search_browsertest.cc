@@ -193,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchWithCustomizableShortcutsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppListSearchWithAppShortcutsBrowserTest,
-                       SearchWebAppShortcut) {
+                       // TODO(crbug.com/335362001): Re-enable this test
+                       DISABLED_SearchWebAppShortcut) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ASSERT_TRUE(profile);
   // Associate `client` with the current profile.

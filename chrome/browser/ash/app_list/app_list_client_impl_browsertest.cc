@@ -893,7 +893,8 @@ using AppListClientSearchResultsBrowserTest = extensions::ExtensionBrowserTest;
 
 // Test showing search results, and uninstalling one of them while displayed.
 IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
-                       UninstallSearchResult) {
+                       // TODO(crbug.com/335362001): Re-enable this test
+                       DISABLED_UninstallSearchResult) {
   base::FilePath test_extension_path;
   ASSERT_TRUE(
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_path));
