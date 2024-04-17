@@ -125,8 +125,10 @@ void BubbleSignInPromoSignInButtonView::AddCallbackToSignInButton(
   text_button->SetCallback(std::move(callback));
 
   // Triggers an event for testing.
-  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-      kBubbleSignInPromoSignInButtonHasCallback, this);
+  if (GetWidget()) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kBubbleSignInPromoSignInButtonHasCallback, this);
+  }
 }
 
 BubbleSignInPromoSignInButtonView::
