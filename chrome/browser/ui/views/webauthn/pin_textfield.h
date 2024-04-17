@@ -32,6 +32,7 @@ class PinTextfield : public views::Textfield {
 
   // Returns currently typed pin.
   std::u16string GetPin();
+  void SetPin(const std::u16string& pin);
 
   void SetObscured(bool obscured);
   void SetDisabled(bool disabled);

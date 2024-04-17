@@ -94,6 +94,15 @@ std::u16string PinTextfield::GetPin() {
   return pin;
 }
 
+void PinTextfield::SetPin(const std::u16string& pin) {
+  int pin_length = std::min(static_cast<int>(pin.length()), pin_digits_count_);
+  for (int i = 0; i < pin_length; i++) {
+    render_texts_[i]->SetText(std::u16string(1, pin[i]));
+  }
+  digits_typed_count_ = pin_length;
+  SchedulePaint();
+}
+
 void PinTextfield::SetObscured(bool obscured) {
   SetTextInputType(obscured ? ui::TEXT_INPUT_TYPE_PASSWORD
                             : ui::TEXT_INPUT_TYPE_TEXT);

@@ -739,6 +739,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
 
   int pin_digits_count() const;
   bool ui_disabled() const;
+  std::u16string pin() { return pin_; }
 
   // Sets currently typed pin in the sheet.
   void SetPin(std::u16string pin);
@@ -782,6 +783,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
   // Sets currently typed pin in the sheet.
   void SetPin(std::u16string pin);
 
+  std::u16string pin() { return pin_; }
   Mode mode() { return mode_; }
   bool ui_disabled() const;
 
