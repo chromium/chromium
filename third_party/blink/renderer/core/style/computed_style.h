@@ -1310,7 +1310,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
     auto BorderSideVisuallyEqual =
-        [](const blink::Color& color, const blink::Color& other_color,
+        [&](const StyleColor& color, const StyleColor& other_color,
            EBorderStyle style, EBorderStyle other_style, int width,
            int other_width) -> bool {
       if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
@@ -1321,26 +1321,22 @@ class ComputedStyle final : public ComputedStyleBase {
         return true;
       }
       return width == other_width && style == other_style &&
-             color == other_color;
+             ResolvedColor(color) == o.ResolvedColor(other_color);
     };
 
-    return BorderSideVisuallyEqual(ResolvedColor(BorderTopColor()),
-                                   o.ResolvedColor(o.BorderTopColor()),
+    return BorderSideVisuallyEqual(BorderTopColor(), o.BorderTopColor(),
                                    BorderTopStyle(), o.BorderTopStyle(),
                                    BorderTopWidthInternal(),
                                    o.BorderTopWidthInternal()) &&
-           BorderSideVisuallyEqual(ResolvedColor(BorderRightColor()),
-                                   o.ResolvedColor(o.BorderRightColor()),
+           BorderSideVisuallyEqual(BorderRightColor(), o.BorderRightColor(),
                                    BorderRightStyle(), o.BorderRightStyle(),
                                    BorderRightWidthInternal(),
                                    o.BorderRightWidthInternal()) &&
-           BorderSideVisuallyEqual(ResolvedColor(BorderBottomColor()),
-                                   o.ResolvedColor(o.BorderBottomColor()),
+           BorderSideVisuallyEqual(BorderBottomColor(), o.BorderBottomColor(),
                                    BorderBottomStyle(), o.BorderBottomStyle(),
                                    BorderBottomWidthInternal(),
                                    o.BorderBottomWidthInternal()) &&
-           BorderSideVisuallyEqual(ResolvedColor(BorderLeftColor()),
-                                   o.ResolvedColor(o.BorderLeftColor()),
+           BorderSideVisuallyEqual(BorderLeftColor(), o.BorderLeftColor(),
                                    BorderLeftStyle(), o.BorderLeftStyle(),
                                    BorderLeftWidthInternal(),
                                    o.BorderLeftWidthInternal()) &&
