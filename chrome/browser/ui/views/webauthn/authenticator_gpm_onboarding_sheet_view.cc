@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_onboarding_sheet_view.h"
 
+#include <memory>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -14,18 +17,19 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 
 namespace {
 
 constexpr int kIconSize = 20;
+constexpr int kGapSize = 8;
 
 std::unique_ptr<views::View> CreateIconWithLabelRow(
     const gfx::VectorIcon& icon,
     const std::u16string& label) {
   auto row = std::make_unique<views::BoxLayoutView>();
   row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  row->SetBetweenChildSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  row->SetBetweenChildSpacing(kGapSize);
 
   row->AddChildView(std::make_unique<views::ImageView>(
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconSize)));
@@ -59,6 +63,11 @@ AuthenticatorGpmOnboardingSheetView::BuildStepSpecificContent() {
   container->AddChildView(CreateIconWithLabelRow(
       // TODO(rgod): Add correct icon.
       kKeyIcon, u"One less password to manage or remember (UT)"));
+
+  auto* sheet_model = static_cast<AuthenticatorSheetModelBase*>(model());
+  std::u16string username = base::UTF8ToUTF16(
+      sheet_model->dialog_model()->user_entity.name.value_or(""));
+  container->AddChildView(CreatePasskeyWithUsernameLabel(username));
 
   return std::make_pair(std::move(container), AutoFocus::kNo);
 }
