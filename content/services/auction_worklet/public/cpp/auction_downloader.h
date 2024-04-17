@@ -100,6 +100,11 @@ class CONTENT_EXPORT AuctionDownloader {
                   std::vector<std::string>* removed_headers);
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
+
+  // Notifies tracing, devtools and callback of a failure and cancels any
+  // further loading.
+  void FailRequest(network::URLLoaderCompletionStatus status,
+                   std::string error_string);
   void TraceResult(bool failure,
                    base::TimeTicks completion_time,
                    int64_t encoded_data_length,

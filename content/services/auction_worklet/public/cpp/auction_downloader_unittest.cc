@@ -183,7 +183,7 @@ TEST_P(AuctionDownloaderTest, NetworkError) {
   EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
 }
 
-// HTTP 404 responses are trested as failures.
+// HTTP 404 responses are treated as failures.
 TEST_P(AuctionDownloaderTest, HttpError) {
   // This is an unlikely response for an error case, but should fail if it ever
   // happens.
@@ -237,6 +237,7 @@ TEST_P(AuctionDownloaderTest, AllowAdAuction) {
       "Rejecting load of https://url.test/script.js due to lack of "
       "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_ABORTED);
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "Ad-Auction-Allowed: true");
@@ -364,6 +365,7 @@ TEST_P(AuctionDownloaderTest, Redirect) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ("Unexpected redirect on https://url.test/script.js.",
             last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_ABORTED);
 }
 
 TEST_P(AuctionDownloaderTest, Success) {
