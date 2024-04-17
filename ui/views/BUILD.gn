@@ -910,7 +910,6 @@ component("views") {
       if (is_chromeos_lacros) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
         sources += [
-          # TODO: do we need one for lacros?
           "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.h",
