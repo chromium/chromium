@@ -671,7 +671,7 @@ void FederatedAuthRequestImpl::RequestToken(
   // idp_get_params_ptrs should never be empty since it is the renderer-side
   // code which populates it.
   if (idp_get_params_ptrs.empty()) {
-    mojo::ReportBadMessage("idp_get_params_ptrs is empty.");
+    ReportBadMessageAndDeleteThis("idp_get_params_ptrs is empty.");
     return;
   }
   // This could only happen with a compromised renderer process. We ensure that
@@ -679,13 +679,13 @@ void FederatedAuthRequestImpl::RequestToken(
   // parsing |IdentityCredentialRequestOptions|.
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     if (idp_get_params_ptr->providers.size() == 0) {
-      mojo::ReportBadMessage("The provider list should not be empty.");
+      ReportBadMessageAndDeleteThis("The provider list should not be empty.");
       return;
     }
   }
 
   if (render_frame_host().IsNestedWithinFencedFrame()) {
-    mojo::ReportBadMessage(
+    ReportBadMessageAndDeleteThis(
         "FedCM should not be allowed in fenced frame trees.");
     return;
   }
@@ -940,7 +940,7 @@ void FederatedAuthRequestImpl::RequestToken(
           // ButtonMode enabled (which controls the JS WebIDL), so we crash
           // here if we ever get to this situation.
           if (!IsFedCmButtonModeEnabled()) {
-            mojo::ReportBadMessage("FedCM button mode is not enabled.");
+            ReportBadMessageAndDeleteThis("FedCM button mode is not enabled.");
             return;
           }
           // We fail sooner before, but just to double check, we assert that
@@ -1010,7 +1010,7 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     blink::mojom::IdentityProviderConfigPtr provider,
     RequestUserInfoCallback callback) {
   if (!render_frame_host().GetPage().IsPrimary()) {
-    mojo::ReportBadMessage(
+    ReportBadMessageAndDeleteThis(
         "FedCM should not be allowed in nested frame trees.");
     return;
   }
