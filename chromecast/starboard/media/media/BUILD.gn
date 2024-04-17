@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
+import("//testing/test.gni")
+
+if (!remove_starboard_headers) {
+  import(
+      "//chromecast/starboard/third_party/starboard/sabi/base_configuration.gni")
+}
+
+source_set("mock_starboard_api_wrapper") {
+  testonly = true
+  sources = [
+    "mock_starboard_api_wrapper.cc",
+    "mock_starboard_api_wrapper.h",
+    "starboard_api_wrapper.cc",
+    "starboard_api_wrapper.h",
+  ]
+  deps = [ "//testing/gmock" ]
+}
+
+cast_source_set("starboard_api_wrapper") {
+  sources = []
+  deps = []
+
+  # TODO(b/333131992): remove this case.
+  if (remove_starboard_headers) {
+    sources += [
+      "starboard_api_wrapper.cc",
+      "starboard_api_wrapper.h",
+      "starboard_api_wrapper_dummy.cc",
+    ]
+  } else {
+    sources += [
+      "starboard_api_wrapper.cc",
+      "starboard_api_wrapper.h",
+      "starboard_api_wrapper_base.cc",
+      "starboard_api_wrapper_base.h",
+    ]
+    if (sb_api_version == 15) {
+      sources += [ "starboard_api_wrapper_15.cc" ]
+    } else {
+      assert(sb_api_version == 13 || sb_api_version == 14,
+             "Only SB 13 and 14 are supported by starboard_api_wrapper_14.cc")
+      sources += [ "starboard_api_wrapper_14.cc" ]
+    }
+    deps += [
+      "//base",
+      "//chromecast/starboard/chromecast/starboard_adapter",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+    ]
+  }
+}
