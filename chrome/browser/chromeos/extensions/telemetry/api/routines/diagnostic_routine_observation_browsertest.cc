@@ -488,6 +488,44 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+                       CanObserveOnRoutineFinishedWithNullDetail) {
+  SetRoutineObservation();
+  RegisterEventObserver(
+      api::os_diagnostics::OnRoutineFinished::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto finished_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        finished_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New(
+                    /*has_passed=*/true, /*detail=*/nullptr));
+        finished_state->percentage = 100;
+
+        remote_->OnRoutineStateChange(std::move(finished_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnRoutineFinishedWithNullDetail() {
+        chrome.os.diagnostics.onRoutineFinished.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "hasPassed": true,
+            "uuid":"%s"
+          });
+
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+
+  auto info = WaitForFinishedReport();
+  EXPECT_EQ(info.extension_id, extension_id());
+  EXPECT_EQ(info.uuid, uuid_);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnRoutineFinishedWithMemoryDetail) {
   SetRoutineObservation();
   RegisterEventObserver(
