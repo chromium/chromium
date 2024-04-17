@@ -242,9 +242,16 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)generateTableViewDataForRootNode {
   BOOL showProfileSection =
       [self hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()];
+  BOOL optedInAccountStorage =
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
+  // The node may not exists just after the user signed-in.
+  BOOL hasMobileNode = _accountBookmarkModel->mobile_node();
+  // Whether the account part should be displayed, if possible.
+  BOOL shouldShowIfPossible =
+      [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()] ||
+      showProfileSection;
   BOOL showAccountSection =
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
-      [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
+      shouldShowIfPossible && hasMobileNode && optedInAccountStorage;
   if (showProfileSection) {
     [self
         generateTableViewDataForModel:_localOrSyncableBookmarkModel.get()

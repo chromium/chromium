@@ -109,7 +109,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Open `Folder 3` nested in `Folder 1->Folder 2`.
   [[EarlGrey
@@ -159,7 +159,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Change to edit mode
   [[EarlGrey
@@ -277,7 +277,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Create a new folder and type "New Folder 1" without pressing return.
   NSString* newFolderTitle = @"New Folder";
@@ -312,7 +312,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       setupBookmarksWhichExceedsScreenHeightInStorage:kindOfTestToStorageType(
                                                           kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Verify bottom URL is not visible before scrolling to bottom (make sure
   // setupBookmarksWhichExceedsScreenHeight works as expected).
@@ -360,7 +360,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Change to edit mode
   [[EarlGrey
@@ -410,7 +410,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Invoke Move through long press.
   [[EarlGrey
@@ -457,7 +457,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Enter Folder 1
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
@@ -506,7 +506,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
@@ -525,7 +525,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Long press on Mobile Bookmarks.
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
-                                          @"Mobile Bookmarks")]
+                                          @"Mobile Bookmarks", kindOfTest)]
       performAction:grey_longPress()];
 
   // We cannot locate new context menus any way, therefore we'll use the
@@ -552,7 +552,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // 1. Edit the folder title at edit page.
 
@@ -945,7 +945,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Change to edit mode, using context menu.
   [[EarlGrey
@@ -1034,7 +1034,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Change to edit mode
   [[EarlGrey
@@ -1083,7 +1083,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Change to edit mode
   [[EarlGrey
@@ -1135,7 +1135,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Invoke Edit through long press.
   [[EarlGrey
@@ -1252,7 +1252,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Create a new folder and type "New Folder 1" without pressing return.
   NSString* newFolderTitle = @"New Folder 1";
@@ -1264,7 +1264,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 
   // Come back to Mobile Bookmarks.
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Verify folder name "New Folder 1" was committed.
   [BookmarkEarlGreyUI verifyFolderCreatedWithTitle:newFolderTitle];
@@ -1339,7 +1339,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:kindOfTestToStorageType(kindOfTest)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:kindOfTest];
 
   // Create a new folder and name it "New Folder 1".
   NSString* newFolderTitle = @"New Folder 1";
@@ -1467,7 +1467,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey setupStandardBookmarksInStorage:kindOfTestToStorageType(
                                                         KindOfTest::kAccount)];
   [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks:KindOfTest::kAccount];
 
   // Open `Folder 3` nested in `Folder 1->Folder 2`.
   [[EarlGrey
