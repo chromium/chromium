@@ -5755,6 +5755,7 @@ source_set("unit_tests") {
     "input_method/editor_consent_store_unittest.cc",
     "input_method/editor_feedback_unittest.cc",
     "input_method/editor_helpers_unittest.cc",
+    "input_method/editor_mediator_unittest.cc",
     "input_method/editor_metrics_recorder_unittest.cc",
     "input_method/editor_panel_manager_unittest.cc",
     "input_method/editor_switch_unittest.cc",

@@ -146,9 +146,6 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
   }
 
   surrounding_text_ = {.text = text, .selection_range = selection_range};
-
-  size_t selected_length = NonWhitespaceAndSymbolsLength(text, selection_range);
-  editor_switch_->OnTextSelectionLengthChanged(selected_length);
 }
 
 void EditorMediator::Announce(const std::u16string& message) {
@@ -207,6 +204,11 @@ void EditorMediator::HandleTrigger(
 
 void EditorMediator::CacheContext() {
   mako_bubble_coordinator_.CacheContextCaretBounds();
+
+  size_t selected_length = NonWhitespaceAndSymbolsLength(
+      surrounding_text_.text, surrounding_text_.selection_range);
+  editor_switch_->OnTextSelectionLengthChanged(selected_length);
+
   if (editor_event_proxy_ != nullptr) {
     editor_event_proxy_->OnSurroundingTextChanged(
         surrounding_text_.text, surrounding_text_.selection_range);
