@@ -13,6 +13,8 @@
  * suffix.
  */
 
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Constructor} from '../../common/types.js';
@@ -23,6 +25,8 @@ export interface PrefControlMixinInternalInterface {
   disabled: boolean;
   isPrefEnforced: boolean;
   pref?: PrefObject;
+  validPrefTypes: chrome.settingsPrivate.PrefType[];
+  validatePref(): void;
 }
 
 export const PrefControlMixinInternal = dedupingMixin(
@@ -72,6 +76,48 @@ export const PrefControlMixinInternal = dedupingMixin(
         pref?: PrefObject;
 
         /**
+         * Array of valid types for `pref`. An empty array means all pref types
+         * are supported. A non-empty array means that only those specified
+         * types are supported.
+         */
+        validPrefTypes: chrome.settingsPrivate.PrefType[] = [];
+
+        override connectedCallback(): void {
+          super.connectedCallback();
+
+          CrSettingsPrefs.initialized.then(() => {
+            this.validatePref();
+          });
+        }
+
+        /**
+         * Logs an error once prefs are initialized if the tracked pref is not
+         * found. Subscribing elements can override and/or extend this method to
+         * handle additional validation.
+         */
+        validatePref(): void {
+          // Pref is not a required property.
+          if (this.pref === undefined) {
+            return;
+          }
+
+          assert(this.pref, this.makeErrorMessage_('Pref not found.'));
+
+          // Assignment for `pref` happens via Polymer data-binding in HTML
+          // which has no typechecking. This check catches data-binding errors
+          // like `pref="prefs.foo.bar"` during runtime.
+          assert(
+              typeof this.pref !== 'string',
+              this.makeErrorMessage_('Invalid string literal.'));
+
+          if (this.validPrefTypes.length > 0) {
+            assert(
+                this.validPrefTypes.includes(this.pref.type),
+                this.makeErrorMessage_(`Invalid pref type ${this.pref.type}.`));
+          }
+        }
+
+        /**
          * PrefObjects are marked as enforced per `PrefsUtil::GetPref()` in
          * `chrome/browser/extensions/api/settings_private/prefs_util.cc`.
          * @returns true if `pref` exists and is enforced. Else returns false.
@@ -89,7 +135,19 @@ export const PrefControlMixinInternal = dedupingMixin(
           this.disabled = this.disabled || this.isPrefEnforced;
         }
 
-        // TODO(b/333454004) Add pref validation logic.
+        /**
+         * Generates an error message, including additional information about
+         * the element causing the error.
+         */
+        private makeErrorMessage_(message: string): string {
+          let error = this.tagName;
+          if (this.id) {
+            error += `#${this.id}`;
+          }
+          error += ` error: ${message}`;
+          return error;
+        }
+
         // TODO(b/333453826) Add dispatch pref change event for one-way binding.
       }
 

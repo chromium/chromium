@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrefControlMixinInternal} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, PrefControlMixinInternal} from 'chrome://os-settings/os_settings.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {clearBody} from '../../utils.js';
 
@@ -21,17 +22,17 @@ suite('PrefControlMixinInternal', () => {
     value: false,
   };
 
-  setup(() => {
+  setup(async () => {
     clearBody();
     testElement = document.createElement('test-element') as TestElement;
+    testElement.id = 'exampleID';
     document.body.appendChild(testElement);
+    await flushTasks();
   });
 
-  suite(
-      'pref property',
-      () => {
-          // TODO(b/333454004) Add pref validation tests.
-      });
+  teardown(() => {
+    CrSettingsPrefs.resetForTesting();
+  });
 
   suite('isPrefEnforced property', () => {
     test('is false if no pref provided', () => {
@@ -92,6 +93,46 @@ suite('PrefControlMixinInternal', () => {
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       };
       assertTrue(testElement.disabled);
+    });
+  });
+
+  suite('validatePref()', () => {
+    test('pref is not a string', () => {
+      // Simulate a string value instead of a PrefObject. Suppress typechecking
+      // here since there is no typechecking in Polymer HTML data-binding.
+      // @ts-ignore:next-line
+      testElement.pref = 'foobar';
+
+      assertThrows(() => {
+        testElement.validatePref();
+      }, 'TEST-ELEMENT#exampleID error: Invalid string literal.');
+    });
+
+    test('pref type is invalidated', () => {
+      testElement.validPrefTypes = [chrome.settingsPrivate.PrefType.NUMBER];
+      testElement.pref = {...fakePrefObject};
+
+      assertThrows(() => {
+        testElement.validatePref();
+      }, 'TEST-ELEMENT#exampleID error: Invalid pref type BOOLEAN.');
+    });
+
+    test('pref type is validated', () => {
+      testElement.validPrefTypes = [chrome.settingsPrivate.PrefType.BOOLEAN];
+      testElement.pref = {...fakePrefObject};
+
+      testElement.validatePref();
+    });
+
+    test('called once prefs are initialized', async () => {
+      let validatePrefCalled = false;
+      testElement['validatePref'] = () => {
+        validatePrefCalled = true;
+      };
+
+      CrSettingsPrefs.setInitialized();
+      await flushTasks();
+      assertTrue(validatePrefCalled);
     });
   });
 });
