@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 
 namespace safe_browsing::hash_realtime_utils {
@@ -158,8 +159,15 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
 }
 
 std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs() {
+  // |kVariationsPermanentOverriddenCountry| and
+  // |kVariationsPermanentConsistencyCountry| are used by
+  // |VariationsService::GetStoredPermanentCountry|. They are not expected to
+  // change mid-session, but it is harmless to add listeners for them in case
+  // they do.
   return {prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingEnhanced,
-          prefs::kHashPrefixRealTimeChecksAllowedByPolicy};
+          prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+          variations::prefs::kVariationsPermanentOverriddenCountry,
+          variations::prefs::kVariationsPermanentConsistencyCountry};
 }
 
 GoogleChromeBrandingPretenderForTesting::

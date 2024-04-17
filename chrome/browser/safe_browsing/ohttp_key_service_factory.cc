@@ -50,11 +50,6 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
-  if (!hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
-          safe_browsing::hash_realtime_utils::GetCountryCode(
-              g_browser_process->variations_service()))) {
-    return nullptr;
-  }
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
@@ -62,7 +57,8 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
               profile));
   return std::make_unique<OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      profile->GetPrefs());
+      profile->GetPrefs(),
+      base::BindRepeating(&OhttpKeyServiceFactory::GetStoredPermanentCountry));
 #endif
 }
 
@@ -80,6 +76,12 @@ OhttpKeyServiceAllowerForTesting::OhttpKeyServiceAllowerForTesting() {
 }
 OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
   kAllowInTests = false;
+}
+
+// static
+std::optional<std::string> OhttpKeyServiceFactory::GetStoredPermanentCountry() {
+  return safe_browsing::hash_realtime_utils::GetCountryCode(
+      g_browser_process->variations_service());
 }
 
 }  // namespace safe_browsing

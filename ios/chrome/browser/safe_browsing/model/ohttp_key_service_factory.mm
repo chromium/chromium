@@ -42,12 +42,6 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  if (!safe_browsing::hash_realtime_utils::
-          IsHashRealTimeLookupEligibleInSessionAndLocation(
-              safe_browsing::hash_realtime_utils::GetCountryCode(
-                  GetApplicationContext()->GetVariationsService()))) {
-    return nullptr;
-  }
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
   auto url_loader_factory =
@@ -55,7 +49,8 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
           safe_browsing_service->GetURLLoaderFactory());
   return std::make_unique<safe_browsing::OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      chrome_browser_state->GetPrefs());
+      chrome_browser_state->GetPrefs(),
+      base::BindRepeating(&OhttpKeyServiceFactory::GetStoredPermanentCountry));
 }
 
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
@@ -72,4 +67,10 @@ OhttpKeyServiceAllowerForTesting::OhttpKeyServiceAllowerForTesting() {
 }
 OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
   kAllowInTests = false;
+}
+
+// static
+std::optional<std::string> OhttpKeyServiceFactory::GetStoredPermanentCountry() {
+  return safe_browsing::hash_realtime_utils::GetCountryCode(
+      GetApplicationContext()->GetVariationsService());
 }

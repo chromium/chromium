@@ -1616,6 +1616,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch"
+    enum="BooleanFreshness" expires_after="2024-10-15">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the OHTTP key service is up to date in whether or not it is
+    enabled. Logged each time a key is requested through the get OHTTP key API.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Result"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-09-01">
   <owner>xinghuilu@chromium.org</owner>

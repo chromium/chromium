@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "components/safe_browsing/core/common/features.h"
-#import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -15,23 +12,17 @@ class OhttpKeyServiceFactoryTest : public PlatformTest {
  protected:
   OhttpKeyServiceFactoryTest() = default;
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
 
  private:
-  safe_browsing::hash_realtime_utils::GoogleChromeBrandingPretenderForTesting
-      apply_branding_;
   OhttpKeyServiceAllowerForTesting allow_ohttp_key_service_;
 };
 
 // Checks that OhttpKeyServiceFactory returns a null for an
 // off-the-record browser state, but returns a non-null instance for a regular
-// browser state, when hash-prefix real-time lookups are enabled.
-TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups},
-      /*disabled_features=*/{});
+// browser state.
+TEST_F(OhttpKeyServiceFactoryTest, GetForBrowserState) {
   browser_state_ = TestChromeBrowserState::Builder().Build();
 
   // The factory should return null for an off-the-record browser state.
@@ -40,22 +31,4 @@ TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsEnabled) {
 
   // There should be a non-null instance for a regular browser state.
   EXPECT_TRUE(OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
-}
-
-// Checks that OhttpKeyServiceFactory returns a null for both
-// off-the-record and regular browser states, when hash-prefix real-time
-// lookups are disabled.
-TEST_F(OhttpKeyServiceFactoryTest, HashPrefixRealTimeLookupsDisabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{safe_browsing::kHashPrefixRealTimeLookups});
-  browser_state_ = TestChromeBrowserState::Builder().Build();
-
-  // The factory should return null for an off-the-record browser state.
-  EXPECT_FALSE(OhttpKeyServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
-
-  // The factory should return null for a regular browser state.
-  EXPECT_FALSE(
-      OhttpKeyServiceFactory::GetForBrowserState(browser_state_.get()));
 }

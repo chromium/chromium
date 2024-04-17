@@ -64,7 +64,9 @@ class OhttpKeyService : public KeyedService {
 
   OhttpKeyService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      base::RepeatingCallback<std::optional<std::string>()>
+          stored_permanent_country_getter);
 
   OhttpKeyService(const OhttpKeyService&) = delete;
   OhttpKeyService& operator=(const OhttpKeyService&) = delete;
@@ -173,6 +175,10 @@ class OhttpKeyService : public KeyedService {
 
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;
+
+  // Callback used to help determine if the service should be enabled.
+  base::RepeatingCallback<std::optional<std::string>()>
+      stored_permanent_country_getter_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };

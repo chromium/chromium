@@ -109,15 +109,14 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
       "default."
   )");
 
-bool IsEnabled(PrefService* pref_service) {
+bool IsEnabled(PrefService* pref_service,
+               std::optional<std::string> stored_permanent_country) {
   // If this class has been created, it is already known that the session is not
-  // off-the-record and that the user's location is eligible, so
-  // |is_off_the_record| is passed through as false and
-  // |stored_permanent_country| as nullopt. |latest_country| is passed through
-  // as null because it is not used.
+  // off-the-record, so |is_off_the_record| is passed through as false.
+  // |latest_country| is passed through as null because it is not used.
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
              /*is_off_the_record=*/false, pref_service,
-             /*stored_permanent_country=*/std::nullopt,
+             /*stored_permanent_country=*/stored_permanent_country,
              /*latest_country=*/std::nullopt) ==
          safe_browsing::hash_realtime_utils::HashRealTimeSelection::
              kHashRealTimeService;
@@ -138,7 +137,9 @@ namespace safe_browsing {
 
 OhttpKeyService::OhttpKeyService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    base::RepeatingCallback<std::optional<std::string>()>
+        stored_permanent_country_getter)
     : url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
@@ -146,7 +147,8 @@ OhttpKeyService::OhttpKeyService(
           /*min_backoff_reset_duration_in_seconds=*/
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
-          kMaxBackOffResetDurationInSeconds)) {
+          kMaxBackOffResetDurationInSeconds)),
+      stored_permanent_country_getter_(stored_permanent_country_getter) {
   // |pref_service_| can be null in tests.
   if (!pref_service_) {
     return;
@@ -162,13 +164,13 @@ OhttpKeyService::OhttpKeyService(
                                   weak_factory_.GetWeakPtr()));
   }
 
-  SetEnabled(IsEnabled(pref_service_));
+  SetEnabled(IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::OnConfiguringPrefsChanged() {
-  SetEnabled(IsEnabled(pref_service_));
+  SetEnabled(IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
 }
 
 void OhttpKeyService::SetEnabled(bool enable) {
@@ -189,6 +191,10 @@ void OhttpKeyService::SetEnabled(bool enable) {
 }
 
 void OhttpKeyService::GetOhttpKey(Callback callback) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
+      enabled_ ==
+          IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
   if (!enabled_) {
     std::move(callback).Run(std::nullopt);
     return;
