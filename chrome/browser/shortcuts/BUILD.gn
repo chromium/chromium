@@ -7,10 +7,27 @@ import("//chrome/browser/buildflags.gni")
 assert(!is_android)
 
 source_set("shortcuts") {
-  sources = [ "create_shortcut_for_current_web_contents_task.h" ]
+  sources = [
+    "create_shortcut_for_current_web_contents_task.h",
+    "platform_util_mac.h",
+    "platform_util_mac.mm",
+  ]
 
   deps = [
     "//base",
     "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "platform_util_mac_unittest.mm" ]
+
+  deps = [
+    ":shortcuts",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
 }
