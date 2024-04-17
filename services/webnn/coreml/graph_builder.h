@@ -133,12 +133,33 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOutput(
       uint64_t output_id);
 
+  // Helper function for simple unary operations that take a single
+  // float32/float16 input.
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryFloatsOperation(
+      std::string_view op_name,
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
+  template <typename T>
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryFloatsOperation(
+      std::string_view op_name,
+      const T& operation,
+      CoreML::Specification::MILSpec::Block& block);
+
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
       const std::string& input_name,
       uint64_t output_operand_id,
       webnn::mojom::Operand::DataType input_data_type,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      float min_value,
+      float max_value,
+      uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
       const mojom::Clamp& operation,
@@ -162,20 +183,8 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReduce(
       const mojom::Reduce& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForRelu(
-      const mojom::Relu& operation,
-      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForResample2d(
       const mojom::Resample2d& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSigmoid(
-      const mojom::Sigmoid& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSoftsign(
-      const mojom::Softsign& operation,
-      CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTanh(
-      const mojom::Tanh& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
