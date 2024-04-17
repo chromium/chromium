@@ -17,11 +17,45 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.EventLog);
 
   TestRunner.addResult('Loading a performance model.');
+  const testData = [
+    {
+      'name': 'top level event name',
+      'ts': 1000000,
+      'ph': 'B',
+      'tid': 1,
+      'pid': 100,
+      'cat': 'toplevel',
+      'args': {'data': {'message': 'AAA'}}
+    },
+    {
+      'name': 'TimeStamp',
+      'ts': 1010000,
+      'ph': 'B',
+      'tid': 1,
+      'pid': 100,
+      'cat': 'toplevel',
+      'args': {'data': {'message': 'BBB'}}
+    },
+    {
+      'name': 'TimeStamp',
+      'ts': 1020000,
+      'ph': 'B',
+      'tid': 1,
+      'pid': 100,
+      'cat': 'toplevel',
+      'args': {'data': {'message': 'CCC'}}
+    },
+  ];
   const view = tabbedPane.visibleView;
-  const model = await PerformanceTestRunner.createPerformanceModelWithEvents([{}]);
-  view.setModel(model, PerformanceTestRunner.mainTrack());
+  const traceEngineData = await PerformanceTestRunner.createTraceEngineDataFromEvents(testData);
+  const mainThreadEvents = traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
+
+  view.setModelWithEvents(null, mainThreadEvents, traceEngineData);
   view.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
-    model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
+      // traceBounds are in microseconds, but fromRange expects milliseconds
+      traceEngineData.Meta.traceBounds.min / 1000,
+      traceEngineData.Meta.traceBounds.max / 1000
+  ));
 
   TestRunner.addResult('Running aXe on the event log pane.');
   await AxeCoreTestRunner.runValidation(view.contentElement);

@@ -41,17 +41,15 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
   ];
 
   // create dummy data for test
-  const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  const traceEngineData = await PerformanceTestRunner.createTraceEngineDataFromEvents(testData)
+  const mainThreadEvents = traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
 
   const detailsView = Timeline.TimelinePanel.TimelinePanel.instance().flameChart.detailsView;
 
   async function testDetailsView() {
     TestRunner.addResult('Tests accessibility in performance Details view using the axe-core linter');
 
-    // Details pane gets data from the parent TimelineDetails view
-    // model = SDK Performance Model
-    // null = where we would pass in the new TraceEngine data, if we had it.
-    detailsView.setModel(model, null, PerformanceTestRunner.mainTrackEvents());
+    detailsView.setModel(null, traceEngineData, mainThreadEvents);
 
     const tabbedPane = detailsView.tabbedPane;
     tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.Details);
@@ -67,10 +65,12 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
     const detailsTab = tabbedPane.visibleView;
 
     // update child views with the same test data
-    detailsTab.setModel(model, PerformanceTestRunner.mainTrack());
+    detailsTab.setModelWithEvents(null, mainThreadEvents, traceEngineData);
     detailsTab.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
-        model.timelineModel().minimumRecordTime(),
-        model.timelineModel().maximumRecordTime()));
+      // traceBounds are in microseconds, but fromRange expects milliseconds
+      traceEngineData.Meta.traceBounds.min / 1000,
+      traceEngineData.Meta.traceBounds.max / 1000
+    ));
 
     await AxeCoreTestRunner.runValidation(detailsTab.element);
   }
