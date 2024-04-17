@@ -20,7 +20,7 @@
 
 namespace ash {
 
-// This class is a singleton and should be accessed using |Get()|.
+// This class is a singleton and should be accessed using `Get()`.
 // DlcserviceClient is used to communicate with the dlcservice daemon which
 // manages DLC (Downloadable Content) modules. DlcserviceClient will allow for
 // CrOS features to be installed and uninstalled at runtime of the system. If
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // This object is returned as the result of DLC install success or failure.
   struct InstallResult {
-    // The error associated with the install. |dlcservice::kErrorNone| indicates
+    // The error associated with the install. `dlcservice::kErrorNone` indicates
     // a success. Any other error code, indicates a failure.
     std::string error;
     // The unique DLC ID which was requested to be installed.
@@ -53,34 +53,34 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
     std::string root_path;
   };
 
-  // The callback used for |Install()|. For large DLC(s) to install, there may
+  // The callback used for `Install()`. For large DLC(s) to install, there may
   // be a delay between the time of this call and the callback being invoked.
   using InstallCallback =
       base::OnceCallback<void(const InstallResult& install_result)>;
 
-  // The callback used for |Install()|, if the caller wants to listen in on the
+  // The callback used for `Install()`, if the caller wants to listen in on the
   // progress of their download/install. If the caller only cares for whether
-  // the install is complete or not, the caller can pass in |RepeatingCallback|
+  // the install is complete or not, the caller can pass in `RepeatingCallback`
   // that is a no-op.
   using ProgressCallback = base::RepeatingCallback<void(double progress)>;
 
-  // The callback used for |Uninstall()|, if the error is something other than
-  // |dlcservice::kErrorNone| the call has failed.
+  // The callback used for `Uninstall()`, if the error is something other than
+  // `dlcservice::kErrorNone` the call has failed.
   using UninstallCallback = base::OnceCallback<void(const std::string& err)>;
 
-  // The callback used for |Purge()|, if the error is something other than
-  // |dlcservice::kErrorNone| the call has failed.
+  // The callback used for `Purge()`, if the error is something other than
+  // `dlcservice::kErrorNone` the call has failed.
   using PurgeCallback = base::OnceCallback<void(const std::string& err)>;
 
-  // The callback used for |GetDlcState()|, if the error is something other
-  // than |dlcservice::kErrorNone| the call has failed.
+  // The callback used for `GetDlcState()`, if the error is something other
+  // than `dlcservice::kErrorNone` the call has failed.
   using GetDlcStateCallback =
       base::OnceCallback<void(const std::string& err,
                               const dlcservice::DlcState& dlc_state)>;
 
-  // The callback used for |GetExistingDlcs()|, if the error is something other
-  // than |dlcservice::kErrorNone| the call has failed. It is a very rare case
-  // for |GetExistingDlcs()| call to fail.
+  // The callback used for `GetExistingDlcs()`, if the error is something other
+  // than `dlcservice::kErrorNone` the call has failed. It is a very rare case
+  // for `GetExistingDlcs()` call to fail.
   using GetExistingDlcsCallback = base::OnceCallback<void(
       const std::string& err,
       const dlcservice::DlcsWithContent& dlcs_with_content)>;
@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // Provides the DLC(s) information such as:
   // id, name, description, used_bytes_on_disk. (reference
-  // |dlcservice::DlcsWithContent| proto for complete details)
+  // `dlcservice::DlcsWithContent` proto for complete details)
   virtual void GetExistingDlcs(GetExistingDlcsCallback callback) = 0;
 
   // During testing, can be used to mimic signals received back from dlcservice.
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
   // Removes an observer from observers list.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Creates and initializes the global instance. |bus| must not be nullptr.
+  // Creates and initializes the global instance. `bus` must not be nullptr.
   static void Initialize(dbus::Bus* bus);
 
   // Creates and initializes a fake global instance if not already created.
