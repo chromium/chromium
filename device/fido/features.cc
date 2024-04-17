@@ -154,4 +154,10 @@ BASE_FEATURE(kWebAuthnPreferVirtualPlatformAuthenticator,
              "WebAuthenticationPreferVirtualPlatformAuthenticator",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Deprecation flag.
+// Default disabled in M125. Remove in or after M128.
+BASE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator,
+             "WebAuthenticationEnableAndroidCableAuthenticator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device
