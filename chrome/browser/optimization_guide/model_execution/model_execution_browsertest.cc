@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
       "WallpaperSearch",
-      true, 1);
+      false, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.Compose",
       0);
@@ -786,8 +786,9 @@ class ModelExecutionEnterprisePolicyBrowserTest
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
          features::kModelQualityLogging,
-         features::internal::kTabOrganizationSettingsVisibility},
-        {});
+         features::internal::kTabOrganizationSettingsVisibility,
+         features::internal::kWallpaperSearchSettingsVisibility},
+        {features::internal::kWallpaperSearchGraduated});
   }
 
  protected:

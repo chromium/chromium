@@ -38,7 +38,7 @@ class WallpaperSearchBrowserTest : public InProcessBrowserTest {
              kWallpaperSearchSettingsVisibility,
          ntp_features::kCustomizeChromeWallpaperSearch,
          optimization_guide::features::kOptimizationGuideModelExecution},
-        {});
+        {optimization_guide::features::internal::kWallpaperSearchGraduated});
     InProcessBrowserTest::SetUp();
   }
 

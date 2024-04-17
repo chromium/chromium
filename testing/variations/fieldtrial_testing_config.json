@@ -3956,26 +3956,6 @@
             ]
         }
     ],
-    "ChromeWallpaperSearchLaunch": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CustomizeChromeWallpaperSearch",
-                        "CustomizeChromeWallpaperSearchInspirationCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeWideEchoCancellation": [
         {
             "platforms": [
@@ -7371,8 +7351,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ComposeSettingsVisibility",
-                        "TabOrganizationSettingsVisibility",
-                        "WallpaperSearchSettingsVisibility"
+                        "TabOrganizationSettingsVisibility"
                     ]
                 }
             ]

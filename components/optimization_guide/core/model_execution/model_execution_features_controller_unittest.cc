@@ -200,15 +200,16 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::internal::kComposeSettingsVisibility,
-       features::internal::kTabOrganizationSettingsVisibility},
-      {});
+       features::internal::kTabOrganizationSettingsVisibility,
+       features::internal::kWallpaperSearchSettingsVisibility},
+      {features::internal::kWallpaperSearchGraduated});
   CreateModelExecutionFeaturesController();
   EnableSignIn();
   EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
       UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
       UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
+  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
       UserVisibleFeatureKey::kWallpaperSearch));
 
   // Enabling the main toggle enables visible features.
@@ -221,15 +222,15 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   EXPECT_TRUE(model_execution_features_controller()
                   ->ShouldFeatureBeCurrentlyEnabledForUser(
                       UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyEnabledForUser(
+                      UserVisibleFeatureKey::kWallpaperSearch));
   // Only the visible feature prefs should be enabled.
   EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
   EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_EQ(prefs::FeatureOptInState::kNotInitialized,
+  EXPECT_EQ(prefs::FeatureOptInState::kEnabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kWallpaperSearch));
 
   // Disabling the main toggle disables all features.
@@ -251,7 +252,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
             GetFeaturePrefValue(UserVisibleFeatureKey::kCompose));
   EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_EQ(prefs::FeatureOptInState::kNotInitialized,
+  EXPECT_EQ(prefs::FeatureOptInState::kDisabled,
             GetFeaturePrefValue(UserVisibleFeatureKey::kWallpaperSearch));
 }
 
@@ -260,9 +261,10 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::internal::kComposeGraduated,
-       features::internal::kWallpaperSearchSettingsVisibility},
+       features::internal::kWallpaperSearchGraduated},
       /*disabled_features=*/
-      {features::internal::kComposeSettingsVisibility});
+      {features::internal::kComposeSettingsVisibility,
+       features::internal::kWallpaperSearchSettingsVisibility});
   CreateModelExecutionFeaturesController();
 
   EnableSignIn();
@@ -271,7 +273,7 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
       UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
       UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(model_execution_features_controller()->IsSettingVisible(
+  EXPECT_FALSE(model_execution_features_controller()->IsSettingVisible(
       UserVisibleFeatureKey::kWallpaperSearch));
   // ShouldFeatureBeCurrentlyEnabledForUser
   EXPECT_TRUE(model_execution_features_controller()
@@ -280,9 +282,9 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   EXPECT_FALSE(model_execution_features_controller()
                    ->ShouldFeatureBeCurrentlyEnabledForUser(
                        UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(model_execution_features_controller()
-                   ->ShouldFeatureBeCurrentlyEnabledForUser(
-                       UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_TRUE(model_execution_features_controller()
+                  ->ShouldFeatureBeCurrentlyEnabledForUser(
+                      UserVisibleFeatureKey::kWallpaperSearch));
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
       1);

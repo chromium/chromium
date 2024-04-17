@@ -15,6 +15,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/search/ntp_features.h"
@@ -43,8 +44,11 @@ class WallpaperSearchInteractiveTest : public InteractiveBrowserTest {
                                   kOptimizationGuideModelExecution,
                               features::kChromeRefresh2023,
                               features::kChromeWebuiRefresh2023,
-                              ntp_features::kNtpWallpaperSearchButton},
-        /*disabled_features=*/{});
+                              ntp_features::kNtpWallpaperSearchButton,
+                              optimization_guide::features::internal::
+                                  kWallpaperSearchSettingsVisibility},
+        /*disabled_features=*/{
+            optimization_guide::features::internal::kWallpaperSearchGraduated});
     InteractiveBrowserTest::SetUp();
   }
 

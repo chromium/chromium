@@ -33,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -183,6 +184,7 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NtpCustomBackgroundService> custom_background_service_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundURL) {

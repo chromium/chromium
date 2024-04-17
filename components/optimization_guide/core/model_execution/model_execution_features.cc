@@ -34,7 +34,7 @@ BASE_FEATURE(kTabOrganizationGraduated,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchGraduated,
              "WallpaperSearchGraduated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentalAIIPHPromoRampUp,
              "ExperimentalAIIPHPromoRampUp",

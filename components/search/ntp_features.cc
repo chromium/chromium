@@ -39,7 +39,7 @@ BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
 // If enabled, shows wallpaper search within the Customize Chrome Side Panel.
 BASE_FEATURE(kCustomizeChromeWallpaperSearch,
              "CustomizeChromeWallpaperSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, shows entry point on Customize Chrome Side Panel's Appearance
 // page for Wallpaper Search.";
@@ -51,7 +51,7 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchButton,
 // Search.
 BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
              "CustomizeChromeWallpaperSearchInspirationCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Forces a dark Google logo for a specific subset of Chrome Web Store themes
 // (see crbug.com/1329552). This is enabled by default to allow finch to disable

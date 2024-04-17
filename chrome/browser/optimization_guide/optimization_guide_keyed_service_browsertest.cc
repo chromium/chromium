@@ -201,6 +201,9 @@ class OptimizationGuideKeyedServiceBrowserTest
          {optimization_guide::features::kOptimizationGuideModelExecution, {}},
          {optimization_guide::features::internal::kComposeSettingsVisibility,
           {}},
+         {optimization_guide::features::internal::
+              kWallpaperSearchSettingsVisibility,
+          {}},
          {optimization_guide::features::kLogOnDeviceMetricsOnStartup,
           {
               {"on_device_startup_metric_delay", "0"},
@@ -208,7 +211,7 @@ class OptimizationGuideKeyedServiceBrowserTest
          {optimization_guide::features::internal::
               kTabOrganizationSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
-        {});
+        {optimization_guide::features::internal::kWallpaperSearchGraduated});
   }
 
   OptimizationGuideKeyedServiceBrowserTest(
@@ -832,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // sign-in.
   EnableSignIn();
 
-  EXPECT_FALSE(IsSettingVisible(
+  EXPECT_TRUE(IsSettingVisible(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_TRUE(IsSettingVisible(
@@ -858,7 +861,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        SettingsVisibilityUpdatedCorrectly) {
   EnableSignIn();
 
-  EXPECT_FALSE(IsSettingVisible(
+  // Visibility of wallpaper search is enabled on ToT.
+  EXPECT_TRUE(IsSettingVisible(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   // Visibility of tab organizer is enabled via finch.
@@ -892,9 +896,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       static_cast<int>(
           optimization_guide::prefs::FeatureOptInState::kDisabled));
 
-  // Restarting the browser should cause wallpaper setting to be not visible
-  // since the feature is no-longer enabled.
-  EXPECT_FALSE(IsSettingVisible(
+  // Restarting the browser should cause wallpaper setting to still be visible
+  // since the feature is still enabled.
+  EXPECT_TRUE(IsSettingVisible(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_TRUE(IsSettingVisible(
@@ -1064,13 +1068,14 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   // Visibility of tab organizer feature is enabled via finch. Only tab
   // organizer feature should be enabled.
-  EXPECT_EQ(0, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_EQ(1, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_TRUE(wallpaper_search_observer.is_currently_enabled_);
   EXPECT_EQ(1, compose_observer.count_feature_enabled_state_changes_);
   EXPECT_TRUE(compose_observer.is_currently_enabled_);
   EXPECT_EQ(1, tab_observer.count_feature_enabled_state_changes_);
   EXPECT_TRUE(tab_observer.is_currently_enabled_);
 
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
+  EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_TRUE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
@@ -1087,7 +1092,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
           optimization_guide::prefs::FeatureOptInState::kDisabled));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(0, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_EQ(2, wallpaper_search_observer.count_feature_enabled_state_changes_);
+  EXPECT_FALSE(wallpaper_search_observer.is_currently_enabled_);
   EXPECT_EQ(2, compose_observer.count_feature_enabled_state_changes_);
   EXPECT_FALSE(compose_observer.is_currently_enabled_);
   EXPECT_EQ(2, tab_observer.count_feature_enabled_state_changes_);
@@ -1101,12 +1107,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kCompose));
-  EXPECT_EQ(
-      optimization_guide::prefs::FeatureOptInState::kNotInitialized,
-      static_cast<
-          optimization_guide::prefs::FeatureOptInState>(prefs->GetInteger(
-          optimization_guide::prefs::GetSettingEnabledPrefName(
-              optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))));
 }
 
 // Verifies that Model Execution Features Controller returns null for incognito
