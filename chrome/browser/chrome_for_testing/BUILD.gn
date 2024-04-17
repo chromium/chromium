@@ -8,7 +8,10 @@ import("//build/config/chrome_build.gni")
 assert(is_chrome_for_testing)
 
 group("chrome_for_testing") {
-  deps = [ ":generate_about_file" ]
+  deps = [
+    ":generate_about_file",
+    "//third_party/hyphenation-patterns:bundle_hyphen_data",
+  ]
 }
 
 action("generate_about_file") {
