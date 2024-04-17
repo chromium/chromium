@@ -50,6 +50,19 @@ async function navigateToRequestedUrl() {
 }
 
 chrome.test.runTests([
+  async function UserScriptWorld_worldIdValidation() {
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.configureWorld({csp: '', worldId: ''}),
+        'Error: If specified, `worldId` must be non-empty.');
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.configureWorld({csp: '', worldId: '_foobar'}),
+        `Error: World IDs beginning with '_' are reserved.`);
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.configureWorld({csp: '', worldId: 'a'.repeat(257)}),
+        'Error: World IDs must be at most 256 characters.');
+    chrome.test.succeed();
+  },
+
   // Tests that a registered user script in the USER_SCRIPT world cannot send or
   // receive messages when messaging is disabled.
   async function UserScriptWorld_messagingDisabled() {

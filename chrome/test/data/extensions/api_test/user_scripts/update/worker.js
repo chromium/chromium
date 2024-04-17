@@ -171,6 +171,32 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function updatingToAnInvalidWorldIdThrowsError() {
+    await chrome.userScripts.unregister();
+
+    // Register user script.
+    const scriptToRegister = [
+      {id: 'us1', matches: ['*://*/*'], js: [{file: 'user_script.js'}]},
+    ];
+    await chrome.userScripts.register(scriptToRegister);
+
+    // Updating a script with an invalid world ID should fail.
+    const scriptUpdate = [
+      {
+        id: 'us1',
+        matches: ['*://*/*'],
+        js: [{file: 'user_script.js'}],
+        worldId: '_',
+      }
+    ];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.update(scriptUpdate),
+        `Error: World IDs beginning with '_' are reserved.`);
+
+    chrome.test.succeed();
+  },
+
   // Tests that calling userScripts.update with a specific ID updates such
   // script and does not inject them into a (former) matching frame.
   async function scriptUpdated() {

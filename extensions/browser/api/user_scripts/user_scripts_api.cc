@@ -39,6 +39,35 @@ constexpr char kInvalidSourceError[] =
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
 
+// Returns true if the given `world_id` is valid from the API perspective.
+// If invalid, populates `error_out`.
+bool IsValidWorldId(const std::optional<std::string>& world_id,
+                    std::string* error_out) {
+  if (!world_id) {
+    // Omitting world ID is valid.
+    return true;
+  }
+
+  if (world_id->empty()) {
+    *error_out = "If specified, `worldId` must be non-empty.";
+    return false;
+  }
+
+  if (world_id->at(0) == '_') {
+    *error_out = "World IDs beginning with '_' are reserved.";
+    return false;
+  }
+
+  static constexpr size_t kMaxWorldIdLength = 256;
+  if (world_id->length() > kMaxWorldIdLength) {
+    *error_out = "World IDs must be at most 256 characters.";
+    return false;
+  }
+
+  // Valid world ID!
+  return true;
+}
+
 api::scripts_internal::SerializedUserScript
 ConvertRegisteredUserScriptToSerializedUserScript(
     api::user_scripts::RegisteredUserScript user_script) {
@@ -118,6 +147,12 @@ std::unique_ptr<UserScript> ParseUserScript(
           UserScript::TrimPrefixFromScriptID(user_script.id));
       return nullptr;
     }
+  }
+
+  std::string utf8_error;
+  if (!IsValidWorldId(user_script.world_id, &utf8_error)) {
+    *error = base::UTF8ToUTF16(utf8_error);
+    return nullptr;
   }
 
   // After this, we can just convert to our internal type and rely on our
@@ -558,8 +593,10 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
     world_id = std::move(params->properties.world_id);
   }
 
-  // TODO(https://crbug.com/331680187): Disallow world IDs that begin with
-  // underscores here and in the script registration flow.
+  std::string error;
+  if (!IsValidWorldId(world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
 
   // TODO(https://crbug.com/331680187): Add some reasonable limit to the number
   // of worlds an extension may create and configure.
