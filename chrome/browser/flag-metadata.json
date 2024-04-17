@@ -4431,7 +4431,7 @@
   {
     "name": "file-notification-revamp",
     "owners": [ "timloh@chromium.org", "backlight-swe@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 127
   },
   {
     "name": "file-system-access-locking-scheme",
