@@ -271,22 +271,6 @@ void DeserializeInternalFieldCallback(v8::Local<v8::Object> object,
   }
 }
 
-namespace {
-// We only care for WrapperTypeInfo and do not supply an actual instance of
-// the document. Since we need a script wrappable to get type info now, this
-// class is a minimal implementation of ScriptWrappable that returns correct
-// type info for HTMLDocument.
-class DummyHTMLDocumentForSnapshot : public ScriptWrappable {
- public:
-  DummyHTMLDocumentForSnapshot() = default;
-
- private:
-  const WrapperTypeInfo* GetWrapperTypeInfo() const override {
-    return V8HTMLDocument::GetWrapperTypeInfo();
-  }
-};
-}  // namespace
-
 void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
                           const DOMWrapperWorld& world) {
   v8::Isolate* isolate = snapshot_creator->GetIsolate();
@@ -316,9 +300,11 @@ void TakeSnapshotForWorld(v8::SnapshotCreator* snapshot_creator,
     v8::Local<v8::Object> document_wrapper = CreatePlatformObject(
         isolate, context, world, document_wrapper_type_info);
 
-    V8DOMWrapper::SetNativeInfo(
-        isolate, document_wrapper, document_wrapper_type_info,
-        MakeGarbageCollected<DummyHTMLDocumentForSnapshot>());
+    int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
+    void* values[] = {nullptr,
+                      const_cast<WrapperTypeInfo*>(document_wrapper_type_info)};
+    document_wrapper->SetAlignedPointerInInternalFields(std::size(indices),
+                                                        indices, values);
 
     V8PrivateProperty::GetWindowDocumentCachedAccessor(isolate).Set(
         context->Global(), document_wrapper);
