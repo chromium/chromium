@@ -190,7 +190,11 @@ TEST_F(SharedImageRepresentationTest, DawnClearing) {
   // wgpu::Texture(reinterpret_cast<WGPUTexture>(203)), so we have to override
   // the texture reference/release procs to avoid crashing.
   DawnProcTable procs = {};
+#if defined(WGPU_BREAKING_REFERENCE_ADDREF)
+  procs.textureAddRef = [](WGPUTexture) {};
+# else
   procs.textureReference = [](WGPUTexture) {};
+#endif
   procs.textureRelease = [](WGPUTexture) {};
   dawnProcSetProcs(&procs);
 
