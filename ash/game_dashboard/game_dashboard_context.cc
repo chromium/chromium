@@ -459,10 +459,13 @@ void GameDashboardContext::OnEvent(ui::Event* event) {
       const bool reverse = event->IsShiftDown();
 
       // Manually move focus from the currently focused widget to the next in
-      // the widget list.
-      MoveFocus(game_dashboard_utils::GetNextWidgetToFocus(
-                    GetTraversableWidgets(), currently_focused, reverse),
-                event, reverse);
+      // the widget list. It is possible that `currently_focused` is not in the
+      // `GetTraversableWidgets()`. For example, `currently_focused` is the app
+      // window itself.
+      if (auto* next_focus = game_dashboard_utils::GetNextWidgetToFocus(
+              GetTraversableWidgets(), currently_focused, reverse)) {
+        MoveFocus(next_focus, event, reverse);
+      }
     }
   } else if (main_menu_widget_) {
     switch (event_type) {
