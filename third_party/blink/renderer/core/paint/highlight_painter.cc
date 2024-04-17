@@ -245,8 +245,7 @@ void HighlightPainter::SelectionPaintState::ComputeSelectionStyle(
     const TextPaintStyle& text_style) {
   selection_style_ =
       HighlightStyleUtils::HighlightPaintingStyle(
-          document, style, node, kPseudoIdSelection, text_style, paint_info)
-          .style;
+          document, style, node, kPseudoIdSelection, text_style, paint_info);
   paint_selected_text_only_ =
       (paint_info.phase == PaintPhase::kSelectionDragImage);
 }
@@ -283,7 +282,7 @@ void HighlightPainter::SelectionPaintState::PaintSelectionBackground(
     const ComputedStyle& style,
     const std::optional<AffineTransform>& rotation) {
   const Color color = HighlightStyleUtils::HighlightBackgroundColor(
-      document, style, node, selection_style_.current_color,
+      document, style, node, selection_style_.style.current_color,
       kPseudoIdSelection);
   HighlightPainter::PaintHighlightBackground(context, style, color,
                                              PhysicalSelectionRect(), rotation);
@@ -298,7 +297,7 @@ void HighlightPainter::SelectionPaintState::PaintSelectedText(
     const AutoDarkMode& auto_dark_mode) {
   text_painter.PaintSelectedText(fragment_paint_info, selection_status_.start,
                                  selection_status_.end, text_style,
-                                 selection_style_, LineRelativeSelectionRect(),
+                                 selection_style_.style, LineRelativeSelectionRect(),
                                  node_id, auto_dark_mode);
 }
 
@@ -861,10 +860,6 @@ void HighlightPainter::PaintHighlightOverlays(
     if (part.type == HighlightLayerType::kSelection) {
       part_rect.Unite(selection_->LineRelativeSelectionRect());
     }
-    const TextPaintStyle& highlight_style =
-        part.type == HighlightLayerType::kSelection
-            ? selection_->GetSelectionStyle()
-            : part.style;
 
     PaintDecorationsExceptLineThrough(part, part_rect);
 
@@ -908,7 +903,7 @@ void HighlightPainter::PaintHighlightOverlays(
           &start, &end);
 
       text_painter_.Paint(fragment_paint_info_.Slice(start, end),
-                          highlight_style, node_id, foreground_auto_dark_mode_,
+                          part.style, node_id, foreground_auto_dark_mode_,
                           TextPainter::kTextProperOnly);
     }
 

@@ -66,7 +66,7 @@ class CORE_EXPORT HighlightPainter {
 
     const LayoutSelectionStatus& Status() const { return selection_status_; }
 
-    const TextPaintStyle& GetSelectionStyle() const { return selection_style_; }
+    const TextPaintStyle& GetSelectionStyle() const { return selection_style_.style; }
 
     SelectionState State() const { return state_; }
 
@@ -125,7 +125,7 @@ class CORE_EXPORT HighlightPainter {
     const PhysicalOffset& box_offset_;
     const std::optional<AffineTransform> writing_mode_rotation_;
     std::optional<SelectionRect> selection_rect_;
-    TextPaintStyle selection_style_;
+    HighlightStyleUtils::HighlightTextPaintStyle selection_style_;
     bool paint_selected_text_only_;
   };
 
