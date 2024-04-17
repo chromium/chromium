@@ -1780,6 +1780,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("os_settings_ui/os_settings_ui_page_availability_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsSettingsUiPrefSync) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_pref_sync_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
                        OsSettingsUiPageVisibilityRevamp) {
   RunSettingsTest(

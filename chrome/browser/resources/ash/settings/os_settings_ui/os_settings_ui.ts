@@ -36,6 +36,7 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {UserActionSettingPrefChangeEvent} from '../common/types.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange, recordSettingChangeForUnmappedPref} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
 import {createPageAvailability, OsPageAvailability} from '../os_page_availability.js';
@@ -58,6 +59,7 @@ declare global {
     'scroll-to-top': CustomEvent<{top: number, callback: () => void}>;
     'user-action-setting-change':
         CustomEvent<{prefKey: string, prefValue: any}>;
+    'user-action-setting-pref-change': UserActionSettingPrefChangeEvent;
   }
 }
 
@@ -229,7 +231,10 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     });
 
     this.addEventListener('refresh-pref', this.onRefreshPref_);
-    this.addEventListener('user-action-setting-change', this.onSettingChange_);
+
+    this.addEventListener('user-action-setting-pref-change', this.syncPrefChange_.bind(this));
+
+    this.addEventListener('user-action-setting-change', this.recordChangedSetting_.bind(this));
 
     this.addEventListener(
         'search-changed',
@@ -395,7 +400,12 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.$.prefs.refresh(e.detail);
   }
 
-  private onSettingChange_(e: CustomEvent<{prefKey: string, prefValue: any}>):
+  /**
+   * Callback for the `user-action-setting-change` event which is emitted by
+   * the `settings-prefs` singleton after a pref-based setting is updated via
+   * some user action. Records the changed setting to relevant metrics.
+   */
+  private recordChangedSetting_(e: CustomEvent<{prefKey: string, prefValue: any}>):
       void {
     const {prefKey, prefValue} = e.detail;
     const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
@@ -407,6 +417,17 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     }
 
     recordSettingChange(settingMetric.setting, settingMetric.value);
+  }
+
+  /**
+   * Callback for the `user-action-setting-pref-change` event which is emitted
+   * by settings pref control components when the prefs state should be synced
+   * after some user action (e.g. a toggle was turned on). Updates the prefs
+   * state and syncs it with the `settings-prefs` singleton.
+   */
+  private syncPrefChange_(event: UserActionSettingPrefChangeEvent): void {
+    const {prefKey, value} = event.detail;
+    this.set(`prefs.${prefKey}.value`, value);
   }
 
   /**
