@@ -16,7 +16,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -200,21 +199,29 @@ void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
   }
 }
 
+void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationStarted(
+    ChromeBrowserState* browser_state,
+    ChromeBrowserState::CreationMode creation_mode) {
+  DCHECK(browser_state);
+}
+
+void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
+    ChromeBrowserState* browser_state,
+    ChromeBrowserState::CreationMode creation_mode,
+    bool is_new_browser_state,
+    bool success) {
+  DCHECK(browser_state);
+  DCHECK(success);
+}
+
 void ChromeBrowserStateManagerImpl::LoadBrowserState(
     const base::FilePath& path,
     BrowserStateLoadedCallback callback) {
   DCHECK(!base::Contains(browser_states_, path));
 
-  // Get sequenced task runner for making sure that file operations of
-  // this profile are executed in expected order (what was previously assured by
-  // the FILE thread).
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
-
   auto [iter, inserted] = browser_states_.insert(std::make_pair(
-      path,
-      base::WrapUnique(new ChromeBrowserStateImpl(path, io_task_runner))));
+      path, ChromeBrowserState::CreateBrowserState(
+                path, ChromeBrowserState::CreationMode::kSynchronous, this)));
   DCHECK(inserted);
   DCHECK(iter != browser_states_.end());
 

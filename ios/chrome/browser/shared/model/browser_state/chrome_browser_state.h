@@ -47,10 +47,44 @@ enum class ChromeBrowserStateType {
 // This class is a Chrome-specific extension of the BrowserState interface.
 class ChromeBrowserState : public web::BrowserState {
  public:
+  enum class CreationMode {
+    kSynchronous,
+  };
+
+  // Delegate notified of ChromeBrowserState creation events.
+  class Delegate {
+   public:
+    Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual ~Delegate() = default;
+
+    // Called when creation of the ChromeBrowserState is started.
+    virtual void OnChromeBrowserStateCreationStarted(
+        ChromeBrowserState* browser_state,
+        CreationMode creation_mode) = 0;
+
+    // Called when creation of the ChromeBrowserState is finished.
+    virtual void OnChromeBrowserStateCreationFinished(
+        ChromeBrowserState* browser_state,
+        CreationMode creation_mode,
+        bool is_new_browser_state,
+        bool success) = 0;
+  };
+
   ChromeBrowserState(const ChromeBrowserState&) = delete;
   ChromeBrowserState& operator=(const ChromeBrowserState&) = delete;
 
   ~ChromeBrowserState() override;
+
+  // Creates a new ChromeBrowserState at `path` with `creation_mode`. If not
+  // null, `delegate` will be notified when the creation starts and completes.
+  static std::unique_ptr<ChromeBrowserState> CreateBrowserState(
+      const base::FilePath& path,
+      CreationMode creation_mode,
+      Delegate* delegate);
 
   // Returns the ChromeBrowserState corresponding to the given BrowserState.
   static ChromeBrowserState* FromBrowserState(BrowserState* browser_state);

@@ -87,14 +87,37 @@ base::FilePath GetCachePath(const base::FilePath& base) {
 
 }  // namespace
 
+// static
+std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
+    const base::FilePath& path,
+    CreationMode creation_mode,
+    Delegate* delegate) {
+  // Get sequenced task runner for making sure that file operations of
+  // this profile are executed in expected order (what was previously assured by
+  // the FILE thread).
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
+
+  return base::WrapUnique(new ChromeBrowserStateImpl(path, io_task_runner,
+                                                     creation_mode, delegate));
+}
+
 ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     const base::FilePath& state_path,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    CreationMode creation_mode,
+    Delegate* delegate)
     : ChromeBrowserState(state_path, std::move(io_task_runner)),
+      delegate_(delegate),
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
+
+  if (delegate_) {
+    delegate_->OnChromeBrowserStateCreationStarted(this, creation_mode);
+  }
 
   // It would be nice to use PathService for fetching this directory, but
   // the cache directory depends on the browser state stash directory, which
@@ -180,6 +203,14 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
   io_data_->Init(cookie_path, cache_path, cache_max_size, state_path);
+
+  if (delegate_) {
+    // TODO(crbug.com/333865629): pass correct values for `success` and
+    // `is_new_browser_state`. Also, split creation and initialisation
+    // to support asynchronous loading.
+    delegate_->OnChromeBrowserStateCreationFinished(
+        this, creation_mode, /*is_new_browser_state=*/false, /*success=*/true);
+  }
 }
 
 ChromeBrowserStateImpl::~ChromeBrowserStateImpl() {

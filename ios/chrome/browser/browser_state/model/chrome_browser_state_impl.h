@@ -55,15 +55,21 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   bool IsOffTheRecord() const override;
 
  private:
-  friend class ChromeBrowserStateManagerImpl;
+  friend class ChromeBrowserState;
 
   ChromeBrowserStateImpl(
       const base::FilePath& state_path,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      CreationMode creation_mode,
+      Delegate* delegate);
 
   // Sets the OffTheRecordChromeBrowserState.
   void SetOffTheRecordChromeBrowserState(
       std::unique_ptr<ChromeBrowserState> otr_state);
+
+  // The ChromeBrowserState::Delegate that will be notified of the progress
+  // of the initialisation if not null.
+  raw_ptr<Delegate> delegate_;
 
   // The incognito ChromeBrowserState instance that is associated with this
   // ChromeBrowserState instance. NULL if `GetOffTheRecordChromeBrowserState()`
