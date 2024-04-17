@@ -598,11 +598,25 @@ test.util.sync.fakeMouseRightClick =
             return false;
           }
 
-          const contextMenuEvent =
-              new MouseEvent('contextmenu', {bubbles: true, composed: true});
-          return test.util.sync.sendEvent(
-              contentWindow, targetQuery, contextMenuEvent);
+          return test.util.sync.fakeContextMenu(contentWindow, targetQuery);
         };
+
+/**
+ * Simulate a fake contextmenu event without right clicking on the element
+ * specified by |targetQuery|. This is mainly to simulate long press on the
+ * element.
+ *
+ * @param contentWindow Window to be tested.
+ * @param targetQuery Query to specify the element.
+ * @return True if the event is sent to the target, false otherwise.
+ */
+test.util.sync.fakeContextMenu =
+    (contentWindow: Window, targetQuery: string): boolean => {
+      const contextMenuEvent =
+          new MouseEvent('contextmenu', {bubbles: true, composed: true});
+      return test.util.sync.sendEvent(
+          contentWindow, targetQuery, contextMenuEvent);
+    };
 
 /**
  * Simulates a fake touch event (touch start and touch end) on the element

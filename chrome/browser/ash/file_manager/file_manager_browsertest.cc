@@ -481,6 +481,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipFileOpenUsb").NewDirectoryTree(),
         TestCase("zipCreateFileUsb").NewDirectoryTree(),
         TestCase("zipExtractFromReadOnly").NewDirectoryTree(),
+        TestCase("zipCloseFromContextMenu").NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("zipFileOpenDownloads"),
         TestCase("zipFileOpenDownloads").InGuestMode(),
@@ -502,7 +503,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("zipExtractFromReadOnly"),
         TestCase("zipExtractShowPanel"),
         TestCase("zipExtractShowMultiPanel"),
-        TestCase("zipExtractSelectionMenus")));
+        TestCase("zipExtractSelectionMenus"),
+        TestCase("zipCloseFromContextMenu")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */

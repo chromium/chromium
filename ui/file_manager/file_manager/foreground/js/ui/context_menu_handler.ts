@@ -220,6 +220,11 @@ class ContextMenuHandler extends FilesEventTarget<ContextMenuHandlerEventMap> {
   private handleContextMenuEvent_(e: MouseEvent) {
     if ((!this.menu || !this.menu.contains(e.target as Node)) &&
         (!this.hideTimestamp_ || Date.now() - this.hideTimestamp_ > 50)) {
+      // Focus the item which triggers the context menu before showing the menu,
+      // so when the menu hides, the focus can be brought back to the item.
+      if (document.activeElement !== e.currentTarget) {
+        (e.currentTarget as HTMLElement).focus();
+      }
       this.showMenu(
           e, (e.currentTarget as Element & WithContextMenu).contextMenu!);
     }

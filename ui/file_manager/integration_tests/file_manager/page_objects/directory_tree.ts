@@ -949,6 +949,19 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Long press the tree item by its label to trigger context menu.
+   *
+   * @param label Label of the tree item.
+   */
+  async longPressItemByLabel(label: string): Promise<void> {
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'fakeContextMenu', this.appId_,
+            [this.selectors_.itemByLabel(label)]),
+        'fakeContextMenu failed');
+  }
+
+  /**
    * Show context menu for the tree item by its full path.
    *
    * @param path Path of the tree item.

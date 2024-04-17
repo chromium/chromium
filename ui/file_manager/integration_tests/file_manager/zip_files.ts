@@ -915,3 +915,43 @@ export async function zipExtractFromReadOnly() {
   await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
 }
+
+/**
+ * Tests ZIP mounting can be closed from the "Close" context menu item.
+ */
+export async function zipCloseFromContextMenu() {
+  await sendTestMessage({
+    name: 'expectFileTask',
+    fileNames: [ENTRIES.zipArchive.targetPath],
+    openType: 'launch',
+  });
+
+  // Open Files app on Downloads containing a zip file.
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
+
+  // Select the zip file.
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
+
+  // Press the Enter key.
+  await remoteCall.fakeKeyDown(
+      appId, '#file-list', 'Enter', false, false, false);
+
+  // Check: the zip mount should show on the directory tree.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.waitForSelectedItemByLabel(ENTRIES.zipArchive.nameText);
+
+  // Trigger context menu event by long pressing.
+  await directoryTree.longPressItemByLabel(ENTRIES.zipArchive.nameText);
+
+  // Wait and click "Close" context menu.
+  await remoteCall.waitForElement(appId, '#roots-context-menu:not([hidden])');
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#unmount"]:not([hidden]):not([disabled])');
+
+  // Old tree implementation doesn't support this.
+  if (directoryTree.isNewTree) {
+    // Check: the zip mount should disappear from the directory tree.
+    await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
+  }
+}
