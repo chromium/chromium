@@ -59,22 +59,6 @@ BrowserAppInstanceRegistry::GetBrowserWindowInstanceById(
   });
 }
 
-const std::set<const BrowserAppInstance*>
-BrowserAppInstanceRegistry::GetBrowserAppInstancesByWindow(
-    const aura::Window* window) const {
-  return SelectAppInstances([&window](const BrowserAppInstance& instance) {
-    return instance.window == window;
-  });
-}
-
-const BrowserWindowInstance*
-BrowserAppInstanceRegistry::GetBrowserWindowInstanceByWindow(
-    const aura::Window* window) const {
-  return FindWindowInstanceIf([&window](const BrowserWindowInstance& instance) {
-    return instance.window == window;
-  });
-}
-
 aura::Window* BrowserAppInstanceRegistry::GetWindowByInstanceId(
     const base::UnguessableToken& id) const {
   if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
@@ -147,12 +131,12 @@ void BrowserAppInstanceRegistry::MinimizeInstance(
 bool BrowserAppInstanceRegistry::IsInstanceActive(
     const base::UnguessableToken& id) const {
   if (const BrowserAppInstance* instance = GetAppInstanceById(id)) {
-    return instance->is_browser_active() && instance->is_web_contents_active;
+    return instance->is_browser_active && instance->is_web_contents_active;
   }
 
   if (const BrowserWindowInstance* instance =
           GetBrowserWindowInstanceById(id)) {
-    return instance->is_active();
+    return instance->is_active;
   }
   return false;
 }
@@ -176,25 +160,6 @@ void BrowserAppInstanceRegistry::NotifyExistingInstances(
   }
 }
 
-void BrowserAppInstanceRegistry::MaybeStartActivationObservation(
-    aura::Window* window) {
-  if (is_activation_observed_) {
-    return;
-  }
-
-  is_activation_observed_ = true;
-  // On Ash Chrome, there is only one `ActivationClient` so as long as `window`
-  // is attached to the tree, it serves the purpose of getting the
-  // `ActivationClient`.
-  // Since `ActivationClient` is destroyed before `BrowserAppInstanceRegistry`,
-  // `BrowserAppInstanceRegistry` does not need to remove itself upon
-  // destruction.
-  wm::ActivationClient* activation_client =
-      wm::GetActivationClient(window->GetRootWindow());
-  CHECK(activation_client);
-  activation_client->AddObserver(this);
-}
-
 void BrowserAppInstanceRegistry::BindReceiver(
     crosapi::CrosapiId id,
     mojo::PendingReceiver<crosapi::mojom::BrowserAppInstanceRegistry>
@@ -204,7 +169,6 @@ void BrowserAppInstanceRegistry::BindReceiver(
 
 void BrowserAppInstanceRegistry::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
-  MaybeStartActivationObservation(instance.window);
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }
@@ -226,7 +190,6 @@ void BrowserAppInstanceRegistry::OnBrowserWindowRemoved(
 
 void BrowserAppInstanceRegistry::OnBrowserAppAdded(
     const BrowserAppInstance& instance) {
-  MaybeStartActivationObservation(instance.window);
   for (auto& observer : observers_) {
     observer.OnBrowserAppAdded(instance);
   }
@@ -332,18 +295,6 @@ void BrowserAppInstanceRegistry::OnWindowInitialized(aura::Window* window) {
   event_list.events.clear();
 }
 
-void BrowserAppInstanceRegistry::OnWindowVisibilityChanged(aura::Window* window,
-                                                           bool visible) {
-  if (visible) {
-    // When `LacrosWindowInstanceAdded()` or
-    // `LacrosAppInstanceAddedOrUpdated()` is called, the `window` is not
-    // attached to the tree yet and will not be able to get `ActivationClient`
-    // from it. For this reason, for Lacros window, we delay the start of
-    // activation to when it becomes visible.
-    MaybeStartActivationObservation(window);
-  }
-}
-
 void BrowserAppInstanceRegistry::OnWindowDestroying(aura::Window* window) {
   lacros_window_observations_.RemoveObservation(window);
   const std::string* id = exo::GetShellApplicationId(window);
@@ -374,31 +325,6 @@ void BrowserAppInstanceRegistry::OnWindowDestroying(aura::Window* window) {
     } else {
       it++;
     }
-  }
-}
-
-void BrowserAppInstanceRegistry::OnWindowActivated(ActivationReason reason,
-                                                   aura::Window* gained_active,
-                                                   aura::Window* lost_active) {
-  std::set<const BrowserAppInstance*> instances =
-      GetBrowserAppInstancesByWindow(gained_active);
-  for (const auto* instance : instances) {
-    OnBrowserAppUpdated(*instance);
-  }
-
-  instances = GetBrowserAppInstancesByWindow(lost_active);
-  for (const auto* instance : instances) {
-    OnBrowserAppUpdated(*instance);
-  }
-
-  if (const BrowserWindowInstance* instance =
-          GetBrowserWindowInstanceByWindow(gained_active)) {
-    OnBrowserWindowUpdated(*instance);
-  }
-
-  if (const BrowserWindowInstance* instance =
-          GetBrowserWindowInstanceByWindow(lost_active)) {
-    OnBrowserWindowUpdated(*instance);
   }
 }
 
