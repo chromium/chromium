@@ -792,7 +792,7 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;
 
-  delegate_->CreateHistoricalGroup(group);
+  delegate_->WillCloseGroup(group);
 
   gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
   if (static_cast<int>(tabs_in_group.length()) == count())

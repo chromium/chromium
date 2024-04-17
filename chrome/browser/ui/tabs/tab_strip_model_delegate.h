@@ -129,6 +129,10 @@ class TabStripModelDelegate {
   // |group|.
   virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
 
+  // Notifies the delegate that a group is about to be closed, and allows it
+  // to perform any preparation neccessary.
+  virtual void WillCloseGroup(const tab_groups::TabGroupId& group) = 0;
+
   // Notifies the tab restore service that the group is no longer closing.
   virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 

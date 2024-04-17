@@ -199,20 +199,31 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
     service->CreateHistoricalGroup(
         BrowserLiveTabContext::FindContextWithGroup(group, browser_->profile()),
         group);
+  }
+}
 
-    tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser_->profile());
-    CHECK(saved_tab_group_service);
+void BrowserTabStripModelDelegate::WillCloseGroup(
+    const tab_groups::TabGroupId& group) {
+  // First the saved group must be stored in tab restore so that it keeps the
+  // SavedTabGroup/TabIDs
+  CreateHistoricalGroup(group);
 
-    if (saved_tab_group_service->model()->Contains(group)) {
-      saved_tab_group_service->DisconnectLocalTabGroup(group);
-    }
+  // When closing, the group should stay available in revisit UIs so disconnect
+  // the group to prevent deletion.
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (saved_tab_group_service &&
+      saved_tab_group_service->model()->Contains(group)) {
+    saved_tab_group_service->DisconnectLocalTabGroup(group);
   }
 }
 
 void BrowserTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
+  // TODO(dpenning), this is only called from UnloadController, handle this in a
+  // better way. Ungroup the remaining tabs, dont destroy the entry.
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
   if (service)

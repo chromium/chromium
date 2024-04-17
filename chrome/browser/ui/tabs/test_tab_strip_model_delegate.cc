@@ -73,6 +73,9 @@ std::optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
 void TestTabStripModelDelegate::CreateHistoricalGroup(
     const tab_groups::TabGroupId& group) {}
 
+void TestTabStripModelDelegate::WillCloseGroup(
+    const tab_groups::TabGroupId& group) {}
+
 void TestTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {}
 
