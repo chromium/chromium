@@ -637,12 +637,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InPositionTryStyleRecalc() const {
     return in_position_try_style_recalc_;
   }
-  // If we are in a container query style recalc, return the container element,
-  // otherwise return nullptr.
-  Element* GetContainerForContainerStyleRecalc() const {
-    // The To<Element>() should not fail because the style_recalc_root_ is set
-    // to the container element when doing a container query style recalc.
-    if (InContainerQueryStyleRecalc()) {
+  // Get the root element of an interleaving recalc, if any. This function will
+  // return nullptr if the interleaving root is a PseudoElement, because such
+  // elements can't be recalc roots.
+  //
+  // See StyleEngine::UpdateStyleAndLayoutTreeForContainer.
+  // See StyleEngine::UpdateStyleForOutOfFlow.
+  Element* GetInterleavingRecalcRoot() const {
+    if (InContainerQueryStyleRecalc() || InPositionTryStyleRecalc()) {
+      // During interleaved style recalc, the recalc root is either set
+      // to the interleaving root (always an Element), or nullptr (if it's
+      // a PseudoElement).
       return To<Element>(style_recalc_root_.GetRootNode());
     }
     return nullptr;

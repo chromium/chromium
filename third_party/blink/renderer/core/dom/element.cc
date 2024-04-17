@@ -7567,8 +7567,7 @@ void Element::UpdateBackdropPseudoElement(
     return;
   }
 
-  if (GetDocument().GetStyleEngine().GetContainerForContainerStyleRecalc() !=
-      this) {
+  if (GetDocument().GetStyleEngine().GetInterleavingRecalcRoot() != this) {
     UpdatePseudoElement(PseudoId::kPseudoIdBackdrop, change,
                         style_recalc_context);
     return;
