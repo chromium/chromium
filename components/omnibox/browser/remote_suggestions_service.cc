@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/search/search.h"
@@ -21,7 +22,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
@@ -75,11 +75,11 @@ GURL RemoteSuggestionsService::EndpointUrl(
       // TODO(b/328763711): Replace this with a TemplateURL substitution.
       if (search_terms_args.lens_overlay_interaction_response.has_value() &&
           search_terms_args.lens_overlay_interaction_response
-              ->has_encoded_response()) {
+              ->has_suggest_signals()) {
         url = net::AppendOrReplaceQueryParameter(
             url, "iil",
             search_terms_args.lens_overlay_interaction_response
-                ->encoded_response());
+                ->suggest_signals());
       }
       break;
     }

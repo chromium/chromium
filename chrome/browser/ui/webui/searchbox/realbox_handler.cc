@@ -394,7 +394,7 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   autocomplete_input.set_allow_exact_keyword_match(false);
   // Set the lens overlay interaction response, if available.
   if (lens_searchbox_client_ &&
-      lens_searchbox_client_->GetLensResponse().has_encoded_response()) {
+      lens_searchbox_client_->GetLensResponse().has_suggest_signals()) {
     autocomplete_input.set_lens_overlay_interaction_response(
         lens_searchbox_client_->GetLensResponse());
   }

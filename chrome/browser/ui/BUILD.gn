@@ -4237,8 +4237,8 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/lens/lens_overlay",
-      "//chrome/browser/resources/lens/server/proto",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
+      "//components/lens/proto/server:proto",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/webui",
     ]

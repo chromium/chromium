@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/search_engines/search_terms_data.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -283,13 +283,13 @@ class AutocompleteInput {
     return terms_prefixed_by_http_or_https_;
   }
 
-  const std::optional<lens::LensOverlayInteractionResponse>&
+  const std::optional<lens::proto::LensOverlayInteractionResponse>&
   lens_overlay_interaction_response() const {
     return lens_overlay_interaction_response_;
   }
 
   void set_lens_overlay_interaction_response(
-      const lens::LensOverlayInteractionResponse&
+      const lens::proto::LensOverlayInteractionResponse&
           lens_overlay_interaction_response) {
     lens_overlay_interaction_response_ = lens_overlay_interaction_response;
   }
@@ -355,7 +355,7 @@ class AutocompleteInput {
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
   // The lens overlay interaction response to be sent as a query parameter in
   // the suggest requests.
-  std::optional<lens::LensOverlayInteractionResponse>
+  std::optional<lens::proto::LensOverlayInteractionResponse>
       lens_overlay_interaction_response_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.

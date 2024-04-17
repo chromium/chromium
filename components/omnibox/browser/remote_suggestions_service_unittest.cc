@@ -304,8 +304,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureLensOverridenOrAppendedQueryParams) {
   TemplateURL template_url(template_url_data);
 
   TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
-  lens::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_encoded_response("xyz");
+  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals("xyz");
   search_terms_args.lens_overlay_interaction_response =
       lens_overlay_interaction_response;
 

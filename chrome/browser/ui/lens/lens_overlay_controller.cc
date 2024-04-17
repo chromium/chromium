@@ -553,9 +553,10 @@ const std::string& LensOverlayController::GetThumbnail() const {
   return *thumbnail;
 }
 
-const lens::LensOverlayInteractionResponse&
+const lens::proto::LensOverlayInteractionResponse&
 LensOverlayController::GetLensResponse() const {
-  static base::NoDestructor<lens::LensOverlayInteractionResponse> response;
+  static base::NoDestructor<lens::proto::LensOverlayInteractionResponse>
+      response;
   return *response;
 }
 
@@ -662,4 +663,3 @@ void LensOverlayController::HandleInteractionURLResponse(
 
 void LensOverlayController::HandleInteractionDataResponse(
     lens::proto::LensOverlayInteractionResponse response) {}
-

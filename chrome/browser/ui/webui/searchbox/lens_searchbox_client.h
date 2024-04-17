@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_
 
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -27,7 +27,7 @@ class LensSearchboxClient {
   virtual const std::string& GetThumbnail() const = 0;
 
   // Returns the Lens response. Used to report iil= in the Suggest requests.
-  virtual const lens::LensOverlayInteractionResponse& GetLensResponse()
+  virtual const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const = 0;
 
   // Called when the user removes the thumbnail.

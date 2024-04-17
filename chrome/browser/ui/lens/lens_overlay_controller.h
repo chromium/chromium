@@ -14,10 +14,10 @@
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
-#include "chrome/browser/resources/lens/server/proto/lens_overlay_response.pb.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -219,7 +219,8 @@ class LensOverlayController : public LensSearchboxClient,
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
       const override;
   const std::string& GetThumbnail() const override;
-  const lens::LensOverlayInteractionResponse& GetLensResponse() const override;
+  const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
+      const override;
   void OnThumbnailRemoved() const override;
   void OnSuggestionAccepted(const GURL& destination_url) override;
   void OnPageBound() override;

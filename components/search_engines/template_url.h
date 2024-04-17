@@ -15,11 +15,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -220,7 +220,7 @@ class TemplateURLRef {
 
     // The lens overlay interaction response to be sent as a query parameter in
     // the suggest requests.
-    std::optional<lens::LensOverlayInteractionResponse>
+    std::optional<lens::proto::LensOverlayInteractionResponse>
         lens_overlay_interaction_response;
 
     // Which omnibox the user used to type the prefix.

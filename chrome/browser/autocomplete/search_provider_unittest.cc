@@ -37,6 +37,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -63,7 +64,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
@@ -3875,8 +3875,8 @@ TEST_F(SearchProviderRequestTest, SendRequestWithoutLensInteractionResponse) {
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  lens::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_encoded_response("xyz");
+  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals("xyz");
   input.set_lens_overlay_interaction_response(
       lens_overlay_interaction_response);
   provider_->Start(input, false);
@@ -3908,8 +3908,8 @@ TEST_F(SearchProviderRequestTest, SendRequestWithLensInteractionResponse) {
   AutocompleteInput input(u"foo",
                           metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
-  lens::LensOverlayInteractionResponse lens_overlay_interaction_response;
-  lens_overlay_interaction_response.set_encoded_response("xyz");
+  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals("xyz");
   input.set_lens_overlay_interaction_response(
       lens_overlay_interaction_response);
   provider_->Start(input, false);

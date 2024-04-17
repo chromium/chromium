@@ -17,6 +17,7 @@
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/common/channel_info.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
