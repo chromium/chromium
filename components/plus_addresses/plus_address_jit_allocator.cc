@@ -9,12 +9,23 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "net/http/http_status_code.h"
 #include "url/origin.h"
 
 namespace plus_addresses {
+
+namespace {
+
+// The cooldown period applied if a user exhausts their refresh quota. Refresh
+// UI will not be offered until the cooldown has expired (or the user has
+// restarted the browser).
+constexpr base::TimeDelta kRefreshLimitReachedCooldown = base::Days(1);
+
+}  // namespace
 
 PlusAddressJitAllocator::PlusAddressJitAllocator(
     PlusAddressHttpClient* http_client)
@@ -45,8 +56,10 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
         return;
       }
       ++attempts_made;
-      http_client_->ReservePlusAddress(origin, /*refresh=*/true,
-                                       std::move(callback));
+      http_client_->ReservePlusAddress(
+          origin, /*refresh=*/true,
+          base::BindOnce(&PlusAddressJitAllocator::HandleRefreshResponse,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
       return;
     }
   }
@@ -55,12 +68,30 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(
     const url::Origin& origin) const {
+  if (!time_refresh_limit_reached_.is_null() &&
+      base::TimeTicks::Now() - time_refresh_limit_reached_ <=
+          kRefreshLimitReachedCooldown) {
+    return false;
+  }
   if (auto it = refresh_attempts_.find(origin);
       it != refresh_attempts_.cend() &&
       it->second >= kMaxPlusAddressRefreshesPerOrigin) {
     return false;
   }
   return base::FeatureList::IsEnabled(features::kPlusAddressRefresh);
+}
+
+void PlusAddressJitAllocator::HandleRefreshResponse(
+    PlusAddressRequestCallback callback,
+    const PlusProfileOrError& profile_or_error) {
+  if (!profile_or_error.has_value() &&
+      profile_or_error.error() == PlusAddressRequestError::AsNetworkError(
+                                      net::HTTP_TOO_MANY_REQUESTS)) {
+    // If the server responds with 429, it means that the refresh quota is
+    // exhausted.
+    time_refresh_limit_reached_ = base::TimeTicks::Now();
+  }
+  std::move(callback).Run(profile_or_error);
 }
 
 }  // namespace plus_addresses

@@ -6,14 +6,17 @@
 
 #include <utility>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -24,6 +27,7 @@ namespace plus_addresses {
 namespace {
 
 using ::testing::_;
+using ::testing::InSequence;
 using ::testing::Message;
 using ::testing::NiceMock;
 
@@ -49,10 +53,14 @@ class PlusAddressJitAllocatorRefreshTest : public ::testing::Test {
   PlusAddressJitAllocatorRefreshTest() : allocator_(&http_client_) {}
 
  protected:
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
   PlusAddressJitAllocator& allocator() { return allocator_; }
   MockPlusAddressHttpClient& http_client() { return http_client_; }
 
  private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_{features::kPlusAddressRefresh};
 
   NiceMock<MockPlusAddressHttpClient> http_client_;
@@ -130,6 +138,42 @@ TEST_F(PlusAddressJitAllocatorRefreshTest, RefreshLimit) {
         GetSampleOrigin2(),
         PlusAddressAllocator::AllocationMode::kNewPlusAddress, callback.Get());
   }
+}
+
+// Tests that the allocator handles the server response for "refresh quota is
+// exhausted" properly by disabling refresh for a cool down period.
+TEST_F(PlusAddressJitAllocatorRefreshTest,
+       HandleServerResponseForQuotaExhausted) {
+  base::MockCallback<PlusAddressRequestCallback> callback;
+  {
+    InSequence s;
+    PlusProfileOrError response = base::unexpected(
+        PlusAddressRequestError::AsNetworkError(net::HTTP_TOO_MANY_REQUESTS));
+    EXPECT_CALL(http_client(),
+                ReservePlusAddress(GetSampleOrigin1(), /*refresh=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(response));
+    EXPECT_CALL(callback, Run(response));
+  }
+
+  EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
+  allocator().AllocatePlusAddress(
+      GetSampleOrigin1(), PlusAddressAllocator::AllocationMode::kNewPlusAddress,
+      callback.Get());
+
+  // After receiving the error, refreshing is no longer supported - regardless
+  // of domain.
+  EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
+  EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin2()));
+
+  // This effect persists...
+  task_environment().FastForwardBy(base::Hours(6));
+  EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
+  EXPECT_FALSE(allocator().IsRefreshingSupported(GetSampleOrigin2()));
+
+  // ... for 24 hours.
+  task_environment().FastForwardBy(base::Hours(19));
+  EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin1()));
+  EXPECT_TRUE(allocator().IsRefreshingSupported(GetSampleOrigin2()));
 }
 
 }  // namespace plus_addresses
