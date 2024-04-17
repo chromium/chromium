@@ -548,23 +548,19 @@ float SVGAnimationElement::CurrentValuesForValuesAnimation(float percent,
   return effective_percent;
 }
 
-bool SVGAnimationElement::CalculateValuesAnimation() {
-  if (!CalculateToAtEndOfDurationValue(values_.back()))
+bool SVGAnimationElement::UpdateAnimationParameters() {
+  if (!IsValid() || !HasValidTarget()) {
     return false;
-  if (GetCalcMode() == kCalcModePaced) {
-    CalculateKeyTimesForCalcModePaced();
   }
-  return true;
+  animation_mode_ = CalculateAnimationMode();
+  if (animation_mode_ == kNoAnimation) {
+    return false;
+  }
+  return CheckAnimationParameters();
 }
 
-bool SVGAnimationElement::CheckAnimationParameters() {
-  if (!IsValid() || !HasValidTarget())
-    return false;
-
-  const AnimationMode animation_mode = CalculateAnimationMode();
-  SetAnimationMode(animation_mode);
-  if (animation_mode == kNoAnimation)
-    return false;
+bool SVGAnimationElement::CheckAnimationParameters() const {
+  DCHECK_NE(animation_mode_, kNoAnimation);
 
   // These validations are appropriate for all animation modes.
   if (FastHasAttribute(svg_names::kKeyPointsAttr)) {
@@ -573,17 +569,18 @@ bool SVGAnimationElement::CheckAnimationParameters() {
     if (KeyTimes().size() != key_points_.size()) {
       return false;
     }
-    if (animation_mode == kFromToAnimation ||
-        animation_mode == kFromByAnimation || animation_mode == kToAnimation ||
-        animation_mode == kByAnimation) {
+    if (animation_mode_ == kFromToAnimation ||
+        animation_mode_ == kFromByAnimation ||
+        animation_mode_ == kToAnimation ||
+        animation_mode_ == kByAnimation) {
       if (FastHasAttribute(svg_names::kKeyTimesAttr)) {
         // ...and at least two points.
         if (KeyTimes().size() < 2) {
           return false;
         }
       }
-    } else if (animation_mode == kValuesAnimation ||
-               animation_mode == kPathAnimation) {
+    } else if (animation_mode_ == kValuesAnimation ||
+               animation_mode_ == kPathAnimation) {
       // ...and at least two points.
       if (KeyTimes().size() < 2) {
         return false;
@@ -596,13 +593,13 @@ bool SVGAnimationElement::CheckAnimationParameters() {
     if (key_splines_.empty() ||
         (FastHasAttribute(svg_names::kKeyPointsAttr) &&
          key_splines_.size() != key_points_.size() - 1) ||
-        (animation_mode == kValuesAnimation &&
+        (animation_mode_ == kValuesAnimation &&
          key_splines_.size() != values_.size() - 1) ||
         (FastHasAttribute(svg_names::kKeyTimesAttr) &&
          key_splines_.size() != KeyTimes().size() - 1))
       return false;
   }
-  if (animation_mode == kValuesAnimation) {
+  if (animation_mode_ == kValuesAnimation) {
     if (values_.empty()) {
       return false;
     }
@@ -630,28 +627,36 @@ bool SVGAnimationElement::CheckAnimationParameters() {
       }
     }
   }
+  return true;
+}
 
-  const String& from = FromValue();
-  const String& to = ToValue();
-  const String& by = ByValue();
-  if (animation_mode == kFromToAnimation)
-    return CalculateFromAndToValues(from, to);
-  if (animation_mode == kToAnimation) {
-    // For to-animations the from value is the current accumulated value from
-    // lower priority animations.
-    // The value is not static and is determined during the animation.
-    return CalculateFromAndToValues(g_empty_string, to);
+bool SVGAnimationElement::UpdateAnimationValues() {
+  switch (GetAnimationMode()) {
+    case kFromToAnimation:
+      return CalculateFromAndToValues(FromValue(), ToValue());
+    case kToAnimation:
+      // For to-animations the from value is the current accumulated value from
+      // lower priority animations. The value is not static and is determined
+      // during the animation.
+      return CalculateFromAndToValues(g_empty_string, ToValue());
+    case kFromByAnimation:
+      return CalculateFromAndByValues(FromValue(), ByValue());
+    case kByAnimation:
+      return CalculateFromAndByValues(g_empty_string, ByValue());
+    case kValuesAnimation:
+      if (!CalculateToAtEndOfDurationValue(values_.back())) {
+        return false;
+      }
+      if (GetCalcMode() == kCalcModePaced) {
+        CalculateKeyTimesForCalcModePaced();
+      }
+      break;
+    case kPathAnimation:
+      break;
+    case kNoAnimation:
+      NOTREACHED();
   }
-  if (animation_mode == kFromByAnimation)
-    return CalculateFromAndByValues(from, by);
-  if (animation_mode == kByAnimation)
-    return CalculateFromAndByValues(g_empty_string, by);
-  if (animation_mode == kValuesAnimation)
-    return CalculateValuesAnimation();
-  if (animation_mode == kPathAnimation) {
-    return true;
-  }
-  return false;
+  return true;
 }
 
 SMILAnimationEffectParameters SVGAnimationElement::ComputeEffectParameters()
@@ -668,7 +673,7 @@ SMILAnimationEffectParameters SVGAnimationElement::ComputeEffectParameters()
 
 void SVGAnimationElement::ApplyAnimation(SMILAnimationValue& animation_value) {
   if (animation_valid_ == AnimationValidity::kUnknown) {
-    if (CheckAnimationParameters()) {
+    if (UpdateAnimationParameters() && UpdateAnimationValues()) {
       animation_valid_ = AnimationValidity::kValid;
 
       if (IsAdditive() || GetAnimationMode() == kByAnimation ||
