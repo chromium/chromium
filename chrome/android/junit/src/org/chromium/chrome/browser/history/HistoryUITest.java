@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -615,6 +616,31 @@ public class HistoryUITest {
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
                 toolbar.getNavigationButtonForTests(), NavigationButton.NORMAL_VIEW_BACK);
+    }
+
+    @Test
+    @SmallTest
+    public void testAppSpecificToolbarHeaderStateNotPersisted() {
+        mHistoryManager =
+                new HistoryManager(
+                        mActivity,
+                        true,
+                        mSnackbarManager,
+                        mProfile,
+                        /* Supplier<Tab>= */ null,
+                        mHistoryProvider,
+                        new HistoryUmaRecorder(),
+                        null,
+                        true,
+                        true);
+        InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
+        Assert.assertFalse(headerPref.isVisible());
+        HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+        MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
+        mHistoryManager.onMenuItemClick(infoMenuItem);
+
+        // Verify that the toggled state is not persisted to preference storage.
+        Assert.assertFalse(headerPref.isVisible());
     }
 
     @Test

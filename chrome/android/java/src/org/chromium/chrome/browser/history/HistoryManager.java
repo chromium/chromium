@@ -30,8 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -79,6 +78,7 @@ public class HistoryManager
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
     private final HistoryUmaRecorder mUmaRecorder;
+    private final InfoHeaderPref mHeaderPref;
     private ViewGroup mRootView;
     private ViewGroup mContentView;
     @Nullable private final SelectableListLayout<HistoryItem> mSelectableListLayout;
@@ -146,6 +146,9 @@ public class HistoryManager
         mPrefService = UserPrefs.get(mProfile);
         mBackPressStateSupplier.set(false);
 
+        // When launched for apps, info header always starts in hidden state.
+        mHeaderPref = launchedForApp ? new InfoHeaderPref() {} : new BrowserHistoryInfoHeaderPref();
+
         mUmaRecorder.recordOpenHistory();
         // If incognito placeholder is shown, we don't need to create History UI elements.
         if (mIsIncognito) {
@@ -164,9 +167,8 @@ public class HistoryManager
         mSelectionDelegate.addObserver(this);
 
         // 2. Create HistoryContentManager and initialize recycler view.
-        boolean shouldShowInfoHeader =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
+        boolean shouldShowInfoHeader = mHeaderPref.isVisible();
+
         mContentManager =
                 new HistoryContentManager(
                         mActivity,
@@ -305,8 +307,7 @@ public class HistoryManager
     private void toggleInfoHeaderVisibility() {
         boolean shouldShowInfoHeader =
                 !mContentManager.getShouldShowPrivacyDisclaimersIfAvailable();
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, shouldShowInfoHeader);
+        mHeaderPref.setVisible(shouldShowInfoHeader);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeader);
         mContentManager.updatePrivacyDisclaimers(shouldShowInfoHeader);
         mShouldShowPrivacyDisclaimerSupplier.set(
@@ -558,5 +559,9 @@ public class HistoryManager
 
     HistoryManagerToolbar getToolbarForTests() {
         return mToolbar;
+    }
+
+    InfoHeaderPref getInfoHeaderPrefForTests() {
+        return mHeaderPref;
     }
 }

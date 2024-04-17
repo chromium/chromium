@@ -683,6 +683,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/gesturenav/SideSlideLayout.java",
   "java/src/org/chromium/chrome/browser/gesturenav/TabbedSheetDelegate.java",
   "java/src/org/chromium/chrome/browser/history/AppHistoryUmaRecorder.java",
+  "java/src/org/chromium/chrome/browser/history/BrowserHistoryInfoHeaderPref.java",
   "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
   "java/src/org/chromium/chrome/browser/history/HistoryActivity.java",
   "java/src/org/chromium/chrome/browser/history/HistoryAdapter.java",
