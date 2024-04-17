@@ -2713,6 +2713,11 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
+        ],
+      },
       # TODO(kbr): figure out a better way to specify blocks of
       # arguments like this for tests on multiple machines.
       'Linux ASan LSan Tests (1)': {
@@ -5026,6 +5031,10 @@
         'ci_only': True,
         'experiment_percentage': 100,
       },
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
         'experiment_percentage': 100,
@@ -5037,6 +5046,7 @@
       # We only need coverage on one GPU per OS, so remove from lower capacity
       # configs.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)',
       'Dawn Linux x64 Release (Intel UHD 630)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 DEPS Release (Intel)',
@@ -5069,6 +5079,7 @@
       # We only need coverage on one GPU per OS, so remove from lower capacity
       # configs.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)',
       'Dawn Linux x64 Release (Intel UHD 630)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 DEPS Release (Intel)',
@@ -5095,6 +5106,7 @@
       'Dawn Android arm Release (Pixel 4)',
       'Dawn Android arm64 Release (Pixel 6)',
       'Dawn Linux x64 DEPS Release (Intel UHD 630)',
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)',
       'Dawn Linux x64 Release (Intel UHD 630)',
       'Dawn Mac x64 DEPS Release (AMD)',
       'Dawn Mac x64 DEPS Release (Intel)',
@@ -5187,6 +5199,9 @@
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
         'ci_only': True,
       },
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
       },
@@ -5205,6 +5220,9 @@
     'modifications': {
       # ci_only for bots where capacity is constrained.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+      'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
         'ci_only': True,
       },
       'Dawn Linux x64 Release (Intel UHD 630)': {
