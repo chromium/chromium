@@ -1518,13 +1518,13 @@
   },
   {
     "name": "contextual-panel",
-    "owners": [ "rkgibson@google.com", "gujen@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 126
+    "owners": [ "rkgibson@google.com", "gujen@google.com", "nicolasmacbeth@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "contextual-panel-force-show-entrypoint",
     "owners": [ "nicolasmacbeth@google.com", "rkgibson@google.com", "gujen@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "contextual-search-debug",
