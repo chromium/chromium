@@ -23,9 +23,9 @@ class KeystonePromotionInfoBarDelegate : public ConfirmInfoBarDelegate {
       const KeystonePromotionInfoBarDelegate&) = delete;
 
   // Creates a keystone promotion delegate and adds it to the
-  // infobars::ContentInfoBarManager associated with `webContents`, if
-  // `webContents` is not nullptr.
-  static void Create(content::WebContents* webContents);
+  // infobars::ContentInfoBarManager associated with `web_contents`, if
+  // `web_contents` is not nullptr.
+  static void Create(content::WebContents* web_contents);
 
  private:
   explicit KeystonePromotionInfoBarDelegate(PrefService* prefs);

@@ -4,25 +4,16 @@
 
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 
-#import <AppKit/AppKit.h>
-
 #include <string>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/branding_buildflags.h"
-#include "chrome/browser/buildflags.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -34,20 +25,18 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-class SkBitmap;
-
 // KeystonePromotionInfoBarDelegate -------------------------------------------
 
 // static
 void KeystonePromotionInfoBarDelegate::Create(
-    content::WebContents* webContents) {
-  if (!webContents) {
+    content::WebContents* web_contents) {
+  if (!web_contents) {
     return;
   }
-  infobars::ContentInfoBarManager::FromWebContents(webContents)
+  infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new KeystonePromotionInfoBarDelegate(
-              Profile::FromBrowserContext(webContents->GetBrowserContext())
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())
                   ->GetPrefs()))));
 }
 
@@ -107,11 +96,11 @@ void ShowUpdaterPromotionInfoBar() {
   // default browser also don't want to be nagged about the update check.
   // (Automated testers, I'm thinking of you...)
   Browser* browser = chrome::FindLastActive();
-  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!browser || !browser->profile() ||
       !browser->profile()->GetPrefs()->GetBoolean(
           prefs::kShowUpdatePromotionInfoBar) ||
-      commandLine->HasSwitch(switches::kNoDefaultBrowserCheck)) {
+      command_line->HasSwitch(switches::kNoDefaultBrowserCheck)) {
     return;
   }
   KeystonePromotionInfoBarDelegate::Create(

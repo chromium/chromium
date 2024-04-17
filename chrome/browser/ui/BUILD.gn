@@ -4604,8 +4604,8 @@ static_library("ui") {
 
     if (enable_updater) {
       sources += [
+        "cocoa/keystone_infobar_delegate.cc",
         "cocoa/keystone_infobar_delegate.h",
-        "cocoa/keystone_infobar_delegate.mm",
       ]
     }
 
