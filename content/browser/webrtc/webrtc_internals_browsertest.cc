@@ -217,6 +217,14 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
     EXPECT_EQ(true, EvalJs(shell(),
                            "document.getElementById('" + id + "') == null;"));
   }
+  // Verifies that the JS object |graphViews| contains no keys starting with id
+  // |id|.
+  void VerifyNoGraphViewsWithId(const string& id) {
+    EXPECT_EQ(true,
+              EvalJs(shell(),
+                     "Object.keys(graphViews).filter(key => key.startsWith('" +
+                         id + "')).length === 0;"));
+  }
 
   // Verifies the JS Array of userMediaRequests matches |requests|.
   void VerifyMediaRequest(const std::vector<UserMediaRequestEntry>& requests) {
@@ -368,22 +376,6 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
           "dp.value.toString()";
     EXPECT_EQ(value, EvalJs(shell(), ss.str()));
   }
-
-  // Get the JSON string of the ssrc info from the page.
-  string GetSsrcInfo(const string& ssrc_id) {
-    return EvalJs(shell(),
-                  "JSON.stringify("
-                  "ssrcInfoManager.streamInfoContainer_['" +
-                      ssrc_id + "'])")
-        .ExtractString();
-  }
-
-  int GetSsrcInfoBlockCount(Shell* shell) {
-    return EvalJs(shell,
-                  "document.getElementsByClassName("
-                  "    ssrcInfoManager.SSRC_INFO_BLOCK_CLASS).length")
-        .ExtractInt();
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, AddAndRemovePeerConnection) {
@@ -401,10 +393,12 @@ IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, AddAndRemovePeerConnection) {
 
   ExecuteRemovePeerConnectionJs(pc_1);
   VerifyNoElementWithId(pc_1.getIdString());
+  VerifyNoGraphViewsWithId(pc_1.getIdString());
   VerifyPeerConnectionEntry(pc_2);
 
   ExecuteRemovePeerConnectionJs(pc_2);
   VerifyNoElementWithId(pc_2.getIdString());
+  VerifyNoGraphViewsWithId(pc_2.getIdString());
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdateAllPeerConnections) {
@@ -497,9 +491,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest,
              "  }"
              "}"
              "result;"));
-
-  count = GetSsrcInfoBlockCount(shell2);
-  EXPECT_GT(count, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcInternalsBrowserTest, UpdateMedia) {
