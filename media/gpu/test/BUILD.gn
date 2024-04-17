@@ -67,6 +67,7 @@ if (enable_av1_decoder && (use_v4l2_codec || use_vaapi)) {
       "//media/gpu:buildflags",
       "//media/gpu:common",
       "//testing/gtest",
+      "//ui/gl:test_support",
     ]
   }
 
