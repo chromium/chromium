@@ -912,6 +912,9 @@ var mapperTab = (function () {
 	        if (params.userContext !== undefined) {
 	            userContext = params.userContext;
 	        }
+	        const existingContexts = this.#browsingContextStorage
+	            .getAllContexts()
+	            .filter((context) => context.userContext === userContext);
 	        let newWindow = false;
 	        switch (params.type) {
 	            case "tab" /* BrowsingContext.CreateType.Tab */:
@@ -921,15 +924,10 @@ var mapperTab = (function () {
 	                newWindow = true;
 	                break;
 	        }
-	        if (userContext !== 'default') {
-	            const existingContexts = this.#browsingContextStorage
-	                .getAllContexts()
-	                .filter((context) => context.userContext === userContext);
-	            if (!existingContexts.length) {
-	                // If there are no contexts in the given user context, we need to set
-	                // newWindow to true as newWindow=false will be rejected.
-	                newWindow = true;
-	            }
+	        if (!existingContexts.length) {
+	            // If there are no contexts in the given user context, we need to set
+	            // newWindow to true as newWindow=false will be rejected.
+	            newWindow = true;
 	        }
 	        let result;
 	        try {
@@ -5624,6 +5622,8 @@ var mapperTab = (function () {
 	    #cdpTarget;
 	    #maybeDefaultRealm;
 	    #logger;
+	    // Keeps track of the previously set viewport.
+	    #previousViewport = { width: 0, height: 0 };
 	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, logger) {
 	        this.#cdpTarget = cdpTarget;
 	        this.#id = id;
@@ -5807,7 +5807,7 @@ var mapperTab = (function () {
 	            }
 	            const timestamp = BrowsingContextImpl.getTimestamp();
 	            this.#url = params.url;
-	            this.#navigation.withinDocument.resolve(params);
+	            this.#navigation.withinDocument.resolve();
 	            this.#eventManager.registerEvent({
 	                type: 'event',
 	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
@@ -5869,7 +5869,7 @@ var mapperTab = (function () {
 	                            url: this.#url,
 	                        },
 	                    }, this.id);
-	                    this.#lifecycle.DOMContentLoaded.resolve(params);
+	                    this.#lifecycle.DOMContentLoaded.resolve();
 	                    break;
 	                case 'load':
 	                    this.#eventManager.registerEvent({
@@ -5882,7 +5882,7 @@ var mapperTab = (function () {
 	                            url: this.#url,
 	                        },
 	                    }, this.id);
-	                    this.#lifecycle.load.resolve(params);
+	                    this.#lifecycle.load.resolve();
 	                    break;
 	            }
 	        });
@@ -5959,8 +5959,7 @@ var mapperTab = (function () {
 	        // Same document navigation.
 	        if (loaderId === undefined || this.#loaderId === loaderId) {
 	            if (this.#navigation.withinDocument.isFinished) {
-	                this.#navigation.withinDocument =
-	                    new Deferred_js_1$2.Deferred();
+	                this.#navigation.withinDocument = new Deferred_js_1$2.Deferred();
 	            }
 	            else {
 	                this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (navigatedWithinDocument)');
@@ -5972,8 +5971,7 @@ var mapperTab = (function () {
 	    }
 	    #resetLifecycleIfFinished() {
 	        if (this.#lifecycle.DOMContentLoaded.isFinished) {
-	            this.#lifecycle.DOMContentLoaded =
-	                new Deferred_js_1$2.Deferred();
+	            this.#lifecycle.DOMContentLoaded = new Deferred_js_1$2.Deferred();
 	        }
 	        else {
 	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (DOMContentLoaded)');
@@ -6007,6 +6005,16 @@ var mapperTab = (function () {
 	            frameId: this.id,
 	        });
 	        if (cdpNavigateResult.errorText) {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$9.ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
+	                params: {
+	                    context: this.id,
+	                    navigation: cdpNavigateResult.loaderId ?? null,
+	                    timestamp: BrowsingContextImpl.getTimestamp(),
+	                    url,
+	                },
+	            }, this.id);
 	            throw new protocol_js_1$9.UnknownErrorException(cdpNavigateResult.errorText);
 	        }
 	        this.#documentChanged(cdpNavigateResult.loaderId);
@@ -6067,9 +6075,23 @@ var mapperTab = (function () {
 	        }
 	        else {
 	            try {
+	                let appliedViewport;
+	                if (viewport === undefined) {
+	                    appliedViewport = this.#previousViewport;
+	                }
+	                else if (viewport === null) {
+	                    appliedViewport = {
+	                        width: 0,
+	                        height: 0,
+	                    };
+	                }
+	                else {
+	                    appliedViewport = viewport;
+	                }
+	                this.#previousViewport = appliedViewport;
 	                await this.#cdpTarget.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
-	                    width: viewport ? viewport.width : 0,
-	                    height: viewport ? viewport.height : 0,
+	                    width: this.#previousViewport.width,
+	                    height: this.#previousViewport.height,
 	                    deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
 	                    mobile: false,
 	                    dontSetVisibleSize: true,
@@ -7632,6 +7654,15 @@ var mapperTab = (function () {
 	        this.#emitEventsIfReady();
 	    }
 	    onResponseReceivedExtraInfoEvent(event) {
+	        if (event.statusCode >= 300 &&
+	            event.statusCode <= 399 &&
+	            this.#request.info &&
+	            event.headers['location'] === this.#request.info.request.url) {
+	            // We received the Response Extra info for the redirect
+	            // Too late so we need to skip it as it will
+	            // fire wrongly for the last one
+	            return;
+	        }
 	        this.#response.extraInfo = event;
 	        this.#emitEventsIfReady();
 	    }
@@ -7909,6 +7940,10 @@ var mapperTab = (function () {
 	                ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
 	                initiator: {
 	                    type: NetworkRequest.#getInitiatorType(this.#request.info.initiator.type),
+	                    columnNumber: this.#request.info.initiator.columnNumber,
+	                    lineNumber: this.#request.info.initiator.lineNumber,
+	                    stackTrace: this.#request.info.initiator.stack,
+	                    request: this.#request.info.initiator.requestId,
 	                },
 	            },
 	        };
