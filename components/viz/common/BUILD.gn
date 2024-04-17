@@ -290,6 +290,7 @@ viz_component("common") {
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/system",
     "//services/tracing/public/cpp:cpp",
+    "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/libyuv",
     "//ui/display/types",
     "//ui/gfx",

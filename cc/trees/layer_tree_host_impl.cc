@@ -2394,6 +2394,14 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   }
 
   metadata.capture_bounds = CollectRegionCaptureBounds();
+
+  if (!screenshot_destination_.is_empty()) {
+    metadata.screenshot_destination =
+        blink::SameDocNavigationScreenshotDestinationToken(
+            screenshot_destination_);
+    screenshot_destination_ = base::UnguessableToken();
+  }
+
   return metadata;
 }
 
@@ -3433,6 +3441,17 @@ void LayerTreeHostImpl::ActivateSyncTree() {
   // priorities.
   if (!active_tree_->picture_layers().empty())
     DidModifyTilePriorities();
+
+  auto screenshot_token = active_tree()->TakeScreenshotDestinationToken();
+  if (child_local_surface_id_allocator_.GetCurrentLocalSurfaceId().is_valid()) {
+    // Since the screenshot will be issued against the previous `viz::Surface`
+    // we need to make sure the renderer has at least embedded a valid surface
+    // previously.
+    screenshot_destination_ = std::move(screenshot_token);
+  } else if (!screenshot_token.is_empty()) {
+    LOG(ERROR)
+        << "Cannot issue a copy because the previous surface is invalid.";
+  }
 
   // Update the child's LocalSurfaceId.
   if (active_tree()->local_surface_id_from_parent().is_valid()) {

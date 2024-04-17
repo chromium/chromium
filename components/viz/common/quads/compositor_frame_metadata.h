@@ -21,6 +21,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -198,6 +199,11 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // Indicates if this frame references shared element resources that need to
   // be replaced with ResourceIds in the Viz process.
   bool has_shared_element_resources = false;
+
+  // When set, the compositor frame submission also informs viz to issue a
+  // screenshot against the previous surface.
+  std::optional<blink::SameDocNavigationScreenshotDestinationToken>
+      screenshot_destination;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

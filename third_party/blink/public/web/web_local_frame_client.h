@@ -448,11 +448,15 @@ class BLINK_EXPORT WebLocalFrameClient {
   // |is_synchronously_committed| is true if the navigation is synchronously
   // committed from within Blink, as opposed to being driven by the browser's
   // navigation stack.
+  // `screenshot_destination`, if non-empty, tags the destination of the
+  // viewport screenshot.
   virtual void DidFinishSameDocumentNavigation(
       WebHistoryCommitType,
       bool is_synchronously_committed,
       mojom::SameDocumentNavigationType,
-      bool is_client_redirect) {}
+      bool is_client_redirect,
+      const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
+          screenshot_destination) {}
 
   // Called when an async same-document navigation fails before commit. This is
   // used in the case where a same-document navigation was instructed to commit

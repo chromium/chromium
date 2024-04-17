@@ -11,6 +11,7 @@
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "skia/public/mojom/skcolor4f_mojom_traits.h"
+#include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
@@ -65,6 +66,10 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   // Preferred_frame_interval must be nullopt or non-negative.
   if (out->preferred_frame_interval &&
       out->preferred_frame_interval->is_negative()) {
+    return false;
+  }
+
+  if (!data.ReadScreenshotDestination(&out->screenshot_destination)) {
     return false;
   }
 

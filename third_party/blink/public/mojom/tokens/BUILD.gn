@@ -96,6 +96,10 @@ mojom_component("tokens") {
           cpp = "::blink::ExecutionContextToken"
         },
         {
+          mojom = "blink.mojom.SameDocNavigationScreenshotDestinationToken"
+          cpp = "::blink::SameDocNavigationScreenshotDestinationToken"
+        },
+        {
           mojom = "blink.mojom.V8ContextToken"
           cpp = "::blink::V8ContextToken"
         },

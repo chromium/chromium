@@ -834,7 +834,8 @@ void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
                             : blink::kWebHistoryInertCommit,
           true /* is_synchronously_committed */,
           blink::mojom::SameDocumentNavigationType::kFragment,
-          false /* is_client_redirect */);
+          false /* is_client_redirect */,
+          /*screenshot_destination=*/std::nullopt);
 }
 
 blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {

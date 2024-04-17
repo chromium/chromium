@@ -4218,7 +4218,9 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
     bool is_synchronously_committed,
     blink::mojom::SameDocumentNavigationType same_document_navigation_type,
-    bool is_client_redirect) {
+    bool is_client_redirect,
+    const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
+        screenshot_destination) {
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation",
                "frame_token", frame_token_);
@@ -4242,6 +4244,9 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       document_loader->LastNavigationHadTransientUserActivation();
   same_document_params->should_replace_current_entry =
       document_loader->ReplacesCurrentHistoryItem();
+  same_document_params->navigation_entry_screenshot_destination =
+      screenshot_destination;
+
   DidCommitNavigationInternal(
       commit_type, transition,
       blink::ParsedPermissionsPolicy(),     // permissions_policy_header

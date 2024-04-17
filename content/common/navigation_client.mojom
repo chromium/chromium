@@ -192,6 +192,13 @@ struct DidCommitSameDocumentNavigationParams {
 
   // Whether this commit should replace the current entry.
   bool should_replace_current_entry;
+
+  // Set if the renderer triggers a screenshot for the last frame before this
+  // navigation. The screenshot is executed by Viz and sent back to the browser
+  // via `mojom::FrameSinkManagerClient`. This token is used to associate the
+  // screenshot sent by Viz to the corresponding navigation entry.
+  blink.mojom.SameDocNavigationScreenshotDestinationToken?
+    navigation_entry_screenshot_destination;
 };
 
 struct CookieManagerInfo {

@@ -1348,7 +1348,8 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
       blink::kWebStandardCommit,
       /*is_synchronously_committed=*/true,
       blink::mojom::SameDocumentNavigationType::kFragment,
-      /*is_client_redirect=*/false);
+      /*is_client_redirect=*/false,
+      /*screenshot_destination=*/std::nullopt);
 
   // Verify that the script was not blocked.
   EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));

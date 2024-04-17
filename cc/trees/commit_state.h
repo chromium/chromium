@@ -164,6 +164,10 @@ struct CC_EXPORT CommitState {
   // compositor when committing the current scroll offset to ensure the scroll
   // is set to a specific value, overriding any compositor updates.
   base::flat_set<ElementId> scrollers_clobbering_active_value;
+
+  // When non-empty, the next compositor frame also informs viz to issue a
+  // screenshot against the previous surface.
+  base::UnguessableToken screenshot_destination_token;
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {

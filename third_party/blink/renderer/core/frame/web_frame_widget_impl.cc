@@ -1368,6 +1368,11 @@ bool WebFrameWidgetImpl::IsScrollGestureActive() const {
   return is_scroll_gesture_active_;
 }
 
+void WebFrameWidgetImpl::RequestViewportScreenshot(
+    const base::UnguessableToken& token) {
+  LayerTreeHost()->RequestViewportScreenshot(token);
+}
+
 void WebFrameWidgetImpl::RequestNewLocalSurfaceId() {
   LayerTreeHost()->RequestNewLocalSurfaceId();
 }

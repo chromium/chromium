@@ -123,6 +123,10 @@ using ExecutionContextToken = MultiToken<LocalFrameToken,
                                          SharedStorageWorkletToken,
                                          ShadowRealmToken>;
 
+// Identifies the destination of a screenshot for a same-document navigation.
+using SameDocNavigationScreenshotDestinationToken = base::TokenType<
+    class SameDocNavigationScreenshotDestinationTokenTypeMarker>;
+
 // Identifies a v8::Context / blink::ScriptState.
 using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
 

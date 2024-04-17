@@ -158,6 +158,12 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.capture_bounds;
   }
 
+  static const std::optional<
+      blink::SameDocNavigationScreenshotDestinationToken>&
+  screenshot_destination(const viz::CompositorFrameMetadata& metadata) {
+    return metadata.screenshot_destination;
+  }
+
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,
                    viz::CompositorFrameMetadata* out);
 };
