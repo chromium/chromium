@@ -406,7 +406,7 @@
       // attribute is missing or set to auto.
       name: "AutoSizeLazyLoadedImages",
       depends_on: ["NoIntrinsicSizeOverride"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AvoidCaretVisibleSelectionAdjuster",

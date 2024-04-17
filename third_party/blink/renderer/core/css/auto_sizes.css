@@ -1,0 +1,12 @@
+/*
+ * Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+img:is([sizes="auto" i], [sizes^="auto," i]) {
+    contain: size !important;
+    contain-intrinsic-size: 300px 150px;
+}

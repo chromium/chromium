@@ -108,6 +108,9 @@ class CSSDefaultStyleSheets final
   StyleSheetContents* FormControlsNotVerticalTextSheet() {
     return form_controls_not_vertical_style_text_sheet_.Get();
   }
+  StyleSheetContents* AutoSizesStyleSheet() {
+    return auto_sizes_style_sheet_.Get();
+  }
 
   CORE_EXPORT void PrepareForLeakDetection();
 
@@ -175,6 +178,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> forced_colors_style_sheet_;
   Member<StyleSheetContents> form_controls_not_vertical_style_sheet_;
   Member<StyleSheetContents> form_controls_not_vertical_style_text_sheet_;
+  Member<StyleSheetContents> auto_sizes_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
 };
