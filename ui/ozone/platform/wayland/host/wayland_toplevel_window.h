@@ -122,7 +122,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-  PlatformWindowState GetPlatformWindowState() const override;
   void Activate() override;
   void Deactivate() override;
   void SizeConstraintsChanged() override;

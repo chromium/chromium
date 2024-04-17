@@ -300,10 +300,6 @@ void WaylandToplevelWindow::Restore() {
   SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
 }
 
-PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
-  return applied_state().window_state;
-}
-
 std::optional<std::string> WaylandToplevelWindow::TakeActivationToken() const {
   if (!connection()->xdg_activation() ||
       // xdg-activation implementation in some compositors is still buggy and

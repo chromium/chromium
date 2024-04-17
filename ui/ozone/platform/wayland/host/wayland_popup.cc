@@ -239,11 +239,11 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
       xdg_parent_window->GetWindowGeometryOffsetInDIP();
 
   // Bounds are in the geometry space. Need to add decoration insets backs. Note
-  // that the window state for WaylandPopup is always `kUnknown` now, but we
+  // that the window state for WaylandPopup is always `kNormal` now, but we
   // check `pending_configure_state_.window_state` to make it consistent.
   const auto insets = delegate()->CalculateInsetsInDIP(
       pending_configure_state_.window_state.value_or(
-          PlatformWindowState::kUnknown));
+          PlatformWindowState::kNormal));
   pending_configure_state_.bounds_dip->Inset(-insets);
   pending_configure_state_.size_px =
       delegate()->ConvertRectToPixels(pending_bounds_dip).size();
@@ -322,6 +322,10 @@ void WaylandPopup::OnCloseRequest() {
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
                                 PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
+
+  // `window_state` is always `kNormal` on WaylandPopup.
+  state->window_state = PlatformWindowState::kNormal;
+
   state->window_scale = parent_window()->applied_state().window_scale;
 
   // See details in WaylandWindow::RequestState().

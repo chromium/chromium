@@ -166,6 +166,10 @@ void WaylandBubble::SetSubsurfacePosition() {
 bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
                                  PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
+
+  // `window_state` is always `kNormal` on WaylandPopup.
+  state->window_state = PlatformWindowState::kNormal;
+
   state->window_scale = parent_window()->applied_state().window_scale;
   // See details in WaylandWindow::RequestState().
   state->size_px = gfx::ScaleToEnclosingRectIgnoringError(

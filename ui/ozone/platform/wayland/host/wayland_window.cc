@@ -524,9 +524,8 @@ void WaylandWindow::Minimize() {}
 void WaylandWindow::Restore() {}
 
 PlatformWindowState WaylandWindow::GetPlatformWindowState() const {
-  // Remove normal state for all the other types of windows as it's only the
-  // WaylandToplevelWindow that supports state changes.
-  return PlatformWindowState::kNormal;
+  // `window_state` is always `kNormal` for WaylandPopup and WaylandBubble.
+  return applied_state().window_state;
 }
 
 void WaylandWindow::Activate() {
