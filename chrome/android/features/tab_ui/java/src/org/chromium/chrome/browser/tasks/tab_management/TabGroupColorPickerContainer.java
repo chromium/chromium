@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -57,8 +56,7 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
         assert mColorViews != null;
         if (mLayoutType == ColorPickerLayoutType.DYNAMIC) {
             // If the color items exceed the width of the container, split into two rows.
-            if (mColorViews.get(0).getMeasuredWidth() * mColorViews.size()
-                    > (((View) getParent()).getMeasuredWidth())) {
+            if (mColorViews.get(0).getMeasuredWidth() * mColorViews.size() > getMeasuredWidth()) {
                 // If the current setup is a single row, perform a re-layout to a double row.
                 if (Boolean.FALSE.equals(mIsDoubleRow)) {
                     addColorsToDoubleRow();
