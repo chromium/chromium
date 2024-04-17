@@ -461,25 +461,37 @@ bool SupervisedUserExtensionsManager::ShouldBlockExtension(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void SupervisedUserExtensionsManager::
     MaybeMarkExtensionsLocallyParentApproved() {
-  if (!is_active_policy_for_supervised_users_) {
-    return;
-  }
-  if (!supervised_user::
-          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-    return;
-  }
-
   supervised_user::LocallyParentApprovedExtensionsMigrationState
       migration_state = static_cast<
           supervised_user::LocallyParentApprovedExtensionsMigrationState>(
           user_prefs_->GetInteger(
               prefs::kLocallyParentApprovedExtensionsMigrationState));
-
-  if (migration_state !=
+  if (migration_state ==
       supervised_user::LocallyParentApprovedExtensionsMigrationState::
           kComplete) {
+    return;
+  }
+
+  if (!supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return;
+  }
+
+  if (supervised_user::IsSubjectToParentalControls(*user_prefs_)) {
+    // In the case of of a supervised user locally approve their extensions.
     DoExtensionsMigrationToParentApproved();
   }
+
+  // Always mark the migration done on feature release for the currently used
+  // profile. Applies to both for supervised and regular users. This way, if the
+  // profile is later Gellerized or if a supervised user takes over an existing
+  // unsupervised profile, their extensions will not be locally approved,
+  // instead they should remain in pending approval state.
+  user_prefs_->SetInteger(
+      prefs::kLocallyParentApprovedExtensionsMigrationState,
+      static_cast<int>(
+          supervised_user::LocallyParentApprovedExtensionsMigrationState::
+              kComplete));
 }
 
 void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
@@ -498,13 +510,6 @@ void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
       ChangeExtensionStateIfNecessary(extension_entry.first);
     }
   }
-
-  // Mark the migration done.
-  user_prefs_->SetInteger(
-      prefs::kLocallyParentApprovedExtensionsMigrationState,
-      static_cast<int>(
-          supervised_user::LocallyParentApprovedExtensionsMigrationState::
-              kComplete));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

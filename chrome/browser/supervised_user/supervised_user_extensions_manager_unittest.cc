@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -36,28 +37,12 @@ enum class ExtensionsManagingToggle : int {
 
 using extensions::Extension;
 
-class SupervisedUserExtensionsManagerTest
-    : public extensions::ExtensionServiceTestBase,
-      public ::testing::WithParamInterface<ExtensionsManagingToggle> {
+class SupervisedUserExtensionsManagerTestBase
+    : public extensions::ExtensionServiceTestBase {
  public:
-  SupervisedUserExtensionsManagerTest() : channel_(version_info::Channel::DEV) {
-    std::vector<base::test::FeatureRef> enabled_features;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-    if (GetParam() == ExtensionsManagingToggle::kExtensions) {
-      enabled_features.push_back(
-          supervised_user::
-              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_feature=s*/ {});
-  }
-  ~SupervisedUserExtensionsManagerTest() override = default;
+  SupervisedUserExtensionsManagerTestBase()
+      : channel_(version_info::Channel::DEV) {}
+  ~SupervisedUserExtensionsManagerTestBase() override = default;
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
@@ -74,7 +59,18 @@ class SupervisedUserExtensionsManagerTest
     base::RunLoop().RunUntilIdle();
   }
 
- protected:
+  void CheckLocalApprovalMigrationForDesktopState(
+      supervised_user::LocallyParentApprovedExtensionsMigrationState
+          expected_migration_state) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto* prefs = profile()->GetPrefs();
+    CHECK(prefs);
+    EXPECT_EQ(static_cast<int>(expected_migration_state),
+              prefs->GetInteger(
+                  prefs::kLocallyParentApprovedExtensionsMigrationState));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  }
+
   scoped_refptr<const extensions::Extension> MakeThemeExtension() {
     base::Value::Dict source;
     source.Set(extensions::manifest_keys::kName, "Theme");
@@ -100,6 +96,36 @@ class SupervisedUserExtensionsManagerTest
 
   extensions::ScopedCurrentChannel channel_;
   std::unique_ptr<extensions::SupervisedUserExtensionsManager> manager_;
+};
+
+class SupervisedUserExtensionsManagerTest
+    : public SupervisedUserExtensionsManagerTestBase,
+      public ::testing::WithParamInterface<ExtensionsManagingToggle> {
+ public:
+  SupervisedUserExtensionsManagerTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+    if (GetExtensionsManagingToggle() ==
+        ExtensionsManagingToggle::kExtensions) {
+      enabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    } else {
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ExtensionsManagingToggle GetExtensionsManagingToggle() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -128,7 +154,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   }
 
   scoped_refptr<const extensions::Extension> extension = MakeExtension();
-  if (GetParam() == ExtensionsManagingToggle::kPermissions) {
+  if (GetExtensionsManagingToggle() == ExtensionsManagingToggle::kPermissions) {
     // Now check a different kind of extension; the supervised user should not
     // be able to load it. It should also not need to remain installed.
     std::u16string error_1;
@@ -161,7 +187,7 @@ TEST_P(SupervisedUserExtensionsManagerTest,
 TEST_P(SupervisedUserExtensionsManagerTest,
        ExtensionManagementPolicyProviderWithSUInitiatedInstalls) {
   MakeSupervisedUserExtensionsManager();
-  if (GetParam() == ExtensionsManagingToggle::kExtensions) {
+  if (GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions) {
     // Enable child users to initiate extension installs by simulating the
     // toggling of "Skip parent approval to install extensions" to disabled.
     supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
@@ -243,13 +269,13 @@ TEST_P(SupervisedUserExtensionsManagerTest,
   bool has_local_approval_migration_run = false;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   auto expected_migration_state =
-      GetParam() == ExtensionsManagingToggle::kExtensions
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
           ? supervised_user::LocallyParentApprovedExtensionsMigrationState::
                 kComplete
           : supervised_user::LocallyParentApprovedExtensionsMigrationState::
                 kNeedToRun;
   has_local_approval_migration_run =
-      GetParam() == ExtensionsManagingToggle::kExtensions;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions;
 
   EXPECT_EQ(
       static_cast<int>(expected_migration_state),
@@ -324,7 +350,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
                                   /*page_ordinal=*/syncer::StringOrdinal());
 
   bool is_extension_approved =
-      GetParam() == ExtensionsManagingToggle::kExtensions ? true : false;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
+          ? true
+          : false;
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_on.get()));
   EXPECT_EQ(is_extension_approved,
@@ -385,7 +413,9 @@ TEST_P(SupervisedUserExtensionsManagerTest,
       profile(), true);
 
   bool is_extension_approved =
-      GetParam() == ExtensionsManagingToggle::kExtensions ? true : false;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions
+          ? true
+          : false;
   EXPECT_EQ(is_extension_approved,
             manager_->IsExtensionAllowed(*extn_with_switch_off.get()));
   EXPECT_EQ(is_extension_approved,
@@ -416,7 +446,7 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
   bool has_local_approval_migration_run = false;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   has_local_approval_migration_run =
-      GetParam() == ExtensionsManagingToggle::kExtensions;
+      GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   auto* prefs = profile()->GetPrefs();
@@ -445,80 +475,6 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
   EXPECT_TRUE(manager_->IsExtensionAllowed(*locally_approved_extn2));
 }
 
-// Tests that on Desktop (Win/Linux/Mac) platforms, when the feature
-// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions` is first
-// enabled, present extensions will be marked as locally parent-approved
-// when a user profile becomes supervised.
-// This covers the scenarios where:
-// 1) supervision is applied to a previously unsupervised user
-// 2) a supervised user signs-in on an existing profile that had installed
-// extensions.
-TEST_P(SupervisedUserExtensionsManagerTest,
-       MigrateExtensionsToLocallyApprovedOnUserBecomingSupervised) {
-  // Make the user non-supervised.
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
-  ASSERT_TRUE(!profile_->IsChild());
-
-  scoped_refptr<const Extension> locally_approved_extn =
-      MakeExtension("extension_test_2");
-  service()->AddExtension(locally_approved_extn.get());
-
-  // Create the object under test.
-  MakeSupervisedUserExtensionsManager();
-
-  auto* prefs = profile()->GetPrefs();
-  CHECK(prefs);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  auto expected_migration_state = supervised_user::
-      LocallyParentApprovedExtensionsMigrationState::kNeedToRun;
-  EXPECT_EQ(
-      static_cast<int>(expected_migration_state),
-      prefs->GetInteger(prefs::kLocallyParentApprovedExtensionsMigrationState));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  const base::Value::Dict& local_approved_extensions_pref =
-      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
-  EXPECT_FALSE(
-      local_approved_extensions_pref.contains(locally_approved_extn->id()));
-  EXPECT_TRUE(
-      registry()->enabled_extensions().Contains(locally_approved_extn->id()));
-
-  // Make the user supervised. This should trigger the migration of extensions
-  // to locally-approved.
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
-  ASSERT_TRUE(profile_->IsChild());
-
-  bool has_local_approval_migration_run = false;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  expected_migration_state =
-      GetParam() == ExtensionsManagingToggle::kExtensions
-          ? supervised_user::LocallyParentApprovedExtensionsMigrationState::
-                kComplete
-          : supervised_user::LocallyParentApprovedExtensionsMigrationState::
-                kNeedToRun;
-  has_local_approval_migration_run =
-      GetParam() == ExtensionsManagingToggle::kExtensions;
-
-  EXPECT_EQ(
-      static_cast<int>(expected_migration_state),
-      prefs->GetInteger(prefs::kLocallyParentApprovedExtensionsMigrationState));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  const base::Value::Dict& local_approved_extensions_pref_post_migr =
-      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
-  // The extensions approved in the migration should be allowed and part of the
-  // local-approved list.
-  EXPECT_EQ(has_local_approval_migration_run,
-            local_approved_extensions_pref_post_migr.contains(
-                locally_approved_extn->id()));
-  EXPECT_EQ(has_local_approval_migration_run,
-            manager_->IsExtensionAllowed(*locally_approved_extn));
-
-  EXPECT_EQ(
-      has_local_approval_migration_run,
-      registry()->enabled_extensions().Contains(locally_approved_extn->id()));
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          SupervisedUserExtensionsManagerTest,
                          testing::Values(ExtensionsManagingToggle::kPermissions,
@@ -530,3 +486,163 @@ INSTANTIATE_TEST_SUITE_P(All,
                                    ? "ManagedByExtensions"
                                    : "ManagedByPermissions");
                          });
+
+// Whether the local approval extension migration for
+// Win/Mac/Linux platforms has already run at the beginning of
+// each test case.
+enum class LocalApprovalMigrationForDesktopState : int {
+  kExecuted = 0,
+  kPending = 1
+};
+
+// Tests the managed extensions' state when an existing profile becomes
+// supervised.
+class AddingSupervisionTest
+    : public SupervisedUserExtensionsManagerTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple<ExtensionsManagingToggle,
+                     LocalApprovalMigrationForDesktopState>> {
+ public:
+  AddingSupervisionTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+    if (GetExtensionsManagingToggle() ==
+        ExtensionsManagingToggle::kExtensions) {
+      enabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    } else {
+      disabled_features.push_back(
+          supervised_user::
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ExtensionsManagingToggle GetExtensionsManagingToggle() {
+    return std::get<0>(GetParam());
+  }
+
+  LocalApprovalMigrationForDesktopState
+  GetInitialLocalApprovalMigrationForDesktopState() {
+    return std::get<1>(GetParam());
+  }
+
+  void MaybeMarkLocalApprovalMigrationDone() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    if (GetInitialLocalApprovalMigrationForDesktopState() ==
+            LocalApprovalMigrationForDesktopState::kExecuted &&
+        GetExtensionsManagingToggle() ==
+            ExtensionsManagingToggle::kExtensions) {
+      auto* prefs = profile()->GetPrefs();
+      CHECK(prefs);
+      prefs->SetInteger(
+          prefs::kLocallyParentApprovedExtensionsMigrationState,
+          static_cast<int>(
+              supervised_user::LocallyParentApprovedExtensionsMigrationState::
+                  kComplete));
+    }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that on Desktop (Win/Linux/Mac) platforms, when:
+// 1) the feature `kEnableSupervisedUserSkipParentApprovalToInstallExtensions`
+// is first enabled and
+// 2) a supervised user sings-in on an existing unsupervised profile or
+//    the existing profile becomes supervised (Gellerized) then
+// the existing extensions remain disabled and pending approval.
+// The states of the present extensions should not be impacted by the local
+// extension approval migration that is executed on feature release for Desktop
+// platforms.
+TEST_P(AddingSupervisionTest,
+       DisableExistingExtensionsOnProfileBecomingSupervised) {
+  MaybeMarkLocalApprovalMigrationDone();
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+  ASSERT_TRUE(!profile_->IsChild());
+
+  scoped_refptr<const Extension> existing_extension =
+      MakeExtension("extension_test_2");
+  service()->AddExtension(existing_extension.get());
+
+  supervised_user::LocallyParentApprovedExtensionsMigrationState
+      expected_migragtion_state = supervised_user::
+          LocallyParentApprovedExtensionsMigrationState::kNeedToRun;
+  if (GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions &&
+      GetInitialLocalApprovalMigrationForDesktopState() ==
+          LocalApprovalMigrationForDesktopState::kExecuted) {
+    expected_migragtion_state = supervised_user::
+        LocallyParentApprovedExtensionsMigrationState::kComplete;
+  }
+  CheckLocalApprovalMigrationForDesktopState(expected_migragtion_state);
+
+  // Create the object under test.
+  MakeSupervisedUserExtensionsManager();
+
+  if (GetExtensionsManagingToggle() == ExtensionsManagingToggle::kExtensions) {
+    expected_migragtion_state = supervised_user::
+        LocallyParentApprovedExtensionsMigrationState::kComplete;
+  }
+  CheckLocalApprovalMigrationForDesktopState(expected_migragtion_state);
+
+  auto* prefs = profile()->GetPrefs();
+  CHECK(prefs);
+  const base::Value::Dict& local_approved_extensions_pref =
+      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  EXPECT_FALSE(
+      local_approved_extensions_pref.contains(existing_extension->id()));
+  EXPECT_TRUE(
+      registry()->enabled_extensions().Contains(existing_extension->id()));
+
+  // Make the user supervised.
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
+  ASSERT_TRUE(profile_->IsChild());
+
+  const base::Value::Dict& local_approved_extensions_pref_post_migr =
+      prefs->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  // Check that the pre-existing extensions should have been be excluded from
+  // the local approval migration.
+  EXPECT_FALSE(local_approved_extensions_pref_post_migr.contains(
+      existing_extension->id()));
+  EXPECT_FALSE(manager_->IsExtensionAllowed(*existing_extension));
+
+  EXPECT_TRUE(
+      registry()->disabled_extensions().Contains(existing_extension->id()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AddingSupervisionTest,
+    testing::Combine(
+        testing::Values(ExtensionsManagingToggle::kPermissions,
+                        ExtensionsManagingToggle::kExtensions),
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        testing::Values(LocalApprovalMigrationForDesktopState::kExecuted,
+                        LocalApprovalMigrationForDesktopState::kPending)),
+#else   // ChromeOS case
+        // The local approval migration is not applicable for ChromeOS.
+        // The test just needs to be executed once, the value of
+        // LocalApprovalMigrationForDesktopState does not matter.
+        testing::Values(LocalApprovalMigrationForDesktopState::kExecuted)),
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    [](const auto& info) {
+      return std::string(std::get<0>(info.param) ==
+                                 ExtensionsManagingToggle::kExtensions
+                             ? "ManagedByExtensions"
+                             : "ManagedByPermissions") +
+             std::string(
+                 std::get<1>(info.param) ==
+                         LocalApprovalMigrationForDesktopState::kExecuted
+                     ? "PostReleaseSkipParentApprovalFeature"
+                     : "PreReleaseSkipParentApprovalFeature");
+    });
