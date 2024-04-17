@@ -543,6 +543,7 @@ class StateKeys {
   void Retrieve(ServerBackedStateKeysBroker* state_key_broker,
                 CompletionCallback completion_callback) {
     ++attempts_;
+    LOG(WARNING) << "Requesting state keys. Attempt no. " << attempts_ << ".";
     state_key_broker->RequestStateKeys(base::BindOnce(
         &StateKeys::OnStateKeysRetrieved, weak_factory_.GetWeakPtr(),
         state_key_broker, std::move(completion_callback)));

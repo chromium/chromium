@@ -52,10 +52,13 @@ void DeviceCloudPolicyInitializer::Init() {
   DCHECK(!is_initialized_);
 
   is_initialized_ = true;
+
   policy_store_->AddObserver(this);
-  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::BindRepeating(&DeviceCloudPolicyInitializer::TryToStartConnection,
-                          base::Unretained(this)));
+  // TODO(b/333951800): Evaluate skipping the state keys if FRE is disabled.
+  state_keys_update_subscription_ =
+      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+          &DeviceCloudPolicyInitializer::TryToStartConnection,
+          base::Unretained(this)));
   policy_manager_observer_.Observe(policy_manager_.get());
 
   TryToStartConnection();
