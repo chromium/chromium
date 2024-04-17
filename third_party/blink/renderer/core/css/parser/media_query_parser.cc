@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -167,7 +168,10 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
       syntax_level_(syntax_level),
       fake_context_(*MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode,
-          SecureContextMode::kInsecureContext)) {}
+          SecureContextMode::kInsecureContext,
+          DynamicTo<LocalDOMWindow>(execution_context)
+              ? DynamicTo<LocalDOMWindow>(execution_context)->document()
+              : nullptr)) {}
 
 MediaQueryParser::~MediaQueryParser() = default;
 
