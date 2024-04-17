@@ -1049,9 +1049,7 @@ class StartSurfaceMediator
             if (mIsNativeInitialized) mLogoCoordinator.initWithNative();
         }
         if (mLogoCoordinator != null) {
-            boolean isShowingHomepage = isHomepageShown();
-            mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
-                    isShowingHomepage && isVisible, !isShowingHomepage, false);
+            mLogoCoordinator.updateVisibility(false);
         }
     }
 
@@ -1201,14 +1199,7 @@ class StartSurfaceMediator
         }
 
         mLogoCoordinator =
-                new LogoCoordinator(
-                        mContext,
-                        logoClickedCallback,
-                        logoView,
-                        true,
-                        null,
-                        isHomepageShown(),
-                        this);
+                new LogoCoordinator(mContext, logoClickedCallback, logoView, true, null, this);
         return mLogoCoordinator;
     }
 

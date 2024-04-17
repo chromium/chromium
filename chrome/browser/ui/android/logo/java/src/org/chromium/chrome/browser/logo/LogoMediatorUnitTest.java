@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.logo;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -146,10 +147,7 @@ public class LogoMediatorUnitTest {
         logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
 
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
 
         verify(mLogoBridge, times(1)).getCurrentLogo(any());
     }
@@ -160,41 +158,15 @@ public class LogoMediatorUnitTest {
         logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
 
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
 
         verify(mLogoBridge, times(0)).getCurrentLogo(any());
-    }
-
-    @Test
-    public void testInitWithNativeWhenParentSurfaceIsNotVisible() {
-        LogoMediator logoMediator =
-                createMediatorWithoutNative(/* isParentSurfaceShown= */ false, true);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ false,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
-        Assert.assertFalse(mLogoModel.get(LogoProperties.VISIBILITY));
-        // When parent surface isn't showing, calling updateVisibilityAndMaybeCleanUp() shouldn't
-        // trigger getSearchProviderLogo() nor add any pending load task.
-        Assert.assertFalse(logoMediator.getIsLoadPendingForTesting());
-        logoMediator.initWithNative();
-
-        Assert.assertFalse(mLogoModel.get(LogoProperties.VISIBILITY));
-        Assert.assertFalse(logoMediator.isLogoVisible());
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
-        verify(mTemplateUrlService).addObserver(logoMediator);
     }
 
     @Test
     public void testInitWithNativeWhenParentSurfaceIsVisible() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true, true);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
+        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
 
         Assert.assertTrue(logoMediator.isLogoVisible());
         // When parent surface is shown while native library isn't loaded, calling
@@ -209,7 +181,7 @@ public class LogoMediatorUnitTest {
 
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true, true);
+        LogoMediator logoMediator = createMediatorWithoutNative(true);
         boolean originKeyValue =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
@@ -217,10 +189,7 @@ public class LogoMediatorUnitTest {
                                 mTemplateUrlService.doesDefaultSearchEngineHaveLogo());
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
         Assert.assertFalse(mLogoModel.get(LogoProperties.VISIBILITY));
         Assert.assertFalse(logoMediator.getIsLoadPendingForTesting());
         verify(mLogoBridge, times(0)).destroy();
@@ -229,65 +198,22 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    public void testUpdateVisibilityAndMaybeCleanUp() {
+    public void testUpdateVisibility() {
         LogoMediator logoMediator = createMediator();
-
-        // If parent surface is not shown nor bridge shouldn't be destroyed, logo shouldn't be
-        // loaded and bridge isn't destroyed.
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ false,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
-        Assert.assertFalse(logoMediator.isLogoVisible());
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
-        verify(mLogoBridge, times(0)).destroy();
-
-        // If parent surface is not shown and bridge should be destroyed, logo should be
-        // loaded and bridge is destroyed.
-        logoMediator.setImageFetcherForTesting(mImageFetcher);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ false,
-                /* shouldDestroyBridge= */ true,
-                /* animationEnabled= */ false);
-        Assert.assertFalse(logoMediator.isLogoVisible());
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
-        verify(mLogoBridge, times(1)).destroy();
-        verify(mImageFetcher, times(1)).destroy();
-        Assert.assertNull(logoMediator.getLogoBridgeForTesting());
-        Assert.assertNull(logoMediator.getImageFetcherForTesting());
 
         // If parent surface is shown, logo should be loaded and bridge shouldn't be
         // destroyed.
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ false);
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
         Assert.assertTrue(logoMediator.isLogoVisible());
-        verify(mLogoBridge, times(1)).getCurrentLogo(any());
-        verify(mLogoBridge, times(1)).destroy();
+        verify(mLogoBridge).getCurrentLogo(any());
+        verify(mLogoBridge, never()).destroy();
         Assert.assertFalse(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
 
         // Attached the test for animationEnabled.
         logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ false,
-                /* animationEnabled= */ true);
+        logoMediator.updateVisibility(/* animationEnabled= */ true);
         Assert.assertTrue(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testUpdateVisibilityAndMaybeCleanUpAssertionError() {
-        LogoMediator logoMediator = createMediator();
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
-
-        // If parent surface is shown and bridge should be destroyed, an assertion error
-        // should be thrown.
-        logoMediator.updateVisibilityAndMaybeCleanUp(
-                /* isParentSurfaceShown= */ true,
-                /* shouldDestroyBridge= */ true,
-                /* animationEnabled= */ false); // should throw an exception
     }
 
     @Test
@@ -299,21 +225,18 @@ public class LogoMediatorUnitTest {
     }
 
     private LogoMediator createMediator(boolean shouldFetchDoodle) {
-        LogoMediator logoMediator =
-                createMediatorWithoutNative(/* isParentSurfaceShown= */ true, shouldFetchDoodle);
+        LogoMediator logoMediator = createMediatorWithoutNative(shouldFetchDoodle);
         logoMediator.initWithNative();
         return logoMediator;
     }
 
     private LogoMediator createMediator() {
-        LogoMediator logoMediator =
-                createMediatorWithoutNative(/* isParentSurfaceShown= */ true, true);
+        LogoMediator logoMediator = createMediatorWithoutNative(true);
         logoMediator.initWithNative();
         return logoMediator;
     }
 
-    private LogoMediator createMediatorWithoutNative(
-            boolean isParentSurfaceShown, boolean shouldFetchDoodle) {
+    private LogoMediator createMediatorWithoutNative(boolean shouldFetchDoodle) {
         LogoMediator logoMediator =
                 new LogoMediator(
                         mContext,
@@ -321,7 +244,6 @@ public class LogoMediatorUnitTest {
                         mLogoModel,
                         shouldFetchDoodle,
                         mOnLogoAvailableCallback,
-                        isParentSurfaceShown,
                         null,
                         new CachedTintedBitmap(
                                 R.drawable.google_logo, R.color.google_logo_tint_color));

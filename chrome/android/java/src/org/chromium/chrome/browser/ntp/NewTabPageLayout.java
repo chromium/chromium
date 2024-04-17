@@ -495,7 +495,6 @@ public class NewTabPageLayout extends LinearLayout {
                         mLogoView,
                         shouldFetchDoodle,
                         onLogoAvailableCallback,
-                        /* isParentSurfaceShown= */ true,
                         /* visibilityObserver= */ null);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);

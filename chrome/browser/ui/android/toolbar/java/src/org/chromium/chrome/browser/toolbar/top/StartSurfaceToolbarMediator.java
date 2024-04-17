@@ -333,7 +333,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
                         logoView,
                         mShouldFetchDoodle,
                         /* onLogoAvailableCallback= */ null,
-                        isOnHomepage(),
                         null);
 
         // The logo view may be ready after native is initialized, so we need to call
@@ -413,8 +412,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private void updateLogoVisibility() {
         if (mLogoCoordinator == null) return;
 
-        mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
-                isOnHomepage(), isOnATab() || isOnGridTabSwitcher(), /* animationEnabled= */ false);
+        mLogoCoordinator.updateVisibility(/* animationEnabled= */ false);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

@@ -53,7 +53,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -520,41 +519,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         assertTrue(mMediator.shouldShowRealSearchBox(toolbarHeight));
         assertTrue(mMediator.isOnHomepage());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testLogoLoadOrDestroy() {
-        createMediator(false);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.TAB_SWITCHER);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-        verify(mLogoBridge).destroy(eq(1L), any());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testLogoLoadOrDestroy_SurfacePolishMoveDownLogoDisabled() {
-        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(false);
-        createMediator(false);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.TAB_SWITCHER);
-        assertFalse(mMediator.isLogoVisibleForTesting());
-        verify(mLogoBridge).destroy(eq(1L), any());
-
-        mMediator.onStartSurfaceStateChanged(true, LayoutType.START_SURFACE);
-        assertTrue(mMediator.isLogoVisibleForTesting());
     }
 
     @Test
