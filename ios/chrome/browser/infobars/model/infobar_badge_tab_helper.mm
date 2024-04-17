@@ -32,6 +32,9 @@ InfobarBadgeTabHelper::~InfobarBadgeTabHelper() = default;
 void InfobarBadgeTabHelper::SetDelegate(
     id<InfobarBadgeTabHelperDelegate> delegate) {
   delegate_ = delegate;
+  if (delegate_ == nil) {
+    return;
+  }
   // Prerendering complete; register infobars using delegate.
   for (size_t index = 0; index < infobars_added_when_prerendering_.size();
        ++index) {
@@ -111,8 +114,15 @@ void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
   InfobarType infobar_type = GetInfobarType(infobar);
   if ([delegate_ badgeSupportedForInfobarType:infobar_type]) {
     infobar_badge_states_.erase(infobar_type);
-    infobar_accept_observer_.scoped_observations().RemoveObservation(
-        static_cast<InfoBarIOS*>(infobar));
+    base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>&
+        infobar_accept_observations =
+            infobar_accept_observer_.scoped_observations();
+    InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
+    // TODO(crbug.com/330899285): Fix the root cause of infobar not being
+    // observed, and remove the `else` condition.
+    if (infobar_accept_observations.IsObservingSource(infobar_ios)) {
+      infobar_accept_observations.RemoveObservation(infobar_ios);
+    }
   }
 }
 
@@ -153,7 +163,12 @@ void InfobarBadgeTabHelper::InfobarAcceptanceObserver::DidUpdateAcceptedState(
 
 void InfobarBadgeTabHelper::InfobarAcceptanceObserver::InfobarDestroyed(
     InfoBarIOS* infobar) {
-  scoped_observations_.RemoveObservation(infobar);
+  InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(infobar);
+  // TODO(crbug.com/330899285): Fix the root cause of infobar not being
+  // observed, and remove the `else` condition.
+  if (scoped_observations_.IsObservingSource(infobar_ios)) {
+    scoped_observations_.RemoveObservation(infobar_ios);
+  }
 }
 
 #pragma mark - InfobarBadgeTabHelper::InfobarManagerObserver
@@ -190,11 +205,19 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
     infobars::InfoBar* new_infobar) {
   // New permission infobar in the same tab should keep preserving previous
   // states.
-  if (GetInfobarType(old_infobar) == InfobarType::kInfobarTypePermissions &&
+  if (tab_helper_->delegate_ &&
+      GetInfobarType(old_infobar) == InfobarType::kInfobarTypePermissions &&
       GetInfobarType(new_infobar) == InfobarType::kInfobarTypePermissions) {
-    infobar_accept_observer_->scoped_observations().RemoveObservation(
-        static_cast<InfoBarIOS*>(old_infobar));
-    infobar_accept_observer_->scoped_observations().AddObservation(
+    base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>&
+        infobar_accept_observations =
+            infobar_accept_observer_->scoped_observations();
+    InfoBarIOS* old_infobar_ios = static_cast<InfoBarIOS*>(old_infobar);
+    // TODO(crbug.com/330899285): Fix the root cause of infobar not being
+    // observed, and remove the `else` condition.
+    if (infobar_accept_observations.IsObservingSource(old_infobar_ios)) {
+      infobar_accept_observations.RemoveObservation(old_infobar_ios);
+    }
+    infobar_accept_observations.AddObservation(
         static_cast<InfoBarIOS*>(new_infobar));
     return;
   }
