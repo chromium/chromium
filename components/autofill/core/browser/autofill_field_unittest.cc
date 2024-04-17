@@ -300,7 +300,17 @@ INSTANTIATE_TEST_SUITE_P(
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = ADDRESS_HOME_CITY,
             .heuristic_type = ADDRESS_HOME_APT_NUM,
-            .expected_result = ADDRESS_HOME_CITY}));
+            .expected_result = ADDRESS_HOME_CITY},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
+            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+            .expected_result = ADDRESS_HOME_HOUSE_NUMBER_AND_APT},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_APT_NUM,
+            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+            .expected_result = ADDRESS_HOME_HOUSE_NUMBER_AND_APT}));
 
 // Tests that consecutive identical events are not added twice to the event log.
 TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
