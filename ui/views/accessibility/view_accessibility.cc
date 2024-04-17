@@ -822,4 +822,12 @@ void ViewAccessibility::UnpruneSubtree() {
     child->UnpruneVirtualSubtree();
   }
 }
+
+void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
+  if (is_enabled) {
+    data_.AddState(state);
+  } else {
+    data_.RemoveState(state);
+  }
+}
 }  // namespace views

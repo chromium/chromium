@@ -441,6 +441,8 @@ class VIEWS_EXPORT ViewAccessibility {
   void PruneSubtree();
   void UnpruneSubtree();
 
+  void SetState(ax::mojom::State state, bool is_enabled);
+
   bool ignore_missing_widget_for_testing_ = false;
 };
 
