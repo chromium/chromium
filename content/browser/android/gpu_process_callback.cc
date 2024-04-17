@@ -19,23 +19,14 @@ namespace content {
 
 void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& token,
+    base::UnguessableToken& request_token,
     const base::android::JavaParamRef<jobject>& surface) {
-  std::optional<base::UnguessableToken> requestToken =
-      base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(env,
-                                                                       token);
-  if (!requestToken) {
-    DLOG(ERROR) << "Received invalid surface request token.";
-    return;
-  }
-
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   base::android::ScopedJavaGlobalRef<jobject> jsurface;
   jsurface.Reset(env, surface);
   ScopedSurfaceRequestManager::GetInstance()->FulfillScopedSurfaceRequest(
-      requestToken.value(),
-      gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
+      request_token, gl::ScopedJavaSurface(jsurface, /*auto_release=*/true));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

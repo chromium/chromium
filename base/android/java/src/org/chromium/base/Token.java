@@ -4,24 +4,19 @@
 
 package org.chromium.base;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
-
-import java.util.Objects;
 
 /** Java counterpart to the native base::Token. A {@link Token} is a random 128-bit integer. */
 @JNINamespace("base::android")
-@DoNotMock("Create a real instance instead.")
-public final class Token {
-    private final long mHigh;
-    private final long mLow;
-
+@DoNotMock("This is a simple value object.")
+public final class Token extends TokenBase {
     /** Returns a new random token using the native implementation. */
     public static Token createRandom() {
         return TokenJni.get().createRandom();
@@ -36,8 +31,7 @@ public final class Token {
      */
     @CalledByNative
     public Token(long high, long low) {
-        mHigh = high;
-        mLow = low;
+        super(high, low);
     }
 
     /** Returns whether the Token is 0. */
@@ -46,13 +40,11 @@ public final class Token {
     }
 
     /** Returns the high portion of the token. */
-    @CalledByNative
     public long getHigh() {
         return mHigh;
     }
 
     /** Returns the low portion of the token. */
-    @CalledByNative
     public long getLow() {
         return mLow;
     }
@@ -62,22 +54,10 @@ public final class Token {
         return String.format("%016X%016X", mHigh, mLow);
     }
 
-    @Override
-    public final int hashCode() {
-        return Objects.hash(mHigh, mLow);
-    }
-
-    @Override
-    public final boolean equals(@Nullable Object obj) {
-        if (obj == null || getClass() != obj.getClass()) return false;
-
-        Token other = (Token) obj;
-        return other.mHigh == mHigh && other.mLow == mLow;
-    }
-
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
+        @JniType("base::Token")
         Token createRandom();
     }
 }

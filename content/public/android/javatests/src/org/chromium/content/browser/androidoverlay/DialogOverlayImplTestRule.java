@@ -196,8 +196,8 @@ public class DialogOverlayImplTestRule extends ContentShellActivityTestRule {
                                             org.chromium.base.UnguessableToken routingToken =
                                                     host.getAndroidOverlayRoutingToken();
                                             UnguessableToken mojoToken = new UnguessableToken();
-                                            mojoToken.high = routingToken.getHighForSerialization();
-                                            mojoToken.low = routingToken.getLowForSerialization();
+                                            mojoToken.high = routingToken.getHighForTesting();
+                                            mojoToken.low = routingToken.getLowForTesting();
                                             return mojoToken;
                                         });
 
