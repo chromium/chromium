@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/devtools/protocol/extensions_handler.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -64,6 +65,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
 
   protocol::UberDispatcher dispatcher_;
   std::unique_ptr<AutofillHandler> autofill_handler_;
+  std::unique_ptr<ExtensionsHandler> extensions_handler_;
   std::unique_ptr<BrowserHandler> browser_handler_;
   std::unique_ptr<CastHandler> cast_handler_;
   std::unique_ptr<EmulationHandler> emulation_handler_;

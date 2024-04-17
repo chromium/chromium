@@ -1059,6 +1059,21 @@ experimental domain Audits
     parameters
       InspectorIssue issue
 
+# Defines commands and events for browser extensions. Available if the client
+# is connected using the --remote-debugging-pipe flag and
+# the --enable-unsafe-extension-debugging flag is set.
+experimental domain Extensions
+  # Installs an unpacked extension from the filesystem similar to
+  # --load-extension CLI flags. Returns extension ID once the extension
+  # has been installed.
+  command loadUnpacked
+    parameters
+      # Absolute file path.
+      string path
+    returns
+      # Extension id.
+      string id
+
 # Defines commands and events for Autofill.
 experimental domain Autofill
   type CreditCard extends object

@@ -96,6 +96,7 @@ extern const char kEnableDomainReliability[];
 extern const char kEnableDownloadWarningImprovements[];
 extern const char kEnableExtensionActivityLogging[];
 extern const char kEnableExtensionActivityLogTesting[];
+extern const char kEnableUnsafeExtensionDebugging[];
 extern const char kEnableHangoutServicesExtensionForTesting[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableLacrosForkZygotesAtLoginScreen[];

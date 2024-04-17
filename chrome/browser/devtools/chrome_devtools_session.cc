@@ -8,20 +8,24 @@
 #include <string_view>
 #include <type_traits>
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
 #include "chrome/browser/devtools/protocol/emulation_handler.h"
+#include "chrome/browser/devtools/protocol/extensions_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
 #include "chrome/browser/devtools/protocol/pwa_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
 #include "chrome/browser/devtools/protocol/storage_handler.h"
 #include "chrome/browser/devtools/protocol/system_info_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
@@ -78,6 +82,14 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       autofill_handler_ =
           std::make_unique<AutofillHandler>(&dispatcher_, agent_host->GetId());
     }
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kEnableUnsafeExtensionDebugging) &&
+      agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser &&
+      channel->GetClient()->AllowUnsafeOperations() &&
+      (IsDomainAvailableToUntrustedClient<ExtensionsHandler>() ||
+       channel->GetClient()->IsTrusted())) {
+    extensions_handler_ = std::make_unique<ExtensionsHandler>(&dispatcher_);
   }
   if (IsDomainAvailableToUntrustedClient<EmulationHandler>() ||
       channel->GetClient()->IsTrusted()) {

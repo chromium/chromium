@@ -19,6 +19,8 @@ if (!is_android) {
   _protocol_generated = [
     "protocol/autofill.cc",
     "protocol/autofill.h",
+    "protocol/extensions.cc",
+    "protocol/extensions.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/cast.cc",
@@ -282,6 +284,8 @@ static_library("devtools") {
       "protocol/cast_handler.h",
       "protocol/emulation_handler.cc",
       "protocol/emulation_handler.h",
+      "protocol/extensions_handler.cc",
+      "protocol/extensions_handler.h",
       "protocol/page_handler.cc",
       "protocol/page_handler.h",
       "protocol/pwa_handler.cc",

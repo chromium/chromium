@@ -2318,6 +2318,7 @@ if (!is_android) {
       "../browser/devtools/devtools_browsertest.cc",
       "../browser/devtools/global_confirm_info_bar_browsertest.cc",
       "../browser/devtools/protocol/devtools_autofill_browsertest.cc",
+      "../browser/devtools/protocol/devtools_extensions_browsertest.cc",
       "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
       "../browser/devtools/protocol/devtools_protocol_test_support.cc",
       "../browser/devtools/protocol/devtools_protocol_test_support.h",

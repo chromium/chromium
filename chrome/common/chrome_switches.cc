@@ -264,6 +264,11 @@ const char kEnableExtensionActivityLogging[] =
 const char kEnableExtensionActivityLogTesting[] =
     "enable-extension-activity-log-testing";
 
+// Enables installing/uninstalling extensions at runtime via Chrome DevTools
+// Protocol if the protocol client is connected over --remote-debugging-pipe.
+const char kEnableUnsafeExtensionDebugging[] =
+    "enable-unsafe-extension-debugging";
+
 // Force enabling HangoutServicesExtension.
 const char kEnableHangoutServicesExtensionForTesting[] =
     "enable-hangout-services-extension-for-testing";
