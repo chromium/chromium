@@ -29,6 +29,8 @@ chromium-metrics-reviews@google.com.
   <variant name="GpuMetrics" summary="For GPU process metrics."/>
   <variant name="NotificationHelperMetrics"
       summary="For notification_helper process metrics."/>
+  <variant name="PlatformExperienceHelperMetrics"
+      summary="For metrics from Platform Experience Helper"/>
   <variant name="PpapiBrokerMetrics"
       summary="For &quot;PPAPI broker&quot; process metrics."/>
   <variant name="PpapiPluginMetrics"
@@ -322,6 +324,7 @@ chromium-metrics-reviews@google.com.
   <token key="Source">
     <variant name="DeferredBrowserMetrics"/>
     <variant name="NotificationHelperMetrics"/>
+    <variant name="PlatformExperienceHelperMetrics"/>
     <variant name="SetupMetrics"/>
   </token>
 </histogram>

@@ -235,6 +235,12 @@ base::LazyInstance<ChromeMetricsServiceCrashReporter>::Leaky g_crash_reporter =
     LAZY_INSTANCE_INITIALIZER;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+// Needs to be kept in sync with the writer in PlatformExperienceHelper.
+const char kPlatformExperienceHelperHistogramAllocatorName[] =
+    "PlatformExperienceHelperMetrics";
+#endif  // BUILDFLAG(IS_WIN)
+
 void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
   metrics::FileMetricsProvider::RegisterSourcePrefs(registry,
                                                     kBrowserMetricsName);
@@ -251,6 +257,8 @@ void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
 
   metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, notification_helper::kNotificationHelperHistogramAllocatorName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
+      registry, kPlatformExperienceHelperHistogramAllocatorName);
 #endif
 }
 
@@ -362,13 +370,16 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
       metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN,
       installer::kSetupHistogramAllocatorName));
 
-  // When metrics reporting is enabled, register the notification_helper metrics
-  // files; otherwise delete any existing files in order to preserve user
-  // privacy.
+  // When metrics reporting is enabled, register the notification_helper
+  // and platform experience helper metrics files; otherwise delete any
+  // existing files in order to preserve user privacy.
   if (!user_data_dir.empty()) {
     base::FilePath notification_helper_metrics_upload_dir =
         user_data_dir.AppendASCII(
             notification_helper::kNotificationHelperHistogramAllocatorName);
+    base::FilePath platform_experience_helper_metrics_upload_dir =
+        user_data_dir.AppendASCII(
+            kPlatformExperienceHelperHistogramAllocatorName);
 
     if (metrics_reporting_enabled) {
       file_metrics_provider->RegisterSource(
@@ -377,6 +388,12 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
               metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
               metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN,
               notification_helper::kNotificationHelperHistogramAllocatorName));
+      file_metrics_provider->RegisterSource(
+          metrics::FileMetricsProvider::Params(
+              platform_experience_helper_metrics_upload_dir,
+              metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
+              metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN,
+              kPlatformExperienceHelperHistogramAllocatorName));
     } else {
       base::ThreadPool::PostTask(
           FROM_HERE,
@@ -384,6 +401,12 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
           base::GetDeletePathRecursivelyCallback(
               std::move(notification_helper_metrics_upload_dir)));
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::GetDeletePathRecursivelyCallback(
+              std::move(platform_experience_helper_metrics_upload_dir)));
     }
   }
 #endif
