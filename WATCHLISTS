@@ -2794,7 +2794,6 @@
     'clang_update': ['chromium-toolchains@engflow.com',
                      'dcheng@chromium.org',
                      'eugenis+clang@chromium.org',
-                     'gbiv+clang@chromium.org',
                      'glider+clang@chromium.org',
                      'hans@chromium.org',
                      'ibiryukov@google.com',
