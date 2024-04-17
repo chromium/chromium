@@ -78,7 +78,7 @@ void BirchModel::SetCalendarItems(
     base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Calendar",
                                 calendar_items.size());
     base::UmaHistogramTimes("Ash.Birch.Latency.Calendar",
-                            GetNow() - fetch_start_time_);
+                            GetNow() - fetch_start_time_calendar_);
     is_fetching_calendar_ = false;
   }
   if (calendar_items != calendar_items_) {
@@ -110,7 +110,7 @@ void BirchModel::SetFileSuggestItems(
     base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.File",
                                 file_suggest_items.size());
     base::UmaHistogramTimes("Ash.Birch.Latency.File",
-                            GetNow() - fetch_start_time_);
+                            GetNow() - fetch_start_time_file_suggest_);
     is_fetching_file_suggest_ = false;
   }
   if (file_suggest_items_ != file_suggest_items) {
@@ -126,7 +126,7 @@ void BirchModel::SetRecentTabItems(
     base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Tab",
                                 recent_tab_items.size());
     base::UmaHistogramTimes("Ash.Birch.Latency.Tab",
-                            GetNow() - fetch_start_time_);
+                            GetNow() - fetch_start_time_recent_tab_);
     is_fetching_recent_tab_ = false;
   }
   if (recent_tab_items_ != recent_tab_items) {
@@ -142,7 +142,7 @@ void BirchModel::SetWeatherItems(
     base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.Weather",
                                 weather_items.size());
     base::UmaHistogramTimes("Ash.Birch.Latency.Weather",
-                            GetNow() - fetch_start_time_);
+                            GetNow() - fetch_start_time_weather_);
     is_fetching_weather_ = false;
   }
   if (weather_items_ != weather_items) {
@@ -158,7 +158,7 @@ void BirchModel::SetReleaseNotesItems(
     base::UmaHistogramCounts100("Ash.Birch.ResultsReturned.ReleaseNotes",
                                 release_notes_items.size());
     base::UmaHistogramTimes("Ash.Birch.Latency.ReleaseNotes",
-                            GetNow() - fetch_start_time_);
+                            GetNow() - fetch_start_time_release_notes_);
     is_fetching_release_notes_ = false;
   }
   if (release_notes_items != release_notes_items_) {
@@ -228,6 +228,7 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     if (prefs->GetBoolean(prefs::kBirchUseCalendar)) {
       is_calendar_data_fresh_ = false;
       is_attachment_data_fresh_ = false;  // Attachments use the same provider.
+      fetch_start_time_calendar_ = GetNow();
       is_fetching_calendar_ = true;
       is_fetching_attachment_ = true;
       birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
@@ -235,18 +236,21 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     }
     if (prefs->GetBoolean(prefs::kBirchUseFileSuggest)) {
       is_files_data_fresh_ = false;
+      fetch_start_time_file_suggest_ = GetNow();
       is_fetching_file_suggest_ = true;
       birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
     if (prefs->GetBoolean(prefs::kBirchUseRecentTabs)) {
       is_tabs_data_fresh_ = false;
+      fetch_start_time_recent_tab_ = GetNow();
       is_fetching_recent_tab_ = true;
       birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
       did_fetch = true;
     }
     if (prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
       is_release_notes_data_fresh_ = false;
+      fetch_start_time_release_notes_ = GetNow();
       is_fetching_release_notes_ = true;
       birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
       did_fetch = true;
@@ -254,6 +258,7 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   }
   if (weather_provider_ && prefs->GetBoolean(prefs::kBirchUseWeather)) {
     is_weather_data_fresh_ = false;
+    fetch_start_time_weather_ = GetNow();
     is_fetching_weather_ = true;
     weather_provider_->RequestBirchDataFetch();
     did_fetch = true;
@@ -526,6 +531,15 @@ void BirchModel::OnCalendarPrefChanged() {
   } else {
     is_calendar_data_fresh_ = false;
     is_attachment_data_fresh_ = false;
+    // When calendar is toggled on while a fetch is in progress, perform
+    // a calendar data fetch.
+    const bool fetch_in_progress = !pending_requests_.empty();
+    if (birch_client_ && fetch_in_progress && !is_fetching_calendar_) {
+      fetch_start_time_calendar_ = GetNow();
+      is_fetching_calendar_ = true;
+      is_fetching_attachment_ = true;
+      birch_client_->GetCalendarProvider()->RequestBirchDataFetch();
+    }
   }
 }
 
@@ -535,6 +549,15 @@ void BirchModel::OnFileSuggestPrefChanged() {
     file_suggest_items_.clear();
   } else {
     is_files_data_fresh_ = false;
+
+    // When file suggest is toggled on while a fetch is in progress, perform
+    // a file suggest data fetch.
+    const bool fetch_in_progress = !pending_requests_.empty();
+    if (birch_client_ && fetch_in_progress && !is_fetching_file_suggest_) {
+      fetch_start_time_file_suggest_ = GetNow();
+      is_fetching_file_suggest_ = true;
+      birch_client_->GetFileSuggestProvider()->RequestBirchDataFetch();
+    }
   }
 }
 
@@ -544,6 +567,14 @@ void BirchModel::OnRecentTabPrefChanged() {
     recent_tab_items_.clear();
   } else {
     is_tabs_data_fresh_ = false;
+    // When recent tabs is toggled on while a fetch is in progress, perform
+    // a tabs data fetch.
+    const bool fetch_in_progress = !pending_requests_.empty();
+    if (birch_client_ && fetch_in_progress && !is_fetching_recent_tab_) {
+      fetch_start_time_recent_tab_ = GetNow();
+      is_fetching_recent_tab_ = true;
+      birch_client_->GetRecentTabsProvider()->RequestBirchDataFetch();
+    }
   }
 }
 
@@ -553,6 +584,14 @@ void BirchModel::OnWeatherPrefChanged() {
     weather_items_.clear();
   } else {
     is_weather_data_fresh_ = false;
+    // When weather is toggled on while a fetch is in progress, perform
+    // a weather data fetch.
+    const bool fetch_in_progress = !pending_requests_.empty();
+    if (weather_provider_ && fetch_in_progress && !is_fetching_weather_) {
+      fetch_start_time_weather_ = GetNow();
+      is_fetching_weather_ = true;
+      weather_provider_->RequestBirchDataFetch();
+    }
   }
 }
 
@@ -562,6 +601,14 @@ void BirchModel::OnReleaseNotesPrefChanged() {
     release_notes_items_.clear();
   } else {
     is_release_notes_data_fresh_ = false;
+    // When release notes is toggled on while a fetch is in progress, perform
+    // a release notes fetch.
+    const bool fetch_in_progress = !pending_requests_.empty();
+    if (birch_client_ && fetch_in_progress && !is_fetching_release_notes_) {
+      fetch_start_time_release_notes_ = GetNow();
+      is_fetching_release_notes_ = true;
+      birch_client_->GetReleaseNotesProvider()->RequestBirchDataFetch();
+    }
   }
 }
 

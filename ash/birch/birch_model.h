@@ -191,6 +191,11 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // When the last fetch was started. Used for metrics.
   base::Time fetch_start_time_;
+  base::Time fetch_start_time_calendar_;
+  base::Time fetch_start_time_file_suggest_;
+  base::Time fetch_start_time_recent_tab_;
+  base::Time fetch_start_time_weather_;
+  base::Time fetch_start_time_release_notes_;
 
   // Which fetches are in progress. Used for metrics.
   bool is_fetching_calendar_ = false;
