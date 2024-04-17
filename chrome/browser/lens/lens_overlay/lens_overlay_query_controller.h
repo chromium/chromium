@@ -86,6 +86,9 @@ class LensOverlayQueryController {
   // and interaction retries.
   LensOverlayFullImageResponseCallback full_image_callback_;
 
+  // Interaction data callback for an interaction.
+  LensOverlayInteractionResponseCallback interaction_data_callback_;
+
  private:
   enum class QueryControllerState {
     // StartQueryFlow has not been called and the query controller is inactive.
@@ -169,9 +172,6 @@ class LensOverlayQueryController {
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
   LensOverlayUrlResponseCallback url_callback_;
-
-  // Interaction data callback for an interaction.
-  LensOverlayInteractionResponseCallback interaction_data_callback_;
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;

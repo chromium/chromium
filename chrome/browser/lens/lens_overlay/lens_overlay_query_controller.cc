@@ -114,10 +114,10 @@ LensOverlayQueryController::LensOverlayQueryController(
     variations::VariationsClient* variations_client,
     signin::IdentityManager* identity_manager)
     : full_image_callback_(std::move(full_image_callback)),
+      interaction_data_callback_(std::move(interaction_data_callback)),
       request_id_generator_(
           std::make_unique<lens::LensOverlayRequestIdGenerator>()),
       url_callback_(std::move(url_callback)),
-      interaction_data_callback_(std::move(interaction_data_callback)),
       variations_client_(variations_client),
       identity_manager_{identity_manager} {}
 

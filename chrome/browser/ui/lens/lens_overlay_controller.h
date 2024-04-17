@@ -170,11 +170,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
-  // Handles the response to the Lens start query request.
-  void HandleStartQueryResponse(
-      std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text);
-
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
@@ -184,6 +179,12 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
+
+  // Returns the lens response stored in this controller for testing.
+  const lens::proto::LensOverlayInteractionResponse&
+  GetLensResponseForTesting() {
+    return GetLensResponse();
+  }
 
  protected:
   // Override these methods to stub out network requests for testing.
@@ -253,6 +254,11 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Calls CloseUI() asynchronously.
   void CloseUIAsync();
+
+  // Handles the response to the Lens start query request.
+  void HandleStartQueryResponse(
+      std::vector<lens::mojom::OverlayObjectPtr> objects,
+      lens::mojom::TextPtr text);
 
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(
@@ -344,6 +350,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+
+  // The latest stored interaction response from the server.
+  lens::proto::LensOverlayInteractionResponse latest_interaction_response_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

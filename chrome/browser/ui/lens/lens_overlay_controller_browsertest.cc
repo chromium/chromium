@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -59,6 +61,18 @@ constexpr char kCheckSidePanelLoadedScript[] =
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
+constexpr char kTestSuggestSignals[] = "suggest_signals";
+
+const lens::mojom::GeometryPtr kTestGeometry =
+    lens::mojom::Geometry::New(lens::mojom::CenterRotatedBox::New(
+        gfx::RectF(0.1, 0.1, 0.8, 0.8),
+        0.1,
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized));
+const lens::mojom::OverlayObjectPtr kTestOverlayObject =
+    lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
+const lens::mojom::TextPtr kTestText =
+    lens::mojom::Text::New(lens::mojom::TextLayout::New(), "es");
+
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
   void ScreenshotDataUriReceived(const std::string& data_uri) override {
@@ -85,6 +99,41 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   lens::mojom::TextPtr last_received_text_;
 };
 
+// TODO(b/334147680): Since both our interactive UI tests and our browser tests
+// both mock out network calls via this method, we should factor this out so it
+// can be used across files.
+class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
+ public:
+  explicit LensOverlayQueryControllerFake(
+      lens::LensOverlayFullImageResponseCallback full_image_callback,
+      lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      variations::VariationsClient* variations_client,
+      signin::IdentityManager* identity_manager)
+      : LensOverlayQueryController(full_image_callback,
+                                   url_callback,
+                                   interaction_data_callback,
+                                   variations_client,
+                                   identity_manager) {}
+
+  void StartQueryFlow(const SkBitmap& screenshot) override {
+    // Send response for full image callback / HandleStartQueryResponse.
+    std::vector<lens::mojom::OverlayObjectPtr> test_objects;
+    test_objects.push_back(kTestOverlayObject->Clone());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(full_image_callback_, std::move(test_objects),
+                                  kTestText->Clone()));
+
+    // Send response for interaction data callback /
+    // HandleInteractionDataResponse.
+    lens::proto::LensOverlayInteractionResponse interaction_response;
+    interaction_response.set_suggest_signals(kTestSuggestSignals);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(interaction_data_callback_, interaction_response));
+  }
+};
+
 // Stubs out network requests and mojo calls.
 class LensOverlayControllerFake : public LensOverlayController {
  public:
@@ -92,6 +141,17 @@ class LensOverlayControllerFake : public LensOverlayController {
                             variations::VariationsClient* variations_client,
                             signin::IdentityManager* identity_manager)
       : LensOverlayController(tab, variations_client, identity_manager) {}
+
+  std::unique_ptr<lens::LensOverlayQueryController> CreateLensQueryController(
+      lens::LensOverlayFullImageResponseCallback full_image_callback,
+      lens::LensOverlayUrlResponseCallback url_callback,
+      lens::LensOverlayInteractionResponseCallback interaction_data_callback,
+      variations::VariationsClient* variations_client,
+      signin::IdentityManager* identity_manager) override {
+    return std::make_unique<LensOverlayQueryControllerFake>(
+        full_image_callback, url_callback, interaction_data_callback,
+        variations_client, identity_manager);
+  }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page) override {
@@ -413,44 +473,36 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Showing UI should eventually result in overlay state.
+  // Before showing the UI, there should be no set objects or text as
+  // no query flow has started.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_TRUE(
+      fake_controller->fake_overlay_page_.last_received_objects_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.last_received_text_);
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // full image callback.
   controller->ShowUI();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // Set up fake test objects to send to controller.
-  auto test_object = lens::mojom::OverlayObject::New();
-  test_object->id = "unique_id";
-  test_object->geometry = lens::mojom::Geometry::New();
-  test_object->geometry->bounding_box = lens::mojom::CenterRotatedBox::New();
-  test_object->geometry->bounding_box->box = gfx::RectF(0.1, 0.1, 0.8, 0.8);
-
-  std::vector<lens::mojom::OverlayObjectPtr> test_objects;
-  test_objects.push_back(test_object->Clone());
-
-  auto test_text = lens::mojom::Text::New();
-  test_text->content_language = "es";
-  test_text->text_layout = lens::mojom::TextLayout::New();
-
-  // Call the response callback and flush the receiver.
-  controller->HandleStartQueryResponse(std::move(test_objects),
-                                       test_text->Clone());
-
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
+  // Prevent flakiness by flushing the tasks.
   fake_controller->FlushForTesting();
 
+  // After flushing the mojo calls, the data should be present.
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_objects_.empty());
-  EXPECT_TRUE(test_object->Equals(
+  EXPECT_TRUE(kTestOverlayObject->Equals(
       *fake_controller->fake_overlay_page_.last_received_objects_[0]));
-  EXPECT_TRUE(test_text->Equals(
+  EXPECT_TRUE(kTestText->Equals(
       *fake_controller->fake_overlay_page_.last_received_text_));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       HandleStartQueryResponse_NoObjectsNoText) {
+                       HandleInteractionDataResponse) {
   WaitForPaint();
 
   // State should start in off.
@@ -461,21 +513,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Showing UI should eventually result in overlay state.
+  // Before showing the UI, there should be no suggest signals as no query flow
+  // has started.
+  EXPECT_FALSE(controller->GetLensResponseForTesting().has_suggest_signals());
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
   controller->ShowUI();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // Call the response callback and flush the receiver.
-  controller->HandleStartQueryResponse({}, nullptr);
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->FlushForTesting();
-
-  EXPECT_TRUE(
-      fake_controller->fake_overlay_page_.last_received_objects_.empty());
-  EXPECT_FALSE(fake_controller->fake_overlay_page_.last_received_text_);
+  // The lens response should have been correctly set for use by the searchbox.
+  EXPECT_TRUE(controller->GetLensResponseForTesting().has_suggest_signals());
+  EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
+            kTestSuggestSignals);
 }
 
 }  // namespace

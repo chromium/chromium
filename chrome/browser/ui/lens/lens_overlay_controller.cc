@@ -241,6 +241,7 @@ void LensOverlayController::CloseUI() {
   current_screenshot_data_uri_.clear();
   lens_overlay_query_controller_.reset();
   scoped_tab_modal_ui_.reset();
+  latest_interaction_response_.Clear();
   // In the future we may want a hibernate state. In this case we would stop
   // showing the UI but persist enough information to defrost the original UI
   // state when the tab is foregrounded.
@@ -334,20 +335,6 @@ void LensOverlayController::SendObjects(
 
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
   page_->TextReceived(std::move(text));
-}
-
-void LensOverlayController::HandleStartQueryResponse(
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text) {
-  CHECK(page_);
-  if (!objects.empty()) {
-    SendObjects(std::move(objects));
-  }
-
-  // Text can be null if there was no text within the server response.
-  if (!text.is_null()) {
-    SendText(std::move(text));
-  }
 }
 
 bool LensOverlayController::IsOverlayShowing() {
@@ -555,9 +542,7 @@ const std::string& LensOverlayController::GetThumbnail() const {
 
 const lens::proto::LensOverlayInteractionResponse&
 LensOverlayController::GetLensResponse() const {
-  static base::NoDestructor<lens::proto::LensOverlayInteractionResponse>
-      response;
-  return *response;
+  return latest_interaction_response_;
 }
 
 void LensOverlayController::OnThumbnailRemoved() const {
@@ -652,6 +637,20 @@ void LensOverlayController::IssueTextSelectionRequest(
   state_ = State::kOverlayAndResults;
 }
 
+void LensOverlayController::HandleStartQueryResponse(
+    std::vector<lens::mojom::OverlayObjectPtr> objects,
+    lens::mojom::TextPtr text) {
+  CHECK(page_);
+  if (!objects.empty()) {
+    SendObjects(std::move(objects));
+  }
+
+  // Text can be null if there was no text within the server response.
+  if (!text.is_null()) {
+    SendText(std::move(text));
+  }
+}
+
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   if (side_panel_page_) {
@@ -662,4 +661,6 @@ void LensOverlayController::HandleInteractionURLResponse(
 }
 
 void LensOverlayController::HandleInteractionDataResponse(
-    lens::proto::LensOverlayInteractionResponse response) {}
+    lens::proto::LensOverlayInteractionResponse response) {
+  latest_interaction_response_ = response;
+}
