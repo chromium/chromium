@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("public_config") {
+  include_dirs = [ "//chromecast/starboard/chromecast/starboard_cast_api" ]
+}
+
+source_set("starboard_cast_api") {
+  sources = [ "cast_starboard_api.h" ]
+  public_configs = [ ":public_config" ]
+}
+
+source_set("cast_starboard_api_types") {
+  sources = [ "cast_starboard_api_types.h" ]
+  public_configs = [ ":public_config" ]
+}
