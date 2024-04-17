@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -74,6 +76,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -673,6 +676,22 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
   EXPECT_EQ(popup_browser, chrome::FindLastActive());
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+
+// Reentrancy regression test for PopunderPreventer attempting to activate a
+// fullscreen web app window that is being closed; see crbug.com/331095620.
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       CloseFullscreenStandaloneWebApp) {
+  GURL url = embedded_test_server()->GetURL("/web_apps/basic.html");
+  web_app::OsIntegrationManager::ScopedSuppressForTesting suppress;
+  webapps::AppId id = web_app::InstallWebAppFromPage(browser(), url);
+  Browser* app = web_app::LaunchWebAppBrowserAndWait(browser()->profile(), id);
+  WebContents* tab = app->tab_strip_model()->GetActiveWebContents();
+  tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+  ui_test_utils::FullscreenWaiter(app, {.tab_fullscreen = true}).Wait();
+
+  app->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(app);
+}
 
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
 // TODO(crbug.com/40901768): Re-enable this test
