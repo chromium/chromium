@@ -114,7 +114,8 @@ void SavedTabGroupUtils::ToggleGroupPinState(Browser* browser,
 std::unique_ptr<ui::DialogModel>
 SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
     Browser* browser,
-    const base::Uuid& saved_guid) {
+    const base::Uuid& saved_guid,
+    bool show_pin_unpin_option) {
   const auto* const service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   const auto* const saved_group = service->model()->Get(saved_guid);
@@ -152,7 +153,7 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           .SetId(kMoveGroupToNewWindowMenuItem)
           .SetIsEnabled(should_enable_move_menu_item));
 
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() && show_pin_unpin_option) {
     dialog_model.AddMenuItem(
         ui::ImageModel::FromVectorIcon(saved_group->is_pinned()
                                            ? kKeepPinFilledChromeRefreshIcon

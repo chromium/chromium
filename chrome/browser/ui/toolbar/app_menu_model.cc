@@ -95,6 +95,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -145,6 +146,7 @@ using base::UserMetricsAction;
 using content::WebContents;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kBookmarksMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
@@ -1732,6 +1734,18 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
                            kBookmarksMenuItem);
   }
+
+  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
+      browser_->profile()->IsRegularProfile()) {
+    auto saved_tab_groups_model = std::make_unique<ui::SimpleMenuModel>(this);
+    sub_menus_.push_back(std::move(saved_tab_groups_model));
+    AddSubMenuWithStringId(IDC_SAVED_TAB_GROUPS_MENU, IDS_SAVED_TAB_GROUPS_MENU,
+                           sub_menus_.back().get());
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_SAVED_TAB_GROUPS_MENU).value(),
+        kTabGroupsMenuItem);
+  }
+
   WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!browser_->profile()->IsOffTheRecord() && web_contents &&
@@ -1932,6 +1946,8 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_RECENT_TABS_MENU, kHistoryIcon);
     SetCommandIcon(this, IDC_SHOW_DOWNLOADS, kDownloadMenuIcon);
     SetCommandIcon(this, IDC_BOOKMARKS_MENU, kBookmarksListsMenuIcon);
+    SetCommandIcon(this, IDC_SAVED_TAB_GROUPS_MENU,
+                   kSavedTabGroupBarEverythingIcon);
     SetCommandIcon(this, IDC_VIEW_PASSWORDS,
                    vector_icons::kPasswordManagerIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);

@@ -25,9 +25,25 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kCreateNewTabGroup);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGEverythingMenu, kTabGroup);
 
 STGEverythingMenu::STGEverythingMenu(views::MenuButtonController* controller,
-                                     views::Widget* widget,
                                      Browser* browser)
-    : menu_button_controller_(controller), browser_(browser), widget_(widget) {}
+    : menu_button_controller_(controller),
+      browser_(browser),
+      widget_(views::Widget::GetWidgetForNativeWindow(
+          browser->window()->GetNativeWindow())) {}
+
+int STGEverythingMenu::GetAndIncrementNextTabGroupItemID() {
+  const int current_id = next_tab_group_item_command_id_;
+  next_tab_group_item_command_id_ += AppMenuModel::kNumUnboundedMenuTypes;
+  return current_id;
+}
+
+const SavedTabGroup* STGEverythingMenu::GetTabGroupForCommandId(
+    int command_id) {
+  const int idx_in_sorted_tab_group =
+      (command_id - AppMenuModel::kMinTabGroupsCommandId) /
+      AppMenuModel::kNumUnboundedMenuTypes;
+  return sorted_tab_groups_[idx_in_sorted_tab_group];
+}
 
 const SavedTabGroupModel*
 STGEverythingMenu::GetSavedTabGroupModelFromBrowser() {
@@ -81,8 +97,9 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     const auto title = tab_group->title();
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
+    const int command_id = GetAndIncrementNextTabGroupItemID();
     menu_model->AddItemWithIcon(
-        i /*command_id*/,
+        command_id,
         title.empty() ? l10n_util::GetPluralStringFUTF16(
                             IDS_SAVED_TAB_GROUP_TABS_COUNT,
                             static_cast<int>(tab_group->saved_tabs().size()))
@@ -91,18 +108,22 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     // Set the first tab group item with element id `kTabGroup`.
     if (i == 0) {
       menu_model->SetElementIdentifierAt(
-          menu_model->GetIndexOfCommandId(0).value(), kTabGroup);
+          menu_model->GetIndexOfCommandId(command_id).value(), kTabGroup);
     }
   }
   return menu_model;
 }
 
 void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
+  if (parent->HasSubmenu()) {
+    parent->GetSubmenu()->RemoveAllChildViews();
+  }
   model_ = CreateMenuModel();
   for (size_t i = 0, max = model_->GetItemCount(); i < max; ++i) {
     views::MenuModelAdapter::AppendMenuItemFromModel(model_.get(), i, parent,
                                                      model_->GetCommandIdAt(i));
   }
+  parent->GetSubmenu()->InvalidateLayout();
 }
 
 void STGEverythingMenu::RunMenu() {
@@ -120,7 +141,7 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_CREATE_NEW_TAB_GROUP) {
     browser_->command_controller()->ExecuteCommand(command_id);
   } else {
-    const auto* const group = sorted_tab_groups_[command_id];
+    const auto* const group = GetTabGroupForCommandId(command_id);
     if (group->saved_tabs().empty()) {
       return;
     }
@@ -138,13 +159,13 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
     return false;
   }
 
-  const auto* const group = sorted_tab_groups_[command_id];
+  const auto* const group = GetTabGroupForCommandId(command_id);
   context_menu_controller_ =
       std::make_unique<views::DialogModelContextMenuController>(
           widget_->GetRootView(),
           base::BindRepeating(
               &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
-              browser_, group->saved_guid()),
+              browser_, group->saved_guid(), show_pin_unpin_option_),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
   context_menu_controller_->ShowContextMenuForViewImpl(widget_->GetRootView(),
                                                        p, source_type);

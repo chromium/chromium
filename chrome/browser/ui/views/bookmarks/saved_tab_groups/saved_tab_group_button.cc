@@ -97,7 +97,8 @@ SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
           base::BindRepeating(
               &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
               browser,
-              group.saved_guid()),
+              group.saved_guid(),
+              /*show_pin_unpin_option=*/true),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
   SetAccessibilityProperties(
       ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),

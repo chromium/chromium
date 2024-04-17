@@ -256,7 +256,7 @@ void SavedTabGroupBar::ShowEverythingMenu() {
   }
 
   everything_menu_ = std::make_unique<STGEverythingMenu>(
-      overflow_button_->button_controller(), GetWidget(), browser_);
+      overflow_button_->button_controller(), browser_);
   everything_menu_->RunMenu();
 }
 

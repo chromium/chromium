@@ -15,7 +15,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -170,6 +172,12 @@ class AppMenu final : public views::MenuDelegate,
 
   // Menu corresponding to IDC_BOOKMARKS_MENU.
   raw_ptr<views::MenuItemView, DanglingUntriaged> bookmark_menu_ = nullptr;
+
+  // Used for managing the tab group menu items.
+  std::unique_ptr<tab_groups::STGEverythingMenu> stg_everything_menu_;
+
+  // Menu corresponding to IDC_SAVED_TAB_GROUPS_MENU.
+  raw_ptr<views::MenuItemView> saved_tab_groups_menu_ = nullptr;
 
   // Menu corresponding to IDC_FEEDBACK.
   raw_ptr<views::MenuItemView, DanglingUntriaged> feedback_menu_item_ = nullptr;

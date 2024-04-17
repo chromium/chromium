@@ -11131,6 +11131,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
           Create new tab group
         </message>
+        <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab groups' menu in the App Menu.">
+      Tab groups
+    </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="In Title Case: Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
@@ -11139,6 +11142,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_CREATE_NEW_TAB_GROUP" desc="The label of item in Everything menu to create a new tab group.">
           Create New Tab Group
         </message>
+        <message name="IDS_SAVED_TAB_GROUPS_MENU" desc="The title of the 'Tab Groups' menu in the App Menu.">
+      Tab Groups
+    </message>
       </if>
 
       <!-- Tab Group Editor Bubble -->

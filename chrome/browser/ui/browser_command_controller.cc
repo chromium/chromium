@@ -1325,6 +1325,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BETA_FORUM, true);
   command_updater_.UpdateCommandEnabled(
       IDC_BOOKMARKS_MENU, (!guest_session && !profile()->IsSystemProfile()));
+  command_updater_.UpdateCommandEnabled(IDC_SAVED_TAB_GROUPS_MENU, true);
   command_updater_.UpdateCommandEnabled(
       IDC_RECENT_TABS_MENU, (!guest_session && !profile()->IsSystemProfile() &&
                              !profile()->IsIncognitoProfile()));

@@ -362,7 +362,40 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
 }
 
-// TODO(crbug.com/40934084): Deflake this test before enabling
+// TODO(crbug.com/333956456): Resolve before enabling.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ContextMenuShowForAppMenuSubmenu \
+  DISABLED_ContextMenuShowForAppMenuSubmenu
+#else
+#define MAYBE_ContextMenuShowForAppMenuSubmenu ContextMenuShowForAppMenuSubmenu
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       MAYBE_ContextMenuShowForAppMenuSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      MoveMouseTo(STGEverythingMenu::kTabGroup), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
+}
+
+// TODO(crbug.com/1487362): Deflake this test before enabling
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   DISABLED_MoveGroupToNewWindowFromButtonMenu
@@ -632,6 +665,90 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       // Open the saved tab group from the Everything menu item.
       PressButton(kSavedTabGroupOverflowButtonElementId),
       WaitForHide(kTabGroupEditorBubbleId),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup), FinishTabstripAnimations(),
+      WaitForShow(kTabGroupHeaderElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       CreateNewTabGroupFromAppMenuSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+  const bool is_v2_ui_enabled = IsV2UIEnabled();
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      EnsureNotPresent(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kCreateNewTabGroup),
+      SelectMenuItem(STGEverythingMenu::kCreateNewTabGroup),
+      FinishTabstripAnimations(), FlushEvents(),
+      WaitForShow(kTabGroupEditorBubbleId),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2),
+      // This menu item opens a new tab and the editor bubble.
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      CheckResult(
+          [&]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL()
+                .host_piece();
+          },
+          chrome::kChromeUINewTabHost));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       OpenSavedGroupFromAppMenuSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  const SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+  base::Uuid saved_guid;
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Save the group and ensure it is linked in the model.
+      SaveGroupLeaveEditorBubbleOpen(local_group_id),
+      // The group we just saved should be the only group in the model.
+      CheckResult([&]() { return service->model()->Count(); }, 1),
+      // Find the saved guid that is linked to the group we just saved.
+      Do([&]() {
+        const SavedTabGroup& saved_group =
+            service->model()->saved_tab_groups()[0];
+        ASSERT_TRUE(saved_group.local_group_id().has_value());
+        saved_guid = saved_group.saved_guid();
+      }),
+      // Make sure the editor bubble is still open and flush events before we
+      // close it.
+      EnsurePresent(kTabGroupEditorBubbleId), FlushEvents(),
+      // Close the tab group and expect the saved group is no longer linked.
+      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+      FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
+      WaitForHide(kTabGroupHeaderElementId),
+      // Open the saved tab group from the submenu of "Tab groups" item in app
+      // menu.
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       WaitForShow(STGEverythingMenu::kTabGroup),
       SelectMenuItem(STGEverythingMenu::kTabGroup), FinishTabstripAnimations(),
       WaitForShow(kTabGroupHeaderElementId));

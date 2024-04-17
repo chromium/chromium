@@ -168,8 +168,7 @@ class STGEverythingMenuUnitTest : public SavedTabGroupBarUnitTest {
  public:
   void SetUp() override {
     SavedTabGroupBarUnitTest::SetUp();
-    everything_menu_ =
-        std::make_unique<STGEverythingMenu>(nullptr, nullptr, browser());
+    everything_menu_ = std::make_unique<STGEverythingMenu>(nullptr, browser());
   }
 
   void TearDown() override {

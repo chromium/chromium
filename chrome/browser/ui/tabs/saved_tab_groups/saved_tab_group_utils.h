@@ -58,9 +58,12 @@ class SavedTabGroupUtils {
   // Create the the context menu model for a saved tab group button or a saved
   // tab group menu item in the Everything menu. `browser` is the one from
   // which this method is invoked. `saved_guid` is the saved tab group's Uuid.
+  // Show a "Pin / Unpin group from bookmarks bar" option if
+  // `show_pin_unpin_option` is true.
   static std::unique_ptr<ui::DialogModel> CreateSavedTabGroupContextMenuModel(
       Browser* browser,
-      const base::Uuid& saved_guid);
+      const base::Uuid& saved_guid,
+      bool show_pin_unpin_option);
 
   // Converts a webcontents into a SavedTabGroupTab.
   static SavedTabGroupTab CreateSavedTabGroupTabFromWebContents(
