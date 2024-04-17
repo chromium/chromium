@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -16,10 +17,13 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "components/browsing_data/content/local_storage_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_usage_info.h"
+
+namespace content {
+struct StorageUsageInfo;
+}
 
 namespace web_app {
 
@@ -51,14 +55,11 @@ class ComputeAppSizeCommand
   void OnQuotaModelInfoLoaded(
       const SiteDataSizeCollector::QuotaStorageUsageInfoList&
           quota_storage_info_list);
-  void GetSessionUsage();
   void OnLocalStorageModelInfoLoaded(
-      const std::list<content::StorageUsageInfo>& local_storage_info_list);
+      const std::vector<content::StorageUsageInfo>& local_storage_info_list);
   void ReportResultAndDestroy(CommandResult result);
 
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
-
-  scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
 
   std::unique_ptr<AppLock> lock_;
 

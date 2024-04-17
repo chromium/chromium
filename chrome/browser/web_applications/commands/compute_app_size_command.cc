@@ -29,6 +29,7 @@
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/browser/storage_usage_info.h"
 
 namespace web_app {
 
@@ -114,24 +115,15 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
   GetMutableDebugValue().Set("data_size_in_bytes",
                              base::ToString(size_.data_size_in_bytes));
 
-  GetSessionUsage();
-}
-
-void ComputeAppSizeCommand::GetSessionUsage() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::StoragePartition* storage_partition =
-      profile_->GetDefaultStoragePartition();
-  local_storage_helper_ =
-      base::MakeRefCounted<browsing_data::LocalStorageHelper>(
-          storage_partition);
-
-  local_storage_helper_->StartFetching(
-      base::BindOnce(&ComputeAppSizeCommand::OnLocalStorageModelInfoLoaded,
-                     weak_factory_.GetWeakPtr()));
+  profile_->GetDefaultStoragePartition()
+      ->GetDOMStorageContext()
+      ->GetLocalStorageUsage(
+          base::BindOnce(&ComputeAppSizeCommand::OnLocalStorageModelInfoLoaded,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void ComputeAppSizeCommand::OnLocalStorageModelInfoLoaded(
-    const std::list<content::StorageUsageInfo>& local_storage_info_list) {
+    const std::vector<content::StorageUsageInfo>& local_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& local_storage_info : local_storage_info_list) {
     url::Origin local_origin = local_storage_info.storage_key.origin();

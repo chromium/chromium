@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "browsing_data_model_unittest.cc",
     "browsing_data_quota_helper_unittest.cc",
     "cookie_helper_unittest.cc",
-    "local_storage_helper_unittest.cc",
   ]
 
   deps = [

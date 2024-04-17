@@ -47,7 +47,7 @@ namespace content {
 namespace {
 
 void AdaptSessionStorageUsageInfo(
-    DOMStorageContext::GetSessionStorageUsageCallback callback,
+    DOMStorageContextWrapper::GetSessionStorageUsageCallback callback,
     std::vector<storage::mojom::SessionStorageUsageInfoPtr> usage) {
   std::vector<SessionStorageUsageInfo> result;
   result.reserve(usage.size());
