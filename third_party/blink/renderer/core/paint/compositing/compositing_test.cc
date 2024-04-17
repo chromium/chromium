@@ -804,6 +804,43 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 }
 
+TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
+  GetLocalFrameView()
+      ->GetFrame()
+      .GetSettings()
+      ->SetPreferCompositingToLCDTextForTesting(false);
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <div id="anchored1"
+         style="position: absolute; position-anchor: --a; top: anchor(bottom)">
+      anchored
+    </div>
+    <div id="scroller" style="overflow: scroll; width: 200px; height: 200px">
+      <div id="anchor" style="anchor-name: --a">anchor</div>
+      <div style="height: 1000px"></div>
+    </div>
+    <div id="anchored2"
+         style="position: absolute; position-anchor: --a; top: anchor(bottom)">
+      anchored
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  int scroll_translation_id =
+      GetElementById("scroller")
+          ->GetLayoutObject()
+          ->FirstFragment()
+          .PaintProperties()
+          ->ScrollTranslation()
+          ->CcNodeId(LayerTreeHost()->property_trees()->sequence_number());
+  EXPECT_LT(scroll_translation_id,
+            CcLayersByDOMElementId(RootCcLayer(), "anchored1")[0]
+                ->transform_tree_index());
+  EXPECT_LT(scroll_translation_id,
+            CcLayersByDOMElementId(RootCcLayer(), "anchored2")[0]
+                ->transform_tree_index());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {

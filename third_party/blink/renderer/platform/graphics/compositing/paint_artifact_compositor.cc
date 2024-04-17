@@ -848,6 +848,23 @@ void PaintArtifactCompositor::Update(
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
+  // Ensure scroll and scroll translation nodes which may be referenced by
+  // AnchorPositionScrollTranslation nodes, to reduce chance of inefficient
+  // stale_forward_dependencies in cc::TransformTree::AnchorPositionOffset().
+  // We want to create a cc::TransformNode only if the scroller is painted.
+  // This avoids violating an assumption in CompositorAnimations that an
+  // element has property nodes for either all or none of its animating
+  // properties (see crbug.com/1385575).
+  // However, we want to create a cc::ScrollNode regardless of whether the
+  // scroller is painted. This ensures that scroll offset animations aren't
+  // affected by becoming unpainted.
+  for (auto* node : scroll_translation_nodes) {
+    property_tree_manager.EnsureCompositorScrollNode(*node);
+  }
+  for (auto* node : painted_scroll_translations_.Keys()) {
+    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
+  }
+
   host->property_trees()
       ->effect_tree_mutable()
       .ClearTransitionPseudoElementEffectNodes();
@@ -904,20 +921,6 @@ void PaintArtifactCompositor::Update(
           ->effect_tree_mutable()
           .AddTransitionPseudoElementEffectId(effect_id);
     }
-  }
-
-  // We want to create a cc::TransformNode only if the scroller is painted.
-  // This avoids violating an assumption in CompositorAnimations that an
-  // element has property nodes for either all or none of its animating
-  // properties (see crbug.com/1385575).
-  // However, we want to create a cc::ScrollNode regardless of whether the
-  // scroller is painted. This ensures that scroll offset animations aren't
-  // affected by becoming unpainted.
-  for (auto* node : scroll_translation_nodes) {
-    property_tree_manager.EnsureCompositorScrollNode(*node);
-  }
-  for (auto* node : painted_scroll_translations_.Keys()) {
-    property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);

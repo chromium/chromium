@@ -515,8 +515,6 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
   // If this transform is a scroll offset translation, create the associated
   // compositor scroll property node and adjust the compositor transform node's
   // scroll offset.
-  // TODO(ScrollUnification): Move this code into
-  // EnsureCompositorScrollAndTransformNode().
   if (transform_node.ScrollNode()) {
     compositor_node.scrolls = true;
     compositor_node.should_be_snapped = true;

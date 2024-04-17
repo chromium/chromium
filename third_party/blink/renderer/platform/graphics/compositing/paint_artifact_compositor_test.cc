@@ -233,6 +233,10 @@ class PaintArtifactCompositorTest : public testing::Test,
     return *paint_artifact_compositor_;
   }
 
+  int CcNodeId(const PaintPropertyNode& node) {
+    return node.CcNodeId(GetPropertyTrees().sequence_number());
+  }
+
  private:
   MockScrollCallbacks scroll_callbacks_;
   Persistent<PaintArtifactCompositor> paint_artifact_compositor_;
@@ -1601,9 +1605,9 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
 
   auto& scroll_tree = GetPropertyTrees().scroll_tree();
   auto& transform_tree = GetPropertyTrees().transform_tree();
-  // Node #0 reserved for null. #1 for root render surface. #2 is for scroll_a.
-  // scroll #3 and transform #4 are for scroll_b. Transform #3 is for
-  // fixed_transform.
+  // Scroll node #0 reserved for null, #1 for root render surface, #2 is for
+  // scroll_a, and #3 for scroll_b. Transform ids depend on the order in the
+  // painted_scroll_translations_ HashMap so are not deterministic.
   ASSERT_EQ(4u, scroll_tree.size());
   ASSERT_EQ(5u, transform_tree.size());
   ASSERT_EQ(3u, LayerCount());
@@ -1612,7 +1616,7 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   auto* layer_a = LayerAt(0);
   EXPECT_EQ(scroll_a.GetCompositorElementId(), scroll_node_a->element_id);
   EXPECT_EQ(1, scroll_node_a->parent_id);
-  EXPECT_EQ(2, scroll_node_a->transform_id);
+  EXPECT_EQ(CcNodeId(scroll_state_a.Transform()), scroll_node_a->transform_id);
   EXPECT_EQ(2, layer_a->scroll_tree_index());
   EXPECT_EQ(1, layer_a->transform_tree_index());
 
@@ -1622,7 +1626,7 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   } else {
     EXPECT_EQ(1, fixed_layer->scroll_tree_index());
   }
-  EXPECT_EQ(3, fixed_layer->transform_tree_index());
+  EXPECT_EQ(CcNodeId(*fixed_transform), fixed_layer->transform_tree_index());
   auto* fixed_transform_node = transform_tree.Node(3);
   EXPECT_EQ(1, fixed_transform_node->parent_id);
 
@@ -1630,9 +1634,9 @@ TEST_P(PaintArtifactCompositorTest, FixedPositionScrollState) {
   auto* layer_b = LayerAt(2);
   EXPECT_EQ(2, scroll_node_b->parent_id);
   EXPECT_EQ(scroll_b.GetCompositorElementId(), scroll_node_b->element_id);
-  EXPECT_EQ(4, scroll_node_b->transform_id);
+  EXPECT_EQ(CcNodeId(scroll_state_b.Transform()), scroll_node_b->transform_id);
   EXPECT_EQ(3, layer_b->scroll_tree_index());
-  EXPECT_EQ(3, layer_b->transform_tree_index());
+  EXPECT_EQ(CcNodeId(*fixed_transform), layer_b->transform_tree_index());
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
