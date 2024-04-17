@@ -282734,6 +282734,32 @@
         {}
        ]
       ],
+      "paint-context-007.svg": [
+       "50360a302e3a3d2ca74b465122d322a25abf743a",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/paint-context-007-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "paint-context-008.svg": [
+       "83308f09b1fc95d538ee078ff9acbf7e7def307e",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/paint-context-008-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "paint-order-001.svg": [
        "c8d60bd5bf68d0dc5f56fb360acdd2bac5aa1aa2",
        [
@@ -346467,7 +346493,7 @@
       []
      ],
      "file-names.md": [
-      "96296c4ff69934a77581a50c5cf7299feadbb838",
+      "5336bfb528cec59ea3ce1fe78540470980969d0c",
       []
      ],
      "general-guidelines.md": [
@@ -346549,7 +346575,7 @@
       []
      ],
      "testdriver.md": [
-      "73af3bb3c8dd72fc283cdc9440fbe05bd768d1d3",
+      "fcf0199badc12e8cca1d017d266db4abe02544ad",
       []
      ],
      "testharness-api.md": [
@@ -384394,7 +384420,7 @@
      []
     ],
     "testdriver.js": [
-     "20140b2fc0a0b7c5bb32089b4e8283ffbb6e2a01",
+     "2d1a89690cc25f87e7d2762c3f5081081a902f7a",
      []
     ],
     "testdriver.js.headers": [
@@ -390893,6 +390919,14 @@
       ],
       "paint-context-006-ref.svg": [
        "6aa42374c512b528868c55d0339eb4deedf09d69",
+       []
+      ],
+      "paint-context-007-ref.svg": [
+       "0328272c6aa0907e226cbbbc2008358bee43ef7b",
+       []
+      ],
+      "paint-context-008-ref.svg": [
+       "49d4f8947b003302a76888e6beea385a4019f404",
        []
       ],
       "paint-order-001-ref.svg": [
@@ -504996,10 +505030,12 @@
      ]
     ],
     "setting-null-config-navigates-to-about-blank.https.html": [
-     "2595fd64c922b1e16220628fe1fa87fdf7c74f5f",
+     "c8322dab1996ccabc5ee980fd63bc52c57df9d05",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "shared-workers.https.html": [
