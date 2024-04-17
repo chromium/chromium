@@ -70,6 +70,10 @@ void FakeStatisticsProvider::ClearMachineStatistic(std::string_view key) {
   machine_statistics_.erase(key);
 }
 
+void FakeStatisticsProvider::ClearAllMachineStatistics() {
+  machine_statistics_.clear();
+}
+
 void FakeStatisticsProvider::SetMachineFlag(const std::string& key,
                                             bool value) {
   machine_flags_[key] = value;

@@ -150,6 +150,21 @@ void SetTabletModeEnabled(bool enabled) {
   waiter.Wait();
 }
 
+std::string GetMachineStatisticKeyString(mojom::MachineStatisticKeyType key) {
+  if (key == mojom::MachineStatisticKeyType::kOemDeviceRequisitionKey) {
+    return ash::system::kOemDeviceRequisitionKey;
+  }
+  if (key == mojom::MachineStatisticKeyType::kHardwareClassKey) {
+    return ash::system::kHardwareClassKey;
+  }
+  if (key == mojom::MachineStatisticKeyType::kCustomizationIdKey) {
+    return ash::system::kCustomizationIdKey;
+  }
+
+  // Return empty string for unknown key.
+  return "";
+}
+
 const base::TimeDelta kWindowWaitTimeout = base::Seconds(10);
 
 TestControllerAsh* g_instance = nullptr;
@@ -1041,6 +1056,34 @@ void TestControllerAsh::UpdateDisplay(int number_of_displays,
   }
   display_manager.UpdateDisplayWithDisplayInfoList(display_infos);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::EnableStatisticsProviderForTesting(
+    bool enable,
+    EnableStatisticsProviderForTestingCallback callback) {
+  ash::system::StatisticsProvider::SetTestProvider(
+      enable ? &fake_statistics_provider_ : nullptr);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::ClearAllMachineStatistics(
+    ClearAllMachineStatisticsCallback callback) {
+  fake_statistics_provider_.ClearAllMachineStatistics();
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::SetMachineStatistic(
+    mojom::MachineStatisticKeyType key,
+    const std::string& value,
+    SetMachineStatisticCallback callback) {
+  std::string key_string = GetMachineStatisticKeyString(key);
+  if (!key_string.empty()) {
+    fake_statistics_provider_.SetMachineStatistic(key_string, value);
+    std::move(callback).Run(true);
+  } else {
+    LOG(WARNING) << "Unknown key for setting machine statistic";
+    std::move(callback).Run(false);
+  }
 }
 
 // This class waits for overview mode to either enter or exit and fires a

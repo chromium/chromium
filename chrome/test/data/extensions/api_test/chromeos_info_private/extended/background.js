@@ -18,6 +18,8 @@ chrome.app.runtime.onLaunched.addListener(function() {
       'assistantStatus',
       'isMeetDevice',
       'deviceRequisition',
+      'hwid',
+      'customizationId',
     ], chrome.test.callbackPass(function(values) {
           switch (testName) {
             case 'kiosk':
@@ -68,11 +70,20 @@ chrome.app.runtime.onLaunched.addListener(function() {
             case 'Is Meet Device - False' :
               chrome.test.assertFalse(values['isMeetDevice']);
               break;
-            case 'Device Requisition - Remora' :
+            case 'Machine Statistics Properties - Unset' :
+              chrome.test.assertEq('', values['deviceRequisition']);
+              chrome.test.assertEq('', values['hwid']);
+              chrome.test.assertEq('', values['customizationId']);
+              break;
+            case 'Device Requisition - Remora':
               chrome.test.assertEq('remora', values['deviceRequisition']);
               break;
-            case 'Device Requisition - Unset' :
-              chrome.test.assertEq('', values['deviceRequisition']);
+            case 'HWID':
+              chrome.test.assertEq('test_hw', values['hwid']);
+              break;
+            case 'CustomizationId':
+              chrome.test.assertEq('test_customization_id',
+                                   values['customizationId']);
               break;
           }
         }));

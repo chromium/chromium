@@ -48,6 +48,14 @@ enum OptionalBoolean {
   kTrue,
 };
 
+[Stable, Extensible]
+enum MachineStatisticKeyType {
+  [Default] kUnknown = 0,
+  kOemDeviceRequisitionKey = 1,
+  kHardwareClassKey = 2,
+  kCustomizationIdKey = 3,
+};
+
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
 // file.
 [Stable]
@@ -336,8 +344,8 @@ enum SnapPosition {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 35
-// Next method id: 50
+// Next version: 36
+// Next method id: 53
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -602,4 +610,15 @@ interface TestController {
   // Sets the number of displays through the `DisplayManagerTestApi`.
   // The values can be in the range [1, 8].
   [MinVersion=34] UpdateDisplay@49(int32 number_of_displays) => ();
+
+  // Enables or disables FakeStatisticsProvider for testing.
+  [MinVersion=35] EnableStatisticsProviderForTesting@50(bool enable) => ();
+
+  // Clears all machine statistics data from FakeStatisficsProvider for testing.
+  [MinVersion=35] ClearAllMachineStatistics@51() => ();
+
+  // Sets the machine statistics data with FakeStatisficsProvider for testing.
+  // Returns true if succeeded.
+  [MinVersion=35] SetMachineStatistic@52(MachineStatisticKeyType key,
+      string value) => (bool success);
 };

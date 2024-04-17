@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
   void ClearMachineStatistic(std::string_view key);
+  void ClearAllMachineStatistics();
   void SetMachineFlag(const std::string& key, bool value);
   void ClearMachineFlag(std::string_view key);
   void SetVpdStatus(VpdStatus new_status);
