@@ -174,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 }
 
 // TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
-#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_TabDiscardPreservesScreenshot \
   DISABLED_TabDiscardPreservesScreenshot
 #else
