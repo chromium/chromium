@@ -12,9 +12,9 @@
 
 namespace ash {
 
-// WindowResizer is used by ToplevelWindowEventFilter to handle dragging, moving
-// or resizing a window. All coordinates passed to this are in the parent
-// windows coordiantes.
+// WindowResizer is used by ToplevelWindowEventHandler to handle dragging,
+// moving or resizing a window. All coordinates passed to this are in the parent
+// windows coordinates.
 class ASH_EXPORT DefaultWindowResizer : public WindowResizer {
  public:
   ~DefaultWindowResizer() override;

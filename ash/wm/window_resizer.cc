@@ -170,7 +170,7 @@ gfx::Rect WindowResizer::CalculateBoundsForDrag(
   // The minimize size constraint may limit how much we change the window
   // position.  For example, dragging the left edge to the right should stop
   // repositioning the window when the minimize size is reached.
-  gfx::Size size = GetSizeForDrag(&delta_x, &delta_y);
+  const gfx::Size size = GetSizeForDrag(&delta_x, &delta_y);
   gfx::Point origin = GetOriginForDrag(delta_x, delta_y, passed_location);
   gfx::Rect new_bounds(origin, size);
 
@@ -417,12 +417,12 @@ gfx::Point WindowResizer::GetOriginForDrag(int delta_x,
   return origin;
 }
 
-gfx::Size WindowResizer::GetSizeForDrag(int* delta_x, int* delta_y) {
+gfx::Size WindowResizer::GetSizeForDrag(int* delta_x, int* delta_y) const {
   gfx::Size size = details().initial_bounds_in_parent.size();
   if (details().bounds_change & kBoundsChange_Resizes) {
-    gfx::Size min_size = GetTarget()->delegate()
-                             ? GetTarget()->delegate()->GetMinimumSize()
-                             : gfx::Size();
+    const gfx::Size min_size = GetTarget()->delegate()
+                                   ? GetTarget()->delegate()->GetMinimumSize()
+                                   : gfx::Size();
     size.SetSize(GetWidthForDrag(min_size.width(), delta_x),
                  GetHeightForDrag(min_size.height(), delta_y));
   } else if (!details().restore_bounds_in_parent.IsEmpty() &&
@@ -434,7 +434,7 @@ gfx::Size WindowResizer::GetSizeForDrag(int* delta_x, int* delta_y) {
   return size;
 }
 
-int WindowResizer::GetWidthForDrag(int min_width, int* delta_x) {
+int WindowResizer::GetWidthForDrag(int min_width, int* delta_x) const {
   int width = details().initial_bounds_in_parent.width();
   if (details().size_change_direction & kBoundsChangeDirection_Horizontal) {
     // Along the right edge, positive delta_x increases the window size.
@@ -468,7 +468,7 @@ int WindowResizer::GetWidthForDrag(int min_width, int* delta_x) {
   return width;
 }
 
-int WindowResizer::GetHeightForDrag(int min_height, int* delta_y) {
+int WindowResizer::GetHeightForDrag(int min_height, int* delta_y) const {
   int height = details().initial_bounds_in_parent.height();
   if (details().size_change_direction & kBoundsChangeDirection_Vertical) {
     // Along the bottom edge, positive delta_y increases the window size.

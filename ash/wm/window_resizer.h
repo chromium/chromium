@@ -29,8 +29,8 @@ class GestureEvent;
 namespace ash {
 class PresentationTimeRecorder;
 
-// WindowResizer is used by ToplevelWindowEventFilter to handle dragging, moving
-// or resizing a window. All coordinates passed to this are in the parent
+// WindowResizer is used by ToplevelWindowEventHandler to handle dragging,
+// moving or resizing a window. All coordinates passed to this are in the parent
 // windows coordinates.
 class ASH_EXPORT WindowResizer {
  public:
@@ -51,10 +51,10 @@ class ASH_EXPORT WindowResizer {
 
   virtual ~WindowResizer();
 
-  // Returns a bitmask of the kBoundsChange_ values.
+  // Returns a bitmask of the `kBoundsChange_*` values.
   static int GetBoundsChangeForWindowComponent(int component);
 
-  // Returns a bitmask of the kBoundsChange_ values.
+  // Returns a bitmask of the `kBoundsChangeDirection_*` values.
   static int GetPositionChangeDirectionForWindowComponent(int window_component);
 
   // Invoked to drag/move/resize the window. |location| is in the coordinates
@@ -117,13 +117,13 @@ class ASH_EXPORT WindowResizer {
                               const gfx::PointF& event_location);
 
   // Returns the size of the window for the drag.
-  gfx::Size GetSizeForDrag(int* delta_x, int* delta_y);
+  gfx::Size GetSizeForDrag(int* delta_x, int* delta_y) const;
 
-  // Returns the width of the window.
-  int GetWidthForDrag(int min_width, int* delta_x);
+  // Called by `GetSizeForDrag` to get the width of the window for the drag.
+  int GetWidthForDrag(int min_width, int* delta_x) const;
 
-  // Returns the height of the drag.
-  int GetHeightForDrag(int min_height, int* delta_y);
+  // Called by `GetSizeForDrag` to get the height of the window for the drag.
+  int GetHeightForDrag(int min_height, int* delta_y) const;
 
   // Updates |new_bounds| to adhere to the aspect ratio.
   void CalculateBoundsWithAspectRatio(float aspect_ratio,
