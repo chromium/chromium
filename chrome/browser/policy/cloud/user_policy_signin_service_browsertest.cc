@@ -39,7 +39,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
@@ -525,8 +524,10 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest,
 
   if (!base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
     // Signout
-    identity_manager()->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ProfileSignout::kTest);
+    auto* accounts_mutator = identity_manager()->GetAccountsMutator();
+    accounts_mutator->RemoveAccount(
+        account_id(), signin_metrics::SourceForRefreshTokenOperation::
+                          kDiceResponseHandler_Signout);
     EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed(
         /*has_sync_account=*/false));
     EXPECT_EQ(std::nullopt,

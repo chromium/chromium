@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/shared_passwords_notification_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -40,7 +40,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
@@ -484,45 +483,20 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-class PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam
-    : public PasswordBubbleInteractiveUiTest,
-      public base::test::WithFeatureOverride {
- public:
-  PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam()
-      : base::test::WithFeatureOverride(
-            switches::kExplicitBrowserSigninUIOnDesktop) {}
-
-  bool is_explicit_browser_signin() { return IsParamFeatureEnabled(); }
-};
-
 // This is a regression test for crbug.com/1335418
-IN_PROC_BROWSER_TEST_P(
-    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam,
-    SaveUiDismissalReason) {
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
   SetupPendingPassword();
   ASSERT_TRUE(IsBubbleShowing());
   PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
   content::RunAllPendingInMessageLoop();
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (is_explicit_browser_signin()) {
-    // Bubble is still showing because of the Sign in Promo showing after saving
-    // the password.
-    ASSERT_TRUE(IsBubbleShowing());
-    // Close it without any action.
-    PasswordBubbleViewBase::manage_password_bubble()->CloseCurrentBubble();
-  }
-#endif
   ASSERT_FALSE(IsBubbleShowing());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SaveUIDismissalReason",
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PasswordBubbleInteractiveUiTestWithExplicitBrowserSigninParam);
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        ClosesBubbleOnNavigationToFullPasswordManager) {

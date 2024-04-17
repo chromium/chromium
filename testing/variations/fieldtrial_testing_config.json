@@ -19942,23 +19942,6 @@
             ]
         }
     ],
-    "UnoDesktopM0Full": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExplicitBrowserSigninUIOnDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnoPhase2FollowUp": [
         {
             "platforms": [
