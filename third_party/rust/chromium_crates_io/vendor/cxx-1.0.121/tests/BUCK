@@ -1,16 +1,9 @@
-load("//tools/buck:build_mode.bzl", "build_mode")
 load("//tools/buck:rust_cxx_bridge.bzl", "rust_cxx_bridge")
-
-build_mode(
-    name = "build_mode",
-    cell = native.get_cell_name(),
-)
 
 rust_test(
     name = "test",
     srcs = ["test.rs"],
     edition = "2021",
-    remote_execution_action_key_providers = ":build_mode",
     deps = [
         ":ffi",
         "//:cxx",

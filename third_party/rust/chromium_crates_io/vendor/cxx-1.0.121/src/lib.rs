@@ -251,7 +251,7 @@
 //! fn main() {
 //!     cxx_build::bridge("src/main.rs")  // returns a cc::Build
 //!         .file("src/demo.cc")
-//!         .flag_if_supported("-std=c++11")
+//!         .std("c++11")
 //!         .compile("cxxbridge-demo");
 //!
 //!     println!("cargo:rerun-if-changed=src/main.rs");
@@ -364,7 +364,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.120")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.121")]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
