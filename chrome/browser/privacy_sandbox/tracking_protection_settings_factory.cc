@@ -55,11 +55,12 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
     } else {
       base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", false);
     }
-    if (base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1)) {
-      base::UmaHistogramBoolean(
-          "Settings.IpProtection.Enabled",
-          profile->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled));
-    }
+    base::UmaHistogramBoolean(
+        "Settings.IpProtection.Enabled",
+        profile->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled));
+    base::UmaHistogramBoolean("Settings.FingerprintingProtection.Enabled",
+                              profile->GetPrefs()->GetBoolean(
+                                  prefs::kFingerprintingProtectionEnabled));
   }
 
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(

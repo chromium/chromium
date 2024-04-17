@@ -20,14 +20,8 @@
 
 class TrackingProtectionSettingsMetricsBrowserTest
     : public InProcessBrowserTest {
- public:
-  TrackingProtectionSettingsMetricsBrowserTest() {
-    feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
-  }
-
  protected:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
@@ -36,6 +30,8 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSettingsMetricsBrowserTest,
                                        false, 1);
   histogram_tester_.ExpectUniqueSample("Settings.IpProtection.Enabled", false,
                                        1);
+  histogram_tester_.ExpectUniqueSample(
+      "Settings.FingerprintingProtection.Enabled", false, 1);
 }
 
 class TrackingProtectionSettingsForEnterpriseBrowserTest

@@ -104,6 +104,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.FingerprintingProtection.Enabled"
+    enum="BooleanEnabled" expires_after="2024-12-01">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state of the pref that represents whether the user has chosen to
+    enable Fingerprinting Protection via the Tracking Protection settings page.
+    Logged on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
     expires_after="2024-09-29">
   <owner>alimariam@google.com</owner>
