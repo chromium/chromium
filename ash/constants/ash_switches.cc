@@ -410,9 +410,6 @@ const char kDerelictIdleTimeout[] = "derelict-idle-timeout";
 // tests as some tests may time out if the ARC container is throttled.
 const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 
-// Disables android user data wipe on opt out.
-const char kDisableArcDataWipe[] = "disable-arc-data-wipe";
-
 // Disables ARC Opt-in verification process and ARC is enabled by default.
 const char kDisableArcOptInVerification[] = "disable-arc-opt-in-verification";
 
