@@ -86,12 +86,12 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
             test_case.input_event, /*is_within_fenced_frame=*/false,
             /*render_frame_id=*/GlobalRenderFrameHostId(), test_case.registrar),
         is_debug_key_allowed,
-        base::BindLambdaForTesting(
-            [&](const OsRegistration& registration, bool success) {
-              // We don't check `success` here because the measurement API may
-              // or may not be available depending on the Android version.
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const OsRegistration& registration,
+                                       const std::vector<bool>& success) {
+          // We don't check `success` here because the measurement API may
+          // or may not be available depending on the Android version.
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
   }

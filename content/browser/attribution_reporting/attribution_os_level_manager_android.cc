@@ -139,12 +139,41 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), jobj_);
 }
 
+namespace {
+
+// 3/4 of the Android API calls below have atomic success/failure, while the
+// fourth has success/failure per item.
+
+std::vector<bool> AtomicSuccess(size_t num_items, bool success) {
+  return std::vector<bool>(num_items, success);
+}
+
+void MergeIndividualSuccessAndInvokeCallback(
+    std::vector<bool>& successes,
+    size_t& remaining,
+    base::OnceCallback<void(const std::vector<bool>&)>& callback,
+    size_t i,
+    bool success) {
+  CHECK_GT(remaining, 0u);
+  --remaining;
+
+  successes.at(i) = success;
+
+  if (remaining == 0) {
+    std::move(callback).Run(successes);
+  }
+}
+
+}  // namespace
+
 void AttributionOsLevelManagerAndroid::Register(
     OsRegistration registration,
     const std::vector<bool>& is_debug_key_allowed,
     RegisterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(registration.registration_items.size(), is_debug_key_allowed.size());
+
+  const size_t num_items = registration.registration_items.size();
+  CHECK_EQ(num_items, is_debug_key_allowed.size());
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
@@ -160,19 +189,24 @@ void AttributionOsLevelManagerAndroid::Register(
       env, registration.top_level_origin.GetURL());
   std::optional<AttributionInputEvent> input_event = registration.input_event;
 
-  int request_id = next_callback_id_++;
-  pending_registration_callbacks_.emplace(
-      request_id, base::BindOnce(std::move(callback), std::move(registration)));
+  auto bound_callback =
+      base::BindOnce(std::move(callback), std::move(registration));
 
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource: {
       DCHECK(input_event.has_value());
+
+      int request_id = next_callback_id_++;
+      pending_registration_callbacks_.emplace(
+          request_id, base::BindOnce(&AtomicSuccess, num_items)
+                          .Then(std::move(bound_callback)));
+
       switch (registrar) {
         case Registrar::kWeb: {
           auto sources =
               Java_AttributionOsLevelManager_createWebSourceParamsList(
-                  env, is_debug_key_allowed.size());
-          for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+                  env, num_items);
+          for (size_t i = 0; i < num_items; ++i) {
             Java_AttributionOsLevelManager_addWebSourceParams(
                 env, sources, registration_urls[i], is_debug_key_allowed[i]);
           }
@@ -193,10 +227,15 @@ void AttributionOsLevelManagerAndroid::Register(
     case attribution_reporting::mojom::RegistrationType::kTrigger: {
       switch (registrar) {
         case Registrar::kWeb: {
+          int request_id = next_callback_id_++;
+          pending_registration_callbacks_.emplace(
+              request_id, base::BindOnce(&AtomicSuccess, num_items)
+                              .Then(std::move(bound_callback)));
+
           auto triggers =
               Java_AttributionOsLevelManager_createWebTriggerParamsList(
-                  env, is_debug_key_allowed.size());
-          for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+                  env, num_items);
+          for (size_t i = 0; i < num_items; ++i) {
             Java_AttributionOsLevelManager_addWebTriggerParams(
                 env, triggers, registration_urls[i], is_debug_key_allowed[i]);
           }
@@ -205,7 +244,18 @@ void AttributionOsLevelManagerAndroid::Register(
           break;
         }
         case Registrar::kOs: {
-          for (const auto& registration_url : registration_urls) {
+          auto merge_results =
+              base::BindRepeating(&MergeIndividualSuccessAndInvokeCallback,
+                                  base::OwnedRef(std::vector<bool>(num_items)),
+                                  base::OwnedRef(num_items),
+                                  base::OwnedRef(std::move(bound_callback)));
+
+          for (size_t i = 0; const auto& registration_url : registration_urls) {
+            int request_id = next_callback_id_++;
+            pending_registration_callbacks_.emplace(
+                request_id, base::BindOnce(merge_results, i));
+            ++i;
+
             Java_AttributionOsLevelManager_registerAttributionTrigger(
                 env, jobj_, request_id, registration_url);
           }

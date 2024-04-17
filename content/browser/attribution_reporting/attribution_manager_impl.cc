@@ -1581,14 +1581,20 @@ void AttributionManagerImpl::NotifyOsRegistration(
 void AttributionManagerImpl::OnOsRegistration(
     const std::vector<bool>& is_debug_key_allowed,
     const OsRegistration& registration,
-    bool success) {
+    const std::vector<bool>& success) {
+  const size_t num_items = registration.registration_items.size();
+
+  CHECK_EQ(num_items, is_debug_key_allowed.size());
+  CHECK_EQ(num_items, success.size());
+
   MaybeSendVerboseDebugReports(registration);
 
   const base::Time now = base::Time::Now();
-  auto result = success ? OsRegistrationResult::kPassedToOs
-                        : OsRegistrationResult::kRejectedByOs;
 
-  for (size_t i = 0; i < is_debug_key_allowed.size(); ++i) {
+  for (size_t i = 0; i < num_items; ++i) {
+    auto result = success[i] ? OsRegistrationResult::kPassedToOs
+                             : OsRegistrationResult::kRejectedByOs;
+
     NotifyOsRegistration(now, registration.registration_items[i],
                          registration.top_level_origin, is_debug_key_allowed[i],
                          registration.GetType(), result);

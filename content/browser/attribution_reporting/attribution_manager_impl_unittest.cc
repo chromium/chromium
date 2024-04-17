@@ -1182,7 +1182,8 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
       EXPECT_CALL(*os_level_manager_,
                   Register(registration1,
                            /*is_debug_key_allowed=*/ElementsAre(true), _))
-          .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
+          .WillOnce(base::test::RunOnceCallback<2>(registration1,
+                                                   std::vector<bool>{true}));
 
       const OsRegistration registration2(
           {OsRegistrationItem(kRegistrationUrl2, /*debug_reporting=*/true)},
@@ -1191,7 +1192,8 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
       EXPECT_CALL(*os_level_manager_,
                   Register(registration2,
                            /*is_debug_key_allowed=*/ElementsAre(false), _))
-          .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
+          .WillOnce(base::test::RunOnceCallback<2>(registration2,
+                                                   std::vector<bool>{false}));
 
       // Dropped due to the URL being opaque.
       EXPECT_CALL(
@@ -1214,7 +1216,8 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
           *os_level_manager_,
           Register(registration5,
                    /*is_debug_key_allowed=*/ElementsAre(true, false), _))
-          .WillOnce(base::test::RunOnceCallback<2>(registration5, true));
+          .WillOnce(base::test::RunOnceCallback<2>(
+              registration5, std::vector<bool>{true, true}));
 
       // Prohibited by policy below.
       EXPECT_CALL(
@@ -1231,13 +1234,15 @@ TEST_F(AttributionManagerImplTest, HandleOsRegistration) {
       EXPECT_CALL(*os_level_manager_,
                   Register(registration1,
                            /*is_debug_key_allowed=*/ElementsAre(false), _))
-          .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
+          .WillOnce(base::test::RunOnceCallback<2>(registration1,
+                                                   std::vector<bool>{true}));
 
       // Bypassing debug cookie.
       EXPECT_CALL(*os_level_manager_,
                   Register(registration2,
                            /*is_debug_key_allowed=*/ElementsAre(true), _))
-          .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
+          .WillOnce(base::test::RunOnceCallback<2>(registration2,
+                                                   std::vector<bool>{false}));
     }
 
     attribution_manager_->HandleOsRegistration(OsRegistration(
@@ -3421,7 +3426,8 @@ TEST_F(AttributionManagerImplTest,
         /*is_within_fenced_frame=*/false, kFrameId, kRegistrar);
 
     EXPECT_CALL(*os_level_manager_, Register)
-        .WillOnce(base::test::RunOnceCallback<2>(registration, true));
+        .WillOnce(base::test::RunOnceCallback<2>(registration,
+                                                 std::vector<bool>{true}));
 
     EXPECT_CALL(*report_sender_, SendReport(_, _));
 
@@ -3486,7 +3492,8 @@ TEST_F(AttributionManagerImplTest,
     ScopedContentBrowserClientSetting setting(&browser_client);
 
     EXPECT_CALL(*os_level_manager_, Register)
-        .WillOnce(base::test::RunOnceCallback<2>(registration, false));
+        .WillOnce(base::test::RunOnceCallback<2>(registration,
+                                                 std::vector<bool>{false}));
 
     attribution_manager_->HandleOsRegistration(registration);
 

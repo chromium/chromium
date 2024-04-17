@@ -259,7 +259,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void ProcessNextOsEvent(const std::vector<bool>& is_debug_key_allowed);
   void OnOsRegistration(const std::vector<bool>& is_debug_key_allowed,
                         const OsRegistration&,
-                        bool success);
+                        const std::vector<bool>& success);
 
   // PrivacySandboxAttestationsObserver:
   void OnAttestationsLoaded() override;

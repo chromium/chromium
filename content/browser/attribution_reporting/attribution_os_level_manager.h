@@ -59,7 +59,8 @@ class CONTENT_EXPORT AttributionOsLevelManager {
   virtual ~AttributionOsLevelManager() = default;
 
   using RegisterCallback =
-      base::OnceCallback<void(const OsRegistration&, bool success)>;
+      base::OnceCallback<void(const OsRegistration&,
+                              const std::vector<bool>& success)>;
 
   virtual void Register(OsRegistration,
                         const std::vector<bool>& is_debug_key_allowed,
