@@ -3763,10 +3763,6 @@ crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerate
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
 
-# This test has a fixed number of time which can depend on performance.
-
-crbug.com/669329 http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.js [ Crash Failure Pass Timeout ]
-
 crbug.com/769347 [ Mac ] fast/dom/inert/inert-node-is-uneditable.html [ Failure ]
 
 crbug.com/769056 virtual/text-antialias/emoji-web-font.html [ Failure ]
