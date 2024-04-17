@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The translator that provides the translation functionalities.
+interface Translator {
+  // Translate the given `input` from the source language to the
+  // target language. If the translation fails, the output would
+  // be null.
+  Translate(string input) => (string? output);
+};

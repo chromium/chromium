@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bundz_translation/service_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
 #include "chrome/services/bundz_translation/public/mojom/bundz_translation_service.mojom.h"

@@ -162,6 +162,8 @@ mojom("mojom_platform") {
     "navigation/was_activated_option.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
+    "on_device_translation/translation_manager.mojom",
+    "on_device_translation/translator.mojom",
     "oom_intervention/oom_intervention.mojom",
     "opengraph/metadata.mojom",
     "origin_trials/origin_trials_settings.mojom",

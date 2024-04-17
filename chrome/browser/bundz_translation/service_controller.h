@@ -41,8 +41,8 @@ class BundzTranslationServiceController {
   BundzTranslationServiceController();
   ~BundzTranslationServiceController();
 
-  void LaunchService();
-
+  // TODO(crbug.com/335374928): implement the error handling for the translation
+  // service crash.
   mojo::Remote<bundz_translation::mojom::BundzTranslationService>
       service_remote_;
 };
