@@ -1407,9 +1407,7 @@ class LocationBarMediator
     }
 
     @Override
-    public void notifyVoiceRecognitionCanceled() {
-        mLocationBarLayout.notifyVoiceRecognitionCanceled();
-    }
+    public void notifyVoiceRecognitionCanceled() {}
 
     // VoiceRecognitionHandler.Delegate implementation.
 

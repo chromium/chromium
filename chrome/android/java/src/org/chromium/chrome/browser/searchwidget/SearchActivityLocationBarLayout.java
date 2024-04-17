@@ -209,11 +209,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public void notifyVoiceRecognitionCanceled() {
-        focusTextBox();
-    }
-
-    @Override
     public int getVoiceRecogintionSource() {
         return mInteractionFromWidget
                 ? VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET

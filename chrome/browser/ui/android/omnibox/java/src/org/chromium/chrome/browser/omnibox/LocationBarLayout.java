@@ -601,8 +601,6 @@ public class LocationBarLayout extends FrameLayout {
         mSearchEngineUtils = searchEngineUtils;
     }
 
-    public void notifyVoiceRecognitionCanceled() {}
-
     /** Returns the source of Voice Recognition interactions. */
     public int getVoiceRecogintionSource() {
         return VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX;
