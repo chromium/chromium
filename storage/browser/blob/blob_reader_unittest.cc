@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/blob/blob_reader.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -19,6 +21,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,7 +35,6 @@
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
-#include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -682,8 +684,8 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
 
   ASSERT_EQ(kData.size(), static_cast<size_t>(bytes_read));
 
-  std::vector<uint8_t> buffer(bytes_read);
-  uint32_t num_bytes = bytes_read;
+  size_t num_bytes = base::checked_cast<size_t>(bytes_read);
+  std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
   MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
   ASSERT_EQ(MOJO_RESULT_OK, read_result);
@@ -729,8 +731,8 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingleRange) {
 
   ASSERT_EQ(range_length, static_cast<uint64_t>(bytes_read));
 
-  std::vector<uint8_t> buffer(bytes_read);
-  uint32_t num_bytes = bytes_read;
+  size_t num_bytes = base::checked_cast<size_t>(bytes_read);
+  std::vector<uint8_t> buffer(num_bytes);
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
   MojoResult read_result = consumer->ReadData(buffer.data(), &num_bytes, flags);
   ASSERT_EQ(MOJO_RESULT_OK, read_result);

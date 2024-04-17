@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -102,7 +103,7 @@ class DataPipeConsumerHelper {
 
     while (current_offset_ < max_bytes_to_read_) {
       const void* data;
-      uint32_t size;
+      size_t size;
       result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_INVALID_ARGUMENT) {
         // `pipe_` is not actually a ScopedDataPipeConsumerHandle.
@@ -123,7 +124,8 @@ class DataPipeConsumerHelper {
         break;
       }
       DCHECK_EQ(MOJO_RESULT_OK, result);
-      size = std::min<uint64_t>(size, max_bytes_to_read_ - current_offset_);
+      size = base::checked_cast<size_t>(std::min<uint64_t>(
+          uint64_t{size}, max_bytes_to_read_ - current_offset_));
       if (!Populate(base::make_span(static_cast<const char*>(data), size),
                     current_offset_)) {
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
@@ -132,7 +134,7 @@ class DataPipeConsumerHelper {
         return;
       }
       if (progress_client_)
-        progress_client_->OnProgress(size);
+        progress_client_->OnProgress(uint64_t{size});
       current_offset_ += size;
       result = pipe_->EndReadData(size);
       DCHECK_EQ(MOJO_RESULT_OK, result);

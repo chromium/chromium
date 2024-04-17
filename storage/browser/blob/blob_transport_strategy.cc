@@ -189,7 +189,7 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
         relative_element_index * limits_.max_bytes_data_item_size;
 
     while (true) {
-      uint32_t num_bytes = 0;
+      size_t num_bytes = 0;
       const void* source_buffer;
       MojoResult read_result = consumer_handle_->BeginReadData(
           &source_buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
@@ -210,9 +210,8 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
 
       // Only read as many bytes as can fit in current data element. Any
       // remaining bytes will be read on the next iteration of this loop.
-      num_bytes =
-          std::min<uint32_t>(num_bytes, limits_.max_bytes_data_item_size -
-                                            offset_in_builder_element);
+      num_bytes = std::min(num_bytes, limits_.max_bytes_data_item_size -
+                                          offset_in_builder_element);
       base::span<uint8_t> output_buffer =
           future_data[relative_element_index].GetDataToPopulate(
               offset_in_builder_element, num_bytes);

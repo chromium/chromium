@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -147,7 +148,7 @@ void FileWriterDelegate::Read() {
   }
 
   DCHECK(data_pipe_);
-  uint32_t num_bytes = io_buffer_->size();
+  size_t num_bytes = io_buffer_->size();
   MojoResult result = data_pipe_->ReadData(io_buffer_->data(), &num_bytes,
                                            MOJO_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -155,7 +156,7 @@ void FileWriterDelegate::Read() {
     return;
   }
   if (result == MOJO_RESULT_OK) {
-    bytes_read_ = num_bytes;
+    bytes_read_ = base::checked_cast<int>(num_bytes);
     OnReadCompleted(bytes_read_);
     return;
   }
