@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
@@ -507,22 +506,6 @@ public class SearchActivityTest {
                 1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
         Assert.assertEquals(1, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
         Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/1166647")
-    @SmallTest
-    public void testNewIntentDiscardsQuery() {
-        final SearchActivity searchActivity = startSearchActivity();
-        // Note: we should not need to request focus here.
-        mOmnibox.requestFocus();
-        mOmnibox.typeText("first query", false);
-
-        // Start the Activity again by firing another copy of the same Intent.
-        SearchActivity restartedActivity = startSearchActivity(1, /* isVoiceSearch= */ false);
-        Assert.assertEquals(searchActivity, restartedActivity);
-
-        mOmnibox.checkText(Matchers.isEmptyString(), null);
     }
 
     @Test

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Intent;
 
 import org.junit.After;
@@ -165,6 +166,7 @@ public class SearchActivityUnitTest {
     private @Mock WebContents mWebContents;
     private @Mock Tab mTab;
     private @Mock SearchActivity.SearchActivityDelegate mDelegate;
+    private @Mock SearchActivityLocationBarLayout mLocationBar;
     private ObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -192,6 +194,7 @@ public class SearchActivityUnitTest {
 
         SearchActivity.setDelegateForTests(mDelegate);
         mActivity.setActivityUsableForTesting(true);
+        mActivity.setLocationBarLayoutForTesting(mLocationBar);
         mProfileProviderSupplier = mActivity.createProfileProvider();
 
         ShadowSearchActivityUtils.sMockUtils = mUtils;
@@ -667,5 +670,39 @@ public class SearchActivityUnitTest {
         assertThrows(
                 IllegalStateException.class,
                 () -> mProfileProviderSupplier.get().hasOffTheRecordProfile());
+    }
+
+    @Test
+    public void onNewIntent_applyQuery() {
+        var intent = new Intent();
+
+        doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        intent.putExtra(SearchManager.QUERY, "query1");
+        mActivity.onNewIntent(intent);
+        verify(mLocationBar)
+                .beginQuery(
+                        eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), eq("query1"), any());
+
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        intent.putExtra(SearchManager.QUERY, "query2");
+        mActivity.onNewIntent(intent);
+        verify(mLocationBar)
+                .beginQuery(
+                        eq(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET),
+                        eq(SearchType.TEXT),
+                        eq("query2"),
+                        any());
+
+        doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        intent.putExtra(SearchManager.QUERY, "");
+        mActivity.onNewIntent(intent);
+        verify(mLocationBar)
+                .beginQuery(eq(IntentOrigin.SEARCH_WIDGET), eq(SearchType.TEXT), eq(""), any());
+
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        intent.removeExtra(SearchManager.QUERY);
+        mActivity.onNewIntent(intent);
+        verify(mLocationBar)
+                .beginQuery(eq(IntentOrigin.CUSTOM_TAB), eq(SearchType.TEXT), eq(null), any());
     }
 }

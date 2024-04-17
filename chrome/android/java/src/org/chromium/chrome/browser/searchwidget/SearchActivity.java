@@ -314,7 +314,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
         // Kick off everything needed for the user to type into the box.
         handleNewIntent(getIntent());
-        beginQuery();
 
         // Kick off loading of the native library.
         if (!getActivityDelegate().shouldDelayNativeInitialization()) {
@@ -364,6 +363,7 @@ public class SearchActivity extends AsyncInitializationActivity
         if (profile != null) refinePageClassWithProfile(profile);
 
         mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
+        beginQuery();
     }
 
     /** Translate current intent origin and extras to a PageClassification. */
@@ -488,7 +488,6 @@ public class SearchActivity extends AsyncInitializationActivity
         super.onNewIntent(intent);
         setIntent(intent);
         handleNewIntent(intent);
-        beginQuery();
     }
 
     @Override
@@ -703,5 +702,9 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ ObservableSupplier getProfileSupplierForTesting() {
         return mProfileSupplier;
+    }
+
+    /* package */ void setLocationBarLayoutForTesting(SearchActivityLocationBarLayout layout) {
+        mSearchBox = layout;
     }
 }
