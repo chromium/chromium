@@ -441,6 +441,11 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 
+// Title and description for the flag to enable account-switching UI when
+// tapping the identity disc on the New Tab page.
+extern const char kIdentityDiscAccountSwitchName[];
+extern const char kIdentityDiscAccountSwitchDescription[];
+
 // Title and description for the flag to enable revamped Incognito NTP page.
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];

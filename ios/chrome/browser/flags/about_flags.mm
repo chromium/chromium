@@ -1585,6 +1585,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSDetectUsernameInUffName,
      flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIosDetectUsernameInUff)},
+    {"identity-disc-account-switch",
+     flag_descriptions::kIdentityDiscAccountSwitchName,
+     flag_descriptions::kIdentityDiscAccountSwitchDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIdentityDiscAccountSwitch)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

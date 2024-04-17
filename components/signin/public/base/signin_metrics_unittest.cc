@@ -194,6 +194,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "ProfileMenuSignoutConfirmationPrompt";
       case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
         return "SettingsSignoutConfirmationPrompt";
+      case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+        return "NtpIdentityDisc";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

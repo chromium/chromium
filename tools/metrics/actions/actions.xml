@@ -36038,6 +36038,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromNtpIdentityDisc">
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded on signin start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromNTPSignedOutIcon">
   <owner>triploblastic@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

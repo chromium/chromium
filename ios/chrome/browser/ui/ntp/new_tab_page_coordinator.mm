@@ -799,10 +799,23 @@
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+
   BOOL isSignedIn =
       self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (isSignedIn || ![self isSignInAllowed]) {
+  if (![self isSignInAllowed]) {
     [handler showSettingsFromViewController:self.baseViewController];
+  } else if (isSignedIn) {
+    if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
+      // "Instant signin" works as a quick account-switching UI.
+      ShowSigninCommand* const switchAccountCommand = [[ShowSigninCommand alloc]
+          initWithOperation:AuthenticationOperation::kInstantSignin
+                accessPoint:signin_metrics::AccessPoint::
+                                ACCESS_POINT_NTP_IDENTITY_DISC];
+      [handler showSignin:switchAccountCommand
+          baseViewController:self.baseViewController];
+    } else {
+      [handler showSettingsFromViewController:self.baseViewController];
+    }
   } else {
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
         initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync

@@ -421,6 +421,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Sign-in choice remembered"/>
   <int value="61" label="Signout confirmation prompt in profile menu"/>
   <int value="62" label="Signout confirmation prompt in settings"/>
+  <int value="63" label="NTP Identity Disc"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

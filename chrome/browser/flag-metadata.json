@@ -4899,6 +4899,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "identity-disc-account-switch",
+    "owners": ["treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "idle-timeout-policies",
     "owners": ["esalma@google.com", "cbe-magic@google.com"],
     "expiry_milestone": 125

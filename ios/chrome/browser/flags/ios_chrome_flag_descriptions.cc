@@ -509,6 +509,11 @@ const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
+const char kIdentityDiscAccountSwitchName[] = "Identity Disc Account Switcher";
+const char kIdentityDiscAccountSwitchDescription[] =
+    "When enabled, tapping the identity disc on the New Tab page shows an "
+    "account switcher UI.";
+
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

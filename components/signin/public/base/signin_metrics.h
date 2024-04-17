@@ -126,6 +126,7 @@ enum class ProfileSignout {
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninAccessPoint
+// LINT.IfChange
 enum class AccessPoint : int {
   ACCESS_POINT_START_PAGE = 0,
   ACCESS_POINT_NTP_LINK = 1,
@@ -213,11 +214,17 @@ enum class AccessPoint : int {
   // allowing the user to reauth.
   ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT = 61,
   ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT = 62,
+  // The identity disc (avatar) on the New Tab page. Note that this only covers
+  // signed-in avatars - interactions with the signed-out avatar are instead
+  // counted under ACCESS_POINT_NTP_SIGNED_OUT_ICON.
+  ACCESS_POINT_NTP_IDENTITY_DISC = 63,
 
   // Add values above this line with a corresponding label to the
-  // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
+  // "SigninAccessPoint" enum in
+  // tools/metrics/histograms/metadata/signin/enums.xml.
   ACCESS_POINT_MAX,  // This must be last.
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
 // Enum values which enumerates all access points where transactional reauth
 // could be initiated. Transactional reauth is used when the user already has
