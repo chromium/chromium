@@ -1867,6 +1867,16 @@ void PaymentsDataManager::AddMaskedBankAccountForTest(
   masked_bank_accounts_.push_back(std::make_unique<BankAccount>(bank_account));
 }
 
+void PaymentsDataManager::AddServerCreditCardForTest(
+    std::unique_ptr<CreditCard> credit_card) {
+  server_credit_cards_.push_back(std::move(credit_card));
+}
+
+void PaymentsDataManager::AddCreditCardBenefitForTest(
+    CreditCardBenefit benefit) {
+  credit_card_benefits_.push_back(std::move(benefit));
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||

@@ -49,6 +49,16 @@ class PaymentsDatabaseHelper;
 class PersonalDataManager;
 class TestPersonalDataManager;
 
+// Contains all payments-related logic of the `PersonalDataManager`. See comment
+// above the `PersonalDataManager` first.
+//
+// Technical details on how modifications are implemented:
+// `PaymentsDataManager` (PayDM) code simply posts a task to the DB sequence and
+// triggers a `Refresh()` afterwards. Since `Refresh()` itself simply posts
+// several read requests on the DB sequence, and because the DB sequence is a
+// sequence, the `Refresh()` is guaranteed to read the latest data. This is
+// unnecessarily inefficient, since any change causes the PayDM to reload all of
+// its data.
 class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
                             public WebDataServiceConsumer,
                             public AccountInfoGetter,
@@ -414,6 +424,17 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Add a bank account to the cached list of bank accounts in
   // PaymentsDataManager.
   void AddMaskedBankAccountForTest(const BankAccount& bank_account);
+
+  // Sets a server credit card for test.
+  //
+  // TODO(crbug.com/330865438): This method currently sets `server_cards_`
+  // directly which is not correct for the real PaymentsDataManager. It should
+  // be moved to TestPaymentsDataManager, and unittests should switch to that.
+  void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
+
+  // Add the credit-card-linked benefit to local cache for tests. This does
+  // not affect data in the real database.
+  void AddCreditCardBenefitForTest(CreditCardBenefit benefit);
 
  protected:
   friend class PaymentsDataManagerTestApi;

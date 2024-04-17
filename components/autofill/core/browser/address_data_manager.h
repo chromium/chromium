@@ -40,9 +40,23 @@ namespace autofill {
 class ContactInfoPreconditionChecker;
 class PersonalDataManager;
 
-// Intended to contain all address-related logic of the `PersonalDataManager`.
+// Contains all address-related logic of the `PersonalDataManager`. See comment
+// above the `PersonalDataManager` first. In the `AddressDataManager` (ADM),
+// `Refresh()` is called `LoadProfiles()`.
 // Owned by the PDM.
-// TODO(b/322170538): Move all address-related logic from the PDM to this file.
+//
+// Technical details on how modifications are implemented:
+// The ADM queues pending changes in `ongoing_profile_changes_`. For each
+// profile, they are executed in order and the next change is only posted to the
+// DB sequence once the previous change has finished. After each change that
+// finishes, the `AutofillWebDataService` notifies the ADM via
+// `OnAutofillProfileChanged(change)` - and the ADM updates its state
+// accordingly. No `LoadProfiles()` is performed.
+// Queuing the pending modifications is necessary, so the ADM can do consistency
+// checks against the latest state. For example, a remove should only be
+// performed if the profile exists. Without the queuing, if a remove operation
+// was posted before the add operation has finished, the remove would
+// incorrectly get rejected by the ADM.
 class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
                            public WebDataServiceConsumer {
  public:

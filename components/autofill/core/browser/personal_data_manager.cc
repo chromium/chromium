@@ -4,61 +4,27 @@
 
 #include "components/autofill/core/browser/personal_data_manager.h"
 
-#include <stddef.h>
-
-#include <map>
-#include <utility>
-
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/case_conversion.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/geo/address_i18n.h"
-#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/validation.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_utils.h"
-#include "components/sync/service/sync_user_settings.h"
-#include "components/version_info/version_info.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace autofill {
 
@@ -177,6 +143,10 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool PersonalDataManager::IsPaymentsDownloadActive() const {
+  return payments_data_manager_->IsPaymentsDownloadActive();
+}
+
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   address_data_manager_->AddProfile(profile);
 }
@@ -219,8 +189,8 @@ void PersonalDataManager::ClearAllServerDataForTesting() {
 
 void PersonalDataManager::AddServerCreditCardForTest(
     std::unique_ptr<CreditCard> credit_card) {
-  payments_data_manager_->server_credit_cards_.push_back(
-      std::move(credit_card));
+  payments_data_manager_->AddServerCreditCardForTest(
+      std::move(credit_card));  // IN-TEST
 }
 
 bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
@@ -256,6 +226,12 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
 CreditCard* PersonalDataManager::GetCreditCardByServerId(
     const std::string& server_id) {
   return payments_data_manager_->GetCreditCardByServerId(server_id);
+}
+
+void PersonalDataManager::AddCreditCardBenefitForTest(
+    CreditCardBenefit benefit) {
+  payments_data_manager_->AddCreditCardBenefitForTest(
+      std::move(benefit));  // IN-TEST
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
@@ -318,6 +294,14 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
 std::vector<VirtualCardUsageData*>
 PersonalDataManager::GetVirtualCardUsageData() const {
   return payments_data_manager_->GetVirtualCardUsageData();
+}
+
+bool PersonalDataManager::HasPendingPaymentQueriesForTesting() const {
+  return payments_data_manager_->HasPendingPaymentQueries();
+}
+
+void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
+  payments_data_manager_->SetSyncingForTest(is_syncing_for_test);
 }
 
 void PersonalDataManager::Refresh() {
