@@ -11,6 +11,7 @@ import {CrSliderElement,SettingsSliderElement} from 'chrome://os-settings/os_set
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {clearBody} from '../utils.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-slider. */
@@ -25,7 +26,7 @@ suite('SettingsSlider', function() {
   const ticks: number[] = [2, 4, 8, 16, 32, 64, 128];
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     slider = document.createElement('settings-slider');
     slider.pref = {
       key: '',

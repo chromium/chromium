@@ -9,6 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestExtensionControlBrowserProxy} from '../test_extension_control_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 // clang-format on
 
@@ -19,7 +20,7 @@ suite('extension controlled indicator', function() {
   let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     browserProxy = new TestExtensionControlBrowserProxy();
     ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
     openWindowProxy = new TestOpenWindowProxy();

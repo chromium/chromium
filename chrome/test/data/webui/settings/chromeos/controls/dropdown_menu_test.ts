@@ -7,6 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 import {SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {clearBody} from '../utils.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
 suite('SettingsDropdownMenu', function() {
@@ -29,7 +30,7 @@ suite('SettingsDropdownMenu', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     dropdown = document.createElement('settings-dropdown-menu');
     document.body.appendChild(dropdown);
     selectElement = dropdown.shadowRoot!.querySelector('select')!;

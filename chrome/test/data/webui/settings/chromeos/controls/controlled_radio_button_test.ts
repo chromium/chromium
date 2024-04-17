@@ -8,6 +8,7 @@ import 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ControlledRadioButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {clearBody} from '../utils.js';
 // clang-format on
 
 suite('controlled radio button', function() {
@@ -20,7 +21,7 @@ suite('controlled radio button', function() {
   };
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     radioButton = document.createElement('controlled-radio-button');
     radioButton.set('pref', pref);
     document.body.appendChild(radioButton);
