@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -249,26 +250,20 @@ void EmitCookieWarningsAndMetricsOnce(
        cookie_details->cookie_list) {
     const net::CookieInclusionStatus& status = cookie->access_result.status;
     if (ShouldReportDevToolsIssueForStatus(status)) {
+      std::optional<std::string> devtools_issue_id;
+      if (status.HasExclusionReason(
+              net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT) ||
+          status.HasWarningReason(
+              net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
+        devtools_issue_id = base::UnguessableToken::Create().ToString();
+      }
       devtools_instrumentation::ReportCookieIssue(
           root_frame_host, cookie, cookie_details->url,
           cookie_details->site_for_cookies,
           cookie_details->type == CookieAccessDetails::Type::kRead
               ? blink::mojom::CookieOperation::kReadCookie
               : blink::mojom::CookieOperation::kSetCookie,
-          cookie_details->devtools_request_id);
-    }
-
-    // Log to the JS console if there is cookie affected by 3PCD.
-    if (status.HasExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT)) {
-      root_frame_host->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          "Blocked third-party cookie. Learn more in the Issues tab.");
-    } else if (status.HasWarningReason(
-                   net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT)) {
-      root_frame_host->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          "Third-party cookie will be blocked. Learn more in the Issues tab.");
+          cookie_details->devtools_request_id, devtools_issue_id);
     }
 
     if (cookie->access_result.status.ShouldWarn()) {

@@ -1796,7 +1796,8 @@ void ReportCookieIssue(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::CookieOperation operation,
-    const std::optional<std::string>& devtools_request_id) {
+    const std::optional<std::string>& devtools_request_id,
+    const std::optional<std::string>& devtools_issue_id) {
   auto exclusion_reasons =
       BuildExclusionReasons(excluded_cookie->access_result.status);
   auto warning_reasons =
@@ -1853,6 +1854,9 @@ void ReportCookieIssue(
           .SetCode(protocol::Audits::InspectorIssueCodeEnum::CookieIssue)
           .SetDetails(std::move(details))
           .Build();
+  if (devtools_issue_id.has_value()) {
+    issue->SetIssueId(devtools_issue_id.value());
+  }
 
   ReportBrowserInitiatedIssue(render_frame_host_impl, issue.get());
 }

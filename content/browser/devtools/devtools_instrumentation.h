@@ -376,7 +376,8 @@ void ReportCookieIssue(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::CookieOperation operation,
-    const std::optional<std::string>& devtools_request_id);
+    const std::optional<std::string>& devtools_request_id,
+    const std::optional<std::string>& devtools_issue_id);
 
 // This function works similar to RenderFrameHostImpl::AddInspectorIssue, in
 // that it reports an InspectorIssue to DevTools clients. The difference is that
