@@ -1,2 +1,0 @@
-Policy delegate: attempt to load javascript://Spaceballs:%20The%20Comment! with navigation type 'link clicked'
-

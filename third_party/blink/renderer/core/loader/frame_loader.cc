@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/url_features.h"
 
 namespace blink {
 
@@ -792,6 +793,18 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       frame_->GetDocument()->ProcessJavaScriptUrl(url,
                                                   request.JavascriptWorld());
     }
+    return;
+  }
+  // If kStandardCompliantNonSpecialSchemeURLParsing feature is enabled,
+  // "javascript:" scheme URL can be a invalid URL. e.g. "javascript://a b".
+  //
+  // We shouldn't navigate to such an invalid "javascript:" scheme URL.
+  //
+  // See wpt/url/javascript-urls.window.js test for the standard compliant
+  // behaviors.
+  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+      ProtocolIsJavaScript(url.GetString())) {
+    DCHECK(!url.IsValid());
     return;
   }
 
