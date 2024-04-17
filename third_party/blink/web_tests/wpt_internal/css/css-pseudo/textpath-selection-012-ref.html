@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Reftest Reference</title>
+<style>
+  text {
+    fill: green;
+  }
+</style>
+<div>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="550" height="300">
+    <path id="pathToApply"
+        d="M 100 200
+           C 100 100 200 0 500 200" fill="none" />
+
+    <text style="font-size: 48px;"><textPath xlink:href="#pathToApply" id="test">Curvy text sample</textPath></text>
+  </svg>
+</div>

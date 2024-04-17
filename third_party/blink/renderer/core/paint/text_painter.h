@@ -70,6 +70,7 @@ class CORE_EXPORT TextPainter {
     PaintFlags paint_flags_ = PaintFlag::kNoFlag;
     bool is_painting_selection_ = false;
     friend class TextPainter;
+    friend class HighlightPainter;
   };
 
   TextPainter(GraphicsContext& context,

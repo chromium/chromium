@@ -76,6 +76,7 @@ blink_core_sources_paint = [
   "inline_box_fragment_painter.h",
   "inline_paint_context.cc",
   "inline_paint_context.h",
+  "line_relative_rect.cc",
   "line_relative_rect.h",
   "link_highlight_impl.cc",
   "link_highlight_impl.h",
