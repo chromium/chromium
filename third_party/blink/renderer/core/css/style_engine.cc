@@ -4065,7 +4065,10 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
         use_color_adjust_background =
             LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
       }
-    } else if (root_color_scheme != owner_color_scheme_) {
+    } else if (
+        root_color_scheme != owner_color_scheme_ &&
+        // https://html.spec.whatwg.org/C#is-initial-about:blank
+        !view->GetFrame().Loader().IsOnInitialEmptyDocument()) {
       // Iframes should paint a solid background if the embedding iframe has a
       // used color-scheme different from the used color-scheme of the embedded
       // root element. Normally, iframes as transparent by default.
