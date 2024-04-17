@@ -64,12 +64,29 @@ void* sk_realloc_throw(void* addr, size_t size) {
         sk_free(addr);
         return nullptr;
     }
+
+    // TODO(crbug.com/1279371): there is no base::UncheckedRealloc, so we need
+    // to rely on the built-in allocator. Mixing allocators also trips up UBSAN.
+#if defined(UNDEFINED_SANITIZER)
+    // It's slower to use alloc + free instead of realloc, but avoids mixing up
+    // our allocators, which should placate UBSAN.
+    size_t old_size = sk_malloc_size(addr, 0);
+    void* result = sk_malloc_throw(size);
+    memcpy(result, addr, std::min(size, old_size));
+    sk_free(addr);
+    return result;
+#else
     return throw_on_failure(size, realloc(addr, size));
+#endif
 }
 
 void sk_free(void* p) {
     if (p) {
+#if BUILDFLAG(IS_IOS)
         free(p);
+#else
+        base::UncheckedFree(p);
+#endif
     }
 }
 
@@ -84,11 +101,7 @@ static void* prevent_overcommit(int fill, size_t size, void* p) {
     return p;
 }
 
-static void* malloc_throw(size_t size) {
-  return prevent_overcommit(0x42, size, throw_on_failure(size, malloc(size)));
-}
-
-static void* malloc_nothrow(size_t size) {
+static void* malloc_nothrow(size_t size, int debug_sentinel) {
   // TODO(b.kelemen): we should always use UncheckedMalloc but currently it
   // doesn't work as intended everywhere.
   void* result;
@@ -99,13 +112,13 @@ static void* malloc_nothrow(size_t size) {
   std::ignore = base::UncheckedMalloc(size, &result);
 #endif
   if (result) {
-    prevent_overcommit(0x47, size, result);
+    prevent_overcommit(debug_sentinel, size, result);
   }
   return result;
 }
 
-static void* calloc_throw(size_t size) {
-  return prevent_overcommit(0, size, throw_on_failure(size, calloc(size, 1)));
+static void* malloc_throw(size_t size, int debug_sentinel) {
+  return throw_on_failure(size, malloc_nothrow(size, debug_sentinel));
 }
 
 static void* calloc_nothrow(size_t size) {
@@ -124,6 +137,10 @@ static void* calloc_nothrow(size_t size) {
   return result;
 }
 
+static void* calloc_throw(size_t size) {
+  return throw_on_failure(size, calloc_nothrow(size));
+}
+
 void* sk_malloc_flags(size_t size, unsigned flags) {
   if (flags & SK_MALLOC_ZERO_INITIALIZE) {
     if (flags & SK_MALLOC_THROW) {
@@ -133,9 +150,9 @@ void* sk_malloc_flags(size_t size, unsigned flags) {
     }
   } else {
     if (flags & SK_MALLOC_THROW) {
-      return malloc_throw(size);
+      return malloc_throw(size, /*debug_sentinel=*/0x42);
     } else {
-      return malloc_nothrow(size);
+      return malloc_nothrow(size, /*debug_sentinel=*/0x47);
     }
   }
 }
