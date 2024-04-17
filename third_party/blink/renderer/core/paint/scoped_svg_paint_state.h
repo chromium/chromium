@@ -45,7 +45,8 @@ class ScopedSVGTransformState {
 
  public:
   ScopedSVGTransformState(const PaintInfo& paint_info,
-                          const LayoutObject& object) {
+                          const LayoutObject& object)
+      : content_paint_info_(paint_info) {
     DCHECK(object.IsSVGChild());
 
     const auto* fragment = &object.FirstFragment();
@@ -59,11 +60,23 @@ class ScopedSVGTransformState {
       transform_property_scope_.emplace(
           paint_info.context.GetPaintController(), *transform_node, object,
           DisplayItem::PaintPhaseToSVGTransformType(paint_info.phase));
+      if (auto* context_paints = paint_info.GetSvgContextPaints()) {
+        transformed_context_paints_.emplace(
+            context_paints->fill, context_paints->stroke,
+            context_paints->transform *
+                AffineTransform::FromTransform(transform_node->Matrix()));
+        content_paint_info_.SetSvgContextPaints(
+            base::OptionalToPtr(transformed_context_paints_));
+      }
     }
   }
 
+  PaintInfo& ContentPaintInfo() { return content_paint_info_; }
+
  private:
+  std::optional<SvgContextPaints> transformed_context_paints_;
   std::optional<ScopedPaintChunkProperties> transform_property_scope_;
+  PaintInfo content_paint_info_;
 };
 
 class ScopedSVGPaintState {

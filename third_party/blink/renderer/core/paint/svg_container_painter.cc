@@ -95,12 +95,14 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
         properties && HasReferenceFilterEffect(*properties))
       paint_info_before_filtering.context.GetPaintController().EnsureChunk();
 
-    PaintInfo child_paint_info(paint_info_before_filtering);
+    PaintInfo& child_paint_info = transform_state.ContentPaintInfo();
     std::optional<SvgContextPaints> child_context_paints;
     if (IsA<SVGUseElement>(layout_svg_container_.GetElement())) {
-      SVGObjectPainter object_painter(
-          layout_svg_container_,
-          paint_info_before_filtering.GetSvgContextPaints());
+      SVGObjectPainter object_painter(layout_svg_container_,
+                                      child_paint_info.GetSvgContextPaints());
+      // Note that this discards child_paint_info.svg_context_paints_.transform,
+      // which is correct because <use> establishes a new coordinate space for
+      // context paints.
       child_context_paints.emplace(
           object_painter.ResolveContextPaint(
               layout_svg_container_.StyleRef().FillPaint()),

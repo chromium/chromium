@@ -55,20 +55,24 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
   // Shapes cannot have children so do not call TransformCullRect.
 
   ScopedSVGTransformState transform_state(paint_info, layout_svg_shape_);
+  const PaintInfo& content_paint_info = transform_state.ContentPaintInfo();
+
   {
-    ScopedSVGPaintState paint_state(layout_svg_shape_, paint_info);
-    SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_, paint_info);
+    ScopedSVGPaintState paint_state(layout_svg_shape_, content_paint_info);
+    SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_,
+                                             content_paint_info);
     SVGModelObjectPainter::RecordRegionCaptureData(layout_svg_shape_,
-                                                   paint_info);
+                                                   content_paint_info);
     if (!DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, layout_svg_shape_, paint_info.phase)) {
-      SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,
-                                  paint_info.phase);
-      PaintShape(paint_info);
+            content_paint_info.context, layout_svg_shape_,
+            content_paint_info.phase)) {
+      SVGDrawingRecorder recorder(content_paint_info.context, layout_svg_shape_,
+                                  content_paint_info.phase);
+      PaintShape(content_paint_info);
     }
   }
 
-  SVGModelObjectPainter(layout_svg_shape_).PaintOutline(paint_info);
+  SVGModelObjectPainter(layout_svg_shape_).PaintOutline(content_paint_info);
 }
 
 void SVGShapePainter::PaintShape(const PaintInfo& paint_info) {

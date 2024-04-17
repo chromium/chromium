@@ -185,7 +185,8 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  PaintInfo block_info(paint_info);
+  ScopedSVGTransformState transform_state(paint_info, *this);
+  PaintInfo& block_info = transform_state.ContentPaintInfo();
   if (const auto* properties = FirstFragment().PaintProperties()) {
     // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
     // Scale, and Offset, probably via a single transform operation to
@@ -194,7 +195,6 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
       block_info.TransformCullRect(*transform);
     }
   }
-  ScopedSVGTransformState transform_state(block_info, *this);
 
   if (block_info.phase == PaintPhase::kForeground) {
     SVGModelObjectPainter::RecordHitTestData(*this, block_info);
