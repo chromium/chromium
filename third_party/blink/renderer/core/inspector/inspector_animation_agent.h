@@ -68,6 +68,7 @@ class CORE_EXPORT InspectorAnimationAgent final
   protocol::Response AssertAnimation(const String& id,
                                      blink::Animation*& result);
 
+  static String AnimationDisplayName(const Animation& animation);
   void Trace(Visitor*) const override;
 
  private:

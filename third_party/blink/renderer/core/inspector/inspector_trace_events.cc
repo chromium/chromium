@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
+#include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
@@ -1580,6 +1581,8 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
   dict.Add("id", String::Number(animation.SequenceNumber()));
   dict.Add("state", animation.PlayStateString());
   if (const AnimationEffect* effect = animation.effect()) {
+    dict.Add("displayName",
+             InspectorAnimationAgent::AnimationDisplayName(animation));
     dict.Add("name", animation.id());
     if (auto* frame_effect = DynamicTo<KeyframeEffect>(effect)) {
       if (Element* target = frame_effect->EffectTarget())

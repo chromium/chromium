@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Simple animation</title>
+    <style>
+      @keyframes simple-animation {
+        from {
+          color: red;
+          transform: translateX(0%);
+        }
+        to {
+          color: yellow;
+          transform: translateX(100%);
+        }
+      }
+
+      div {
+        width: 200px;
+        height: 200px;
+        background-color: red;
+        animation-name: simple-animation;
+        animation-duration: 4s;
+      }
+    </style>
+  </head>
+  <body>
+    <div>hello world. This Animation has an unsupported css property!</div>
+  </body>
+</html>

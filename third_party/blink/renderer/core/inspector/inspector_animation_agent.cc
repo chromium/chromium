@@ -97,17 +97,6 @@ double AsDoubleOrZero(Timing::V8Delay* value) {
   return value->GetAsDouble();
 }
 
-String AnimationDisplayName(const Animation& animation) {
-  if (!animation.id().empty())
-    return animation.id();
-  else if (auto* css_animation = DynamicTo<CSSAnimation>(animation))
-    return css_animation->animationName();
-  else if (auto* css_transition = DynamicTo<CSSTransition>(animation))
-    return css_transition->transitionProperty();
-  else
-    return animation.id();
-}
-
 }  // namespace
 
 InspectorAnimationAgent::InspectorAnimationAgent(
@@ -121,6 +110,19 @@ InspectorAnimationAgent::InspectorAnimationAgent(
       enabled_(&agent_state_, /*default_value=*/false),
       playback_rate_(&agent_state_, /*default_value=*/1.0) {
   DCHECK(css_agent);
+}
+
+String InspectorAnimationAgent::AnimationDisplayName(
+    const Animation& animation) {
+  if (!animation.id().empty()) {
+    return animation.id();
+  } else if (auto* css_animation = DynamicTo<CSSAnimation>(animation)) {
+    return css_animation->animationName();
+  } else if (auto* css_transition = DynamicTo<CSSTransition>(animation)) {
+    return css_transition->transitionProperty();
+  } else {
+    return "";
+  }
 }
 
 void InspectorAnimationAgent::Restore() {
