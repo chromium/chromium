@@ -718,7 +718,6 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
         page_sources_[dirty_page_id].get(), /* crash_on_error */ true);
     pages_[dirty_page_id] =
         std::make_unique<ui::AXTreeManager>(std::move(page_tree));
-    UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
   } else {
     complete_tree_update.tree_data.tree_id =
         pages_.at(dirty_page_id)->GetTreeID();
