@@ -1,3 +1,7 @@
 dullweber@chromium.org
 engedy@chromium.org
 msramek@chromium.org
+
+# Additional owners for CookieSettings code:
+per-file ...cookie_settings*=cfredric@chromium.org
+per-file ...cookie_settings*=dylancutler@google.com
