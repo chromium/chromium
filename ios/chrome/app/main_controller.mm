@@ -371,6 +371,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)scheduleAppDistributionPings;
 // Asynchronously schedule the init of the memoryDebuggerManager.
 - (void)scheduleMemoryDebuggingTools;
+// Creates the MailtoHandlerService for all loaded browserStates.
+- (void)createMailtoHandlerServices;
 // Asynchronously kick off regular free memory checks.
 - (void)startFreeMemoryMonitoring;
 // Asynchronously schedules the reset of the failed startup attempt counter.
@@ -1160,21 +1162,21 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)initializeMailtoHandling {
-  __weak __typeof(self) weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kMailtoHandlingInitialization
                   block:^{
-                    // TODO(crbug.com/330724241) Remove use of
-                    // appState.mainBrowserState. Force creation of
-                    // MailtoHandlerService for all loaded browserStates.
-                    __strong __typeof(weakSelf) strongSelf = weakSelf;
-                    if (!strongSelf || !strongSelf.appState.mainBrowserState) {
-                      return;
-                    }
-                    // Force the creation of the MailtoHandlerService.
-                    MailtoHandlerServiceFactory::GetForBrowserState(
-                        strongSelf.appState.mainBrowserState);
+                    [self createMailtoHandlerServices];
                   }];
+}
+
+- (void)createMailtoHandlerServices {
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    MailtoHandlerServiceFactory::GetForBrowserState(browserState);
+  }
 }
 
 // Schedule a call to `scheduleSaveFieldTrialValuesForExternals` for deferred
