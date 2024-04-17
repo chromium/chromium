@@ -38,7 +38,10 @@
 namespace ash {
 namespace {
 
+using ::testing::Contains;
 using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::Return;
 
 bool CopyTextToClipboard() {
   base::test::TestFuture<bool> copy_confirmed_future;
@@ -115,17 +118,8 @@ class TestPickerClient : public MockPickerClient {
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
-  base::test::TestFuture<void>& show_editor_future() {
-    return show_editor_future_;
-  }
-
-  ShowEditorCallback CacheEditorContext() override {
-    return show_editor_future_.GetCallback();
-  }
-
  private:
   raw_ptr<PickerController> controller_ = nullptr;
-  base::test::TestFuture<void> show_editor_future_;
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
@@ -383,11 +377,39 @@ TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
 TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
-  controller.ToggleWidget();
+  base::test::TestFuture<void> show_editor_future;
+  EXPECT_CALL(client, CacheEditorContext)
+      .WillOnce(Return(show_editor_future.GetCallback()));
 
+  controller.ToggleWidget();
   controller.ShowEditor();
 
-  EXPECT_TRUE(client.show_editor_future().Wait());
+  EXPECT_TRUE(show_editor_future.Wait());
+}
+
+TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  EXPECT_CALL(client, CacheEditorContext).WillOnce(Return(base::DoNothing()));
+
+  controller.ToggleWidget();
+  controller.ShowEditor();
+
+  EXPECT_THAT(controller.GetAvailableCategories(),
+              Contains(PickerCategory::kEditor));
+}
+
+TEST_F(PickerControllerTest,
+       AvailableCategoriesDoesNotContainEditorWhenDisabled) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  EXPECT_CALL(client, CacheEditorContext)
+      .WillOnce(Return(base::NullCallback()));
+
+  controller.ToggleWidget();
+
+  EXPECT_THAT(controller.GetAvailableCategories(),
+              Not(Contains(PickerCategory::kEditor)));
 }
 
 TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {

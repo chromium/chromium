@@ -22,11 +22,14 @@ class ImeKeyboard;
 
 class ASH_EXPORT PickerModel {
  public:
+  enum class EditorStatus { kEnabled, kDisabled };
+
   // `focused_client` is the input field that was focused when Picker is opened.
   // It can be null. `ime_keyboard` is used to monitor caps lock state. This
   // cannot be null.
   explicit PickerModel(ui::TextInputClient* focused_client,
-                       input_method::ImeKeyboard* ime_keyboard);
+                       input_method::ImeKeyboard* ime_keyboard,
+                       EditorStatus editor_status);
 
   std::vector<PickerCategory> GetAvailableCategories() const;
 
@@ -37,6 +40,7 @@ class ASH_EXPORT PickerModel {
  private:
   std::u16string selected_text_;
   bool is_caps_lock_enabled_;
+  EditorStatus editor_status_;
 };
 
 }  // namespace ash

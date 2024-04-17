@@ -310,8 +310,10 @@ void PickerController::ToggleWidget(
   } else {
     show_editor_callback_ = client_->CacheEditorContext();
 
-    model_ = std::make_unique<PickerModel>(GetFocusedTextInputClient(),
-                                           &GetImeKeyboard());
+    model_ = std::make_unique<PickerModel>(
+        GetFocusedTextInputClient(), &GetImeKeyboard(),
+        show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
+                                        : PickerModel::EditorStatus::kEnabled);
     widget_ = PickerWidget::Create(
         this,
         GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),

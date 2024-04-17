@@ -27,31 +27,44 @@ std::u16string GetSelectedText(ui::TextInputClient* client) {
 }  // namespace
 
 PickerModel::PickerModel(ui::TextInputClient* focused_client,
-                         input_method::ImeKeyboard* ime_keyboard)
+                         input_method::ImeKeyboard* ime_keyboard,
+                         EditorStatus editor_status)
     : selected_text_(GetSelectedText(focused_client)),
-      is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()) {}
+      is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
+      editor_status_(editor_status) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   if (HasSelectedText()) {
-    return std::vector<PickerCategory>{
-        PickerCategory::kEditor,    PickerCategory::kUpperCase,
-        PickerCategory::kLowerCase, PickerCategory::kSentenceCase,
-        PickerCategory::kTitleCase,
-    };
+    std::vector<PickerCategory> categories;
+    if (editor_status_ == EditorStatus::kEnabled) {
+      categories.push_back(PickerCategory::kEditor);
+    }
+    categories.insert(categories.end(), {
+                                            PickerCategory::kUpperCase,
+                                            PickerCategory::kLowerCase,
+                                            PickerCategory::kSentenceCase,
+                                            PickerCategory::kTitleCase,
+                                        });
+    return categories;
   }
 
-  return std::vector<PickerCategory>{
-      (is_caps_lock_enabled_ ? PickerCategory::kCapsOff
-                             : PickerCategory::kCapsOn),
-      PickerCategory::kEditor,
-      PickerCategory::kLinks,
-      PickerCategory::kExpressions,
-      PickerCategory::kClipboard,
-      PickerCategory::kDriveFiles,
-      PickerCategory::kLocalFiles,
-      PickerCategory::kDatesTimes,
-      PickerCategory::kUnitsMaths,
-  };
+  std::vector<PickerCategory> categories{is_caps_lock_enabled_
+                                             ? PickerCategory::kCapsOff
+                                             : PickerCategory::kCapsOn};
+  if (editor_status_ == EditorStatus::kEnabled) {
+    categories.push_back(PickerCategory::kEditor);
+  }
+  categories.insert(categories.end(), {
+                                          PickerCategory::kLinks,
+                                          PickerCategory::kExpressions,
+                                          PickerCategory::kClipboard,
+                                          PickerCategory::kDriveFiles,
+                                          PickerCategory::kLocalFiles,
+                                          PickerCategory::kDatesTimes,
+                                          PickerCategory::kUnitsMaths,
+                                      });
+
+  return categories;
 }
 
 bool PickerModel::HasSelectedText() const {
