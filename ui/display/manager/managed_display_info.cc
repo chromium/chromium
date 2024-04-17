@@ -39,13 +39,6 @@ namespace {
 
 const float kDpi96 = 96.0;
 
-// The recommended default external display DPI, only used when an external
-// display is connected for the first time. e.g. when a 4K native mode is used
-// when firstly connected, the content is almost certainly too small. The value
-// comes from the metrics of currently most used external effective display DPI
-// - Ash.Display.ExternalDisplay.ActiveEffectiveDPI.
-const float kRecommendedDefaultExternalDisplayDpi = kDpi96;
-
 // Check the content of |spec| and fill |bounds| and |device_scale_factor|.
 // Returns true when |bounds| is found.
 void GetDisplayBounds(const std::string& spec,
@@ -504,53 +497,6 @@ float ManagedDisplayInfo::GetEffectiveDeviceScaleFactor() const {
   // Floor the value by default but allow very close value to be roudnd up.
   const int32_t logical_size = base::ClampFloor(logical_size_f + 0.0005);
   return pixel_size / static_cast<float>(logical_size);
-}
-
-void ManagedDisplayInfo::UpdateZoomFactorToMatchTargetDPI() {
-  // Only update zoom factor if device dpi is valid.
-  if (!device_dpi_) {
-    return;
-  }
-
-  const float target_zoom_factor =
-      device_dpi_ / kRecommendedDefaultExternalDisplayDpi;
-
-  // Refine zoom factor based on available zoom factors in settings.
-  const int display_larger_side =
-      std::max(bounds_in_native_.width(), bounds_in_native_.height());
-  const std::vector<float> avaialble_zoom_factors =
-      GetDisplayZoomFactorsByDisplayWidth(display_larger_side);
-  DCHECK_GE(avaialble_zoom_factors.size(), 1u);
-
-  const float min_zoom_factor = avaialble_zoom_factors.front();
-  const float max_zoom_factor = avaialble_zoom_factors.back();
-  // Check min boundary.
-  if (target_zoom_factor <= min_zoom_factor) {
-    zoom_factor_ = min_zoom_factor;
-  } else if (target_zoom_factor >= max_zoom_factor) {
-    // Check max boundary.
-    zoom_factor_ = max_zoom_factor;
-  } else {
-    // Round to the neareast available zoom factor.
-    DCHECK(std::is_sorted(avaialble_zoom_factors.begin(),
-                          avaialble_zoom_factors.end()));
-    for (size_t i = 0; i < avaialble_zoom_factors.size() - 1; i++) {
-      const float left_bound = avaialble_zoom_factors[i];
-      const float right_bound = avaialble_zoom_factors[i + 1];
-      if (target_zoom_factor >= right_bound) {
-        continue;
-      }
-
-      zoom_factor_ =
-          (target_zoom_factor - left_bound < right_bound - target_zoom_factor)
-              ? left_bound
-              : right_bound;
-      break;
-    }
-  }
-
-  // Also update the zoom factor in the zoom_factor_map_.
-  AddZoomFactorForSize(size_in_pixel_.ToString(), zoom_factor_);
 }
 
 gfx::Size ManagedDisplayInfo::GetSizeInPixelWithPanelOrientation() const {

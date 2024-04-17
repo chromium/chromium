@@ -601,11 +601,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // |GetDisplayInfo| to get the correct ManagedDisplayInfo for a display.
   void InsertAndUpdateDisplayInfo(const ManagedDisplayInfo& new_info);
 
-  // Applies recommended zoom factor when necessary, only used when an external
-  // display is connected for the first time. e.g. when a 4K native mode is used
-  // when firstly connected, the content is almost certainly too small.
-  void ApplyDefaultZoomFactorIfNecessary(ManagedDisplayInfo& info);
-
   // Creates a display object from the ManagedDisplayInfo for
   // |display_id|.
   Display CreateDisplayFromDisplayInfoById(int64_t display_id);
