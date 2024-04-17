@@ -345,8 +345,6 @@ component("skia") {
   sources += [
     "//third_party/skia/src/codec/SkEncodedInfo.cpp",
     "//third_party/skia/src/codec/SkPngCodec.cpp",
-    "//third_party/skia/src/fonts/SkFontMgr_indirect.cpp",
-    "//third_party/skia/src/fonts/SkRemotableFontMgr.cpp",
     "//third_party/skia/src/ports/SkGlobalInitialization_default.cpp",
     "//third_party/skia/src/ports/SkImageGenerator_none.cpp",
     "//third_party/skia/src/ports/SkOSFile_stdio.cpp",
