@@ -13,20 +13,94 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ash/javascript_browser_test.h"
+#include "chrome/test/base/test_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
-#include "chrome/test/base/test_switches.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/service_worker_host.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/common/extension.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace {
+
+// Class to observe service worker readiness for the execution of test JS.
+class ExtensionTestObserver
+    : public extensions::ServiceWorkerTaskQueue::TestObserver,
+      public extensions::ExtensionRegistryObserver {
+ public:
+  explicit ExtensionTestObserver(const char* extension_id,
+                                 content::BrowserContext* context)
+      : extension_id_(extension_id), context_(context) {
+    extensions::ExtensionRegistry::Get(context_)->AddObserver(this);
+    extensions::ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+
+  ~ExtensionTestObserver() override {
+    extensions::ExtensionRegistry::Get(context_)->RemoveObserver(this);
+    extensions::ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
+  }
+
+  int WaitForManifestVersion() {
+    if (manifest_version_) {
+      return manifest_version_;
+    }
+    base::RunLoop waiter;
+    manifest_quit_ = waiter.QuitClosure();
+    waiter.Run();
+    return manifest_version_;
+  }
+
+  void WaitForServiceWorkerStart() {
+    if (started_) {
+      return;
+    }
+    base::RunLoop waiter;
+    started_quit_ = waiter.QuitClosure();
+    waiter.Run();
+  }
+
+  // extensions::ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* context,
+                         const extensions::Extension* extension) override {
+    if (context == context_ && extension->id() == extension_id_) {
+      manifest_version_ = extension->manifest_version();
+      if (manifest_quit_) {
+        std::move(manifest_quit_).Run();
+      }
+    }
+  }
+
+  // extensions::ServiceWorkerTaskQueue::TestObserver:
+  void DidStartWorker(const std::string& extension_id) override {
+    if (extension_id == extension_id_) {
+      started_ = true;
+      if (started_quit_) {
+        std::move(started_quit_).Run();
+      }
+    }
+  }
+
+ private:
+  const std::string extension_id_;
+  // Not owned.
+  raw_ptr<content::BrowserContext> context_;
+  size_t manifest_version_ = 0;
+  bool started_ = false;
+  base::OnceClosure manifest_quit_;
+  base::OnceClosure started_quit_;
+};
 
 const std::vector<std::string>& GetExtensionIdsToCollectCoverage() {
   static const std::vector<std::string> extensions_for_coverage = {
@@ -73,8 +147,20 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
 void ExtensionJSBrowserTest::WaitForExtension(const char* extension_id,
                                               base::OnceClosure load_cb) {
   extension_id_ = extension_id;
+
+  // ExtensionHosts only exist when there is an associated RenderFrame.
+  // Initialize both an ExtensionHostTestHelper and a ServiceWorkerObserver
+  // before running the load callback, to avoid missing the relevant event.
   extensions::ExtensionHostTestHelper host_helper(GetProfile(), extension_id);
+  ExtensionTestObserver observer(extension_id, GetProfile());
   std::move(load_cb).Run();
+
+  if (observer.WaitForManifestVersion() == 3) {
+    observer.WaitForServiceWorkerStart();
+    extension_host_browser_context_ = GetProfile();
+    return;
+  }
+
   extensions::ExtensionHost* extension_host =
       host_helper.WaitForHostCompletedFirstLoad();
   ASSERT_TRUE(extension_host);

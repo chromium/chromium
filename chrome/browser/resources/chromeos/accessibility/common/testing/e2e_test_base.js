@@ -38,7 +38,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "chrome/common/extensions/extension_constants.h"
   #include "content/public/test/browser_test.h"
   #include "content/public/test/browser_test_utils.h"
-  #include "extensions/browser/extension_host.h"
+  #include "extensions/browser/test_extension_console_observer.h"
   #include "extensions/browser/process_manager.h"
       `);
   }
@@ -62,7 +62,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   testGenPostamble() {
     GEN(`
     if (fail_on_console_error) {
-      EXPECT_EQ(0u, console_observer.messages().size())
+      EXPECT_EQ(0u, console_observer.GetErrorCount())
           << "Found console.warn or console.error with message: "
           << console_observer.GetMessageAt(0);
     }
@@ -76,31 +76,18 @@ E2ETestBase = class extends AccessibilityTestBase {
     GEN(`
     WaitForExtension(extension_misc::${extensionIdName}, std::move(load_cb));
 
-    extensions::ExtensionHost* host =
-        extensions::ProcessManager::Get(GetProfile())
-            ->GetBackgroundHostForExtension(
-                extension_misc::${extensionIdName});
-
     bool fail_on_console_error = ${failOnConsoleError};
     // Convert |allowedMessages| into a C++ set.
     base::flat_set<std::u16string> allowed_messages({${messages}});
-    content::WebContentsConsoleObserver console_observer(host->host_contents());
+    extensions::TestExtensionConsoleObserver
+        console_observer(GetProfile(), extension_misc::${extensionIdName},
+        fail_on_console_error);
     // In most cases, A11y extensions should not log warnings or errors.
     // However, informational messages may be logged in some cases and should
     // be specified in |allowed_messages|. All other messages should cause test
     // failures.
-    auto filter =
-        [](const base::flat_set<std::u16string>& allowed,
-           const content::WebContentsConsoleObserver::Message& message) {
-          if (allowed.contains(message.message))
-            return false;
-
-          return message.log_level ==
-              blink::mojom::ConsoleMessageLevel::kWarning ||
-              message.log_level == blink::mojom::ConsoleMessageLevel::kError;
-        };
     if (fail_on_console_error) {
-      console_observer.SetFilter(base::BindRepeating(filter, allowed_messages));
+      console_observer.SetAllowedErrorMessages(allowed_messages);
     }
     `);
   }
