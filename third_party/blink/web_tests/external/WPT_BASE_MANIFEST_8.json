@@ -70793,6 +70793,19 @@
        {}
       ]
      ],
+     "anchor-scroll-overflow-hidden.html": [
+      "b57e39956bbbb3f268b25d3dabedb6c97ef22dd0",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-scroll-overflow-hidden-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-scroll-position-try-012.html": [
       "7c0b381999d303dcefd8dccbdcad60d9c4b1d29d",
       [
@@ -70800,6 +70813,19 @@
        [
         [
          "/css/css-anchor-position/anchor-scroll-position-try-012-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-scroll-scrollable-anchor.html": [
+      "c2a256877d4c64b9652d2056d1ba19c0f1e51be9",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-scroll-scrollable-anchor-ref.html",
          "=="
         ]
        ],
@@ -302274,8 +302300,16 @@
       "dc7f77f2b3441ebee25f3e40a9480b668ee79ea4",
       []
      ],
+     "anchor-scroll-overflow-hidden-ref.html": [
+      "b674998a5db1f347af82bde1f5efb4261a3732af",
+      []
+     ],
      "anchor-scroll-position-try-012-ref.html": [
       "fbc0b5fc6da55cfadb1ea610092882b8ff7502a7",
+      []
+     ],
+     "anchor-scroll-scrollable-anchor-ref.html": [
+      "3528b565fccb1d32dff6fe732c9497446e5f525e",
       []
      ],
      "inset-area-inline-container-ref.html": [
@@ -320048,7 +320082,7 @@
          []
         ],
         "masonry-align-content-003-ref.html": [
-         "9780d5f5dcf069295ce97d301e37bc4253b561d0",
+         "9da15c0f40319f07c5560f9aaf96a2e3e0ffa592",
          []
         ],
         "masonry-align-content-004-ref.html": [
@@ -454163,7 +454197,7 @@
      "masonry": {
       "tentative": {
        "masonry-grid-template-columns-computed-withcontent.html": [
-        "b36efb664dadc62a2f7f2ffaf1e834c195f13acc",
+        "a799955553e4c39177f5712f7a2e6b244b1a499e",
         [
          null,
          {}
@@ -699909,7 +699943,7 @@
      ]
     ],
     "invalid.html": [
-     "26b2905e4d44c2534af70930e2ea24876ed0f556",
+     "6c0ed90f735c59fe7c832a634779eab56914437c",
      [
       null,
       {}
