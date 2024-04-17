@@ -276,6 +276,7 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerNeverStarted) {
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
 
+  ASSERT_FALSE(did_register_tasks());
   EXPECT_EQ(s_counter, 0);
 }
 
@@ -284,11 +285,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerFastForward) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_FALSE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
 
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   task_environment_.FastForwardBy(base::Seconds(30));
 
@@ -303,11 +306,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerOnPreFreeze) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_FALSE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
 
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
@@ -322,11 +327,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStopSingle) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_FALSE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
 
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   timer.Stop();
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
@@ -342,11 +349,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStopMultiple) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_FALSE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
 
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   timer.Stop();
   timer.Stop();
@@ -366,12 +375,14 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerDestroyed) {
 
     ASSERT_EQ(pending_task_count(), 0u);
     ASSERT_FALSE(timer.IsRunning());
+    ASSERT_FALSE(did_register_tasks());
 
     timer.Start(FROM_HERE, base::Seconds(30),
                 base::BindOnce(&IncGlobalCounter));
 
     ASSERT_EQ(pending_task_count(), 1u);
     ASSERT_TRUE(timer.IsRunning());
+    ASSERT_TRUE(did_register_tasks());
   }
 
   ASSERT_EQ(pending_task_count(), 0u);
@@ -391,11 +402,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_FALSE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
 
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   timer.Start(FROM_HERE, base::Seconds(10), base::BindOnce(&DecGlobalCounter));
 
@@ -403,11 +416,13 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStartedWhileRunning) {
   ASSERT_EQ(s_counter, 1);
   ASSERT_EQ(pending_task_count(), 1u);
   ASSERT_TRUE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(timer.IsRunning());
+  ASSERT_TRUE(did_register_tasks());
 
   // Expect 0 here because we decremented it. The incrementing task was
   // cancelled when we restarted the experiment.
