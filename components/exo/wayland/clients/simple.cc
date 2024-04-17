@@ -132,11 +132,7 @@ void Simple::Run(int frames,
   bool frame_callback_pending = false;
   wp_viewport* viewport =
       wp_viewporter_get_viewport(globals_.wp_viewporter.get(), surface_.get());
-
-  int dispatch_res = 0;
   do {
-    DCHECK(dispatch_res != -1);
-
     if (frame_callback_pending)
       continue;
 
@@ -202,9 +198,7 @@ void Simple::Run(int frames,
 
     wl_surface_commit(surface_.get());
     wl_display_flush(display_.get());
-  } while ((dispatch_res = wl_display_dispatch(display_.get())));
-
-  wp_viewport_destroy(viewport);
+  } while (wl_display_dispatch(display_.get()) != -1);
 
   if (feedback)
     *feedback = presentation.feedback;

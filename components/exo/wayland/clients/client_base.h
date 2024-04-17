@@ -68,7 +68,7 @@ class ClientBase {
     bool use_memfd = false;
     bool use_touch = false;
     bool use_vulkan = false;
-    bool use_wl_shell = false;
+    bool use_xdg = false;
     bool use_release_fences = false;
     bool use_stylus = false;
     std::optional<std::string> wayland_socket = {};

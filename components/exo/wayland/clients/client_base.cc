@@ -108,9 +108,8 @@ const char kVulkanBlitter[] = "vk-blitter";
 // Specifies if client should y-invert the dmabuf surfaces.
 const char kYInvert[] = "y-invert";
 
-// Specifies if client should use the deprecated wl_shell instead of xdg or
-// zxdg_v6.
-const char kWlShell[] = "wl-shell";
+// Specifies if client should use xdg or zxdg_v6 or rely on wl_shell.
+const char kXdg[] = "xdg";
 
 // In cases where we can't easily change the environment variables, such as tast
 // tests, this flag specifies the socket to pass to wl_display_connect.
@@ -976,7 +975,7 @@ bool ClientBase::InitParams::FromCommandLine(
 
   y_invert = command_line.HasSwitch(switches::kYInvert);
 
-  use_wl_shell = command_line.HasSwitch(switches::kWlShell);
+  use_xdg = command_line.HasSwitch(switches::kXdg);
 
   if (command_line.HasSwitch(switches::kWaylandSocket))
     wayland_socket = command_line.GetSwitchValueASCII(switches::kWaylandSocket);
@@ -1031,8 +1030,6 @@ bool ClientBase::Init(const InitParams& params) {
   }
 
   base::flat_map<std::string, uint32_t> requested_versions;
-  requested_versions[xdg_wm_base_interface.name] =
-      XDG_SURFACE_CONFIGURE_SINCE_VERSION;
   requested_versions[zwp_linux_dmabuf_v1_interface.name] =
       params.linux_dmabuf_version;
   globals_.Init(display_.get(), std::move(requested_versions));
@@ -1278,7 +1275,7 @@ bool ClientBase::Init(const InitParams& params) {
     zwp_fullscreen_shell_v1_present_surface(globals_.fullscreen_shell.get(),
                                             surface_.get(), 0, nullptr);
 
-  } else if (params.use_wl_shell) {
+  } else if (!params.use_xdg) {
     if (!globals_.shell) {
       LOG(ERROR) << "Can't find shell interface";
       return false;
