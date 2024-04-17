@@ -466,16 +466,15 @@ crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [
 crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Failures on Windows with SkiaGraphite
-crbug.com/329235191 [ win graphite-enabled ] Pixel_BackgroundImage [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_PrecisionRoundedCorner [ Failure ]
+crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_BackgroundImage [ Failure ]
+crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_BackgroundImage [ Failure ]
+crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_PrecisionRoundedCorner [ Failure ]
+crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasDisableOneCopyCapture_Accelerated [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGPUCanvasOneCopyCapture_Hidden [ Failure ]
 
 # Graphite was disabled on older NVIDIA drivers, and these tests fail under
 # ganesh.
