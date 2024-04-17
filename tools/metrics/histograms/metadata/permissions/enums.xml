@@ -154,6 +154,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HARDCODED_FALLBACK"/>
 </enum>
 
+<enum name="PermissionPromptDismissMethod">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Back navigation"/>
+  <int value="2" label="Touching outside the scrim"/>
+  <int value="3"
+      label="Autodismissed due to dequeuing a prompt after the user
+             backgrounds the browser and cleanup has happened."/>
+  <int value="4"
+      label="Autodismissed after prompt was accepted but OS permission was
+             denied"/>
+</enum>
+
 <enum name="PermissionRequestIgnoredReason">
   <summary>
     Breaks down reasons for permission requests being categorized as ignored.

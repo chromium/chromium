@@ -115,10 +115,10 @@ public class PermissionDialogDelegate {
         PermissionDialogDelegateJni.get().cancel(mNativeDelegatePtr, PermissionDialogDelegate.this);
     }
 
-    public void onDismiss() {
+    public void onDismiss(@DismissalType int dismissalType) {
         assert mNativeDelegatePtr != 0;
         PermissionDialogDelegateJni.get()
-                .dismissed(mNativeDelegatePtr, PermissionDialogDelegate.this);
+                .dismissed(mNativeDelegatePtr, PermissionDialogDelegate.this, dismissalType);
     }
 
     public void destroy() {
@@ -228,7 +228,10 @@ public class PermissionDialogDelegate {
 
         void cancel(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 
-        void dismissed(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        void dismissed(
+                long nativePermissionDialogDelegate,
+                PermissionDialogDelegate caller,
+                @DismissalType int dismissalType);
 
         void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
 

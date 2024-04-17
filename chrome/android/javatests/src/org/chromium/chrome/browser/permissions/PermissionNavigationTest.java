@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.view.View;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -14,13 +16,18 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
+import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.permissions.DismissalType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /** Test suite for interaction between permissions requests and navigation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -29,6 +36,11 @@ public class PermissionNavigationTest {
     @Rule public PermissionTestRule mPermissionRule = new PermissionTestRule();
 
     private static final String TEST_FILE = "/content/test/data/android/permission_navigation.html";
+
+    private static final String DISMISS_TYPE_HISTOGRAM =
+            "Permissions.Prompt.Geolocation.ModalDialog.Dismissed.Method";
+
+    private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
     public PermissionNavigationTest() {}
 
@@ -74,5 +86,52 @@ public class PermissionNavigationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navigationWaiter));
 
         mPermissionRule.waitForDialogShownState(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Permissions"})
+    public void testUmaMetricsForDismissalReasonsNavigateBackAndTouchOutsideTheScrim()
+            throws Exception {
+        mPermissionRule.setUpUrl(TEST_FILE);
+        mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mPermissionRule.waitForDialogShownState(true);
+
+        // Verify dismissing by pressing back is recorded in UMA
+        var histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(DISMISS_TYPE_HISTOGRAM, DismissalType.NAVIGATE_BACK)
+                        .build();
+
+        PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPermissionRule.getActivity().onBackPressed();
+                });
+
+        histogramExpectation.assertExpected(
+                "Should record tapping back to dismiss permission prompt in UMA");
+
+        // Verify touching outside the scrim is recorded in UMA
+        mPermissionRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        mPermissionRule.waitForDialogShownState(true);
+
+        histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(DISMISS_TYPE_HISTOGRAM, DismissalType.TOUCH_OUTSIDE)
+                        .build();
+        PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
+
+        ChromeTabModalPresenter mTabModalPresenter =
+                (ChromeTabModalPresenter)
+                        mPermissionRule
+                                .getActivity()
+                                .getModalDialogManager()
+                                .getPresenterForTest(ModalDialogType.TAB);
+
+        View dialogContainerForTest = mTabModalPresenter.getDialogContainerForTest();
+        TestThreadUtils.runOnUiThreadBlocking(dialogContainerForTest::performClick);
+        histogramExpectation.assertExpected(
+                "Should record tapping outside the scrim to dismiss permission prompt in UMA");
     }
 }
