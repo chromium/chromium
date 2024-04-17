@@ -15,7 +15,11 @@ namespace fend_core {
 std::optional<std::string> evaluate(std::string_view query) {
   rust::String rust_result;
   if (evaluate_using_rust(base::StringPieceToRustSlice(query), rust_result)) {
-    return std::string(rust_result);
+    std::string result(rust_result);
+    if (result.ends_with(query) || result.starts_with("\\")) {
+      return std::nullopt;
+    }
+    return result;
   } else {
     return std::nullopt;
   }

@@ -29,6 +29,26 @@ TEST(MAYBE_FendCoreTest, SimpleMath) {
   EXPECT_THAT(result, Optional(Eq("2")));
 }
 
+TEST(MAYBE_FendCoreTest, NoApproxString) {
+  std::optional<std::string> result = evaluate("1/3");
+  EXPECT_THAT(result, Optional(Eq("0.3333333333")));
+}
+
+TEST(MAYBE_FendCoreTest, FiltersTrivialResult) {
+  std::optional<std::string> result = evaluate("1");
+  EXPECT_THAT(result, std::nullopt);
+}
+
+TEST(MAYBE_FendCoreTest, FiltersUnitOnlyQueries) {
+  std::optional<std::string> result = evaluate("meter");
+  EXPECT_THAT(result, std::nullopt);
+}
+
+TEST(MAYBE_FendCoreTest, FiltersLambdaResults) {
+  std::optional<std::string> result = evaluate("sqrt");
+  EXPECT_THAT(result, std::nullopt);
+}
+
 TEST(MAYBE_FendCoreTest, UnitConversion) {
   std::optional<std::string> result = evaluate("2 miles in meters");
   EXPECT_THAT(result, Optional(Eq("3218.688 meters")));
