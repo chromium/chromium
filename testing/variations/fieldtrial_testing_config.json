@@ -8030,25 +8030,6 @@
             ]
         }
     ],
-    "ForceSigninFlowInProfilePicker": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForceSigninFlowInProfilePicker"
-                    ]
-                }
-            ]
-        }
-    ],
     "ForestFeature": [
         {
             "platforms": [

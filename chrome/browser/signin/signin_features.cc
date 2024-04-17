@@ -111,7 +111,7 @@ BASE_FEATURE(kProfilesReordering,
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kForceSigninFlowInProfilePicker,
              "ForceSigninFlowInProfilePicker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<bool>
     kForceSigninReauthInProfilePickerUseAddSession{
         &kForceSigninFlowInProfilePicker, /*name=*/"reauth_use_add_session",
