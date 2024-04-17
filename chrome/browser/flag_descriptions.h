@@ -1918,9 +1918,6 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncSessionOnVisibilityChangedName[];
 extern const char kSyncSessionOnVisibilityChangedDescription[];
 
-extern const char kSyncShowIdentityErrorsForSignedInUsersName[];
-extern const char kSyncShowIdentityErrorsForSignedInUsersDescription[];
-
 extern const char kSyncTrustedVaultPassphrasePromoName[];
 extern const char kSyncTrustedVaultPassphrasePromoDescription[];
 

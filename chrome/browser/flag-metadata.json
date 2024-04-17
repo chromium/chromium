@@ -7599,11 +7599,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "show-identity-errors-for-signed-in-users",
-    "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-connectivity@google.com" ],
     "expiry_milestone": 122
