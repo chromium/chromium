@@ -470,12 +470,6 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       ComponentExtensionEngine engine;
       ReadEngineComponent(component_ime, dictionary, &engine);
 
-      if (base::StartsWith(engine.engine_id, "experimental_",
-                           base::CompareCase::SENSITIVE) &&
-          !base::FeatureList::IsEnabled(features::kMultilingualTyping)) {
-        continue;
-      }
-
       const char* kHindiInscriptEngineId = "vkd_hi_inscript";
       if (engine.engine_id == kHindiInscriptEngineId &&
           !base::FeatureList::IsEnabled(features::kHindiInscriptLayout)) {
