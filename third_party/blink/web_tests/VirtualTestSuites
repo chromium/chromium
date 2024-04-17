@@ -2534,7 +2534,8 @@
       "fast/url/mailto.html",
       "fast/url/segments.html",
       "http/tests/security/base-url-data.html",
-      "http/tests/security/base-url-javascript.html"
+      "http/tests/security/base-url-javascript-invalid.html",
+      "http/tests/security/base-url-javascript-valid.html"
     ],
     "args": ["--enable-features=StandardCompliantNonSpecialSchemeURLParsing"],
     "owners": ["hayato@chromium.org"],
