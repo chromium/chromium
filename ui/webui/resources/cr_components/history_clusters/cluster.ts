@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
+import {HistoryResultType} from '//resources/cr_components/history/constants.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -186,9 +187,18 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         ClusterAction.kVisitClicked, this.index);
 
     const visit = event.detail;
+    const visitIndex = this.getVisitIndex_(visit);
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.kClicked, this.getVisitIndex_(visit),
-        MetricsProxyImpl.getVisitType(visit));
+        VisitAction.kClicked, visitIndex, MetricsProxyImpl.getVisitType(visit));
+
+    this.dispatchEvent(new CustomEvent('record-history-link-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        resultType: HistoryResultType.GROUPED,
+        index: visitIndex,
+      },
+    }));
   }
 
   private onOpenAllVisits_() {

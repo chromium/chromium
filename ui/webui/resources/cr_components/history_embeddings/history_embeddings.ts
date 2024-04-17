@@ -10,6 +10,7 @@ import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
+import {HistoryResultType} from '//resources/cr_components/history/constants.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -125,6 +126,15 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private onResultClick_(e: DomRepeatEvent<SearchResultItem>) {
     this.dispatchEvent(new CustomEvent('result-click', {detail: e.model.item}));
+
+    this.dispatchEvent(new CustomEvent('record-history-link-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        resultType: HistoryResultType.EMBEDDINGS,
+        index: e.model.index,
+      },
+    }));
   }
 
   private onSearchQueryChanged_() {

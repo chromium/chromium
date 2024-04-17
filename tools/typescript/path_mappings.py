@@ -26,6 +26,7 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
       "cr_components/customize_color_scheme_mode",
       "cr_components/customize_themes",
       "cr_components/help_bubble",
+      "cr_components/history",
       "cr_components/history_embeddings",
       "cr_components/history_clusters",
       "cr_components/localized_link",

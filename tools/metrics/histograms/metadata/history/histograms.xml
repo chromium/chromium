@@ -2024,6 +2024,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.SearchResultClicked.Index{HistoryResultType}"
+    units="index" expires_after="2025-04-15">
+  <owner>tommycli@chromium.org</owner>
+  <owner>orinj@chromium.org</owner>
+  <summary>
+    Logs the zero-based index of the result clicked.
+
+    For Embeddings and Traditional history types, this logs the index of the
+    visit with respect to visits of the same type only. For example, the first
+    matching Traditional visit has index 0, even though it's displayed below all
+    Embeddings matches.
+
+    For Grouped history, this logs the index of the visit WITHIN its containing
+    cluster. This is to match the History.Clusters.UIActions UMAs.
+
+    This does not log anything shown directly in the omnibox suggest surface.
+
+    This UMA is further sliced into per-type slices, and the sum of those
+    histograms equals the unsliced histogram. The maximum index is 99, and
+    clicks above that are clamped to that maximum.
+  </summary>
+  <token key="HistoryResultType">
+    <variant name="" summary="Clicks of all types, unsliced"/>
+    <variant name=".Embeddings" summary="Embeddings search result"/>
+    <variant name=".Grouped"
+        summary="Grouped history search result (index within cluster)"/>
+    <variant name=".Traditional"
+        summary="Traditional history search result (reverse chronological
+                 list)"/>
+  </token>
+</histogram>
+
+<histogram name="History.SearchResultClicked.Type" enum="HistoryResultType"
+    expires_after="2025-04-15">
+  <owner>tommycli@chromium.org</owner>
+  <owner>orinj@chromium.org</owner>
+  <summary>
+    Logs the type of the History result clicked from History UI surfaces. Note,
+    this does NOT include any results clicked from the omnibox suggest surface,
+    even if they are History or @history site search suggestions.
+  </summary>
+</histogram>
+
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
     expires_after="2024-09-15">
   <owner>mahmadi@chromium.org</owner>

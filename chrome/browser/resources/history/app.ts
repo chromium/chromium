@@ -19,8 +19,9 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
-import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
+import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
+import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
@@ -290,6 +291,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(
         document, 'visibilitychange', this.onVisibilityChange_.bind(this));
+    this.eventTracker_.add(
+        document, 'record-history-link-click',
+        this.onRecordHistoryLinkClick_.bind(this));
     this.addWebUiListener(
         'sign-in-state-changed',
         (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
@@ -459,6 +463,48 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.historyClustersViewStartTime_ === null) {
       // Restart the timer if the user switches back to the History tab.
       this.historyClustersViewStartTime_ = new Date();
+    }
+  }
+
+  private onRecordHistoryLinkClick_(
+      e: CustomEvent<{resultType: HistoryResultType, index: number}>) {
+    // All of the above code only applies to History search results, not the
+    // zero-query state. Check queryResult_ instead of queryState_ to key on
+    // actually displayed results rather than the latest user input, which may
+    // not have finished loading yet.
+    if (!this.queryResult_.info || !this.queryResult_.info.term) {
+      return;
+    }
+
+    this.browserService_!.recordHistogram(
+        'History.SearchResultClicked.Type', e.detail.resultType,
+        HistoryResultType.END);
+
+    // MetricsHandler uses a 100 bucket limit, so the max index is 99.
+    const maxIndex = 99;
+    const clampedIndex = Math.min(e.detail.index, 99);
+    this.browserService_!.recordHistogram(
+        'History.SearchResultClicked.Index', clampedIndex, maxIndex);
+
+    switch (e.detail.resultType) {
+      case HistoryResultType.TRADITIONAL: {
+        this.browserService_!.recordHistogram(
+            'History.SearchResultClicked.Index.Traditional', clampedIndex,
+            maxIndex);
+        break;
+      }
+      case HistoryResultType.GROUPED: {
+        this.browserService_!.recordHistogram(
+            'History.SearchResultClicked.Index.Grouped', clampedIndex,
+            maxIndex);
+        break;
+      }
+      case HistoryResultType.EMBEDDINGS: {
+        this.browserService_!.recordHistogram(
+            'History.SearchResultClicked.Index.Embeddings', clampedIndex,
+            maxIndex);
+        break;
+      }
     }
   }
 

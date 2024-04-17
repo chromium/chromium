@@ -153,6 +153,13 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Journeys"/>
 </enum>
 
+<enum name="HistoryResultType">
+  <int value="0"
+      label="Traditional history search result (reverse chronological list)"/>
+  <int value="1" label="Grouped history search result"/>
+  <int value="2" label="Embeddings search result"/>
+</enum>
+
 <enum name="OtherSessionsActions">
   <int value="0" label="Menu initialized"/>
   <int value="1" label="Menu shown (deprecated)"/>

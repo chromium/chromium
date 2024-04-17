@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android && !is_ios)
+
+build_webui("build") {
+  grd_prefix = "cr_components_history_embeddings"
+  non_web_component_files = [ "constants.ts" ]
+
+  ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/history"
+  ts_composite = true
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+}

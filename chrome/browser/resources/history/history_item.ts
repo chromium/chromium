@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
@@ -308,6 +309,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
     if (this.searchTerm) {
       browserService.recordAction('SearchResultClick');
     }
+
+    this.fire_('record-history-link-click', {
+      resultType: HistoryResultType.TRADITIONAL,
+      index: this.index,
+    });
   }
 
   private onLinkRightClick_() {

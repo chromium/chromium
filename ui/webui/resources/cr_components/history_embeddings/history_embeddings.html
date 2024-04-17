@@ -94,7 +94,8 @@ a {
       <template is="dom-repeat" items="[[searchResult_.items]]">
         <cr-url-list-item url="[[item.url.url]]" title="[[item.title]]"
             description="[[item.urlForDisplay]]"
-            on-click="onResultClick_" as-anchor always-show-suffix>
+            on-click="onResultClick_" on-auxclick="onResultClick_"
+            as-anchor always-show-suffix>
           <span slot="suffix">[[item.relativeTime]]</span>
           <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
               on-click="onMoreActionsClick_">
