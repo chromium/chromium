@@ -1244,7 +1244,29 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
                    ->clear_forced_re_enrollment_vpd_call_count());
 }
 
-IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
+class WizardControllerDeviceLegacyTest
+    : public WizardControllerDeviceStateTest {
+ public:
+  WizardControllerDeviceLegacyTest(
+      const WizardControllerDeviceLegacyTest&) = delete;
+  WizardControllerDeviceLegacyTest& operator=(
+      const WizardControllerDeviceLegacyTest&) = delete;
+
+ protected:
+  WizardControllerDeviceLegacyTest() = default;
+  ~WizardControllerDeviceLegacyTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
+
+    // Explicitly test legacy state determination flow.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerDeviceLegacyTest,
                        ServerAdvertisedReEnrollment) {
   base::Value::Dict device_state;
   device_state.Set(
@@ -1277,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 #else
 #define MAYBE_ControlFlowDeviceDisabled ControlFlowDeviceDisabled
 #endif
-IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
+IN_PROC_BROWSER_TEST_F(WizardControllerDeviceLegacyTest,
                        MAYBE_ControlFlowDeviceDisabled) {
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
@@ -1710,6 +1732,82 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
   CheckCurrentScreen(DeviceDisabledScreenView::kScreenId);
 }
 
+// Tests that when EnrollmentStateFetcher reports kDisabled and configures
+// corresponding device state mode, we show device disabled screen after
+// attempting to enter demo mode.
+IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest,
+                       DisabledDemoMode) {
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl());
+  EXPECT_CALL(*mock_network_screen_, ShowImpl());
+
+  WizardController::default_controller()->StartDemoModeSetup();
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_network_screen_, HideImpl());
+  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl());
+
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_demo_preferences_screen_, HideImpl());
+  EXPECT_CALL(*mock_update_screen_, ShowImpl());
+
+  mock_demo_preferences_screen_->ExitScreen(
+      DemoPreferencesScreen::Result::COMPLETED);
+
+  // Let update screen smooth time process (time = 0ms).
+  base::RunLoop().RunUntilIdle();
+
+  CheckCurrentScreen(UpdateView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, HideImpl());
+  EXPECT_CALL(*mock_consolidated_consent_screen_, ShowImpl());
+
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  CheckCurrentScreen(ConsolidatedConsentScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  EXPECT_CALL(*mock_consolidated_consent_screen_, HideImpl());
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl());
+
+  mock_consolidated_consent_screen_->ExitScreen(
+      ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE);
+
+  CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+  EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+
+  mock_auto_enrollment_check_screen_->RealShow();
+
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  base::Value::Dict device_state;
+  device_state.Set(policy::kDeviceStateMode,
+                   base::Value(policy::kDeviceStateModeDisabled));
+  device_state.Set(policy::kDeviceStateDisabledMessage,
+                   base::Value(kDisabledMessage));
+  g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                            std::move(device_state));
+
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(_, _, kDisabledMessage, false));
+
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentResult::kDisabled);
+
+  CheckCurrentScreen(DeviceDisabledScreenView::kScreenId);
+}
+
 // Tests that when EnrollmentStateFetcher times out, we set state correctly,
 // show an error on enrollment check screen and that it is not possible to enter
 // guest mode (like in FRE).
@@ -1779,6 +1877,11 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
+
+    // Explicitly test legacy state determination flow.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   // Test initial enrollment. This method is shared by the tests for initial
@@ -2749,6 +2852,15 @@ class WizardControllerDemoSetupDeviceDisabledTest
  protected:
   WizardControllerDemoSetupDeviceDisabledTest() = default;
   ~WizardControllerDemoSetupDeviceDisabledTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
+
+    // Explicitly test legacy state determination flow.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+  }
 
   // MixinBasedInProcessBrowserTest:
   void SetUpOnMainThread() override {
