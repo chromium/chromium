@@ -64,24 +64,27 @@ class ChannelOverrideWorkItemTest : public ::testing::Test {
   registry_util::RegistryOverrideManager registry_override_;
 };
 
-#ifndef ARCH_CPU_ARM64
-// TODO(https://crbug.com/1422068) - reenable when this is fixed for ARM64
 TEST_F(ChannelOverrideWorkItemTest, DoAndRollback) {
   static constexpr TestParam kIterations[] = {
-    {L"", L""},
-    {L"1.1-beta", L""},
-    {L"2.0-dev", L""},
-    {L"extended", L""},
+      {L"", L""},
+      {L"1.1-beta", L""},
+      {L"2.0-dev", L""},
+      {L"extended", L""},
 #if defined(ARCH_CPU_X86_64)
-    {L"x64-stable", L"x64-stable"},
-    {L"1.1-beta-arch_x64", L"x64-stable"},
-    {L"2.0-dev-arch_x64", L"x64-stable"},
-    {L"extended-arch_x64", L"x64-stable"},
+      {L"x64-stable", L"x64-stable"},
+      {L"1.1-beta-arch_x64", L"x64-stable"},
+      {L"2.0-dev-arch_x64", L"x64-stable"},
+      {L"extended-arch_x64", L"x64-stable"},
 #elif defined(ARCH_CPU_X86)
-    {L"stable-arch_x86", L"stable-arch_x86"},
-    {L"1.1-beta-arch_x86", L"stable-arch_x86"},
-    {L"2.0-dev-arch_x86", L"stable-arch_x86"},
-    {L"extended-arch_x86", L"stable-arch_x86"},
+      {L"stable-arch_x86", L"stable-arch_x86"},
+      {L"1.1-beta-arch_x86", L"stable-arch_x86"},
+      {L"2.0-dev-arch_x86", L"stable-arch_x86"},
+      {L"extended-arch_x86", L"stable-arch_x86"},
+#elif defined(ARCH_CPU_ARM64)
+      {L"arm64-stable", L"arm64-stable"},
+      {L"1.1-beta-arch_arm64", L"arm64-stable"},
+      {L"2.0-dev-arch_arm64", L"arm64-stable"},
+      {L"extended-arch_arm64", L"arm64-stable"},
 #else
 #error unsupported processor architecture.
 #endif
@@ -99,4 +102,3 @@ TEST_F(ChannelOverrideWorkItemTest, DoAndRollback) {
     EXPECT_EQ(GetAp(), optional_input(iteration));
   }
 }
-#endif
