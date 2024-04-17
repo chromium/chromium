@@ -271,6 +271,13 @@ const CGFloat kLeadingMargin = 20;
                                                 .leadingAnchor],
     ];
 
+    // This low-priority, 0 width constraint is necessary for the stackview to
+    // return to its 0 size when empty and exiting fullscreen.
+    NSLayoutConstraint* badgesContainerStackViewWidthConstraint =
+        [_badgesContainerStackView.widthAnchor constraintEqualToConstant:0];
+    badgesContainerStackViewWidthConstraint.priority =
+        UILayoutPriorityDefaultLow - 1;
+
     [NSLayoutConstraint
         activateConstraints:
             [self.badgesStackViewFullScreenDisabledConstraints
@@ -279,6 +286,7 @@ const CGFloat kLeadingMargin = 20;
                       constraintEqualToAnchor:self.topAnchor],
                   [_badgesContainerStackView.bottomAnchor
                       constraintEqualToAnchor:self.bottomAnchor],
+                  badgesContainerStackViewWidthConstraint,
                 ]]];
 
     // Different possible X anchors for the location label container.
