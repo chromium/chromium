@@ -13,20 +13,20 @@ cargo_crate("lib") {
   epoch = "0.12"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/encoding.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/message.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/name.rs",
-    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/encoding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/message.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/types.rs",
   ]
-  inputs = [ "//third_party/rust/chromium_crates_io/vendor/prost-0.12.3/src/../README.md" ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/prost-0.12.4/src/../README.md" ]
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.12.3"
+  cargo_pkg_version = "0.12.4"
   cargo_pkg_authors = "Dan Burkert <dan@danburkert.com>, Lucio Franco <luciofranco14@gmail.com, Tokio Contributors <team@tokio.rs>"
   cargo_pkg_name = "prost"
   cargo_pkg_description =
@@ -42,7 +42,7 @@ cargo_crate("lib") {
     "//third_party/rust/prost_derive/v0_12:lib",
   ]
   features = [
-    "prost-derive",
+    "derive",
     "std",
   ]
   testonly = true

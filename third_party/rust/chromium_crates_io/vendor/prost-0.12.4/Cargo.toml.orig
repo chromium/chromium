@@ -1,6 +1,6 @@
 [package]
 name = "prost"
-version = "0.12.3"
+version = "0.12.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com",
@@ -14,7 +14,7 @@ description = "A Protocol Buffers implementation for the Rust Language."
 keywords = ["protobuf", "serialization"]
 categories = ["encoding"]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.70"
 
 [workspace]
 members = [
@@ -42,13 +42,15 @@ exclude = [
 bench = false
 
 [features]
-default = ["prost-derive", "std"]
+default = ["derive", "std"]
+derive = ["dep:prost-derive"]
+prost-derive = ["derive"]     # deprecated, please use derive feature instead
 no-recursion-limit = []
 std = []
 
 [dependencies]
 bytes = { version = "1", default-features = false }
-prost-derive = { version = "0.12.3", path = "prost-derive", optional = true }
+prost-derive = { version = "0.12.4", path = "prost-derive", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.4", default-features = false }

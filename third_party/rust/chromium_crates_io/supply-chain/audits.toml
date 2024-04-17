@@ -719,6 +719,11 @@ who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.12.3"
 
+[[audits.prost]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.12.3 -> 0.12.4"
+
 [[audits.prost-derive]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]

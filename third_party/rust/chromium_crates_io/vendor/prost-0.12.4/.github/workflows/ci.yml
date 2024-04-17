@@ -1,5 +1,12 @@
 name: CI
-on: pull_request
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+  merge_group:
+    branches: [ "master" ]
+
 
 env:
   PROTOC_VERSION: 3.20.3
@@ -9,7 +16,7 @@ jobs:
   rustfmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
@@ -18,12 +25,9 @@ jobs:
   machete:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: install cargo-machete
-        uses: baptiste0928/cargo-install@v2
-        with:
-          crate: cargo-machete
+      - uses: taiki-e/install-action@cargo-machete
       - name: Check unused dependencies
         run: cargo machete
 
@@ -33,13 +37,13 @@ jobs:
       matrix:
         toolchain:
           - stable
-          - "1.65"
+          - "1.70"
         os:
           - ubuntu-latest
           - macos-latest
           - windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: install toolchain (${{ matrix.toolchain }})
         uses: dtolnay/rust-toolchain@master
         with:
@@ -61,10 +65,20 @@ jobs:
       - name: test doc no-default-features
         run: cargo test -p prost-build -p prost-derive -p prost-types --doc --no-default-features
 
+  minimal-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@cargo-hack
+      - uses: taiki-e/install-action@cargo-minimal-versions
+      - run: cargo minimal-versions --no-private check --workspace --all-features
+
   kani:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Verify with Kani
         uses: model-checking/kani-github-action@v0.32
         with:
@@ -84,7 +98,7 @@ jobs:
   no-std:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - name: install protoc
         uses: taiki-e/install-action@v2

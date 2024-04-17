@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.70"
 name = "prost"
-version = "0.12.3"
+version = "0.12.4"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com",
@@ -45,7 +45,7 @@ version = "1"
 default-features = false
 
 [dependencies.prost-derive]
-version = "0.12.3"
+version = "0.12.4"
 optional = true
 
 [dev-dependencies.criterion]
@@ -67,8 +67,10 @@ version = "0.8"
 
 [features]
 default = [
-    "prost-derive",
+    "derive",
     "std",
 ]
+derive = ["dep:prost-derive"]
 no-recursion-limit = []
+prost-derive = ["derive"]
 std = []

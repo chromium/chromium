@@ -149,7 +149,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."prost-derive:0.12.4"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."prost:0.12.3"]
+[policy."prost:0.12.4"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."qr_code:2.0.0"]
