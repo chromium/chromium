@@ -380,13 +380,13 @@ void ClipPolygon(GraphicsContext& context,
                  const gfx::PointF vertices[],
                  unsigned vertices_size,
                  bool antialiased) {
-  SkPathBuilder path;
+  SkPath path;
   path.moveTo(gfx::PointFToSkPoint(vertices[0]));
   for (unsigned i = 1; i < vertices_size; ++i) {
     path.lineTo(gfx::PointFToSkPoint(vertices[i]));
   }
 
-  context.ClipPath(path.detach(), antialiased ? kAntiAliased : kNotAntiAliased);
+  context.ClipPath(path, antialiased ? kAntiAliased : kNotAntiAliased);
 }
 
 void DrawDashedOrDottedBoxSide(GraphicsContext& context,
@@ -662,7 +662,7 @@ void FillQuad(GraphicsContext& context,
               const Color& color,
               bool antialias,
               const AutoDarkMode& auto_dark_mode) {
-  SkPathBuilder path;
+  SkPath path;
   path.moveTo(gfx::PointFToSkPoint(quad[0]));
   path.lineTo(gfx::PointFToSkPoint(quad[1]));
   path.lineTo(gfx::PointFToSkPoint(quad[2]));
@@ -671,7 +671,7 @@ void FillQuad(GraphicsContext& context,
   flags.setAntiAlias(antialias);
   flags.setColor(color.toSkColor4f());
 
-  context.DrawPath(path.detach(), flags, auto_dark_mode);
+  context.DrawPath(path, flags, auto_dark_mode);
 }
 
 void DrawSolidBoxSide(GraphicsContext& context,

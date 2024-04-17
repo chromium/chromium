@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPath.h"
 
 namespace blink {
 
@@ -36,7 +36,7 @@ PaintRecord RecordMarker(Color blink_color) {
 
   // Adjust the phase such that f' == 0 is "pixel"-centered
   // (for optimal rasterization at native rez).
-  SkPathBuilder path;
+  SkPath path;
   path.moveTo(kMarkerWidth * -3 / 8, kMarkerHeight * 3 / 4);
   path.cubicTo(kMarkerWidth * -1 / 8, kMarkerHeight * 3 / 4,
                kMarkerWidth * -1 / 8, kMarkerHeight * 1 / 4,
@@ -56,7 +56,7 @@ PaintRecord RecordMarker(Color blink_color) {
 
   PaintRecorder recorder;
   recorder.beginRecording();
-  recorder.getRecordingCanvas()->drawPath(path.detach(), flags);
+  recorder.getRecordingCanvas()->drawPath(path, flags);
 
   return recorder.finishRecordingAsPicture();
 }

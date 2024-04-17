@@ -140,7 +140,7 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
-  SkPathBuilder line_path;
+  SkPath line_path;
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(GetScrollableArea().GetLayoutBox()->StyleRef(),
@@ -152,18 +152,19 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   line_path.moveTo(points[2].x(), points[2].y());
   line_path.lineTo(points[3].x(), points[3].y());
   paint_flags.setColor(SkColorSetARGB(153, 0, 0, 0));
-  context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
+  context.DrawPath(line_path, paint_flags, auto_dark_mode);
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
   int v_offset = std::ceil(paint_scale);
   int h_offset = on_left ? -v_offset : v_offset;
+  line_path.reset();
   line_path.moveTo(points[0].x(), points[0].y() + v_offset);
   line_path.lineTo(points[1].x() + h_offset, points[1].y());
   line_path.moveTo(points[2].x(), points[2].y() + v_offset);
   line_path.lineTo(points[3].x() + h_offset, points[3].y());
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
-  context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
+  context.DrawPath(line_path, paint_flags, auto_dark_mode);
 }
 
 bool ScrollableAreaPainter::PaintOverflowControls(

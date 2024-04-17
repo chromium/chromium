@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 #include "ui/gfx/geometry/transform.h"
 

@@ -963,11 +963,11 @@ void GraphicsContext::StrokeRect(const gfx::RectF& rect,
   } else if (valid_w || valid_h) {
     // we are expected to respect the lineJoin, so we can't just call
     // drawLine -- we have to create a path that doubles back on itself.
-    SkPathBuilder path;
+    SkPath path;
     path.moveTo(r.fLeft, r.fTop);
     path.lineTo(r.fRight, r.fBottom);
     path.close();
-    DrawPath(path.detach(), flags, auto_dark_mode);
+    DrawPath(path, flags, auto_dark_mode);
   }
 }
 
