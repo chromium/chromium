@@ -82,7 +82,8 @@ class DlcserviceErrorResponseHandler {
     auto itr = kErrSet.find(err);
     if (itr == kErrSet.end()) {
       LOG(ERROR) << "Failed to set error based on ErrorResponse "
-                    "defaulted to kErrorInternal, was:" << err;
+                    "defaulted to kErrorInternal, was:"
+                 << err;
       err_ = dlcservice::kErrorInternal;
       return;
     }
@@ -117,7 +118,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
   void Install(const dlcservice::InstallRequest& install_request,
                InstallCallback install_callback,
                ProgressCallback progress_callback) override {
-    CheckServiceAvailable("Install");
     const std::string& id = install_request.id();
     VLOG(1) << "DLC install called for: " << id;
     // If another installation for the same DLC ID was already called, go ahead
@@ -158,7 +158,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
   void Uninstall(const std::string& dlc_id,
                  UninstallCallback uninstall_callback) override {
-    CheckServiceAvailable("Uninstall");
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kUninstallMethod);
     dbus::MessageWriter writer(&method_call);
@@ -173,7 +172,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
   }
 
   void Purge(const std::string& dlc_id, PurgeCallback purge_callback) override {
-    CheckServiceAvailable("Purge");
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kPurgeMethod);
     dbus::MessageWriter writer(&method_call);
@@ -189,7 +187,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
   void GetDlcState(const std::string& dlc_id,
                    GetDlcStateCallback callback) override {
-    CheckServiceAvailable("GetDlcState");
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kGetDlcStateMethod);
     dbus::MessageWriter writer(&method_call);
@@ -202,7 +199,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
   }
 
   void GetExistingDlcs(GetExistingDlcsCallback callback) override {
-    CheckServiceAvailable("GetExistingDlcs");
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kGetExistingDlcsMethod);
 
@@ -255,10 +251,11 @@ class DlcserviceClientImpl : public DlcserviceClient {
   };
 
   void OnServiceAvailable(bool service_available) {
-    if (service_available)
+    if (service_available) {
       VLOG(1) << "dlcservice is available.";
-    else
+    } else {
       LOG(ERROR) << "dlcservice is not available.";
+    }
     service_available_ = service_available;
   }
 
@@ -313,8 +310,9 @@ class DlcserviceClientImpl : public DlcserviceClient {
     auto id = dlc_state.id();
     auto progress = dlc_state.progress();
     VLOG(2) << "Installation for DLC " << id << " in progress: " << progress;
-    for (auto& installation_state : installation_holder_[id])
+    for (auto& installation_state : installation_holder_[id]) {
       installation_state.progress_callback.Run(progress);
+    }
   }
 
   void SendCompleted(const dlcservice::DlcState& dlc_state) {
@@ -336,8 +334,9 @@ class DlcserviceClientImpl : public DlcserviceClient {
         .dlc_id = id,
         .root_path = dlc_state.root_path(),
     };
-    for (auto& installation_state : installation_holder_[id])
+    for (auto& installation_state : installation_holder_[id]) {
       std::move(installation_state.install_callback).Run(result);
+    }
     ReleaseInstallation(id);
   }
 
@@ -354,8 +353,10 @@ class DlcserviceClientImpl : public DlcserviceClient {
     }
 
     // Skip DLCs not installing from this dlcservice client.
-    if (installation_holder_.find(dlc_state.id()) == installation_holder_.end())
+    if (installation_holder_.find(dlc_state.id()) ==
+        installation_holder_.end()) {
       return;
+    }
 
     switch (dlc_state.state()) {
       case dlcservice::DlcState::NOT_INSTALLED:
@@ -456,14 +457,6 @@ class DlcserviceClientImpl : public DlcserviceClient {
           DlcserviceErrorResponseHandler(err_response).get_err(),
           dlcservice::DlcsWithContent());
     }
-  }
-
-  // TODO(b/164310699): This check is added in order to see if dlcservice daemon
-  // not being available is the cause of flakes in the CQ.
-  void CheckServiceAvailable(const std::string& method_name) {
-    if (!service_available_)
-      LOG(WARNING) << method_name
-                   << " called when dlcservice is not available.";
   }
 
   // DLC ID to `InstallationHolder` mapping.
