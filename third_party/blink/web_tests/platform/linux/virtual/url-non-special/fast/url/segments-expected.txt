@@ -38,7 +38,7 @@ PASS segments('/:23') is '["http:","example.org","","/:23","",""]'
 PASS segments('//') is '[":","","","","",""]'
 PASS segments('::') is '["http:","example.org","","/foo/::","",""]'
 PASS segments('::23') is '["http:","example.org","","/foo/::23","",""]'
-FAIL segments('foo://') should be ["foo:","","","//","",""]. Was ["foo:","","","","",""].
+PASS segments('foo://') is '["foo:","","","","",""]'
 PASS segments('http://a:b@c:29/d') is '["http:","c","29","/d","",""]'
 PASS segments('http::@c:29') is '["http:","example.org","","/foo/:@c:29","",""]'
 PASS segments('http://&a:foo(b]c@d:2/') is '["http:","d","2","/","",""]'
@@ -49,9 +49,9 @@ PASS segments('http:\\\\foo.com\\') is '["http:","foo.com","","/","",""]'
 PASS segments('http:\\\\a\\b:c\\d@foo.com\\') is '["http:","a","","/b:c/d@foo.com/","",""]'
 PASS segments('foo:/') is '["foo:","","","/","",""]'
 PASS segments('foo:/bar.com/') is '["foo:","","","/bar.com/","",""]'
-FAIL segments('foo://///////') should be ["foo:","","","/////////","",""]. Was ["foo:","","","///////","",""].
-FAIL segments('foo://///////bar.com/') should be ["foo:","","","/////////bar.com/","",""]. Was ["foo:","","","///////bar.com/","",""].
-FAIL segments('foo:////://///') should be ["foo:","","","////://///","",""]. Was ["foo:","","","//://///","",""].
+PASS segments('foo://///////') is '["foo:","","","///////","",""]'
+PASS segments('foo://///////bar.com/') is '["foo:","","","///////bar.com/","",""]'
+PASS segments('foo:////://///') is '["foo:","","","//://///","",""]'
 PASS segments('c:/foo') is '["c:","","","/foo","",""]'
 PASS segments('//foo/bar') is '["http:","foo","","/bar","",""]'
 PASS segments('http://foo/path;a??e#f#g') is '["http:","foo","","/path;a","??e","#f#g"]'
