@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -474,9 +473,7 @@ public class SearchActivity extends AsyncInitializationActivity
         //                will navigate to Tabbed mode.  Investigate whether this can inflate
         //                the tabbed mode layout in the background instead of CCTs.
         CustomTabsConnection.getInstance().warmup(0);
-        VoiceRecognitionHandler voiceRecognitionHandler =
-                mLocationBarCoordinator.getVoiceRecognitionHandler();
-        mSearchBox.onDeferredStartup(mSearchType, voiceRecognitionHandler, getWindowAndroid());
+        mSearchBox.onDeferredStartup(mSearchType, getWindowAndroid());
 
         getActivityDelegate().onFinishDeferredInitialization();
     }
@@ -526,7 +523,7 @@ public class SearchActivity extends AsyncInitializationActivity
         super.onResumeWithNative();
     }
 
-    /** Mark that the UMA session has ended. */
+    /** Initiate new UMA session, associating metrics with appropriate Activity type. */
     private void umaSessionResume() {
         mUmaActivityObserver.startUmaSession(
                 mIntentOrigin == IntentOrigin.CUSTOM_TAB
@@ -556,7 +553,6 @@ public class SearchActivity extends AsyncInitializationActivity
                 mIntentOrigin,
                 mSearchType,
                 SearchActivityUtils.getIntentQuery(getIntent()),
-                mLocationBarCoordinator.getVoiceRecognitionHandler(),
                 getWindowAndroid());
     }
 

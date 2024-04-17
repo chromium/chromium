@@ -662,7 +662,7 @@ class LocationBarMediator
 
         RecordUserAction.record("MobileOmniboxVoiceSearch");
         mVoiceRecognitionHandler.startVoiceRecognition(
-                VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX);
+                mLocationBarLayout.getVoiceRecogintionSource());
     }
 
     /** package */
