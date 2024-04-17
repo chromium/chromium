@@ -169,7 +169,7 @@ void ConnectTetheringOperation::OnMessageSent(int sequence_number) {
 
 void ConnectTetheringOperation::NotifyConnectTetheringRequestSent() {
   for (auto& observer : observer_list_) {
-    observer.OnConnectTetheringRequestSent(remote_device());
+    observer.OnConnectTetheringRequestSent();
   }
 }
 
@@ -177,15 +177,14 @@ void ConnectTetheringOperation::NotifyObserversOfSuccessfulResponse(
     const std::string& ssid,
     const std::string& password) {
   for (auto& observer : observer_list_) {
-    observer.OnSuccessfulConnectTetheringResponse(remote_device(), ssid,
-                                                  password);
+    observer.OnSuccessfulConnectTetheringResponse(ssid, password);
   }
 }
 
 void ConnectTetheringOperation::NotifyObserversOfConnectionFailure(
     HostResponseErrorCode error_code) {
   for (auto& observer : observer_list_) {
-    observer.OnConnectTetheringFailure(remote_device(), error_code);
+    observer.OnConnectTetheringFailure(error_code);
   }
 }
 

@@ -78,14 +78,11 @@ class ConnectTetheringOperation : public MessageTransferOperation {
 
   class Observer {
    public:
-    virtual void OnConnectTetheringRequestSent(
-        multidevice::RemoteDeviceRef remote_device) = 0;
+    virtual void OnConnectTetheringRequestSent() = 0;
     virtual void OnSuccessfulConnectTetheringResponse(
-        multidevice::RemoteDeviceRef remote_device,
         const std::string& ssid,
         const std::string& password) = 0;
     virtual void OnConnectTetheringFailure(
-        multidevice::RemoteDeviceRef remote_device,
         HostResponseErrorCode error_code) = 0;
   };
 

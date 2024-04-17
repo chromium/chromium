@@ -77,14 +77,11 @@ class TetherConnectorImpl : public TetherConnector,
   bool CancelConnectionAttempt(const std::string& tether_network_guid) override;
 
   // ConnectTetheringOperation::Observer:
-  void OnConnectTetheringRequestSent(
-      multidevice::RemoteDeviceRef remote_device) override;
+  void OnConnectTetheringRequestSent() override;
   void OnSuccessfulConnectTetheringResponse(
-      multidevice::RemoteDeviceRef remote_device,
       const std::string& ssid,
       const std::string& password) override;
   void OnConnectTetheringFailure(
-      multidevice::RemoteDeviceRef remote_device,
       ConnectTetheringOperation::HostResponseErrorCode error_code) override;
 
  private:
