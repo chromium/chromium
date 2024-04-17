@@ -68,6 +68,10 @@ void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
     destination.AddStringListAttribute(attr.first, attr.second);
   }
 
+  if (!source.relative_bounds.bounds.IsEmpty()) {
+    destination.relative_bounds.bounds = source.relative_bounds.bounds;
+  }
+
   // TODO(javiercon): Add checking for all the states, and add DCHECK for them
   // as well. Do the same thing for the Restrictions.
   if (source.HasState(ax::mojom::State::kIgnored)) {
