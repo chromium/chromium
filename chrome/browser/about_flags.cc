@@ -1302,28 +1302,6 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam
-    kJourneysLabelsWithSearchVisitEntitiesParams[] = {
-        {"labels_from_search_visit_entities", "true"},
-};
-const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
-    {"labels_from_entities", "true"},
-};
-const FeatureEntry::FeatureParam
-    kJourneysLabelsWithEntitiesNoHostnamesParams[] = {
-        {"labels_from_hostnames", "false"},
-        {"labels_from_entities", "true"},
-};
-const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
-    {"With Entities", kJourneysLabelsWithEntitiesParams,
-     std::size(kJourneysLabelsWithEntitiesParams), nullptr},
-    {"With Entities, No Hostnames",
-     kJourneysLabelsWithEntitiesNoHostnamesParams,
-     std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
-    {"With Search Entities", kJourneysLabelsWithSearchVisitEntitiesParams,
-     std::size(kJourneysLabelsWithSearchVisitEntitiesParams), nullptr},
-};
-
-const FeatureEntry::FeatureParam
     kOmniboxCompanyEntityIconAdjustmentLeastAggressive[] = {
         {"OmniboxCompanyEntityAdjustmentGroup", "least-aggressive"}};
 const FeatureEntry::FeatureParam kOmniboxCompanyEntityIconAdjustmentModerate[] =
@@ -6350,12 +6328,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneys,
                                     kJourneysVariations,
                                     "HistoryJourneys")},
-
-    {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
-     flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysLabels,
-                                    kJourneysLabelsVariations,
-                                    "HistoryJourneysLabels")},
 
     {"history-journeys-show-all-clusters",
      flag_descriptions::kJourneysShowAllClustersName,

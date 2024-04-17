@@ -63,23 +63,6 @@ struct Config {
   // reverse chronologically, but the clusters within batches will be resorted.
   bool sort_clusters_within_batch_for_query = false;
 
-  // The `kJourneysLabels` feature and child params.
-
-  // Whether to assign labels to clusters from the hostnames of the cluster.
-  // Does nothing if `should_label_clusters` is false. Note that since every
-  // cluster has a hostname, this flag in conjunction with
-  // `should_label_clusters` will give every cluster a label.
-  bool labels_from_hostnames = true;
-
-  // Whether to assign labels to clusters from the Entities of the cluster.
-  // Does nothing if `should_label_clusters` is false.
-  bool labels_from_entities = false;
-
-  // Whether to assign labels to clusters from the entities associated with
-  // search visits within a cluster if there are multiple search visits for the
-  // cluster.
-  bool labels_from_search_visit_entities = false;
-
   // The `kJourneysImages` feature and child params.
 
   // Whether to attempt to provide images for eligible Journeys.

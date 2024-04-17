@@ -56,26 +56,6 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
       {"baz", 25}, {"someotherentity", 10}};
 
   {
-    // With only search term labelling active, there should be no label.
-    Config config;
-    config.labels_from_hostnames = false;
-    config.labels_from_entities = false;
-    SetConfigForTesting(config);
-
-    history::Cluster cluster;
-    cluster.visits = {visit2, visit3};
-    FinalizeCluster(cluster);
-    EXPECT_EQ(cluster.raw_label, std::nullopt);
-    EXPECT_EQ(cluster.label, std::nullopt);
-    EXPECT_EQ(cluster.label_source, LabelSource::kUnknown);
-  }
-
-  {
-    // With hostname labelling active only, we should use the hostname.
-    Config config;
-    config.labels_from_hostnames = true;
-    SetConfigForTesting(config);
-
     history::Cluster cluster;
     cluster.visits = {visit2, visit3};
     FinalizeCluster(cluster);
@@ -86,20 +66,11 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
 }
 
 TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
-  // Verify that search terms take precedence even if labels from entities are
-  // enabled.
-  Config config;
-  config.labels_from_hostnames = true;
-  config.labels_from_entities = true;
-  config.labels_from_search_visit_entities = false;
-  SetConfigForTesting(config);
-
+  // Verify that search terms take precedence.
   history::ClusterVisit visit =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://nosearchtermsbuthighscorevisit.com/")));
   visit.engagement_score = 0.9;
-  visit.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 100}, {"onlyinnoisyvisit", 99}};
 
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -110,8 +81,6 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
   visit3.score = 0.8;
-  visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 100}, {"someotherentity", 100}};
   visit3.annotated_visit.content_annotations.search_terms = u"searchtermlabel";
 
   history::Cluster cluster;

@@ -4826,11 +4826,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "history-journeys-labels",
-    "owners": [ "tommycli@chromium.org", "chrome-journeys@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "history-journeys-show-all-clusters",
     "owners": [ "sophiechang@chromium.org", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 125

@@ -29,10 +29,6 @@ namespace internal {
 
 BASE_FEATURE(kJourneys, "Journeys", enabled_by_default_desktop_only);
 
-BASE_FEATURE(kJourneysLabels,
-             "JourneysLabel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kJourneysImages,
              "JourneysImages",
              base::FEATURE_ENABLED_BY_DEFAULT);

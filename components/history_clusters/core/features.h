@@ -22,9 +22,6 @@ namespace internal {
 // directly. Instead use `IsJourneysEnabled()` for the system language filter.
 BASE_DECLARE_FEATURE(kJourneys);
 
-// Enables labelling of Journeys in UI.
-BASE_DECLARE_FEATURE(kJourneysLabels);
-
 // Enables images for Journeys in UI.
 BASE_DECLARE_FEATURE(kJourneysImages);
 

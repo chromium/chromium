@@ -46,7 +46,7 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   }
 
   // If we haven't found a label yet, use hostnames if the flag is enabled.
-  if (GetConfig().labels_from_hostnames && !current_highest_scoring_label) {
+  if (!current_highest_scoring_label) {
     base::flat_map<std::u16string, float> hostname_to_score;
     for (const auto& visit : cluster.visits) {
       std::u16string host =
