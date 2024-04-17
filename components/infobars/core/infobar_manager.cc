@@ -14,6 +14,7 @@
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobars_switches.h"
 #endif
 
@@ -67,9 +68,6 @@ void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {
 InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
                                     bool replace_existing) {
   DCHECK(new_infobar);
-  if (!infobars_enabled_) {
-    return nullptr;
-  }
 
   for (infobars::InfoBar* infobar : infobars_) {
     if (infobar->delegate()->EqualsDelegate(new_infobar->delegate())) {
@@ -77,6 +75,10 @@ InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
       return replace_existing ? ReplaceInfoBar(infobar, std::move(new_infobar))
                               : nullptr;
     }
+  }
+
+  if (!ShouldShowInfoBar(new_infobar.get())) {
+    return nullptr;
   }
 
   InfoBar* infobar_ptr = new_infobar.release();
@@ -101,11 +103,12 @@ void InfoBarManager::RemoveAllInfoBars(bool animate) {
 InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
                                         std::unique_ptr<InfoBar> new_infobar) {
   DCHECK(old_infobar);
-  if (!infobars_enabled_) {
-    // Deletes the infobar.
-    return AddInfoBar(std::move(new_infobar));
-  }
   DCHECK(new_infobar);
+
+  if (!ShouldShowInfoBar(new_infobar.get())) {
+    RemoveInfoBar(old_infobar);
+    return nullptr;
+  }
 
   auto i = base::ranges::find(infobars_, old_infobar);
   DCHECK(i != infobars_.end());
@@ -159,7 +162,6 @@ void InfoBarManager::OnNavigation(
 
 void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
-  DCHECK(infobars_enabled_);
 
   auto i = base::ranges::find(infobars_, infobar);
   // TODO(crbug.com/): Temporarily a CHECK instead of a DCHECK CHECK() in order
@@ -177,6 +179,28 @@ void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
     observer.OnInfoBarRemoved(infobar, animate);
 
   infobar->CloseSoon();
+}
+
+bool InfoBarManager::ShouldShowInfoBar(const InfoBar* infobar) const {
+  DCHECK(infobar);
+
+  if (infobars_enabled_) {
+    return true;
+  }
+
+  // Chrome for Testing can hide infobars that do not require confirmation using
+  // --disable-infobars command line switch.
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  ConfirmInfoBarDelegate* delegate =
+      infobar->delegate()->AsConfirmInfoBarDelegate();
+  if (delegate &&
+      delegate->GetButtons() != ConfirmInfoBarDelegate::BUTTON_NONE) {
+    return true;
+  }
+#endif
+
+  // Headless mode and non confirmational Chrome for Testing are not shown.
+  return false;
 }
 
 }  // namespace infobars
