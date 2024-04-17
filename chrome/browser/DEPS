@@ -435,6 +435,7 @@ include_rules = [
   "+media/renderers",
   "+media/webrtc",  # For webrtc media switches.
   "+mojo/core/embedder",
+  "+pdf/pdf_features.h",
   "+ppapi/c",  # For various types.
   "+ppapi/host",
   "+ppapi/proxy",
@@ -595,9 +596,6 @@ specific_include_rules = {
     # For GetVirtualKeyboardController.
     "+ash/keyboard/ui/keyboard_ui_controller.h",
   ],
-  "chrome_back_forward_cache_browsertest.cc": [
-    "+pdf/pdf_features.h",
-  ],
   "chrome_browsing_data_remover_delegate_unittest.cc": [
     "+services/network/network_context.h",
     "+services/network/network_service.h",
@@ -614,12 +612,8 @@ specific_include_rules = {
   "chrome_navigation_browsertest.cc" : [
     "+content/common/content_navigation_policy.h",
   ],
-  "chrome_web_platform_security_metrics_browsertest.cc" : [
-    "+pdf/pdf_features.h",
-  ],
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
-    "+pdf/pdf_features.h",
     "+sandbox/policy/features.h",
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [

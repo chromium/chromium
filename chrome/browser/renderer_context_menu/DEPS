@@ -1,3 +1,0 @@
-include_rules = [
-  "+pdf/pdf_features.h"
-]
