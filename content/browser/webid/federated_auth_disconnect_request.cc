@@ -249,9 +249,9 @@ void FederatedAuthDisconnectRequest::Complete(
       disconnect_request_sent_
           ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
           : std::nullopt;
-  metrics_->RecordDisconnectMetrics(disconnect_status_for_metrics, duration,
-                                    *render_frame_host_, origin_,
-                                    embedding_origin_);
+  metrics_->RecordDisconnectMetrics(
+      disconnect_status_for_metrics, duration, *render_frame_host_, origin_,
+      embedding_origin_, options_->config->config_url);
 
   std::move(callback_).Run(status);
 }

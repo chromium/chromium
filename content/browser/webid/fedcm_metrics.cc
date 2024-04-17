@@ -505,7 +505,7 @@ void FedCmMetrics::RecordSingleIdpMismatchDialogShown(
   base::UmaHistogramBoolean("Blink.FedCm.MismatchDialogShown", true);
 }
 
-void FedCmMetrics::RecordAccountsRequestSent() {
+void FedCmMetrics::RecordAccountsRequestSent(const GURL& provider_url) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetAccountsRequestSent(true);
     ukm_builder.SetFedCmSessionID(session_id_);
@@ -514,7 +514,8 @@ void FedCmMetrics::RecordAccountsRequestSent() {
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+      GetOrCreateProviderSourceId(provider_url));
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramBoolean("Blink.FedCm.AccountsRequestSent", true);
@@ -525,7 +526,8 @@ void FedCmMetrics::RecordDisconnectMetrics(
     std::optional<base::TimeDelta> duration,
     const RenderFrameHost& rfh,
     url::Origin requester,
-    url::Origin embedder) {
+    url::Origin embedder,
+    const GURL& provider_url) {
   FedCmRequesterFrameType requester_frame_type =
       ComputeRequesterFrameType(rfh, requester, embedder);
   auto RecordUkm = [&](auto& ukm_builder) {
@@ -542,7 +544,8 @@ void FedCmMetrics::RecordDisconnectMetrics(
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+      GetOrCreateProviderSourceId(provider_url));
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Status.Disconnect", status);
@@ -553,7 +556,8 @@ void FedCmMetrics::RecordDisconnectMetrics(
   }
 }
 
-void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result) {
+void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result,
+                                           const GURL& provider_url) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetError_ErrorDialogResult(static_cast<int>(result));
     ukm_builder.SetFedCmSessionID(session_id_);
@@ -562,62 +566,53 @@ void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result) {
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+      GetOrCreateProviderSourceId(provider_url));
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogResult", result);
 }
 
-void FedCmMetrics::RecordErrorDialogType(
-    IdpNetworkRequestManager::FedCmErrorDialogType type) {
+void FedCmMetrics::RecordErrorMetricsBeforeShowingErrorDialog(
+    IdpNetworkRequestManager::FedCmTokenResponseType response_type,
+    std::optional<IdpNetworkRequestManager::FedCmErrorDialogType> dialog_type,
+    std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> url_type,
+    const GURL& provider_url) {
   auto RecordUkm = [&](auto& ukm_builder) {
-    ukm_builder.SetError_ErrorDialogType(static_cast<int>(type));
+    ukm_builder.SetError_TokenResponseType(static_cast<int>(response_type));
+    if (dialog_type) {
+      ukm_builder.SetError_ErrorDialogType(static_cast<int>(*dialog_type));
+    }
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
-
-  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogType", type);
-}
-
-void FedCmMetrics::RecordTokenResponseTypeMetrics(
-    IdpNetworkRequestManager::FedCmTokenResponseType type) {
-  auto RecordUkm = [&](auto& ukm_builder) {
-    ukm_builder.SetError_TokenResponseType(static_cast<int>(type));
-    ukm_builder.SetFedCmSessionID(session_id_);
-    ukm_builder.Record(ukm::UkmRecorder::Get());
-  };
-  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
-  RecordUkm(fedcm_builder);
-
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
-
-  base::UmaHistogramEnumeration("Blink.FedCm.Error.TokenResponseType", type);
-}
-
-void FedCmMetrics::RecordErrorUrlTypeMetrics(
-    IdpNetworkRequestManager::FedCmErrorUrlType type) {
-  auto RecordUkm = [&](auto& ukm_builder) {
-    ukm_builder.SetError_ErrorUrlType(static_cast<int>(type));
-    ukm_builder.SetFedCmSessionID(session_id_);
-    ukm_builder.Record(ukm::UkmRecorder::Get());
-  };
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+      GetOrCreateProviderSourceId(provider_url));
   // We do not record the RP-keyed equivalent because the error URL is passed by
   // the IDP.
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  if (url_type) {
+    fedcm_idp_builder.SetError_ErrorUrlType(static_cast<int>(*url_type));
+  }
   RecordUkm(fedcm_idp_builder);
 
-  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorUrlType", type);
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.TokenResponseType",
+                                response_type);
+  if (dialog_type) {
+    base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogType",
+                                  *dialog_type);
+  }
+  if (url_type) {
+    base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorUrlType", *url_type);
+  }
 }
 
 void FedCmMetrics::RecordMultipleRequestsRpMode(
     blink::mojom::RpMode pending_request_rp_mode,
-    blink::mojom::RpMode new_request_rp_mode) {
+    blink::mojom::RpMode new_request_rp_mode,
+    const std::vector<GURL>& requested_providers) {
   FedCmMultipleRequestsRpMode status;
   if (pending_request_rp_mode == blink::mojom::RpMode::kWidget) {
     status = new_request_rp_mode == blink::mojom::RpMode::kWidget
@@ -636,8 +631,11 @@ void FedCmMetrics::RecordMultipleRequestsRpMode(
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
 
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
+  for (const auto& provider : requested_providers) {
+    ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+        GetOrCreateProviderSourceId(provider));
+    RecordUkm(fedcm_idp_builder);
+  }
 
   base::UmaHistogramEnumeration("Blink.FedCm.MultipleRequestsRpMode", status);
 }

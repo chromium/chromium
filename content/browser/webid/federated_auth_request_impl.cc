@@ -756,8 +756,8 @@ void FederatedAuthRequestImpl::RequestToken(
 
     RpMode pending_request_rp_mode = pending_request->GetRpMode();
     RpMode new_request_rp_mode = idp_get_params_ptrs[0]->mode;
-    fedcm_metrics_->RecordMultipleRequestsRpMode(pending_request_rp_mode,
-                                                 new_request_rp_mode);
+    fedcm_metrics_->RecordMultipleRequestsRpMode(
+        pending_request_rp_mode, new_request_rp_mode, idp_order_);
 
     bool can_replace_pending_request =
         IsFedCmButtonModeEnabled() && had_transient_user_activation_ &&
@@ -1274,11 +1274,12 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
 
     GURL accounts_endpoint = idp_info->endpoints.accounts;
     std::string client_id = idp_info->provider->config->client_id;
+    const GURL& config_url = idp_info->provider->config->config_url;
     network_manager_->SendAccountsRequest(
         accounts_endpoint, client_id,
         base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
-    fedcm_metrics_->RecordAccountsRequestSent();
+    fedcm_metrics_->RecordAccountsRequestSent(config_url);
   }
 }
 
@@ -2214,7 +2215,7 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
                        : ErrorDialogResult::kOtherWithoutMoreDetails;
       break;
   }
-  fedcm_metrics_->RecordErrorDialogResult(result);
+  fedcm_metrics_->RecordErrorDialogResult(result, idp_config_url);
 
   CompleteTokenRequest(idp_config_url, status, /*token=*/std::nullopt,
                        token_error, /*should_delay_callback=*/false);
@@ -3082,7 +3083,8 @@ void FederatedAuthRequestImpl::Disconnect(
             FedCmDisconnectStatus::kTooManyRequests));
     fedcm_metrics_->RecordDisconnectMetrics(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
-        render_frame_host(), origin(), GetEmbeddingOrigin());
+        render_frame_host(), origin(), GetEmbeddingOrigin(),
+        options->config->config_url);
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }
@@ -3113,17 +3115,14 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     std::optional<ErrorUrlType> error_url_type) {
   MaybeCreateFedCmMetrics(idp->config->config_url);
 
-  fedcm_metrics_->RecordTokenResponseTypeMetrics(token_response_type);
-
-  if (error_dialog_type) {
-    fedcm_metrics_->RecordErrorDialogType(*error_dialog_type);
-  }
+  fedcm_metrics_->RecordErrorMetricsBeforeShowingErrorDialog(
+      token_response_type, error_dialog_type, error_url_type,
+      idp->config->config_url);
 
   if (error_url_type) {
     // This is used to determine if we need to use the cross-site specific
     // devtools issue when failing the request.
     error_url_type_ = error_url_type;
-    fedcm_metrics_->RecordErrorUrlTypeMetrics(*error_url_type);
   }
 }
 

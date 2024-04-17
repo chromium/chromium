@@ -4185,7 +4185,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
 // Tests that multiple IDPs provided results in an error if the
 // `kFedCmMultipleIdentityProviders` flag is disabled.
-TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
+TEST_F(FederatedAuthRequestImplTest, MultiIdpDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kFedCmMultipleIdentityProviders);
 
@@ -4233,6 +4233,10 @@ TEST_F(FederatedAuthRequestImplTest,
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
   ExpectUKMPresence("Timing.TurnaroundTime");
 
+  ExpectUKMCount("AccountsRequestSent", FedCmEntry::kEntryName, 2);
+  ExpectUKMCount("AccountsRequestSent", FedCmIdpEntry::kEntryName, 2);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 2);
+
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.Timing.AccountsDialogShownDuration2", 1);
   ExpectUKMCount("Timing.AccountsDialogShownDuration", FedCmEntry::kEntryName,
@@ -4251,6 +4255,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectUkmValue("NumIdpsRequested", 2);
   ExpectUkmValue("NumIdpsMismatch", 0);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test successful multi IDP FedCM request.
@@ -4308,6 +4313,10 @@ TEST_F(FederatedAuthRequestImplTest, FirstIdpWellKnownInvalid) {
   EXPECT_EQ(NumFetched(FetchedEndpoint::CONFIG), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::TOKEN), 1u);
+
+  ExpectUKMCount("AccountsRequestSent", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("AccountsRequestSent", FedCmIdpEntry::kEntryName, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 1);
 }
 
 // Test fetching information for the 1st IdP succeeding, and failing for the
@@ -4333,6 +4342,10 @@ TEST_F(FederatedAuthRequestImplTest, SecondIdpWellKnownInvalid) {
   EXPECT_EQ(NumFetched(FetchedEndpoint::CONFIG), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::TOKEN), 1u);
+
+  ExpectUKMCount("AccountsRequestSent", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("AccountsRequestSent", FedCmIdpEntry::kEntryName, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 1);
 }
 
 // Test fetching information for all of the IdPs failing.
@@ -4358,6 +4371,9 @@ TEST_F(FederatedAuthRequestImplTest, AllWellKnownsInvalid) {
   EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
   EXPECT_EQ(NumFetched(FetchedEndpoint::CONFIG), 2u);
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+
+  ExpectNoUKMPresence("Timing.ShowAccountsDialog");
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 0);
 }
 
 // Test multi IDP FedCM request with duplicate IDPs should throw an error.
@@ -4495,6 +4511,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
                  static_cast<int>(TokenStatus::kShouldEmbargo));
   ExpectUkmValue("NumIdpsRequested", 2);
   ExpectUkmValue("NumIdpsMismatch", 2);
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
@@ -4556,6 +4573,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
                         /*other_values_allowed=*/true);
   ExpectUkmValue("NumIdpsRequested", 2);
   ExpectUkmValue("NumIdpsMismatch", 1);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that API can succeed with multiple IdPs, if silent mediation is used but
@@ -4808,6 +4826,46 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoggedOut) {
   EXPECT_FALSE(auth_helper_.was_callback_called());
   WaitForCurrentAuthRequest();
   CheckAuthExpectations(kConfigurationMultiIdpValid, expectations);
+}
+
+TEST_F(FederatedAuthRequestImplTest, MultiIdpWithError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  ErrorDialogType error_dialog_type =
+      ErrorDialogType::kGenericNonEmptyWithoutUrl;
+  TokenResponseType token_response_type =
+      TokenResponseType::kTokenReceivedAndErrorReceived;
+  configuration.token_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  configuration.error_dialog_type = error_dialog_type;
+  configuration.token_response_type = token_response_type;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(dialog_controller_state_.did_show_error_dialog);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.ErrorDialogType",
+                                       error_dialog_type, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.Error.ErrorDialogResult",
+      FedCmErrorDialogResult::kCloseWithoutMoreDetails, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Error.TokenResponseType",
+                                       token_response_type, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
+
+  ExpectUKMPresence("Error.ErrorDialogType");
+  ExpectUKMPresence("Error.ErrorDialogResult");
+  ExpectUKMPresence("Error.TokenResponseType");
+  ExpectNoUKMPresence("Error.ErrorUrlType");
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {

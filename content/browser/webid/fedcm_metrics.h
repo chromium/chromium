@@ -347,7 +347,7 @@ class CONTENT_EXPORT FedCmMetrics {
                                           bool has_hints);
 
   // Records a sample when an accounts request is sent.
-  void RecordAccountsRequestSent();
+  void RecordAccountsRequestSent(const GURL& provider_url);
 
   // Records metrics for a disconnect call. `duration` is nullopt if the
   // disconnect fetch request was not sent, in which case we do not log the
@@ -356,29 +356,26 @@ class CONTENT_EXPORT FedCmMetrics {
                                std::optional<base::TimeDelta> duration,
                                const RenderFrameHost& rfh,
                                url::Origin requester,
-                               url::Origin embedder);
-
-  // Records the type of error dialog shown.
-  void RecordErrorDialogType(
-      IdpNetworkRequestManager::FedCmErrorDialogType type);
+                               url::Origin embedder,
+                               const GURL& provider_url);
 
   // Records the outcome of the error dialog.
-  void RecordErrorDialogResult(FedCmErrorDialogResult result);
+  void RecordErrorDialogResult(FedCmErrorDialogResult result,
+                               const GURL& provider_url);
 
-  // Records the type of token response received.
-  void RecordTokenResponseTypeMetrics(
-      IdpNetworkRequestManager::FedCmTokenResponseType type);
-
-  // Records whether the error URL is same-site cross-origin, same-origin or
-  // cross-site with the config URL.
-  void RecordErrorUrlTypeMetrics(
-      IdpNetworkRequestManager::FedCmErrorUrlType type);
+  // Records metrics before the error dialog has been shown.
+  void RecordErrorMetricsBeforeShowingErrorDialog(
+      IdpNetworkRequestManager::FedCmTokenResponseType response_type,
+      std::optional<IdpNetworkRequestManager::FedCmErrorDialogType> dialog_type,
+      std::optional<IdpNetworkRequestManager::FedCmErrorUrlType> url_type,
+      const GURL& provider_url);
 
   // Records the RpMode of two consecutive requests when one is invoked while
   // the other is pending.
   void RecordMultipleRequestsRpMode(
       blink::mojom::RpMode pending_request_rp_mode,
-      blink::mojom::RpMode new_request_rp_mode);
+      blink::mojom::RpMode new_request_rp_mode,
+      const std::vector<GURL>& requested_providers);
 
   // Records the time from when a User Info API call, if any, most likely upon
   // page load, to when the first Button Mode API is called afterwards, if any.
