@@ -42,6 +42,10 @@
       --oobe-button-font-size: 22px;
       --oobe-button-font-weight: 500;
 
+      --oobe-welcome-left-button-font-family: var(--oobe-button-font-family);
+      --oobe-welcome-left-button-font-size: var(--oobe-button-font-size);
+      --oobe-welcome-left-button-font-weight: var(--oobe-button-font-weight);
+
       --oobe-select-font-size: 18px;
       --oobe-select-line-height: 24px;
 
@@ -125,4 +129,22 @@
 
       /* Network screen */
       --oobe-network-row-height: 78px;
+    }
+
+    html.jelly-enabled {
+      /* Button Color */
+      --oobe-button-icon-fill-color-bg-transparent:
+          var(--cros-color-prominent-light);
+      --oobe-icon-button-text-color-bg-transparent:
+          var(--cros-color-prominent-light);
+      --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-prominent-light);
+
+      /* Font */
+      --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
+      --oobe-button-font-size: 22px;
+      --oobe-button-font-weight: 500;
+
+      --oobe-welcome-left-button-font-family: var(--oobe-button-font-family);
+      --oobe-welcome-left-button-font-size: var(--oobe-button-font-size);
+      --oobe-welcome-left-button-font-weight: var(--oobe-button-font-weight);
     }

@@ -161,9 +161,9 @@ found in the LICENSE file.
   }
 
   :host-context(.jelly-enabled) .welcome-left-buttons {
-    --oobe-button-font-family: var(--cros-body-0-font-family);
-    --oobe-button-font-size: var(--cros-body-0-font-size);
-    --oobe-button-font-weight: var(--cros-body-0-font-weight);
+    --oobe-button-font-family: var(--oobe-welcome-left-button-font-family);
+    --oobe-button-font-size: var(--oobe-welcome-left-button-font-size);
+    --oobe-button-font-weight: var(--oobe-welcome-left-button-font-weight);
     line-height: var(--cros-body-0-line-height);
   }
 
@@ -184,8 +184,10 @@ found in the LICENSE file.
   }
 
   :host-context(.jelly-enabled) oobe-icon-button.bg-transparent {
-    --oobe-button-icon-fill-color: var(--cros-sys-primary);
-    --oobe-icon-button-text-color: var(--cros-sys-on_surface_variant);
+    --oobe-button-icon-fill-color:
+        var(--oobe-button-icon-fill-color-bg-transparent);
+    --oobe-icon-button-text-color:
+        var(--oobe-icon-button-text-color-bg-transparent);
   }
 
   .illustration-jelly {

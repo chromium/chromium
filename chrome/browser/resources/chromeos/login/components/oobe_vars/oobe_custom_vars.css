@@ -45,6 +45,10 @@
       --oobe-button-font-size: 13px;
       --oobe-button-font-weight: 500;
 
+      --oobe-welcome-left-button-font-family: var(--oobe-button-font-family);
+      --oobe-welcome-left-button-font-size: var(--oobe-button-font-size);
+      --oobe-welcome-left-button-font-weight: var(--oobe-button-font-weight);
+
       --oobe-select-font-size: 13px;
       --oobe-select-line-height: 20px;
 
@@ -176,6 +180,10 @@
       --oobe-button-font-family: var(--cros-button-2-font-family);
       --oobe-button-font-size: var(--cros-button-2-font-size);
       --oobe-button-font-weight: var(--cros-button-2-font-weight);
+
+      --oobe-welcome-left-button-font-family: var(--cros-body-0-font-family);
+      --oobe-welcome-left-button-font-size: var(--cros-body-0-font-size);
+      --oobe-welcome-left-button-font-weight: var(--cros-body-0-font-weight);
 
       --oobe-hw-data-collection-usage-line-height:
           var(--oobe-default-line-height);
@@ -314,6 +322,11 @@
       /* Dialog */
       --oobe-adaptive-dialog-icon-size: 48px;
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
+
+      /* Button Color */
+      --oobe-button-icon-fill-color-bg-transparent: var(--cros-sys-primary);
+      --oobe-icon-button-text-color-bg-transparent:
+          var(--cros-sys-on_surface_variant);
     }
 
     html.boot-animation-enabled {
