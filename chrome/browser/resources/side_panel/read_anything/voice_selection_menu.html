@@ -75,13 +75,14 @@
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
     <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_">
-      <template is="dom-repeat" items="[[voiceSelectionOptions_]]">
+      <template is="dom-repeat" items="[[voiceSelectionOptions_]]"
+                initial-count="10">
         <div data-test-id$="group-[[stringToHtmlTestId_(item.language)]]">
           <span class="dropdown-line lang-group-title">
             [[item.language]]
           </span>
 
-          <template is="dom-repeat" items="[[item.voices]]">
+          <template is="dom-repeat" items="[[item.voices]]" initial-count="10">
             <button data-test-id$="[[item.id]]"
               class="dropdown-item dropdown-voice-selection-button"
               on-click="onVoiceSelectClick_">
