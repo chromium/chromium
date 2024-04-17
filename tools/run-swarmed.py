@@ -125,11 +125,18 @@ def _DoSpawn(args):
       raise Exception('Either both of --ios-sim-version and --ios-sim-platform '
                       'or --ios-device is required')
 
-    trigger_args.extend(['-service-account', args.service_account])
     trigger_args.extend(
         ['-named-cache', f'xcode_ios_{args.ios_xcode_build_version}=Xcode.app'])
     trigger_args.extend(
         ['-cipd-package', '.:infra/tools/mac_toolchain/${platform}=latest'])
+
+  if args.service_account:
+    account = args.service_account
+  elif args.swarming_instance == 'chromium-swarm':
+    account = 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com'
+  elif args.swarming_instance == 'chrome-swarming':
+    account = 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com'
+  trigger_args.extend(['-service-account', account])
 
   if args.arch != 'detect':
     trigger_args += [
@@ -271,11 +278,11 @@ def main():
                            '--system-log-file flags to the comment.')
   parser.add_argument('out_dir', type=str, help='Build directory.')
   parser.add_argument('target_name', type=str, help='Name of target to run.')
-  # ios only args
   parser.add_argument(
       '--service-account',
-      default='chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
-      help='The service account that the swarming task will be run using')
+      help='Optional service account that the swarming task will be run using. '
+      'Default value will be set based on the "--swarming-instance".')
+  # ios only args
   parser.add_argument('--ios-xcode-build-version',
                       help='The version of xcode that will be used for all '
                       'xcodebuild CLI commands')
