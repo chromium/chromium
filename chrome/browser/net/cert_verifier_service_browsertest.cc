@@ -80,27 +80,19 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
 
   {
     // Create updated Chrome Root Store with just the test server root cert.
-    chrome_root_store::RootStore root_store_proto;
-    root_store_proto.set_version_major(net::CompiledChromeRootStoreVersion() +
-                                       1);
+    chrome_root_store::RootStore root_store;
+    root_store.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
 
-    chrome_root_store::TrustAnchor* anchor =
-        root_store_proto.add_trust_anchors();
+    chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
     scoped_refptr<net::X509Certificate> root_cert =
         net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
     ASSERT_TRUE(root_cert);
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
 
-    std::string proto_serialized;
-    root_store_proto.SerializeToString(&proto_serialized);
-    cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
-        cert_verifier::mojom::ChromeRootStore::New(
-            base::as_bytes(base::make_span(proto_serialized)));
-
     base::RunLoop update_run_loop;
     content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        std::move(root_store_ptr), update_run_loop.QuitClosure());
+        mojo_base::ProtoWrapper(root_store), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

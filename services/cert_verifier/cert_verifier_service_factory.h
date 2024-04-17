@@ -26,6 +26,7 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include <optional>
 
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #endif
 
@@ -69,7 +70,7 @@ class CertVerifierServiceFactoryImpl
                        UpdateCtLogListCallback callback) override;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
+  void UpdateChromeRootStore(mojo_base::ProtoWrapper new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
   // Will not return anchors that are not trusted for the current running
   // version of Chrome.

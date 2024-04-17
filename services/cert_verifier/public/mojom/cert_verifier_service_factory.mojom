@@ -6,6 +6,7 @@ module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
@@ -36,12 +37,6 @@ struct CertVerifierCreationParams {
   // Initial additional certificates that will be used for certificate
   // validation.
   AdditionalCertificates? initial_additional_certificates;
-};
-
-// Serialized copy of the Chrome Root store.
-struct ChromeRootStore {
-  // Serialized proto of type chrome_root_store::RootStore.
-  mojo_base.mojom.BigBuffer serialized_proto_root_store;
 };
 
 // Information about a certificate in the Chrome Root Store
@@ -87,7 +82,7 @@ interface CertVerifierServiceFactory {
   // new version. The callback will be run once the update has been processed
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
-  UpdateChromeRootStore(ChromeRootStore new_root_store) => ();
+  UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including

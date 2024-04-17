@@ -10,6 +10,7 @@
 
 namespace component_updater {
 class ReadMaskedDomainListProto;
+class PKIMetadataComponentInstallerService;
 }  // namespace component_updater
 
 namespace mojo_base {
@@ -31,6 +32,7 @@ class ProtoWrapperBytes {
   // Add friend classes that need direct access to the underlying span_bytes()
   // or to directly set the contained class name and bytes with from_span().
   friend class component_updater::ReadMaskedDomainListProto;
+  friend class component_updater::PKIMetadataComponentInstallerService;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

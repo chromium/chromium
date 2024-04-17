@@ -42,6 +42,7 @@
 
 #include "base/version_info/version_info.h"  // nogncheck
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/cert/internal/trust_store_chrome.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
@@ -299,20 +300,13 @@ void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
-    mojom::ChromeRootStorePtr new_root_store,
+    mojo_base::ProtoWrapper new_root_store,
     UpdateChromeRootStoreCallback callback) {
   // Ensure the callback is run regardless which return path is used.
   base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
 
-  if (new_root_store->serialized_proto_root_store.size() == 0) {
-    LOG(ERROR) << "Empty serialized RootStore proto";
-    return;
-  }
-
-  chrome_root_store::RootStore proto;
-  if (!proto.ParseFromArray(
-          new_root_store->serialized_proto_root_store.data(),
-          new_root_store->serialized_proto_root_store.size())) {
+  auto message = new_root_store.As<chrome_root_store::RootStore>();
+  if (!message.has_value()) {
     LOG(ERROR) << "error parsing proto for Chrome Root Store";
     return;
   }
@@ -321,12 +315,12 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   // Component Updater to revert to older versions. Check is left in
   // to guard against Component updater being stuck on older versions due
   // to daily updates of the PKI Metadata component being broken.
-  if (proto.version_major() <= net::CompiledChromeRootStoreVersion()) {
+  if (message->version_major() <= net::CompiledChromeRootStoreVersion()) {
     return;
   }
 
   std::optional<net::ChromeRootStoreData> root_store_data =
-      net::ChromeRootStoreData::CreateChromeRootStoreData(proto);
+      net::ChromeRootStoreData::CreateChromeRootStoreData(message.value());
   if (!root_store_data) {
     LOG(ERROR) << "error interpreting proto for Chrome Root Store";
     return;

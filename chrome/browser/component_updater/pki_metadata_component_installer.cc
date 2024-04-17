@@ -44,6 +44,8 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
 #endif
 
 using component_updater::ComponentUpdateService;
@@ -81,6 +83,7 @@ const base::FilePath::CharType kKPConfigProtoFileName[] =
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 const base::FilePath::CharType kCRSProtoFileName[] =
     FILE_PATH_LITERAL("crs.pb");
+constexpr char kChromeRootStoreProto[] = "chrome_root_store.RootStore";
 #endif
 
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
@@ -119,8 +122,19 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&LoadBinaryProtoFromDisk,
-                     install_dir_.Append(kCRSProtoFileName)),
+      base::BindOnce(
+          [](const base::FilePath& pb_path)
+              -> std::optional<mojo_base::ProtoWrapper> {
+            std::string file_contents = LoadBinaryProtoFromDisk(pb_path);
+            if (file_contents.size()) {
+              return mojo_base::ProtoWrapper(
+                  base::as_bytes(base::make_span(file_contents)),
+                  kChromeRootStoreProto,
+                  mojo_base::ProtoWrapperBytes::GetPassKey());
+            }
+            return std::nullopt;
+          },
+          install_dir_.Append(kCRSProtoFileName)),
       base::BindOnce(
           &PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI,
           weak_factory_.GetWeakPtr()));
@@ -129,15 +143,14 @@ void PKIMetadataComponentInstallerService::ConfigureChromeRootStore() {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void PKIMetadataComponentInstallerService::UpdateChromeRootStoreOnUI(
-    const std::string& chrome_root_store_bytes) {
-  cert_verifier::mojom::ChromeRootStorePtr root_store_ptr =
-      cert_verifier::mojom::ChromeRootStore::New(
-          base::as_bytes(base::make_span(chrome_root_store_bytes)));
-  content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-      std::move(root_store_ptr),
-      base::BindOnce(&PKIMetadataComponentInstallerService::
-                         NotifyChromeRootStoreConfigured,
-                     weak_factory_.GetWeakPtr()));
+    std::optional<mojo_base::ProtoWrapper> chrome_root_store) {
+  if (chrome_root_store.has_value()) {
+    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
+        std::move(chrome_root_store.value()),
+        base::BindOnce(&PKIMetadataComponentInstallerService::
+                           NotifyChromeRootStoreConfigured,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void PKIMetadataComponentInstallerService::NotifyChromeRootStoreConfigured() {

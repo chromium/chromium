@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_PKI_METADATA_COMPONENT_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "net/net_buildflags.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -76,9 +78,10 @@ class PKIMetadataComponentInstallerService final {
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Updates cert verifiers with the component delivered Chrome Root Store
-  // data. |chrome_root_store_bytes| should be a serialized
+  // data. `chrome_root_store` should be a wrapped
   // chrome_root_store.RootStore proto message.
-  void UpdateChromeRootStoreOnUI(const std::string& chrome_root_store_bytes);
+  void UpdateChromeRootStoreOnUI(
+      std::optional<mojo_base::ProtoWrapper> chrome_root_store);
 
   // Notifies all observers that the Chrome Root Store data has been
   // configured.
