@@ -67,7 +67,7 @@ class SocketTest : public testing::Test {
 
     // Attempting to read from |receive_stream_| before the BluetoothSocket
     // provides received data should signal a MOJO_RESULT_SHOULD_WAIT result.
-    uint32_t buffer_size = static_cast<uint32_t>(max_buffer_size);
+    size_t buffer_size = static_cast<size_t>(max_buffer_size);
     EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT,
               receive_stream_->ReadData(nullptr, &buffer_size,
                                         MOJO_READ_DATA_FLAG_NONE));
@@ -112,7 +112,7 @@ class SocketTest : public testing::Test {
     // because no bytes have been written over |send_stream_| yet.
     EXPECT_FALSE(fake_bluetooth_socket_->HasSendArgs());
 
-    uint32_t message_size = message.size();
+    size_t message_size = message.size();
     EXPECT_EQ(MOJO_RESULT_OK,
               send_stream_->WriteData(message.data(), &message_size,
                                       MOJO_WRITE_DATA_FLAG_NONE));
@@ -127,7 +127,7 @@ class SocketTest : public testing::Test {
     auto send_args = fake_bluetooth_socket_->TakeSendArgs();
 
     int buffer_size = std::get<1>(*send_args);
-    EXPECT_EQ(message_size, static_cast<uint32_t>(buffer_size));
+    EXPECT_EQ(message_size, static_cast<size_t>(buffer_size));
 
     char* buffer = std::get<0>(*send_args)->data();
     std::string sent_string(buffer, buffer_size);

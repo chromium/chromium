@@ -300,18 +300,13 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnInPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      const size_t todo = buffer_.size() - buffer_i_;
+      size_t todo = buffer_.size() - buffer_i_;
       CHECK_GT(todo, 0u);
 
-      // We CHECK that the message fits into Mojo's 32-bit lengths because we
-      // don't expect anything that large in unittests.
-      uint32_t todo_32 = todo;
-      CHECK_LE(todo, std::numeric_limits<decltype(todo_32)>::max());
-
-      const MojoResult result = in_->ReadData(
-          &buffer_.data()[buffer_i_], &todo_32, MOJO_READ_DATA_FLAG_NONE);
+      const MojoResult result = in_->ReadData(&buffer_.data()[buffer_i_], &todo,
+                                              MOJO_READ_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_OK) {
-        buffer_i_ += todo_32;
+        buffer_i_ += todo;
         CHECK_LE(buffer_i_, buffer_.size());
 
         if (peer_ && buffer_i_ > 0) {
@@ -331,24 +326,24 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnOutPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      const size_t todo = peer_->buffer_.size();
-      if (todo == 0) {
+      size_t original_todo = peer_->buffer_.size();
+      if (original_todo == 0) {
         return;
       }
 
-      uint32_t todo_32 = todo;
-      const MojoResult result = out_->WriteData(peer_->buffer_.data(), &todo_32,
+      size_t todo = original_todo;
+      const MojoResult result = out_->WriteData(peer_->buffer_.data(), &todo,
                                                 MOJO_WRITE_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_OK) {
-        if (todo_32 == todo) {
+        if (todo == original_todo) {
           peer_->buffer_.clear();
           peer_->buffer_i_ = 0;
         } else {
-          const size_t new_length = todo - todo_32;
-          memmove(peer_->buffer_.data(), &peer_->buffer_.data()[todo_32],
+          const size_t new_length = original_todo - todo;
+          memmove(peer_->buffer_.data(), &peer_->buffer_.data()[todo],
                   new_length);
           peer_->buffer_.resize(new_length);
-          peer_->buffer_i_ -= todo_32;
+          peer_->buffer_i_ -= todo;
         }
 
         if (!peer_->buffer_.empty()) {

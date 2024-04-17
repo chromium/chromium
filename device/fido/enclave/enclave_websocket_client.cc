@@ -147,11 +147,10 @@ void EnclaveWebSocketClient::InternalWrite(base::span<const uint8_t> data) {
 
   websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                           data.size());
-  uint32_t num_bytes = static_cast<uint32_t>(data.size());
+  size_t num_bytes = data.size();
   MojoResult result = writable_->WriteData(data.data(), &num_bytes,
                                            MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  CHECK(result != MOJO_RESULT_OK ||
-        data.size() == static_cast<size_t>(num_bytes));
+  CHECK(result != MOJO_RESULT_OK || data.size() == num_bytes);
   if (result != MOJO_RESULT_OK) {
     FIDO_LOG(ERROR) << "Failed to write to WebSocket.";
     ClosePipe(SocketStatus::kError);
@@ -257,20 +256,13 @@ void EnclaveWebSocketClient::OnClosingHandshake() {}
 
 void EnclaveWebSocketClient::ReadFromDataPipe(MojoResult,
                                               const mojo::HandleSignalsState&) {
-  const size_t todo = pending_read_data_.size() - pending_read_data_index_;
+  size_t todo = pending_read_data_.size() - pending_read_data_index_;
   CHECK_GT(todo, 0u);
-
-  // Truncation to 32-bits cannot overflow because |pending_read_data_.size()|
-  // is bound by |kMaxIncomingMessageSize| when it is resized in |OnDataFrame|.
-  uint32_t todo_32 = static_cast<uint32_t>(todo);
-  static_assert(
-      kMaxIncomingMessageSize <= std::numeric_limits<decltype(todo_32)>::max(),
-      "");
   const MojoResult result =
       readable_->ReadData(&pending_read_data_.data()[pending_read_data_index_],
-                          &todo_32, MOJO_READ_DATA_FLAG_NONE);
+                          &todo, MOJO_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    pending_read_data_index_ += todo_32;
+    pending_read_data_index_ += todo;
     DCHECK_LE(pending_read_data_index_, pending_read_data_.size());
 
     if (pending_read_data_index_ < pending_read_data_.size()) {

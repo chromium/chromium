@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -90,7 +91,7 @@ void Socket::ReceiveMore() {
 
   // Passing 0 as the initial value allows |pending_write_buffer_max_size| to be
   // assigned the buffer's max size.
-  uint32_t pending_write_buffer_max_size = 0;
+  size_t pending_write_buffer_max_size = 0;
 
   MojoResult result = receive_stream_->BeginWriteData(
       &pending_write_buffer, &pending_write_buffer_max_size,
@@ -104,7 +105,7 @@ void Socket::ReceiveMore() {
   }
 
   bluetooth_socket_->Receive(
-      pending_write_buffer_max_size,
+      base::checked_cast<int>(pending_write_buffer_max_size),
       base::BindOnce(&Socket::OnBluetoothSocketReceive,
                      weak_ptr_factory_.GetWeakPtr(), pending_write_buffer),
       base::BindOnce(&Socket::OnBluetoothSocketReceiveError,
@@ -164,7 +165,7 @@ void Socket::SendMore() {
   // Passing 0 as the initial value allows |pending_read_buffer_size| to be
   // assigned the number of bytes that the other side of |send_stream_| has
   // already written.
-  uint32_t pending_read_buffer_size = 0;
+  size_t pending_read_buffer_size = 0;
 
   MojoResult result = send_stream_->BeginReadData(&pending_read_buffer,
                                                   &pending_read_buffer_size,
@@ -180,8 +181,8 @@ void Socket::SendMore() {
   bluetooth_socket_->Send(
       base::MakeRefCounted<net::WrappedIOBuffer>(
           base::make_span(static_cast<const char*>(pending_read_buffer),
-                          static_cast<size_t>(pending_read_buffer_size))),
-      pending_read_buffer_size,
+                          pending_read_buffer_size)),
+      base::checked_cast<int>(pending_read_buffer_size),
       base::BindOnce(&Socket::OnBluetoothSocketSend,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&Socket::OnBluetoothSocketSendError,
