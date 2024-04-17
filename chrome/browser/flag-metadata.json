@@ -7275,7 +7275,7 @@
   {
     "name": "request-desktop-site-window-setting",
     "owners": [ "shuyng@google.com", "skavuluru@google.com", "clank-app-team@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "reset-shortcut-customizations",
