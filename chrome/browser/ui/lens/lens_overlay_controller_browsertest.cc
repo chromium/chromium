@@ -355,8 +355,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
             SidePanelEntry::Id::kLensOverlayResults);
 }
 
+// TODO(b/335028577): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowSidePanelAfterTextSelectionRequest \
+  DISABLED_ShowSidePanelAfterTextSelectionRequest
+#else
+#define MAYBE_ShowSidePanelAfterTextSelectionRequest \
+  ShowSidePanelAfterTextSelectionRequest
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       ShowSidePanelAfterTextSelectionRequest) {
+                       MAYBE_ShowSidePanelAfterTextSelectionRequest) {
   WaitForPaint();
 
   std::string text_query = "Apples";
