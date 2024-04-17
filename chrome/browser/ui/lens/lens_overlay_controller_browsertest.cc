@@ -333,8 +333,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
             SidePanelEntry::Id::kLensOverlayResults);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
+    defined(MEMORY_SANTIZER)
+#define MAYBE_DelayPermissionsPrompt DISABLED_DelayPermissionsPrompt
+#else
+#define MAYBE_DelayPermissionsPrompt DelayPermissionsPrompt
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DelayPermissionsPrompt) {
+                       MAYBE_DelayPermissionsPrompt) {
   // Navigate to a page so we can request permissions
   WaitForPaint();
 
