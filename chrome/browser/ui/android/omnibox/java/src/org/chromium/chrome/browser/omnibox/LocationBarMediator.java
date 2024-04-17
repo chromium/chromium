@@ -668,8 +668,13 @@ class LocationBarMediator
     /** package */
     void lensButtonClicked(View view) {
         if (!mNativeInitialized || mLocationBarDataProvider == null) return;
-        LensMetrics.recordClicked(LensEntryPoint.OMNIBOX);
-        startLens(LensEntryPoint.OMNIBOX);
+        int entryPoint = mLocationBarLayout.getLensEntryPoint();
+        // Lens does not track Search Widget metrics.
+        // Enable once LensMetrics#getClickedActionName includes QUICK_ACTION_SEARCH_WIDGET.
+        if (entryPoint != LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET) {
+            LensMetrics.recordClicked(entryPoint);
+        }
+        startLens(entryPoint);
     }
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {

@@ -25,6 +25,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -605,6 +606,11 @@ public class LocationBarLayout extends FrameLayout {
     /** Returns the source of Voice Recognition interactions. */
     public int getVoiceRecogintionSource() {
         return VoiceRecognitionHandler.VoiceInteractionSource.OMNIBOX;
+    }
+
+    /** Returns the entrypoint used to launch Lens. */
+    public int getLensEntryPoint() {
+        return LensEntryPoint.OMNIBOX;
     }
 
     /**

@@ -14,10 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensIntentParams;
-import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -33,7 +30,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
@@ -41,6 +37,7 @@ import org.chromium.ui.widget.Toast;
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
+    private boolean mInteractionFromWidget;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
@@ -146,13 +143,15 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
         }
 
+        mInteractionFromWidget = true;
         if (searchType == SearchType.VOICE) {
             runVoiceSearch();
         } else if (searchType == SearchType.LENS) {
-            runGoogleLens(windowAndroid);
+            runGoogleLens();
         } else {
             focusTextBox();
         }
+        mInteractionFromWidget = false;
     }
 
     /** Begins a new Voice query. */
@@ -176,14 +175,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
     }
 
-    /**
-     * Begins a new Lens query.
-     *
-     * @param windowAndroid WindowAndroid context.
-     */
-    private void runGoogleLens(@NonNull WindowAndroid windowAndroid) {
-        assert mNativeInitialized;
-
+    /** Begins a new Lens query. */
+    private void runGoogleLens() {
         // Preemptively focus the Search box to handle fallback to text search for every case where
         // Lens search could not be performed, including events where Lens is started and canceled
         // by the User.
@@ -192,30 +185,14 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // lands the User on a white, unfocused activity with no keyboard and single, empty text
         // field on top.
         focusTextBox();
-
-        LensController lensController = LensController.getInstance();
-        LensQueryParams lensParams =
-                new LensQueryParams.Builder(
-                                LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                                mLocationBarDataProvider.isIncognito(),
-                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()))
-                        .build();
-        if (lensController.isLensEnabled(lensParams)) {
-            lensController.startLens(
-                    windowAndroid,
-                    new LensIntentParams.Builder(
-                                    LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
-                                    mLocationBarDataProvider.isIncognito())
-                            .build());
-            return;
+        View lensButton = findViewById(R.id.lens_camera_button);
+        if (lensButton.getVisibility() != View.VISIBLE || !lensButton.performClick()) {
+            Toast.makeText(
+                            getContext(),
+                            R.string.quick_action_search_widget_message_no_google_lens,
+                            Toast.LENGTH_LONG)
+                    .show();
         }
-
-        Toast.makeText(
-                        getContext(),
-                        R.string.quick_action_search_widget_message_no_google_lens,
-                        Toast.LENGTH_LONG)
-                .show();
-        // No need to focus, because the Text field should already be focused.
     }
 
     /** Focus the Omnibox and present the cached suggestions. */
@@ -238,6 +215,15 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     @Override
     public int getVoiceRecogintionSource() {
-        return VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET;
+        return mInteractionFromWidget
+                ? VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET
+                : super.getVoiceRecogintionSource();
+    }
+
+    @Override
+    public int getLensEntryPoint() {
+        return mInteractionFromWidget
+                ? LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET
+                : super.getLensEntryPoint();
     }
 }
