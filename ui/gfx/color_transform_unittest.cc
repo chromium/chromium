@@ -90,35 +90,6 @@ TEST(SimpleColorSpace, BT709toSRGB) {
   EXPECT_GT(tmp.z(), tmp.y());
 }
 
-TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
-  ColorSpace bt2020cl(
-      ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::BT2020_10,
-      ColorSpace::MatrixID::BT2020_CL, ColorSpace::RangeID::LIMITED);
-  ColorSpace bt2020rgb(ColorSpace::PrimaryID::BT2020,
-                       ColorSpace::TransferID::BT2020_10,
-                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-  std::unique_ptr<ColorTransform> t(
-      ColorTransform::NewColorTransform(bt2020cl, bt2020rgb));
-
-  ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
-  t->Transform(&tmp, 1);
-  EXPECT_NEAR(tmp.x(), 0.0f, kMathEpsilon);
-  EXPECT_NEAR(tmp.y(), 0.0f, kMathEpsilon);
-  EXPECT_NEAR(tmp.z(), 0.0f, kMathEpsilon);
-
-  tmp = ColorTransform::TriStim(235.0f / 255.0f, 0.5f, 0.5f);
-  t->Transform(&tmp, 1);
-  EXPECT_NEAR(tmp.x(), 1.0f, kMathEpsilon);
-  EXPECT_NEAR(tmp.y(), 1.0f, kMathEpsilon);
-  EXPECT_NEAR(tmp.z(), 1.0f, kMathEpsilon);
-
-  // Test a blue color
-  tmp = ColorTransform::TriStim(128.0f / 255.0f, 240.0f / 255.0f, 0.5f);
-  t->Transform(&tmp, 1);
-  EXPECT_GT(tmp.z(), tmp.x());
-  EXPECT_GT(tmp.z(), tmp.y());
-}
-
 TEST(SimpleColorSpace, YCOCGLimitedToSRGB) {
   ColorSpace ycocg(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB,
                    ColorSpace::MatrixID::YCOCG, ColorSpace::RangeID::LIMITED);

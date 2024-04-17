@@ -1134,8 +1134,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(std::move(src_range_adjust_matrix));
 
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformFromBT2020CL>());
+    NOTREACHED_NORETURN();
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
         Invert(src.GetTransferMatrix(options.src_bit_depth))));
@@ -1182,9 +1181,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   }
 
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(src.GetTransferMatrix(options.src_bit_depth))));
+    NOTREACHED_NORETURN();
   }
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(src.GetPrimaryMatrix()));
@@ -1259,9 +1256,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(Invert(dst.GetPrimaryMatrix())));
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        dst.GetTransferMatrix(options.dst_bit_depth)));
+    NOTREACHED_NORETURN();
   }
 
   switch (dst.GetTransferID()) {
@@ -1313,7 +1308,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(std::move(dst_range_adjust_matrix));
 
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   } else {
     steps_.push_back(std::make_unique<ColorTransformMatrix>(
         dst.GetTransferMatrix(options.dst_bit_depth)));
