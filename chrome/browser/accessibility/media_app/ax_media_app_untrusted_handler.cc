@@ -690,14 +690,16 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
     const std::string& dirty_page_id,
     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!tree_update.has_tree_data ||
+  if (
       // TODO(b/319536234): Validate tree ID.
+      // !tree_update.has_tree_data ||
       // ui::AXTreeIDUnknown() == tree_update.tree_data.tree_id ||
       ui::kInvalidAXNodeID == tree_update.root_id) {
     mojo::ReportBadMessage("OnPageOcred() bad tree update from Screen AI.");
     return;
   }
   ui::AXTreeUpdate complete_tree_update = tree_update;
+  complete_tree_update.has_tree_data = true;
   complete_tree_update.tree_data.parent_tree_id = document_tree_id_;
   if (HasRendererTerminatedDueToBadPageId("OnPageOcred", dirty_page_id)) {
     return;
@@ -705,10 +707,6 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   if (!pages_.contains(dirty_page_id)) {
     // Add a newly generated tree id to the tree update so that the new
     // `AXSerializableTree` that's generated has a non-empty tree id.
-    CHECK(complete_tree_update.has_tree_data);
-    CHECK_EQ(complete_tree_update.tree_data.tree_id.type(),
-             ax::mojom::AXTreeIDType::kUnknown)
-        << "Not expected to be set yet.";
     complete_tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
     auto page_tree =
         std::make_unique<ui::AXSerializableTree>(complete_tree_update);
