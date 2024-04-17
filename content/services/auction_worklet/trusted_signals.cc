@@ -554,7 +554,7 @@ void TrustedSignals::StartDownload(
       url_loader_factory, full_signals_url,
       AuctionDownloader::DownloadMode::kActualDownload,
       AuctionDownloader::MimeType::kJson,
-      /*post_body=*/std::nullopt,
+      /*post_body=*/std::nullopt, AuctionDownloader::ResponseStartedCallback(),
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
                      base::Unretained(this)),
       /*network_events_delegate=*/std::move(network_events_delegate));

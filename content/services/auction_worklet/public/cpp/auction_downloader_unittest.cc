@@ -110,7 +110,7 @@ class AuctionDownloaderTest
 
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
-        std::move(post_body),
+        std::move(post_body), response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -169,6 +169,9 @@ class AuctionDownloaderTest
   std::optional<GURL> observed_response_url_;
   std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
   network::URLLoaderCompletionStatus observed_completion_status_;
+
+  base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+      response_started_callback_;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -345,6 +348,40 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
   EXPECT_EQ("true", allow_fledge_string);
   EXPECT_FALSE(
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+}
+
+TEST_P(AuctionDownloaderTest, ResponseStartedCallback) {
+  bool called = false;
+  response_started_callback_ = base::BindLambdaForTesting(
+      [&](const network::mojom::URLResponseHead& response_head) {
+        EXPECT_FALSE(called);
+        // If this callback is called, it's called before the result one.
+        EXPECT_TRUE(run_loop_);
+        called = true;
+        ASSERT_TRUE(response_head.headers);
+        std::string test_header_str;
+        EXPECT_TRUE(response_head.headers->GetNormalizedHeader(
+            "Test-Header", &test_header_str));
+        EXPECT_EQ("test-val", test_header_str);
+      });
+
+  // Since response doesn't have Ad-Auction-Allowed, this will fail and not
+  // get the `response_started_callback_` invoked, either.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "Test-Header: test-val");
+  EXPECT_FALSE(RunRequest());
+  EXPECT_FALSE(called);
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
+      last_error_msg());
+
+  // This will succeed and invoke the callback as well.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody,
+              "Test-Header: test-val\r\nAd-Auction-Allowed: true");
+  EXPECT_TRUE(RunRequest());
+  EXPECT_TRUE(called);
 }
 
 // Redirect responses are treated as failures.

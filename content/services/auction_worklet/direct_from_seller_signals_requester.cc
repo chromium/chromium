@@ -244,6 +244,7 @@ DirectFromSellerSignalsRequester::LoadSignals(
             AuctionDownloader::DownloadMode::kActualDownload,
             AuctionDownloader::MimeType::kJson,
             /*post_body=*/std::nullopt,
+            AuctionDownloader::ResponseStartedCallback(),
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,
                 base::Unretained(this), signals_url, base::TimeTicks::Now()),

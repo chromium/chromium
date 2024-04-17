@@ -84,6 +84,7 @@ WorkletLoaderBase::WorkletLoaderBase(
     AuctionDownloader::MimeType mime_type,
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    AuctionDownloader::ResponseStartedCallback response_started_callback,
     LoadWorkletCallback load_worklet_callback)
     : source_url_(source_url),
       mime_type_(mime_type),
@@ -105,7 +106,7 @@ WorkletLoaderBase::WorkletLoaderBase(
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
-      /*post_body=*/std::nullopt,
+      /*post_body=*/std::nullopt, std::move(response_started_callback),
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),
       /*network_events_delegate=*/std::move(network_events_delegate));
@@ -126,16 +127,6 @@ void WorkletLoaderBase::OnDownloadComplete(
                        weak_ptr_factory_.GetWeakPtr(), false,
                        std::move(error_msg)));
     return;
-  }
-
-  std::string allow_trusted_scoring_signals_from_header;
-  if (mime_type_ == AuctionDownloader::MimeType::kJavascript && headers &&
-      headers->GetNormalizedHeader(
-          kAllowTrustedScoringSignalsHeader,
-          &allow_trusted_scoring_signals_from_header)) {
-    pending_result_.allow_trusted_scoring_signals_from_ =
-        WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
-            allow_trusted_scoring_signals_from_header);
   }
 
   pending_result_.DownloadReady(v8_helper_, body->size(),
@@ -244,6 +235,7 @@ WorkletLoader::WorkletLoader(
     const GURL& source_url,
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback,
     LoadWorkletCallback load_worklet_callback)
     : WorkletLoaderBase(url_loader_factory,
                         std::move(auction_network_events_handler),
@@ -251,7 +243,15 @@ WorkletLoader::WorkletLoader(
                         AuctionDownloader::MimeType::kJavascript,
                         std::move(v8_helper),
                         std::move(debug_id),
-                        std::move(load_worklet_callback)) {}
+                        allow_trusted_scoring_signals_callback
+                            ? base::BindOnce(&WorkletLoader::OnResponseStarted,
+                                             base::Unretained(this))
+                            : AuctionDownloader::ResponseStartedCallback(),
+                        std::move(load_worklet_callback)),
+      allow_trusted_scoring_signals_callback_(
+          std::move(allow_trusted_scoring_signals_callback)) {}
+
+WorkletLoader::~WorkletLoader() = default;
 
 // static
 v8::Global<v8::UnboundScript> WorkletLoader::TakeScript(Result&& result) {
@@ -300,6 +300,22 @@ WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
   return result;
 }
 
+void WorkletLoader::OnResponseStarted(
+    const network::mojom::URLResponseHead& head) {
+  DCHECK(allow_trusted_scoring_signals_callback_);
+  std::vector<url::Origin> allow_trusted_scoring_signals_from;
+  std::string allow_trusted_scoring_signals_from_header;
+  if (head.headers && head.headers->GetNormalizedHeader(
+                          kAllowTrustedScoringSignalsHeader,
+                          &allow_trusted_scoring_signals_from_header)) {
+    allow_trusted_scoring_signals_from =
+        WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+            allow_trusted_scoring_signals_from_header);
+  }
+  std::move(allow_trusted_scoring_signals_callback_)
+      .Run(allow_trusted_scoring_signals_from);
+}
+
 WorkletWasmLoader::WorkletWasmLoader(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -314,6 +330,7 @@ WorkletWasmLoader::WorkletWasmLoader(
                         AuctionDownloader::MimeType::kWebAssembly,
                         std::move(v8_helper),
                         std::move(debug_id),
+                        AuctionDownloader::ResponseStartedCallback(),
                         std::move(load_worklet_callback)) {}
 
 // static

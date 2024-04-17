@@ -51,6 +51,9 @@ class CONTENT_EXPORT AuctionDownloader {
     kSimulatedDownload
   };
 
+  using ResponseStartedCallback =
+      base::OnceCallback<void(const network::mojom::URLResponseHead&)>;
+
   // Passes in nullptr on failure. Always invoked asynchronously. Will not be
   // invoked after the AuctionDownloader is destroyed.
   using AuctionDownloaderCallback =
@@ -73,14 +76,35 @@ class CONTENT_EXPORT AuctionDownloader {
         const network::URLLoaderCompletionStatus& status) = 0;
   };
 
-  // Starts loading `source_url` on construction. Callback will be invoked
-  // asynchronously once the data has been fetched or an error has occurred.
+  // Starts loading `source_url` on construction.
+  //
+  // `response_started_callback` is optional, and will be invoked once the
+  // response headers have been received if they are for a 2xx with an
+  // appropriate Ad-Auction-Allowed header.
+  //
+  // `auction_downloader_callback` will be invoked asynchronously once the data
+  // has been fetched or an error has occurred.
+  //
+  // When `response_started_callback` is set, the following sequences of
+  // callback invocations are possible:
+  //
+  // 1) `auction_downloader_callback` with a failure. This happens e.g.
+  //    if the response doesn't have the proper Ad-Auction-Allowed header.
+  //
+  // 2) `response_started_callback` followed by an `auction_downloader_callback`
+  //    with a failure. This means the headers were received fine and checked
+  //    out, but something went wrong afterwards. This also includes the
+  //    mimetype and charset check.
+  //
+  // 3) `response_started_callback` followed by an `auction_downloader_callback`
+  //    with a success.
   AuctionDownloader(
       network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& source_url,
       DownloadMode download_mode,
       MimeType mime_type,
       std::optional<std::string> post_body,
+      ResponseStartedCallback response_started_callback,
       AuctionDownloaderCallback auction_downloader_callback,
       std::unique_ptr<NetworkEventsDelegate> network_events_delegate);
   explicit AuctionDownloader(const AuctionDownloader&) = delete;
@@ -116,6 +140,7 @@ class CONTENT_EXPORT AuctionDownloader {
   std::string request_id_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  ResponseStartedCallback response_started_callback_;
   AuctionDownloaderCallback auction_downloader_callback_;
   std::unique_ptr<NetworkEventsDelegate> network_events_delegate_;
 };

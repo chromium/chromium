@@ -163,11 +163,13 @@ AuctionDownloader::AuctionDownloader(
     DownloadMode download_mode,
     MimeType mime_type,
     std::optional<std::string> post_body,
+    ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
     : source_url_(source_url),
       mime_type_(mime_type),
       request_id_(base::UnguessableToken::Create().ToString()),
+      response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
       network_events_delegate_(std::move(network_events_delegate)) {
   DCHECK(auction_downloader_callback_);
@@ -406,6 +408,10 @@ void AuctionDownloader::OnResponseStarted(
             "(or the deprecated X-Allow-FLEDGE: true).",
             source_url_.spec().c_str()));
     return;
+  }
+
+  if (response_started_callback_) {
+    std::move(response_started_callback_).Run(response_head);
   }
 }
 

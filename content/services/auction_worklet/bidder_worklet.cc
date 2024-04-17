@@ -1812,6 +1812,7 @@ void BidderWorklet::Start() {
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
       script_source_url_, v8_helper_, debug_id_,
+      WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&BidderWorklet::OnScriptDownloaded,
                      base::Unretained(this)));
 

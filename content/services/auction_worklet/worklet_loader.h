@@ -62,13 +62,6 @@ class CONTENT_EXPORT WorkletLoaderBase {
     size_t original_size_bytes() const { return original_size_bytes_; }
     base::TimeDelta download_time() const { return download_time_; }
 
-    // Returns parsed value of the header which specifies which origins
-    // cross-origin trusted scoring signals may come from for this script.
-    // Set only for JS (and relevant only for seller JS).
-    std::vector<url::Origin> TakeAllowTrustedScoringSignalsFrom() {
-      return std::move(allow_trusted_scoring_signals_from_);
-    }
-
    private:
     friend class WorkletLoader;
     friend class WorkletLoaderBase;
@@ -108,8 +101,6 @@ class CONTENT_EXPORT WorkletLoaderBase {
     // Used only for metrics; the time required to download.
     base::TimeDelta download_time_;
 
-    std::vector<url::Origin> allow_trusted_scoring_signals_from_;
-
     bool success_ = false;
   };
 
@@ -134,6 +125,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
       AuctionDownloader::MimeType mime_type,
       scoped_refptr<AuctionV8Helper> v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      AuctionDownloader::ResponseStartedCallback response_started_callback,
       LoadWorkletCallback load_worklet_callback);
   ~WorkletLoaderBase();
 
@@ -193,10 +185,20 @@ class CONTENT_EXPORT WorkletLoaderBase {
 // Utility for loading and compiling worklet JavaScript.
 class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
  public:
-  // Starts loading the resource on construction. Callback will be invoked
-  // asynchronously once the data has been fetched and compiled or an error has
-  // occurred, on the current thread. Destroying this is guaranteed to cancel
-  // the callback.
+  using AllowTrustedScoringSignalsCallback =
+      base::OnceCallback<void(std::vector<url::Origin>)>;
+
+  // Starts loading the resource on construction.
+  // `load_worklet_callback` will be invoked asynchronously once the data has
+  // been fetched and compiled or an error has occurred, on the current thread.
+  //
+  // If `allow_trusted_scoring_signals_callback` is specified, it will
+  // be invoked, on the current thread, with parsed contents of
+  // Ad-Auction-Allow-Trusted-Scoring-Signals-From header as soon as headers
+  // are available, unless the headers were enough for the request to be
+  // rejected.
+  //
+  // Destroying this is guaranteed to cancel any outstanding callbacks.
   WorkletLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -204,7 +206,9 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
       const GURL& source_url,
       scoped_refptr<AuctionV8Helper> v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback,
       LoadWorkletCallback load_worklet_callback);
+  ~WorkletLoader();
 
   // The returned value is a compiled script not bound to any context. It
   // can be repeatedly bound to different contexts and executed, without
@@ -221,6 +225,11 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
   // Public for testing.
   static std::vector<url::Origin> ParseAllowTrustedScoringSignalsFromHeader(
       const std::string& allow_trusted_scoring_signals_from_header);
+
+ private:
+  void OnResponseStarted(const network::mojom::URLResponseHead&);
+
+  AllowTrustedScoringSignalsCallback allow_trusted_scoring_signals_callback_;
 };
 
 class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {

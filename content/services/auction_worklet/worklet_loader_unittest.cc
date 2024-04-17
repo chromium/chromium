@@ -12,6 +12,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
@@ -96,6 +97,7 @@ TEST_F(WorkletLoaderTest, NetworkError) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -111,6 +113,7 @@ TEST_F(WorkletLoaderTest, CompileError) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -134,7 +137,7 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
   WorkletLoader worklet_loader(
       &url_loader_factory_,
       /*auction_network_events_handler=*/mojo::NullRemote(), url_, v8_helper_,
-      id,
+      id, WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -151,6 +154,7 @@ TEST_F(WorkletLoaderTest, Success) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -196,6 +200,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackSuccess) {
           /*auction_network_events_handler=*/
           auction_network_events_handler_.CreateRemote(), url_, v8_helper.get(),
           scoped_refptr<AuctionV8Helper::DebugId>(),
+          WorkletLoader::AllowTrustedScoringSignalsCallback(),
           base::BindLambdaForTesting([&](WorkletLoader::Result worklet_script,
                                          std::optional<std::string> error_msg) {
             EXPECT_TRUE(worklet_script.success());
@@ -221,6 +226,7 @@ TEST_F(WorkletLoaderTest, DeleteDuringCallbackCompileError) {
           /*auction_network_events_handler=*/
           auction_network_events_handler_.CreateRemote(), url_, v8_helper.get(),
           scoped_refptr<AuctionV8Helper::DebugId>(),
+          WorkletLoader::AllowTrustedScoringSignalsCallback(),
           base::BindLambdaForTesting([&](WorkletLoader::Result worklet_script,
                                          std::optional<std::string> error_msg) {
             EXPECT_FALSE(worklet_script.success());
@@ -256,6 +262,7 @@ TEST_F(WorkletLoaderTest, DeleteBeforeCallback) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      WorkletLoader::AllowTrustedScoringSignalsCallback(),
       base::BindOnce([](WorkletLoader::Result worklet_script,
                         std::optional<std::string> error_msg) {
         ADD_FAILURE() << "Callback should not be invoked since loader deleted";
@@ -329,6 +336,7 @@ TEST_F(WorkletLoaderTest, TrustedSignalsHeader) {
       "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://a.com\", "
       "\"https://b.com\"";
 
+  base::test::TestFuture<std::vector<url::Origin>> allow_trusted_signals_from;
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType,
               /*charset=*/std::nullopt, kValidScript, kHeader);
   WorkletLoader worklet_loader(
@@ -336,13 +344,43 @@ TEST_F(WorkletLoaderTest, TrustedSignalsHeader) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      allow_trusted_signals_from.GetCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
   EXPECT_TRUE(result_.success()) << last_error_msg();
-  EXPECT_THAT(result_.TakeAllowTrustedScoringSignalsFrom(),
+  EXPECT_TRUE(allow_trusted_signals_from.IsReady());
+  EXPECT_THAT(allow_trusted_signals_from.Get(),
               ElementsAre(url::Origin::Create(GURL("https://a.com")),
                           url::Origin::Create(GURL("https://b.com"))));
+}
+
+// Test that a response with Ad-Auction-Allow-Trusted-Scoring-Signals-From but
+// no Ad-Auction-Allowed does not invoke the trusted signals permissions
+// callback, only just a regular failure.
+TEST_F(WorkletLoaderTest, TrustedSignalsHeaderNoAllowed) {
+  const char kHeader[] =
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://a.com\", "
+      "\"https://b.com\"";
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType,
+              /*charset=*/std::nullopt, kValidScript, kHeader);
+  WorkletLoader worklet_loader(
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
+      scoped_refptr<AuctionV8Helper::DebugId>(),
+      base::BindOnce([](std::vector<url::Origin> allowed_origins) {
+        ADD_FAILURE() << "Should not be called here";
+      }),
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_FALSE(result_.success());
+  EXPECT_EQ(
+      "Rejecting load of https://foo.test/ due to lack of Ad-Auction-Allowed: "
+      "true (or the deprecated X-Allow-FLEDGE: true).",
+      last_error_msg());
 }
 
 // List headers are combined in the usual HTTP way when specified more than
@@ -353,6 +391,7 @@ TEST_F(WorkletLoaderTest, TrustedSignalsHeaderCombine) {
       "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://a.com\"\r\n"
       "Ad-Auction-Allow-Trusted-Scoring-Signals-From: \"https://b.com\"\r\n";
 
+  base::test::TestFuture<std::vector<url::Origin>> allow_trusted_signals_from;
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType,
               /*charset=*/std::nullopt, kValidScript, kHeader);
   WorkletLoader worklet_loader(
@@ -360,11 +399,13 @@ TEST_F(WorkletLoaderTest, TrustedSignalsHeaderCombine) {
       /*auction_network_events_handler=*/
       auction_network_events_handler_.CreateRemote(), url_, v8_helper_,
       scoped_refptr<AuctionV8Helper::DebugId>(),
+      allow_trusted_signals_from.GetCallback(),
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
   EXPECT_TRUE(result_.success()) << last_error_msg();
-  EXPECT_THAT(result_.TakeAllowTrustedScoringSignalsFrom(),
+  EXPECT_TRUE(allow_trusted_signals_from.IsReady());
+  EXPECT_THAT(allow_trusted_signals_from.Get(),
               ElementsAre(url::Origin::Create(GURL("https://a.com")),
                           url::Origin::Create(GURL("https://b.com"))));
 }
