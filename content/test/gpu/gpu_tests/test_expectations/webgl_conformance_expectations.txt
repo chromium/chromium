@@ -509,9 +509,6 @@ crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/m
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
 
-# Graphite
-crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
-crbug.com/329322651 [ win graphite-enabled ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ####################
 # Mac failures     #
