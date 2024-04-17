@@ -52,6 +52,9 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
 
   static std::unique_ptr<BackgroundTracingRule> Create(
       const perfetto::protos::gen::TriggerRule& config);
+  static bool Append(
+      const std::vector<perfetto::protos::gen::TriggerRule>& configs,
+      std::vector<std::unique_ptr<BackgroundTracingRule>>& rules);
 
   const std::string& rule_id() const { return rule_id_; }
   std::optional<int32_t> triggered_value() const { return triggered_value_; }

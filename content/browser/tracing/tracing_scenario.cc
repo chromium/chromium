@@ -30,18 +30,6 @@ namespace {
 constexpr uint32_t kStartupTracingTimeoutMs = 30 * 1000;  // 30 sec
 #endif
 
-bool AppendRules(const std::vector<perfetto::protos::gen::TriggerRule>& configs,
-                 std::vector<std::unique_ptr<BackgroundTracingRule>>& rules) {
-  for (const auto& rule_config : configs) {
-    auto rule = BackgroundTracingRule::Create(rule_config);
-    if (!rule) {
-      return false;
-    }
-    rules.push_back(std::move(rule));
-  }
-  return true;
-}
-
 }  // namespace
 
 void TracingScenario::TracingSessionDeleter::operator()(
@@ -146,9 +134,9 @@ void NestedTracingScenario::Stop() {
 
 bool NestedTracingScenario::Initialize(
     const perfetto::protos::gen::NestedScenarioConfig& config) {
-  return AppendRules(config.start_rules(), start_rules_) &&
-         AppendRules(config.stop_rules(), stop_rules_) &&
-         AppendRules(config.upload_rules(), upload_rules_);
+  return BackgroundTracingRule::Append(config.start_rules(), start_rules_) &&
+         BackgroundTracingRule::Append(config.stop_rules(), stop_rules_) &&
+         BackgroundTracingRule::Append(config.upload_rules(), upload_rules_);
 }
 
 bool NestedTracingScenario::OnStartTrigger(
@@ -251,10 +239,10 @@ bool TracingScenario::Initialize(
     }
     nested_scenarios_.push_back(std::move(nested_scenario));
   }
-  return AppendRules(config.start_rules(), start_rules_) &&
-         AppendRules(config.stop_rules(), stop_rules_) &&
-         AppendRules(config.upload_rules(), upload_rules_) &&
-         AppendRules(config.setup_rules(), setup_rules_);
+  return BackgroundTracingRule::Append(config.start_rules(), start_rules_) &&
+         BackgroundTracingRule::Append(config.stop_rules(), stop_rules_) &&
+         BackgroundTracingRule::Append(config.upload_rules(), upload_rules_) &&
+         BackgroundTracingRule::Append(config.setup_rules(), setup_rules_);
 }
 
 void TracingScenario::Disable() {

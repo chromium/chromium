@@ -26,10 +26,14 @@ bool MaybeSetupSystemTracingFromFieldTrial() {
     return false;
   }
 
+  auto& manager = BackgroundTracingManager::GetInstance();
+  auto trigger_config = tracing::GetTracingTriggerRulesConfig();
+  if (trigger_config) {
+    return manager.InitializePerfettoTriggerRules(std::move(*trigger_config));
+  }
   if (tracing::IsFieldTracingEnabled()) {
     return false;
   }
-  auto& manager = BackgroundTracingManager::GetInstance();
   std::unique_ptr<BackgroundTracingConfig> config =
       manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
   if (!config || config->tracing_mode() != BackgroundTracingConfig::SYSTEM) {

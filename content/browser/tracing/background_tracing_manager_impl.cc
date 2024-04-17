@@ -420,6 +420,11 @@ bool BackgroundTracingManagerImpl::RequestActivateScenario() {
   if (!enabled_scenarios_.empty()) {
     return false;
   }
+  // Bail on scenario activation if trigger rules are already setup to be
+  // forwarded to system tracing.
+  if (!trigger_rules_.empty()) {
+    return false;
+  }
   if (legacy_active_scenario_ &&
       (legacy_active_scenario_->state() !=
        BackgroundTracingActiveScenario::State::kIdle)) {
@@ -440,10 +445,36 @@ void BackgroundTracingManagerImpl::SetReceiveCallback(
   receive_callback_ = std::move(receive_callback);
 }
 
+bool BackgroundTracingManagerImpl::InitializePerfettoTriggerRules(
+    const perfetto::protos::gen::TracingTriggerRulesConfig& config) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Trigger rules can't be initialized twice.
+  DCHECK(trigger_rules_.empty());
+  DCHECK_EQ(legacy_active_scenario_, nullptr);
+
+  // Bail on setting up trigger rules if scenarios are already enabled.
+  if (!enabled_scenarios_.empty()) {
+    return false;
+  }
+
+  if (!BackgroundTracingRule::Append(config.rules(), trigger_rules_)) {
+    return false;
+  }
+  for (auto& rule : trigger_rules_) {
+    rule->Install(base::BindRepeating([](const BackgroundTracingRule* rule) {
+      perfetto::Tracing::ActivateTriggers({rule->rule_id()},
+                                          /*ttl_ms=*/0);
+      return true;
+    }));
+  }
+  return true;
+}
+
 bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     const perfetto::protos::gen::ChromeFieldTracingConfig& config,
     DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(legacy_active_scenario_, nullptr);
   if (!RequestActivateScenario()) {
     return false;
   }
@@ -513,6 +544,10 @@ bool BackgroundTracingManagerImpl::SetEnabledScenarios(
     }
     enabled_scenarios_.clear();
   }
+  for (auto& rule : trigger_rules_) {
+    rule->Uninstall();
+  }
+  trigger_rules_.clear();
   InitializeTraceReportDatabase();
   for (const std::string& hash : enabled_scenarios) {
     auto it = preset_scenarios_.find(hash);

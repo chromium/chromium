@@ -28,6 +28,9 @@
 
 namespace tracing {
 
+BASE_FEATURE(kTracingTriggers,
+             "TracingTriggers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFieldTracing, "FieldTracing", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPresetTracing,
              "PresetTracing",
@@ -35,6 +38,8 @@ BASE_FEATURE(kPresetTracing,
 
 namespace {
 
+const base::FeatureParam<std::string> kTracingTriggerRulesConfig{
+    &kTracingTriggers, "config", ""};
 const base::FeatureParam<std::string> kFieldTracingConfig{&kFieldTracing,
                                                           "config", ""};
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
@@ -272,6 +277,23 @@ GetFieldTracingConfig() {
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetPresetTracingConfig() {
   return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig);
+}
+
+std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
+GetTracingTriggerRulesConfig() {
+  if (!base::FeatureList::IsEnabled(kTracingTriggers)) {
+    return std::nullopt;
+  }
+  std::string serialized_config;
+  if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
+                          &serialized_config)) {
+    return std::nullopt;
+  }
+  perfetto::protos::gen::TracingTriggerRulesConfig config;
+  if (config.ParseFromString(serialized_config)) {
+    return config;
+  }
+  return std::nullopt;
 }
 
 bool IsFieldTracingEnabled() {

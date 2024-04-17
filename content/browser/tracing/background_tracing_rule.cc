@@ -599,4 +599,17 @@ std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
   return tracing_rule;
 }
 
+bool BackgroundTracingRule::Append(
+    const std::vector<perfetto::protos::gen::TriggerRule>& configs,
+    std::vector<std::unique_ptr<BackgroundTracingRule>>& rules) {
+  for (const auto& rule_config : configs) {
+    auto rule = BackgroundTracingRule::Create(rule_config);
+    if (!rule) {
+      return false;
+    }
+    rules.push_back(std::move(rule));
+  }
+  return true;
+}
+
 }  // namespace content

@@ -102,6 +102,15 @@ class BackgroundTracingManager {
       std::unique_ptr<BackgroundTracingConfig> config,
       DataFiltering data_filtering) = 0;
 
+  // Initializes a list of triggers from `config` to be forwarded to
+  // perfetto. This is useful when system tracing is running. This will
+  // fail and return false if any scenario was previously enabled,
+  // either with InitializeFieldScenarios() or SetEnabledScenarios().
+  // This shouldn't be called if SetActiveScenario() was previously
+  // called.
+  virtual bool InitializePerfettoTriggerRules(
+      const perfetto::protos::gen::TracingTriggerRulesConfig& config) = 0;
+
   // Tracing Scenarios are enrolled by clients based on a set of start and
   // stop rules that delimitate a meaningful tracing interval, usually covering
   // a user journey or a guardian metric (e.g. FirstContentfulPaint). This can
@@ -114,6 +123,7 @@ class BackgroundTracingManager {
   // tracing configs. Returns true if all scenarios were successfully
   // initialized. This will fail and return false if any scenario was previously
   // enabled, either with InitializeFieldScenarios() or SetEnabledScenarios().
+  // This shouldn't be called if SetActiveScenario() was previously called.
   virtual bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) = 0;

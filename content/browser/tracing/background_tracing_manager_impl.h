@@ -105,6 +105,8 @@ class BackgroundTracingManagerImpl
                                  mojom::ChildProcess* child_process);
 
   void SetReceiveCallback(ReceiveCallback receive_callback) override;
+  bool InitializePerfettoTriggerRules(
+      const perfetto::protos::gen::TracingTriggerRulesConfig& config) override;
   bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
       DataFiltering data_filtering) override;
@@ -237,6 +239,7 @@ class BackgroundTracingManagerImpl
       preset_scenarios_;
   std::vector<raw_ptr<TracingScenario>> enabled_scenarios_;
   raw_ptr<TracingScenario> active_scenario_{nullptr};
+  std::vector<std::unique_ptr<BackgroundTracingRule>> trigger_rules_;
   ReceiveCallback receive_callback_;
   base::RepeatingCallback<std::string()> system_profile_recorder_;
 
