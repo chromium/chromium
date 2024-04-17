@@ -635,7 +635,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupSyncAndroid =
             newCachedFlag(TAB_GROUP_SYNC_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
-            newCachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
+            newCachedFlag(TAB_LINK_DRAG_DROP_ANDROID, true);
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
     public static final CachedFlag sTabStateFlatBuffer = newCachedFlag(TAB_STATE_FLATBUFFER, false);

@@ -636,7 +636,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testDragDropInstances_Success() {
         enableMultiInstance();
         initializeTest();
@@ -647,7 +646,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testDragDropInstances_MultiInstanceNotEnabled_ReturnsNull() {
         initializeTest();
         assertNull(
@@ -670,7 +668,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testGetDragListener() {
         enableMultiInstance();
         initializeTest();

@@ -91,7 +91,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Tests for {@link TabDragSource}. */
-@EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
 @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
@@ -239,7 +238,6 @@ public class TabDragSourceTest {
     }
 
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @Test
     public void test_startTabDragAction_withTabLinkDragDropFF_returnsTrueForValidTab() {
         // Act and verify.
@@ -334,7 +332,6 @@ public class TabDragSourceTest {
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
         ChromeFeatureList.DRAG_DROP_TAB_TEARING
     })
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void test_startTabDragAction_returnFalseForNonSplitScreen() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -352,7 +349,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @DisableFeatures({
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
         ChromeFeatureList.DRAG_DROP_TAB_TEARING
@@ -459,7 +455,6 @@ public class TabDragSourceTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_onProvideShadowMetrics_withTabLinkDragDropFF() {
         // Call startDrag to set class variables.

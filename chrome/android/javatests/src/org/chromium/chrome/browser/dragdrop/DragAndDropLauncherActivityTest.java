@@ -206,10 +206,7 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.DRAG_DROP_TAB_TEARING,
-        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void testDraggedTab_newWindow() throws Exception {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(

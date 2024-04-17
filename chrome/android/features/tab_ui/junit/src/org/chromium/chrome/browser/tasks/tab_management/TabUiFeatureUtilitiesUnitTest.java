@@ -95,7 +95,6 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @Config(sdk = VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testIsTabDragDropEnabled() {
         MultiWindowTestUtils.enableMultiInstance();
         assertTrue(TabUiFeatureUtilities.isTabDragEnabled());
@@ -103,10 +102,7 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @Config(sdk = VERSION_CODES.S)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     public void testIsTabDragDropEnabled_bothFlagsEnabled() {
         MultiWindowTestUtils.enableMultiInstance();
         assertThrows(AssertionError.class, () -> TabUiFeatureUtilities.isTabDragEnabled());
@@ -114,7 +110,6 @@ public class TabUiFeatureUtilitiesUnitTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testIsTabDragDropEnabled_multiInstanceDisabled() {
         assertFalse(TabUiFeatureUtilities.isTabDragEnabled());
     }
