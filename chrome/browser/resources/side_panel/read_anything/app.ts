@@ -1596,8 +1596,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   languageChanged() {
-    // TODO: b/40275871 - handle the case where the previously used font is not
-    // supported for the new language.
     this.$.toolbar.updateFonts();
     this.selectPreferredVoice_();
   }

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/threading/platform_thread.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_app_model.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -118,6 +118,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void ClearPendingUpdates() { model_->ClearPendingUpdates(); }
 
   std::string FontName() { return model_->font_name(); }
+
+  void SetFontName(std::string font) { model_->set_font_name(font); }
 
   float FontSize() { return model_->font_size(); }
 
@@ -257,6 +259,14 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   // not accessible by std::make_unique.
   raw_ptr<ReadAnythingAppModel> model_ = nullptr;
 };
+
+TEST_F(ReadAnythingAppModelTest, FontName) {
+  EXPECT_EQ(string_constants::kReadAnythingPlaceholderFontName, FontName());
+
+  std::string font_name = "Montserrat";
+  SetFontName(font_name);
+  EXPECT_EQ(font_name, FontName());
+}
 
 TEST_F(ReadAnythingAppModelTest, Theme) {
   std::string font_name = "Roboto";

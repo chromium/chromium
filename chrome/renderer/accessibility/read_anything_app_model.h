@@ -131,6 +131,7 @@ class ReadAnythingAppModel {
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
   const std::string& font_name() const { return font_name_; }
+  void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
   bool links_enabled() const { return links_enabled_; }
   float letter_spacing() const { return letter_spacing_; }

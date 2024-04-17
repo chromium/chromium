@@ -1235,6 +1235,7 @@ void ReadAnythingAppController::OnBlueTheme() {
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {
   page_handler_->OnFontChange(font);
+  model_.set_font_name(font);
 }
 
 void ReadAnythingAppController::OnSpeechRateChange(double rate) {

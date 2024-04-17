@@ -388,7 +388,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     // TODO(b/329677511): Font names should be displayed as
     // "Font name (loading)" until the fonts have been loaded.
-    this.updateFonts();
+    this.initFonts_();
     this.loadFontsStylesheet();
   }
 
@@ -436,14 +436,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private restoreFontMenu_() {
-    const currentFontIndex =
+    // Default to the first font option if the previously used font is no
+    // longer available.
+    let currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
+    if (currentFontIndex < 0) {
+      currentFontIndex = 0;
+      this.propagateFontChange_(this.fontOptions_[0]);
+    }
     if (this.isReadAloudEnabled_) {
-      // Default to the first font option if the previously used font is no
-      // longer available.
       this.setCheckMarkForMenu_(
-          this.$.fontMenu.getIfExists(),
-          currentFontIndex > -1 ? currentFontIndex : 0);
+          this.$.fontMenu.getIfExists(), currentFontIndex);
 
     } else {
       const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
@@ -488,6 +491,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   updateFonts() {
+    this.initFonts_();
+    this.restoreFontMenu_();
+  }
+
+  private initFonts_() {
     const fonts = chrome.readingMode.supportedFonts;
     this.fontOptions_ = [];
     fonts.forEach(element => {

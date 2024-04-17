@@ -99,6 +99,26 @@ suite('FontMenu', () => {
       assertEquals(fontMenuOptions.length, 8);
     });
 
+    test('uses the first font if font not available', () => {
+      // Set the current font to one that will be removed
+      const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
+      chrome.readingMode.fontName = 'EB Garamond';
+      updateFonts(fonts.concat(chrome.readingMode.fontName));
+
+      // Update the fonts to exclude the previously chosen font
+      updateFonts(fonts);
+
+      const checkMarks = toolbar.$.fontMenu.get().querySelectorAll<HTMLElement>(
+          '.check-mark-hidden-false');
+      const hiddenCheckMarks =
+          toolbar.$.fontMenu.get().querySelectorAll<HTMLElement>(
+              '.check-mark-hidden-true');
+      assertEquals(checkMarks.length, 1);
+      assertEquals(hiddenCheckMarks.length, 2);
+      assertEquals(chrome.readingMode.fontName, fonts[0]);
+      assertEquals(toolbar.style.fontFamily, fonts[0]);
+    });
+
     test('each font option is styled with the font that it is', () => {
       updateFonts(['Serif', 'Andika', 'Poppins', 'STIX Two Text']);
       toolbar.setFontsLoaded();
@@ -169,6 +189,20 @@ suite('FontMenu', () => {
       updateFonts(['font 1', 'font 2', 'font 3', 'font 4']);
       assertEquals(
           chrome.readingMode.supportedFonts.length, fontSelect!.options.length);
+    });
+
+    test('uses the first font if font not available', () => {
+      // Set the current font to one that will be removed
+      const fonts = ['Andika', 'Poppins', 'STIX Two Text'];
+      chrome.readingMode.fontName = 'EB Garamond';
+      updateFonts(fonts.concat(chrome.readingMode.fontName));
+
+      // Update the fonts to exclude the previously chosen font
+      updateFonts(fonts);
+
+      assertEquals(fontSelect!.selectedIndex, 0);
+      assertEquals(chrome.readingMode.fontName, fonts[0]);
+      assertEquals(toolbar.style.fontFamily, fonts[0]);
     });
 
     suite('on font option clicked', () => {

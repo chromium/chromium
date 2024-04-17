@@ -304,6 +304,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetDisplayNameForLocale(locale, display_locale);
   }
 
+  void OnFontChange(const std::string& font) {
+    controller_->OnFontChange(font);
+  }
+
   void OnVoiceChange(const std::string& voice, const std::string& lang) {
     controller_->OnVoiceChange(voice, lang);
   }
@@ -414,6 +418,15 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 
   scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   EXPECT_TRUE(IsReadAloudEnabled());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
+  std::string expected_font = "Roboto";
+
+  OnFontChange(expected_font);
+
+  EXPECT_CALL(page_handler_, OnFontChange(expected_font)).Times(1);
+  ASSERT_EQ(FontName(), expected_font);
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
