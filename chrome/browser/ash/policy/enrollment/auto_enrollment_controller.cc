@@ -395,7 +395,7 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
             kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
-          LOG(WARNING) << "Requesting state keys. Attempt no. "
+          LOG(WARNING) << "Requesting state keys. Attempt "
                        << request_state_keys_tries_ << ".";
           state_keys_broker_->RequestStateKeys(
               base::BindOnce(&AutoEnrollmentController::StartClientForFRE,

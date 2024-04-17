@@ -54,13 +54,17 @@ void DeviceCloudPolicyInitializer::Init() {
   is_initialized_ = true;
 
   policy_store_->AddObserver(this);
-  // TODO(b/333951800): Evaluate skipping the state keys if FRE is disabled.
+  policy_manager_observer_.Observe(policy_manager_.get());
+
+  // If FRE is enabled, we want to obtain state keys before proceeding.
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
   state_keys_update_subscription_ =
       state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
           &DeviceCloudPolicyInitializer::TryToStartConnection,
           base::Unretained(this)));
-  policy_manager_observer_.Observe(policy_manager_.get());
+  }
 
+  // TODO(b/333951800): This could be an else to the if, check if warranted.
   TryToStartConnection();
 }
 
