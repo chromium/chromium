@@ -225,7 +225,8 @@ class CORE_EXPORT PointerEventFactory {
       HashMap<int32_t, int32_t, IntWithZeroKeyHashTraits<int64_t>>;
   // This map contains every received device id from browser since page load.
   BrowserDeviceIdToBlinkDeviceIdMap device_id_browser_to_blink_mapping_;
-  int32_t current_device_id_ = -1;
+  int32_t current_device_id_ = 0;
+  int32_t device_id_for_mouse_ = -1;
 };
 
 }  // namespace blink

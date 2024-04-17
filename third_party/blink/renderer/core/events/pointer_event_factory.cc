@@ -574,7 +574,8 @@ void PointerEventFactory::Clear() {
   pointer_id_to_attributes_.insert(kMouseId, attributes);
 
   current_id_ = PointerEventFactory::kMouseId + 1;
-  current_device_id_ = PointerEventFactory::kMouseId + 1;
+  current_device_id_ = 0;
+  device_id_for_mouse_ = -1;
 }
 
 PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
@@ -762,7 +763,10 @@ int32_t PointerEventFactory::GetBlinkDeviceId(
     const WebPointerEvent& web_pointer_event) {
   if (web_pointer_event.pointer_type ==
       WebPointerProperties::PointerType::kMouse) {
-    return PointerEventFactory::kMouseId;
+    if (device_id_for_mouse_ == -1) {
+      device_id_for_mouse_ = current_device_id_++;
+    }
+    return device_id_for_mouse_;
   }
 
   const int32_t incoming_id = web_pointer_event.device_id;
