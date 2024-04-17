@@ -1879,7 +1879,7 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
     if (AXObject* parent = ParentObject()) {
       DCHECK(parent->ChooserPopup() == this)
-          << "ChooserPopup missing for: " << parent->ToString();
+          << "ChooserPopup missing for: " << parent;
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPopupForId,
                                  parent->AXObjectID());
     }
@@ -3089,7 +3089,7 @@ bool AXObject::AccessibilityIsIgnored() const {
 #if defined(AX_FAIL_FAST_BUILD)
   if (!cached_is_ignored_ && IsDetached()) {
     NOTREACHED()
-        << "A detached node cannot be ignored: " << ToString()
+        << "A detached node cannot be ignored: " << this
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
   }
@@ -5221,8 +5221,8 @@ int AXObject::IndexInParent() const {
   wtf_size_t index = siblings.Find(this);
 
   DCHECK_NE(index, kNotFound)
-      << "Could not find child in parent:" << "\nChild: " << ToString()
-      << "\nParent: " << ax_parent_included->ToString()
+      << "Could not find child in parent:" << "\nChild: " << this
+      << "\nParent: " << ax_parent_included
       << "  #children=" << siblings.size();
   return (index == kNotFound) ? 0 : static_cast<int>(index);
 }
@@ -7946,15 +7946,15 @@ void AXObject::PreSerializationConsistencyCheck() {
     // TODO(accessibility): Return to CHECK once it has been resolved,
     // so that the message does not bloat stable releases.
     DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Do not serialize unincluded nodes: " << ToString()
+        << "Do not serialize unincluded nodes: " << this
         << "\nIncluded parent: "
-        << (included_parent ? included_parent->ToString() : "nullptr");
+        << included_parent;
   }
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.
   CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
       << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
-      << ToString();
+      << this;
 #endif
 }
 

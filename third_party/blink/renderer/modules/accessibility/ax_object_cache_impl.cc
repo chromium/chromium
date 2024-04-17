@@ -2672,10 +2672,9 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
          "serialization, because the ancestor may have already been "
          "visited. Reaching this line indicates that AXObjectCacheImpl did "
          "not handle a signal and call ChildrenChanged() earlier."
-      << "\nChild: " << obj->ToString() << "\nParent: "
-      << (obj->CachedParentObject() ? obj->CachedParentObject()->ToString()
-                                    : "")
-      << "\nAncestor: " << ax_ancestor->ToString();
+      << "\nChild: " << obj << "\nParent: "
+      << obj->CachedParentObject()
+      << "\nAncestor: " << ax_ancestor;
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(AXObject* obj) {
@@ -2953,7 +2952,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
       for (const auto& child : object->CachedChildrenIncludingIgnored()) {
         CHECK(child->AccessibilityIsIncludedInTree())
             << "Included parent cannot have unincluded child:" << "\n* Parent: "
-            << object << "\n* Child: " << child->ToString();
+            << object << "\n* Child: " << child;
       }
       if (!object->IsRoot()) {
         // Parent must have this child in its cached children.
@@ -2963,8 +2962,8 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
             included_parent->CachedChildrenIncludingIgnored();
         DCHECK(siblings.Contains(object))
             << "Object was not included in its parent: " << "\n* Object: "
-            << object->ToString()
-            << "\n* Included parent: " << included_parent->ToString();
+            << object
+            << "\n* Included parent: " << included_parent;
       }
     }
     count++;
@@ -2991,7 +2990,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
       }
       DCHECK(!ancestor->HasDirtyDescendants())
           << "No subtrees should be flagged as needing updates at this point:"
-          << "\n* Object: " << ancestor->ToString()
+          << "\n* Object: " << ancestor
           << "\n* Included parent: " << included_parent->GetAXTreeForThis();
     }
     AXObject* included_parent = object->ParentObjectIncludedInTree();
@@ -3000,8 +2999,8 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
     }
     DCHECK(!object->NeedsToUpdateChildren())
         << "No children in the tree should require an update at this point: "
-        << "\n* Object: " << object->ToString()
-        << "\n* Included parent: " << included_parent->ToString();
+        << "\n* Object: " << object
+        << "\n* Included parent: " << included_parent;
 
     count++;
   }
@@ -5371,7 +5370,7 @@ void AXObjectCacheImpl::GetUpdatesAndEventsForSerialization(
            "in its parent's children, and should never have been marked dirty "
            "in the first place: "
         << obj->ToString()
-        << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString()
+        << "\nParent: " << obj->ParentObjectIncludedInTree()
         << "\nIndex in parent: "
         << obj->ParentObjectIncludedInTree()
                ->CachedChildrenIncludingIgnored()
