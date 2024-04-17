@@ -201,7 +201,7 @@ TEST_F(AidaClientTest, Succeeds) {
           std::string() /*id_token*/, signin::ScopeSet{kScope});
   run_loop.Run();
 
-  EXPECT_EQ(kEndpointUrl, delegate.url_);
+  EXPECT_EQ(kEndpointUrlWithPath, delegate.url_);
 }
 
 TEST_F(AidaClientTest, ReusesOAuthToken) {

@@ -186,10 +186,7 @@ void AidaClient::PrepareAidaRequest(
   }
 
   network::ResourceRequest aida_request;
-  // TODO(dsv): remove clearing path once the config is updated
-  GURL::Replacements clear_path;
-  clear_path.ClearPath();
-  aida_request.url = GURL(aida_endpoint_).ReplaceComponents(clear_path);
+  aida_request.url = GURL(aida_endpoint_);
   aida_request.load_flags = net::LOAD_DISABLE_CACHE;
   aida_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   aida_request.method = "POST";
