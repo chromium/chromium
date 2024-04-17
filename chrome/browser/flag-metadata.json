@@ -4563,7 +4563,7 @@
   {
     "name": "force-resync-drive",
     "owners": [ "cassycc@google.com", "alexbn@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 128
   },
   {
     "name": "force-show-update-menu-badge",
@@ -8243,7 +8243,7 @@
   {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 128
   },
   {
     "name": "upm-local-no-migration",
