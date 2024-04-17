@@ -340,10 +340,6 @@ BASE_FEATURE(kIOSSaveToPhotos,
              "IOSSaveToPhotos",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableUIEditMenuInteraction,
-             "EnableUIEditMenuInteraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin,
              "HistoryOptInForRestoreShortyAndReSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);

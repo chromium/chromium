@@ -227,10 +227,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerID;
   self.tableView.allowsSelectionDuringEditing = YES;
 
-  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
-    if (@available(iOS 16.0, *)) {
-      _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-    }
+  if (@available(iOS 16.0, *)) {
+    _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self.tableView addInteraction:self.interactionMenu];
   }
   [self setOrExtendAuthValidityTimer];
 }
@@ -637,17 +636,14 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)ensureContextMenuShownForItemType:(NSInteger)itemType
                                 tableView:(UITableView*)tableView
                               atIndexPath:(NSIndexPath*)indexPath {
-  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction) &&
-      base::ios::IsRunningOnIOS16OrLater()) {
-    if (@available(iOS 16.0, *)) {
-      CGRect row = [tableView rectForRowAtIndexPath:indexPath];
-      CGPoint editMenuLocation =
-          CGPointMake(row.origin.x + row.size.width / 2, row.origin.y);
-      UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
-          configurationWithIdentifier:[NSNumber numberWithInt:itemType]
-                          sourcePoint:editMenuLocation];
-      [self.interactionMenu presentEditMenuWithConfiguration:configuration];
-    }
+  if (@available(iOS 16.0, *)) {
+    CGRect row = [tableView rectForRowAtIndexPath:indexPath];
+    CGPoint editMenuLocation =
+        CGPointMake(row.origin.x + row.size.width / 2, row.origin.y);
+    UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+        configurationWithIdentifier:[NSNumber numberWithInt:itemType]
+                        sourcePoint:editMenuLocation];
+    [self.interactionMenu presentEditMenuWithConfiguration:configuration];
   }
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   else {

@@ -66,11 +66,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self configureNavigationBar];
   [self loadModel];
 
-  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
-    if (@available(iOS 16.0, *)) {
-      _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-      [self.tableView addInteraction:self.interactionMenu];
-    }
+  if (@available(iOS 16.0, *)) {
+    _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self.tableView addInteraction:self.interactionMenu];
   }
 }
 
@@ -127,16 +125,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   self.indexPathOfSelectedRow = indexPath;
-  if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction) &&
-      base::ios::IsRunningOnIOS16OrLater()) {
-    if (@available(iOS 16.0, *)) {
-      CGRect row = [tableView rectForRowAtIndexPath:indexPath];
-      CGPoint editMenuLocation = CGPointMake(CGRectGetMidX(row), row.origin.y);
-      UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
-          configurationWithIdentifier:nil
-                          sourcePoint:editMenuLocation];
-      [self.interactionMenu presentEditMenuWithConfiguration:configuration];
-    }
+  if (@available(iOS 16.0, *)) {
+    CGRect row = [tableView rectForRowAtIndexPath:indexPath];
+    CGPoint editMenuLocation = CGPointMake(CGRectGetMidX(row), row.origin.y);
+    UIEditMenuConfiguration* configuration =
+        [UIEditMenuConfiguration configurationWithIdentifier:nil
+                                                 sourcePoint:editMenuLocation];
+    [self.interactionMenu presentEditMenuWithConfiguration:configuration];
   }
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   else {

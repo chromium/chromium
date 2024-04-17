@@ -119,7 +119,7 @@ TEST_F(FollowManagementViewControllerTest, RemovesUnfollowedWebChannel) {
 // Tests that a menu is presented when the user selects a row.
 TEST_F(FollowManagementViewControllerTest, DidSelectRow) {
   if (@available(iOS 16.0, *)) {
-    scoped_feature_list_.InitWithFeatures({kEnableUIEditMenuInteraction}, {});
+    scoped_feature_list_.InitWithFeatures({}, {});
     SetupMockDataSource();
 
     id mock_interaction_menu = OCMClassMock([UIEditMenuInteraction class]);

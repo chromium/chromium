@@ -202,8 +202,7 @@ class PasswordDetailsTableViewControllerTest
   PasswordDetailsTableViewControllerTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::
-                                  kIOSPasswordAuthOnEntryV2,
-                              kEnableUIEditMenuInteraction},
+                                  kIOSPasswordAuthOnEntryV2},
         /*disabled_features=*/{});
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
