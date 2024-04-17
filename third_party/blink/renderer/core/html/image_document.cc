@@ -26,6 +26,8 @@
 
 #include <limits>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -165,8 +167,12 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
   CHECK_LE(length, std::numeric_limits<unsigned>::max());
   // If decoding has already failed, there's no point in sending additional
   // data to the ImageResource.
-  if (image_resource_->GetStatus() != ResourceStatus::kDecodeError)
-    image_resource_->AppendData(data, length);
+  if (image_resource_->GetStatus() != ResourceStatus::kDecodeError) {
+    image_resource_->AppendData(
+        // SAFETY: The caller must ensure `data` points to `length` bytes.
+        // TODO(crbug.com/40284755): Spanify this method.
+        UNSAFE_BUFFERS(base::span(data, length)));
+  }
 
   if (!IsDetached())
     GetDocument()->ImageUpdated();

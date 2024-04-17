@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -110,8 +112,8 @@ TEST_F(ResourceTest, RevalidationFailed) {
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
-  const char kData[5] = "abcd";
-  resource->AppendData(kData, 4);
+  const std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
   MemoryCache::Get()->Add(resource);
 
@@ -132,7 +134,7 @@ TEST_F(ResourceTest, RevalidationFailed) {
   EXPECT_FALSE(resource->ResourceBuffer());
   EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
 
-  resource->AppendData(kData, 4);
+  resource->AppendData(kData);
 
   EXPECT_FALSE(client->NotifyFinishedCalled());
 
@@ -152,8 +154,8 @@ TEST_F(ResourceTest, RevalidationSucceeded) {
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
-  const char kData[5] = "abcd";
-  resource->AppendData(kData, 4);
+  const std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
   MemoryCache::Get()->Add(resource);
 
@@ -318,8 +320,8 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
-  const char kData[5] = "abcd";
-  resource->AppendData(kData, 4);
+  const std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
   MemoryCache::Get()->Add(resource);
 
@@ -357,8 +359,8 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   revalidating_response.SetHttpStatusCode(200);
   resource->ResponseReceived(revalidating_response);
 
-  const char kData2[4] = "xyz";
-  resource->AppendData(kData2, 3);
+  const std::string_view kData2 = "xyz";
+  resource->AppendData(kData2);
   resource->FinishForTest();
   EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_FALSE(resource->HasSuccessfulRevalidation());

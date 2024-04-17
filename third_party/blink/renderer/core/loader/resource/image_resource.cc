@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -332,12 +333,13 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
   return GetContent()->ResourceBuffer();
 }
 
-void ImageResource::AppendData(const char* data, size_t length) {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(length);
+void ImageResource::AppendData(base::span<const char> data) {
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(data.size());
   if (multipart_parser_) {
-    multipart_parser_->AppendData(data, base::checked_cast<wtf_size_t>(length));
+    multipart_parser_->AppendData(data.data(),
+                                  base::checked_cast<wtf_size_t>(data.size()));
   } else {
-    Resource::AppendData(data, length);
+    Resource::AppendData(data);
 
     // Update the image immediately if needed.
     //
@@ -514,7 +516,11 @@ void ImageResource::OnePartInMultipartReceived(
 
 void ImageResource::MultipartDataReceived(const char* bytes, size_t size) {
   DCHECK(multipart_parser_);
-  Resource::AppendData(bytes, size);
+  Resource::AppendData(
+      // SAFETY: The caller must ensure `bytes` points to `size` elements.
+      // TODO(crbug.com/40284755): Make this method take a span to capture the
+      // invariant.
+      UNSAFE_BUFFERS(base::span(bytes, size)));
 }
 
 bool ImageResource::IsAccessAllowed(

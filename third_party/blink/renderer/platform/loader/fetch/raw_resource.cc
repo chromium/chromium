@@ -99,11 +99,11 @@ RawResource::RawResource(const ResourceRequest& resource_request,
                          const ResourceLoaderOptions& options)
     : Resource(resource_request, type, options) {}
 
-void RawResource::AppendData(const char* data, size_t length) {
+void RawResource::AppendData(base::span<const char> data) {
   if (GetResourceRequest().UseStreamOnResponse())
     return;
 
-  Resource::AppendData(data, length);
+  Resource::AppendData(data);
 }
 
 class RawResource::PreloadBytesConsumerClient final

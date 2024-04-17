@@ -28,10 +28,12 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -101,12 +103,14 @@ SharedBuffer::SharedBuffer() : size_(0) {}
 
 SharedBuffer::SharedBuffer(wtf_size_t size) : size_(size), buffer_(size) {}
 
-SharedBuffer::SharedBuffer(const char* data, wtf_size_t size) : size_(size) {
-  buffer_.Append(data, size);
+SharedBuffer::SharedBuffer(base::span<const char> data)
+    : size_(base::checked_cast<wtf_size_t>(data.size())) {
+  // TODO(crbug.com/40284755): Spanify `Vector::Append`.
+  buffer_.Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 
-SharedBuffer::SharedBuffer(const unsigned char* data, wtf_size_t size)
-    : SharedBuffer(reinterpret_cast<const char*>(data), size) {}
+SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
+    : SharedBuffer(base::as_chars(data)) {}
 
 SharedBuffer::~SharedBuffer() = default;
 
@@ -124,32 +128,37 @@ const char* SharedBuffer::Data() {
 
 void SharedBuffer::Append(const SharedBuffer& data) {
   for (const auto& span : data)
-    Append(span.data(), span.size());
+    Append(span);
 }
 
-void SharedBuffer::AppendInternal(const char* data, size_t length) {
-  if (!length)
-    return;
-
-  DCHECK_GE(size_, buffer_.size());
-  size_t position_in_segment = OffsetInSegment(size_ - buffer_.size());
-  size_ += length;
-
-  if (size_ <= kSegmentSize) {
-    // No need to use segments for small resource data.
-    buffer_.Append(data, static_cast<wtf_size_t>(length));
+void SharedBuffer::Append(base::span<const char> data) {
+  if (data.empty()) {
     return;
   }
 
-  while (length > 0) {
+  DCHECK_GE(size_, buffer_.size());
+  size_t position_in_segment = OffsetInSegment(size_ - buffer_.size());
+  size_ += data.size();
+
+  if (size_ <= kSegmentSize) {
+    // No need to use segments for small resource data.
+    buffer_.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+    return;
+  }
+
+  while (!data.empty()) {
     if (!position_in_segment)
       segments_.push_back(CreateSegment());
 
-    size_t bytes_to_copy = std::min(length, kSegmentSize - position_in_segment);
-    memcpy(segments_.back().get() + position_in_segment, data, bytes_to_copy);
+    size_t bytes_to_copy =
+        std::min(data.size(), kSegmentSize - position_in_segment);
+    auto [to_copy, rest] = data.split_at(bytes_to_copy);
+    // SAFETY: Every segment has size `kSegmentSize`.
+    UNSAFE_BUFFERS(base::span(segments_.back().get(), kSegmentSize))
+        .subspan(position_in_segment, bytes_to_copy)
+        .copy_from(to_copy);
 
-    data += bytes_to_copy;
-    length -= bytes_to_copy;
+    data = rest;
     position_in_segment = 0;
   }
 }

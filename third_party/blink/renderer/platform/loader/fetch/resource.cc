@@ -250,18 +250,18 @@ void Resource::MarkClientFinished(ResourceClient* client) {
   }
 }
 
-void Resource::AppendData(const char* data, size_t length) {
-  TRACE_EVENT1("blink", "Resource::appendData", "length", length);
+void Resource::AppendData(base::span<const char> data) {
+  TRACE_EVENT1("blink", "Resource::appendData", "length", data.size());
   DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
   if (options_.data_buffering_policy == kBufferData) {
     if (data_)
-      data_->Append(data, length);
+      data_->Append(data);
     else
-      data_ = SharedBuffer::Create(data, length);
+      data_ = SharedBuffer::Create(data);
     SetEncodedSize(data_->size());
   }
-  NotifyDataReceived(base::span(data, length));
+  NotifyDataReceived(data);
 }
 
 void Resource::NotifyDataReceived(base::span<const char> data) {

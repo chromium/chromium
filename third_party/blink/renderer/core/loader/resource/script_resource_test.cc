@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
@@ -25,8 +27,8 @@ TEST(ScriptResourceTest, SuccessfulRevalidation) {
   response.SetHttpStatusCode(200);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* original_handler = resource->CacheHandler();
@@ -51,8 +53,8 @@ TEST(ScriptResourceTest, FailedRevalidation) {
   response.SetHttpStatusCode(200);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* original_handler = resource->CacheHandler();
@@ -79,8 +81,8 @@ TEST(ScriptResourceTest, RedirectDuringRevalidation) {
   response.SetHttpStatusCode(200);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* original_handler = resource->CacheHandler();
@@ -115,8 +117,8 @@ TEST(ScriptResourceTest, WebUICodeCacheEnabled) {
   response.SetHttpStatusCode(200);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* handler = resource->CacheHandler();
@@ -140,8 +142,8 @@ TEST(ScriptResourceTest, WebUICodeCacheDisabled) {
   response.SetHttpStatusCode(200);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* handler = resource->CacheHandler();
@@ -159,8 +161,8 @@ TEST(ScriptResourceTest, CodeCacheEnabledByResponseFlag) {
   response.SetShouldUseSourceHashForJSCodeCache(true);
 
   resource->ResponseReceived(response);
-  constexpr char kData[5] = "abcd";
-  resource->AppendData(kData, strlen(kData));
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
   resource->FinishForTest();
 
   auto* handler = resource->CacheHandler();

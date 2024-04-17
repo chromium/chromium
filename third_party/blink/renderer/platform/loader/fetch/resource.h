@@ -159,7 +159,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void Trace(Visitor*) const override;
 
   virtual WTF::TextEncoding Encoding() const { return WTF::TextEncoding(); }
-  virtual void AppendData(const char*, size_t);
+  virtual void AppendData(base::span<const char>);
   virtual void FinishAsError(const ResourceError&,
                              base::SingleThreadTaskRunner*);
 

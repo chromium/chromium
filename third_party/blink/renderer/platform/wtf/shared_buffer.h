@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -99,6 +100,15 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
     return base::AdoptRef(new SharedBuffer);
   }
 
+  static scoped_refptr<SharedBuffer> Create(base::span<const char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(
+      base::span<const unsigned char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
@@ -110,16 +120,20 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   static scoped_refptr<SharedBuffer> Create(const char* data,
                                             STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
   }
 
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
                                             STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return base::AdoptRef(
-        new SharedBuffer(data, base::checked_cast<wtf_size_t>(size)));
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
   }
 
   static scoped_refptr<SharedBuffer> AdoptVector(Vector<char>&);
@@ -136,17 +150,29 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   void Append(const SharedBuffer&);
 
+  // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
+  // ones.
   HAS_STRICTLY_TYPED_ARG
   void Append(const char* data, STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    AppendInternal(data, size);
+    Append(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
   }
   HAS_STRICTLY_TYPED_ARG
   void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    AppendInternal(reinterpret_cast<const char*>(data), size);
+    Append(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
   }
-  void Append(const Vector<char>& data) { Append(data.data(), data.size()); }
+
+  void Append(base::span<const char> data);
+  void Append(base::span<const unsigned char> data) {
+    Append(base::as_chars(data));
+  }
 
   void Clear();
 
@@ -209,13 +235,12 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   SharedBuffer();
   explicit SharedBuffer(wtf_size_t);
-  SharedBuffer(const char*, wtf_size_t);
-  SharedBuffer(const unsigned char*, wtf_size_t);
+  explicit SharedBuffer(base::span<const char>);
+  explicit SharedBuffer(base::span<const unsigned char>);
 
   // See SharedBuffer::data().
   void MergeSegmentsIntoBuffer();
 
-  void AppendInternal(const char* data, size_t);
   bool GetBytesInternal(void* dest, size_t) const;
   Iterator GetIteratorAtInternal(size_t position) const;
   size_t GetLastSegmentSize() const {

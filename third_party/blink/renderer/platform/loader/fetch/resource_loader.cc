@@ -33,6 +33,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -1046,7 +1048,11 @@ void ResourceLoader::DidReceiveData(const char* data, size_t length) {
     observer->DidReceiveData(resource_->InspectorId(),
                              base::make_span(data, length));
   }
-  resource_->AppendData(data, length);
+  resource_->AppendData(
+      // SAFETY: `data` must point to `length` elements.
+      // TODO(crbug.com/40284755): Make this method take a span to capture it in
+      // the type system.
+      UNSAFE_BUFFERS(base::span(data, length)));
 
   // This value should not be exposed for opaque responses.
   if (resource_->response_.WasFetchedViaServiceWorker() &&

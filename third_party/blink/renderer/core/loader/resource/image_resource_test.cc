@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 
 #include <memory>
+#include <string_view>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -178,13 +180,13 @@ constexpr unsigned char kJpegImage2[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x03, 0xff, 0xd9};
 
-constexpr char kSvgImage[] =
+constexpr std::string_view kSvgImage =
     "<svg width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\" "
     "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
     "<rect x=\"0\" y=\"0\" width=\"100px\" height=\"100px\" fill=\"red\"/>"
     "</svg>";
 
-constexpr char kSvgImage2[] =
+constexpr std::string_view kSvgImage2 =
     "<svg width=\"300\" height=\"300\" xmlns=\"http://www.w3.org/2000/svg\" "
     "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
     "<rect x=\"0\" y=\"0\" width=\"200px\" height=\"200px\" fill=\"green\"/>"
@@ -196,7 +198,7 @@ String GetTestFilePath() {
   return test::CoreTestDataPath("cancelTest.html");
 }
 
-constexpr char kSvgImageWithSubresource[] =
+constexpr std::string_view kSvgImageWithSubresource =
     "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"198\" height=\"100\">"
     "<style>"
     "  <![CDATA[@font-face{font-family:\"test\"; "
@@ -208,14 +210,13 @@ constexpr char kSvgImageWithSubresource[] =
 void ReceiveResponse(ImageResource* image_resource,
                      const KURL& url,
                      const char* mime_type,
-                     const char* data,
-                     size_t data_size) {
+                     base::span<const char> data) {
   ResourceResponse resource_response(url);
   resource_response.SetMimeType(AtomicString(mime_type));
   resource_response.SetHttpStatusCode(200);
   image_resource->NotifyStartLoad();
   image_resource->ResponseReceived(resource_response);
-  image_resource->AppendData(data, data_size);
+  image_resource->AppendData(data);
   image_resource->FinishForTest();
 }
 
@@ -268,10 +269,10 @@ TEST_F(ImageResourceTest, MultipartImage) {
   EXPECT_EQ("multipart/x-mixed-replace",
             image_resource->GetResponse().MimeType());
 
-  const char kFirstPart[] =
+  const std::string_view kFirstPart =
       "--boundary\n"
       "Content-Type: image/svg+xml\n\n";
-  image_resource->AppendData(kFirstPart, strlen(kFirstPart));
+  image_resource->AppendData(kFirstPart);
   // Send the response for the first real part. No image or data buffer is
   // created.
   EXPECT_FALSE(image_resource->ResourceBuffer());
@@ -280,12 +281,12 @@ TEST_F(ImageResourceTest, MultipartImage) {
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
   EXPECT_EQ("image/svg+xml", image_resource->GetResponse().MimeType());
 
-  const char kSecondPart[] =
+  const std::string_view kSecondPart =
       "<svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'><rect "
       "width='1' height='1' fill='green'/></svg>\n";
   // The first bytes arrive. The data buffer is created, but no image is
   // created.
-  image_resource->AppendData(kSecondPart, strlen(kSecondPart));
+  image_resource->AppendData(kSecondPart);
   EXPECT_TRUE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(0, observer->ImageChangedCount());
@@ -298,10 +299,10 @@ TEST_F(ImageResourceTest, MultipartImage) {
   EXPECT_EQ(0, observer2->ImageChangedCount());
   EXPECT_FALSE(observer2->ImageNotifyFinishedCalled());
 
-  const char kThirdPart[] = "--boundary";
-  image_resource->AppendData(kThirdPart, strlen(kThirdPart));
+  const std::string_view kThirdPart = "--boundary";
+  image_resource->AppendData(kThirdPart);
   ASSERT_TRUE(image_resource->ResourceBuffer());
-  EXPECT_EQ(strlen(kSecondPart) - 1, image_resource->ResourceBuffer()->size());
+  EXPECT_EQ(kSecondPart.size() - 1, image_resource->ResourceBuffer()->size());
 
   // This part finishes. The image is created, callbacks are sent, and the data
   // buffer is cleared.
@@ -351,13 +352,12 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
       /*cached_metadata=*/std::nullopt);
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
 
-  const char kBoundary[] = "--boundary\n";
-  const char kContentType[] = "Content-Type: image/jpeg\n\n";
-  image_resource->AppendData(kBoundary, strlen(kBoundary));
-  image_resource->AppendData(kContentType, strlen(kContentType));
-  image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
-                             sizeof(kJpegImage));
-  image_resource->AppendData(kBoundary, strlen(kBoundary));
+  const std::string_view kBoundary = "--boundary\n";
+  const std::string_view kContentType = "Content-Type: image/jpeg\n\n";
+  image_resource->AppendData(kBoundary);
+  image_resource->AppendData(kContentType);
+  image_resource->AppendData(base::as_chars(base::span(kJpegImage)));
+  image_resource->AppendData(kBoundary);
   image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_TRUE(IsA<BitmapImage>(image_resource->GetContent()->GetImage()));
@@ -438,8 +438,7 @@ TEST_F(ImageResourceTest, CancelWithImageAndFinishObserver) {
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage));
   image_resource->ResponseReceived(resource_response);
-  image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
-                             sizeof(kJpegImage));
+  image_resource->AppendData(base::as_chars(base::span(kJpegImage)));
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
 
@@ -469,8 +468,7 @@ TEST_F(ImageResourceTest, DecodedDataRemainsWhileHasClients) {
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage));
   image_resource->ResponseReceived(resource_response);
-  image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
-                             sizeof(kJpegImage));
+  image_resource->AppendData(base::as_chars(base::span(kJpegImage)));
   image_resource->FinishForTest();
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -507,8 +505,7 @@ TEST_F(ImageResourceTest, UpdateBitmapImages) {
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(sizeof(kJpegImage));
   image_resource->ResponseReceived(resource_response);
-  image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage),
-                             sizeof(kJpegImage));
+  image_resource->AppendData(base::as_chars(base::span(kJpegImage)));
   image_resource->FinishForTest();
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -524,8 +521,7 @@ TEST_F(ImageResourceTest, SVGImage) {
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage,
-                  strlen(kSvgImage));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -542,7 +538,7 @@ TEST_F(ImageResourceTest, SVGImageWithSubresource) {
       image_resource->GetContent());
 
   ReceiveResponse(image_resource, url, "image/svg+xml",
-                  kSvgImageWithSubresource, strlen(kSvgImageWithSubresource));
+                  kSvgImageWithSubresource);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -587,8 +583,7 @@ TEST_F(ImageResourceTest, SuccessfulRevalidationJpeg) {
       image_resource->GetContent());
 
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -623,8 +618,7 @@ TEST_F(ImageResourceTest, SuccessfulRevalidationSvg) {
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage,
-                  strlen(kSvgImage));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -657,8 +651,7 @@ TEST_F(ImageResourceTest, FailedRevalidationJpegToJpeg) {
       image_resource->GetContent());
 
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -672,8 +665,7 @@ TEST_F(ImageResourceTest, FailedRevalidationJpegToJpeg) {
 
   image_resource->SetRevalidatingRequest(ResourceRequest(url));
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage2),
-                  sizeof(kJpegImage2));
+                  base::as_chars(base::span(kJpegImage2)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -692,8 +684,7 @@ TEST_F(ImageResourceTest, FailedRevalidationJpegToSvg) {
       image_resource->GetContent());
 
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -706,8 +697,7 @@ TEST_F(ImageResourceTest, FailedRevalidationJpegToSvg) {
             image_resource->GetContent()->GetImage()->height());
 
   image_resource->SetRevalidatingRequest(ResourceRequest(url));
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage,
-                  strlen(kSvgImage));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -725,8 +715,7 @@ TEST_F(ImageResourceTest, FailedRevalidationSvgToJpeg) {
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage,
-                  strlen(kSvgImage));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -739,8 +728,7 @@ TEST_F(ImageResourceTest, FailedRevalidationSvgToJpeg) {
 
   image_resource->SetRevalidatingRequest(ResourceRequest(url));
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -759,8 +747,7 @@ TEST_F(ImageResourceTest, FailedRevalidationSvgToSvg) {
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
       image_resource->GetContent());
 
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage,
-                  strlen(kSvgImage));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -772,8 +759,7 @@ TEST_F(ImageResourceTest, FailedRevalidationSvgToSvg) {
   EXPECT_EQ(200, image_resource->GetContent()->GetImage()->height());
 
   image_resource->SetRevalidatingRequest(ResourceRequest(url));
-  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage2,
-                  strlen(kSvgImage2));
+  ReceiveResponse(image_resource, url, "image/svg+xml", kSvgImage2);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -792,8 +778,7 @@ TEST_F(ImageResourceTest, Prune) {
   ImageResource* image_resource = ImageResource::CreateForTest(url);
 
   ReceiveResponse(image_resource, url, "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
@@ -981,9 +966,9 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   // image to be created (since the size is known). This was determined by
   // appending one byte at a time (with flushes) until the image was decoded.
   size_t meaningful_image_size = 280;
-  image_resource->AppendData(reinterpret_cast<const char*>(kJpegImage2),
-                             meaningful_image_size);
-  size_t bytes_sent = meaningful_image_size;
+  base::span<const char> remaining = base::as_chars(base::span(kJpegImage2));
+  image_resource->AppendData(remaining.first(meaningful_image_size));
+  remaining = remaining.subspan(meaningful_image_size);
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
@@ -1006,14 +991,13 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
     // increases.
     for (int i = 0; i < 5; ++i) {
       SCOPED_TRACE(i);
-      image_resource->AppendData(
-          reinterpret_cast<const char*>(kJpegImage2) + bytes_sent, 1);
+      image_resource->AppendData(remaining.first(1u));
+      remaining = remaining.subspan(1u);
 
       EXPECT_FALSE(image_resource->ErrorOccurred());
       ASSERT_TRUE(image_resource->GetContent()->HasImage());
       EXPECT_EQ(flush_count, observer->ImageChangedCount());
 
-      ++bytes_sent;
       platform->RunForPeriodSeconds(0.2001);
     }
   }
@@ -1027,9 +1011,7 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   EXPECT_EQ(4, observer->ImageChangedCount());
 
   // Append the rest of the data and finish (which causes another flush).
-  image_resource->AppendData(
-      reinterpret_cast<const char*>(kJpegImage2) + bytes_sent,
-      sizeof(kJpegImage2) - bytes_sent);
+  image_resource->AppendData(remaining);
   image_resource->FinishForTest();
 
   EXPECT_FALSE(image_resource->ErrorOccurred());
@@ -1049,8 +1031,7 @@ TEST_F(ImageResourceTest, DeferredInvalidation) {
 
   // Image loaded.
   ReceiveResponse(image_resource, NullURL(), "image/jpeg",
-                  reinterpret_cast<const char*>(kJpegImage),
-                  sizeof(kJpegImage));
+                  base::as_chars(base::span(kJpegImage)));
   EXPECT_EQ(obs->ImageChangedCount(), 2);
   EXPECT_EQ(obs->Defer(), ImageResourceObserver::CanDeferInvalidation::kNo);
 
@@ -1096,20 +1077,17 @@ TEST_F(ImageResourceTest, WebPSniffing) {
 
   // Test lossy WebP image.
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
-  image_resource->AppendData(reinterpret_cast<const char*>(kLossyWebPImage),
-                             sizeof(kLossyWebPImage));
+  image_resource->AppendData(base::as_chars(base::span(kLossyWebPImage)));
   EXPECT_EQ(1, image_resource->GetContent()->GetCompressionFormat());
 
   // Test lossless WebP image.
   image_resource = ImageResource::CreateForTest(test_url);
-  image_resource->AppendData(reinterpret_cast<const char*>(kLosslessWebPImage),
-                             sizeof(kLosslessWebPImage));
+  image_resource->AppendData(base::as_chars(base::span(kLosslessWebPImage)));
   EXPECT_EQ(2, image_resource->GetContent()->GetCompressionFormat());
 
   // Test extended WebP image.
   image_resource = ImageResource::CreateForTest(test_url);
-  image_resource->AppendData(reinterpret_cast<const char*>(kExtendedWebPImage),
-                             sizeof(kExtendedWebPImage));
+  image_resource->AppendData(base::as_chars(base::span(kExtendedWebPImage)));
   EXPECT_EQ(1, image_resource->GetContent()->GetCompressionFormat());
 }
 
