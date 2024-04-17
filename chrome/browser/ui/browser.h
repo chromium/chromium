@@ -1011,8 +1011,7 @@ class Browser : public TabStripModelObserver,
   void RestoreFromWebAPI() override;
   ui::WindowShowState GetWindowShowState() const override;
   bool CanEnterFullscreenModeForTab(
-      content::RenderFrameHost* requesting_frame,
-      const blink::mojom::FullscreenOptions& options) override;
+      content::RenderFrameHost* requesting_frame) override;
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;

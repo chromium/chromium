@@ -188,8 +188,7 @@ FullscreenState WebContentsDelegate::GetFullscreenState(
 }
 
 bool WebContentsDelegate::CanEnterFullscreenModeForTab(
-    RenderFrameHost* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
+    RenderFrameHost* requesting_frame) {
   return true;
 }
 

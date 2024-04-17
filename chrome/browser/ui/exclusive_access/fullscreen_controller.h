@@ -114,9 +114,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Returns whether entering fullscreen with |EnterFullscreenModeForTab()| is
   // allowed.
-  bool CanEnterFullscreenModeForTab(
-      content::RenderFrameHost* requesting_frame,
-      const int64_t display_id = display::kInvalidDisplayId);
+  bool CanEnterFullscreenModeForTab(content::RenderFrameHost* requesting_frame);
 
   // Enter tab-initiated fullscreen mode. FullscreenController decides whether
   // to also fullscreen the browser window. See 'FullscreenWithinTab Note'.

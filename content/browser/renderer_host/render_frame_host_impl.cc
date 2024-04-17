@@ -7524,7 +7524,7 @@ void RenderFrameHostImpl::EnterFullscreen(
     }
   }
 
-  if (!delegate_->CanEnterFullscreenMode(this, *options)) {
+  if (!delegate_->CanEnterFullscreenMode(this)) {
     std::move(callback).Run(/*granted=*/false);
     return;
   }

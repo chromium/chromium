@@ -78,8 +78,7 @@ void PrerenderWebContentsDelegate::WebContentsCreated(
 }
 
 bool PrerenderWebContentsDelegate::CanEnterFullscreenModeForTab(
-    RenderFrameHost* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
+    RenderFrameHost* requesting_frame) {
   // This should not be called for a prerendered page.
   NOTREACHED_NORETURN();
 }

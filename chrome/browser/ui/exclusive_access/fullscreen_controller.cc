@@ -221,8 +221,7 @@ bool FullscreenController::IsFullscreenCausedByTab() const {
 }
 
 bool FullscreenController::CanEnterFullscreenModeForTab(
-    content::RenderFrameHost* requesting_frame,
-    const int64_t display_id) {
+    content::RenderFrameHost* requesting_frame) {
   DCHECK(requesting_frame);
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   DCHECK(web_contents);
@@ -244,7 +243,7 @@ void FullscreenController::EnterFullscreenModeForTab(
   // could cause requestFullscreen promises to hang. If we are in this function,
   // the renderer expects a visual property update to call
   // |blink::FullscreenController::DidEnterFullscreen| to resolve promises.
-  DCHECK(CanEnterFullscreenModeForTab(requesting_frame, display_id));
+  DCHECK(CanEnterFullscreenModeForTab(requesting_frame));
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   DCHECK(web_contents);
 

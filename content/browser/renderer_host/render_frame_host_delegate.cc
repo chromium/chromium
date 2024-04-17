@@ -76,8 +76,7 @@ void RenderFrameHostDelegate::GetNFC(
 #endif
 
 bool RenderFrameHostDelegate::CanEnterFullscreenMode(
-    RenderFrameHostImpl* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
+    RenderFrameHostImpl* requesting_frame) {
   return true;
 }
 
