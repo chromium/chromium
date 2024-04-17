@@ -317,7 +317,9 @@ void DisplaySettingsProvider::SetInternalDisplayScreenBrightness(
     return;
   }
 
-  brightness_control_delegate_->SetBrightnessPercent(percent, /*gradual=*/true);
+  brightness_control_delegate_->SetBrightnessPercent(
+      percent, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kSettingsApp);
 
   // Record the brightness change event.
   std::string histogram_name(base::StrCat(

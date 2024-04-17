@@ -425,7 +425,13 @@ TEST_F(BrightnessControllerChromeosTest,
   // Wait for a period of time, then send another brightness event
   int seconds_to_wait = 5;
   AdvanceClock(base::Seconds(seconds_to_wait));
-  brightness_control_delegate()->SetBrightnessPercent(50, true);
+  brightness_control_delegate()->SetBrightnessPercent(
+      50, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
+
+  // Brightness changes from Quick Settings should have cause "USER_REQUEST".
+  EXPECT_EQ(power_manager_client()->requested_screen_brightness_cause(),
+            power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
 
   // Expect a record with the number of seconds since login, not since the
   // beginning of the login screen.
@@ -578,6 +584,31 @@ TEST_P(BrightnessControllerChromeosTest_NonApplicableSessionStates,
       "ChromeOS.Display.TimeUntilFirstBrightnessChange.AfterLogin."
       "IncreaseBrightness.ChargerPower",
       0);
+}
+
+TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercent_Cause) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetChargerPower();
+
+  brightness_control_delegate()->SetBrightnessPercent(
+      50, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
+
+  // Brightness changes from Quick Settings should have cause "USER_REQUEST".
+  EXPECT_EQ(power_manager_client()->requested_screen_brightness_cause(),
+            power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
+
+  brightness_control_delegate()->SetBrightnessPercent(
+      50, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kSettingsApp);
+
+  // Brightness changes from the Settings app should have cause
+  // "USER_REQUEST_FROM_SETTINGS_APP".
+  EXPECT_EQ(
+      power_manager_client()->requested_screen_brightness_cause(),
+      power_manager::
+          SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP);
 }
 
 }  // namespace ash

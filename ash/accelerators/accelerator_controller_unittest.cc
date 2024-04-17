@@ -191,7 +191,9 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
     ++handle_brightness_up_count_;
     last_accelerator_ = ui::Accelerator(ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE);
   }
-  void SetBrightnessPercent(double percent, bool gradual) override {}
+  void SetBrightnessPercent(double percent,
+                            bool gradual,
+                            BrightnessChangeSource source) override {}
   void GetBrightnessPercent(
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(100.0);

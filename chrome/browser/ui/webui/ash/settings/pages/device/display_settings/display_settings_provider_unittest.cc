@@ -140,8 +140,11 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
 
   void HandleBrightnessDown() override {}
   void HandleBrightnessUp() override {}
-  void SetBrightnessPercent(double percent, bool gradual) override {
+  void SetBrightnessPercent(double percent,
+                            bool gradual,
+                            BrightnessChangeSource source) override {
     brightness_percent_ = percent;
+    last_brightness_change_source_ = source;
   }
   void GetBrightnessPercent(
       base::OnceCallback<void(std::optional<double>)> callback) override {
@@ -156,6 +159,9 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
   }
 
   double brightness_percent() const { return brightness_percent_; }
+  BrightnessChangeSource last_brightness_change_source() const {
+    return last_brightness_change_source_;
+  }
   bool is_ambient_light_sensor_enabled() const {
     return is_ambient_light_sensor_enabled_;
   }
@@ -165,6 +171,8 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
 
  private:
   double brightness_percent_;
+  BrightnessChangeSource last_brightness_change_source_ =
+      BrightnessChangeSource::kUnknown;
   // Enabled by default to match system behavior.
   bool is_ambient_light_sensor_enabled_ = true;
   bool has_ambient_light_sensor_ = true;
@@ -566,8 +574,10 @@ TEST_F(DisplaySettingsProviderTest,
   // Set the brightness with a sentinel value, so we can test that the
   // brightness doesn't change if the feature flag is disabled.
   double brightness_before_setting = 50.0;
-  brightness_control_delegate_->SetBrightnessPercent(brightness_before_setting,
-                                                     false);
+  brightness_control_delegate_->SetBrightnessPercent(
+      brightness_before_setting,
+      /*gradual=*/false, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
 
   provider_->SetBrightnessControlDelegateForTesting(
       brightness_control_delegate_.get());
@@ -607,6 +617,10 @@ TEST_F(DisplaySettingsProviderTest,
   // brightness percent.
   EXPECT_EQ(brightness_percent,
             brightness_control_delegate_->brightness_percent());
+  // The BrightnessChangeSource should indicate that this change came from the
+  // Settings app.
+  EXPECT_EQ(BrightnessControlDelegate::BrightnessChangeSource::kSettingsApp,
+            brightness_control_delegate_->last_brightness_change_source());
 
   // Histogram should have been recorded for this change.
   histogram_tester_.ExpectTotalCount(

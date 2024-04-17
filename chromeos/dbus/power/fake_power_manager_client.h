@@ -69,6 +69,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   double screen_brightness_percent() const {
     return screen_brightness_percent_.value();
   }
+  power_manager::SetBacklightBrightnessRequest_Cause
+  requested_screen_brightness_cause() const {
+    return requested_screen_brightness_cause_;
+  }
   double keyboard_brightness_percent() const {
     return keyboard_brightness_percent_.value();
   }
@@ -303,6 +307,12 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // brightness.
   // Initially set to an arbitrary non-null value.
   double requested_screen_brightness_percent_ = 80;
+
+  // Last screen brightness request cause via SetScreenBrightness().
+  // Initially set to an arbitrary value.
+  power_manager::SetBacklightBrightnessRequest_Cause
+      requested_screen_brightness_cause_ =
+          power_manager::SetBacklightBrightnessRequest_Cause_MODEL;
 
   // Last value set by SetAmbientLightSensorEnabled. Defaults to true to match
   // system behavior.

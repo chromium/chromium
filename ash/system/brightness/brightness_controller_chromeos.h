@@ -50,7 +50,9 @@ class ASH_EXPORT BrightnessControllerChromeos
   // Overridden from ash::BrightnessControlDelegate:
   void HandleBrightnessDown() override;
   void HandleBrightnessUp() override;
-  void SetBrightnessPercent(double percent, bool gradual) override;
+  void SetBrightnessPercent(double percent,
+                            bool gradual,
+                            BrightnessChangeSource source) override;
   void GetBrightnessPercent(
       base::OnceCallback<void(std::optional<double>)> callback) override;
   void SetAmbientLightSensorEnabled(bool enabled) override;

@@ -134,6 +134,7 @@ void FakePowerManagerClient::SetScreenBrightness(
     const power_manager::SetBacklightBrightnessRequest& request) {
   screen_brightness_percent_ = request.percent();
   requested_screen_brightness_percent_ = request.percent();
+  requested_screen_brightness_cause_ = request.cause();
 
   power_manager::BacklightBrightnessChange change;
   change.set_percent(request.percent());

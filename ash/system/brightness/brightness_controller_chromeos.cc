@@ -114,16 +114,22 @@ void BrightnessControllerChromeos::HandleBrightnessUp() {
   RecordHistogramForBrightnessAction(BrightnessAction::kIncreaseBrightness);
 }
 
-void BrightnessControllerChromeos::SetBrightnessPercent(double percent,
-                                                        bool gradual) {
+void BrightnessControllerChromeos::SetBrightnessPercent(
+    double percent,
+    bool gradual,
+    BrightnessChangeSource source) {
   power_manager::SetBacklightBrightnessRequest request;
   request.set_percent(percent);
   request.set_transition(
       gradual
           ? power_manager::SetBacklightBrightnessRequest_Transition_FAST
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
-  request.set_cause(
-      power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
+  power_manager::SetBacklightBrightnessRequest_Cause brightness_change_cause =
+      source == BrightnessChangeSource::kSettingsApp
+          ? power_manager::
+                SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
+          : power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST;
+  request.set_cause(brightness_change_cause);
   chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
   RecordHistogramForBrightnessAction(BrightnessAction::kSetBrightness);
 }

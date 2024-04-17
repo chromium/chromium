@@ -89,7 +89,9 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
   previous_percent_ = percent;
 
   percent = std::max(kMinBrightnessPercent, percent);
-  brightness_control_delegate->SetBrightnessPercent(percent, true);
+  brightness_control_delegate->SetBrightnessPercent(
+      percent, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
 }
 
 }  // namespace ash
