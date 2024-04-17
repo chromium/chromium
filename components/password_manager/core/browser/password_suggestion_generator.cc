@@ -272,18 +272,19 @@ autofill::Suggestion GetManualFallbackSuggestion(
     const CredentialUIEntry& credential,
     IsTriggeredOnPasswordForm on_password_form,
     IsCrossDomain is_cross_origin) {
-  autofill::Suggestion suggestion(
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
-      autofill::PopupItemId::kPasswordEntry);
+  // TODO(b/335383206): figure out if suggestions should be shown for all
+  // affiliated domains or for a certain primary domain.
+  const std::u16string kDisplaySingonRealm =
+      base::UTF8ToUTF16(credential.GetAffiliatedDomains()[0].name);
+  autofill::Suggestion suggestion(kDisplaySingonRealm,
+                                  autofill::PopupItemId::kPasswordEntry);
   bool replaced;
   const std::u16string maybe_username =
       ReplaceEmptyUsername(credential.username, &replaced);
   suggestion.additional_label = maybe_username;
   suggestion.icon = autofill::Suggestion::Icon::kGlobe;
   suggestion.payload = autofill::Suggestion::PasswordSuggestionDetails(
-      credential.password,
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
-      is_cross_origin.value());
+      credential.password, kDisplaySingonRealm, is_cross_origin.value());
   suggestion.is_acceptable = on_password_form.value();
 
   if (!replaced) {

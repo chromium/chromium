@@ -90,6 +90,22 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
     return CredentialUIEntry(password_form_no_username());
   }
 
+  CredentialUIEntry android_credential_ui_entry() const {
+    PasswordForm form;
+    form.username_value = u"username@example.com";
+    form.password_value = u"password";
+    const std::string url =
+        "android://"
+        "Jzj5T2E45Hb33D-lk-"
+        "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg=="
+        "@com.netflix.mediaclient/";
+    form.url = GURL(url);
+    form.signon_realm = url;
+    // This field is populated for Android credentials.
+    form.app_display_name = "Netflix";
+    return CredentialUIEntry(form);
+  }
+
   std::vector<Suggestion> GenerateSuggestedPasswordsSection(
       const std::vector<PasswordForm> suggested_credentials,
       IsTriggeredOnPasswordForm on_password_form) {
@@ -174,6 +190,23 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   /*is_cross_domain=*/true)),
                           EqualsSuggestion(PopupItemId::kSeparator),
                           EqualsManageManagePasswordsSuggestion()));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_AllPasswords_AndroidCredential_SuggestionContent) {
+  std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
+      {android_credential_ui_entry()}, IsTriggeredOnPasswordForm(true));
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(EqualsManualFallbackSuggestion(
+                      PopupItemId::kPasswordEntry, u"Netflix",
+                      u"username@example.com", Suggestion::Icon::kGlobe,
+                      /*is_acceptable=*/true,
+                      Suggestion::PasswordSuggestionDetails(
+                          u"password", u"Netflix", /*is_cross_domain=*/true)),
+                  EqualsSuggestion(PopupItemId::kSeparator),
+                  EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
