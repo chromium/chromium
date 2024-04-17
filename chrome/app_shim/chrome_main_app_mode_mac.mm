@@ -27,6 +27,7 @@
 #include "base/mac/scoped_sending_event.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -218,6 +219,9 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
 
     ChromeContentClient chrome_content_client;
     content::SetContentClient(&chrome_content_client);
+
+    // Local histogram to let tests verify that histograms are emitted properly.
+    LOCAL_HISTOGRAM_BOOLEAN("AppShim.Launched", true);
 
     // Launch the IO thread.
     base::Thread::Options io_thread_options;

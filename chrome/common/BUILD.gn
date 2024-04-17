@@ -769,6 +769,8 @@ mojom("mojo_bindings") {
 
   if (is_mac) {
     sources += [ "mac/app_shim.mojom" ]
+    deps +=
+        [ "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings" ]
     cpp_typemaps = [
       {
         types = [

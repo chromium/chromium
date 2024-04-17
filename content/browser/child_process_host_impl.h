@@ -50,17 +50,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
 
   ~ChildProcessHostImpl() override;
 
-  // Returns a unique ID to identify a child process. On construction, this
-  // function will be used to generate the id_, but it is also used to generate
-  // IDs for the RenderProcessHost, which doesn't inherit from us, and whose IDs
-  // must be unique for all child processes.
-  //
-  // This function is threadsafe since RenderProcessHost is on the UI thread,
-  // but normally this will be used on the IO thread.
-  //
-  // This will never return ChildProcessHost::kInvalidUniqueID.
-  static int GenerateChildProcessUniqueId();
-
   // Derives a tracing process id from a child process id. Child process ids
   // cannot be used directly in child process for tracing due to security
   // reasons (see: discussion in crrev.com/1173263004). This method is meant to

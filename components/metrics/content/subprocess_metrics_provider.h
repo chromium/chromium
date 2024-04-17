@@ -55,6 +55,16 @@ class SubprocessMetricsProvider
       bool async = false,
       base::OnceClosure done_callback = base::DoNothing());
 
+  // Indicates subprocess to be monitored with unique id for later reference.
+  // Metrics reporting will read histograms from it and upload them to UMA.
+  void RegisterSubprocessAllocator(
+      int id,
+      std::unique_ptr<base::PersistentHistogramAllocator> allocator);
+
+  // Indicates that a subprocess has exited and is thus finished with the
+  // allocator it was using.
+  void DeregisterSubprocessAllocator(int id);
+
  private:
   friend class SubprocessMetricsProviderTest;
 
@@ -86,16 +96,6 @@ class SubprocessMetricsProvider
   // This should never be deleted, as it handles subprocess metrics for the
   // whole lifetime of the browser process.
   ~SubprocessMetricsProvider() override;
-
-  // Indicates subprocess to be monitored with unique id for later reference.
-  // Metrics reporting will read histograms from it and upload them to UMA.
-  void RegisterSubprocessAllocator(
-      int id,
-      std::unique_ptr<base::PersistentHistogramAllocator> allocator);
-
-  // Indicates that a subprocess has exited and is thus finished with the
-  // allocator it was using.
-  void DeregisterSubprocessAllocator(int id);
 
   // base::StatisticsRecorder::HistogramProvider:
   void MergeHistogramDeltas(bool async,

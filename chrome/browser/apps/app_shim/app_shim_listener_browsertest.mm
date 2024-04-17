@@ -89,6 +89,9 @@ class TestShimClient : public chrome::mojom::AppShim {
           provider) override {}
   void RequestNotificationPermission(
       RequestNotificationPermissionCallback callback) override {}
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+          receiver) override {}
 
  private:
   void OnShimConnectedDone(

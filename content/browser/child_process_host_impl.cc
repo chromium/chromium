@@ -289,7 +289,8 @@ bool ChildProcessHostImpl::Send(IPC::Message* message) {
   return channel_->Send(message);
 }
 
-int ChildProcessHostImpl::GenerateChildProcessUniqueId() {
+// static
+int ChildProcessHost::GenerateChildProcessUniqueId() {
   // This function must be threadsafe.
   //
   // Historically, this function returned ids started with 1, so in several

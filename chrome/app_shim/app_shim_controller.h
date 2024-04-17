@@ -185,6 +185,9 @@ class AppShimController
           provider) override;
   void RequestNotificationPermission(
       RequestNotificationPermissionCallback callback) override;
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+          receiver) override;
 
   // mac_notifications::mojom::MacNotificationProvider implementation.
   void BindNotificationService(

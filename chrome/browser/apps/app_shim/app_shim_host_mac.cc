@@ -7,16 +7,24 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_shared_memory.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/metrics/histogram_controller.h"
+#include "components/metrics/public/mojom/histogram_fetcher.mojom.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_host.h"
+#include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 AppShimHost::AppShimHost(AppShimHost::Client* client,
@@ -28,6 +36,8 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
       app_id_(app_id),
       profile_path_(profile_path),
       uses_remote_views_(uses_remote_views),
+      child_process_host_id_(
+          content::ChildProcessHost::GenerateChildProcessUniqueId()),
       launch_weak_factory_(this) {
   // Create the interfaces used to host windows, so that browser windows may be
   // created before the host process finishes launching.
@@ -44,10 +54,23 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
     app_shim_->CreateRemoteCocoaApplication(
         std::move(views_application_receiver));
   }
+
+  auto shared_memory = base::HistogramSharedMemory::Create(
+      child_process_host_id_,
+      {content::PROCESS_TYPE_UTILITY, "AppShimMetrics", 512 << 10});
+  if (shared_memory) {
+    histogram_allocator_ = std::move(shared_memory->allocator);
+  }
+  metrics::HistogramController::GetInstance()->SetHistogramMemory(
+      this,
+      shared_memory ? std::move(shared_memory->region)
+                    : base::UnsafeSharedMemoryRegion(),
+      metrics::HistogramController::ChildProcessMode::kGetHistogramData);
 }
 
 AppShimHost::~AppShimHost() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  metrics::HistogramController::GetInstance()->NotifyChildDied(this);
   // If this instance gets destructed while a test is still waiting for it to be
   // connected, we should unblock the test. The shim would have never connected,
   // but unblocking the test at least can cause the test to fail gracefully
@@ -61,6 +84,13 @@ void AppShimHost::ChannelError(uint32_t custom_reason,
                                const std::string& description) {
   LOG(ERROR) << "Channel error custom_reason:" << custom_reason
              << " description: " << description;
+
+  if (auto* provider = metrics::SubprocessMetricsProvider::GetInstance()) {
+    provider->DeregisterSubprocessAllocator(child_process_host_id_);
+  } else {
+    // SubprocessMetricsProvider can be null in tests.
+    CHECK_IS_TEST();
+  }
 
   // OnShimProcessDisconnected will delete |this|.
   client_->OnShimProcessDisconnected(this);
@@ -92,8 +122,18 @@ void AppShimHost::OnShimProcessLaunched(
 
   // If the shim process was created, then await either an AppShimHostBootstrap
   // connecting or the process exiting.
-  if (shim_process.IsValid())
+  if (shim_process.IsValid()) {
+    auto* provider = metrics::SubprocessMetricsProvider::GetInstance();
+    if (!provider) {
+      CHECK_IS_TEST();
+    } else if (histogram_allocator_) {
+      provider->RegisterSubprocessAllocator(
+          child_process_host_id_,
+          std::make_unique<base::PersistentHistogramAllocator>(
+              std::move(histogram_allocator_)));
+    }
     return;
+  }
 
   // Shim launch failing is treated the same as the shim launching but
   // terminating before connecting.
@@ -104,6 +144,13 @@ void AppShimHost::OnShimProcessTerminated(
     web_app::LaunchShimUpdateBehavior update_behavior,
     web_app::ShimLaunchMode launch_mode) {
   DCHECK(!bootstrap_);
+
+  if (auto* provider = metrics::SubprocessMetricsProvider::GetInstance()) {
+    provider->DeregisterSubprocessAllocator(child_process_host_id_);
+  } else {
+    // SubprocessMetricsProvider can be null in tests.
+    CHECK_IS_TEST();
+  }
 
   // If this was a launch without recreating shims, then the launch may have
   // failed because the shims were not present, or because they were out of
@@ -256,4 +303,10 @@ remote_cocoa::ApplicationHost* AppShimHost::GetRemoteCocoaApplicationHost()
 
 chrome::mojom::AppShim* AppShimHost::GetAppShim() const {
   return app_shim_.get();
+}
+
+void AppShimHost::BindChildHistogramFetcherFactory(
+    mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+        factory) {
+  app_shim_->BindChildHistogramFetcherFactory(std::move(factory));
 }

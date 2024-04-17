@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
+import "components/metrics/public/mojom/histogram_fetcher.mojom";
 
 enum AppShimLaunchType {
   // Process the app shim's LaunchAppmessage and associate the shim with the
@@ -124,6 +125,11 @@ interface AppShim {
   // to accept permissions if not granted or denied already.
   RequestNotificationPermission()
       => (mac_notifications.mojom.RequestPermissionResult result);
+
+  // Called to connect to a ChildHistogramFetcherFactory, to allow chrome to
+  // fetch histogram data from the app shim.
+  BindChildHistogramFetcherFactory(
+      pending_receiver<metrics.mojom.ChildHistogramFetcherFactory> receiver);
 };
 
 // Interface through which the a process communicates to the browser process.

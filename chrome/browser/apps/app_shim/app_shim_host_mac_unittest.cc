@@ -73,6 +73,9 @@ class TestingAppShim : public chrome::mojom::AppShim {
           provider) override {}
   void RequestNotificationPermission(
       RequestNotificationPermissionCallback callback) override {}
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+          receiver) override {}
 
   bool received_launch_done_result_ = false;
   chrome::mojom::AppShimLaunchResult launch_done_result_ =
