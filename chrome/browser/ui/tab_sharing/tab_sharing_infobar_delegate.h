@@ -88,6 +88,9 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   //
   // The primary button is for stopping the capture. It is always present.
   //
+  // The infobar replaces any non-null `old_infobar`, or will be added if that
+  // is null.
+  //
   // |role| denotes whether the infobar is associated with the capturing
   // and/or captured tab.
   //
@@ -98,6 +101,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Otherwise, there is no secondary button.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
+      infobars::InfoBar* old_infobar,
       const std::u16string& shared_tab_name,
       const std::u16string& capturer_name,
       content::WebContents* web_contents,

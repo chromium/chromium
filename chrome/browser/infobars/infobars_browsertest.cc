@@ -364,6 +364,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
       TabSharingInfoBarDelegate::Create(
           /*infobar_manager=*/GetInfoBarManager(),
+          /*old_infobar=*/nullptr,
           /*shared_tab_name=*/u"example.com",
           /*capturer_name=*/u"application.com",
           /*web_contents=*/nullptr,
