@@ -9,7 +9,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -25,8 +24,6 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
 
 namespace {
-
-const char* kDefaultDisplaySize = "1200x800";
 
 aura::Window* GetRootWindow() {
   auto* root_window = Shell::GetRootWindowForNewWindows();
@@ -94,12 +91,6 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     GetRootWindow()->AddPreTargetHandler(&event_handler_);
-    display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-        .UpdateDisplay(kDefaultDisplaySize);
-
-    // Initialize FaceGaze.
-    utils_->EnableFaceGaze();
-    utils_->CreateFaceLandmarker();
   }
 
   void TearDownOnMainThread() override {
@@ -129,7 +120,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
-  utils()->ConfigureFaceGaze(Config().Default());
+  utils()->EnableFaceGaze(Config().Default());
   event_handler().ClearEvents();
 
   utils()->ProcessFaceLandmarkerResult(
@@ -151,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, UpdateCursorLocation) {
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
-  utils()->ConfigureFaceGaze(
+  utils()->EnableFaceGaze(
       Config()
           .Default()
           .WithGesturesToMacros(
@@ -183,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, ResetCursor) {
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
                        IgnoreGesturesWithLowConfidence) {
-  utils()->ConfigureFaceGaze(
+  utils()->EnableFaceGaze(
       Config()
           .Default()
           .WithGesturesToMacros(
@@ -208,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
                        UpdateCursorLocationWithSpeed1) {
-  utils()->ConfigureFaceGaze(Config().Default().WithCursorSpeeds(
+  utils()->EnableFaceGaze(Config().Default().WithCursorSpeeds(
       {/*up=*/1, /*down=*/1, /*left=*/1, /*right=*/1}));
 
   // With cursor acceleration off and buffer size 1, one-pixel head movements
@@ -225,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
-  utils()->ConfigureFaceGaze(
+  utils()->EnableFaceGaze(
       Config()
           .Default()
           .WithGesturesToMacros(
@@ -257,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, SpaceKeyEvents) {
 // ensures that the associated action is performed if either of the gestures is
 // detected.
 IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, BrowsDownGesture) {
-  utils()->ConfigureFaceGaze(
+  utils()->EnableFaceGaze(
       Config()
           .Default()
           .WithCursorLocation(gfx::Point(0, 0))

@@ -21,6 +21,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ash {
@@ -30,6 +31,7 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 
 namespace {
 
+const char* kDefaultDisplaySize = "1200x800";
 constexpr char kMediapipeTestFilePath[] =
     "resources/chromeos/accessibility/accessibility_common/third_party/"
     "mediapipe_task_vision";
@@ -220,7 +222,11 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
 FaceGazeTestUtils::FaceGazeTestUtils() = default;
 FaceGazeTestUtils::~FaceGazeTestUtils() = default;
 
-void FaceGazeTestUtils::EnableFaceGaze() {
+void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
+  // TODO(b/309121742): Add display size to Config so that tests can configure
+  // it.
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay(kDefaultDisplaySize);
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
 
@@ -238,6 +244,49 @@ void FaceGazeTestUtils::EnableFaceGaze() {
   WaitForJSReady();
   SetUpJSTestSupport();
   CancelMouseControllerInterval();
+  CreateFaceLandmarker();
+  ConfigureFaceGaze(config);
+}
+
+void FaceGazeTestUtils::WaitForCursorPosition(const gfx::Point& location) {
+  std::string script =
+      base::StringPrintf("faceGazeTestSupport.waitForCursorLocation(%d, %d);",
+                         location.x(), location.y());
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::ProcessFaceLandmarkerResult(
+    const MockFaceLandmarkerResult& result) {
+  std::string forehead_location_json =
+      base::WriteJson(result.forehead_location()).value();
+  std::string recognized_gestures_json =
+      base::WriteJson(result.recognized_gestures()).value();
+  std::string script = base::StringPrintf(
+      "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s)",
+      forehead_location_json.c_str(), recognized_gestures_json.c_str());
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::TriggerMouseControllerInterval() {
+  std::string script = "faceGazeTestSupport.triggerMouseControllerInterval();";
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::MoveMouseTo(const gfx::Point& location) {
+  event_generator_->MoveMouseTo(location.x(), location.y());
+}
+
+void FaceGazeTestUtils::AssertCursorAt(const gfx::Point& location) {
+  WaitForCursorPosition(location);
+  ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
+}
+
+void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
+    const std::string& script) {
+  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+      /*context=*/AccessibilityManager::Get()->profile(),
+      /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
+      /*script=*/script);
 }
 
 void FaceGazeTestUtils::SetUpMediapipeDir() {
@@ -261,14 +310,6 @@ void FaceGazeTestUtils::WaitForJSReady() {
     })();
   )JS");
   ExecuteAccessibilityCommonScript(script);
-}
-
-void FaceGazeTestUtils::ExecuteAccessibilityCommonScript(
-    const std::string& script) {
-  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-      /*context=*/AccessibilityManager::Get()->profile(),
-      /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
-      /*script=*/script);
 }
 
 void FaceGazeTestUtils::SetUpJSTestSupport() {
@@ -332,13 +373,6 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   AssertCursorAt(config.cursor_location());
 }
 
-void FaceGazeTestUtils::WaitForCursorPosition(const gfx::Point& location) {
-  std::string script =
-      base::StringPrintf("faceGazeTestSupport.waitForCursorLocation(%d, %d);",
-                         location.x(), location.y());
-  ExecuteAccessibilityCommonScript(script);
-}
-
 void FaceGazeTestUtils::SetCursorSpeeds(const CursorSpeeds& speeds) {
   GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedUp, speeds.up);
   GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSpeedDown,
@@ -391,32 +425,6 @@ void FaceGazeTestUtils::SetGestureRepeatDelayMs(int delay) {
   std::string script = base::StringPrintf(
       "faceGazeTestSupport.setGestureRepeatDelayMs(%d);", delay);
   ExecuteAccessibilityCommonScript(script);
-}
-
-void FaceGazeTestUtils::ProcessFaceLandmarkerResult(
-    const MockFaceLandmarkerResult& result) {
-  std::string forehead_location_json =
-      base::WriteJson(result.forehead_location()).value();
-  std::string recognized_gestures_json =
-      base::WriteJson(result.recognized_gestures()).value();
-  std::string script = base::StringPrintf(
-      "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s)",
-      forehead_location_json.c_str(), recognized_gestures_json.c_str());
-  ExecuteAccessibilityCommonScript(script);
-}
-
-void FaceGazeTestUtils::TriggerMouseControllerInterval() {
-  std::string script = "faceGazeTestSupport.triggerMouseControllerInterval();";
-  ExecuteAccessibilityCommonScript(script);
-}
-
-void FaceGazeTestUtils::MoveMouseTo(const gfx::Point& location) {
-  event_generator_->MoveMouseTo(location.x(), location.y());
-}
-
-void FaceGazeTestUtils::AssertCursorAt(const gfx::Point& location) {
-  WaitForCursorPosition(location);
-  ASSERT_EQ(location, display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
 }  // namespace ash

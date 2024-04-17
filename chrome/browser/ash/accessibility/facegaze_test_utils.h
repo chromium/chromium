@@ -216,12 +216,8 @@ class FaceGazeTestUtils {
   FaceGazeTestUtils(const FaceGazeTestUtils&) = delete;
   FaceGazeTestUtils& operator=(const FaceGazeTestUtils&) = delete;
 
-  // Enables and sets up FaceGaze.
-  void EnableFaceGaze();
-  // Creates and initializes the FaceLandmarker API within the extension.
-  void CreateFaceLandmarker();
-  // Configures FaceGaze with the given configuration.
-  void ConfigureFaceGaze(const Config& config);
+  // Enables, sets up, and configures FaceGaze with the given configuration.
+  void EnableFaceGaze(const Config& config);
   // Waits for the cursor location to propagate to the FaceGaze MouseController.
   void WaitForCursorPosition(const gfx::Point& location);
   // Forces FaceGaze to process `result`, since tests don't have access to real
@@ -243,19 +239,19 @@ class FaceGazeTestUtils {
   void WaitForJSReady();
   void SetUpJSTestSupport();
   void CancelMouseControllerInterval();
+  // Creates and initializes the FaceLandmarker API within the extension.
+  void CreateFaceLandmarker();
+  void ConfigureFaceGaze(const Config& config);
 
-  // Sets cursor speed prefs.
+  // Preference-related methods.
   void SetCursorSpeeds(const CursorSpeeds& speeds);
-  // Sets the buffer size pref.
   void SetBufferSize(int size);
-  // Sets the cursor acceleration pref.
   void SetCursorAcceleration(bool use_acceleration);
-  // Sets the gesture to macro mapping pref.
   void SetGesturesToMacros(
       const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros);
-  // Sets the gesture confidences mapping pref.
   void SetGestureConfidences(
       const base::flat_map<FaceGazeGesture, int>& gesture_confidences);
+
   // Sets the gesture repeat delay threshold.
   void SetGestureRepeatDelayMs(int delay);
 
