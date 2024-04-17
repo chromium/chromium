@@ -235,6 +235,10 @@ IN_PROC_BROWSER_TEST_F(SafetyHubExtensionSettingsUIBrowserTest,
   InstallGoodExtension();
   SafetyHubMenuNotificationService* notification_service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
+  // Safety Hub services will be initialized when
+  // SafetyHubMenuNotificationService is created. Let Safety Hub services to
+  // initialize properly.
+  safety_hub_test_util::RunUntilPasswordCheckCompleted(profile);
   // No unpublished extensions yet, so there shouldn't be a menu notifications.
   std::optional<MenuNotificationEntry> notification =
       notification_service->GetNotificationToShow();

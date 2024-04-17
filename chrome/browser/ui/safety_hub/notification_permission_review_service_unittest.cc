@@ -249,6 +249,8 @@ TEST_F(NotificationPermissionReviewServiceTest,
       NotificationsEngagementServiceFactory::GetForProfile(profile());
   notification_engagement_service->RecordNotificationDisplayed(
       GURL("https://google.com:443"), 10 * 7);
+  // Letting service update the cached result.
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
   const auto& updated_notification_permissions =
       service->PopulateNotificationPermissionReviewData();
   EXPECT_EQ(2UL, updated_notification_permissions.size());

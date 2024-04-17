@@ -40,6 +40,8 @@ SafetyHubMenuNotificationServiceFactory::
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(UnusedSitePermissionsServiceFactory::GetInstance());
+  DependsOn(NotificationPermissionsReviewServiceFactory::GetInstance());
+  DependsOn(PasswordStatusCheckServiceFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 }
 

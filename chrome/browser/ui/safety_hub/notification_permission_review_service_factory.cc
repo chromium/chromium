@@ -50,7 +50,3 @@ std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
       engagement_service);
 }
 
-bool NotificationPermissionsReviewServiceFactory::
-    ServiceIsCreatedWithBrowserContext() const {
-  return base::FeatureList::IsEnabled(features::kSafetyHub);
-}

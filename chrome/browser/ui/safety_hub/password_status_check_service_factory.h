@@ -34,8 +34,6 @@ class PasswordStatusCheckServiceFactory : public ProfileKeyedServiceFactory {
   ~PasswordStatusCheckServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  bool ServiceIsCreatedWithBrowserContext() const override;
-
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };

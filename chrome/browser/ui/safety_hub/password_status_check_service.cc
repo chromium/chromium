@@ -285,14 +285,9 @@ PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   // ProfilePasswordStore may not exist for some cases like non-user profiles on
-  // Ash. If ProfilePasswordStore does not exist, then no other password
-  // operations can be done. Hence, here is an early return to prevent
-  // initializing checks.
-  // TODO(crbug.com/1443466): Add CHECK for profile_store after making this
-  // service null if the store does not exist.
-  if (!profile_store) {
-    return;
-  }
+  // Ash. If ProfilePasswordStore does not exist, the service should not be
+  // created by the factory.
+  DCHECK(profile_store);
 
   profile_password_store_observation_.Observe(profile_store.get());
   if (account_store) {

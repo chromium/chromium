@@ -252,25 +252,6 @@ class PasswordStatusCheckServiceParameterizedCardTest
   }
 };
 
-class PasswordStatusCheckServiceWithoutPasswordStoreTest
-    : public testing::Test {
- public:
-  PasswordStatusCheckService* service() { return service_.get(); }
-
-  content::BrowserTaskEnvironment* task_environment() { return &task_env_; }
-
- private:
-  void SetUp() override {
-    service_ = std::make_unique<PasswordStatusCheckService>(&profile_);
-    task_env_.RunUntilIdle();
-  }
-
-  content::BrowserTaskEnvironment task_env_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
-  std::unique_ptr<PasswordStatusCheckService> service_;
-};
-
 class PasswordStatusCheckServiceParameterizedSchedulingTest
     : public PasswordStatusCheckServiceBaseTest,
       public testing::WithParamInterface<int> {
@@ -866,20 +847,6 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
       static_cast<PasswordStatusCheckResult*>(opt_new_result.value().get());
   EXPECT_THAT(new_result->GetCompromisedOrigins(),
               testing::ElementsAre(kOrigin1));
-}
-
-TEST_F(PasswordStatusCheckServiceWithoutPasswordStoreTest, NoPasswordStored) {
-  // Let the time pass until a check should have happened.
-  task_environment()->AdvanceClock(base::Days(30));
-  task_environment()->RunUntilIdle();
-
-  // Expect that nothing is initialized.
-  EXPECT_FALSE(service()->GetSavedPasswordsPresenterForTesting());
-  EXPECT_FALSE(service()->GetPasswordCheckDelegateForTesting());
-  EXPECT_FALSE(service()->IsObservingSavedPasswordsPresenterForTesting());
-  EXPECT_FALSE(service()->IsObservingBulkLeakCheckForTesting());
-  EXPECT_FALSE(service()->is_password_check_running());
-  EXPECT_FALSE(service()->is_update_credential_count_pending());
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedSchedulingTest,

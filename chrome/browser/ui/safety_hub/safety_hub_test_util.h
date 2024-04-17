@@ -37,6 +37,10 @@ void UpdateSafetyHubServiceAsync(SafetyHubService* service);
 void UpdatePasswordCheckServiceAsync(
     PasswordStatusCheckService* password_service);
 
+// This will run until ongoing checks in PasswordStatusCheckService to be
+// completed.
+void RunUntilPasswordCheckCompleted(Profile* profile);
+
 // Creates a mock service that returns mock results for the CWS info service. If
 // |with_calls| is true, total six extensions with different properties are
 // mocked: malware, policy violation, unpublished, combination of malware and

@@ -132,16 +132,8 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Called when the pref for Safe Browsing has been updated.
   void OnSafeBrowsingPrefUpdate();
 
-  const std::map<safety_hub::SafetyHubModuleType, const char*>
-      pref_dict_key_map_ = {
-          {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
-           "unused-site-permissions"},
-          {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-           "notification-permissions"},
-          {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
-          {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
-          {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
-      };
+  // Holds the mapping from module type to pref name.
+  std::map<safety_hub::SafetyHubModuleType, const char*> pref_dict_key_map_;
 
   // Preference service that persists the notifications.
   raw_ptr<PrefService> pref_service_;

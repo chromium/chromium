@@ -52,11 +52,19 @@ PasswordStatusCheckServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(features::kSafetyHub)) {
     return nullptr;
   }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  password_manager::PasswordStoreInterface* store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get();
+  // Incognito, guest, or system profiles doesn't have PasswordStore so
+  // SafetyHub shouldn't be created as well.
+  if (!store) {
+    return nullptr;
+  }
+
   return std::make_unique<PasswordStatusCheckService>(
       Profile::FromBrowserContext(context));
 }
 
-bool PasswordStatusCheckServiceFactory::ServiceIsCreatedWithBrowserContext()
-    const {
-  return base::FeatureList::IsEnabled(features::kSafetyHub);
-}
