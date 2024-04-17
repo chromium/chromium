@@ -632,6 +632,19 @@ class AuthenticatorGPMErrorSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
 };
 
+class AuthenticatorGPMConnectingSheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorGPMConnectingSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorGPMConnectingSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
+
 // A confirmation screen that can be shown instead of the mechanism selection
 // screen when we are confident a request can be resolved using an already
 // paired phone.

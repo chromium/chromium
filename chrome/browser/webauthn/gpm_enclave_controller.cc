@@ -483,8 +483,15 @@ void GPMEnclaveController::OnGPMSelected() {
     case AccountState::kLoading:
     case AccountState::kChecking:
       waiting_for_account_state_to_start_enclave_ = true;
-      model_->ui_disabled_ = true;
-      model_->OnSheetModelChanged();
+      if (model_->step() == Step::kNotStarted) {
+        // No UI is visible yet, display a loading dialog after a delay, so it
+        // doesn't flicker in case the account state is fetched quickly.
+        // TODO(rgod): Add delay.
+        model_->SetStep(Step::kGPMConnecting);
+      } else {
+        model_->ui_disabled_ = true;
+        model_->OnSheetModelChanged();
+      }
       break;
 
     case AccountState::kNone:

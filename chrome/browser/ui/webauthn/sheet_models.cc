@@ -1487,6 +1487,28 @@ std::u16string AuthenticatorGPMErrorSheetModel::GetStepDescription() const {
   return u"Check your internet connection and try again (UNTRANSLATED)";
 }
 
+// AuthenticatorGPMConnectingSheetModel --------------------------------------
+
+AuthenticatorGPMConnectingSheetModel::AuthenticatorGPMConnectingSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT,
+                                IDR_WEBAUTHN_HYBRID_CONNECTING_DARK);
+}
+
+AuthenticatorGPMConnectingSheetModel::~AuthenticatorGPMConnectingSheetModel() =
+    default;
+
+std::u16string AuthenticatorGPMConnectingSheetModel::GetStepTitle() const {
+  return u"";
+}
+
+std::u16string AuthenticatorGPMConnectingSheetModel::GetStepDescription()
+    const {
+  return u"";
+}
+
 // AuthenticatorPhoneConfirmationSheet --------------------------------
 
 AuthenticatorPhoneConfirmationSheet::AuthenticatorPhoneConfirmationSheet(

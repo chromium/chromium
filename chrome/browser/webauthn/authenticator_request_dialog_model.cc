@@ -2406,6 +2406,13 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     CHECK_EQ(transport_availability_.request_type,
              device::FidoRequestType::kMakeCredential);
 
+    if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+        enclave_enabled_ &&
+        *transport_availability_.make_credential_attachment ==
+            device::AuthenticatorAttachment::kPlatform) {
+      priority_list.emplace_back(Mechanism::Enclave());
+    }
+
     if (windows_handles_hybrid) {
       // If Windows supports hybrid and the enclave is not available, we defer
       // to the platform.
