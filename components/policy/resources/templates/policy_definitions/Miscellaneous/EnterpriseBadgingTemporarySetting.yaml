@@ -25,13 +25,13 @@ items:
   name: hide_enterprise_badging
   value: 0
 - caption: Show enterprise badging on unmanaged devices only
-  name: show_enterprise_badging_managed_browsers
+  name: show_enterprise_badging_unmanaged_devices
   value: 1
 - caption: Show enterprise badging on all devices
-  name: show_enterprise_badging_managed_browsers
+  name: show_enterprise_badging_all_devices
   value: 2
 - caption: Show enterprise badging on managed devices only
-  name: show_enterprise_badging_managed_browsers
+  name: show_enterprise_badging_managed_devices
   value: 3
 owners:
 - ydago@chromium.org
