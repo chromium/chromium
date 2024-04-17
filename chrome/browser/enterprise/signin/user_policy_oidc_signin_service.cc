@@ -173,6 +173,8 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
   // Sign in service only need to initialize for Dasherless profiles, with the
   // exception of first sign-in.
   if (policy_manager()->core()->store()->has_policy()) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "OIDC Signin Service Initializing for Dasherless Profile";
     InitializeForSignedInUser(AccountId(),
                               profile->GetDefaultStoragePartition()
                                   ->GetURLLoaderFactoryForBrowserProcess());

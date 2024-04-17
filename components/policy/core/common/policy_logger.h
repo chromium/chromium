@@ -56,6 +56,7 @@
 #define PLATFORM_POLICY ::policy::PolicyLogger::Log::Source::kPlatformPolicy
 #define REMOTE_COMMANDS ::policy::PolicyLogger::Log::Source::kRemoteCommands
 #define DEVICE_TRUST ::policy::PolicyLogger::Log::Source::kDeviceTrust
+#define OIDC_ENROLLMENT ::policy::PolicyLogger::Log::Source::kOidcEnrollment
 
 namespace policy {
 
@@ -73,6 +74,7 @@ class POLICY_EXPORT PolicyLogger {
       kAuthentication,
       kRemoteCommands,
       kDeviceTrust,
+      kOidcEnrollment,
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 
