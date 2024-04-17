@@ -190,11 +190,6 @@ class PersonalDataManager : public KeyedService,
   // Removes |observer| as an observer of this PersonalDataManager.
   virtual void RemoveObserver(PersonalDataManagerObserver* observer);
 
-  // Called to indicate |profile_or_credit_card| was used (to fill in a form).
-  // Updates the database accordingly.
-  void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card);
-
   // Adds |profile| to the web database.
   void AddProfile(const AutofillProfile& profile);
 

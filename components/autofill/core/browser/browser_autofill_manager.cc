@@ -2113,10 +2113,18 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           credit_card_, form_structure, trigger_autofill_field, filled_fields,
           safe_fields, signin_state_for_metrics_,
           trigger_details.trigger_source);
+
+      client()
+          .GetPersonalDataManager()
+          ->payments_data_manager()
+          .RecordUseOfCard(
+              absl::get<const CreditCard*>(profile_or_credit_card));
     }
   } else {
     CHECK(absl::holds_alternative<const AutofillProfile*>(
         profile_or_credit_card));
+    const AutofillProfile* profile =
+        absl::get<const AutofillProfile*>(profile_or_credit_card);
     if (!trigger_autofill_field
              .ShouldSuppressSuggestionsAndFillingByDefault()) {
       if (is_refill) {
@@ -2127,9 +2135,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             form_structure.global_id(), safe_filled_fields,
             safe_filled_autofill_fields);
         address_form_event_logger_->OnDidFillFormFillingSuggestion(
-            *absl::get<const AutofillProfile*>(profile_or_credit_card),
-            form_structure, trigger_autofill_field, signin_state_for_metrics_,
-            trigger_details.trigger_source);
+            *profile, form_structure, trigger_autofill_field,
+            signin_state_for_metrics_, trigger_details.trigger_source);
       }
     } else if (!is_refill) {
       address_form_event_logger_->RecordFillingOperation(
@@ -2138,10 +2145,10 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
       autocomplete_unrecognized_fallback_logger_
           ->OnDidFillFormFillingSuggestion();
     }
-  }
-  if (!is_refill) {
-    // Note that this may invalidate `profile_or_credit_card`.
-    client().GetPersonalDataManager()->RecordUseOf(profile_or_credit_card);
+    if (!is_refill) {
+      client().GetPersonalDataManager()->address_data_manager().RecordUseOf(
+          *profile);
+    }
   }
 }
 

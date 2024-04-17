@@ -177,18 +177,6 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void PersonalDataManager::RecordUseOf(
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card) {
-  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    payments_data_manager_->RecordUseOfCard(
-        absl::get<const CreditCard*>(profile_or_credit_card));
-  } else {
-    address_data_manager_->RecordUseOf(
-        *absl::get<const AutofillProfile*>(profile_or_credit_card));
-  }
-}
-
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   address_data_manager_->AddProfile(profile);
 }
