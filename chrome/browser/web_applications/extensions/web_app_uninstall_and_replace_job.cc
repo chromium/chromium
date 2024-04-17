@@ -80,7 +80,7 @@ WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
 WebAppUninstallAndReplaceJob::~WebAppUninstallAndReplaceJob() = default;
 
 void WebAppUninstallAndReplaceJob::Start() {
-  DCHECK(to_app_lock_->registrar().IsInstalled(to_app_));
+  CHECK(to_app_lock_->registrar().GetAppById(to_app_));
 
   std::vector<webapps::AppId> apps_to_replace;
   for (const webapps::AppId& from_app : from_apps_or_extensions_) {
