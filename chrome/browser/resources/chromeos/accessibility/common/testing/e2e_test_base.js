@@ -23,19 +23,6 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical by file path.
-      importModule('AsyncUtil', '/common/async_util.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('constants', '/common/constants.js'),
-    ]);
-  }
-
-  /** @override */
   testGenCppIncludes() {
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
@@ -278,9 +265,17 @@ E2ETestBase = class extends AccessibilityTestBase {
           // getting the default focus (the address bar), setting the value to
           // the url and then performing do default on the auto completion node.
           const focus = await AsyncUtil.getFocus();
-          // It's possible focus is elsewhere; wait until it lands on the
+          // It's possible focus is elsewhere; ensure it lands on the
           // address bar text field.
           if (!focus || focus.role !== chrome.automation.RoleType.TEXT_FIELD) {
+            // Focus the address bar.
+            const textField = this.desktop_.find({
+              role: 'textField',
+              attributes: {className: 'OmniboxViewViews'},
+            });
+            if (textField) {
+              textField.focus();
+            }
             return;
           }
 
@@ -318,9 +313,7 @@ E2ETestBase = class extends AccessibilityTestBase {
         const createParams = {active: true, url};
         chrome.tabs.create(createParams);
       } else {
-        chrome.automation.getFocus(f => {
-          listener({target: f});
-        });
+        chrome.automation.getFocus(f => listener({target: f}));
       }
     }));
   }
