@@ -6829,7 +6829,7 @@ def CheckAssertAshOnlyCode(input_api, output_api):
                 output_api.PresubmitError(
                     'Please add assert(is_chromeos_ash) to %s. If that\'s not '
                     'possible, please create and issue and add a comment such '
-                    'as:\n  # TODO(https://crbug.com/XXX): add '
+                    'as:\n  # TODO(crbug.com/XXX): add '
                     'assert(is_chromeos_ash) when ...' % f.LocalPath()))
     return errors
 
@@ -6855,7 +6855,7 @@ def _IsMiraclePtrDisallowed(input_api, affected_file):
     # We assume that everything else may be used outside of Renderer processes.
     return False
 
-# TODO(https://crbug.com/1273182): Remove these checks, once they are replaced
+# TODO(crbug.com/40206238): Remove these checks, once they are replaced
 # by the Chromium Clang Plugin (which will be preferable because it will
 # 1) report errors earlier - at compile-time and 2) cover more rules).
 def CheckRawPtrUsage(input_api, output_api):
@@ -7294,6 +7294,37 @@ def CheckInlineConstexprDefinitionsInHeaders(input_api, output_api):
                 'Consider inlining constexpr variable definitions in headers '
                 'outside of classes to avoid unnecessary copies of the '
                 'constant. See https://abseil.io/tips/168 for more details.',
+                problems)
+        ]
+    else:
+        return []
+
+def CheckTodoBugReferences(input_api, output_api):
+    """Checks that bugs in TODOs use updated issue tracker IDs."""
+
+    files_to_skip = ['PRESUBMIT_test.py']
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_skip=files_to_skip)
+
+    # Monorail bug IDs are all less than or equal to 1524553 so check that all
+    # bugs in TODOs are greater than that value.
+    pattern = input_api.re.compile(r'.*TODO\([^\)0-9]*([0-9]+)\).*')
+    problems = []
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        for line_number, line in f.ChangedContents():
+            match = pattern.match(line)
+            if match and int(match.group(1)) <= 1524553:
+                problems.append(
+                    f"{f.LocalPath()}: {line_number}\n    {line}")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                'TODOs should use the new Chromium Issue Tracker IDs.  '
+                'See https://crbug.com/321899722 for more details.',
                 problems)
         ]
     else:

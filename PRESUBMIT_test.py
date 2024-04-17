@@ -5310,5 +5310,23 @@ class CheckInlineConstexprDefinitionsInHeadersTest(unittest.TestCase):
     warnings = PRESUBMIT.CheckInlineConstexprDefinitionsInHeaders(input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
 
+  def testTodoBugReferencesWithOldBugId(self):
+    """Tests that an old monorail bug ID in a TODO fails."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['// TODO(crbug.com/12345)'])
+    ]
+    warnings = PRESUBMIT.CheckTodoBugReferences(input_api, MockOutputApi())
+    self.assertEqual(1, len(warnings))
+
+  def testTodoBugReferencesWithUpdatedBugId(self):
+    """Tests that a new issue tracker bug ID in a TODO passes."""
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('src/helpers.h', ['// TODO(crbug.com/40781525)'])
+    ]
+    warnings = PRESUBMIT.CheckTodoBugReferences(input_api, MockOutputApi())
+    self.assertEqual(0, len(warnings))
+
 if __name__ == '__main__':
   unittest.main()
