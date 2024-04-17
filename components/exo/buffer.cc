@@ -53,9 +53,7 @@
 namespace exo {
 namespace {
 
-// Allow MappableSI to be used in Exo::Buffer. Note that enabling this flag
-// does not necessarily enables MappableSI usage as it also currently needs
-// MultiPlanarSI support.
+// Allow MappableSI to be used in Exo::Buffer.
 BASE_FEATURE(kAlwaysUseMappableSIForExoBuffer,
              "AlwaysUseMappableSIForExoBuffer",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -92,10 +90,6 @@ SkColorType GetColorTypeForBitmapCreation(gfx::BufferFormat format) {
 // Gets the shared image format equivalent of |buffer_format| used for creating
 // shared image.
 viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
-  if (!media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    return viz::GetSinglePlaneSharedImageFormat(buffer_format);
-  }
-
   viz::SharedImageFormat format;
   switch (buffer_format) {
     case gfx::BufferFormat::BGRA_8888:
@@ -190,7 +184,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::ColorSpace color_space,
           gpu::SyncToken& sync_token_out);
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
-          gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
           gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
           const gfx::BufferFormat buffer_format,
@@ -287,8 +280,7 @@ Buffer::Texture::Texture(
       context_provider_(std::move(context_provider)),
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM),
       is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-          media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
+          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // These SharedImages are used over the raster interface as both the source
@@ -315,7 +307,6 @@ Buffer::Texture::Texture(
 
 Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gfx::GpuMemoryBufferHandle* gpu_memory_buffer_handle,
     const gfx::BufferFormat buffer_format,
@@ -332,8 +323,7 @@ Buffer::Texture::Texture(
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay),
       is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-          media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
+          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {
   // Adding checks to avoid running into issues until the feature is fully
   // enabled.
   CHECK((is_mappable_si_enabled_ && !gpu_memory_buffer_handle_->is_null()) ||
@@ -357,17 +347,11 @@ Buffer::Texture::Texture(
         {GetSharedImageFormat(buffer_format), size_, color_space, usage,
          gpu::kExoTextureLabelPrefix},
         gpu_memory_buffer_handle_->Clone());
-  } else if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
+  } else {
     shared_image_ = sii->CreateSharedImage(
         {GetSharedImageFormat(buffer_format), size_, color_space, usage,
          gpu::kExoTextureLabelPrefix},
         gpu_memory_buffer_->CloneHandle());
-  } else {
-    shared_image_ = sii->CreateSharedImage(
-        gpu_memory_buffer_, gpu_memory_buffer_manager,
-        gfx::BufferPlane::DEFAULT,
-        {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-         gpu::kExoTextureLabelPrefix});
   }
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
@@ -621,8 +605,7 @@ Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       y_invert_(y_invert),
       wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)),
       is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-          media::IsMultiPlaneFormatForHardwareVideoEnabled()) {}
+          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {}
 
 Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
                gfx::BufferFormat buffer_format,
@@ -643,8 +626,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
       y_invert_(y_invert),
       wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)),
       is_mappable_si_enabled_(
-          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-          media::IsMultiPlaneFormatForHardwareVideoEnabled()) {}
+          base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer)) {}
 
 Buffer::~Buffer() {}
 
@@ -659,8 +641,7 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool is_overlay_candidate,
     bool y_invert) {
   const bool is_mappable_si_enabled =
-      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-      media::IsMultiPlaneFormatForHardwareVideoEnabled();
+      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer);
   if (is_mappable_si_enabled) {
     return base::WrapUnique(new Buffer(
         std::move(buffer_handle), buffer_format, buffer_size, buffer_usage,
@@ -695,15 +676,14 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
   const bool is_mappable_si_enabled =
-      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer) &&
-      media::IsMultiPlaneFormatForHardwareVideoEnabled();
+      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForExoBuffer);
   if (is_mappable_si_enabled) {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     auto* sii = GetSharedImageInterface();
     if (sii) {
       // Note that we are creating this mappable shared image only to get a
       // GMBHandle from it and use below to create ::Buffer.
-      // TODO(vikassoni) : Once MultiPlanarSI and MappableSI is fully launced
+      // TODO(vikassoni) : Once MappableSI is fully launched
       // and we remove legacy code paths, refactor ::Buffer and
       // ::Buffer::Texture to use this MappableSI created below directly in
       // ::Buffer::Texture instead of creating new SI in it.
@@ -812,10 +792,10 @@ bool Buffer::ProduceTransferableResource(
   // CopyTexImage.
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
-        context_provider, context_factory->GetGpuMemoryBufferManager(),
-        gpu_memory_buffer_.get(), &gpu_memory_buffer_handle_, buffer_format_,
-        size_, color_space, query_type_, wait_for_release_delay_,
-        is_overlay_candidate_, resource->mailbox_holder.sync_token);
+        context_provider, gpu_memory_buffer_.get(), &gpu_memory_buffer_handle_,
+        buffer_format_, size_, color_space, query_type_,
+        wait_for_release_delay_, is_overlay_candidate_,
+        resource->mailbox_holder.sync_token);
   }
   Texture* contents_texture = contents_texture_.get();
 
