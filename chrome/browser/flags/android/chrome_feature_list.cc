@@ -206,7 +206,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuSysUiMatchesActivity,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
-    &kContextualSearchThinWebViewImplementation,
     &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
     &kDragDropIntoOmnibox,
@@ -598,10 +597,6 @@ BASE_FEATURE(kContextualSearchDisableOnlineDetection,
 
 BASE_FEATURE(kContextualSearchSuppressShortView,
              "ContextualSearchSuppressShortView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualSearchThinWebViewImplementation,
-             "ContextualSearchThinWebViewImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingAndroid,

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ViewGroup;
@@ -49,10 +48,10 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.List;
 
 /**
- * Controls the Contextual Search Panel, primarily the Bar - the
- * {@link ContextualSearchBarControl} - and the content area that shows the Search Result.
+ * Controls the Contextual Search Panel, primarily the Bar - the {@link ContextualSearchBarControl}
+ * - and the content area that shows the Search Result.
  */
-public class ContextualSearchPanel extends OverlayPanel implements ContextualSearchPanelInterface {
+public class ContextualSearchPanel extends OverlayPanel {
     /** Allows controls that appear in this panel to call back with requests or notifications. */
     interface ContextualSearchPanelSectionHost {
         /** Returns the current Y position of the panel section. */
@@ -223,9 +222,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Sets the {@code ContextualSearchManagementDelegate} associated with this panel.
+     *
      * @param delegate The {@code ContextualSearchManagementDelegate}.
      */
-    @Override
     public void setManagementDelegate(ContextualSearchManagementDelegate delegate) {
         if (mManagementDelegate != delegate) {
             mManagementDelegate = delegate;
@@ -237,9 +236,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Notifies that the preference state has changed.
+     *
      * @param isEnabled Whether the feature is enabled.
      */
-    @Override
     public void onContextualSearchPrefChanged(boolean isEnabled) {
         if (!isShowing()) return;
 
@@ -521,7 +520,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     // ============================================================================================
 
     /** Notify the panel that the content was seen. */
-    @Override
     public void setWasSearchContentViewSeen() {
         mPanelMetrics.setWasSearchContentViewSeen();
     }
@@ -529,7 +527,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /**
      * @param isActive Whether the promo is active.
      */
-    @Override
     public void setIsPromoActive(boolean isActive) {
         if (isActive) {
             getPromoControl().show();
@@ -540,7 +537,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mPanelMetrics.setIsPromoActive(isActive);
     }
 
-    @Override
     public void clearRelatedSearches() {
         getRelatedSearchesInBarControl().hide();
     }
@@ -557,9 +553,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Maximizes the Contextual Search Panel, then promotes it to a regular Tab.
+     *
      * @param reason The {@code StateChangeReason} behind the maximization and promotion to tab.
      */
-    @Override
     public void maximizePanelThenPromoteToTab(@StateChangeReason int reason) {
         mShouldPromoteToTabAfterMaximizing = true;
         super.maximizePanel(reason);
@@ -610,28 +606,27 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /** Gets whether a touch on the content view has been done yet or not. */
-    @Override
     public boolean didTouchContent() {
         return mHasContentBeenTouched;
     }
 
     /**
-     * Sets the search term to display in the SearchBar.
-     * This should be called when the search term is set without search term resolution.
+     * Sets the search term to display in the SearchBar. This should be called when the search term
+     * is set without search term resolution.
+     *
      * @param searchTerm The string that represents the search term.
      */
-    @Override
     public void setSearchTerm(String searchTerm) {
         setSearchTerm(searchTerm, null);
     }
 
     /**
-     * Sets the search term to display in the SearchBar.
-     * This should be called when the search term is set after search term resolution completed.
+     * Sets the search term to display in the SearchBar. This should be called when the search term
+     * is set after search term resolution completed.
+     *
      * @param searchTerm The string that represents the search term.
      * @param pronunciation A string for the pronunciation when a Definition is shown.
      */
-    @Override
     public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
@@ -642,10 +637,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Sets the search context details to display in the SearchBar.
+     *
      * @param selection The portion of the context that represents the user's selection.
      * @param end The portion of the context from the selection to its end.
      */
-    @Override
     public void setContextDetails(String selection, String end) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setContextDetails(selection, end);
@@ -655,17 +650,16 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * Sets the caption to display in the SearchBar.
-     * When the caption is displayed, the Search Term is pushed up and the caption shows below.
+     * Sets the caption to display in the SearchBar. When the caption is displayed, the Search Term
+     * is pushed up and the caption shows below.
+     *
      * @param caption The string to show in as the caption.
      */
-    @Override
     public void setCaption(String caption) {
         getSearchBarControl().setCaption(caption);
     }
 
     /** Ensures that we have a Caption to display in the SearchBar. */
-    @Override
     public void ensureCaption() {
         if (getSearchBarControl().hasCaption()) return;
         getSearchBarControl()
@@ -675,23 +669,22 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /** Hides the caption. */
-    @Override
     public void hideCaption() {
         getSearchBarControl().hideCaption();
     }
 
     /**
      * Handles showing the resolved search term in the SearchBar.
+     *
      * @param searchTerm The string that represents the search term.
      * @param thumbnailUrl The URL of the thumbnail to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@code QuickActionCategory} for the quick action.
-     * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
-     *        or {@code 0}.
+     * @param cardTagEnum The {@link CardTag} that the server returned if there was a card, or
+     *     {@code 0}.
      * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
      */
     @VisibleForTesting
-    @Override
     public void onSearchTermResolved(
             String searchTerm,
             String thumbnailUrl,
@@ -711,16 +704,16 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Handles showing the resolved search term in the SearchBar.
+     *
      * @param searchTerm The string that represents the search term.
      * @param pronunciation A string for the pronunciation when a Definition is shown.
      * @param thumbnailUrl The URL of the thumbnail to display.
      * @param quickActionUri The URI for the intent associated with the quick action.
      * @param quickActionCategory The {@code QuickActionCategory} for the quick action.
-     * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
-     *        or {@code 0}.
+     * @param cardTagEnum The {@link CardTag} that the server returned if there was a card, or
+     *     {@code 0}.
      * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
      */
-    @Override
     public void onSearchTermResolved(
             String searchTerm,
             @Nullable String pronunciation,
@@ -753,28 +746,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * Calculates the position of the Contextual Search panel on the screen.
-     * @return A {@link Rect} object that represents the Contextual Search panel's position in
-     *         the screen, in pixels.
+     * @return The padding used for each side of the button in the Bar.
      */
-    @Override
-    public Rect getPanelRect() {
-        int[] contentLocationInWindow = new int[2];
-        mActivity.findViewById(android.R.id.content).getLocationInWindow(contentLocationInWindow);
-        int leftPadding = contentLocationInWindow[0];
-        int topPadding = contentLocationInWindow[1];
-
-        // getOffsetX() and getOffsetY() return the position of the panel relative to the activity,
-        // therefore leftPadding and topPadding are added to get the position in the screen.
-        int left = (int) (getOffsetX() / mPxToDp) + leftPadding;
-        int top = (int) (getOffsetY() / mPxToDp) + topPadding;
-        int bottom = top + (int) (getBarHeight() / mPxToDp);
-        int right = left + (int) (getWidth() / mPxToDp);
-
-        return new Rect(left, top, right, bottom);
-    }
-
-    /** @return The padding used for each side of the button in the Bar. */
     public float getButtonPaddingDps() {
         return mButtonPaddingDps;
     }
@@ -788,13 +761,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /**
      * @return The {@link ContextualSearchPanelMetrics}.
      */
-    @Override
     public ContextualSearchPanelMetrics getPanelMetrics() {
         return mPanelMetrics;
     }
 
     /** Sets that the contextual search involved the promo. */
-    @Override
     public void setDidSearchInvolvePromo() {
         mPanelMetrics.setDidSearchInvolvePromo();
     }
@@ -933,9 +904,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /**
      * Updates the coordinate of the existing selection.
+     *
      * @param y The y coordinate of the selection in pixels.
      */
-    @Override
     public void updateBasePageSelectionYPx(float y) {
         mBasePageSelectionYPx = y;
     }
@@ -965,7 +936,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * Creates the ContextualSearchBarControl, if needed. The Views are set to INVISIBLE, because
      * they won't actually be displayed on the screen (their snapshots will be displayed instead).
      */
-    @Override
     public ContextualSearchBarControl getSearchBarControl() {
         // When Edge To Edge is enabled and drawing to the bottom edge, pass in the bottom inset
         // to pad the search bar (specifically, the caption's bottom padding). Use 0 otherwise.
@@ -1027,14 +997,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     private ContextualSearchPromoControl mPromoControl;
     private ContextualSearchPromoHost mPromoHost;
-
-    /**
-     * @return Whether the Promo reached a state in which it could be interacted.
-     */
-    @Override
-    public boolean wasPromoInteractive() {
-        return getPromoControl().wasInteractive();
-    }
 
     /**
      * @return Height of the promo in pixels.
@@ -1208,11 +1170,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * Destroy the current content in the panel.
-     * NOTE(mdjones): This should not be exposed. The only use is in ContextualSearchManager for a
-     * bug related to loading new panel content.
+     * Destroy the current content in the panel. NOTE(mdjones): This should not be exposed. The only
+     * use is in ContextualSearchManager for a bug related to loading new panel content.
      */
-    @Override
     public void destroyContent() {
         super.destroyOverlayPanelContent();
     }

@@ -3167,7 +3167,6 @@ HSPLorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/Contextual
 HSPLorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanel;->getBarHeight()F
 HSPLorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanel;->onActivityStateChange(Landroid/app/Activity;I)V
 HSPLorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanel;->setManagementDelegate(Lorg/chromium/chrome/browser/contextualsearch/ContextualSearchManager;)V
-Lorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanelInterface;
 Lorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanelMetrics;
 HSPLorg/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchPanelMetrics;-><init>()V
 Lorg/chromium/chrome/browser/compositor/bottombar/ephemeraltab/EphemeralTabCoordinator;

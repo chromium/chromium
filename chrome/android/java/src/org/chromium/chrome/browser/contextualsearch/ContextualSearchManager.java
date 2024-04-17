@@ -35,8 +35,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelCoordinator;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
@@ -171,7 +169,7 @@ public class ContextualSearchManager
     private ContextualSearchInternalStateController mInternalStateController;
 
     // The panel.
-    private ContextualSearchPanelInterface mSearchPanel;
+    private ContextualSearchPanel mSearchPanel;
 
     // The native manager associated with this object.
     private long mNativeContextualSearchManagerPtr;
@@ -365,39 +363,24 @@ public class ContextualSearchManager
 
         mLayoutManager = layoutManager;
 
-        ContextualSearchPanelInterface panel;
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION)) {
-            panel =
-                    new ContextualSearchPanelCoordinator(
-                            mActivity,
-                            mWindowAndroid,
-                            bottomSheetController,
-                            this::getBasePageHeight,
-                            intentRequestTracker);
-        } else {
-            panel =
-                    new ContextualSearchPanel(
-                            mActivity,
-                            mLayoutManager,
-                            mLayoutManager.getOverlayPanelManager(),
-                            mBrowserControlsStateProvider,
-                            mWindowAndroid,
-                            mProfile,
-                            compositorViewHolder,
-                            toolbarHeightDp,
-                            toolbarManager,
-                            activityType,
-                            mTabSupplier,
-                            mEdgeToEdgeControllerSupplier);
-        }
-
+        ContextualSearchPanel panel =
+                new ContextualSearchPanel(
+                        mActivity,
+                        mLayoutManager,
+                        mLayoutManager.getOverlayPanelManager(),
+                        mBrowserControlsStateProvider,
+                        mWindowAndroid,
+                        mProfile,
+                        compositorViewHolder,
+                        toolbarHeightDp,
+                        toolbarManager,
+                        activityType,
+                        mTabSupplier,
+                        mEdgeToEdgeControllerSupplier);
         panel.setManagementDelegate(this);
-        setContextualSearchPanel(panel);
 
-        if (panel instanceof SceneOverlay) {
-            mLayoutManager.addSceneOverlay((SceneOverlay) panel);
-        }
+        setContextualSearchPanel(panel);
+        mLayoutManager.addSceneOverlay((SceneOverlay) panel);
 
         mRedirectHandler = RedirectHandler.create();
 
@@ -433,7 +416,7 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void setContextualSearchPanel(ContextualSearchPanelInterface panel) {
+    public void setContextualSearchPanel(ContextualSearchPanel panel) {
         assert panel != null;
         mSearchPanel = panel;
         mPolicy.setContextualSearchPanel(panel);
@@ -2054,9 +2037,11 @@ public class ContextualSearchManager
         mPolicy = policy;
     }
 
-    /** @return The {@link ContextualSearchPanelInterface}, for testing purposes only. */
+    /**
+     * @return The {@link ContextualSearchPanel}, for testing purposes only.
+     */
     @VisibleForTesting
-    ContextualSearchPanelInterface getContextualSearchPanel() {
+    ContextualSearchPanel getContextualSearchPanel() {
         return mSearchPanel;
     }
 

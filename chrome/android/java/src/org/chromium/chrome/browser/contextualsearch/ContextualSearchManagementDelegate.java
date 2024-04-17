@@ -9,7 +9,6 @@ import android.app.Activity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /**
@@ -29,13 +28,15 @@ public interface ContextualSearchManagementDelegate {
 
     /**
      * Sets the handle to the ContextualSearchPanel.
+     *
      * @param panel The ContextualSearchPanel.
      */
-    void setContextualSearchPanel(ContextualSearchPanelInterface panel);
+    void setContextualSearchPanel(ContextualSearchPanel panel);
 
     /**
-     * Gets whether the device is running in compatibility mode for Contextual Search.
-     * If so, a new tab showing search results should be opened instead of showing the panel.
+     * Gets whether the device is running in compatibility mode for Contextual Search. If so, a new
+     * tab showing search results should be opened instead of showing the panel.
+     *
      * @return whether the device is running in compatibility mode.
      */
     boolean isRunningInCompatibilityMode();

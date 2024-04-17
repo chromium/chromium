@@ -25,10 +25,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION
-})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @DoNotBatch(reason = "testTapWithLanguage is flaky if it is batched https://crbug.com/1105488")
