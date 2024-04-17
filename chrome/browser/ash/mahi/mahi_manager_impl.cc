@@ -206,6 +206,36 @@ void MahiManagerImpl::OnContextMenuClicked(
   }
 }
 
+void MahiManagerImpl::OpenFeedbackDialog() {
+  std::string description_template = base::StringPrintf(
+      "#Mahi user feedback:\n\n-----------\nlatest status code: %d\nlatest "
+      "summary: %s",
+      static_cast<int>(latest_response_status_),
+      base::UTF16ToUTF8(latest_summary_).c_str());
+
+  if (!current_panel_qa_.empty()) {
+    base::StringAppendF(&description_template, "\nQA history:");
+    for (const auto& [question, answer] : current_panel_qa_) {
+      base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
+                          question.c_str(), answer.c_str());
+    }
+  }
+
+  base::Value::Dict ai_metadata;
+  ai_metadata.Set(feedback::kMahiMetadataKey, "true");
+
+  chrome::ShowFeedbackPage(
+      /*browser=*/chrome::FindBrowserWithProfile(
+          ProfileManager::GetActiveUserProfile()),
+      /*source=*/chrome::kFeedbackSourceAI, description_template,
+      /*description_placeholder_text=*/
+      base::UTF16ToUTF8(
+          l10n_util::GetStringUTF16(IDS_MAHI_FEEDBACK_PLACEHOLDER)),
+      /*category_tag=*/"mahi",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
+}
+
 bool MahiManagerImpl::IsEnabled() {
   return IsSupportedWithCorrectFeatureKey() &&
          Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
@@ -268,6 +298,28 @@ void MahiManagerImpl::OnGetPageContentForSummary(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void MahiManagerImpl::OnGetPageContentForQA(
+    const std::u16string& question,
+    MahiAnswerQuestionCallback callback,
+    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
+  if (!mahi_content_ptr) {
+    std::move(callback).Run(std::nullopt,
+                            MahiResponseStatus::kContentExtractionError);
+    return;
+  }
+
+  // Assign current panel content and clear the current panel QA
+  current_panel_content_ = std::move(mahi_content_ptr);
+  current_panel_qa_.clear();
+
+  mahi_provider_->QuestionAndAnswer(
+      base::UTF16ToUTF8(current_panel_content_->page_content),
+      current_panel_qa_, base::UTF16ToUTF8(question),
+      base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
+                     weak_ptr_factory_.GetWeakPtr(), question,
+                     std::move(callback)));
+}
+
 void MahiManagerImpl::OnMahiProviderSummaryResponse(
     MahiSummaryCallback summary_callback,
     base::Value::Dict dict,
@@ -311,59 +363,6 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
     std::move(callback).Run(std::nullopt, latest_response_status_);
   }
-}
-
-void MahiManagerImpl::OnGetPageContentForQA(
-    const std::u16string& question,
-    MahiAnswerQuestionCallback callback,
-    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-  if (!mahi_content_ptr) {
-    std::move(callback).Run(std::nullopt,
-                            MahiResponseStatus::kContentExtractionError);
-    return;
-  }
-
-  // Assign current panel content and clear the current panel QA
-  current_panel_content_ = std::move(mahi_content_ptr);
-  current_panel_qa_.clear();
-
-  mahi_provider_->QuestionAndAnswer(
-      base::UTF16ToUTF8(current_panel_content_->page_content),
-      current_panel_qa_, base::UTF16ToUTF8(question),
-      base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
-                     weak_ptr_factory_.GetWeakPtr(), question,
-                     std::move(callback)));
-}
-
-void MahiManagerImpl::OpenFeedbackDialog() {
-  std::string description_template = base::StringPrintf(
-      "#Mahi user feedback:\n\n-----------\nlatest status code: %d\nlatest "
-      "summary: %s",
-      static_cast<int>(latest_response_status_),
-      base::UTF16ToUTF8(latest_summary_).c_str());
-
-  if (!current_panel_qa_.empty()) {
-    base::StringAppendF(&description_template, "\nQA history:");
-    for (const auto& [question, answer] : current_panel_qa_) {
-      base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
-                          question.c_str(), answer.c_str());
-    }
-  }
-
-  base::Value::Dict ai_metadata;
-  ai_metadata.Set(feedback::kMahiMetadataKey, "true");
-
-  // TODO(b:329166865): add mahi feedback placeholder
-  chrome::ShowFeedbackPage(
-      /*browser=*/chrome::FindBrowserWithProfile(
-          ProfileManager::GetActiveUserProfile()),
-      /*source=*/chrome::kFeedbackSourceAI, description_template,
-      /*description_placeholder_text=*/
-      base::UTF16ToUTF8(
-          l10n_util::GetStringUTF16(IDS_MAHI_FEEDBACK_PLACEHOLDER)),
-      /*category_tag=*/"mahi",
-      /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
 }
 
 }  // namespace ash
