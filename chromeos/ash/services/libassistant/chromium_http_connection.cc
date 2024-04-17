@@ -326,7 +326,7 @@ void ChromiumHttpConnection::SendData() {
   if (!upload_pipe_.is_valid() || upload_body_.empty())
     return;
 
-  uint32_t write_bytes = upload_body_.size();
+  size_t write_bytes = upload_body_.size();
   MojoResult result = upload_pipe_->WriteData(upload_body_.data(), &write_bytes,
                                               MOJO_WRITE_DATA_FLAG_NONE);
 
