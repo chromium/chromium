@@ -44,6 +44,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -821,8 +822,11 @@ TEST_F(CaptureModeDemoToolsTest, CaptureBoundsChangeTest) {
 
   // Snap the `window` which will result in window bounds change and the key
   // combo widget will still be centered horizontally.
-  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
-  EXPECT_EQ(split_view_controller->primary_window(), window.get());
+  const WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->OnWMEvent(&event);
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
   VerifyKeyComboWidgetPosition();
 }
 

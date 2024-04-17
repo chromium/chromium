@@ -2446,6 +2446,42 @@ TEST_F(SnapGroupTest, AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
   EXPECT_TRUE(window_to_snap_group_map.empty());
 }
 
+// Tests we correctly end split view if partial overview is skipped and another
+// window is snapped. Regression test for http://b/333600706.
+TEST_F(SnapGroupTest, EndSplitView) {
+  // Snap `w1` to start partial overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(split_view_controller()->primary_window());
+  // Skip partial overview.
+  PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  // Test we cleared the observed window.
+  EXPECT_FALSE(split_view_controller()->primary_window());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // Drag to snap `w2` to the opposite side.
+  wm::ActivateWindow(w2.get());
+  const gfx::Rect w2_bounds(w2->GetBoundsInScreen());
+  const gfx::Point drag_point(w2_bounds.CenterPoint().x(), w2_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->DragMouseTo(work_area_bounds().right_center());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  // Test we cleared the observed window.
+  EXPECT_FALSE(split_view_controller()->secondary_window());
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // Activate `w1`. Test we don't create a snap group.
+  wm::ActivateWindow(w1.get());
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDividerTest:
 
@@ -4557,7 +4593,6 @@ TEST_F(SnapGroupTabletConversionTest,
   auto* snap_group_controller = SnapGroupController::Get();
   EXPECT_FALSE(
       snap_group_controller->GetSnapGroupForGivenWindow(window1.get()));
-
   EXPECT_EQ(window1.get(), split_view_controller()->primary_window());
   EXPECT_EQ(window2.get(), split_view_controller()->secondary_window());
   UnionBoundsEqualToWorkAreaBounds(window1.get(), window2.get(),

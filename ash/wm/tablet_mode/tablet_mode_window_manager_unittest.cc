@@ -1652,6 +1652,7 @@ TEST_F(TabletModeWindowManagerTest, AllowNormalWindowBoundsChangeByVK) {
 }
 
 // Test clamshell mode <-> tablet mode transition.
+// TODO(b/327269057): Refactor this to `SplitViewController|SnapGroup`.
 TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
