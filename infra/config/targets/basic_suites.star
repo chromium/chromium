@@ -1117,7 +1117,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "base_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1132,7 +1131,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "build_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1147,7 +1145,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1162,7 +1159,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "chrome_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1177,7 +1173,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "components_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1192,7 +1187,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "content_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1207,7 +1201,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "device_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1222,7 +1215,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "junit_unit_tests": targets.legacy_test_config(
             mixins = [
@@ -1237,7 +1229,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "keyboard_accessory_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1252,7 +1243,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "media_base_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1267,7 +1257,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "module_installer_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1282,7 +1271,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "net_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1297,7 +1285,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "paint_preview_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1312,7 +1299,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "password_check_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1327,7 +1313,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "password_manager_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1342,7 +1327,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "services_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1357,7 +1341,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "touch_to_fill_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1372,7 +1355,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "ui_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1387,7 +1369,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "webapk_client_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1402,7 +1383,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1417,7 +1397,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
         "webapk_shell_apk_junit_tests": targets.legacy_test_config(
             mixins = [
@@ -1432,7 +1411,6 @@ targets.legacy_basic_suite(
                 "walleye",
                 "pie_fleet",
             ],
-            use_isolated_scripts_api = True,
         ),
     },
 )
