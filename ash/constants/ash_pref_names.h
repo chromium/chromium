@@ -176,6 +176,11 @@ inline constexpr char kEduCoexistenceToSVersion[] =
 inline constexpr char kEduCoexistenceToSAcceptedVersion[] =
     "family_link_user.edu_coexistence_tos_accepted_version";
 
+// A boolean pref indicating if a PIN has been set up for on-device apps
+// parental controls.
+inline constexpr char kOnDeviceAppControlsSetupCompleted[] =
+    "on_device_app_controls.setup_completed";
+
 // A boolean pref indicating whether welcome page should be skipped in
 // in-session 'Add account' flow.
 inline constexpr char kShouldSkipInlineLoginWelcomePage[] =

@@ -16,6 +16,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace ash {
 namespace on_device_controls {
 
@@ -47,6 +51,8 @@ class AppControlsServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace on_device_controls

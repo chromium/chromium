@@ -327,7 +327,21 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   private onClickParentalControls_(): void {
-    Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    const isParentalControlsSetup =
+        this.getPref('on_device_app_controls.setup_completed').value;
+    if (isParentalControlsSetup) {
+      Router.getInstance().navigateTo(routes.APP_PARENTAL_CONTROLS);
+    }
+  }
+
+  private setUpParentalControls_(e: Event): void {
+    this.setPrefValue('on_device_app_controls.setup_completed', true);
+    // Stop propagation to keep the subpage from opening.
+    e.stopPropagation();
+  }
+
+  private disableParentalControls_(): void {
+    this.setPrefValue('on_device_app_controls.setup_completed', false);
   }
 
   private onClickManageIsolatedWebApps_(): void {

@@ -1,10 +1,12 @@
 <style include="settings-shared">
-  :host-context(body.revamp-wayfinding-enabled) #androidAppsRowIcon {
+  :host-context(body.revamp-wayfinding-enabled) #androidAppsRowIcon,
+  :host-context(body.revamp-wayfinding-enabled) #parentalControlsRowIcon {
     margin-inline-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
 
-  #androidApps[actionable]:hover {
+  #androidApps[actionable]:hover,
+  #appParentalControls[actionable]:hover {
     background-color: var(--cr-hover-background-color);
     cursor: pointer;
   }
@@ -30,13 +32,41 @@
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[isAppParentalControlsFeatureAvailable_]]">
-        <cr-link-row id="appParentalControlsRow" class="settings-box"
-            start-icon="[[rowIcons_.manageApps]]"
-            label="$i18n{appParentalControlsTitle}"
-            on-click="onClickParentalControls_"
-            role-description="$i18n{subpageArrowRoleDescription}"
-            sub-label="$i18n{appParentalControlsSubtitle}">
-        </cr-link-row>
+        <div id="appParentalControls"
+            class="settings-box"
+            actionable$="[[prefs.on_device_app_controls.setup_completed.value]]"
+            on-click="onClickParentalControls_">
+          <iron-icon id="parentalControlsRowIcon"
+              icon="[[rowIcons_.manageApps]]">
+          </iron-icon>
+          <div class="start settings-box-text">
+            $i18n{appParentalControlsTitle}
+            <div class="secondary">$i18n{appParentalControlsSubtitle}</div>
+          </div>
+          <template is="dom-if"
+              if="[[!prefs.on_device_app_controls.setup_completed.value]]">
+            <div class="separator"></div>
+            <cr-button
+                on-click="setUpParentalControls_"
+                aria-label="$i18n{appParentalControlsTitle}"
+                aria-roledescription="$i18n{appParentalControlsSetUpButton}">
+              $i18n{appParentalControlsSetUpButton}
+            </cr-button>
+          </template>
+          <template is="dom-if"
+              if="[[prefs.on_device_app_controls.setup_completed.value]]">
+            <cr-icon-button class="subpage-arrow"
+                aria-label="$i18n{appParentalControlsTitle}"
+                aria-describedby="secondaryText"
+                aria-roledescription="$i18n{subpageArrowRoleDescription}">
+            </cr-icon-button>
+            <div class="separator"></div>
+            <cr-toggle id="toggle"
+                checked="[[prefs.on_device_app_controls.setup_completed.value]]"
+                on-change="disableParentalControls_">
+            </cr-toggle>
+          </template>
+        </div>
       </template>
       <template is="dom-if" if="[[showAndroidApps_]]">
         <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
@@ -68,7 +98,7 @@
             </template>
             <template is="dom-if" if="[[!androidAppsInfo.playStoreEnabled]]">
               <div class="separator"></div>
-              <cr-button id="enable"
+              <cr-button id="arcEnable"
                   disabled="[[isEnforced_(prefs.arc.enabled)]]"
                   on-click="onEnableAndroidAppsClick_"
                   aria-label="$i18n{androidAppsPageTitle}"

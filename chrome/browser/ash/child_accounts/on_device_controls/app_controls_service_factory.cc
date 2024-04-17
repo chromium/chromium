@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/on_device_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace {
 constexpr char kServiceName[] = "AppsControlsService";
@@ -62,6 +63,11 @@ std::unique_ptr<KeyedService>
 AppControlsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<AppControlsService>();
+}
+
+void AppControlsServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  AppControlsService::RegisterProfilePrefs(registry);
 }
 
 }  // namespace on_device_controls

@@ -406,6 +406,18 @@ void AddBorealisStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
+void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appParentalControlsTitle", IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL},
+      {"appParentalControlsSubtitle",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL},
+      {"appParentalControlsSetUpButton",
+       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SET_UP_BUTTON},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
   // Even if not allowed, we still want to show Plugin VM if the VM image is on
   // disk, so that users are still able to delete the image at will.
@@ -514,9 +526,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableIsolatedWebAppsToggleLabel",
        IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL},
       {"appManagementAppLanguageLabel", IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL},
-      {"appParentalControlsTitle", IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_LABEL},
-      {"appParentalControlsSubtitle",
-       IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -564,6 +573,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddAndroidAppStrings(html_source);
   AddPluginVmLoadTimeData(html_source);
   AddBorealisStrings(html_source);
+  AddAppParentalControlsStrings(html_source);
 
   // Startup subsection exists only when OsSettingsRevampWayfinding is disabled.
   if (startup_subsection_) {

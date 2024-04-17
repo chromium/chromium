@@ -7,6 +7,8 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 namespace on_device_controls {
 
@@ -14,6 +16,8 @@ namespace on_device_controls {
 // blocking apps.
 class AppControlsService : public KeyedService {
  public:
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   AppControlsService();
   ~AppControlsService() override;
   AppControlsService(const AppControlsService&) = delete;

@@ -6302,6 +6302,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL" desc="The sublabel that describes the feature where users can set up on-device parental controls to block or enable apps.">
     Manage access and block apps on this Chromebook.
   </message>
+  <message name="IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SET_UP_BUTTON" desc="Text for the button that allows users to set up a PIN for on-device parental controls.">
+    Set up
+  </message>
 
    <!-- Apps > Manage your apps > Borealis -->
   <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" desc="Description in Steam (name of app, manages other apps) settings page.">

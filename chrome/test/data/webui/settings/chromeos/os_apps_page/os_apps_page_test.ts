@@ -25,6 +25,8 @@ type ReadinessType = appNotificationHandlerMojom.Readiness;
 
 const isRevampWayfindingEnabled =
     loadTimeData.getBoolean('isRevampWayfindingEnabled');
+const isAppParentalControlsAvailable =
+    loadTimeData.getBoolean('isAppParentalControlsFeatureAvailable');
 let appsPage: OsSettingsAppsPageElement;
 let androidAppsBrowserProxy: TestAndroidAppsBrowserProxy;
 
@@ -47,6 +49,13 @@ function getFakePrefs() {
         key: 'settings.restore_apps_and_pages',
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: 2,
+      },
+    },
+    on_device_app_controls: {
+      setup_completed: {
+        key: 'on_device_app_controls.setup_completed',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
       },
     },
   };
@@ -376,33 +385,74 @@ suite('AppsPageTests', () => {
       assertTrue(isVisible(rowLink));
     });
 
-    test(
-      'Clicking app parental controls row opens subpage',
+    if (isAppParentalControlsAvailable) {
+      test(
+        'Clicking set up sets up parental controls and navigates to subpage',
         () => {
-          const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
-              '#appParentalControlsRow');
-          // Row link is visible when the parental controls feature is enabled.
-          if (loadTimeData.getBoolean(
-                  'isAppParentalControlsFeatureAvailable')) {
-            assertTrue(!!rowLink);
-            assertTrue(isVisible(rowLink));
+          const parentalControlsRow =
+            appsPage.shadowRoot!.querySelector<HTMLElement>(
+              '#appParentalControls');
+            assertTrue(!!parentalControlsRow);
+            assertTrue(isVisible(parentalControlsRow));
+
+            const setUpButton =
+                parentalControlsRow.querySelector<HTMLElement>('cr-button');
+            assertTrue(!!setUpButton);
+            setUpButton.click();
+            flush();
 
             assertNull(appsPage.shadowRoot!.querySelector(
                 'settings-app-parental-controls-subpage'));
-            rowLink.click();
+            const subpageArrow = parentalControlsRow.querySelector<HTMLElement>(
+                '.subpage-arrow');
+            assertTrue(!!subpageArrow);
+            subpageArrow.click();
+            flush();
+
             assertTrue(!!appsPage.shadowRoot!.querySelector(
-                'settings-app-parental-controls-subpage'));
-          } else {
-            assertNull(rowLink);
-          }
+              'settings-app-parental-controls-subpage'));
         });
 
+      test('Toggling parental controls resets parental controls', () => {
+        const parentalControlsRow =
+          appsPage.shadowRoot!.querySelector<HTMLElement>(
+            '#appParentalControls');
+        assertTrue(!!parentalControlsRow);
+        assertTrue(isVisible(parentalControlsRow));
+
+        const setUpButton =
+            parentalControlsRow.querySelector<HTMLElement>('cr-button');
+        assertTrue(!!setUpButton);
+        setUpButton.click();
+        flush();
+
+        const toggle =
+            parentalControlsRow.querySelector<HTMLElement>('cr-toggle');
+        assertTrue(!!toggle);
+        toggle.click();
+        flush();
+
+        assertTrue(
+            !!parentalControlsRow.querySelector<HTMLElement>('cr-button'));
+      });
+    }
+
+    if (!isAppParentalControlsAvailable) {
+      test('Parental controls row not visible when feature off', () => {
+        const parentalControlsRow =
+          appsPage.shadowRoot!.querySelector<HTMLElement>(
+            '#appParentalControls');
+        assertNull(parentalControlsRow);
+      });
+    }
+
     test('Clicking enable button enables ARC', () => {
-      const button =
-          appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#enable');
+      const androidApps = appsPage.shadowRoot!.querySelector('#androidApps');
+      assertTrue(!!androidApps);
+      const button = androidApps.querySelector<HTMLButtonElement>('#arcEnable');
       assertTrue(!!button);
       assertTrue(isVisible(button));
-      assertNull(appsPage.shadowRoot!.querySelector('.subpage-arrow'));
+      assertNull(androidApps.querySelector('.subpage-arrow'));
 
       button.click();
       flush();
@@ -413,8 +463,7 @@ suite('AppsPageTests', () => {
         settingsAppAvailable: false,
       };
       flush();
-      assertTrue(
-          isVisible(appsPage.shadowRoot!.querySelector('.subpage-arrow')));
+      assertTrue(isVisible(androidApps.querySelector('.subpage-arrow')));
     });
 
     // On startup row does not exist in the apps page under the revamp.
@@ -490,7 +539,7 @@ suite('AppsPageTests', () => {
       Router.getInstance().navigateTo(routes.APPS, params);
 
       const deepLinkElement =
-          appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#enable');
+        appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#arcEnable');
       assertTrue(!!deepLinkElement);
       assertTrue(isVisible(deepLinkElement));
       await waitAfterNextRender(deepLinkElement);

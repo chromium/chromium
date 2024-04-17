@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service_factory.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_service_factory.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/concierge_helper_service.h"
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
@@ -217,6 +218,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   nearby::NearbyProcessManagerFactory::GetInstance();
   nearby::presence::NearbyPresenceServiceFactory::GetInstance();
   OAuth2LoginManagerFactory::GetInstance();
+  on_device_controls::AppControlsServiceFactory::GetInstance();
   OfflineSigninLimiterFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();
   PasswordSyncTokenVerifierFactory::GetInstance();

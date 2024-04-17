@@ -787,6 +787,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::ash::prefs::kIsolatedWebAppsEnabled] =
       settings_api::PrefType::kBoolean;
 
+  // App - On-Device Parental Controls
+  (*s_allowlist)[::ash::prefs::kOnDeviceAppControlsSetupCompleted] =
+      settings_api::PrefType::kBoolean;
+
   // Ambient Mode.
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeEnabled] =
       settings_api::PrefType::kBoolean;
