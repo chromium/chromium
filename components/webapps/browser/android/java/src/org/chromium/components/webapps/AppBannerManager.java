@@ -211,6 +211,11 @@ public class AppBannerManager {
         AppBannerManagerJni.get().setTotalEngagementToTrigger(engagement);
     }
 
+    /** Sets the install promo result from segmentation service for testing purpose. */
+    public static void setOverrideSegmentationResultForTesting(boolean show) {
+        AppBannerManagerJni.get().setOverrideSegmentationResultForTesting(show);
+    }
+
     /** Returns the AppBannerManager object. This is owned by the C++ banner manager. */
     public static AppBannerManager forWebContents(WebContents contents) {
         ThreadUtils.assertOnUiThread();
@@ -262,5 +267,7 @@ public class AppBannerManager {
         void setTimeDeltaForTesting(int days);
 
         void setTotalEngagementToTrigger(double engagement);
+
+        void setOverrideSegmentationResultForTesting(boolean show);
     }
 }

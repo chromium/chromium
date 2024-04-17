@@ -5648,13 +5648,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "ml-mobile-pwa-prompt",
-    "owners": [
-      "eirage@chromium.org", "mwi-team-core@google.com"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 125

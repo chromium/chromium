@@ -12,9 +12,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
-#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/installable/installable_params.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -22,14 +20,12 @@ class PrefService;
 
 namespace webapps {
 
-class InstallableManager;
 struct AddToHomescreenParams;
-struct InstallableData;
 
 // Coordinates the creation of an install ambient badge, from detecting the
 // eligibility to promote the associated web/native app and creating the ambient
-// badge. Lifecycle: This class is owned by the AppBannerManagerAndroidclass and
-// is instantiated when an ambient badge may be shown.
+// badge. Lifecycle: This class is owned by the AppBannerManagerAndroid class
+// and is instantiated when an ambient badge may be shown.
 class AmbientBadgeManager : public InstallableAmbientBadgeClient {
  public:
   // Returns if the bottom sheet was shown.
@@ -60,10 +56,10 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
     kBlocked = 2,
 
     // Waiting for service worker install to trigger the banner.
-    kPendingWorker = 3,
+    kPendingWorker = 3,  // Deprecated
 
     // Waiting for sufficient engagement to trigger the ambient badge.
-    kPendingEngagement = 4,
+    kPendingEngagement = 4,  // Deprecated
 
     // Showing Ambient Badge.
     kShowing = 5,
@@ -78,9 +74,12 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
     kComplete = 8,
 
     // Getting classification result from the segmentation platform.
-    kSegmentation = 9,
+    kPendingSegmentation = 9,
 
-    kMaxValue = kSegmentation,
+    // Blocked by segmentation result.
+    kSegmentationBlock = 10,
+
+    kMaxValue = kSegmentationBlock,
   };
 
   State state() const { return state_; }
@@ -100,9 +99,7 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   // Hides the ambient badge if it is showing.
   void HideAmbientBadge();
 
-  // Callback invoked by the InstallableManager once it has finished checking
-  // service worker for showing ambient badge.
-  void OnWorkerCheckResult(const InstallableData& data);
+  static void SetOverrideSegmentationResultForTesting(bool show);
 
  protected:
   virtual void UpdateState(State state);
@@ -116,10 +113,6 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   void ShowAmbientBadge();
 
  private:
-  // Perform checks and shows the install ambient badge. Uses legacy conditions
-  // instead of the segmentation APIs.
-  void MaybeShowAmbientBadgeLegacy();
-
   // Uses the segmentation APIs to decide showing the install ambient badge
   void MaybeShowAmbientBadgeSmart();
 
@@ -128,11 +121,6 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
 
   // Returns true if the prompt should be block.
   bool ShouldMessageBeBlockedByGuardrail();
-
-  void PerformWorkerCheckForAmbientBadge(InstallableCallback callback);
-
-  // Returns true if it's the first visit and  the badge should be suprressed.
-  bool ShouldSuppressAmbientBadgeOnFirstVisit();
 
   // Message controller for the ambient badge.
   InstallableAmbientBadgeMessageController message_controller_{this};
@@ -156,8 +144,6 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
 
   // The current ambient badge status.
   State state_ = State::kInactive;
-
-  bool passed_worker_check_ = false;
 
   base::WeakPtrFactory<AmbientBadgeManager> weak_factory_{this};
 };

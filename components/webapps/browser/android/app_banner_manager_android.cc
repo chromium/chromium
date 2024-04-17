@@ -761,4 +761,11 @@ void JNI_AppBannerManager_SetTotalEngagementToTrigger(JNIEnv* env,
   AppBannerSettingsHelper::SetTotalEngagementToTrigger(engagement);
 }
 
+// static
+void JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
+    JNIEnv* env,
+    jboolean show) {
+  AmbientBadgeManager::SetOverrideSegmentationResultForTesting(show);
+}
+
 }  // namespace webapps

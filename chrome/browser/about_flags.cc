@@ -10327,12 +10327,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"ml-mobile-pwa-prompt", flag_descriptions::kMobilePWAInstallPromptMlName,
-     flag_descriptions::kMobilePWAInstallPromptMlDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kInstallPromptSegmentation)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"mouse-and-trackpad-dropdown-menu",
      flag_descriptions::kMouseAndTrackpadDropdownMenuName,
      flag_descriptions::kMouseAndTrackpadDropdownMenuDescription, kOsAndroid,

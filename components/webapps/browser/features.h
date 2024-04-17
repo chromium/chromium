@@ -28,9 +28,6 @@ inline constexpr int kTotalDaysToStoreMLGuardrails = 60;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
-BASE_DECLARE_FEATURE(kAmbientBadgeSuppressFirstVisit);
-extern const base::FeatureParam<base::TimeDelta>
-    kAmbientBadgeSuppressFirstVisit_Period;
 BASE_DECLARE_FEATURE(kInstallPromptGlobalGuardrails);
 extern const base::FeatureParam<int>
     kInstallPromptGlobalGuardrails_DismissCount;
@@ -44,8 +41,6 @@ BASE_DECLARE_FEATURE(kPwaUniversalInstallUi);
 
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
 
 BASE_DECLARE_FEATURE(kAppBannerTriggering);
 extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey;

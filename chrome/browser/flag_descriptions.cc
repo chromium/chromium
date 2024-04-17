@@ -4169,12 +4169,6 @@ const char kMessagesForAndroidStackingAnimationName[] =
 const char kMessagesForAndroidStackingAnimationDescription[] =
     "When enabled, Messages UI will use the new stacking animation.";
 
-const char kMobilePWAInstallPromptMlName[] =
-    "Use ML to show mobile PWA install prompt";
-const char kMobilePWAInstallPromptMlDescription[] =
-    "When enabled, will use ML result to decide whether mobile PWA install "
-    "prompt should be shown.";
-
 const char kMouseAndTrackpadDropdownMenuName[] =
     "Android Mouse & Trackpad Drop-down Text Selection Menu";
 const char kMouseAndTrackpadDropdownMenuDescription[] =

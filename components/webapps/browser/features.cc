@@ -14,10 +14,6 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
-             "AmbientBadgeSuppressFirstVisit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallPromptGlobalGuardrails,
              "InstallPromptGlobalGuardrails",
@@ -44,11 +40,6 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Use segmentation to decide whether install prompt should be shown.
-BASE_FEATURE(kInstallPromptSegmentation,
-             "InstallPromptSegmentation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keys to use when querying the variations params.
 BASE_FEATURE(kAppBannerTriggering,

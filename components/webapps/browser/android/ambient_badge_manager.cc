@@ -8,9 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -22,8 +20,6 @@
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
-#include "components/webapps/browser/features.h"
-#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -31,8 +27,6 @@
 namespace webapps {
 
 namespace {
-
-constexpr base::TimeDelta kSuppressedForFirsVisitPeriod = base::Days(30);
 
 constexpr char kSegmentationResultHistogramName[] =
     "WebApk.InstallPrompt.SegmentationResult";
@@ -45,6 +39,9 @@ enum class SegmentationResult {
   kShowInstallPrompt = 2,
   kMaxValue = kShowInstallPrompt,
 };
+
+bool gOverrideSegmentationResultForTesting = false;
+bool gShowInstallPromptForTesting = false;
 
 }  // namespace
 
@@ -76,12 +73,7 @@ void AmbientBadgeManager::MaybeShow(
   maybe_show_pwa_bottom_sheet_ = std::move(maybe_show_pwa_bottom_sheet);
 
   UpdateState(State::kActive);
-
-  if (base::FeatureList::IsEnabled(features::kInstallPromptSegmentation)) {
-    MaybeShowAmbientBadgeSmart();
-  } else {
-    MaybeShowAmbientBadgeLegacy();
-  }
+  MaybeShowAmbientBadgeSmart();
 }
 
 void AmbientBadgeManager::AddToHomescreenFromBadge() {
@@ -125,79 +117,6 @@ void AmbientBadgeManager::UpdateState(State state) {
   state_ = state;
 }
 
-void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
-  // Do not show the ambient badge if it was recently dismissed.
-  if (AppBannerSettingsHelper::WasBannerRecentlyBlocked(
-          web_contents(), validated_url_, app_identifier_,
-          AppBannerManager::GetCurrentTime())) {
-    UpdateState(State::kBlocked);
-    return;
-  }
-
-  if (ShouldSuppressAmbientBadgeOnFirstVisit()) {
-    UpdateState(State::kPendingEngagement);
-    return;
-  }
-
-  // if it's showing for web app (not native app), only show if the worker check
-  // already passed.
-  if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
-      !passed_worker_check_) {
-    PerformWorkerCheckForAmbientBadge(
-        base::BindOnce(&AmbientBadgeManager::OnWorkerCheckResult,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  ShowAmbientBadge();
-}
-
-bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAmbientBadgeSuppressFirstVisit)) {
-    return false;
-  }
-
-  std::optional<base::Time> last_could_show_time =
-      AppBannerSettingsHelper::GetSingleBannerEvent(
-          web_contents(), validated_url_, app_identifier_,
-          AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE);
-
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents(), validated_url_, app_identifier_,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE,
-      AppBannerManager::GetCurrentTime());
-
-  if (!last_could_show_time || last_could_show_time->is_null()) {
-    return true;
-  }
-
-  return AppBannerManager::GetCurrentTime() - *last_could_show_time >
-         kSuppressedForFirsVisitPeriod;
-}
-
-void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
-    InstallableCallback callback) {
-  UpdateState(State::kPendingWorker);
-  InstallableParams params;
-  params.has_worker = true;
-  params.wait_for_worker = true;
-  InstallableManager* installable_manager =
-      InstallableManager::FromWebContents(&web_contents_.get());
-  installable_manager->GetData(params, std::move(callback));
-}
-
-void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
-  if (!data.errors.empty()) {
-    return;
-  }
-  passed_worker_check_ = true;
-
-  if (state_ == State::kPendingWorker) {
-    ShowAmbientBadge();
-  }
-}
-
 void AmbientBadgeManager::MaybeShowAmbientBadgeSmart() {
   if (ShouldMessageBeBlockedByGuardrail()) {
     UpdateState(State::kBlocked);
@@ -211,7 +130,18 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart() {
   CHECK(validated_url_.is_valid());
   CHECK(a2hs_params_);
 
-  UpdateState(State::kSegmentation);
+  UpdateState(State::kPendingSegmentation);
+
+  if (gOverrideSegmentationResultForTesting) {
+    segmentation_platform::ClassificationResult result(
+        segmentation_platform::PredictionStatus::kSucceeded);
+    result.ordered_labels.emplace_back(
+        gShowInstallPromptForTesting
+            ? MLInstallabilityPromoter::kShowInstallPromptLabel
+            : MLInstallabilityPromoter::kDontShowLabel);
+    OnGotClassificationResult(result);
+    return;
+  }
 
   segmentation_platform::PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -241,9 +171,7 @@ void AmbientBadgeManager::OnGotClassificationResult(
     UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
                               SegmentationResult::kInvalid,
                               SegmentationResult::kMaxValue);
-
-    // If the classification is not ready yet, fallback to the legacy logic.
-    MaybeShowAmbientBadgeLegacy();
+    UpdateState(State::kSegmentationBlock);
     return;
   }
 
@@ -255,9 +183,13 @@ void AmbientBadgeManager::OnGotClassificationResult(
                             show ? SegmentationResult::kShowInstallPrompt
                                  : SegmentationResult::kDontShow,
                             SegmentationResult::kMaxValue);
-  if (show) {
-    ShowAmbientBadge();
+
+  if (!show) {
+    UpdateState(State::kSegmentationBlock);
+    return;
   }
+
+  ShowAmbientBadge();
 }
 
 bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
@@ -310,6 +242,12 @@ void AmbientBadgeManager::ShowAmbientBadge() {
   message_controller_.EnqueueMessage(
       web_contents(), app_name_, a2hs_params_->primary_icon,
       a2hs_params_->HasMaskablePrimaryIcon(), url);
+}
+
+// static
+void AmbientBadgeManager::SetOverrideSegmentationResultForTesting(bool show) {
+  gOverrideSegmentationResultForTesting = true;
+  gShowInstallPromptForTesting = show;
 }
 
 }  // namespace webapps

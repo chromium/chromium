@@ -95,6 +95,7 @@ class MLInstallabilityPromoter
       public content::WebContentsUserData<MLInstallabilityPromoter> {
  public:
   static constexpr char kShowInstallPromptLabel[] = "ShowInstallPrompt";
+  static constexpr char kDontShowLabel[] = "DontShow";
 
   ~MLInstallabilityPromoter() override;
 

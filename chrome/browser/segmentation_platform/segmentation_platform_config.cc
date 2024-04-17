@@ -165,6 +165,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
   configs.emplace_back(AndroidHomeModuleRanker::GetConfig());
+  configs.emplace_back(GetConfigForWebAppInstallationPromo());
 #endif
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
@@ -181,9 +182,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
 
   if (base::FeatureList::IsEnabled(
-          webapps::features::kWebAppsEnableMLModelForPromotion) ||
-      base::FeatureList::IsEnabled(
-          webapps::features::kInstallPromptSegmentation)) {
+          webapps::features::kWebAppsEnableMLModelForPromotion)) {
     configs.emplace_back(GetConfigForWebAppInstallationPromo());
   }
   if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleSegmentation)) {

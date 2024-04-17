@@ -364,7 +364,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncShowIdentityErrorsForSignedInUsers,
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kTabGroupSyncAndroid,
-    &webapps::features::kAmbientBadgeSuppressFirstVisit,
     &webapps::features::kPwaUniversalInstallUi,
     &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
