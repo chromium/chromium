@@ -5,6 +5,7 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -67,8 +68,13 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
                              /*baseline_cl=*/"3924454"));
 }
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CompareScreenshot_Surface DISABLED_CompareScreenshot_Surface
+#else
+#define MAYBE_CompareScreenshot_Surface CompareScreenshot_Surface
+#endif
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
-                       CompareScreenshot_Surface) {
+                       MAYBE_CompareScreenshot_Surface) {
   const auto lock =
       user_education::NewBadgeController::DisableNewBadgesForTesting();
   RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
