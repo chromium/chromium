@@ -130,10 +130,6 @@ LayoutView::LayoutView(ContainerNode* document)
       GetDocument()) {
     SetIsEffectiveRootScroller(true);
   }
-
-  // This flag is normally set when an object is inserted into the tree, but
-  // this doesn't happen for LayoutView, since it's the root.
-  SetMightTraversePhysicalFragments(true);
 }
 
 LayoutView::~LayoutView() = default;
