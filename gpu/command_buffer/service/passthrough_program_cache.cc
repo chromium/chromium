@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "ui/gl/gl_bindings.h"
 
 #if defined(USE_EGL)
@@ -163,10 +164,10 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
     // that consumes `value`.
     if (cache_program_callback_) {
       // Convert the key and binary to string form.
-      base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
-                                   key.size());
-      base::StringPiece value_string(
-          reinterpret_cast<const char*>(value.data()), value.size());
+      std::string_view key_string(reinterpret_cast<const char*>(key.data()),
+                                  key.size());
+      std::string_view value_string(reinterpret_cast<const char*>(value.data()),
+                                    value.size());
       std::string key_string_64 = base::Base64Encode(key_string);
       std::string value_string_64 = base::Base64Encode(value_string);
       cache_program_callback_.Run(key_string_64, value_string_64);

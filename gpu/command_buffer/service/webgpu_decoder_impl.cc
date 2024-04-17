@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -248,7 +249,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                           const volatile void* buffer,
                           int num_entries,
                           int* entries_processed) override;
-  base::StringPiece GetLogPrefix() override { return "WebGPUDecoderImpl"; }
+  std::string_view GetLogPrefix() override { return "WebGPUDecoderImpl"; }
   gles2::ContextGroup* GetContextGroup() override { return nullptr; }
   gles2::ErrorState* GetErrorState() override {
     NOTREACHED();

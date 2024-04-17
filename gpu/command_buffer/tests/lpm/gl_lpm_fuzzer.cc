@@ -12,6 +12,7 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -130,8 +131,8 @@ const char* acceptable_errors[] = {
 };
 
 // Filter errors which we don't think interfere with fuzzing everything.
-bool ErrorOk(const base::StringPiece line) {
-  for (const base::StringPiece acceptable_error : acceptable_errors) {
+bool ErrorOk(const std::string_view line) {
+  for (const std::string_view acceptable_error : acceptable_errors) {
     if (base::Contains(line, acceptable_error)) {
       return true;
     }
@@ -140,7 +141,7 @@ bool ErrorOk(const base::StringPiece line) {
   return false;
 }
 
-bool ErrorsOk(const base::StringPiece log) {
+bool ErrorsOk(const std::string_view log) {
   std::vector<std::string> lines = base::SplitString(
       log, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
@@ -168,7 +169,7 @@ GLuint LoadShader(GLenum type, const fuzzing::Shader& shader_proto) {
       glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
       auto buffer = std::make_unique<GLchar[]>(log_length);
       glGetShaderInfoLog(shader, log_length, /*length=*/nullptr, buffer.get());
-      base::StringPiece log(buffer.get(), log_length);
+      std::string_view log(buffer.get(), log_length);
       if (!ErrorsOk(log)) {
         LOG(FATAL) << "Encountered an unexpected failure when translating:\n"
                    << log << "\nfailed to compile shader:\n"
@@ -197,7 +198,7 @@ GLuint SetupProgram(GLuint vertex_shader, GLuint fragment_shader) {
       auto buffer = std::make_unique<GLchar[]>(log_length);
       glGetProgramInfoLog(program, log_length, /*length=*/nullptr,
                           buffer.get());
-      base::StringPiece log(buffer.get(), log_length);
+      std::string_view log(buffer.get(), log_length);
       LOG(WARNING) << "Error linking program: " << log;
     }
     glDeleteProgram(program);

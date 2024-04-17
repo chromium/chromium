@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -252,7 +252,7 @@ struct Config {
     attrib_helper.enable_oop_rasterization = it.GetBit();
 
 #if defined(GPU_FUZZER_USE_STUB)
-    std::vector<base::StringPiece> enabled_extensions;
+    std::vector<std::string_view> enabled_extensions;
     enabled_extensions.reserve(kExtensionCount);
     for (const char* extension : kExtensions) {
       if (it.GetBit())

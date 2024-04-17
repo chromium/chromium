@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -81,7 +82,7 @@ class AsyncAPIMock : public AsyncAPIInterface {
                             int num_entries,
                             int* entries_processed));
 
-  base::StringPiece GetLogPrefix() override { return "None"; }
+  std::string_view GetLogPrefix() override { return "None"; }
 
   // Forwards the SetToken commands to the engine.
   void SetToken(unsigned int command,

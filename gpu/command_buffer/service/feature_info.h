@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
@@ -250,7 +251,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
 
   ~FeatureInfo();
 
-  void AddExtensionString(const base::StringPiece& s);
+  void AddExtensionString(std::string_view s);
   void InitializeBasicState(const base::CommandLine* command_line);
   void InitializeFeatures();
   void InitializeFloatAndHalfFloatFeatures(const gfx::ExtensionSet& extensions);

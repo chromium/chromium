@@ -4,6 +4,8 @@
 
 #include "gpu/config/gpu_util.h"
 
+#include <string_view>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -648,7 +650,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   std::string disabled_gl_extensions_value =
       command_line->GetSwitchValueASCII(switches::kDisableGLExtensions);
   if (!disabled_gl_extensions_value.empty()) {
-    std::vector<base::StringPiece> command_line_disabled_extensions =
+    std::vector<std::string_view> command_line_disabled_extensions =
         base::SplitStringPiece(disabled_gl_extensions_value, ", ;",
                                base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);

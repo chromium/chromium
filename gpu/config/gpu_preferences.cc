@@ -4,6 +4,8 @@
 
 #include "gpu/config/gpu_preferences.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,7 +19,7 @@ namespace gpu {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-size_t GetCustomGpuCacheSizeBytesIfExists(base::StringPiece switch_string) {
+size_t GetCustomGpuCacheSizeBytesIfExists(std::string_view switch_string) {
   const base::CommandLine& process_command_line =
       *base::CommandLine::ForCurrentProcess();
   size_t cache_size;

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -522,7 +523,7 @@ class RasterDecoderImpl final : public RasterDecoder,
                           const volatile void* buffer,
                           int num_entries,
                           int* entries_processed) override;
-  base::StringPiece GetLogPrefix() override;
+  std::string_view GetLogPrefix() override;
 
   gles2::ContextGroup* GetContextGroup() override;
   gles2::ErrorState* GetErrorState() override;
@@ -977,7 +978,7 @@ gles2::Outputter* RasterDecoder::outputter() const {
   return outputter_;
 }
 
-base::StringPiece RasterDecoder::GetLogPrefix() {
+std::string_view RasterDecoder::GetLogPrefix() {
   return GetLogger()->GetLogPrefix();
 }
 
@@ -1593,7 +1594,7 @@ void RasterDecoderImpl::ExitCommandProcessingEarly() {
   commands_to_process_ = 0;
 }
 
-base::StringPiece RasterDecoderImpl::GetLogPrefix() {
+std::string_view RasterDecoderImpl::GetLogPrefix() {
   return logger_.GetLogPrefix();
 }
 
@@ -1929,7 +1930,7 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   if (!url_str)
     return error::kInvalidArguments;
 
-  GURL url(base::StringPiece(url_str, size));
+  GURL url(std::string_view(url_str, size));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

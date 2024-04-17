@@ -10,6 +10,7 @@
 #include <GLES2/gl2.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -109,12 +110,12 @@ class GpuCommandBufferTestEGL {
   void RestoreGLDefault();
 
   // Returns whether the current context supports the named EGL extension.
-  bool HasEGLExtension(const base::StringPiece& extension) {
+  bool HasEGLExtension(std::string_view extension) {
     return gfx::HasExtension(egl_extensions_, extension);
   }
 
   // Returns whether the current context supports the named GL extension.
-  bool HasGLExtension(const base::StringPiece& extension) {
+  bool HasGLExtension(std::string_view extension) {
     return gfx::HasExtension(gl_extensions_, extension);
   }
 

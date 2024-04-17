@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -2194,7 +2195,7 @@ bool FeatureInfo::IsES31ForTestingContext() const {
   return IsES31ForTestingContextType(context_type_);
 }
 
-void FeatureInfo::AddExtensionString(const base::StringPiece& extension) {
+void FeatureInfo::AddExtensionString(std::string_view extension) {
   extensions_.insert(extension);
 }
 

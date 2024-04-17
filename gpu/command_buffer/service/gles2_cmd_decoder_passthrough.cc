@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -2704,7 +2705,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(
   if (!url_str)
     return error::kInvalidArguments;
 
-  GURL url(base::StringPiece(url_str, size));
+  GURL url(std::string_view(url_str, size));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

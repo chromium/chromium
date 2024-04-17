@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -63,7 +65,7 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
                     const gfx::Rect& cleared_rect) override;
   void BeginDecoding() override;
   void EndDecoding() override;
-  base::StringPiece GetLogPrefix() override;
+  std::string_view GetLogPrefix() override;
 
   virtual gles2::GLES2Util* GetGLES2Util() = 0;
   virtual gles2::Logger* GetLogger() = 0;

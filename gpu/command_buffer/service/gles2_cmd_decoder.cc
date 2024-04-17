@@ -17,6 +17,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
@@ -519,7 +520,7 @@ void GLES2Decoder::BeginDecoding() {}
 
 void GLES2Decoder::EndDecoding() {}
 
-base::StringPiece GLES2Decoder::GetLogPrefix() {
+std::string_view GLES2Decoder::GetLogPrefix() {
   return GetLogger()->GetLogPrefix();
 }
 
@@ -18117,7 +18118,7 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
   if (!url_str)
     return error::kInvalidArguments;
 
-  GURL url(base::StringPiece(url_str, size));
+  GURL url(std::string_view(url_str, size));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

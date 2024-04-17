@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -33,7 +34,7 @@ namespace gles2 {
 namespace {
 
 bool GetUintFromSwitch(const base::CommandLine* command_line,
-                       const base::StringPiece& switch_string,
+                       std::string_view switch_string,
                        uint32_t* value) {
   if (!command_line->HasSwitch(switch_string)) {
     return false;

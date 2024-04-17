@@ -4,6 +4,8 @@
 
 #include "gpu/config/vulkan_info.h"
 
+#include <string_view>
+
 #include "gpu/ipc/common/vulkan_info.mojom.h"
 #include "gpu/ipc/common/vulkan_info_mojom_traits.h"
 
@@ -57,7 +59,7 @@ void VulkanInfo::SetEnabledInstanceExtensions(
 }
 
 void VulkanInfo::SetEnabledInstanceExtensions(
-    const std::vector<base::StringPiece>& extensions) {
+    const std::vector<std::string_view>& extensions) {
   enabled_instance_extensions.clear();
   for (const auto& extension : extensions) {
     bool found = false;

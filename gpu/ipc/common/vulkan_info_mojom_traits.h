@@ -5,7 +5,8 @@
 #ifndef GPU_IPC_COMMON_VULKAN_INFO_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_INFO_MOJOM_TRAITS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "gpu/config/vulkan_info.h"
 #include "gpu/ipc/common/vulkan_info.mojom-shared.h"
 #include "gpu/ipc/common/vulkan_types_mojom_traits.h"
@@ -77,9 +78,9 @@ struct StructTraits<gpu::mojom::VulkanInfoDataView, gpu::VulkanInfo> {
     return input.instance_extensions;
   }
 
-  static std::vector<base::StringPiece> enabled_instance_extensions(
+  static std::vector<std::string_view> enabled_instance_extensions(
       const gpu::VulkanInfo& input) {
-    std::vector<base::StringPiece> extensions;
+    std::vector<std::string_view> extensions;
     extensions.reserve(input.enabled_instance_extensions.size());
     for (const char* extension : input.enabled_instance_extensions)
       extensions.emplace_back(extension);
@@ -103,7 +104,7 @@ struct StructTraits<gpu::mojom::VulkanInfoDataView, gpu::VulkanInfo> {
     if (!data.ReadInstanceExtensions(&out->instance_extensions))
       return false;
 
-    std::vector<base::StringPiece> extensions;
+    std::vector<std::string_view> extensions;
     if (!data.ReadEnabledInstanceExtensions(&extensions))
       return false;
     out->SetEnabledInstanceExtensions(extensions);

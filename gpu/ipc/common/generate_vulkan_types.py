@@ -284,7 +284,7 @@ struct StructTraits<gpu::mojom::%sDataView, %s> {
       assert array_len
       traits_header_file.write(
 """
-  static base::StringPiece %s(const %s& input) {
+  static std::string_view %s(const %s& input) {
     return input.%s;
   }
 """ % (field_name, name, field_name))
@@ -334,7 +334,7 @@ bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
       read_method = "Read%s" % (NormalizedCamelCase(field_name))
       traits_source_file.write(
 """
-  base::StringPiece %s;
+  std::string_view %s;
   if (!data.%s(&%s))
     return false;
   %s.copy(out->%s, sizeof(out->%s));
@@ -435,8 +435,9 @@ def GenerateTraitsFile(traits_header_file: typing.IO,
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "gpu/ipc/common/vulkan_types.h"
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 
