@@ -122,6 +122,7 @@ interface StableVideoDecoder {
   // for any config that does not match an entry in this list.
   //
   // May be called before Construct().
+  [Sync]
   GetSupportedConfigs@0() =>
       (array<SupportedVideoDecoderConfig> supported_configs,
        VideoDecoderType decoder_type);

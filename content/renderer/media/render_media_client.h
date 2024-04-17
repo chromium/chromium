@@ -12,6 +12,7 @@
 #include "media/base/media_client.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -50,14 +51,17 @@ class RenderMediaClient : public media::MediaClient {
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 
   // Used to indicate if optional video profile support information has been
-  // retrieved from the MojoVideoDecoder. May be waited upon by any thread but
-  // the RenderThread since it's always signaled from the RenderThread.
+  // retrieved from the |video_decoder_for_supported_profiles_|. May be waited
+  // upon by any thread but the RenderThread since it's always signaled from the
+  // RenderThread.
   [[maybe_unused]] base::WaitableEvent did_update_;
 
   [[maybe_unused]] mojo::Remote<media::mojom::InterfaceFactory>
       interface_factory_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
-  [[maybe_unused]] mojo::SharedRemote<media::mojom::VideoDecoder>
+  [[maybe_unused]] absl::variant<
+      mojo::SharedRemote<media::mojom::VideoDecoder>,
+      mojo::SharedRemote<media::stable::mojom::StableVideoDecoder>>
       video_decoder_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 };
