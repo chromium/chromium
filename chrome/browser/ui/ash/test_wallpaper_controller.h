@@ -183,7 +183,6 @@ class TestWallpaperController : public ash::WallpaperController {
   bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const override;
   std::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo() const override;
-  bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(

@@ -446,11 +446,6 @@ bool WallpaperControllerImpl::ShouldShowInitialAnimation() {
   return true;
 }
 
-bool WallpaperControllerImpl::CanOpenWallpaperPicker() {
-  return ShouldShowWallpaperSetting() &&
-         !IsActiveUserWallpaperControlledByPolicy();
-}
-
 bool WallpaperControllerImpl::HasShownAnyWallpaper() const {
   return !!current_wallpaper_;
 }
@@ -1364,8 +1359,11 @@ void WallpaperControllerImpl::SetAnimationDuration(
 }
 
 void WallpaperControllerImpl::OpenWallpaperPickerIfAllowed() {
-  if (wallpaper_controller_client_ && CanOpenWallpaperPicker())
+  const auto* session = GetActiveUserSession();
+  if (wallpaper_controller_client_ && session &&
+      CanSetUserWallpaper(session->user_info.account_id)) {
     wallpaper_controller_client_->OpenWallpaperPicker();
+  }
 }
 
 void WallpaperControllerImpl::MinimizeInactiveWindows(
@@ -1462,20 +1460,6 @@ WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
     return std::nullopt;
   }
   return info;
-}
-
-bool WallpaperControllerImpl::ShouldShowWallpaperSetting() {
-  const UserSession* const active_user_session = GetActiveUserSession();
-  if (!active_user_session)
-    return false;
-
-  // Since everything gets wiped at the end of the Public Session (and Managed
-  // Guest Session), users are disallowed to set wallpaper (and other
-  // personalization settings) to avoid unnecessary confusion and surprise when
-  // everything resets.
-  user_manager::UserType active_user_type = active_user_session->user_info.type;
-  return active_user_type == user_manager::UserType::kRegular ||
-         active_user_type == user_manager::UserType::kChild;
 }
 
 void WallpaperControllerImpl::OnDisplayConfigurationChanged() {

@@ -1090,7 +1090,6 @@ TEST_P(WallpaperControllerTest, Client) {
   controller_->Init(empty_path, empty_path, empty_path, empty_path);
 
   EXPECT_EQ(0u, client_.open_count());
-  EXPECT_TRUE(controller_->CanOpenWallpaperPicker());
   controller_->OpenWallpaperPickerIfAllowed();
   EXPECT_EQ(1u, client_.open_count());
 }
@@ -2800,12 +2799,6 @@ TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_FALSE(
       pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
-}
-
-// Disable the wallpaper setting for public session since it is ephemeral.
-TEST_P(WallpaperControllerTest, NotShowWallpaperSettingInPublicSession) {
-  SimulateUserLogin("public_session", user_manager::UserType::kPublicAccount);
-  EXPECT_FALSE(controller_->ShouldShowWallpaperSetting());
 }
 
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {

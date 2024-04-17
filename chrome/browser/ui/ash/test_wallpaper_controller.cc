@@ -343,11 +343,6 @@ TestWallpaperController::GetActiveUserWallpaperInfo() const {
   return wallpaper_info_;
 }
 
-bool TestWallpaperController::ShouldShowWallpaperSetting() {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void TestWallpaperController::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {

@@ -163,9 +163,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // wallpapers at login screen).
   bool ShouldShowInitialAnimation();
 
-  // Returns true if the active user is allowed to open the wallpaper picker.
-  bool CanOpenWallpaperPicker();
-
   // Returns whether any wallpaper has been shown. It returns false before the
   // first wallpaper is set (which happens momentarily after startup), and will
   // always return true thereafter.
@@ -329,7 +326,6 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsWallpaperControlledByPolicy(
       const AccountId& account_id) const override;
   std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const override;
-  bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(

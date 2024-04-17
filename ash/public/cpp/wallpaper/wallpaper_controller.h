@@ -348,10 +348,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // active user.
   virtual std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
 
-  // Returns true if the wallpaper setting (used to open the wallpaper picker)
-  // should be visible.
-  virtual bool ShouldShowWallpaperSetting() = 0;
-
   // Set and store the collection id used to update refreshable wallpapers.
   // Empty if daily refresh is not enabled.
   virtual void SetDailyRefreshCollectionId(
