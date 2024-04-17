@@ -3500,9 +3500,6 @@ extern const char kCrostiniQtImeSupportDescription[];
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 
-extern const char kCrostiniTerminaDlcForceOtaName[];
-extern const char kCrostiniTerminaDlcForceOtaDescription[];
-
 extern const char kCameraAppAutoQRDetectionName[];
 extern const char kCameraAppAutoQRDetectionDescription[];
 

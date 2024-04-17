@@ -6024,11 +6024,6 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
-const char kCrostiniTerminaDlcForceOtaName[] =
-    "Crostini termina-dlc new infrastructure";
-const char kCrostiniTerminaDlcForceOtaDescription[] =
-    "Experimentally uses new infrastructure to serve termina-dlc.";
-
 const char kCameraAppAutoQRDetectionName[] =
     "Camera App Auto QR Code Detection";
 const char kCameraAppAutoQRDetectionDescription[] =
